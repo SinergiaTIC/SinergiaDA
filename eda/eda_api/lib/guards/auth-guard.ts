@@ -5,7 +5,7 @@ import _ = require('lodash');
 const SEED = require('../../config/seed').SEED;
 const jwt = require ('jsonwebtoken');
 
-
+asasas
 
 
 export const authGuard = async function (req: Request, res: Response, next: NextFunction) {
