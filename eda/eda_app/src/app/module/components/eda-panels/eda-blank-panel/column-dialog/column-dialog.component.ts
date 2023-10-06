@@ -34,7 +34,7 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
         filterValue: false,
         filterButton: true,
         switchButton: true,
-        duplicateColumn: false
+        duplicateColumnInp: false
     };
     public filter = {
         switch: false,
@@ -54,7 +54,7 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
     public dropDownFields: SelectItem[];
     public limitSelectionFields: number;
     public cumulativeSum: boolean;
-    public cumulativeSumTooltip: string = $localize`:@@cumulativeSumTooltip:Si activas ésta función se calculará la suma acumulativa 
+    public cumulativeSumTooltip: string = $localize`:@@cumulativeSumTooltip:Si activas ésta función se calculará la suma acumulativa
                                             para los campos numéricos que eligas. Sólo se puede activar si la fecha está agregada por mes, semana o dia.`
 
     constructor(
@@ -141,7 +141,7 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
                 this.columnUtils.addFilter(this.filterValue, table, column, type, range)
             );
         }
-        
+
 
         this.carregarFilters();
 
@@ -526,19 +526,15 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
         }
     }
 
-    public onCancelDuplicateColumn(): void {
-        this.display.duplicateColumn = false;
-    }
-
     public duplicateColumn() {
-        this.display.duplicateColumn = true;
+        this.display.duplicateColumnInp = true;
         this.duplicatedColumnName = this.selectedColumn.display_name.default + ' (Copy)';
     }
 
     public saveDuplicatedColumn() {
         if (_.isNil(this.duplicatedColumnName) || _.isEmpty(this.duplicatedColumnName)) return;
 
-        this.display.duplicateColumn = false;
+        this.display.duplicateColumnInp = false;
         const newColumn = _.cloneDeep(this.selectedColumn);
         newColumn.display_name.default = this.duplicatedColumnName;
         this.onClose(EdaDialogCloseEvent.NEW, { duplicated: true, column: newColumn});

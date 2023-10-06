@@ -537,26 +537,14 @@ console.log(sinergiaDatabase);
     main_model.ds.connection.password = EnCrypterService.encrypt(sinergiaDatabase.sinergiaConn.password);
     main_model.ds.model.tables = tables; //añadimos el parámetro en la columna adecuada
     main_model.ds.metadata.model_granted_roles = await grantedRoles;
+
+    const cleanM = new CleanModel;
+
+    main_model = await cleanM.cleanModel(main_model);
     
-    
-    try {
-        const cleanM = new CleanModel; 
-        main_model = await cleanM.cleanModel(main_model);
-        fs.writeFile(`metadata.json`, JSON.stringify(main_model), { encoding: `utf-8` }, (err) => { if (err) {throw err} else { }})
-        try {
-          await new pushModelToMongo().pushModel(main_model,res)
-          } catch (e) {
-            console.log(e)
-            res.status(500).json({'status' : 'ko'})
-          } finally {
-            res.status(200).json({'status' : 'ok'})
-          }
-        
-        } catch (e) {        
-            console.log(e)
-            res.status(500).json({'status' : 'ko'})
-        }
-      
-    }
+    await new pushModelToMongo().pushModel(main_model);
+    fs.writeFile(`metadata.json`, JSON.stringify(main_model), { encoding: `utf-8` }, (err) => { if (err) throw err })
 
   }
+
+}

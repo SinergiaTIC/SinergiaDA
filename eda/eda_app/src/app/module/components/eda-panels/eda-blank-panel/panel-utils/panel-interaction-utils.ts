@@ -9,7 +9,7 @@ export const PanelInteractionUtils = {
 
   /**
      * loads columns from table
-     * @param table  
+     * @param table
      */
   loadColumns: (ebp: EdaBlankPanelComponent, table: any, hideColumns : number) => {
 
@@ -23,11 +23,11 @@ export const PanelInteractionUtils = {
 
       const matcher = _.find(ebp.currentQuery, (x: Column) => c.table_id === x.table_id && c.column_name === x.column_name && c.display_name.default === x.display_name.default);
       if (!matcher) ebp.columns.push(c);
-      
+
 
       if (hideColumns === 1) {
         ebp.columns = ebp.columns.filter(col =>  col.hidden !== hideColumns)
-      } 
+      }
 
       ebp.columns = ebp.columns.filter(col => col.visible === true )
         .sort((a, b) => (a.display_name.default > b.display_name.default) ? 1 : ((b.display_name.default > a.display_name.default) ? -1 : 0));
@@ -41,7 +41,7 @@ export const PanelInteractionUtils = {
 
   /**
      * set local and global filters
-     * @param column 
+     * @param column
      */
   handleFilters: (ebp: EdaBlankPanelComponent, content: any): void => {
     ebp.selectedFilters = _.cloneDeep(content.filters);
@@ -102,7 +102,7 @@ export const PanelInteractionUtils = {
       return;
     }
 
-    const originTable = ebp.tables.filter(t => t.table_name === c.table_id)[0];              // Selected table   
+    const originTable = ebp.tables.filter(t => t.table_name === c.table_id)[0];              // Selected table
     const tablesMap = TableUtils.findRelationsRecursive(ebp.inject.dataSource.model.tables, originTable, new Map());         // Map with all related tables
     ebp.tablesToShow = Array.from(tablesMap.values());
     ebp.tablesToShow = ebp.tablesToShow
@@ -112,7 +112,7 @@ export const PanelInteractionUtils = {
 
   /**
     * set aggregation types
-    * @param column 
+    * @param column
     */
   handleAggregationType: (ebp: EdaBlankPanelComponent, column: Column): void => {
     const voidPanel = ebp.panel.content === undefined;
@@ -126,7 +126,7 @@ export const PanelInteractionUtils = {
       });
     }
     if (!voidPanel) {
-      const colInCurrentQuery = ebp.currentQuery.find(c => c.table_id === tableId && c.column_name === colName  && c.display_name.default === displayName ).aggregation_type.find(agg => agg.selected === true);
+      const colInCurrentQuery = ebp.currentQuery.find(c => c.table_id === tableId && c.column_name === colName  && c.display_name.default == displayName ).aggregation_type.find(agg => agg.selected === true);
       const queryFromServer = ebp.panel.content.query.query.fields;
       // Column is in currentQuery
       if (colInCurrentQuery) {
@@ -134,7 +134,7 @@ export const PanelInteractionUtils = {
         ebp.aggregationsTypes = tmpAggTypes;
         //Column isn't in currentQuery
       } else {
-        const columnInServer = queryFromServer.filter(c =>  c.table_id === tableId && c.column_name === colName   && c.display_name == displayName )[0];
+        const columnInServer = queryFromServer.filter(c =>  c.table_id === tableId && c.column_name === colName   && c.display_name.default == displayName )[0];
         // Column is in server's query
         if (columnInServer) {
           const aggregation = columnInServer.aggregation_type;
@@ -156,10 +156,10 @@ export const PanelInteractionUtils = {
     }).aggregation_type = _.cloneDeep(ebp.aggregationsTypes);
   },
 
-  
+
   /**
     * set aggregation types
-    * @param column 
+    * @param column
     */
   handleAggregationType4DuplicatedColumns: (ebp: EdaBlankPanelComponent, column: Column): void => {
     const tableId = column.table_id;
@@ -178,13 +178,13 @@ export const PanelInteractionUtils = {
           }
         });
       }
-  
+
   },
 
 
   /**
   * Set order types
-  * @param column 
+  * @param column
   */
   handleOrdTypes: (ebp: EdaBlankPanelComponent, column: Column): void => {
 
@@ -246,13 +246,13 @@ export const PanelInteractionUtils = {
     PanelInteractionUtils.searchRelations(ebp, c);        // Busca les relacions de la nova columna afegida a la consulta
     PanelInteractionUtils.handleAggregationType(ebp, c);  // Comprovacio d'agregacions de la nova columna afegida a la consulta
     PanelInteractionUtils.handleOrdTypes(ebp, c);         // Comprovacio ordenacio  de la nova columna afegida a la consulta
-   
+
 
     ebp.inputs.findColumn.reset();  // resetea las columnas a mostrar
     PanelInteractionUtils.loadColumns( // Torna a carregar les columnes de la taula
-      ebp, 
+      ebp,
       ebp.tablesToShow.filter(table => table.table_name === ebp.userSelectedTable)[0], ebp.hiddenColumn );
-  
+
   },
 
   /**
@@ -270,7 +270,7 @@ export const PanelInteractionUtils = {
   },
 
   /**
-  * sets chart state (allowed, not allowed) because there are too many data 
+  * sets chart state (allowed, not allowed) because there are too many data
   * @param charts not allowedCharts
   */
   tooManyDataForCharts(ebp: EdaBlankPanelComponent, tooManyDataForCharts: any[]) {
@@ -343,7 +343,7 @@ export const PanelInteractionUtils = {
     // Carregar de nou l'array Columns amb la columna borrada
 
     PanelInteractionUtils.loadColumns(ebp, _.find(ebp.tables, (t) => t.table_name === c.table_id), ebp.hiddenColumn);
-  
+
     // Buscar relacións per tornar a mostrar totes les taules
     if (ebp.currentQuery.length === 0 && ebp.filtredColumns.length === 0) {
 
