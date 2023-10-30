@@ -441,7 +441,7 @@ export class updateModel {
           let c = columns[i];
     
           //diferenciamos los agregadores por los tipos de las columnas
-          if (columns[i].type === "numeric") {
+          if (columns[i].type) {
             agg_used = this.getAggretations( columns[i].aggregations);
           } else {
             agg_used = agg_none
@@ -458,7 +458,7 @@ export class updateModel {
             //damos los valores a cada columna
             c = {
               "column_name": columns[i].column,
-              "column_type": columns[i].type=='enumeration'?'text':columns[i].type,
+              "column_type": columns[i].type,
               "display_name": {
                 "default": columns[i].label,
                 "localized": []
