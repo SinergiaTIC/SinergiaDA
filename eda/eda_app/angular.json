@@ -18,6 +18,9 @@
                     },
                     "pl": {
                         "translation": "src/locale/messages.pl.xlf"
+                    }, 
+                    "gl": {
+                        "translation": "src/locale/messages.gl.xlf"
                     }
                 }
             },
@@ -75,6 +78,10 @@
                             "localize": [
                                 "pl"
                             ]
+                        },"gl": {
+                            "localize": [
+                                "gl"
+                            ]
                         },
                         "production": {
                             "fileReplacements": [
@@ -122,6 +129,9 @@
                         },
                         "pl": {
                             "browserTarget": "app-eda:build:pl"
+                        },
+                        "gl": {
+                            "browserTarget": "app-eda:build:gl"
                         }
                     }
                 },
