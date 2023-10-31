@@ -458,7 +458,7 @@ export class updateModel {
             //damos los valores a cada columna
             c = {
               "column_name": columns[i].column,
-              "column_type": columns[i].type,
+              "column_type": columns[i].type=='enumeration'?'text':columns[i].type,
               "display_name": {
                 "default": columns[i].label,
                 "localized": []
