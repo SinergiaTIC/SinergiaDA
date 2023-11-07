@@ -8,8 +8,14 @@
     "projects": {
         "app-eda": {
             "i18n": {
-                "sourceLocale": "es",
+                "sourceLocale": {
+                    "baseHref": "en-US"
+                } ,
                 "locales": {
+                    "es": {
+                        "translation": "src/locale/messages.es.xlf",
+                        "baseHref": "/es"
+                    },
                     "en": {
                         "translation": "src/locale/messages.en.xlf"
                     },
@@ -70,6 +76,11 @@
                                 "en"
                             ]
                         },
+                        "es": {
+                            "localize": [
+                                "es"
+                            ]
+                        },
                         "ca": {
                             "localize": [
                                 "ca"
@@ -81,6 +92,10 @@
                         },"gl": {
                             "localize": [
                                 "gl"
+                            ]
+                        },"eda": {
+                            "localize": [
+                                "eda"
                             ]
                         },
                         "production": {
@@ -121,7 +136,7 @@
                         "production": {
                             "browserTarget": "app-eda:build:production"
                         },
-                        "es": {
+                        "en": {
                             "browserTarget": "app-eda:build:en"
                         },
                         "ca": {
@@ -132,6 +147,12 @@
                         },
                         "gl": {
                             "browserTarget": "app-eda:build:gl"
+                        },
+                        "es": {
+                            "browserTarget": "app-eda:build:es"
+                        },
+                        "eda": {
+                            "browserTarget": "app-eda:build:eda"
                         }
                     }
                 },
