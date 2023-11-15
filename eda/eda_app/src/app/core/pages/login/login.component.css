@@ -62,3 +62,8 @@
     color: #000;
     border: none;
 }
+
+.login .btn:hover {
+  background-color: #C7CE43;
+  color: #000;
+}
