@@ -9,8 +9,8 @@
         <div class="login-card w-100">
             <div class="logo-card">
                 <div>
-                    <img [src]="logo" alt="logo" width="150" height="150" />
-                    <img *ngIf="subLogo" [src]="subLogo" class="w-100" alt="logo" style="padding-top: 1rem;" />
+                    <img [src]="logo" alt="logo" />
+                    <img *ngIf="subLogo" [src]="subLogo" class="w-100" alt="logo" />
                 </div>
             </div>
 
@@ -43,8 +43,8 @@
                                 <span class="language" (click)="redirectLocale('EN')">English &nbsp;</span>
                                 <span class="language" (click)="redirectLocale('PL')">Polski &nbsp;</span>
                             </div>
-                            <button pButton type="submit" i18n-label="@@signinBtn" label="Ingresar" 
-                                class="btn btn-primary w-100 mt-3 login-button" style="padding: 3px; background-color: #b5bc31  ; "></button>
+                            <button pButton type="submit" i18n-label="@@signinBtn" label="Ingresar"
+                                class="btn btn-primary w-100 mt-3 login-button" style="padding: 3px; "></button>
                         </div>
                     </form>
 
