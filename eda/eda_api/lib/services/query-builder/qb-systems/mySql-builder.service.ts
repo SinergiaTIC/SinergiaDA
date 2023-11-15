@@ -76,6 +76,8 @@ export class MySqlBuilderService extends QueryBuilderService {
     const order_columns_string = orderColumns.join(',');
     if (order_columns_string.length > 0) {
       myQuery = `${myQuery}\norder by ${order_columns_string}`;
+    } else if (forSelector === true) {
+      myQuery = `${myQuery}\norder by 1`;
     }
 
     if (limit) myQuery += `\nlimit ${limit}`;
