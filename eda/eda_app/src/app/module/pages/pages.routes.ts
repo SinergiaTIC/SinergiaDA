@@ -9,6 +9,8 @@ import { UsersLlistaComponent } from './users-management/users-list/users-list.c
 import { DsConfigWrapperComponent } from './data-sources/dsconfig-wrapper.component'
 import { DataSourceListComponent } from './data-sources/data-source-list/data-source-list.component';
 import { ModelSettingsComponent } from './model-settings/model-settings.component';
+import { SdareportsComponent } from './sdareports/sdareports.component';
+
 
 
 // Guard
@@ -21,6 +23,7 @@ import { MailManagementComponent } from './mail-management/mail-management.compo
 const pagesRoutes: Routes = [
 
     { path: 'home', component: HomeComponent, canActivate: [VerifyTokenGuard] },
+    { path: 'sdareports', component: SdareportsComponent, canActivate: [VerifyTokenGuard] },
     { path: 'dashboard/:id', component: DashboardComponent, canActivate: [VerifyTokenGuard] },
     { path: 'account-settings', component: AccountSettingsComponent, canActivate: [VerifyTokenGuard] },
     { path: 'profile', component: ProfileComponent, canActivate: [VerifyTokenGuard] },

@@ -42,6 +42,7 @@ import { CalculatedColumnDialogComponent } from './data-sources/data-source-deta
 import { UploadFileComponent } from './data-sources/data-source-detail/upload-file/upload-file.component';
 import { SaveAsDialogComponent } from './dashboard/saveAsDialog/save-as-dialog.component';
 import { EditStylesDialogComponent } from './dashboard/edit-styles-dialog/edit-styles.dialog.component';
+import { SdareportsComponent } from './sdareports/sdareports.component';
 
 @NgModule({
     imports: [
@@ -83,7 +84,8 @@ import { EditStylesDialogComponent } from './dashboard/edit-styles-dialog/edit-s
         MailManagementComponent,
         DashboardMailDialogComponent,
         SaveAsDialogComponent,
-        EditStylesDialogComponent
+        EditStylesDialogComponent,
+        SdareportsComponent
     ]
 })
 export class PagesModule { }
