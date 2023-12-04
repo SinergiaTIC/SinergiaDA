@@ -1,199 +1,157 @@
-<div class="grid animated fadeIn">
-  <div *ngIf="!isObserver" class="col-12" id="div_new_dashboard">
-    <button
-      type="button"
-      class="btn btn-dark d-flex justify-content-center"
-      (click)="initDialog()"
-    >
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+  <!-- Botón para crear un nuevo informe -->
+  <div *ngIf="!isObserver">
+    <button type="button" class="btn btn-dark" (click)="initDialog()">
       <i class="fa fa-plus-circle mr-2"></i>
       <span i18n="@@tituloNuevoInforme">CREAR UN NUEVO INFORME</span>
     </button>
   </div>
 
-  <div class="col-12" *ngIf="tags.length !== 2" >
-    <div class="d-flex align-items-center bg-light p-2">
-      <span class="font-weight-bold mr-2">Tags:</span>
-      <div class="btn-group" role="group">
-        <button
-          type="button"
-          class="btn btn-outline-primary"
-          *ngFor="let tag of tags"
-          [class.active]="selectedTag === tag.value || (tag.value === null && selectedTag === 0)"
-          (click)="filterDashboards(tag)"
-        >
-          {{ tag.label }}
-        </button>
+  <!-- Barra de Tags -->
+  <div *ngIf="tags.length !== 2" class="ml-3">
+    <div class="navbar-text mr-2">Tags:</div>
+    <div class="btn-group" role="group">
+      <button
+        type="button"
+        class="btn btn-outline-light"
+        *ngFor="let tag of tags"
+        [class.active]="
+          selectedTag === tag.value || (tag.value === null && selectedTag === 0)
+        "
+        (click)="filterDashboards(tag)"
+      >
+        {{ tag.label }}
+      </button>
+    </div>
+  </div>
+
+  <!-- Filtro de Tipos de Informe -->
+  <!-- <div class="btn-group ml-3" role="group">
+    <button type="button" class="btn btn-outline-light"
+            *ngFor="let type of reportTypes"
+            [class.active]="selectedTypes.includes(type)"
+            (click)="toggleReportType(type)">
+      {{ type }}
+    </button>
+  </div> -->
+
+  <!-- Buscador -->
+  <div class="ml-auto">
+    <div class="input-group">
+      <input
+        type="text"
+        class="form-control"
+        id="buscador"
+        name="buscador"
+        (keyup)="filterTitle($event)"
+        i18n-placeholder="@@buscarPorNombre"
+        placeholder="Buscar por nombre del informe"
+      />
+      <div class="input-group-prepend">
+        <span class="input-group-text bg-dark border-0">
+          <i class="fa fa-search"></i>
+        </span>
       </div>
     </div>
   </div>
+</nav>
 
-
-  <!-- Buscador -->
-  <div
-  class="col-12 ml-3"
-  *ngIf="filteringByName || visibleDashboards.publics.length > 3 || visibleDashboards.grups.length > 3 || visibleDashboards.privats.length > 3"
-  style="margin-top: 0em;"
->
-  <div class="input-group">
-    <input
-      type="text"
-      class="form-control pl-5"
-      id="buscador"
-      name="buscador"
-      (keyup)="filterTitle($event)"
-      i18n-placeholder="@@buscarPorNombre"
-      placeholder="Buscar por nombre del informe"
-    />
-    <div class="input-group-prepend">
-      <span class="input-group-text border-0 bg-transparent position-absolute" style="left: 10px;">
-        <i class="fa fa-search"></i>
-      </span>
-    </div>
-  </div>
-</div>
-
-
-
-
-  <!-- PUBLICS -->
-  <div class="col-12 lg:col-3" id="public-list">
-    <h4 i18n="@@tituloGrupoPublicos" class="visibility-segment">PUBLICOS</h4>
-
-    <div
-      *ngFor="let dashboard of visibleDashboards.shared"
-      class="col-12 md:col-12 mb-2"
-      style="padding: 0px"
-    >
-      <eda-dashboard-panel>
-        <div class="d-flex justify-content-between align-items-end">
-          <h3 (click)="goToDashboard(dashboard)" class="pointer">
+<!-- Inicio de la tabla de Bootstrap -->
+<div class="container mt-4">
+  <table class="table table-striped" id="report-table">
+    <thead>
+      <tr>
+        <th>Nombre del Informe</th>
+        <th>Tipo</th>
+        <th>Acciones</th>
+      </tr>
+    </thead>
+    <tbody>
+      <!-- Informes Públicos -->
+      <ng-container *ngFor="let dashboard of visibleDashboards.shared">
+        <tr>
+          <td (click)="goToDashboard(dashboard)" class="pointer">
             {{ dashboard.config.title }}
-          </h3>
+          </td>
+          <td><i class="fa fa-circle text-danger"></i> Público</td>
+          <td>
+            <span
+              *ngIf="!isObserver && canIEdit(dashboard)"
+              (click)="deleteDashboard(dashboard)"
+              class="pointer"
+            >
+              <i class="fa fa-trash text-danger"></i>
+            </span>
+          </td>
+        </tr>
+      </ng-container>
 
-          <span
-            *ngIf="!isObserver && canIEdit(dashboard)"
-            (click)="deleteDashboard(dashboard)"
-            class="pointer"
-          >
-            <i class="fa fa-trash" style="font-size: 16px"></i>
-          </span>
-        </div>
-      </eda-dashboard-panel>
-    </div>
-  </div>
-  <!-- COMUN -->
-  <div class="col-12 lg:col-3" id="common-list">
-    <h4 i18n="@@tituloGrupoComunes" class="visibility-segment">COMUNES</h4>
-
-    <div
-      *ngFor="let dashboard of visibleDashboards.publics"
-      class="col-12 md:col-12 mb-2"
-      style="padding: 0px"
-    >
-      <eda-dashboard-panel>
-        <div class="d-flex justify-content-between align-items-end">
-          <h3 (click)="goToDashboard(dashboard)" class="pointer">
+      <!-- Informes Comunes -->
+      <ng-container *ngFor="let dashboard of visibleDashboards.publics">
+        <tr>
+          <td (click)="goToDashboard(dashboard)" class="pointer">
             {{ dashboard.config.title }}
-          </h3>
+          </td>
+          <td><i class="fa fa-circle text-primary"></i> Común</td>
+          <td>
+            <span
+              *ngIf="!isObserver && canIEdit(dashboard)"
+              (click)="deleteDashboard(dashboard)"
+              class="pointer"
+            >
+              <i class="fa fa-trash text-danger"></i>
+            </span>
+          </td>
+        </tr>
+      </ng-container>
 
-          <span
-            *ngIf="!isObserver && canIEdit(dashboard)"
-            (click)="deleteDashboard(dashboard)"
-            class="pointer"
-          >
-            <i class="fa fa-trash" style="font-size: 16px"></i>
-          </span>
-        </div>
-      </eda-dashboard-panel>
-    </div>
-  </div>
-  <!-- GROUPS -->
-  <div class="col-12 lg:col-3" id="group-list">
-    <h4 i18n="@@tituloGrupoMisGrupos" class="visibility-segment">MIS GRUPOS</h4>
-
-    <div *ngFor="let group of groups" class="col-12" style="padding: 0px">
-      <!-- <h6>{{group.name}}:</h6> -->
-
-      <div
-        *ngFor="
-          let dashboard of visibleDashboards.grups | ids : 'group' : group
-        "
-        class="col-12 md:col-12 mb-2"
-        style="padding: 0px"
-      >
-        <ng-container>
-          <eda-dashboard-panel>
-            <h3 (click)="goToDashboard(dashboard)" class="pointer">
+      <!-- Informes de Grupos -->
+      <ng-container *ngFor="let group of groups">
+        <ng-container
+          *ngFor="
+            let dashboard of visibleDashboards.grups | ids : 'group' : group
+          "
+        >
+          <tr>
+            <td (click)="goToDashboard(dashboard)" class="pointer">
               {{ dashboard.config.title }}
-            </h3>
-
-            <div class="d-flex justify-content-between align-items-end">
-              <span style="text-align: left">{{
-                getGroupsNamesByDashboard(dashboard.group)
-              }}</span>
-
+            </td>
+            <td><i class="fa fa-circle text-default"> </i>Mis Grupos</td>
+            <td>
               <span
                 *ngIf="!isObserver && canIEdit(dashboard)"
                 (click)="deleteDashboard(dashboard)"
                 class="pointer"
               >
-                <i class="fa fa-trash" style="font-size: 16px"></i>
+                <i class="fa fa-trash text-danger"></i>
               </span>
-            </div>
-          </eda-dashboard-panel>
+            </td>
+          </tr>
         </ng-container>
-      </div>
-    </div>
-  </div>
-  <!-- PRIVATES -->
-  <div class="col-12 lg:col-3" id="private-list">
-    <h4 i18n="@@tituloGrupoPersonales" class="visibility-segment">PRIVADOS</h4>
-
-    <div
-      *ngFor="let dashboard of visibleDashboards.privats"
-      class="col-12 md:col-12 mb-2"
-      style="padding: 0px"
-    >
-      <ng-container *ngIf="!isAdmin">
-        <eda-dashboard-panel>
-          <div class="d-flex justify-content-between align-items-end">
-            <h3 (click)="goToDashboard(dashboard)" class="pointer">
-              {{ dashboard.config.title }}
-            </h3>
-
-            <span
-              *ngIf="!isObserver && canIEdit(dashboard)"
-              (click)="deleteDashboard(dashboard)"
-              class="pointer"
-            >
-              <i class="fa fa-trash" style="font-size: 16px"></i>
-            </span>
-          </div>
-        </eda-dashboard-panel>
       </ng-container>
 
-      <ng-container *ngIf="isAdmin">
-        <eda-dashboard-panel>
-          <h3 (click)="goToDashboard(dashboard)" class="pointer">
+      <!-- Informes Privados -->
+      <ng-container *ngFor="let dashboard of visibleDashboards.privats">
+        <tr>
+          <td (click)="goToDashboard(dashboard)" class="pointer">
             {{ dashboard.config.title }}
-          </h3>
-
-          <div class="d-flex justify-content-between align-items-end">
-            <span>{{ dashboard.user.name }}</span>
-
+          </td>
+          <td> <i class="fa fa-circle text-default"></i> Privado</td>
+          <td>
             <span
               *ngIf="!isObserver && canIEdit(dashboard)"
               (click)="deleteDashboard(dashboard)"
               class="pointer"
             >
-              <i class="fa fa-trash" style="font-size: 16px"></i>
+              <i class="fa fa-trash text-danger"></i>
             </span>
-          </div>
-        </eda-dashboard-panel>
+          </td>
+        </tr>
       </ng-container>
-    </div>
-  </div>
+    </tbody>
+  </table>
 </div>
+<!-- Fin de la tabla de Bootstrap -->
 
 <app-create-dashboard
   *ngIf="dashController"

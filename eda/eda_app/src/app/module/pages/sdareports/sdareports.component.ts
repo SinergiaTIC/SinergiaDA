@@ -30,6 +30,8 @@ export class SdareportsComponent implements OnInit {
   }
   public selectedTag: any;
 
+  public isTableView: boolean = true;
+
   public groups: IGroup[] = [];
   public isAdmin: boolean;
   public IsDataSourceCreator: boolean;
