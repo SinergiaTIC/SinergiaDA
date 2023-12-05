@@ -1,0 +1,17 @@
+.cdk-drop-list.select-list {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  box-sizing: border-box;
+  font-size: 1.4em;
+  .select-box {
+    max-width: 33.3%;
+    display: block;
+    .fa-close {
+      color: silver;
+      &:hover {
+        color: black;
+      }
+    }
+  }
+}
