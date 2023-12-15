@@ -307,8 +307,8 @@ export class EdaTable {
 
                 numericCols.forEach(key => {
                     valuesKeys.forEach(valueKey => {
-                      let keyForCompare = key.split('~')[1].trim();
-                        if (keyForCompare.trim() === valueKey.trim()) {
+                      let keyArray = key.split('~');
+                        if (keyArray.includes(valueKey)) {
                             let decimalplaces =  0;  /** esto se hace  para ajustar el número de dicimales porque 3.1+2.5 puede dar 5.600004 */
                             try{
                                 if(  row[key].toString().split(".")[1].length > 0){
