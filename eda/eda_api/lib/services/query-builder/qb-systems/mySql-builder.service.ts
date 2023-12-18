@@ -259,7 +259,12 @@ export class MySqlBuilderService extends QueryBuilderService {
           if (el.aggregation_type === 'count_distinct') {
             columns.push(`cast( count( distinct \`${el.table_id}\`.\`${el.column_name}\`) as decimal(32,${el.minimumFractionDigits||0}) ) as \`${el.display_name}\``);
           } else {
-            columns.push(`cast(${el.aggregation_type}(\`${el.table_id}\`.\`${el.column_name}\`) as decimal(32,${el.minimumFractionDigits||0}) ) as \`${el.display_name}\``);
+              if(el.aggregation_type ==='avg'){
+                // If aggregation is AVG, set decimal places to 2
+                columns.push(`cast(${el.aggregation_type}(\`${el.table_id}\`.\`${el.column_name}\`) as decimal(32,${el.minimumFractionDigits||2}) ) as \`${el.display_name}\``);
+              }else{
+                columns.push(`cast(${el.aggregation_type}(\`${el.table_id}\`.\`${el.column_name}\`) as decimal(32,${el.minimumFractionDigits||0}) ) as \`${el.display_name}\``);
+              }
           }
         } else {
           if (el.column_type === 'numeric') {
