@@ -1,6 +1,6 @@
 
 import { Injectable } from '@angular/core';
-
+import moment from 'moment';
 @Injectable()
 export class DateUtils {
 
@@ -60,16 +60,33 @@ export class DateUtils {
         return [monday, today];
     }
     public setWeekStartFull(): Array<Date> {
-        let getMonday = (d: Date) => {
+    
+        /*    
+        // Es substitueix getMonday per us de llibreria moment
+        
+         let getMonday = (d: Date) => {
             d = new Date(d);
             var day = d.getDay(),
                 diff = d.getDate() - day + (day == 0 ? -6 : 1); // adjust when day is sunday
             return new Date(d.setDate(diff));
         }
-        const today = new Date();
-        const monday = getMonday(new Date());
-        today.setDate( monday.getDate() + 6);
-        return [monday, today];
+        
+        */
+        
+        let now = (new Date());
+        let monday = (new Date());
+        let sunday = (new Date());
+      
+        if (moment(now).weekday() == 0) {
+            monday = moment(now).subtract(6,'days').toDate();
+            sunday = moment(now).toDate();
+        } else {
+            monday = moment(now).weekday(1).toDate();        
+            sunday = moment(monday).add(6,'days').toDate();
+
+        }
+
+        return [monday, sunday];
     }
 
     public setPastWeek(): Array<Date> {
