@@ -21,6 +21,7 @@ Delcaramos la función decorador al principio del archivo. fuera de la clase. Pa
 
 El código queda parecido a esto: 
 
+```
 function CustomSingleSingnOn(target: any, propertyKey: string, descriptor: PropertyDescriptor) {
     const originalMethod = descriptor.value;
     descriptor.value = async function (req: Request, res: Response, next: NextFunction) {
@@ -39,7 +40,7 @@ export class UserController {
         console.log('Single Sign On', req.body);
         return res.status(200).json({foo:"var"})
     }
-
+```
 
 
 ## Guia de estilo para código html y css
@@ -50,6 +51,7 @@ El html y el CSS son lenguajes declarativos por lo que no se puede sobreescribir
 
 El código queda parecido a esto:
 ### HTML
+```
                             <div class = "langoption">
                                 <span class="language" (click)="redirectLocale('CAT')">Català &nbsp;</span>
                                 <span class="language" (click)="redirectLocale('ES')">Español &nbsp;</span>
@@ -57,14 +59,16 @@ El código queda parecido a esto:
                                 <!--span class="language" (click)="redirectLocale('PL')">Polski &nbsp;</span-->
                                 <!--SDA CUSTOM--> <span class="language" (click)="redirectLocale('GL')">Galego &nbsp;</span>
                             </div>
+```
 ### CSS
 
+```
 .login .btn:hover {
   /* background-color: #C7CE43; */
   /*SDA CUSTOM*/ background-color: #C7CE43;
   color: #000;
 }
-
+```
 En caso de que se creen clases nuevas específicas de SDA se prefijarán con el nombre **SDA_XXXX**
 
 
