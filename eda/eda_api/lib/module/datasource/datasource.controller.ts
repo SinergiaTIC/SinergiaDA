@@ -79,8 +79,6 @@ export class DataSourceController {
         });
     }
 
-
-
     /* Aquesta funció retorna els datasources disponibles per fer un dashboard.
     Un cop filtrats els permisos de grup i de usuari. */
 
@@ -146,7 +144,6 @@ export class DataSourceController {
    Aquesta funció sustitueix GetDataSourcesNames en la nova versió on cada usuari por afegir i editar models de dades */
    @CustomGetDataSourcesNamesForEdit
    static async GetDataSourcesNamesForEdit(req: Request, res: Response, next: NextFunction) {
-
     const groups = await Group.find({users: {$in: req.user._id}}).exec();
     const isAdmin = groups.filter(g => g.role === 'EDA_ADMIN_ROLE').length > 0;
     const output = [];
@@ -166,7 +163,6 @@ export class DataSourceController {
             ((upperCase(b.model_name) > upperCase(a.model_name)) ? -1 : 0));
             return res.status(200).json({ ok: true, ds: output });
         });
-        
     }else{
         // Si l'usuari NO es admin retorna els seus.
         DataSource.find({}, '_id ds.metadata.model_name ds.metadata.model_owner',options, (err, ds) => {
