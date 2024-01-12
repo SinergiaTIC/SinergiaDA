@@ -78,5 +78,30 @@ En caso de que se creen clases nuevas específicas de SDA se prefijarán con el 
 
 1. se hará un una nueva rama a partir de la rama Reporting.
 2. se hará un merge a partir de la rama de EDA que se quiere integrar. 
+3. Cuando se haga un merge hay que:
 
 
+3.1 Respetar los archivos propios de SDA:
+
+SinergiaDA\.github\PULL_REQUEST_TEMPLATE\Plantilla para Pull Request.md
+SinergiaDA\.github\PULL_REQUEST_TEMPLATE.md
+SinergiaDA\eda\eda_api\config\base_datamodel.json
+SinergiaDA\eda\eda_api\config\sinergiacrm.config.js
+SinergiaDA\eda\eda_api\lib\guards\updateModel-guard.ts
+SinergiaDA\eda\eda_api\lib\module\updateModel
+SinergiaDA\eda\eda_api\lib\module\updateModel\models
+SinergiaDA\eda\eda_api\lib\module\updateModel\models\dashboard.ts
+SinergiaDA\eda\eda_api\lib\module\updateModel\models\data-source.ts
+SinergiaDA\eda\eda_api\lib\module\updateModel\models\groups.ts
+SinergiaDA\eda\eda_api\lib\module\updateModel\models\users.ts
+SinergiaDA\eda\eda_api\lib\module\updateModel\service
+SinergiaDA\eda\eda_api\lib\module\updateModel\service\cleanModel.ts
+SinergiaDA\eda\eda_api\lib\module\updateModel\service\enumerations.ts
+SinergiaDA\eda\eda_api\lib\module\updateModel\service\push.Model.to.Mongo.ts
+SinergiaDA\eda\eda_api\lib\module\updateModel\service\sda_basic.group.ts
+SinergiaDA\eda\eda_api\lib\module\updateModel\service\usersAndGroupsToMongo.ts
+SinergiaDA\eda\eda_api\lib\module\updateModel\updateModel.controller.ts
+SinergiaDA\eda\eda_api\lib\module\updateModel\updateModel.router.ts
+SinergiaDA\eda\eda_app\src\locale\messages.es.xlf
+SinergiaDA\eda\eda_app\src\locale\messages.gl.xlf
+**ESTA LISTA SE DEBE ACTUALIZAR CON TODOS LOS NUEVOS ARCHIVOS QUE SE GENEREN NUEVOS EN SINERGIA DATA ANALYTICS**
