@@ -654,7 +654,6 @@ export class ChartUtilsService {
         //pyramid
         if (dataDescription.totalColumns === 3 && dataDescription.numericColumns.length === 1
             ) {
-            console.log(dataDescription)
             notAllowed.splice(notAllowed.indexOf('pyramid'), 1);
         }
         return notAllowed;
@@ -849,7 +848,6 @@ export class ChartUtilsService {
 
         });
 
-
         let min_om = Math.pow(10, Math.floor(Math.log10(Math.abs(min))));
         let min_sign = min < 0;
         min = Math.ceil(Math.abs(min) / min_om) * min_om;
@@ -899,6 +897,7 @@ export class ChartUtilsService {
 */
         if (min_sign) min = -min;
         min = min > 0 && max > 0 ? 0 : min;
+        
         return { min: min ? min : 0, max: max ? max : 0 }
 
     }
@@ -1075,7 +1074,7 @@ export class ChartUtilsService {
 
         const maxTicksLimit = size.width < 200 ? 5 + variador : size.width < 400 ? 12 + variador : size.width < 600 ? 25 + variador : 40 + variador;
         const maxTicksLimitHorizontal = size.height < 200 ? 5 + variador : size.height < 400 ? 12 + variador : size.height < 600 ? 25 + variador : 40 + variador;
-        const maxTicksLimitY = size.height < 100 ? 1  : size.height < 150 ? 2 : size.height < 200 ? 3 :  size.height < 300 ? 4 : 5;
+        const maxTicksLimitY = size.height < 100 ? 1  : size.height < 150 ? 2 : size.height < 200 ? 4 :  size.height < 250 ? 5 :  size.height < 300 ? 6 :  size.height < 350 ? 8: 10;
 
         /** Defineixo les propietats en funció del tipus de gràfic. */
         let dataLabelsObjt={}
@@ -1190,7 +1189,7 @@ export class ChartUtilsService {
                             weight: 'bold',
                             size:  edaFontSize  ,
                             },
-                            padding: 10,
+                            padding: 2,
 
                             formatter: (value,ctx) => {
                                 
@@ -1279,6 +1278,7 @@ export class ChartUtilsService {
                                     drawBorder: false,
                                 },
                                 display: true,
+                                grace: (showLabels || showLabelsPercent )?'1%': '0%',
                                 ticks: {
                                     autoSkip: true,
                                     maxTicksLimit: maxTicksLimitY,
