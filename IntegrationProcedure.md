@@ -81,7 +81,10 @@ En caso de que se creen clases nuevas específicas de SDA se prefijarán con el 
 3. Cuando se haga un merge hay que:
 
 
-3.1 Respetar los archivos propios de SDA:
+3.1 Resolver los conflictos y dejarlo todo en "Staged"
+
+
+3.2 Respetar los archivos propios de SDA (**Unstage** y **Descartar Cambios** ):
 
 SinergiaDA\.github\PULL_REQUEST_TEMPLATE\Plantilla para Pull Request.md
 SinergiaDA\.github\PULL_REQUEST_TEMPLATE.md
@@ -105,3 +108,13 @@ SinergiaDA\eda\eda_api\lib\module\updateModel\updateModel.router.ts
 SinergiaDA\eda\eda_app\src\locale\messages.es.xlf
 SinergiaDA\eda\eda_app\src\locale\messages.gl.xlf
 **ESTA LISTA SE DEBE ACTUALIZAR CON TODOS LOS NUEVOS ARCHIVOS QUE SE GENEREN NUEVOS EN SINERGIA DATA ANALYTICS**
+
+
+3.3 Revisar todos y cada uno de los archivos modificados:
+
+3.3.1 Archivos que hay que respetar y **Descartar Cambios**
+
+SinergiaDA\eda\eda_api\lib\router.ts
+
+
+
