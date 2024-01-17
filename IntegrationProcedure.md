@@ -14,7 +14,7 @@ Para la app, por defecto, ya está habilitada la posibilidad de sobrecargar las 
 
       "experimentalDecorators": true,
 
-Existe un ejemplo en eda/eda_api/lib/module/admin/users/user.controller.ts
+Existe un ejemplo en eda/eda_api/lib/module/datasource/datasource.controller.ts
 
 
 Delcaramos la función decorador al principio del archivo. fuera de la clase. Pasandole todos los parámetros que necestia la función que vamos a sobreescribir. Luego invocamos el decorador justo encima del método para que se sobreescriba. 
@@ -56,7 +56,7 @@ El código queda parecido a esto:
                                 <span class="language" (click)="redirectLocale('CAT')">Català &nbsp;</span>
                                 <span class="language" (click)="redirectLocale('ES')">Español &nbsp;</span>
                                 <span class="language" (click)="redirectLocale('EN')">English &nbsp;</span>
-                                <!--span class="language" (click)="redirectLocale('PL')">Polski &nbsp;</span-->
+                                <!--SDA CUSTOM span class="language" (click)="redirectLocale('PL')">Polski &nbsp;</span-->
                                 <!--SDA CUSTOM--> <span class="language" (click)="redirectLocale('GL')">Galego &nbsp;</span>
                             </div>
 ```
@@ -64,7 +64,7 @@ El código queda parecido a esto:
 
 ```
 .login .btn:hover {
-  /* background-color: #C7CE43; */
+  /*SDA CUSTOM background-color: #C7CE43; */
   /*SDA CUSTOM*/ background-color: #C7CE43;
   color: #000;
 }
