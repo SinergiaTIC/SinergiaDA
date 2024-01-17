@@ -72,7 +72,7 @@ El código queda parecido a esto:
 En caso de que se creen clases nuevas específicas de SDA se prefijarán con el nombre **SDA_XXXX**
 
 
-## PROCEDIMEINTO DE INTEGRACIÓN 
+## PROCEDIMEINTO DE INTEGRACIÓN DE CÓDIGO
 
 ### Sincronizar SDA con EDA
 
@@ -118,3 +118,9 @@ SinergiaDA\eda\eda_api\lib\router.ts
 
 
 
+
+
+
+## PROCEDIMEINTO DE INTEGRACIÓN DEL PULL REQUEST
+
+Debido a la "delicadeza" de este tipo de pull request. Estos deberán ser periódicos. Por ejemplo cada mes. Y se deberán integrar en SinergiaDA con prioridad sobre otros pull request. Esto es debido a que son pull request "masivos" y si no se hace en el orden adecuado provocará conflictos en archivos.
