@@ -12,8 +12,8 @@ import { upperCase } from 'lodash';
 import Group from '../../module/admin/groups/model/group.model';
 import { json } from 'body-parser';
 const cache_config = require('../../../config/cache.config');
-/* Custom functions override */
-import {CustomGetDataSourcesNamesForEdit} from './datasource.controller.custom'
+
+/* Custom */ import  * as customFunctions  from './datasource.controller.custom'
 
 
 export class DataSourceController {
@@ -142,7 +142,7 @@ export class DataSourceController {
 
     /* Aquesta funció retorna els datasources disponibles per editar al llistat de l'esquerra.
    Aquesta funció sustitueix GetDataSourcesNames en la nova versió on cada usuari por afegir i editar models de dades */
-   @CustomGetDataSourcesNamesForEdit
+   @customFunctions.CustomGetDataSourcesNamesForEdit
    static async GetDataSourcesNamesForEdit(req: Request, res: Response, next: NextFunction) {
     const groups = await Group.find({users: {$in: req.user._id}}).exec();
     const isAdmin = groups.filter(g => g.role === 'EDA_ADMIN_ROLE').length > 0;
