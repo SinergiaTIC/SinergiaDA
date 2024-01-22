@@ -62,40 +62,40 @@ export class updateModel {
                         let columns = rows;
                         // seleccionamos Relaciones
                         await connection.query(` 
-                    SELECT distinct source_table, source_column, target_table, target_column 
+                    SELECT distinct source_table, source_column, target_table, target_column, label 
                     FROM sda_def_relationships
                     union 
                     SELECT target_table as source_table, target_column as source_column , 
-                    source_table as target_table , source_column as target_column
+                    source_table as target_table , source_column as target_column, label as label 
                     FROM sda_def_relationships 
                     union 
                     SELECT source_table , source_column  , 
-                            master_table  , master_id as target_column
+                            master_table  , master_id as target_column, 'bridge'
                             FROM sda_def_enumerations 
                             where bridge_table is null or bridge_table = ''
                     union 
                     SELECT master_table  , master_id  ,
-                            source_table , source_column  
+                            source_table , source_column , 'bridge'
                             FROM sda_def_enumerations 
                             where bridge_table is null or bridge_table = ''
                     union 
                     SELECT source_table , source_bridge as source_column   , 
-                            bridge_table  , source_bridge
+                            bridge_table  , source_bridge, 'bridge'
                             FROM sda_def_enumerations 
                             where bridge_table   != ''
                     union 
                     SELECT bridge_table  , source_bridge,
-                                source_table , source_bridge as source_column 
+                                source_table , source_bridge as source_column , 'bridge'
                             FROM sda_def_enumerations 
                             where bridge_table != ''
                     union 
                     SELECT bridge_table  , target_bridge,
-                            master_table , master_id  
+                            master_table , master_id  , 'bridge'
                             FROM sda_def_enumerations 
                             where bridge_table != ''
                     union 
                     SELECT  master_table , master_id,
-                        bridge_table  , target_bridge 
+                        bridge_table  , target_bridge , 'bridge'
                             FROM sda_def_enumerations 
                             where bridge_table   != ''  `).then(async rows => {
                             let relations = rows;
@@ -509,7 +509,11 @@ export class updateModel {
               "source_column": [relations[i].source_column],
               "target_table": relations[i].target_table,
               "target_column": [relations[i].target_column],
-              "visible": true
+              "visible": true,
+              "display_name": {
+                "default": relations[i].label,
+                 "localized": []
+        },
             }
             destRelations.push(rr);
             
