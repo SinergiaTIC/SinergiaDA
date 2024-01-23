@@ -125,8 +125,8 @@
         </context-group>
       </trans-unit>
       <trans-unit id="sidebarMyDashboards" datatype="html">
-        <source>Mis informes</source>
-        <target>Els meus informes</target>
+        <source> Mis informes</source>
+        <target state="new">Els meus informes</target>
         <context-group purpose="location">
           <context context-type="sourcefile">app/shared/components/sidebar/sidebar.component.html</context>
           <context context-type="linenumber">68</context>
@@ -1052,12 +1052,9 @@
         </context-group>
       </trans-unit>
       <trans-unit id="tituloNuevoInforme" datatype="html">
-        <source>
-          CREAR UN NUEVO INFORME
-</source>
-        <target>
-          CREAR UN NOU INFORME
-</target>
+        <source> Crear nuevo informe
+        </source>
+        <target>Crear nou informe</target>
         <context-group purpose="location">
           <context context-type="sourcefile">app/module/pages/home/home.component.html</context>
           <context context-type="linenumber">7</context>
@@ -3929,6 +3926,30 @@
         <target>
           <x id="INTERPOLATION" equiv-text="{{getDisplayName(userSelectedTable)}"/>
         </target>
+      </trans-unit>
+      <trans-unit id="addBtn">
+        <source>Añadir</source>
+        <target>Afegir</target>
+      </trans-unit>
+      <trans-unit id="measureLabel">
+        <source>Medida:</source>
+        <target>Mesura</target>
+      </trans-unit>
+      <trans-unit id="operationLabel">
+        <source>Operación</source>
+        <target>Operació</target>
+      </trans-unit>
+      <trans-unit id="numericalValueLabel">
+        <source>Valor numérico</source>
+        <target>Valor numèric</target>
+      </trans-unit>
+      <trans-unit id="newNameLabel">
+        <source>Nuevo nombre</source>
+        <target>Nou nom</target>
+      </trans-unit>
+      <trans-unit id="allowSSL">
+        <source>Conexión mediante SSL</source>
+        <target>Conexió mijanjant SSL</target>
       </trans-unit>
     </body>
   </file>

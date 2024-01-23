@@ -124,8 +124,8 @@
         </context-group>
       </trans-unit>
       <trans-unit id="sidebarMyDashboards" datatype="html">
-        <source>Mis informes</source>
-        <target>My dashboards</target>
+        <source> Mis informes</source>
+        <target state="new">My dashboards</target>
         <context-group purpose="location">
           <context context-type="sourcefile">app/shared/components/sidebar/sidebar.component.html</context>
           <context context-type="linenumber">68</context>
@@ -1050,12 +1050,9 @@
         </context-group>
       </trans-unit>
       <trans-unit id="tituloNuevoInforme" datatype="html">
-        <source>
-          CREAR UN NUEVO INFORME
-</source>
-        <target>
-          CREATE A NEW DASHBOARD
-</target>
+        <source> Crear nuevo informe
+          </source>
+        <target>Create new dashboard</target>
         <context-group purpose="location">
           <context context-type="sourcefile">app/module/pages/home/home.component.html</context>
           <context context-type="linenumber">7</context>
@@ -3927,6 +3924,26 @@
         <target>
           <x id="INTERPOLATION" equiv-text="{{getDisplayName(userSelectedTable)}"/>
         </target>
+      </trans-unit>
+      <trans-unit id="addBtn">
+        <source>Añadir</source>
+        <target>Add</target>
+      </trans-unit>
+      <trans-unit id="measureLabel">
+        <source>Medida</source>
+        <target>Measure</target>
+      </trans-unit>
+      <trans-unit id="operationLabel">
+        <source>Operación</source>
+        <target>Operation</target>
+      </trans-unit>
+      <trans-unit id="numericalValueLabel">
+        <source>Valor numérico</source>
+        <target>Numerical value</target>
+      </trans-unit>
+      <trans-unit id="newNameLabel">
+        <source>Nuevo nombre</source>
+        <target>New name</target>
       </trans-unit>
     </body>
   </file>
