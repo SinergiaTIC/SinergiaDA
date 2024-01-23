@@ -295,21 +295,6 @@ export abstract class QueryBuilderService {
         return (v);
     }
 
-/* NO APLICA PORQUE NO APLICA SEGURIDAD    
-    public valueListQuery( ) {
-        const schema = this.dataModel.ds.connection.schema;
-        let table = this.queryTODO.fields[0].valueListSource.target_table
-        if (schema) {
-            table = `${schema}.${this.queryTODO.fields[0].valueListSource.target_table}`;
-        }
-
-        console.log('Woho!!!!!!!!!');
-        console.log('Woho!!!!!!!!!');
-        console.log('Woho!!!!!!!!!');
-        console.log('Woho!!!!!!!!!');
-        return `SELECT DISTINCT ${this.queryTODO.fields[0].valueListSource.target_description_column} \nFROM ${table}`;
-    }
-*/
 
 
     /** esto se usa para las consultas que hacemos a bbdd para generar el modelo */
