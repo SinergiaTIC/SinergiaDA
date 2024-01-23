@@ -1032,7 +1032,7 @@
           CREAR UN NUEVO INFORME
 </source>
         <target>
-          CREAR UN NUEVO INFORME
+          Crear un nuevo informe
 </target>
         <context-group purpose="location">
           <context context-type="sourcefile">app/module/pages/home/home.component.html</context>
