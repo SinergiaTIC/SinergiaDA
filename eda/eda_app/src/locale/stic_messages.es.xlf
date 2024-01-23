@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+  <file source-language="es" datatype="plaintext" original="ng2.template">
+    <body>
+      <trans-unit id="placeholderInputUsuario" datatype="html">
+        <source>Usuario</source>
+        <target>Usuario Custom</target>
+      </trans-unit>
+      <trans-unit id="abc" datatype="html">
+        <source>ABC</source>
+        <target>ABC Custom</target>
+      </trans-unit>
+
+    </body>
+  </file>
+</xliff>
