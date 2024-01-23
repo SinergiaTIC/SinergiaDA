@@ -114,8 +114,8 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 </context-group>
 </trans-unit>
 <trans-unit id="sidebarMyDashboards" datatype="html">
-<source>Mis informes</source>
-<target>Moje raporty</target>
+<source> Mis informes</source>
+<target> Moje raporty</target>
 <context-group purpose="location">
 <context context-type="sourcefile">app/shared/components/sidebar/sidebar.component.html</context>
 <context context-type="linenumber">68</context>
@@ -929,11 +929,9 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 </context-group>
 </trans-unit>
 <trans-unit id="tituloNuevoInforme" datatype="html">
-<source>
-                    CREAR UN NUEVO INFORME
+<source> Crear nuevo informe
 </source>
-<target>
-                    STWÓRZ NOWY RAPORT
+<target> Stwórz nowy raport
 </target>
 <context-group purpose="location">
 <context context-type="sourcefile">app/module/pages/home/home.component.html</context>
@@ -1900,7 +1898,6 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <trans-unit id="chartTypes7">
 <source>Gráfico de Barras Horizontales</source>
 <target>Poziomy wykres słupkowy</target>
-
 </trans-unit>
 <trans-unit id="chartTypesPyramid">
 <source>Gráfico de Piramide</source>
@@ -2396,12 +2393,10 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <trans-unit id="chartInfo13">
 <source>Los datos seleccionados no permiten utilizar este gráfico.</source>
 <target>Wykres niedostępny dla bieżących danych.</target>
-
 </trans-unit>
 <trans-unit id="chartInfoBubble">
 <source>Un gráfico de burbujas necesita una categorías y una série numérica.</source>
 <target>Wykres bąbelkowy wymaga jednej kategorii i jednej serii numerycznej.</target>
-
 </trans-unit>
 
 
@@ -3113,7 +3108,6 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
   </trans-unit>
 
   <trans-unit id="AllTags">
-
     <source>Todos</source>
     <target>Wszystko</target>
   </trans-unit>
@@ -3593,7 +3587,6 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
    <trans-unit id="mailConfOk">
     <source>Credenciales correctas </source>
     <target> Prawidłowe dane uwierzytelniające</target>
-
   </trans-unit>
 
   <trans-unit id="chartInfoPyramid">
