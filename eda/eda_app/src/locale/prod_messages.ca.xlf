@@ -56,7 +56,7 @@
           términos
           <x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/>
         </source>
-        <target state="new">
+        <target>
            Estic d&apos;acord amb els 
           <x id="START_LINK" ctype="x-a" equiv-text="&lt;a&gt;"/>
           termes
@@ -76,7 +76,7 @@
           <x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
           <x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/>
         </source>
-        <target state="new">
+        <target>
            Tens un compte? 
           <x id="START_LINK" ctype="x-a" equiv-text="&lt;a&gt;"/>
           <x id="START_BOLD_TEXT" ctype="x-b" equiv-text="&lt;b&gt;"/>
@@ -125,8 +125,8 @@
         </context-group>
       </trans-unit>
       <trans-unit id="sidebarMyDashboards" datatype="html">
-        <source> Mis informes</source>
-        <target state="new">Els meus informes</target>
+        <source>Mis informes</source>
+        <target>Els meus informes</target>
         <context-group purpose="location">
           <context context-type="sourcefile">app/shared/components/sidebar/sidebar.component.html</context>
           <context context-type="linenumber">68</context>
@@ -693,10 +693,10 @@
       <trans-unit id="atributosH4" datatype="html">
         <source>
           Atributos
-        </source>
+</source>
         <target>
           Atributs
-        </target>
+</target>
         <context-group purpose="location">
           <context context-type="sourcefile">
             app/module/components/eda-panels/eda-blank-panel/eda-blank-panel.component.html</context>
@@ -1992,7 +1992,7 @@
           Editar 
           <x id="INTERPOLATION" equiv-text="{{tablePanel.type ? tablePanel.name : &apos;&apos;}}"/>
         </source>
-        <target state="new">
+        <target>
           Editar 
           <x id="INTERPOLATION" equiv-text="{{tablePanel.type ? tablePanel.name : &apos;&apos;}}"/>
         </target>
@@ -2364,7 +2364,7 @@
       </trans-unit>
       <trans-unit id="newPassPlaceholderUsers" datatype="html">
         <source>Repite la contraseña</source>
-        <target>Repeteix la contrasenya</target>
+        <target>Repeteix la contrassenya</target>
         <context-group purpose="location">
           <context context-type="sourcefile">
             app/module/pages/users-management/users-detail/users-detail.component.html</context>
@@ -2834,7 +2834,7 @@
           <x id="INTERPOLATION" equiv-text="{{ table.filteredValue.length }}"/>
            registros
         </source>
-        <target state="new">
+        <target>
           <x id="INTERPOLATION" equiv-text="{{ table.filteredValue.length }}"/>
            registres
         </target>
@@ -2849,7 +2849,7 @@
           <x id="INTERPOLATION" equiv-text="{{ table.value.length }}"/>
            registros
         </source>
-        <target state="new">
+        <target>
           <x id="INTERPOLATION" equiv-text="{{ table.value.length }}"/>
            registres
         </target>
@@ -3907,26 +3907,6 @@
         <source>Nombre columna duplicada:</source>
         <target>Nom columna duplicada:</target>
       </trans-unit>
-      <trans-unit id="hiddenAttributes">
-        <source>Atributos ocultos</source>
-        <target>Mostra/amaga columnes ocultes</target>
-      </trans-unit>
-      <trans-unit id="atributosH4+" datatype="html">
-        <source>
-          Columnas de:
-        </source>
-        <target>
-          Columnes de:
-        </target>
-      </trans-unit>
-      <trans-unit id="atributosH4interpolation" datatype="html">
-        <source>
-          <x id="INTERPOLATION" equiv-text="{{getDisplayName(userSelectedTable)}"/>
-        </source>
-        <target>
-          <x id="INTERPOLATION" equiv-text="{{getDisplayName(userSelectedTable)}"/>
-        </target>
-      </trans-unit>
       <trans-unit id="addBtn">
         <source>Añadir</source>
         <target>Afegir</target>
@@ -3950,6 +3930,26 @@
       <trans-unit id="allowSSL">
         <source>Conexión mediante SSL</source>
         <target>Conexió mijanjant SSL</target>
+      </trans-unit>
+      <trans-unit id="hiddenAttributes">
+        <source>Atributos ocultos</source>
+        <target>Mostra/amaga columnes ocultes</target>
+      </trans-unit>
+      <trans-unit id="atributosH4+" datatype="html">
+        <source>
+          Columnas de:
+        </source>
+        <target>
+          Columnes de:
+        </target>
+      </trans-unit>
+      <trans-unit id="atributosH4interpolation" datatype="html">
+        <source>
+          <x id="INTERPOLATION" equiv-text="{{getDisplayName(userSelectedTable)}"/>
+        </source>
+        <target>
+          <x id="INTERPOLATION" equiv-text="{{getDisplayName(userSelectedTable)}"/>
+        </target>
       </trans-unit>
     </body>
   </file>
