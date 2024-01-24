@@ -22,7 +22,7 @@
                     },
                     "pl": {
                         "translation": "src/locale/messages.pl.xlf"
-                    },
+                    }, 
                     "gl": {
                         "translation": "src/locale/messages.gl.xlf"
                     }
