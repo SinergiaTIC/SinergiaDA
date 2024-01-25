@@ -1,6 +1,7 @@
 /**
    * Modifica la propiedad `minimumFractionDigits` de un objeto basado en condiciones específicas.
    * Se utiliza para forzar a dos decimales los calculos de promedio en SinergiaDA
+   * https://github.com/SinergiaTIC/SinergiaDA/pull/67
    * 
    * @param {Object} target - El objeto al cual está adjunto el descriptor.
    * @param {string} propertyKey - La clave de la propiedad a la que se está adjuntando el descriptor.
