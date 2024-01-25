@@ -1,7 +1,8 @@
 import { QueryBuilderService } from './../query-builder.service';
 import * as _ from 'lodash';
 import { filter, values } from 'lodash';
-
+import { Column } from 'snowflake-sdk';
+import * as custom from '../../custom/custom';
 
 
 export class MySqlBuilderService extends QueryBuilderService {
@@ -175,6 +176,14 @@ export class MySqlBuilderService extends QueryBuilderService {
 
   }
 
+  @custom.muSqlBuilderServiceCustomGetMinFractionDigits
+  public getMinFractionDigits(el:any): any{
+    if (!el.hasOwnProperty('minimumFractionDigits')) {
+      el.minimumFractionDigits = 0;
+    }
+    return el;
+  }
+  
   public getSeparedColumns(origin: string, dest: string[]): any {
 
     const columns = [];
@@ -183,9 +192,8 @@ export class MySqlBuilderService extends QueryBuilderService {
     this.queryTODO.fields.forEach(el => {
       el.order !== 0 && el.table_id !== origin && !dest.includes(el.table_id) ? dest.push(el.table_id) : false;
 
-      if (!el.hasOwnProperty('minimumFractionDigits')) {
-        el.minimumFractionDigits = 0;
-      }
+      el = this.getMinFractionDigits(el);
+
       // Aqui se manejan las columnas calculadas
       if (el.computed_column === 'computed') {
         if(el.column_type=='text'){
