@@ -2,7 +2,8 @@ import { QueryBuilderService } from './../query-builder.service';
 import * as _ from 'lodash';
 import { filter, values } from 'lodash';
 import { Column } from 'snowflake-sdk';
-import * as custom from '../../custom/custom';
+
+ /*SDA CUSTOM*/ import * as custom from '../../custom/custom';
 
 
 export class MySqlBuilderService extends QueryBuilderService {
@@ -176,7 +177,7 @@ export class MySqlBuilderService extends QueryBuilderService {
 
   }
 
-  @custom.muSqlBuilderServiceCustomGetMinFractionDigits
+  /*SDA CUSTOM*/ @custom.muSqlBuilderServiceCustomGetMinFractionDigits
   public getMinFractionDigits(el:any): any{
     if (!el.hasOwnProperty('minimumFractionDigits')) {
       el.minimumFractionDigits = 0;
