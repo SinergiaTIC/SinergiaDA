@@ -1,7 +1,6 @@
 import { QueryBuilderService } from './../query-builder.service';
 import * as _ from 'lodash';
 import { filter, values } from 'lodash';
-import { Column } from 'snowflake-sdk';
 
  /*SDA CUSTOM*/ import * as custom from '../../custom/custom';
 
