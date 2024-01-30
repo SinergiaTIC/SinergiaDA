@@ -2,7 +2,7 @@ import { Request, Response } from 'express';
 import * as fs from 'fs';
 import * as path from 'path';
 
-export class updateModel2 {
+export class getSdaInfo {
     public static async getinfo(req: Request, res: Response) {
         try {
           const moment = require('moment');

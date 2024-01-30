@@ -7,7 +7,7 @@ import UploadsRouter from './module/uploads/uploads.router';
 import MailRouter from './module/mail/mail.router';
 
 import updateModelRouter from './module/updateModel/updateModel.router';
-import updateModel2Router from './module/updateModel2/updateModel2.router';
+import getSdaInfoRouter from './module/getSdaInfo/getSdaInfo.router';
 
 const router = express.Router();
 
@@ -24,7 +24,7 @@ router.use('/addTable', AddTableRouter );
 router.use('/mail', MailRouter);
 
 //Router para update model de SinergiaTIC
-router.use('/updatemodel2', updateModel2Router);
+router.use('/getsdainfo', getSdaInfoRouter);
 router.use('/updatemodel', updateModelRouter);
 
 
