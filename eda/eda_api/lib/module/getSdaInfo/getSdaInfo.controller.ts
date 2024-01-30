@@ -9,7 +9,7 @@ export class getSdaInfo {
           const filePath = path.join(__dirname, '../../../metadata.json');
           const stats = fs.statSync(filePath);
           const formattedDate = moment(stats.ctime).format('YYYY-MM-DD HH:mm:ss');
-          res.json({ lastModified: formattedDate });
+          res.json({ lastUpdateModelRun: formattedDate });
         } catch (error) {
           res.status(500).json({ error: 'Error al obtener la fecha de modificación' });
         }

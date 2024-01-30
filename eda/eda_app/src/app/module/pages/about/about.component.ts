@@ -13,7 +13,7 @@ export class AboutComponent implements OnInit {
   sinergiaDaVersion: string = "2.0.1";
   edaVersion: string = "1.4.0";
   lastSyncDate: string = "2023-11-16 15:00:00";
-  lastUpateModelRun: string = "20231116150000";
+  lastUpdateModelRun: string = "20231116150000";
   sinergiaCRMDatabaseName: string = "Undefind";
 
   constructor() {}
