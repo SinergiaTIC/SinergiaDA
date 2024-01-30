@@ -1,6 +1,7 @@
 import { Component, OnInit } from "@angular/core";
 import { sinergiaConn } from "../../../../../../eda_api/config/sinergiacrm.config.js";
-import { SdaVersion } from   "../../../../../../SdaVersion.js";
+
+const versions = require("../../../../../../SdaVersion.js");
 
 @Component({
   selector: "app-about",
@@ -12,14 +13,15 @@ export class AboutComponent implements OnInit {
   sinergiaDaVersion: string = "2.0.1";
   edaVersion: string = "1.4.0";
   lastSyncDate: string = "2023-11-16 15:00:00";
-  lastSyncDateScriptVersion: string = "20231116150000";
-  sinergiaCRMDatabaseName: string = "Undfind";
+  lastUpateModelRun: string = "20231116150000";
+  sinergiaCRMDatabaseName: string = "Undefind";
 
   constructor() {}
 
   ngOnInit(): void {
     this.sinergiaCRMDatabaseName = sinergiaConn.database;
-    this.sinergiaDaVersion = SdaVersion;
+    this.sinergiaDaVersion = versions.SdaVersion;
+    this.edaVersion = versions.edaVersion;
   }
 
 
