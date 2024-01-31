@@ -25,9 +25,17 @@
             <li
               class="list-group-item d-flex justify-content-between align-items-center"
             >
-              <span i18n="@@aboutPageEdaVersion">Versión de EDA</span>
+              <span i18n="@@aboutPageEdaVersion">Versión de EDA (APP)</span>
               <span class="badge badge-primary badge-dark">{{
-                edaVersion
+                edaAppVersion
+              }}</span>
+            </li>
+            <li
+              class="list-group-item d-flex justify-content-between align-items-center"
+            >
+              <span i18n="@@aboutPageEdaVersion">Versión de EDA (API)</span>
+              <span class="badge badge-primary badge-dark">{{
+                edaApiVersion
               }}</span>
             </li>
             <li
@@ -37,7 +45,7 @@
                 >Última sincronización con SinergiaCRM (updateModel)</span
               >
               <span class="badge badge-dark">{{
-                lastSyncDate
+                lastUpdateModelRun
               }}</span>
             </li>
             <li
