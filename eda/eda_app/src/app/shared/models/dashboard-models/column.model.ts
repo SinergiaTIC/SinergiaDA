@@ -16,5 +16,5 @@ export interface Column {
     minimumFractionDigits:number;
     cumulativeSum: boolean;
     valueListSource: {};
-    hidden: number;
+/* SDA CUSTOM*/    hidden: number;
 }

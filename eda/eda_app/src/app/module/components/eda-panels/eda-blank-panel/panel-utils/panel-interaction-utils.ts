@@ -11,7 +11,8 @@ export const PanelInteractionUtils = {
      * loads columns from table
      * @param table  
      */
-  loadColumns: (ebp: EdaBlankPanelComponent, table: any, hideColumns : number) => {
+    
+/* SDA CUSTOM*/ loadColumns: (ebp: EdaBlankPanelComponent, table: any, hideColumns : number) => {
 
 
     ebp.userSelectedTable = table.table_name;
@@ -25,9 +26,9 @@ export const PanelInteractionUtils = {
       if (!matcher) ebp.columns.push(c);
       
 
-      if (hideColumns === 1) {
-        ebp.columns = ebp.columns.filter(col =>  col.hidden !== hideColumns)
-      } 
+/* SDA CUSTOM*/      if (hideColumns === 1) {
+/* SDA CUSTOM*/         ebp.columns = ebp.columns.filter(col =>  col.hidden !== hideColumns)
+/* SDA CUSTOM*/      } 
 
       ebp.columns = ebp.columns.filter(col => col.visible === true )
         .sort((a, b) => (a.display_name.default > b.display_name.default) ? 1 : ((b.display_name.default > a.display_name.default) ? -1 : 0));
@@ -276,7 +277,7 @@ export const PanelInteractionUtils = {
     ebp.inputs.findColumn.reset();  // resetea las columnas a mostrar
     PanelInteractionUtils.loadColumns( // Torna a carregar les columnes de la taula
       ebp, 
-      ebp.tablesToShow.filter(table => table.table_name === ebp.userSelectedTable)[0], ebp.hiddenColumn );
+/* SDA CUSTOM*/ ebp.tablesToShow.filter(table => table.table_name === ebp.userSelectedTable)[0], ebp.hiddenColumn );
   
   },
 
@@ -367,7 +368,7 @@ export const PanelInteractionUtils = {
     }
     // Carregar de nou l'array Columns amb la columna borrada
 
-    PanelInteractionUtils.loadColumns(ebp, _.find(ebp.tables, (t) => t.table_name === c.table_id), ebp.hiddenColumn);
+    /* SDA CUSTOM*/ PanelInteractionUtils.loadColumns(ebp, _.find(ebp.tables, (t) => t.table_name === c.table_id), ebp.hiddenColumn);
   
     // Buscar relacións per tornar a mostrar totes les taules
     if (ebp.currentQuery.length === 0 && ebp.filtredColumns.length === 0) {

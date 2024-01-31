@@ -101,8 +101,8 @@ export class LoginComponent implements OnInit {
             baseUrl.slice(-4) ==  '/ca/'  ||  
             baseUrl.slice(-4) ==  '/pl/'  ||  
             baseUrl.slice(-4) ==  '/en/'  ||
-            baseUrl.slice(-4) ==  '/gl/'
-             ){
+/* SDA CUSTOM*/ baseUrl.slice(-4) ==  '/gl/'
+        ){
                 baseUrl  = baseUrl.slice(0, baseUrl.length -3)
             }
         switch(lan){
@@ -110,7 +110,7 @@ export class LoginComponent implements OnInit {
             case 'CAT' : window.location.href = baseUrl + 'ca/#/'; break;
             case 'ES'  : window.location.href = baseUrl + 'es/#/'; break;
             case 'PL'  : window.location.href = baseUrl + 'pl/#/'; break;
-            case 'GL'  : window.location.href = baseUrl + 'gl/#/'; break;
-        }
+/* SDA CUSTOM*/ case 'GL'  : window.location.href = baseUrl + 'gl/#/'; break;
+}
     }
 }

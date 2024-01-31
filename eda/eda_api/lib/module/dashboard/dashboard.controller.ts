@@ -1049,10 +1049,10 @@ export class DashboardController {
     if( user.role.includes('135792467811111111111110') ){
       return true;
     }
-    if(user._id== '135792467811111111111112'){
-      console.log('Anonymous access');
-      return true;
-    }
+/* SDA CUSTOM*/    if(user._id== '135792467811111111111112'){
+/* SDA CUSTOM*/     console.log('Anonymous access');
+/* SDA CUSTOM*/      return true;
+/* SDA CUSTOM*/     }
 
 
 

@@ -75,8 +75,7 @@ export class EdaBlankPanelComponent implements OnInit {
     public sunburstController: EdaDialogController;
     public contextMenu: EdaContextMenu;
     public lodash: any = _;
-    public hiddenColumn: number;
-
+/* SDA CUSTOM  */ public hiddenColumn: number;
     public inputs: any = {};
 
     /**Dashbard emitter */
@@ -117,7 +116,7 @@ export class EdaBlankPanelComponent implements OnInit {
     public draggFields: string = $localize`:@@dragFields:Arrastre aquí los atributos que quiera ver en su panel`;
     public draggFilters: string = $localize`:@@draggFilters:Arrastre aquí los atributos sobre los que quiera filtrar`;
     public ptooltipSQLmode: string = $localize`:@@sqlTooltip:Al cambiar de modo perderás la configuración de la consulta actual`;
-    public ptooltipHiddenColumn: string = $localize`:@@hiddenColumn:Al cambiar de modo se verán las columnas marcadas como ocultas`;
+/* SDA CUSTOM  */ public ptooltipHiddenColumn: string = $localize`:@@hiddenColumn:Al cambiar de modo se verán las columnas marcadas como ocultas`;
     public ptooltipViewQuery: string = $localize`:@@ptooltipViewQuery:Ver consulta SQL`
 
     /** Query Variables */
@@ -153,7 +152,7 @@ export class EdaBlankPanelComponent implements OnInit {
     public colorsDeepCopy: any = {};
 
     public queryFromServer: string = '';
-    public showHiddId: boolean;
+    /* SDA CUSTOM  */    public showHiddId: boolean;
 
     // join types
     joinTypeOptions: any[] = [
@@ -187,9 +186,9 @@ export class EdaBlankPanelComponent implements OnInit {
 
         this.index = 0;
         this.modeSQL = false;
-        this.hiddenColumn = 0;
+        /* SDA CUSTOM  */ this.hiddenColumn = 0;
 
-        this.showIdForHiddenMode()
+        /* SDA CUSTOM  */ this.showIdForHiddenMode()
         this.setTablesData();
 
         /**If panel comes from server */
@@ -317,7 +316,7 @@ export class EdaBlankPanelComponent implements OnInit {
                 const queryTables = [...new Set(panelContent.query.query.fields.map((field) => field.table_id))];
                 for (const idTable of queryTables) {
                     const table = this.tables.find(t => t.table_name === idTable);
-                    PanelInteractionUtils.loadColumns(this, table,  this.hiddenColumn);
+/* SDA CUSTOM  */   PanelInteractionUtils.loadColumns(this, table,  this.hiddenColumn);
                     panelContent.query.query.fields.forEach((el) => {
                         const column = this.columns.find(c => c.table_id === el.table_id &&  c.column_name === el.column_name && c.display_name.default === el.display_name);
                         if (column) PanelInteractionUtils.moveItem(this, column);
@@ -512,7 +511,7 @@ export class EdaBlankPanelComponent implements OnInit {
 
     public onColumnInputKey(event: any) {
         if (!_.isNil(this.userSelectedTable)) {
-            PanelInteractionUtils.loadColumns(this, this.tablesToShow.filter(table => table.table_name === this.userSelectedTable)[0], this.hiddenColumn);
+/* SDA CUSTOM  */     PanelInteractionUtils.loadColumns(this, this.tablesToShow.filter(table => table.table_name === this.userSelectedTable)[0], this.hiddenColumn);
             if (event.target.value) {
                 this.columns = this.columns
                     .filter(col => col.display_name.default.toLowerCase().includes(event.target.value.toLowerCase()));
@@ -677,8 +676,8 @@ export class EdaBlankPanelComponent implements OnInit {
         this.ableBtnSave();
         PanelInteractionUtils.verifyData(this);
 
-        this.hiddenColumn = 1;
-        this.columns = this.columns.filter (c => !c.hidden) ;
+/* SDA CUSTOM  */        this.hiddenColumn = 1;
+/* SDA CUSTOM  */this.columns = this.columns.filter (c => !c.hidden) ;
     }
 
     /**
@@ -924,7 +923,7 @@ export class EdaBlankPanelComponent implements OnInit {
 
     public loadColumns (table: any)  {
 
-        PanelInteractionUtils.loadColumns(this, table, this.hiddenColumn);
+        /* SDA CUSTOM  */ PanelInteractionUtils.loadColumns(this, table, this.hiddenColumn);
     }
 
     public removeColumn = (c: Column, list?: string) => PanelInteractionUtils.removeColumn(this, c, list);
@@ -1012,15 +1011,15 @@ export class EdaBlankPanelComponent implements OnInit {
     }
 
     /** Esta función permite al switch en la columna atributos ver u ocultar las columnas con el atributo hidden */
-    public async changeHiddenMode(): Promise<void> {
-        if(this.hiddenColumn == 0){
-            this.hiddenColumn = 1 ;
-        }else{
-            this.hiddenColumn = 0;
-        }
-        let table = this.tablesToShow.find(table => table.table_name === this.userSelectedTable)
-        this.loadColumns(table);
-    }
+/* SDA CUSTOM  */    public async changeHiddenMode(): Promise<void> {
+/* SDA CUSTOM  */        if(this.hiddenColumn == 0){
+/* SDA CUSTOM  */           this.hiddenColumn = 1 ;
+/* SDA CUSTOM  */        }else{
+/* SDA CUSTOM  */           this.hiddenColumn = 0;
+/* SDA CUSTOM  */        }
+/* SDA CUSTOM  */       let table = this.tablesToShow.find(table => table.table_name === this.userSelectedTable)
+/* SDA CUSTOM  */       this.loadColumns(table);
+                        }
 
     public accopen(e){
 
@@ -1030,13 +1029,13 @@ export class EdaBlankPanelComponent implements OnInit {
          return this.tables.find( t => t.table_name === table).display_name.default;
     }
 
-    public showIdForHiddenMode() {
-
-        if (this.inject.dataSource._id == "111111111111111111111111") {
-            this.showHiddId = true;
-        } else {
-            this.showHiddId = false;
-        }
+/* SDA CUSTOM  */    public showIdForHiddenMode() {
+/* SDA CUSTOM  */
+/* SDA CUSTOM  */       if (this.inject.dataSource._id == "111111111111111111111111") {
+/* SDA CUSTOM  */           this.showHiddId = true;
+/* SDA CUSTOM  */       } else {
+/* SDA CUSTOM  */           this.showHiddId = false;
+/* SDA CUSTOM  */       }
 
     }
 
