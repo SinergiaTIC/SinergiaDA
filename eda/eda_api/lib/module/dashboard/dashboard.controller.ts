@@ -878,11 +878,11 @@ export class DashboardController {
         // el admin ve todo
        uniquesForbiddenTables = [];
       }
-      if( req.user._id == '135792467811111111111112'){
-        console.log('ANONYMOUS USER QUERY....NO PERMISSIONS APPLY HERE.....');
-        uniquesForbiddenTables = [];
+/* SDA CUSTOM*/      if( req.user._id == '135792467811111111111112'){
+/* SDA CUSTOM*/        console.log('ANONYMOUS USER QUERY....NO PERMISSIONS APPLY HERE.....');
+/* SDA CUSTOM*/        uniquesForbiddenTables = [];
+/* SDA CUSTOM*/      }
 
-      }
       let notAllowedQuery = false
       uniquesForbiddenTables.forEach(table => {
         if (req.body.query.SQLexpression.indexOf(table) >= 0) {
