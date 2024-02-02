@@ -1,5 +1,7 @@
 import { HttpClient } from "@angular/common/http";
 import { Component, OnInit } from "@angular/core";
+import { User } from '@eda/models/model.index';
+import { UserService } from "@eda/services/service.index";
 
 
 @Component({
@@ -10,6 +12,8 @@ import { Component, OnInit } from "@angular/core";
 
 export class AboutComponent implements OnInit {
   // Estos valores son solo ejemplos. Debes reemplazarlos con datos reales, posiblemente obtenidos desde un servicio.
+  public user: User;
+  public isAdmin: boolean;
   sinergiaDaVersion: string = "XXXX";
   edaApiVersion: string = "XXXX";
   edaAppVersion: string = "XXXX";
@@ -17,10 +21,17 @@ export class AboutComponent implements OnInit {
   sinergiaCRMDatabaseName: string = "XXXX";
   lastUpdateModelRun: string = "XXXX";
 
-  constructor(private http: HttpClient) {}
+  constructor(
+    private http: HttpClient,
+    public userService: UserService,
+    ) {
+      this.user = this.userService.getUserObject();
+
+    }
 
   ngOnInit(): void {
 
+    this.user = this.userService.getUserObject();
     interface InfoResponse {
       info: {
         sinergiaDaVersion: string;
@@ -37,12 +48,11 @@ export class AboutComponent implements OnInit {
 
     this.http.get<InfoResponse>("http://localhost:8666/getsdainfo/getinfo").subscribe({
       next: data => {
-
         this.sinergiaDaVersion = data.info.sinergiaDaVersion;
         this.edaApiVersion = data.info.edaApiVersion;
         this.edaAppVersion = data.info.edaAppVersion;
         this.lastSyncDate = data.info.lastSyncDate;
-        this.sinergiaCRMDatabaseName = data.info.sinergiaCRMDatabaseName;
+        this.sinergiaCRMDatabaseName = this.userService.isAdmin ? data.info.sinergiaCRMDatabaseName: '';
         this.lastUpdateModelRun = data.info.lastUpdateModelRun;
 
       },
