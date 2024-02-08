@@ -223,8 +223,10 @@ export class EdaTable {
             event ? this.colSubTotals(event.first / event.rows + 1) : this.colSubTotals(1);
 
         } 
-        if (this.noRepetitions || !this.noRepetitions) {
-            this.noRepeatedRows();
+
+        if ( !this.pivot) {
+            console.log('desactivadas las no repeticiones');
+            //this.noRepeatedRows();
         }
 
     }
