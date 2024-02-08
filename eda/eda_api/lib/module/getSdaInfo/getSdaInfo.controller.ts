@@ -42,9 +42,6 @@ export class getSdaInfo {
       connection = await mariadb.createConnection(sinergiaDatabase.sinergiaConn);
       const rows = await connection.query("SELECT value from sda_def_config WHERE `key` = 'last_rebuild';");
 
-      // async (rows, err1) => {
-      //   if (err1) { console.log("Error getting last_rebuild"); throw err1 }
-      // }
       if (rows.length > 0) {
         info["lastSyncDate"] = rows[0].value;
       } else {
