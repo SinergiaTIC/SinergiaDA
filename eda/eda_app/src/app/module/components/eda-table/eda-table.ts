@@ -228,6 +228,11 @@ export class EdaTable {
         // SDA CUSTOM if (this.noRepetitions || !this.noRepetitions) {
         // SDA CUSTOM    this.noRepeatedRows();
         // SDA CUSTOM }
+        // Nueva propuesta
+        // if ( !this.pivot) {
+        // console.log('desactivadas las no repeticiones');
+        // this.noRepeatedRows();
+        // }
         // END SDA CUSTOM
 
 
