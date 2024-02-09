@@ -179,9 +179,10 @@
         <source>Última sincronización con SinergiaCRM (updateModel)</source>
         <target>Last synchronization with SinergiaCRM (updateModel)</target>
       </trans-unit>
-      <trans-unit id="aboutPageSCRMScriptVersion" datatype="html">
-        <source>Versión del fichero de reconstrución de SinergiaCRM</source>
-        <target>SinergiaCRM Reconstruction File Version</target>
+      <trans-unit id="aboutPageLastRebuildDate" datatype="html">
+        <source>Última reconstrucción de origenes de datos en SinergiaCRM
+          (rebuild)</source>
+        <target>Last data source reconstruction in SinergiaCRM (rebuild)</target>
       </trans-unit>
       <trans-unit id="aboutPageDB" datatype="html">
         <source>Base de datos de SinergiaCRM</source>

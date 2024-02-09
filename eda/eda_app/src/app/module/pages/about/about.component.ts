@@ -17,7 +17,7 @@ export class AboutComponent implements OnInit {
   sinergiaDaVersion: string = "XXXX"; // Placeholder value, replace with actual data.
   edaApiVersion: string = "XXXX"; // Placeholder value, replace with actual data.
   edaAppVersion: string = "XXXX"; // Placeholder value, replace with actual data.
-  lastSyncDate: string = "XXXX"; // Placeholder value, replace with actual data.
+  lastRebuildDate: string = "XXXX"; // Placeholder value, replace with actual data.
   sinergiaCRMDatabaseName: string = "XXXX"; // Placeholder value, replace with actual data.
   lastUpdateModelRun: string = "XXXX"; // Placeholder value, replace with actual data.
 
@@ -45,7 +45,7 @@ export class AboutComponent implements OnInit {
         sinergiaDaVersion: string;
         edaAppVersion: string;
         edaApiVersion: string;
-        lastSyncDate: string;
+        lastRebuildDate: string;
         sinergiaCRMDatabaseName: string;
         lastUpdateModelRun: string;
       };
@@ -57,10 +57,11 @@ export class AboutComponent implements OnInit {
         this.sinergiaDaVersion = data.info.sinergiaDaVersion;
         this.edaApiVersion = data.info.edaApiVersion;
         this.edaAppVersion = data.info.edaAppVersion;
-        this.lastSyncDate = data.info.lastSyncDate;
+        this.lastRebuildDate = data.info.lastRebuildDate;
+        this.lastUpdateModelRun = data.info.lastUpdateModelRun;
         // Conditionally displays the database name based on admin status.
         this.sinergiaCRMDatabaseName = this.userService.isAdmin ? data.info.sinergiaCRMDatabaseName : '';
-        this.lastUpdateModelRun = data.info.lastUpdateModelRun;
+        console.log('data',data)
       },
       error: error => {
         console.error("Error fetching information from the backend", error);

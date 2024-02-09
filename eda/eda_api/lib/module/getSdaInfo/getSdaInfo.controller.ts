@@ -26,6 +26,7 @@ export class getSdaInfo {
       const stats = fs.statSync(metadataPath);
       const formattedDate = moment(stats.ctime).format("YYYY-MM-DD HH:mm:ss");
       info["lastUpdateModelRun"] = formattedDate;
+      
 
       // Retrieve SinergiaCRM database name and connection details.
       info["sinergiaCRMDatabaseName"] =
@@ -53,9 +54,9 @@ export class getSdaInfo {
       const rows = await connection.query("SELECT value from sda_def_config WHERE `key` = 'last_rebuild';");
 
       if (rows.length > 0) {
-        info["lastSyncDate"] = rows[0].value;
+        info["lastRebuildDate"] = rows[0].value;
       } else {
-        info["lastSyncDate"] = "N/D"; // N/D stands for Not Available/No Data.
+        info["lastRebuildDate"] = "N/D"; // N/D stands for Not Available/No Data.
       }
       connection.end();
 

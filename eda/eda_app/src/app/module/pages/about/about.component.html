@@ -46,24 +46,28 @@
               <span i18n="@@aboutPageLastSync"
                 >Última sincronización con SinergiaCRM (updateModel)</span
               >
-              <span class="badge badge-dark">{{ lastUpdateModelRun }}</span>
+              <span class="badge badge-primary badge-dark">{{
+                lastUpdateModelRun
+              }}</span>
             </li>
+
+
+
+
             <li
               class="list-group-item d-flex justify-content-between align-items-center"
             >
+              <span i18n="@@aboutPageLastSync"
+                > Última reconstrucción de origenes de datos en SinergiaCRM
+                (rebuild)</span
+              >
+              <span class="badge badge-primary badge-dark">{{
+                lastRebuildDate
+              }}</span>
+            </li>
+            <li class="list-group-item d-flex justify-content-between align-items-center">
               <span i18n="aboutPageDB">Base de datos de SinergiaCRM </span>
-              <span class="badge badge-primary badge-dark">{{
-                sinergiaCRMDatabaseName
-              }}</span>
-            </li>
-            <li
-              i18n="@@aboutPageSCRMScriptVersion"
-              class="list-group-item d-flex justify-content-between align-items-center"
-            >
-              Versión del fichero de reconstrución de SinergiaCRM
-              <span class="badge badge-primary badge-dark">{{
-                lastSyncDate
-              }}</span>
+              <span class="badge badge-primary badge-dark">{{ sinergiaCRMDatabaseName }}</span>
             </li>
             <li
               class="list-group-item justify-content-between align-items-center"
