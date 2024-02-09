@@ -4,20 +4,30 @@ import * as path from "path";
 const sinergiaDatabase = require("../../../config/sinergiacrm.config");
 const mariadb = require("mariadb");
 
+/**
+ * A class responsible for fetching and returning Sinergia Data Analytics (SDA) information.
+ */
 export class getSdaInfo {
+  /**
+   * Retrieves and compiles information about Sinergia Data Analytics including version details, last update model run,
+   * database connection details, and synchronization information.
+   * 
+   * @param req The HTTP request object.
+   * @param res The HTTP response object used to return the compiled information or an error message.
+   */
   public static async getinfo(req: Request, res: Response) {
     let info = {};
 
     try {
       const moment = require("moment");
 
-      // get lastUpdateModelRun
+      // Retrieve the last update model run time.
       const metadataPath = path.join(__dirname, "../../../metadata.json");
       const stats = fs.statSync(metadataPath);
       const formattedDate = moment(stats.ctime).format("YYYY-MM-DD HH:mm:ss");
       info["lastUpdateModelRun"] = formattedDate;
 
-      // get sinergiaCRMDatabaseName
+      // Retrieve SinergiaCRM database name and connection details.
       info["sinergiaCRMDatabaseName"] =
         sinergiaDatabase.sinergiaConn.host +
         ":" +
@@ -25,19 +35,19 @@ export class getSdaInfo {
         "/" +
         sinergiaDatabase.sinergiaConn.database;
 
-      // get sinergiaDaVersion
+      // Retrieve SinergiaDA version.
       const versions = require("../../../../SdaVersion.js");
       info["sinergiaDaVersion"] = versions.SdaVersion;
 
-      // get edaApiVersion from package.json
+      // Retrieve EDA API version from package.json.
       const packageJsonPathAPI = path.join(__dirname, "../../../package.json");
       info["edaApiVersion"] = JSON.parse(fs.readFileSync(packageJsonPathAPI, "utf8")).version;
 
-      // get edaAppVersion from package.json
+      // Retrieve EDA APP version from package.json.
       const packageJsonPathAPP = path.join(__dirname, "../../../../eda_app/package.json");
       info["edaAppVersion"] = JSON.parse(fs.readFileSync(packageJsonPathAPP, "utf8")).version;
 
-      // get lastSyncDate
+      // Retrieve the last synchronization date with SinergiaCRM.
       let connection: any;
       connection = await mariadb.createConnection(sinergiaDatabase.sinergiaConn);
       const rows = await connection.query("SELECT value from sda_def_config WHERE `key` = 'last_rebuild';");
@@ -45,13 +55,14 @@ export class getSdaInfo {
       if (rows.length > 0) {
         info["lastSyncDate"] = rows[0].value;
       } else {
-        info["lastSyncDate"] = "N/D";
+        info["lastSyncDate"] = "N/D"; // N/D stands for Not Available/No Data.
       }
       connection.end();
 
-      // return
+      // Return the compiled information.
       res.json({ info: info });
     } catch (error) {
+      // Return an error response in case of failure.
       res.status(500).json({ error: "Error al obtener los datos" });
     }
   }
