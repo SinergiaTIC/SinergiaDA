@@ -49,15 +49,16 @@ export class DataSourceListComponent implements OnInit, OnDestroy {
             (data) => this.treeData = data,
             (err) => this.alertService.addError(err)
         );
-        
+        console.log(this)
         this.dataModelService.unsaved.subscribe(
             (data) => {
                 this.unsaved = data ? $localize`:@@notSavedChanges:Hay cambios sin guardar...` : ''
             },
             (err) => this.alertService.addError(err)
         )
-        this.dataModelService.getModelById(this.id);        
-    }
+        this.dataModelService.getModelById(this.id);
+      }
+
 
     ngOnDestroy(): void {
         if (this.navigationSubscription) {
@@ -75,7 +76,7 @@ export class DataSourceListComponent implements OnInit, OnDestroy {
 
     deleteDatasource() {
 
-        const options = 
+        const options =
         {
             title: $localize`:@@Sure:¿Estás seguro?`,
             text: $localize`:@@SureInfo:Estás a punto de borrar el modelo de datos y todos los dashboards asociados, el cambio es irreversible`,
@@ -140,7 +141,7 @@ export class DataSourceListComponent implements OnInit, OnDestroy {
         this.spinnerService.on();
         this.dataModelService.realoadModelFromDb(this.id).subscribe(
             () => {
-                this.refreshModel(); 
+                this.refreshModel();
                 this.alertService.addSuccess($localize`:@@UpdateModelSucess:Modelo actualizado correctamente`);
                 this.spinnerService.off()},
             err => {
