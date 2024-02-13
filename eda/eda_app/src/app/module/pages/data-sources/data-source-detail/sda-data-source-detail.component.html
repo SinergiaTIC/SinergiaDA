@@ -1,4 +1,11 @@
+<div *ngIf="dataModelService.model_id=='111111111111111111111111'" id="deleteModel" class="alert alert-primary flex" role="alert" >
+  <i class="mdi mdi-information-outline" style="font-size: 24px"></i>
+  <div i18n="@@partialEditDataSourceNotice" style="margin-left:10px;">Algunas áreas de la configuración de la fuente de datos SinergiaDA se encuentran desactivadas porque se configuran automáticamente durante el proceso de sincronización de datos con SinergiaCRM.
+  </div>
+</div>
+
 <!-- EDICIÓN DE LAS TABLAS -->
+
 <div *ngIf=" typePanel==='tabla' && tablePanel.technical_name" class="tp-container">
 
     <p-card i18n-header="@@editModelHeaders" header="Editar {{tablePanel.type ? tablePanel.name : ''}}">
@@ -6,34 +13,34 @@
 
         </p-header>
 
-        <div class="opacity-50" style="pointer-events: none;">
+        <div [ngClass]="{'hidden':dataModelService.model_id=='111111111111111111111111'}">
             <h5 class="title-datamodel" i18n="@@inputNombre">Nombre</h5>
             <p><input pInputText type="text" size="50" [(ngModel)]="tablePanel.name" (keyup)="update()"></p>
         </div>
 
-        <div class="opacity-50" style="pointer-events: none;">
+        <div >
             <h5 class="title-datamodel" i18n="@@inputNombreTecnico">Nombre técnico</h5>
             <p>{{tablePanel.technical_name}}</p>
         </div>
 
-        <div class="opacity-50" style="pointer-events: none;">
+        <div [ngClass]="{'hidden':dataModelService.model_id=='111111111111111111111111'}">
             <h5 class="title-datamodel" i18n="@@inputDescripcion"> Descripción </h5>
             <p><input pInputText type="text" size="50" [(ngModel)]="tablePanel.description" (keyup)="update()"></p>
         </div>
 
-        <div *ngIf="tablePanel.query" class="opacity-50" style="pointer-events: none;">
+        <div *ngIf="tablePanel.query" [ngClass]="{'hidden':dataModelService.model_id=='111111111111111111111111'}">
             <h5 class="title-datamodel" i18n="@@inputQueryView"> Vista </h5>
             <p>{{tablePanel.query}}</p>
         </div>
 
 
-        <div class="opacity-50" style="pointer-events: none;">
+        <div [ngClass]="{'hidden':dataModelService.model_id=='111111111111111111111111'}">
             <h5 class="title-datamodel" i18n="@@inputEsconderTabla">Esconder tabla</h5>
             <p-inputSwitch (onChange)="toggle_table(tablePanel.visible)" [(ngModel)]="!tablePanel.visible">
             </p-inputSwitch>
         </div>
 
-        <div class="opacity-50" style="pointer-events: none; margin-bottom: 1em; margin-top: 0.5em;">
+        <div [ngClass]="{'hidden':dataModelService.model_id=='111111111111111111111111'}" style="margin-bottom: 1em; margin-top: 0.5em;">
             <h5 class="title-datamodel" i18n="@@inputTipoTabla">Tipo de tabla</h5>
             <div>
                 <p-selectButton [options]="tableTypes" [(ngModel)]="selectedTableType" (onChange)="updateTableType()">
@@ -42,7 +49,7 @@
 
         </div>
 
-        <div class="opacity-50" style="pointer-events: none;">
+        <div [ngClass]="{'hidden':dataModelService.model_id=='111111111111111111111111'}">
             <h5 class="title-datamodel" i18n="@@listRelations">Relaciones</h5>
             <eda-table [inject]="relationsTable"></eda-table>
         </div>
@@ -56,7 +63,7 @@
             <button pButton type="button" icon="pi pi-plus"
             [label]="addPermission" class="p-button-secondary" (click)="openTablePermissionsDialog()"
             style="margin-bottom: 1px;"> </button>
-          <span *ngIf="this.dataModelService.model_id !=='111111111111111111111111'">
+          <span class="hidden">
             <button pButton type="button" icon="pi pi-plus" [label]="addRelation" class="p-button-secondary "
                 (click)="openTableRelationDialog()" style="margin-bottom: 1px;"> </button>
             <button *ngIf="selectedTableType !=='view'" pButton type="button" icon="pi pi-plus"
@@ -80,8 +87,8 @@
 
 
 <!-- EDICION DE LAS COLUMNAS -->
-<div class="opacity-50" style="pointer-events: none;">
-<div *ngIf="typePanel==='columna' && columnPanel.technical_name" class="tp-container">
+
+<div *ngIf="typePanel==='columna' && columnPanel.technical_name" class="tp-container" [ngClass]="{'sda-disabled':dataModelService.model_id=='111111111111111111111111'}">
 
     <p-card i18n-header="@@editModelHeaders" header="Editar {{columnPanel.type ?  columnPanel.name : ''}}">
 
@@ -195,7 +202,7 @@
     </p-card>
 
 </div>
-</div>
+
 
 
 
@@ -204,19 +211,20 @@
 <!-- EDICION DEL MODELO -->
 <div *ngIf="typePanel==='root' && modelPanel.metadata" class="tp-container">
 
-    <p-card i18n-header="@@editModelHeaders" header="Editar {{modelPanel.type ? modelPanel.metadata.model_name : ''}}">
+    <p-card i18n-header="@@editModelHeaders" header="{{modelPanel.type ? modelPanel.metadata.model_name : ''}}">
         <div class="grid">
             <div style="margin-bottom: 1rem;" class="col-12">
 
                 <p-header style="font-size: 18px;">
                 </p-header>
-                <div class="sda-disabled">
+
+
                 <div class="grid">
-                    <h4 class="col-12" i18n="@@metadata" style="border-bottom: 1px solid #d4d4d4;">
+                    <h4 [ngClass]="{'hidden':dataModelService.model_id=='111111111111111111111111'}" class="col-12" i18n="@@metadata" style="border-bottom: 1px solid #d4d4d4;">
                         Metadata
                     </h4>
 
-                    <div class="col-12  xl:col-4">
+                    <div class="col-12  xl:col-4 " [ngClass]="{'hidden':dataModelService.model_id=='111111111111111111111111'}" >
                         <h5 class="title-datamodel" i18n="@@inputNombre">
                             Nombre
                         </h5>
@@ -224,9 +232,12 @@
                     </div>
 
                     <h4 class="col-12" i18n="@@conexionh4" style="border-bottom: 1px solid #d4d4d4;">
-                        Conexión
+                      Conexión
                     </h4>
-                    <div class="col-12  xl:col-4">
+
+
+
+                    <div class="col-12  xl:col-4  " [ngClass]="{'sda-disabled':dataModelService.model_id=='111111111111111111111111'}">
                         <h5 class="title-datamodel" i18n="@@inputTipoDatamodel">
                             Tipo
                         </h5>
@@ -237,42 +248,42 @@
                         </p-dropdown>
                     </div>
 
-                    <div class="col-12  xl:col-4" *ngIf="  selectedTipoBD.value !== 'bigquery' && selectedTipoBD.value !== 'snowflake'">
+                    <div class="col-12  xl:col-4 " [ngClass]="{'sda-disabled':dataModelService.model_id=='111111111111111111111111'}" *ngIf="  selectedTipoBD.value !== 'bigquery' && selectedTipoBD.value !== 'snowflake'">
                         <h5 class="title-datamodel" i18n="@@inputHost">
                             Host
                         </h5>
                         <input pInputText type="text" [(ngModel)]="modelPanel.connection.host" (keyup)="update()">
                     </div>
 
-                    <div class="col-12  xl:col-4" *ngIf="selectedTipoBD.value === 'snowflake'">
+                    <div class="col-12  xl:col-4  " [ngClass]="{'sda-disabled':dataModelService.model_id=='111111111111111111111111'}" *ngIf="selectedTipoBD.value === 'snowflake'">
                         <h5 class="title-datamodel" i18n="@@inputCuentaEdit">
                             Cuenta
                         </h5>
                         <input pInputText type="text" [(ngModel)]="modelPanel.connection.host" (keyup)="update()">
                     </div>
 
-                    <div class="col-12  xl:col-4">
+                    <div class="col-12  xl:col-4 " [ngClass]="{'sda-disabled':dataModelService.model_id=='111111111111111111111111'}">
                         <h5 class="title-datamodel" i18n="@@inputNombreDB">
                             Base de datos
                         </h5>
                         <input pInputText type="text" [(ngModel)]="modelPanel.connection.database" (keyup)="update()">
                     </div>
 
-                    <div class="col-12  xl:col-4" *ngIf="selectedTipoBD.value !== 'bigquery'">
+                    <div class="col-12  xl:col-4 " [ngClass]="{'sda-disabled':dataModelService.model_id=='111111111111111111111111'}" *ngIf="selectedTipoBD.value !== 'bigquery'">
                         <h5 class="title-datamodel" i18n="@@inputPuerto">
                             Puerto
                         </h5>
-                        <input pInputText type="text" [(ngModel)]="modelPanel.connection.port" (keyup)="update()">
+                        <input pInputText type="text " [ngClass]="{'sda-disabled':dataModelService.model_id=='111111111111111111111111'}" [(ngModel)]="modelPanel.connection.port" (keyup)="update()">
                     </div>
 
-                    <div class="col-12  xl:col-4" *ngIf="selectedTipoBD.value !== 'bigquery'">
+                    <div class="col-12  xl:col-4 " [ngClass]="{'sda-disabled':dataModelService.model_id=='111111111111111111111111'}" *ngIf="selectedTipoBD.value !== 'bigquery'">
                         <h5 class="title-datamodel" i18n="@@inputNombreEsquemaModel">
                             Esquema
                         </h5>
                         <input pInputText type="text" [(ngModel)]="modelPanel.connection.schema" (keyup)="update()">
                     </div>
 
-                    <div class="col-12  xl:col-4" *ngIf="selectedTipoBD.value === 'mysql'">
+                    <div class="col-12  xl:col-4 " [ngClass]="{'sda-disabled':dataModelService.model_id=='111111111111111111111111'}" *ngIf="selectedTipoBD.value === 'mysql'">
                         <h5 class="title-datamodel" >
                             Pool Limit
                         </h5>
@@ -280,35 +291,35 @@
                     </div>
 
 
-                    <div class="col-12  xl:col-4" *ngIf="selectedTipoBD.value === 'snowflake'">
+                    <div class="col-12  xl:col-4 " [ngClass]="{'sda-disabled':dataModelService.model_id=='111111111111111111111111'}" *ngIf="selectedTipoBD.value === 'snowflake'">
                         <h5 class="title-datamodel" >
                             Warehouse
                         </h5>
                         <input pInputText type="text" [(ngModel)]="modelPanel.connection.warehouse" (keyup)="update()">
                     </div>
 
-                    <div class="col-12  xl:col-4" *ngIf="selectedTipoBD.value !== 'bigquery'">
+                    <div class="col-12  xl:col-4 " [ngClass]="{'sda-disabled':dataModelService.model_id=='111111111111111111111111'}" *ngIf="selectedTipoBD.value !== 'bigquery'">
                         <h5 class="title-datamodel" i18n="@@inputNombreUsuario">
                             Usuario
                         </h5>
                         <input pInputText type="text" [(ngModel)]="modelPanel.connection.user" (keyup)="update()">
                     </div>
 
-                    <div class="col-12  xl:col-4" *ngIf="selectedTipoBD.value !== 'bigquery'">
+                    <div class="col-12  xl:col-4 " [ngClass]="{'sda-disabled':dataModelService.model_id=='111111111111111111111111'}" *ngIf="selectedTipoBD.value !== 'bigquery'">
                         <h5 class="title-datamodel" i18n="password@@inputPassword">
                             Password
                         </h5>
                         <input pInputText type="password" [(ngModel)]="modelPanel.connection.password"
                             (keyup)="update()" autocomplete="new-password">
                     </div>
-                    <div class="col-12  xl:col-4">
+                    <div class="col-12  xl:col-4 " [ngClass]="{'sda-disabled':dataModelService.model_id=='111111111111111111111111'}">
                       <h5 class="title-datamodel" i18n="@@inputFilter">
                         Filtros
                       </h5>
                       <input pInputText type="text" [(ngModel)]="modelPanel.metadata.filter" (keyup)="update()">
                     </div>
 
-                  </div>
+
 
 
                     <div class="col-12 " *ngIf="selectedTipoBD.value !== 'bigquery'">
@@ -317,7 +328,7 @@
                     </div>
 
 
-            <div style="margin-bottom: 1rem;" class="col-12">
+            <div style="margin-bottom: 1rem;" class="col-12 hidden">
 
                 <h4 style="margin-bottom: 4px; border-bottom: 1px solid #d4d4d4;"> {{functionalities}} </h4>
 
@@ -337,23 +348,23 @@
                 <h4 style="margin-bottom: 4px; border-bottom: 1px solid #d4d4d4;"> {{utilities}} </h4>
 
                 <span class="p-buttonset">
-                  <span class="sda-hidden">
+                  <span *ngIf="dataModelService.model_id!='111111111111111111111111'">
                   <button pButton type="button" icon="pi pi-eye-slash" [label]="hideTablesString"
                         class="p-button-secondary" (click)="hideAllTables()" style="margin-bottom: 1px;"> </button>
                   <button pButton type="button" icon="pi pi-eye-slash" [label]="hideAllRelationsString"
                         class="p-button-secondary" (click)="hideAllRelations()" style="margin-bottom: 1px;"> </button>
+                        <button pButton type="button" icon="pi pi-cog" [label]="addCacheConfig" class="p-button-secondary"
+                            (click)="openCacheDialog()" style="margin-bottom: 1px;"> </button>
+                        <button pButton type="button" icon="pi pi-plus" [label]="addPermission" class="p-button-secondary"
+                            (click)="openModelPermissionsDialog()" style="margin-bottom: 1px;"> </button>
                   </span>
-                    <button pButton type="button" icon="pi pi-cog" [label]="addCacheConfig" class="p-button-secondary"
-                        (click)="openCacheDialog()" style="margin-bottom: 1px;"> </button>
-                    <button pButton type="button" icon="pi pi-plus" [label]="addPermission" class="p-button-secondary"
-                         (click)="openModelPermissionsDialog()" style="margin-bottom: 1px;"> </button>
                     <button pButton type="button" icon="pi pi-eye" [label]="viewsecurity" class="p-button-secondary"
                          (click)="openSecurityDialog()" style="margin-bottom: 1px;"> </button>
                 </span>
 
             </div>
 
-            <div style="margin-bottom: 1rem;" class="col-12">
+            <div style="margin-bottom: 1rem;" class="col-12 sda-hidden">
                 <h4 style="margin-bottom: 4px; border-bottom: 1px solid #d4d4d4;" i18n="@@rolesPermisosModelo">Visibilidad a nivel de modelo</h4>
                 <eda-table [inject]="permissionModel"></eda-table>
 

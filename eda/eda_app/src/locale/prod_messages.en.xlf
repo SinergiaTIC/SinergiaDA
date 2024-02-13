@@ -4062,6 +4062,14 @@
         <source>Base de datos de SinergiaCRM</source>
         <target>SinergiaCRM Database</target>
       </trans-unit>
+      <trans-unit id="partialEditDataSourceNotice" datatype="html">
+        <source>Algunas áreas de la configuración de la fuente de datos SinergiaDA se encuentran
+          desactivadas porque se configuran automáticamente durante el proceso de sincronización de
+          datos con SinergiaCRM.</source>
+        <target>Some areas of the SinergiaDA data source settings are disabled because they are
+          automatically configured during the data synchronization process with SinergiaCRM.
+        </target>
+      </trans-unit>
     </body>
   </file>
 </xliff>

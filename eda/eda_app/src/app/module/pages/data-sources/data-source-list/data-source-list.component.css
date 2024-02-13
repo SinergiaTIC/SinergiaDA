@@ -84,11 +84,9 @@
 }
 
 
+/* SDA CUSTOM */
 .sda-disabled{
   opacity: .5;
   pointer-events: none;
 }
-
-.sda-hidden{
-  display:none !important;
-}
+/* END SDA CUSTOM */

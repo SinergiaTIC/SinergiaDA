@@ -12,7 +12,9 @@ import * as _ from 'lodash';
 
 @Component({
     selector: 'app-data-source-detail',
+    // SDA CUSTOM
     templateUrl: './sda-data-source-detail.component.html',
+    // END SDA CUSTOM
     styleUrls: ['../data-source-list/data-source-list.component.css']
 })
 
@@ -264,8 +266,8 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
     }
 
     ngOnInit() {
-        this.carregarPanels();
-        this.items = [{
+      this.carregarPanels();
+              this.items = [{
             label: 'Options',
             items: [{
                 label: 'Update',
