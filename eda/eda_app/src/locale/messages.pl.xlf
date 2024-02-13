@@ -3321,9 +3321,9 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
     <source>Totales de fila</source>
     <target>Suma</target>
   </trans-unit>
-  <trans-unit id="addRowSubtotals">
-    <source>Subtotales de fila</source>
-    <target>Suma częściowa</target>
+  <trans-unit id="addColumnSubtotals">
+    <source>Subtotales de columna</source>
+    <target>Podsumy kolumn</target>
   </trans-unit>
   <trans-unit id="addColTotals">
     <source>Totales de columna</source>

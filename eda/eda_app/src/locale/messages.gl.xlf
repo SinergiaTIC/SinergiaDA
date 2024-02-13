@@ -3599,9 +3599,9 @@
         <target>Totales de fila</target>
       </trans-unit>
 
-      <trans-unit id="addRowSubtotals">
-        <source>Subtotales de fila</source>
-        <target>Subtotales de fila</target>
+      <trans-unit id="addColumnSubtotals">
+        <source>Subtotales de columna</source>
+        <target>Subtotales de columna</target>
       </trans-unit>
 
       <trans-unit id="addColTotals">

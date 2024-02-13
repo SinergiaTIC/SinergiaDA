@@ -46,7 +46,7 @@ export class TableDialogComponent extends EdaDialogAbstract implements AfterView
   public removeRowTotals: string = $localize`:@@removeRowTotals:Quitar totales de fila`
   public removeRowSubtotals: string = $localize`:@@removeRowSubtotals:Quitar subtotales de fila`
   public addRowTotals: string = $localize`:@@addRowTotals:Totales de fila`
-  public addRowSubtotals: string = $localize`:@@addRowSubtotals:Subtotales de fila`
+  public addColumnSubtotals: string = $localize`:@@addColumnSubtotals:Subtotales de columna`
   public addColTotals: string = $localize`:@@addColTotals:Totales de columna`;
   public removeColTotals: string = $localize`:@@removeColTotals:Quitar totales de columna`;
   public addOnlyPercentages: string = $localize`:@@addOnlyPercentages:Sólo Porcentajes`;
@@ -325,7 +325,7 @@ export class TableDialogComponent extends EdaDialogAbstract implements AfterView
               command: () => this.colTotals()
             },
             {
-              label: this.col_subtotals === true ? this.removeRowSubtotals : this.addRowSubtotals,
+              label: this.col_subtotals === true ? this.removeRowSubtotals : this.addColumnSubtotals,
               command: () => this.colSubTotals()
             }
           ]
@@ -389,7 +389,7 @@ export class TableDialogComponent extends EdaDialogAbstract implements AfterView
               command: () => this.colTotals()
             },
             {
-              label: this.col_subtotals === true ? this.removeRowSubtotals : this.addRowSubtotals,
+              label: this.col_subtotals === true ? this.removeRowSubtotals : this.addColumnSubtotals,
               command: () => this.colSubTotals()
             }
           ]
