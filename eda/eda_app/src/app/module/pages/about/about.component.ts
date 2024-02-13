@@ -14,12 +14,12 @@ import { UserService } from "@eda/services/service.index";
 export class AboutComponent implements OnInit {
   public user: User;
   public isAdmin: boolean;
-  sinergiaDaVersion: string = "XXXX"; // Placeholder value, replace with actual data.
-  edaApiVersion: string = "XXXX"; // Placeholder value, replace with actual data.
-  edaAppVersion: string = "XXXX"; // Placeholder value, replace with actual data.
-  lastRebuildDate: string = "XXXX"; // Placeholder value, replace with actual data.
-  sinergiaCRMDatabaseName: string = "XXXX"; // Placeholder value, replace with actual data.
-  lastUpdateModelRun: string = "XXXX"; // Placeholder value, replace with actual data.
+  sinergiaDaVersion: string = "XXXX"; // Placeholder value, replace with real data.
+  edaApiVersion: string = "XXXX"; // Placeholder value, replace with real data.
+  edaAppVersion: string = "XXXX"; // Placeholder value, replace with real data.
+  lastRebuildDate: string = "XXXX"; // Placeholder value, replace with real data.
+  sinergiaCRMDatabaseName: string = "XXXX"; // Placeholder value, replace with real data.
+  lastUpdateModelRun: string = "XXXX"; // Placeholder value, replace with real data.
 
   /**
    * Constructs the AboutComponent with injected services for HTTP requests and user services.
