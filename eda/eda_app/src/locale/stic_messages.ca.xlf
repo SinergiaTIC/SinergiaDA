@@ -12,9 +12,8 @@
         </context-group>
       </trans-unit>
       <trans-unit id="tituloNuevoInforme" datatype="html">
-        <source> Crear nuevo informe
-        </source>
-        <target>Crear nou informe</target>
+        <source> Crear nuevo informe</source>
+        <target>Crea un nou informe</target>
         <context-group purpose="location">
           <context context-type="sourcefile">app/module/pages/home/home.component.html</context>
           <context context-type="linenumber">7</context>
@@ -46,7 +45,7 @@
       </trans-unit>
       <trans-unit id="inputRepitePassword" datatype="html">
         <source>Repite la contraseña</source>
-        <target>Repeteix la contrasenya</target>
+        <target>Repetiu la contrasenya</target>
         <context-group purpose="location">
           <context context-type="sourcefile">
             app/module/pages/users-management/users-detail/users-detail.component.html</context>
@@ -55,7 +54,7 @@
       </trans-unit>
       <trans-unit id="saveModel" datatype="html">
         <source>Guardar modelo de datos</source>
-        <target>Guardar model de dades</target>
+        <target>Desa el model de dades</target>
         <context-group purpose="location">
           <context context-type="sourcefile">
             app/module/pages/data-sources/data-source-list/data-source-list.component.html</context>
@@ -65,7 +64,7 @@
       <trans-unit id="labelnewPass" datatype="html">
         <source>Nueva Contraseña (Si no quieres modificar tu contraseña actual deja el campo en
           blanco)</source>
-        <target>Nova contrasenya (si no vols modificar la teva contrasenya actual deixa el camp en
+        <target>Nova contrasenya (si no voleu modificar la vostra contrasenya actual deixeu el camp en
           blanc)</target>
         <context-group purpose="location">
           <context context-type="sourcefile">app/module/pages/profile/profile.component.html</context>
@@ -82,7 +81,7 @@
       </trans-unit>
       <trans-unit id="labelRepeatPass" datatype="html">
         <source>Repite la nueva contraseña </source>
-        <target>Repeteix la nova contrasenya </target>
+        <target>Repetiu la nova contrasenya </target>
         <context-group purpose="location">
           <context context-type="sourcefile">app/module/pages/profile/profile.component.html</context>
           <context context-type="linenumber">31</context>
@@ -98,7 +97,7 @@
       </trans-unit>
       <trans-unit id="newPassPlaceholderProfile" datatype="html">
         <source>Repite la contraseña</source>
-        <target>Repeteix la contrasenya</target>
+        <target>Repetiu la contrasenya</target>
         <context-group purpose="location">
           <context context-type="sourcefile">app/module/pages/profile/profile.component.html</context>
           <context context-type="linenumber">32</context>
@@ -128,7 +127,7 @@
       <x id="CLOSE_TAG_P-INPUTNUMBER"
             ctype="x-p-inputNumber" equiv-text="&lt;/p-inputNumber&gt;" />
         </source>
-        <target> Mostrar Top:   <x id="START_TAG_P-INPUTNUMBER" ctype="x-p-inputNumber"
+        <target> Mostra Top:   <x id="START_TAG_P-INPUTNUMBER" ctype="x-p-inputNumber"
             equiv-text="&lt;p-inputNumber&gt;" />
       <x id="CLOSE_TAG_P-INPUTNUMBER"
             ctype="x-p-inputNumber" equiv-text="&lt;/p-inputNumber&gt;" />
@@ -141,15 +140,11 @@
       </trans-unit>
       <trans-unit id="hiddenAttributes">
         <source>Atributos ocultos</source>
-        <target>Mostra/amaga columnes ocultes</target>
+        <target>Mostra/amaga les columnes</target>
       </trans-unit>
       <trans-unit id="atributosH4+" datatype="html">
-        <source>
-          Columnas de:
-        </source>
-        <target>
-          Columnes de:
-        </target>
+        <source>Columnas de:</source>
+        <target>Columnes de:</target>
       </trans-unit>
       <trans-unit id="atributosH4interpolation" datatype="html">
         <source>
@@ -199,46 +194,30 @@
         </source>
         <target>
           <p>
-            <a href="https://github.com/SinergiaTIC/SinergiaDA"
-            >Sinergia Data Analytics
-              (SinergiaDA)</a> es un proyecto de <a href="https://sinergiatic.org">SinergiaTIC</a> y
-            es una iniciativa derivada de <a href="https://github.com/jortilles/EDA"
-            >Enterprise Data
-            Analytics
-              (EDA)</a>, originalmente creada por Juanjo Ortilles. Al igual que EDA, SinergiaDA está
-            comprometida con la promoción de la colaboración y el uso compartido de software en el
-            ámbito del análisis de datos. </p>
-
-          <p>
-            SinergiaDA no solo hereda todas las funcionalidades de EDA
-            sino que también se integra de forma automática con
-            SinergiaCRM. Esta conexión directa convierte a SinergiaCRM en
-            una fuente de datos automatizada, lo cual simplifica y agiliza
-            la generación de informes y la creación de cuadros de mando.
+              <a href="https://github.com/SinergiaTIC/SinergiaDA">Sinergia Data Analytics</a> (SinergiaDA) 
+              és una eina d'anàlisi de dades que s'integra de forma automàtica amb SinergiaCRM, permetent 
+              la generació àgil d'informes i quadres de comandament basats en les dades emmagatzemades en 
+              aquesta aplicació.
           </p>
-
-          <p> Como proyecto derivado, SinergiaDA mantiene los términos de la <a
-              href="https://www.gnu.org/licenses/agpl-3.0.html"
-            >GNU Affero General Public License
-            versión 3</a> (AGPLv3), que fue adoptada por EDA para garantizar la libertad de uso,
-            modificación y distribución del software, así como el acceso al código fuente. </p>
           <p>
-            Respetamos profundamente los derechos de autor y el espíritu
-            de colaboración inherentes en la AGPLv3, asegurando que
-            cualquier versión modificada de SinergiaDA esté también
-            disponible bajo los mismos términos de licencia.
+              SinergiaDA és un desenvolupament de <a href="https://www.sinergiacrm.org">l'Associació 
+              SinergiaTIC</a> en col·laboració amb <a href="https://www.jortilles.com/">Jortilles</a>, basat
+              en <a href="https://github.com/jortilles/EDA">Enterprise Data Analytics</a> i publicat sota la 
+              <a href="https://www.gnu.org/licenses/agpl-3.0.html">llicència de codi obert AGPLv3</a>. 
           </p>
-          <p> Para más detalles sobre la licencia y los términos de uso, visite los repositorios de
-            GitHub de <a href="https://github.com/SinergiaTIC/SinergiaDA"
-            >SinergiaDA</a> y <a
-              href="https://github.com/jortilles/EDA">EDA</a>. </p>
-        </target>
+          <p>
+              El programari es proporciona TAL COM ÉS, sense cap garantia. Aquest programa és programari 
+              lliure. Podeu redistribuir-lo i/o modificar-lo segons els termes de la Llicència Pública General
+              Affero de GNU versió 3, publicada per la Free Software Foundation, incloent-hi qualsevol permís 
+              addicional indicat a la capçalera del codi font. Per a més informació, visiteu el repositori de 
+              <a href="https://github.com/SinergiaTIC/SinergiaDA">SinergiaDA</a>.
+          </p>
+          </target>
       </trans-unit>
-
       <trans-unit
         id="aboutPageTitle" datatype="html">
         <source>Acerca de</source>
-        <target>Acerca de</target>
+        <target>Quant a</target>
       </trans-unit>
       <trans-unit id="aboutPageSinergiaDAVersion"
         datatype="html">
@@ -263,7 +242,7 @@
       <trans-unit id="aboutPageLastRebuildDate" datatype="html">
         <source>Última reconstrucción de origenes de datos en SinergiaCRM
           (rebuild)</source>
-        <target>Última reconstrucció d'origens de dades a SinergiaCRM (rebuild)
+        <target>Última reconstrucció dels orígens de dades a SinergiaCRM (rebuild)
         </target>
       </trans-unit>
       <trans-unit id="aboutPageDB" datatype="html">
