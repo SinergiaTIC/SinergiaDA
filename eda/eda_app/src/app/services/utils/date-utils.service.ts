@@ -59,34 +59,18 @@ export class DateUtils {
         const monday = getMonday(new Date());
         return [monday, today];
     }
+
+    /**
+     * Establece el inicio y fin de la semana basado en la fecha actual.
+     *
+     * Utiliza la biblioteca moment para manejar fechas y tiempos. Esta función calcula el primer y último días de la semana.
+     *
+     * @return Array<Date> Un arreglo que contiene dos objetos Date, el primero es el inicio de la semana
+     * y el segundo es el fin de la semana.
+    */
     public setWeekStartFull(): Array<Date> {
-    
-        /*    
-        // Es substitueix getMonday per us de llibreria moment
-        
-         let getMonday = (d: Date) => {
-            d = new Date(d);
-            var day = d.getDay(),
-                diff = d.getDate() - day + (day == 0 ? -6 : 1); // adjust when day is sunday
-            return new Date(d.setDate(diff));
-        }
-        
-        */
-        
-        let now = (new Date());
-        let monday = (new Date());
-        let sunday = (new Date());
-      
-        if (moment(now).weekday() == 0) {
-            monday = moment(now).subtract(6,'days').toDate();
-            sunday = moment(now).toDate();
-        } else {
-            monday = moment(now).weekday(1).toDate();        
-            sunday = moment(monday).add(6,'days').toDate();
-
-        }
-
-        return [monday, sunday];
+      let now = moment();
+      return [now.clone().weekday(0).toDate(), now.clone().weekday(6).toDate()];
     }
 
     public setPastWeek(): Array<Date> {
@@ -96,7 +80,7 @@ export class DateUtils {
                 diff = d.getDate() - day + (day == 0 ? -6 : 1); // adjust when day is sunday
             return new Date(d.setDate(diff));
         }
-        let today = new Date(); 
+        let today = new Date();
         today.setDate(today.getDate() - 7);
         const monday = getMonday(today);
         return [monday, today];
@@ -109,7 +93,7 @@ export class DateUtils {
                 diff = d.getDate() - day + (day == 0 ? -6 : 1); // adjust when day is sunday
             return new Date(d.setDate(diff));
         }
-        let today = new Date(); 
+        let today = new Date();
         today.setDate(today.getDate() - 7);
         const monday = getMonday(today);
         today.setDate( monday.getDate() + 6);
@@ -129,12 +113,12 @@ export class DateUtils {
         var newMonth = d.getMonth() - 1;
         if(newMonth < 0){
             newMonth += 12;
-            d.setFullYear(d.getFullYear() - 1);  
+            d.setFullYear(d.getFullYear() - 1);
         }
         d.setMonth(newMonth);
         const monthStart = new Date(d.getFullYear(), d.getMonth(), 1);
         const monthEnd = new Date(d.getFullYear(), d.getMonth(), t.getDate() );
-        
+
         return [monthStart, monthEnd];
     }
 
@@ -144,12 +128,12 @@ export class DateUtils {
         var newMonth = d.getMonth() - 1;
         if(newMonth < 0){
             newMonth += 12;
-            d.setFullYear(d.getFullYear() - 1);  
+            d.setFullYear(d.getFullYear() - 1);
         }
         d.setMonth(newMonth);
         const monthStart = new Date(d.getFullYear(), d.getMonth(), 1);
         const monthEnd = new Date(d.getFullYear(), d.getMonth(),  new Date(d.getFullYear(), d.getMonth()+1, 0).getDate() );
-        
+
         return [monthStart, monthEnd];
     }
 
@@ -167,7 +151,7 @@ export class DateUtils {
         const today = new Date( t.getFullYear()-1, t.getMonth(), new Date(t.getFullYear(), t.getMonth()+1, 0).getDate() );
         return [monthStart, today];
     }
-    
+
     public setYearStart(): Array<Date> {
         const today = new Date();
         const yearStart = new Date(today.getFullYear(), 0, 1);
@@ -192,7 +176,7 @@ export class DateUtils {
         const last7 = new Date(today.getTime() - (6 * 24 * 60 * 60 * 1000));
         return [last7, today];
     }
-    
+
     public setLast15(): Array<Date> {
         const today = new Date();
         const last15 = new Date(today.getTime() - (14 * 24 * 60 * 60 * 1000));
