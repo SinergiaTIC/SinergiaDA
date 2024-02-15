@@ -12,6 +12,7 @@ import { UserService } from "@eda/services/service.index";
   styleUrls: ["./about.component.css"]
 })
 export class AboutComponent implements OnInit {
+  public lang: String;
   public user: User;
   public isAdmin: boolean;
   sinergiaDaVersion: string = "XXXX"; // Placeholder value, replace with real data.
@@ -51,6 +52,13 @@ export class AboutComponent implements OnInit {
       };
     }
 
+    // get lang
+    let lang = window.location.pathname;
+    lang = lang.replace(/[^a-zA-Z]/g, "");
+    this.lang = lang || "es";
+
+
+
     // Fetches information from the backend and updates component properties accordingly.
     this.http.get<InfoResponse>("http://localhost:8666/getsdainfo/getinfo").subscribe({
       next: data => {
@@ -61,7 +69,6 @@ export class AboutComponent implements OnInit {
         this.lastUpdateModelRun = data.info.lastUpdateModelRun;
         // Conditionally displays the database name based on admin status.
         this.sinergiaCRMDatabaseName = this.userService.isAdmin ? data.info.sinergiaCRMDatabaseName : '';
-        console.log('data',data)
       },
       error: error => {
         console.error("Error fetching information from the backend", error);

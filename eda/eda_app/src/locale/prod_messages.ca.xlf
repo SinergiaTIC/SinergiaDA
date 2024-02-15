@@ -2263,7 +2263,8 @@
       <trans-unit id="labelnewPass" datatype="html">
         <source>Nueva Contraseña (Si no quieres modificar tu contraseña actual deja el campo en
           blanco)</source>
-        <target>Nova contrasenya (si no voleu modificar la vostra contrasenya actual deixeu el camp en
+        <target>Nova contrasenya (si no voleu modificar la vostra contrasenya actual deixeu el camp
+          en
           blanc)</target>
         <context-group purpose="location">
           <context context-type="sourcefile">app/module/pages/profile/profile.component.html</context>
@@ -3946,80 +3947,6 @@
           <x id="INTERPOLATION" equiv-text="{{getDisplayName(userSelectedTable)}"/>
         </target>
       </trans-unit>
-      <trans-unit id="aboutPageText" datatype="html">
-        <source>
-          <p>
-            <a href="https://github.com/SinergiaTIC/SinergiaDA">Sinergia Data Analytics (SinergiaDA)</a>
-            es un proyecto de 
-            <a href="https://sinergiatic.org">SinergiaTIC</a>
-             y es una iniciativa
-            derivada de 
-            <a href="https://github.com/jortilles/EDA">Enterprise Data Analytics (EDA)</a>
-            ,
-            originalmente creada por Juanjo Ortilles. Al igual que EDA, SinergiaDA está comprometida
-            con la promoción de la colaboración y el uso compartido de software en el ámbito del
-            análisis de datos. 
-          </p>
-          <p>
-            SinergiaDA no solo hereda todas las funcionalidades de EDA
-            sino que también se integra de forma automática con
-            SinergiaCRM. Esta conexión directa convierte a SinergiaCRM en
-            una fuente de datos automatizada, lo cual simplifica y agiliza
-            la generación de informes y la creación de cuadros de mando.
-          </p>
-          <p>
-             Como proyecto derivado, SinergiaDA mantiene los términos de la 
-            <a href="https://www.gnu.org/licenses/agpl-3.0.html">GNU Affero General Public License
-            versión 3</a>
-             (AGPLv3), que fue adoptada por EDA para garantizar la libertad de uso,
-            modificación y distribución del software, así como el acceso al código fuente. 
-          </p>
-          <p>
-            Respetamos profundamente los derechos de autor y el espíritu
-            de colaboración inherentes en la AGPLv3, asegurando que
-            cualquier versión modificada de SinergiaDA esté también
-            disponible bajo los mismos términos de licencia.
-          </p>
-          <p>
-             Para más detalles sobre la licencia y los términos de uso, visite los repositorios de
-            GitHub de 
-            <a href="https://github.com/SinergiaTIC/SinergiaDA">SinergiaDA</a>
-             y 
-            <a href="https://github.com/jortilles/EDA">EDA</a>
-            . 
-          </p>
-        </source>
-        <target>
-          <p>
-            <a href="https://github.com/SinergiaTIC/SinergiaDA">Sinergia Data Analytics</a>
-             (SinergiaDA) 
-              és una eina d&apos;anàlisi de dades que s&apos;integra de forma automàtica amb SinergiaCRM, permetent 
-              la generació àgil d&apos;informes i quadres de comandament basats en les dades emmagatzemades en 
-              aquesta aplicació.
-          </p>
-          <p>
-              SinergiaDA és un desenvolupament de 
-            <a href="https://www.sinergiacrm.org">l&apos;Associació 
-              SinergiaTIC</a>
-             en col·laboració amb 
-            <a href="https://www.jortilles.com/">Jortilles</a>
-            , basat
-              en 
-            <a href="https://github.com/jortilles/EDA">Enterprise Data Analytics</a>
-             i publicat sota la 
-            <a href="https://www.gnu.org/licenses/agpl-3.0.html">llicència de codi obert AGPLv3</a>
-            . 
-          </p>
-          <p>
-              El programari es proporciona TAL COM ÉS, sense cap garantia. Aquest programa és programari 
-              lliure. Podeu redistribuir-lo i/o modificar-lo segons els termes de la Llicència Pública General
-              Affero de GNU versió 3, publicada per la Free Software Foundation, incloent-hi qualsevol permís 
-              addicional indicat a la capçalera del codi font. Per a més informació, visiteu el repositori de 
-            <a href="https://github.com/SinergiaTIC/SinergiaDA">SinergiaDA</a>
-            .
-          </p>
-        </target>
-      </trans-unit>
       <trans-unit id="aboutPageTitle" datatype="html">
         <source>Acerca de</source>
         <target>Quant a</target>
@@ -4049,6 +3976,10 @@
       <trans-unit id="aboutPageDB" datatype="html">
         <source>Base de datos de SinergiaCRM</source>
         <target>Base de dades de SinergiaCRM</target>
+      </trans-unit>
+      <trans-unit id="logotipoSdaAlt" datatype="html">
+        <source>Logotipo de Sinergia Data Analytics</source>
+        <target>Logotip de Sinergia Data Analytics</target>
       </trans-unit>
     </body>
   </file>

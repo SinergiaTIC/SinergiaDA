@@ -25,7 +25,7 @@ router.use('/addTable', AddTableRouter );
 
 router.use('/mail', MailRouter);
 
-//Router para update model de SinergiaTIC
+// Router for SinergiaTIC update model
 router.use('/updatemodel', updateModelRouter);
 
 // SDA CUSTOM
