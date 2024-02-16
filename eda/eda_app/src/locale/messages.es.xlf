@@ -3585,8 +3585,8 @@
       </trans-unit>
 
       <trans-unit id="removeRowTotals">
-        <source>Quitar totales de columna</source>
-        <target>Quitar totales de columna</target>
+        <source>Quitar totales de fila</source>
+        <target>Quitar totales de fila</target>
       </trans-unit>
 
       <trans-unit id="removeRowSubtotals">
