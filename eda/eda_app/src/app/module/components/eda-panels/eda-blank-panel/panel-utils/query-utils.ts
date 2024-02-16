@@ -108,7 +108,7 @@ export const QueryUtils = {
       ebp.panelChart.NO_DATA = false;
       ebp.display_v.minispinner = true;
     }
-    console.log(ebp);
+
 
     try {
 
