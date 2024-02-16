@@ -296,7 +296,7 @@ export class EdaBlankPanelComponent implements OnInit {
             try {
                 const response = await QueryUtils.switchAndRun(this, panelContent.query);
                 this.chartLabels = this.chartUtils.uniqueLabels(response[0]);
-                this.chartData = response[1].map(item => item.map(a => a == null || a === '' ? 'null' : a)); // canviem els nulls i cadenes buides per 'null'                
+                this.chartData = response[1].map(item => item.map(a => a == null ? 'null' : a)); // canviem els nulls i cadenes buides per 'null'              
                 this.buildGlobalconfiguration(panelContent);
             } catch (err) {
                 this.alertService.addError(err);
