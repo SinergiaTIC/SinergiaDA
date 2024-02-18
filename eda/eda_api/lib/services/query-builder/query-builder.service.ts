@@ -1,8 +1,4 @@
-import { Console } from 'console';
-import { lstat } from 'fs';
 import * as _ from 'lodash';
-import { filter } from 'lodash';
-import { join } from 'path';
 
 class TreeNode {
     public value: string;
