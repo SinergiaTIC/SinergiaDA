@@ -61,12 +61,8 @@ export class DateUtils {
     }
 
     /**
-     * Establece el inicio y fin de la semana basado en la fecha actual.
-     *
-     * Utiliza la biblioteca moment para manejar fechas y tiempos. Esta función calcula el primer y último días de la semana.
-     *
-     * IMPORTANTE: La función devuelve correctamente el prime días de la semana (lunes) y el último(domingo), pero el calendario en la interfaz resta un día a cada fecha
-     * por lo que se ha establecido que la función devuelva un día más en ambas fechas (1 y 7) en lugar de (0 y 6)
+     * Establece el inicio y fin de la semana basado en la fecha actual de acuerdo al ISO 8601 que en todos
+     * los casos considera el lunes como el primer día de la semana. Utiliza la biblioteca moment.js.
      *
      * @return Array<Date> Un arreglo que contiene dos objetos Date, el primero es el inicio de la semana
      * y el segundo es el fin de la semana.
@@ -74,8 +70,9 @@ export class DateUtils {
     */
     public setWeekStartFull(): Array<Date> {
       let now = moment();
-
-      return [now.clone().weekday(1).toDate(), now.clone().weekday(7).toDate()];
+      let start = now.clone().startOf('isoWeek').toDate();
+      let end = now.clone().endOf('isoWeek').toDate();
+      return [start, end];
     }
 
     public setPastWeek(): Array<Date> {
