@@ -3949,8 +3949,8 @@
         <target>SinergiaDA Version</target>
       </trans-unit>
       <trans-unit id="aboutPageEdaVersionAPI" datatype="html">
-        <source>Versión de EDA (API)</source>
-        <target>EDA Version (API)</target>
+        <source>Puerto / Versión de EDA (API)</source>
+        <target>EDA Version / Port (API)</target>
       </trans-unit>
       <trans-unit id="aboutPageEdaVersionAPP" datatype="html">
         <source>Versión de EDA (APP)</source>

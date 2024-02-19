@@ -15,12 +15,13 @@ export class AboutComponent implements OnInit {
   public lang: String;
   public user: User;
   public isAdmin: boolean;
-  sinergiaDaVersion: string = "XXXX"; // Placeholder value, replace with real data.
-  edaApiVersion: string = "XXXX"; // Placeholder value, replace with real data.
-  edaAppVersion: string = "XXXX"; // Placeholder value, replace with real data.
-  lastRebuildDate: string = "XXXX"; // Placeholder value, replace with real data.
-  sinergiaCRMDatabaseName: string = "XXXX"; // Placeholder value, replace with real data.
-  lastUpdateModelRun: string = "XXXX"; // Placeholder value, replace with real data.
+  sinergiaDaVersion: string = "XXXX";
+  edaApiVersion: string = "XXXX";
+  edaApiPort: string = "XXXX";
+  edaAppVersion: string = "XXXX";
+  lastRebuildDate: string = "XXXX";
+  sinergiaCRMDatabaseName: string = "XXXX";
+  lastUpdateModelRun: string = "XXXX";
 
   /**
    * Constructs the AboutComponent with injected services for HTTP requests and user services.
@@ -46,6 +47,7 @@ export class AboutComponent implements OnInit {
         sinergiaDaVersion: string;
         edaAppVersion: string;
         edaApiVersion: string;
+        edaApiPort: string;
         lastRebuildDate: string;
         sinergiaCRMDatabaseName: string;
         lastUpdateModelRun: string;
@@ -60,10 +62,11 @@ export class AboutComponent implements OnInit {
 
 
     // Fetches information from the backend and updates component properties accordingly.
-    this.http.get<InfoResponse>("http://localhost:8666/getsdainfo/getinfo").subscribe({
+    this.http.get<InfoResponse>("/edapi/getsdainfo/getinfo").subscribe({
       next: data => {
         this.sinergiaDaVersion = data.info.sinergiaDaVersion;
         this.edaApiVersion = data.info.edaApiVersion;
+        this.edaApiPort = data.info.edaApiPort;
         this.edaAppVersion = data.info.edaAppVersion;
         this.lastRebuildDate = data.info.lastRebuildDate;
         this.lastUpdateModelRun = data.info.lastUpdateModelRun;

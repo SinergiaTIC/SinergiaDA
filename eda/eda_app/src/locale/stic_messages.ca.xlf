@@ -169,8 +169,8 @@
       </trans-unit>
       <trans-unit
         id="aboutPageEdaVersionAPI" datatype="html">
-        <source>Versión de EDA (API)</source>
-        <target>Versió d'EDA (API)</target>
+        <source>Puerto / Versión de EDA (API)</source>
+        <target>Port / Versió d'EDA (API)</target>
       </trans-unit>
       <trans-unit
         id="aboutPageEdaVersionAPP" datatype="html">
