@@ -15,6 +15,7 @@ import domtoimage from 'dom-to-image';
 import Swal from 'sweetalert2';
 import jspdf from 'jspdf';
 import * as _ from 'lodash';
+import { NULL_VALUE } from '@eda/configs/personalitzacio/customizables';
 import { ValueListSource } from '@eda/models/data-source-model/data-source-models';
 
 @Component({
@@ -965,6 +966,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
             query.query.forSelector = true;
             const res = await this.dashboardService.executeQuery(query).toPromise();
             filter.data = res[1].filter(item => !!item[0]).map(item => ({ label: item[0], value: item[0] }));
+            filter.data = [...filter.data, ...res[1].filter(item => !item[0]).map(item => ({ label: NULL_VALUE, value:NULL_VALUE})) ];
         } catch (err) {
             this.alertService.addError(err);
             throw err;

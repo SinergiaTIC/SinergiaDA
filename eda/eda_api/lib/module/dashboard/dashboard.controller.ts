@@ -10,7 +10,7 @@ import { CachedQueryService } from '../../services/cache-service/cached-query.se
 import { QueryOptions } from 'mongoose'
 import ServerLogService from '../../services/server-log/server-log.service'
 const cache_config = require('../../../config/cache.config')
-
+const eda_api_config = require('../../../config/eda_api_config');
 export class DashboardController {
   static async getDashboards(req: Request, res: Response, next: NextFunction) {
     try {
@@ -662,9 +662,7 @@ export class DashboardController {
         uniquesForbiddenTables = [];
 
       }
-	  
-	  
-      
+
       let mylabels = []
       let myQuery: any
       if (uniquesForbiddenTables.length > 0) {
@@ -694,12 +692,10 @@ export class DashboardController {
           mylabels.push(req.body.query.fields[c].column_name)
         }
       }
-
+      
       myQuery.simple = req.body.query.simple;
       myQuery.queryLimit = req.body.query.queryLimit;
       myQuery.joinType = req.body.query.joinType ? req.body.query.joinType : 'inner';
-
-
 
       if (myQuery.fields.length == 0) {
         console.log('you cannot see any data');
@@ -711,6 +707,31 @@ export class DashboardController {
           myQuery.forSelector = false;
       }
 
+      let nullFilter = {};
+      const filters = myQuery.filters;
+      filters.forEach(a => {
+        a.filter_elements.forEach(b => {
+          if (b.value1.includes('null') && b.value1.length > 1 ) {
+            nullFilter =  {
+              filter_id: 'is_null',
+              filter_table: a.filter_table,
+              filter_column: a.filter_column  ,
+              filter_type: 'is_null',
+              filter_elements: [{value1:['null']}],
+              isGlobal: true,
+              applyToAll: false
+            }          
+            b.value1 = b.value1.filter(c => c != 'null')
+            console.log(b.value1)
+            filters.push(nullFilter);
+            console.log(filters)
+          } else if (b.value1.includes('null') && b.value1.length == 1 ){
+            a.filter_type='is_null';
+          } 
+        })
+      }) 
+
+      myQuery.filters = filters;
       const query = await connection.getQueryBuilded(
         myQuery,
         dataModelObject,
@@ -756,7 +777,8 @@ export class DashboardController {
             }
           })
         }
-        const results = []
+
+        let results = []
 
         // Normalize data here i also transform oracle numbers who come as strings to real numbers
         for (let i = 0, n = getResults.length; i < n; i++) {
@@ -770,14 +792,14 @@ export class DashboardController {
               if (numerics[ind] == 'true') {
                 const res = parseFloat(r[i])
                 if (isNaN(res)) {
-                  return null
+                   return eda_api_config.null_value;
                 } else {
                   return res
                 }
               } else {
                 //això es per evitar els null trec els nulls i els canvio per '' dels lavels
-                if (r[i] == null == null) {
-                  return ''
+                if (r[i] === null) {
+                  return eda_api_config.null_value;
                 } else {
                   return r[i]
                 }
@@ -785,7 +807,7 @@ export class DashboardController {
             } else {
               // trec els nulls i els canvio per '' dels lavels
               if (numerics[ind] != 'true' && r[i] == null) {
-                return ''
+                return eda_api_config.null_value;
               } else {
                 return r[i];
               }
@@ -794,11 +816,11 @@ export class DashboardController {
             }
 
           })
-          results.push(output)
+
+          results.push(output)          
         }
         // las etiquetas son el nombre técnico...
         const output = [mylabels, results]
-
         if (output[1].length < cache_config.MAX_STORED_ROWS && cacheEnabled) {
           CachedQueryService.storeQuery(req.body.model_id, query, output)
         }
@@ -814,6 +836,8 @@ export class DashboardController {
           `Date: ${formatDate(new Date())} Dashboard:${req.body.dashboard.dashboard_id
           } Panel:${req.body.dashboard.panel_id} DONE\n`
         )
+
+            
 
         return res.status(200).json(output)
 
@@ -834,7 +858,8 @@ export class DashboardController {
           '\x1b[32m%s\x1b[0m',
           `Date: ${formatDate(new Date())} Dashboard:${req.body.dashboard.dashboard_id
           } Panel:${req.body.dashboard.panel_id} DONE\n`
-        )
+        )    
+        console.log(cachedQuery.cachedQuery.response);     
         return res.status(200).json(cachedQuery.cachedQuery.response)
       }
     } catch (err) {
@@ -908,7 +933,6 @@ export class DashboardController {
             )
           )
         }
-
         console.log(
           '\x1b[32m%s\x1b[0m',
           `QUERY for user ${req.user.name}, with ID: ${req.user._id
@@ -1112,6 +1136,8 @@ export class DashboardController {
         dataModelObject,
         req.user
       )
+      console.log("query")
+      console.log(query)
       return res.status(200).json(query)
     } catch (err) {
       console.log(err)

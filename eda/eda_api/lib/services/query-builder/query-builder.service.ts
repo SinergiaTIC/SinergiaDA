@@ -68,17 +68,7 @@ export abstract class QueryBuilderService {
         const valueListJoins = [];
 
 
-        /** ............................................................................... */
-        /** ............................PER ELS VALUE LISTS................................ */
-        /** si es una consulta de llista de valors es retorna la llista de valors possibles */
-        /** ............................................................................... */
-        /*
-        if( this.queryTODO.fields.length == 1 && this.queryTODO.fields[0].valueListSource   && this.queryTODO.fields[0].column_type === 'text'   && this.permissions.length == 0&& this.queryTODO.filters.length == 0){
-            nO APLICA PORQUE NO APLICA LA SEGURDAD
-            this.query = this.valueListQuery( );
-            return this.query;
-        }
-*/
+
         /** Reviso si cap columna de la  consulta es un multivalueliest..... */
         this.queryTODO.fields.forEach( e=>{
                 if( e.valueListSource ){
@@ -440,6 +430,7 @@ export abstract class QueryBuilderService {
         else if (['not_in', 'in'].includes(filter)) return 1;
         else if (filter === 'between') return 2;
         else if (filter === 'not_null') return 3;
+        else if (filter === 'is_null') return 4;
     }
 
 
@@ -766,7 +757,6 @@ export abstract class QueryBuilderService {
 
     public mergeFilterStrings = (filtersString, equalfilters ) => {
         if (equalfilters.toRemove.length > 0) {
-
             equalfilters.map.forEach((value, key) => {
                 let filterSTR = '\nand ('
                 value.forEach(f => {
