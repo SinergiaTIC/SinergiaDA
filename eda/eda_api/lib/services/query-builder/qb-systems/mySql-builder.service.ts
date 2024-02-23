@@ -75,6 +75,7 @@ export class MySqlBuilderService extends QueryBuilderService {
       filters = filters.filter(f => !equalfilters.toRemove.includes(f.filter_id));
       let filtersString = `\nwhere 1 = 1 `;
 
+
       filters.forEach(f => {
         const column = this.findColumn(f.filter_table, f.filter_column);
         const colname = this.getFilterColname(column);
@@ -82,8 +83,10 @@ export class MySqlBuilderService extends QueryBuilderService {
           filtersString += '\nand ' + this.filterToString(f);
         } else {
           /* Control de nulos... se genera la consutla de forma diferente */
-            if (   f.filter_type == 'is_null' && f.filter_elements[0].value1.length === 1) {
-                   filtersString += `\n and ${colname}  is null `;
+            if (   f.filter_type == 'is_null' && f.filter_elements[0].value1.length === 1 && filters.length >1 ) {// Si tengo varios filtors es filtro por X o es nulo.
+                   filtersString += `\nor ${colname}  is null `;
+            } if (   f.filter_type == 'is_null' && f.filter_elements[0].value1.length === 1 && filters.length ==1 ) { // si soolo tengo el filtro de nulo es un and poqque digo 1=1 y es nulo.
+              filtersString += `\nand ${colname}  is null `;
             } else {  
                 filtersString += `\nand (${this.filterToString(f)} ) `;
             }
