@@ -722,9 +722,7 @@ export class DashboardController {
               applyToAll: false
             }          
             b.value1 = b.value1.filter(c => c != 'null')
-            console.log(b.value1)
             filters.push(nullFilter);
-            console.log(filters)
           } else if (b.value1.includes('null') && b.value1.length == 1 ){
             a.filter_type='is_null';
           } 
@@ -1136,8 +1134,6 @@ export class DashboardController {
         dataModelObject,
         req.user
       )
-      console.log("query")
-      console.log(query)
       return res.status(200).json(query)
     } catch (err) {
       console.log(err)
