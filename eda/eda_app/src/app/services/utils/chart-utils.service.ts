@@ -137,6 +137,13 @@ export class ChartUtilsService {
         numberOfColumns es el numero de columnes que farem servidr en el histograma
     */
     public transformDataQuery(type: string, subType: string,  values: any[], dataTypes: string[], dataDescription: any, isBarline: boolean, numberOfColumns: number) {
+        
+        dataTypes.forEach( (e,indice)=>{            
+            if(e=='text'){
+                values.forEach( (v) => {
+                    v[indice] = v[indice] == '' ? '-' :  v[indice] ; //canviem les cadenes buides de text per un '-';                   
+                })}
+        })
 
         let output = [];
         const idx = { label: null, serie: null, numeric: [] };
