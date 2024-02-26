@@ -875,7 +875,6 @@ export class DashboardController {
           `Date: ${formatDate(new Date())} Dashboard:${req.body.dashboard.dashboard_id
           } Panel:${req.body.dashboard.panel_id} DONE\n`
         )    
-        console.log(cachedQuery.cachedQuery.response);     
         return res.status(200).json(cachedQuery.cachedQuery.response)
       }
     } catch (err) {
