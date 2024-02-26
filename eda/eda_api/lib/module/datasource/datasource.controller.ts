@@ -129,7 +129,7 @@ export class DataSourceController {
                         }
                     });
 
-                    if (users.includes(userID) || roles.length > 0 || allCanSee == 'true') {
+                    if (users.includes(userID) || roles.length > 0 || allCanSee == 'true'  || req.user.role.includes('135792467811111111111110') /* admin role  los admin lo ven todo*/ )  {
                         output.push({ _id: e._id, model_name: e.ds.metadata.model_name });
                     }
 
@@ -452,6 +452,7 @@ export class DataSourceController {
                         searchPath: req.body.schema || manager.GetDefaultSchema(),
                         user: req.body.user,
                         password: EnCrypterService.encrypt(req.body.password || 'no'),
+                        poolLimit: req.body.poolLimit,
                         sid: req.body.sid,
                         warehouse: req.body.warehouse
                     },
@@ -499,7 +500,6 @@ export class DataSourceController {
                 return dataSource;
             })
         } catch (err) {
-            console.log(err);
             throw err;
         }
     }
@@ -522,7 +522,6 @@ export class DataSourceController {
             }else{
                 tables = await manager.generateDataModel(storedDataModel.ds.metadata.optimized,storedDataModel.ds.metadata.filter);
             }
-           
 
             const datasource: IDataSource = new DataSource({
                 ds: {
@@ -591,7 +590,6 @@ export class DataSourceController {
     static async removeCacheFromModel(req: Request, res: Response, next: NextFunction){
         try{
             const queries = await CachedQuery.deleteMany({ 'cachedQuery.model_id':  req.body.id }).exec();
-            console.log(queries);
             return res.status(200).json({ ok: true});
         }catch(err){
             next(err);

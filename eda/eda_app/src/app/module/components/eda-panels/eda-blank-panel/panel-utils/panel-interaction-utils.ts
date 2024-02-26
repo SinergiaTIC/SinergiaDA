@@ -83,6 +83,10 @@ export const PanelInteractionUtils = {
           if (field) {
             ebp.currentQuery[i].format = field.format;
             ebp.currentQuery[i].cumulativeSum = field.cumulativeSum;
+            if (ebp.currentQuery[i].column_type === 'text' && ![null, 'none'].includes(field.aggregation_type)) {
+              ebp.currentQuery[i].column_type = 'numeric';
+              ebp.currentQuery[i].old_column_type = 'text';
+            }
           }
         }catch(e){
           console.error('ERROR handling current query .... handleCurrentQuery.... did you changed the query model?');
@@ -194,7 +198,14 @@ export const PanelInteractionUtils = {
       const queryFromServer = ebp.panel.content.query.query.fields;
 
       if (!column.ordenation_type) {
-        column.ordenation_type = 'No';
+        if( column.column_type  === 'numeric'){
+          column.ordenation_type = 'Desc';
+        }else if( column.column_type  === 'date'){
+          column.ordenation_type = 'Asc';
+        }else{
+          column.ordenation_type = 'No';
+        }
+        
       }
 
       const colInServer = queryFromServer.filter(c => c.column_name === column.column_name && c.table_id === column.table_id)[0];
@@ -210,12 +221,26 @@ export const PanelInteractionUtils = {
       }
 
     } else if (!column.ordenation_type) {
+      if( column.column_type  === 'numeric'){
+        ebp.ordenationTypes = [
+          { display_name: 'ASC', value: 'Asc', selected: false },
+          { display_name: 'DESC', value: 'Desc', selected: true },
+          { display_name: 'NO', value: 'No', selected:false  }
+        ];
+      }else if( column.column_type  === 'date'){
+          ebp.ordenationTypes = [
+            { display_name: 'ASC', value: 'Asc', selected: true },
+            { display_name: 'DESC', value: 'Desc', selected: false },
+            { display_name: 'NO', value: 'No', selected:false  }
+          ];
+        } else{
+        ebp.ordenationTypes = [
+          { display_name: 'ASC', value: 'Asc', selected: false },
+          { display_name: 'DESC', value: 'Desc', selected: false },
+          { display_name: 'NO', value: 'No', selected:true  }
+        ];
+      }
 
-      ebp.ordenationTypes = [
-        { display_name: 'ASC', value: 'Asc', selected: false },
-        { display_name: 'DESC', value: 'Desc', selected: true },
-        { display_name: 'NO', value: 'No', selected:false  }
-      ];
 
     } else {
       ebp.ordenationTypes.forEach(ord => {

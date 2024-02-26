@@ -167,11 +167,15 @@ export class SnowflakeConnection extends AbstractConnection {
     : floatOrInt === 'float' &&  column.column_type === 'numeric' ? 2 : null;
 
 
-    column.column_type === 'numeric'
-      ? column.aggregation_type = AggregationTypes.getValues()
-      : column.aggregation_type = [{ value: 'none', display_name: 'no' }];
+    if (column.column_type === 'numeric') {
+      column.aggregation_type = AggregationTypes.getValuesForNumbers();
+    } else if (column.column_type === 'text') {
+        column.aggregation_type = AggregationTypes.getValuesForText();
+    } else {
+        column.aggregation_type = AggregationTypes.getValuesForOthers();
+    }
 
-    column.computed_column == 'no'   // las posibilidades son no, computed_numeric, computed_string
+    column.computed_column == 'no'   // las posibilidades son no, computed, 
 
     column.column_granted_roles = [];
     column.row_granted_roles = [];

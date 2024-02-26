@@ -28,8 +28,6 @@ import { QueryUtils } from './panel-utils/query-utils';
 import { EbpUtils } from './panel-utils/ebp-utils';
 import { ChartsConfigUtils } from './panel-utils/charts-config-utils';
 import { PanelInteractionUtils } from './panel-utils/panel-interaction-utils'
-import { SelectButtonModule } from 'primeng/selectbutton';
-import { display } from 'html2canvas/dist/types/css/property-descriptors/display';
 
 export interface IPanelAction {
     code: string;
@@ -39,7 +37,7 @@ export interface IPanelAction {
 @Component({
     selector: 'eda-blank-panel',
     templateUrl: './eda-blank-panel.component.html',
-    styleUrls: []
+    styleUrls: ['./eda-blank-panel.component.css']
 })
 export class EdaBlankPanelComponent implements OnInit {
 
@@ -78,7 +76,6 @@ export class EdaBlankPanelComponent implements OnInit {
     public contextMenu: EdaContextMenu;
     public lodash: any = _;
     public hiddenColumn: number;
-
 
     public inputs: any = {};
 
@@ -158,7 +155,7 @@ export class EdaBlankPanelComponent implements OnInit {
     public queryFromServer: string = '';
     public showHiddId: boolean;
 
-    // join types 
+    // join types
     joinTypeOptions: any[] = [
         { icon: 'pi pi-align-left', joinType: 'left' },
         { icon: 'pi pi-align-center', joinType: 'inner' },
@@ -191,15 +188,15 @@ export class EdaBlankPanelComponent implements OnInit {
         this.index = 0;
         this.modeSQL = false;
         this.hiddenColumn = 0;
-        
+
         this.showIdForHiddenMode()
         this.setTablesData();
-        
+
         /**If panel comes from server */
         if (this.panel.content) {
             try{
                 const query = this.panel.content.query;
-                    
+
                 if (query.query.modeSQL) {
                     this.modeSQL = true;
                     this.currentSQLQuery = query.query.SQLexpression;
@@ -337,10 +334,10 @@ export class EdaBlankPanelComponent implements OnInit {
                                     this.currentQuery.push(duplicatedColumn); // Moc la columna directament perque es una duplicada.... o no....
                                 }
                             }
-                            
+
                         }
                     });
-                }
+                 } 
                 this.columns = this.columns.filter((c) => !c.isdeleted);
             }catch(e){
                 console.error('Error loading columns to define query in blank panel compoment........ Do you have deleted any column?????');
@@ -349,24 +346,10 @@ export class EdaBlankPanelComponent implements OnInit {
         }
 
         this.queryLimit = panelContent.query.query.queryLimit;
-
-        try {
-            PanelInteractionUtils.handleFilters(this, panelContent.query.query);
-            PanelInteractionUtils.handleFilterColumns(this, panelContent.query.query.filters,panelContent.query.query.fields);
- 
-        }catch(e){
-            console.log('Error loading filters to define query in blank panel compoment........ Do you have deleted any column?????');
-            console.log(e);
-        }
-       
-
-
+        PanelInteractionUtils.handleFilters(this, panelContent.query.query);
+        PanelInteractionUtils.handleFilterColumns(this, panelContent.query.query.filters, panelContent.query.query.fields);
         PanelInteractionUtils.handleCurrentQuery(this);
-
-        this.chartForm.patchValue({
-            chart: this.chartUtils.chartTypes.find(o => o.subValue === panelContent.edaChart)
-        });
-
+        this.chartForm.patchValue({chart: this.chartUtils.chartTypes.find(o => o.subValue === panelContent.edaChart)});
         PanelInteractionUtils.verifyData(this);
 
         const config = ChartsConfigUtils.recoverConfig(panelContent.chart, panelContent.query.output.config);
@@ -434,7 +417,7 @@ export class EdaBlankPanelComponent implements OnInit {
     }
 
     /**
-     * Triggers PanelChartComponent.ngOnChanges() 
+     * Triggers PanelChartComponent.ngOnChanges()
      * @param query Query object.
      * @param chartLabels data labels.
      * @param chartData data values.
@@ -465,13 +448,16 @@ export class EdaBlankPanelComponent implements OnInit {
     public setChartProperties() {
         const config = this.panelChart.getCurrentConfig();
         //W T F F!!!!!!!!!!!=)&/=)!/(!&=)&)!=
-        if (config 
-            && ['bar', 'line', 'horizontalBar', 'polarArea', 'doughnut', 'pyramid'].includes(config.chartType) 
+        if (config
+            && ['bar', 'line', 'horizontalBar', 'polarArea', 'doughnut', 'pyramid'].includes(config.chartType)
             && config.chartType === this.graficos.chartType ) {
             this.graficos = this.panelChart.getCurrentConfig();
         }
     }
 
+    /**
+     * Chart click event
+    */
     public onChartClick(event: any): void {
         const config = this.panelChart.getCurrentConfig();
         if (config?.chartType == 'doughnut') {
@@ -480,7 +466,7 @@ export class EdaBlankPanelComponent implements OnInit {
     }
 
     /**
-     * Changes chart type 
+     * Changes chart type
      * @param type chart type
      * @param content panel content
      */
@@ -494,7 +480,7 @@ export class EdaBlankPanelComponent implements OnInit {
         this.graficos.numberOfColumns = config && config.getConfig() ? config.getConfig()['numberOfColumns'] : null;
 
         if (!_.isEqual(this.display_v.chart, 'no_data') && !allow.ngIf && !allow.tooManyData) {
-            this.panelChart.destroyComponent();
+            // this.panelChart.destroyComponent();
             const _config = config || new ChartConfig(ChartsConfigUtils.setVoidChartConfig(type));
             this.renderChart(this.currentQuery, this.chartLabels, this.chartData, type, subType, _config);
         }
@@ -513,7 +499,7 @@ export class EdaBlankPanelComponent implements OnInit {
     }
 
     /**
-     * 
+     *
      */
     public onTableInputKey(event: any) {
         this.setTablesData();
@@ -536,7 +522,7 @@ export class EdaBlankPanelComponent implements OnInit {
 
     /**
      * Move column with drag and drop
-     * @param event 
+     * @param event
      */
     public drop(event: CdkDragDrop<string[]>) {
         if (event.previousContainer === event.container) {
@@ -547,6 +533,21 @@ export class EdaBlankPanelComponent implements OnInit {
                 event.container.data,
                 event.previousIndex,
                 event.currentIndex);
+                //obor dialeg o filre
+                if(event.container.element.nativeElement.className.toString().includes( 'select-list') ) {                
+                    this.openColumnDialog( <Column><unknown>event.container.data[event.currentIndex] );
+                }else{
+                    this.openColumnDialog( <Column><unknown>event.container.data[event.currentIndex]  , true);
+                   // Trec la agregació si puc.
+                    try{
+                        const c:Column = <Column><unknown>event.container.data[event.currentIndex];
+                        c.aggregation_type.forEach( e=> e.selected = false);
+                        c.aggregation_type.map( e=> e.value == 'none'? e.selected = true:true );
+                    }catch(e){
+                        console.log('no llego')
+                    }
+                    
+                }
         }
 
 
@@ -559,7 +560,7 @@ export class EdaBlankPanelComponent implements OnInit {
 
     /**
      * Opens columnDialog
-     * @param column 
+     * @param column
      * @param isFilter is filter column or normal column
      */
     public openColumnDialog(column: Column, isFilter?: boolean): void {
@@ -582,16 +583,29 @@ export class EdaBlankPanelComponent implements OnInit {
                         this.configController = undefined;
                         setTimeout(() => this.openColumnDialog(response.column), 100);
                     } else if (response.length > 0) {
-                        response.forEach(f => {
+                        for (const f of response) {
                             if (_.isNil(this.selectedFilters.find(o => o.filter_id === f.filter_id))) {
                                 this.selectedFilters.push(f);
                             }
                             if (f.removed) {
                                 this.selectedFilters = _.filter(this.selectedFilters, o => o.filter_id !== f.filter_id);
                             }
-                        });
-
+                        }
                         this.configController = undefined;
+                    }
+
+                    for (const field of this.currentQuery) {
+                        const aggregationSelected = field.aggregation_type.find((agg: any) => agg.selected)
+                        if (aggregationSelected?.value) {
+                            if (field.column_type === 'text' && aggregationSelected.value !== 'none') {
+                                field.old_column_type = 'text';
+                                field.column_type = 'numeric';
+                            }
+
+                            if (field.old_column_type === 'text' && aggregationSelected.value === 'none') {
+                                field.column_type = 'text';
+                            }
+                        }
                     }
 
                     if (event === EdaDialogCloseEvent.NONE) {
@@ -694,7 +708,7 @@ export class EdaBlankPanelComponent implements OnInit {
 
     /**
      * Set new chart properties when editionChartPanel is closed
-     * @param event 
+     * @param event
      * @param properties properties to set
      */
     public onCloseChartProperties(event, properties): void {
@@ -791,7 +805,7 @@ export class EdaBlankPanelComponent implements OnInit {
     }
 
 
-    
+
 
 
     public onCloseScatterProperties(event, response): void {
@@ -857,7 +871,7 @@ export class EdaBlankPanelComponent implements OnInit {
     }
 
     public onClosedynamicTextProperties(event, response): void {
-        if (!_.isEqual(event, EdaDialogCloseEvent.NONE)) { 
+        if (!_.isEqual(event, EdaDialogCloseEvent.NONE)) {
             const config = new ChartConfig(response.color);
             this.renderChart(this.currentQuery, this.chartLabels, this.chartData, this.graficos.chartType, this.graficos.edaChart, config);
             this.dashboardService._notSaved.next(true);
@@ -879,8 +893,8 @@ export class EdaBlankPanelComponent implements OnInit {
                     || content.chart === 'scatterPlot'
                     || content.chart === 'funnel'
                     || content.chart === 'knob'
-                    || content.chart === 'sunburst' 
-                    || content.chart === 'bubblechart' 
+                    || content.chart === 'sunburst'
+                    || content.chart === 'bubblechart'
                     || content.chart === 'dynamicText')
             ) {
 
@@ -910,8 +924,8 @@ export class EdaBlankPanelComponent implements OnInit {
 
     public loadColumns (table: any)  {
 
-        PanelInteractionUtils.loadColumns(this, table, this.hiddenColumn);        
-    } 
+        PanelInteractionUtils.loadColumns(this, table, this.hiddenColumn);
+    }
 
     public removeColumn = (c: Column, list?: string) => PanelInteractionUtils.removeColumn(this, c, list);
 
@@ -931,20 +945,19 @@ export class EdaBlankPanelComponent implements OnInit {
     }
 
     public switchAndBuildQuery() {
-
         if (!this.modeSQL) return QueryUtils.initEdaQuery(this);
         else return QueryUtils.initSqlQuery(this);
     }
 
     /** duplica un patell del dashboard i el posiciona un punt per sota del origina./ */
     public duplicatePanel(): void {
-        let duplicatedPanel =   _.cloneDeep(this.panel, true); 
+        let duplicatedPanel =   _.cloneDeep(this.panel, true);
         duplicatedPanel.id = this.fileUtiles.generateUUID();
         duplicatedPanel.y = duplicatedPanel.y+1;
         this.duplicate.emit(duplicatedPanel);
     }
 
-    
+
     public removePanel(): void {
         this.remove.emit(this.panel.id);
     }
@@ -1018,12 +1031,22 @@ export class EdaBlankPanelComponent implements OnInit {
     }
 
     public showIdForHiddenMode() {
-        
+
         if (this.inject.dataSource._id == "111111111111111111111111") {
             this.showHiddId = true;
         } else {
             this.showHiddId = false;
         }
-     
+
+    }
+
+    public getDisplayName(table) {
+        let tmpTable : any;
+        this.tablesToShow.filter(a => {
+            if (a.table_name == table) {
+                tmpTable = a;
+            }
+            })
+        return tmpTable.display_name.default;
     }
 }
