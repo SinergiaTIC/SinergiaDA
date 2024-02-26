@@ -54,13 +54,14 @@ export class DashboardController {
   static async cleanDashboards(dashboards: any[], user: any) {
     const allowedDashboards = [];
     for (const dashboard of dashboards) {
+      console.log(dashboard);
       const datasourceId = dashboard.config?.ds?._id;
       const sourceMetadata = await DataSourceController.GetDataSourceMetadata(datasourceId);
       const modelGrantedRoles = sourceMetadata?.model_granted_roles || [];
 
       // Inicializamos variable "allowed" por defecto en true
-      user.allowed = true;
-      user.groupAllowed = true;
+      user.allowed = false;
+      user.groupAllowed = false;
       // let main = false;
 
       // Si modelGrantedRoles esta lleno hay que revisar la query, sino el dashboard es visible
@@ -108,63 +109,56 @@ export class DashboardController {
 
             }
 
+            if(Object.keys(queryRoles).length == 0){
+              // Si no hay condiciones puede ver el informe.
+              user.allowed = true;
+              user.groupAllowed = true;   
+            }
+            
             // Recorremos el objeto queryRoles
             for (const key of Object.keys(queryRoles)) {
               const queryRole = queryRoles[key];
-
               // if (queryRole.length === 1) main = true;
 
               queryRole.forEach((value: any) => {
                   // Si el usuario sigue siendo "allowed" && el tipo de condicion es por "users" && el valor "users" existe comprobamos:
                   // Si existe la propiedad "permission" se trata de una condicion a nivel de tabla
-                  if (user.allowed && value.type === 'users' && value.users) {
+                  if (!user.allowed && value.type === 'users' && value.users) {
                     // Tabla restringida y usuari NO EXISTE en el Array
-                    if (value.permission && !value.users.includes(user.id)) {
-                      user.allowed = false;
+                    if (value.permission && value.users.includes(user.id)) {
+                      user.allowed = true;
                     // Tabla con permisos negativos y usuario EXISTE en el Array
-                    } else if(value.permission === false && value.users.includes(user.id)) {
-                      user.allowed = false;
-                     // Columna restringida y usuario NO EXISTE en el Array
-                    } else if (value.none && value.users.includes(user.id)) {
-                      user.allowed = false;
-                    } // Columna con permisos negativos y usuario EXISTE en el Array
-                    else if (value.none === false && !value.users.includes(user.id)) {
-                      user.allowed = false;
-                    }
+                    } else if(value.permission === true && value.users.includes(user.id)) {
+                      user.allowed = true;
+                    } 
                   }
 
                   // Si el usuario sigue siendo "groupAllowed" && el tipo de condicion es por "groups" && el valor "groups" existe comprobamos:
                   // Si existe la propiedad "permission" se trata de una condicion a nivel de tabla
-                  if (user.groupAllowed && value.type === 'groups' && value.groups) {
+                  if (!user.groupAllowed && value.type === 'groups' && value.groups) {
                     // Tabla restringida por grupo y usuaro NO EXISTE en el grupo
-                    if (value.permission && !value.groups.some((group: any) => user.roles.includes(group))) {
-                      user.groupAllowed = false;
+                    if (value.permission && value.groups.some((group: any) => user.roles.includes(group))) {
+                      user.groupAllowed = true;
                       // Tabla con permisos negativos por grupo y usuario EXISTE en el grupo
-                    } else if (value.permission === false && value.groups.some((group: any) => user.roles.includes(group))) {
-                      user.groupAllowed = false;
-                      // Columna restringida por grupo y usuario NO EXISTE en el grupo
-                    } else if (value.none && value.groups.some((group: any) => user.roles.includes(group))) {
-                      user.groupAllowed = false;
+                    } else if (value.permission === false && !value.groups.some((group: any) => user.roles.includes(group))) {
+                      user.groupAllowed = true;
                       // Columna con permisos negativos por grupo y usuario EXISTE en el grupo
-                    } else if (value.none === false && !value.groups.some((group: any) => user.roles.includes(group))) {
-                      user.groupAllowed = false;
-                    }
+                    } 
                   }
               })
             }
           }
         }
+      }else{
+        user.allowed = true;
+        user.groupAllowed = true;
       }
 
-      if (user.allowed && user.groupAllowed) {
+      if (user.allowed || user.groupAllowed) {
         addDashboard(dashboard)
       }
 
-      // if (!main&& (user.allowed || user.groupAllowed)) {
-      //   addDashboard(dashboard);
-      // } else if (main && ![user.allowed,user.groupAllowed].includes(false)) {
-      //   addDashboard(dashboard);
-      // } 
+
     }
 
     function addDashboard(dashboard: any) {
