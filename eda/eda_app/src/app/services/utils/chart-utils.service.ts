@@ -145,7 +145,6 @@ export class ChartUtilsService {
                 })}
         })
 
-        console.log(values);
         let output = [];
         const idx = { label: null, serie: null, numeric: [] };
 
