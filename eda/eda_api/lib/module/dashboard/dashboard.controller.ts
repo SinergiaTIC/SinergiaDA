@@ -66,88 +66,93 @@ export class DashboardController {
 
       // Si modelGrantedRoles esta lleno hay que revisar la query, sino el dashboard es visible
       if (modelGrantedRoles.length > 0) {
-        const panels = dashboard.config.panel;
-        for (const panel of panels) {
-          const query: any[] = panel.content?.query?.query?.fields;
+        if(dashboard.config.panel){
+          const panels = dashboard.config.panel;
+          for (const panel of panels) {
+            const query: any[] = panel.content?.query?.query?.fields;
 
-          if (query?.length > 0) {
+            if (query?.length > 0) {
 
-            // Aqui almacenaremos las condiciones de la consulta agrupadas por tabla
-            const queryRoles: any = {};
+              // Aqui almacenaremos las condiciones de la consulta agrupadas por tabla
+              const queryRoles: any = {};
 
-            for (const field of query) {
-              // Por cada columna de la consulta buscamos alguna coincidencia en el modelGrantedRoles para esa columna especifico (podria existir más de una).
-              const columnConditions = modelGrantedRoles.filter((columnCondition: any) => field.table_id === columnCondition.table && field.column_name == columnCondition.column);
-              // Por cada columna de la consulta buscamos alguna coincidencia para la tabla de esa columna (podria existir más de una).
-              const tableConditions = modelGrantedRoles.filter((tableCondition: any) => field.table_id === tableCondition.table && tableCondition.column === 'fullTable'); 
-              
-              // Si hay coincidencias por columna 
-              if (columnConditions?.length > 0) {
-                // Si todavia no existe la tabla dentro del queryRoles, incializamos esa propiedad ([table]: Array vacio)
-                if (!queryRoles[columnConditions[0].table]) {
-                  queryRoles[columnConditions[0].table] = [];
-                }
-
-                // Por cada condicion de columna, lo añadimos dentro del queryRoles[table]
-                for (const condition of columnConditions) {
-                  queryRoles[columnConditions[0].table].push(condition);
-                }
-              }
-              
-              // Si hay coincidencias por tabla
-              if (tableConditions?.length > 0) {
-                // Si todavia no existe la tabla dentro del queryRoles, incializamos esa propiedad ([table]: Array vacio)
-                if (!queryRoles[tableConditions[0].table]) {
-                  queryRoles[tableConditions[0].table] = [];
-                }
-
-                // Por cada condicion de tabla, lo añadimos dentro del queryRoles[table]
-                for (const condition of tableConditions) {
-                  queryRoles[tableConditions[0].table].push(condition);
-                }
-              }
-
-            }
-
-            if(Object.keys(queryRoles).length == 0){
-              // Si no hay condiciones puede ver el informe.
-              user.allowed = true;
-              user.groupAllowed = true;   
-            }
-            
-            // Recorremos el objeto queryRoles
-            for (const key of Object.keys(queryRoles)) {
-              const queryRole = queryRoles[key];
-              // if (queryRole.length === 1) main = true;
-
-              queryRole.forEach((value: any) => {
-                  // Si el usuario sigue siendo "allowed" && el tipo de condicion es por "users" && el valor "users" existe comprobamos:
-                  // Si existe la propiedad "permission" se trata de una condicion a nivel de tabla
-                  if (!user.allowed && value.type === 'users' && value.users) {
-                    // Tabla restringida y usuari NO EXISTE en el Array
-                    if (value.permission && value.users.includes(user.id)) {
-                      user.allowed = true;
-                    // Tabla con permisos negativos y usuario EXISTE en el Array
-                    } else if(value.permission === true && value.users.includes(user.id)) {
-                      user.allowed = true;
-                    } 
+              for (const field of query) {
+                // Por cada columna de la consulta buscamos alguna coincidencia en el modelGrantedRoles para esa columna especifico (podria existir más de una).
+                const columnConditions = modelGrantedRoles.filter((columnCondition: any) => field.table_id === columnCondition.table && field.column_name == columnCondition.column);
+                // Por cada columna de la consulta buscamos alguna coincidencia para la tabla de esa columna (podria existir más de una).
+                const tableConditions = modelGrantedRoles.filter((tableCondition: any) => field.table_id === tableCondition.table && tableCondition.column === 'fullTable'); 
+                
+                // Si hay coincidencias por columna 
+                if (columnConditions?.length > 0) {
+                  // Si todavia no existe la tabla dentro del queryRoles, incializamos esa propiedad ([table]: Array vacio)
+                  if (!queryRoles[columnConditions[0].table]) {
+                    queryRoles[columnConditions[0].table] = [];
                   }
 
-                  // Si el usuario sigue siendo "groupAllowed" && el tipo de condicion es por "groups" && el valor "groups" existe comprobamos:
-                  // Si existe la propiedad "permission" se trata de una condicion a nivel de tabla
-                  if (!user.groupAllowed && value.type === 'groups' && value.groups) {
-                    // Tabla restringida por grupo y usuaro NO EXISTE en el grupo
-                    if (value.permission && value.groups.some((group: any) => user.roles.includes(group))) {
-                      user.groupAllowed = true;
-                      // Tabla con permisos negativos por grupo y usuario EXISTE en el grupo
-                    } else if (value.permission === false && !value.groups.some((group: any) => user.roles.includes(group))) {
-                      user.groupAllowed = true;
-                      // Columna con permisos negativos por grupo y usuario EXISTE en el grupo
-                    } 
+                  // Por cada condicion de columna, lo añadimos dentro del queryRoles[table]
+                  for (const condition of columnConditions) {
+                    queryRoles[columnConditions[0].table].push(condition);
                   }
-              })
+                }
+                
+                // Si hay coincidencias por tabla
+                if (tableConditions?.length > 0) {
+                  // Si todavia no existe la tabla dentro del queryRoles, incializamos esa propiedad ([table]: Array vacio)
+                  if (!queryRoles[tableConditions[0].table]) {
+                    queryRoles[tableConditions[0].table] = [];
+                  }
+
+                  // Por cada condicion de tabla, lo añadimos dentro del queryRoles[table]
+                  for (const condition of tableConditions) {
+                    queryRoles[tableConditions[0].table].push(condition);
+                  }
+                }
+
+              }
+
+              if(Object.keys(queryRoles).length == 0){
+                // Si no hay condiciones puede ver el informe.
+                user.allowed = true;
+                user.groupAllowed = true;   
+              }
+              
+              // Recorremos el objeto queryRoles
+              for (const key of Object.keys(queryRoles)) {
+                const queryRole = queryRoles[key];
+                // if (queryRole.length === 1) main = true;
+
+                queryRole.forEach((value: any) => {
+                    // Si el usuario sigue siendo "allowed" && el tipo de condicion es por "users" && el valor "users" existe comprobamos:
+                    // Si existe la propiedad "permission" se trata de una condicion a nivel de tabla
+                    if (!user.allowed && value.type === 'users' && value.users) {
+                      // Tabla restringida y usuari NO EXISTE en el Array
+                      if (value.permission && value.users.includes(user.id)) {
+                        user.allowed = true;
+                      // Tabla con permisos negativos y usuario EXISTE en el Array
+                      } else if(value.permission === true && value.users.includes(user.id)) {
+                        user.allowed = true;
+                      } 
+                    }
+
+                    // Si el usuario sigue siendo "groupAllowed" && el tipo de condicion es por "groups" && el valor "groups" existe comprobamos:
+                    // Si existe la propiedad "permission" se trata de una condicion a nivel de tabla
+                    if (!user.groupAllowed && value.type === 'groups' && value.groups) {
+                      // Tabla restringida por grupo y usuaro NO EXISTE en el grupo
+                      if (value.permission && value.groups.some((group: any) => user.roles.includes(group))) {
+                        user.groupAllowed = true;
+                        // Tabla con permisos negativos por grupo y usuario EXISTE en el grupo
+                      } else if (value.permission === false && !value.groups.some((group: any) => user.roles.includes(group))) {
+                        user.groupAllowed = true;
+                        // Columna con permisos negativos por grupo y usuario EXISTE en el grupo
+                      } 
+                    }
+                })
+              }
             }
           }
+        }else{
+          user.allowed = true;
+          user.groupAllowed = true;
         }
       }else{
         user.allowed = true;
