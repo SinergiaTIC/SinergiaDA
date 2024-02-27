@@ -777,10 +777,10 @@ export class DashboardController {
               } else {
                 //això es per evitar els null trec els nulls i els canvio per ' ' dels labels al igual que les cadenes buides
                 if (r[i] === null ) {
-                    return ' ';
+                    return '';
                 } else {
                   if(r[i].length == 0){
-                    return ' ';
+                    return '';
                   }else{
                     return r[i];
                   }
@@ -790,7 +790,7 @@ export class DashboardController {
             } else {
               // trec els nulls i els canvio per ' ' dels labels al igual que les cadenes buides
               if (numerics[ind] != 'true' && ( r[i] == null || r[i]?.length == 0 ) ) {
-                  return ' ';
+                  return '';
               } else {
                 return r[i];
               }
@@ -961,8 +961,8 @@ export class DashboardController {
 
               output.forEach((val, index) => {
                 if(val===null || val.length == 0){
-                  output[index] = ' ' // los valores nulos o cadenas vacías les canvio per un espai en blanc pero que si no tinc problemes
-                  resultsRollback[i][index] = ' ';// los valores nulos o cadenas vacías les canvio per un espai en blanc pero que si no tinc problemes
+                  output[index] = '' // los valores nulos o cadenas vacías les canvio per un espai en blanc pero que si no tinc problemes
+                  resultsRollback[i][index] = '';// los valores nulos o cadenas vacías les canvio per un espai en blanc pero que si no tinc problemes
                 }
                 if (DashboardController.isNotNumeric(val)) {
                   tmpArray.push('NaN');
@@ -977,7 +977,7 @@ export class DashboardController {
               const output = Object.keys(r).map(i => r[i]);
               output.forEach((val, index) => {
                 if(val===null || val.length == 0){
-                  output[index] = ' ' // los valores nulos o cadenas vacías les canvio per un espai en blanc pero que si no tinc problemes
+                  output[index] = '' // los valores nulos o cadenas vacías les canvio per un espai en blanc pero que si no tinc problemes
                   resultsRollback[i][index] = ' ';// los valores nulos o cadenas vacías les canvio per un espai en blanc pero que si no tinc problemes
                 }
               })

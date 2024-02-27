@@ -141,10 +141,11 @@ export class ChartUtilsService {
         dataTypes.forEach( (e,indice)=>{            
             if(e=='text'){
                 values.forEach( (v) => {
-                    v[indice] = v[indice] == '' || v[indice] == null ? '-' :  v[indice] ; //canviem les cadenes buides i els null de text per un '-';                   
+                    v[indice] = (v[indice] == '' || v[indice] == ' ' || v[indice] === null ) ? '-' :  v[indice] ; //canviem les cadenes buides i els null de text per un '-';                   
                 })}
         })
 
+        console.log(values);
         let output = [];
         const idx = { label: null, serie: null, numeric: [] };
 
