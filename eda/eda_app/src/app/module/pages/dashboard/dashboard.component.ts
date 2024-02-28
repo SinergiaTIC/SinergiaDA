@@ -965,8 +965,8 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
             let query = this.queryBuilderService.normalQuery([filter.column.value], queryParams);
             query.query.forSelector = true;
             const res = await this.dashboardService.executeQuery(query).toPromise();
-            filter.data = res[1].filter(item => !!item[0]).map(item => ({ label: item[0], value: item[0] }));
-            filter.data = [...filter.data, ...res[1].filter(item => !item[0]).map(item => ({ label: NULL_VALUE, value:'null'})) ];
+            filter.data = res[1].filter(item => item[0] !== NULL_VALUE ).map(item => ({ label: item[0], value: item[0] }));
+            filter.data = [...filter.data, ...res[1].filter(item => item[0]==NULL_VALUE).map(item => ({ label: NULL_VALUE, value:'null'})) ];
         } catch (err) {
             this.alertService.addError(err);
             throw err;
