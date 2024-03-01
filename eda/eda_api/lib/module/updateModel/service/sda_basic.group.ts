@@ -15,6 +15,7 @@ export class Sda_Basic_Group {
             let groupSchema = new Group(
 
                 {
+                  _id: "135792467811111111111117",
                   role: "EDA_USER_ROLE",
                   name: "SDA_BASIC",
                   users: []

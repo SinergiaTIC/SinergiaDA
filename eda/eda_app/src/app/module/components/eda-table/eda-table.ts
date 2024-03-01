@@ -10,11 +10,14 @@ import { Column } from '@eda/models/model.index';
 import { EdaColumnNumber } from './eda-columns/eda-column-number';
 import { EdaColumnPercentage } from './eda-columns/eda-column-percentage';
 import { Output, EventEmitter, Component } from '@angular/core';
+import DOCUMENT from '@angular/platform-browser';
 import { EdaColumnChart } from './eda-columns/eda-column-chart';
 import { ToastModule } from 'primeng/toast';
 import { Key } from 'protractor';
 import { FindValueSubscriber } from 'rxjs/internal/operators/find';
 import { values } from 'd3';
+
+
 
 interface PivotTableSerieParams {
     mainCol: any,
@@ -80,7 +83,6 @@ export class EdaTable {
     public SubTotals:string = $localize`:@@SubTotals:SubTotales`;
     public Trend:string = $localize`:@@addtrend:Tendencia`;
 
-
     public constructor(init: Partial<EdaTable>) {
         Object.assign(this, init);
         this.initRows = init['visibleRows'] || 10;
@@ -120,7 +122,10 @@ export class EdaTable {
         this.rows = event.rows;
         this.initRows = event.rows;
         this.onNotify.emit(this.rows)
-        this.checkTotals(event);
+/* SDA CUSTOM*/  const url = document.location.href;
+/* SDA CUSTOM*/  if (!url.includes('-management')) { 
+/* SDA CUSTOM*/         this.checkTotals(event);
+/* SDA CUSTOM*/  }
     }
 
 
@@ -223,9 +228,9 @@ export class EdaTable {
             event ? this.colSubTotals(event.first / event.rows + 1) : this.colSubTotals(1);
 
         } 
-        if (this.noRepetitions || !this.noRepetitions) {
-            this.noRepeatedRows();
-        }
+
+        this.noRepeatedRows();
+        
 
     }
 

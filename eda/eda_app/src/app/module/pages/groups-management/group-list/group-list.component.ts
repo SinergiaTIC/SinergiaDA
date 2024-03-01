@@ -13,7 +13,7 @@ import * as _ from 'lodash';
 export class GroupListComponent implements OnInit {
     public fitxa: EdaDialogController;
     public table: EdaTable;
-/* SDA CUSTOM */ public protectedGroups: any = ["135792467811111111111110","135792467811111111111113","135792467811111111111115"]
+/* SDA CUSTOM */ public protectedGroups: any = ["135792467811111111111110","135792467811111111111113","135792467811111111111115","135792467811111111111117"]
 
     constructor( private userService: UserService,
                  private groupService: GroupService,
