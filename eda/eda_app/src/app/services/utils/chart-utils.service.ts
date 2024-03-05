@@ -138,12 +138,20 @@ export class ChartUtilsService {
     */
     public transformDataQuery(type: string, subType: string,  values: any[], dataTypes: string[], dataDescription: any, isBarline: boolean, numberOfColumns: number) {
 
+        dataTypes.forEach( (e,indice)=>{            
+            if(e=='text'){
+                values.forEach( (v) => {
+                    v[indice] = (v[indice] == '' || v[indice] == ' ' || v[indice] === null ) ? '-' :  v[indice] ; //canviem les cadenes buides i els null de text per un '-';                   
+                })}
+        })
+        
         let output = [];
         const idx = { label: null, serie: null, numeric: [] };
 
         dataTypes.forEach((e: any, i) => {
             e === 'numeric' ? idx.numeric.push(i) : idx.label != null ? idx.serie = i : idx.label = i;
         });
+        
 
         const label_idx = idx.label;
         const serie_idx = idx.serie;
