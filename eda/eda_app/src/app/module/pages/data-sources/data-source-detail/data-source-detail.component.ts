@@ -182,21 +182,21 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
             contextMenu: new EdaContextMenu({
                 contextMenuItems: [
                     new EdaContextMenuItem({
-                        label: 'ELIMINAR', command: () => {
+                        label: 'ELIMINAR', command: () => {                            
                             let users = [];
                             let groups = [];
 
                             if (this.permissionTable.getContextMenuRow().user) {
-                                const usersTmp = this.permissionTable.getContextMenuRow().user;
+                                const usersTmp = this.permissionTable.getContextMenuRow()._id;
                                 const table = this.tablePanel.technical_name;
-                                const mdgTmp = this.modelPanel.metadata.model_granted_roles.filter(r => r.table === table && r.usersName === usersTmp);
+                                const mdgTmp = this.modelPanel.metadata.model_granted_roles.filter(r => r.table === table && r.users === usersTmp);
                                 users = this.modelPanel.metadata.model_granted_roles.filter(a => a != mdgTmp[0]);
                                 
 
                             } else if (this.permissionTable.getContextMenuRow().group) {
-                                const groupTmp = this.permissionTable.getContextMenuRow().group;
+                                const groupTmp = this.permissionTable.getContextMenuRow()._id;
                                 const table = this.tablePanel.technical_name;
-                                const mdgTmpG = this.modelPanel.metadata.model_granted_roles.filter(r => r.table === table && r.groupsName === groupTmp)
+                                const mdgTmpG = this.modelPanel.metadata.model_granted_roles.filter(r => r.table === table && r.groups === groupTmp)
                                 groups = this.modelPanel.metadata.model_granted_roles.filter(a => a != mdgTmpG[0]);
                             }
                             let tmpPermissions = [];
