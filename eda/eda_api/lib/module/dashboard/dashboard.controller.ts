@@ -817,11 +817,11 @@ export class DashboardController {
                 if (r[i] === null) {
                   return eda_api_config.null_value;
                 } else {
-                  return r[i]
+                    return r[i];
                 }
               }
             } else {
-              // trec els nulls i els canvio per '' dels lavels
+              // trec els nulls i els canvio per eda_api_config.null_value dels lavels
               if (numerics[ind] != 'true' && r[i] == null) {
                 return eda_api_config.null_value;
               } else {
@@ -918,11 +918,11 @@ export class DashboardController {
         // el admin ve todo
        uniquesForbiddenTables = [];
       }
-      if( req.user._id == '135792467811111111111112'){
-        console.log('ANONYMOUS USER QUERY....NO PERMISSIONS APPLY HERE.....');
-        uniquesForbiddenTables = [];
+      /*SDA CUSTOM */if( req.user._id == '135792467811111111111112'){
+      /*SDA CUSTOM */  console.log('ANONYMOUS USER QUERY....NO PERMISSIONS APPLY HERE.....');
+      /*SDA CUSTOM */  uniquesForbiddenTables = [];
+      /*SDA CUSTOM */}
 
-      }
       let notAllowedQuery = false
       uniquesForbiddenTables.forEach(table => {
         if (req.body.query.SQLexpression.indexOf(table) >= 0) {
@@ -992,24 +992,41 @@ export class DashboardController {
               const output = Object.keys(r).map(i => r[i])
               resultsRollback.push([...output])
               const tmpArray = []
+
               output.forEach((val, index) => {
+
                 if (DashboardController.isNotNumeric(val)) {
-                  tmpArray.push('NaN')
+                  tmpArray.push('NaN');
+                  if(val===null  ){
+                    output[index] =  eda_api_config.null_value;  // los valores nulos  les canvio per un espai en blanc pero que si no tinc problemes
+                    resultsRollback[i][index] =  eda_api_config.null_value; // los valores nulos  les canvio per un espai en blanc pero que si no tinc problemes
+                  }
                 } else {
                   tmpArray.push('int')
-                  output[index] = parseFloat(val)
+                  if(val !== null){
+                    output[index] = parseFloat(val);
+                  }else{
+                    output[index] =  eda_api_config.null_value;
+                    resultsRollback[i][index] =  eda_api_config.null_value;
+                    //output[index] = null;
+                  }
+                  
                 }
               })
               oracleDataTypes.push(tmpArray)
               results.push(output)
             } else {
-              const output = Object.keys(r).map(i => r[i])
+              const output = Object.keys(r).map(i => r[i]);
+              output.forEach((val, index) => {
+                if(val===null  ){
+                  output[index] =  eda_api_config.null_value;// los valores nulos les canvio per un espai en blanc pero que si no tinc problemes
+                  resultsRollback[i][index] =   eda_api_config.null_value; // los valores nulos les canvio per un espai en blanc pero que si no tinc problemes
+                }
+              })
               results.push(output)
               resultsRollback.push(output)
             }
           }
-
-
 
 
           /** si tinc resultats de oracle evaluo la matriu de tipus de numero per verure si tinc enters i textos barrejats.
@@ -1018,19 +1035,31 @@ export class DashboardController {
             for (var i = 0; i < oracleDataTypes.length - 1; i++) {
               var e = oracleDataTypes[i]
               for (var j = 0; j < e.length; j++) {
-                if (oracleDataTypes[i][j] != oracleDataTypes[i + 1][j]) {
-                  oracleEval = false
+                if(oracleDataTypes[j][0]=='int'  ){
+                  if ( oracleDataTypes[i][j] != oracleDataTypes[i + 1][j]) {
+                    oracleEval = false
+                  }
                 }
               }
             }
           }
-
           /** si tinc numeros barrejats. Poso el rollback */
           if (oracleEval !== true) {
             results = resultsRollback
+          }else{
+            // pongo a nulo los numeros nulos
+            for (var i = 0; i < results.length; i++) {
+              var e = results[i]
+              for (var j = 0; j < e.length; j++) {
+                if(oracleDataTypes[j][0]=='int'  ){
+                  if ( results[i][j] ==  eda_api_config.null_value ) {
+                    results[i][j] = null;
+                  }
+                }
+              }
+            }
           }
           const output = [labels, results]
-
           if (output[1].length < cache_config.MAX_STORED_ROWS && cacheEnabled) {
             CachedQueryService.storeQuery(req.body.model_id, query, output)
           }
@@ -1070,7 +1099,7 @@ export class DashboardController {
       if (
         isNaN(val) || val.toString().indexOf('-') >= 0 || val.toString().indexOf('/') >= 0 ||
         val.toString().indexOf('|') >= 0 || val.toString().indexOf(':') >= 0 || val.toString().indexOf('T') >= 0 ||
-        val.toString().indexOf('Z') >= 0 || val.toString().indexOf('Z') >= 0) {
+        val.toString().indexOf('Z') >= 0 || val.toString().indexOf('Z') >= 0 || val.toString().length  == 0) {
         isNotNumeric = true;
       }
     } catch (e) {
@@ -1088,10 +1117,10 @@ export class DashboardController {
     if( user.role.includes('135792467811111111111110') ){
       return true;
     }
-    if(user._id== '135792467811111111111112'){
-      console.log('Anonymous access');
-      return true;
-    }
+    /*SDA CUSTOM*/if(user._id== '135792467811111111111112'){
+    /*SDA CUSTOM*/  console.log('Anonymous access');
+    /*SDA CUSTOM*/  return true;
+    /*SDA CUSTOM*/}
 
 
 
