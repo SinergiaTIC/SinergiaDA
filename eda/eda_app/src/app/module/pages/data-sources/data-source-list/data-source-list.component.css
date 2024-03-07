@@ -84,9 +84,7 @@
 }
 
 
-/* SDA CUSTOM */
-.sda-disabled{
-  opacity: .5;
-  pointer-events: none;
-}
-/* END SDA CUSTOM */
+/*SDA CUSTOM*/.sda-disabled{
+/*SDA CUSTOM*/  opacity: .5;
+/*SDA CUSTOM*/  pointer-events: none;
+/*SDA CUSTOM*/}

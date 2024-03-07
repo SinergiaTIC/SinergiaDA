@@ -12,9 +12,7 @@ import * as _ from 'lodash';
 
 @Component({
     selector: 'app-data-source-detail',
-    // SDA CUSTOM
-    templateUrl: './sda-data-source-detail.component.html',
-    // END SDA CUSTOM
+    /*SDA CUSTOM*/ templateUrl: './sda-data-source-detail.component.html',
     styleUrls: ['../data-source-list/data-source-list.component.css']
 })
 
