@@ -3054,6 +3054,11 @@
         <target> Últimos 120 días </target>
       </trans-unit>
 
+      <trans-unit id="DatePickerNull">
+       <source>Fecha nula</source>
+        <target>Fecha nula</target>
+      </trans-unit> 
+
       <trans-unit id="DateSelectRange">
         <source>Selecciona un rango</source>
         <target>Selecciona un rango</target>

@@ -2811,6 +2811,10 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <source> Últimos 120 días </source>
 <target>Ostatnie 120 dni </target>
 </trans-unit>
+<trans-unit id="DatePickerNull">
+  <source>Fecha nula</source>
+  <target>Data zerowa</target>
+</trans-unit>
 <trans-unit id="DateSelectRange">
 <source>Selecciona un rango</source>
 <target>Wybierz zakres</target>
