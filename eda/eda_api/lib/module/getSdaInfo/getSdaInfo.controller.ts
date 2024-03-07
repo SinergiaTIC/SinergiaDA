@@ -4,6 +4,7 @@ import * as path from "path";
 const sinergiaDatabase = require("../../../config/sinergiacrm.config");
 const mariadb = require("mariadb");
 
+
 /**
  * A class responsible for fetching and returning Sinergia Data Analytics (SDA) information.
  */

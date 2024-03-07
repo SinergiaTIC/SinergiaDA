@@ -133,6 +133,7 @@ export abstract class QueryBuilderService {
         }
 
         
+
         /** SEPAREM ENTRE AGGREGATION COLUMNS/GROUPING COLUMNS */
         const separedCols = this.getSeparedColumns(origin, dest);
         const columns = separedCols[0];
