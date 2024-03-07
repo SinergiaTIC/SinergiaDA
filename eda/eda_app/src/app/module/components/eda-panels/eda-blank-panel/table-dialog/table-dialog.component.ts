@@ -152,7 +152,7 @@ export class TableDialogComponent extends EdaDialogAbstract implements AfterView
     this.myPanelChartComponent.componentRef.instance.inject.checkTotals(null);
     this.noRepetitions = currentConfig.noRepetitions;
 
-
+    
     this.setItems();
   }
 
@@ -265,7 +265,7 @@ export class TableDialogComponent extends EdaDialogAbstract implements AfterView
   onClose(event: EdaDialogCloseEvent, response?: any): void {
     return this.controller.close(event, response);
   }
-
+  
   saveChartConfig() {
 
     const config = (<TableConfig>this.panelChartConfig.config.getConfig());

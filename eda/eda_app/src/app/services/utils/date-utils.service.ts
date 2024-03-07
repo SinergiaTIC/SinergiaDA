@@ -120,6 +120,7 @@ export class DateUtils {
         d.setMonth(newMonth);
         const monthStart = new Date(d.getFullYear(), d.getMonth(), 1);
         const monthEnd = new Date(d.getFullYear(), d.getMonth(), t.getDate() );
+
         return [monthStart, monthEnd];
     }
 
@@ -134,6 +135,7 @@ export class DateUtils {
         d.setMonth(newMonth);
         const monthStart = new Date(d.getFullYear(), d.getMonth(), 1);
         const monthEnd = new Date(d.getFullYear(), d.getMonth(),  new Date(d.getFullYear(), d.getMonth()+1, 0).getDate() );
+
         return [monthStart, monthEnd];
     }
 
@@ -151,6 +153,7 @@ export class DateUtils {
         const today = new Date( t.getFullYear()-1, t.getMonth(), new Date(t.getFullYear(), t.getMonth()+1, 0).getDate() );
         return [monthStart, today];
     }
+
     public setYearStart(): Array<Date> {
         const today = new Date();
         const yearStart = new Date(today.getFullYear(), 0, 1);
@@ -175,6 +178,7 @@ export class DateUtils {
         const last7 = new Date(today.getTime() - (6 * 24 * 60 * 60 * 1000));
         return [last7, today];
     }
+
     public setLast15(): Array<Date> {
         const today = new Date();
         const last15 = new Date(today.getTime() - (14 * 24 * 60 * 60 * 1000));

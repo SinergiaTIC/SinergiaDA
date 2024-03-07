@@ -54,15 +54,15 @@ export class EdaKpiComponent implements OnInit {
     getStyle():any{
         return { 'font-weight': 'bold','font-size': this.getFontSize(), display: 'flex','justify-content':'center',color:this.color}
     }
-
+   
     /**
-     * This function returns a string with the given font size (in px) based on the panel width and height
+     * This function returns a string with the given font size (in px) based on the panel width and height 
      * @returns {string}
     */
     getFontSize():string{
         let resultSize:number = 1;
         resultSize = this.containerHeight/2;
-
+        
         let textLongitude = (this.inject.value + this.inject.sufix).length;
         if(this.inject.sufix.length > 3){
             // Provoco saltos de linea en sufijos largos
@@ -70,31 +70,31 @@ export class EdaKpiComponent implements OnInit {
         }
 
         let textWidth = textLongitude * resultSize;
-
+        
         if (textWidth > this.containerWidth) resultSize = ( this.containerWidth / textLongitude ) * 1.1 ;
-
+    
         if (resultSize > this.containerHeight) resultSize = this.containerHeight;
-
+        
         if (textLongitude * resultSize > this.containerWidth * 1.2) resultSize = resultSize / 1.5;
-
-        if(this.inject.sufix.length > 3 &&
+        
+        if(this.inject.sufix.length > 3 &&  
             resultSize * 4 > this.containerHeight  &&
             textWidth >  this.containerWidth  ) resultSize = resultSize / 1.8;
-
+        
         return resultSize.toFixed().toString() +'px';
     }
-
-
-
-
+    
+     
+    
+    
 
     ngAfterViewInit() {
         const widthKpiContainer = this.kpiContainer.nativeElement.offsetWidth;
-
+        
         const heightKpiContainer = this.kpiContainer.nativeElement.offsetHeight;
-
+        
         const sufixContainerReference = this.sufixContainer.nativeElement;
-
+        
         if( widthKpiContainer > 0 ){
             this.containerHeight = heightKpiContainer  ;
             this.containerWidth = widthKpiContainer  ;
@@ -103,7 +103,7 @@ export class EdaKpiComponent implements OnInit {
         sufixContainerReference.style.margin = "auto"
 
       }
-
+      
 
 
 
