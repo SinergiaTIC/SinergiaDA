@@ -52,7 +52,6 @@ export class DataSourceListComponent implements OnInit, OnDestroy {
             (data) => this.treeData = data,
             (err) => this.alertService.addError(err)
         );
-
         this.dataModelService.unsaved.subscribe(
             (data) => {
                 this.unsaved = data ? $localize`:@@notSavedChanges:Hay cambios sin guardar...` : ''

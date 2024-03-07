@@ -12,8 +12,7 @@
         </context-group>
       </trans-unit>
       <trans-unit id="tituloNuevoInforme" datatype="html">
-        <source> Crear nuevo informe
-        </source>
+        <source> Crear nuevo informe</source>
         <target>Create new dashboard</target>
         <context-group purpose="location">
           <context context-type="sourcefile">app/module/pages/home/home.component.html</context>
@@ -22,7 +21,7 @@
       </trans-unit>
       <trans-unit id="saveModel" datatype="html">
         <source>Guardar modelo de datos</source>
-        <target>Save datamodel</target>
+        <target>Save data model</target>
         <context-group purpose="location">
           <context context-type="sourcefile">
             app/module/pages/data-sources/data-source-list/data-source-list.component.html</context>
@@ -60,16 +59,11 @@
       </trans-unit>
       <trans-unit id="hiddenAttributes">
         <source>Atributos ocultos</source>
-        <target>Show/hide hidden columns</target>
+        <target>Show/hide columns</target>
       </trans-unit>
-
       <trans-unit id="atributosH4+" datatype="html">
-        <source>
-          Columnas de:
-        </source>
-        <target>
-          Columns of:
-        </target>
+        <source>Columnas de:</source>
+        <target>Columns of:</target>
       </trans-unit>
       <trans-unit id="atributosH4interpolation" datatype="html">
         <source>
@@ -79,85 +73,12 @@
           <x id="INTERPOLATION" equiv-text="{{getDisplayName(userSelectedTable)}" />
         </target>
       </trans-unit>
+
       <!-- ABOUT PAGE -->
-      <trans-unit id="aboutPageText" datatype="html">
-        <source>
-          <p>
-            <a href="https://github.com/SinergiaTIC/SinergiaDA"
-            >Sinergia Data Analytics (SinergiaDA)</a>
-            es un proyecto de <a href="https://sinergiatic.org">SinergiaTIC</a> y es una iniciativa
-            derivada de <a href="https://github.com/jortilles/EDA"
-            >Enterprise Data Analytics (EDA)</a>,
-            originalmente creada por Juanjo Ortilles. Al igual que EDA, SinergiaDA está comprometida
-            con la promoción de la colaboración y el uso compartido de software en el ámbito del
-            análisis de datos. </p>
-
-          <p>
-            SinergiaDA no solo hereda todas las funcionalidades de EDA
-            sino que también se integra de forma automática con
-            SinergiaCRM. Esta conexión directa convierte a SinergiaCRM en
-            una fuente de datos automatizada, lo cual simplifica y agiliza
-            la generación de informes y la creación de cuadros de mando.
-          </p>
-
-          <p> Como proyecto derivado, SinergiaDA mantiene los términos de la <a
-              href="https://www.gnu.org/licenses/agpl-3.0.html"
-            >GNU Affero General Public License
-            versión 3</a> (AGPLv3), que fue adoptada por EDA para garantizar la libertad de uso,
-            modificación y distribución del software, así como el acceso al código fuente. </p>
-          <p>
-            Respetamos profundamente los derechos de autor y el espíritu
-            de colaboración inherentes en la AGPLv3, asegurando que
-            cualquier versión modificada de SinergiaDA esté también
-            disponible bajo los mismos términos de licencia.
-          </p>
-          <p> Para más detalles sobre la licencia y los términos de uso, visite los repositorios de
-            GitHub de <a href="https://github.com/SinergiaTIC/SinergiaDA"
-            >SinergiaDA</a> y <a
-              href="https://github.com/jortilles/EDA">EDA</a>. </p>
-        </source>
-        <target>
-          <p>
-            <a href="https://github.com/SinergiaTIC/SinergiaDA"
-            >Sinergia Data Analytics
-              (SinergiaDA)</a> es un proyecto de <a href="https://sinergiatic.org">SinergiaTIC</a> y
-            es una iniciativa derivada de <a href="https://github.com/jortilles/EDA"
-            >Enterprise Data
-            Analytics
-              (EDA)</a>, originalmente creada por Juanjo Ortilles. Al igual que EDA, SinergiaDA está
-            comprometida con la promoción de la colaboración y el uso compartido de software en el
-            ámbito del análisis de datos. </p>
-
-          <p>
-            SinergiaDA no solo hereda todas las funcionalidades de EDA
-            sino que también se integra de forma automática con
-            SinergiaCRM. Esta conexión directa convierte a SinergiaCRM en
-            una fuente de datos automatizada, lo cual simplifica y agiliza
-            la generación de informes y la creación de cuadros de mando.
-          </p>
-
-          <p> Como proyecto derivado, SinergiaDA mantiene los términos de la <a
-              href="https://www.gnu.org/licenses/agpl-3.0.html"
-            >GNU Affero General Public License
-            versión 3</a> (AGPLv3), que fue adoptada por EDA para garantizar la libertad de uso,
-            modificación y distribución del software, así como el acceso al código fuente. </p>
-          <p>
-            Respetamos profundamente los derechos de autor y el espíritu
-            de colaboración inherentes en la AGPLv3, asegurando que
-            cualquier versión modificada de SinergiaDA esté también
-            disponible bajo los mismos términos de licencia.
-          </p>
-          <p> Para más detalles sobre la licencia y los términos de uso, visite los repositorios de
-            GitHub de <a href="https://github.com/SinergiaTIC/SinergiaDA"
-            >SinergiaDA</a> y <a
-              href="https://github.com/jortilles/EDA">EDA</a>. </p>
-        </target>
-      </trans-unit>
-
       <trans-unit
         id="aboutPageTitle" datatype="html">
         <source>Acerca de</source>
-        <target>Acerca de</target>
+        <target>About</target>
       </trans-unit>
       <trans-unit id="aboutPageSinergiaDAVersion"
         datatype="html">
@@ -166,8 +87,8 @@
       </trans-unit>
       <trans-unit
         id="aboutPageEdaVersionAPI" datatype="html">
-        <source>Versión de EDA (API)</source>
-        <target>EDA Version (API)</target>
+        <source>Puerto / Versión de EDA (API)</source>
+        <target>EDA Version / Port (API)</target>
       </trans-unit>
       <trans-unit
         id="aboutPageEdaVersionAPP" datatype="html">
@@ -182,16 +103,20 @@
       <trans-unit id="aboutPageLastRebuildDate" datatype="html">
         <source>Última reconstrucción de origenes de datos en SinergiaCRM
           (rebuild)</source>
-        <target>Last data source reconstruction in SinergiaCRM (rebuild)</target>
+        <target>Last data source rebuild in SinergiaCRM (rebuild)</target>
       </trans-unit>
       <trans-unit id="aboutPageDB" datatype="html">
         <source>Base de datos de SinergiaCRM</source>
-        <target>SinergiaCRM Database</target>
+        <target>SinergiaCRM database</target>
+      </trans-unit>
+      <trans-unit id="logotipoSdaAlt" datatype="html">
+        <source>Logotipo de Sinergia Data Analytics</source>
+        <target>Sinergia Data Analytics Logo</target>
       </trans-unit>
       <!-- END ABOUT PAGE -->
 
-      <!-- PARTIAL SDA DATASOURCE EDIT-->
-      <trans-unit id="partialEditDataSourceNotice" datatype="html">
+       <!-- PARTIAL SDA DATASOURCE EDIT-->
+       <trans-unit id="partialEditDataSourceNotice" datatype="html">
         <source>Algunas áreas de la configuración de la fuente de datos SinergiaDA se encuentran
           desactivadas porque se configuran automáticamente durante el proceso de sincronización de
           datos con SinergiaCRM.</source>

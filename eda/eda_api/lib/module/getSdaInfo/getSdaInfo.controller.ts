@@ -26,7 +26,6 @@ export class getSdaInfo {
       const stats = fs.statSync(metadataPath);
       const formattedDate = moment(stats.ctime).format("YYYY-MM-DD HH:mm:ss");
       info["lastUpdateModelRun"] = formattedDate;
-      
 
       // Retrieve SinergiaCRM database name and connection details.
       info["sinergiaCRMDatabaseName"] =
@@ -44,9 +43,26 @@ export class getSdaInfo {
       const packageJsonPathAPI = path.join(__dirname, "../../../package.json");
       info["edaApiVersion"] = JSON.parse(fs.readFileSync(packageJsonPathAPI, "utf8")).version;
 
-      // Retrieve EDA APP version from package.json.
-      const packageJsonPathAPP = path.join(__dirname, "../../../../eda_app/package.json");
-      info["edaAppVersion"] = JSON.parse(fs.readFileSync(packageJsonPathAPP, "utf8")).version;
+      // Retrieve server TS port
+      const serverTsPath = path.join(__dirname, "../../../lib/server.ts");
+      fs.readFile(serverTsPath, "utf8", (err, data) => {
+        if (err) {
+          console.error("Error leyendo el archivo:", err);
+          return;
+        }
+        const match = data.match(/const PORT = (\d+);/);
+
+        if (match && match[1]) {
+          const port = match[1];
+          console.log(port);
+          info["edaApiPort"] = port;
+        }
+      });
+
+      //  It is necessary to put this information in an accessible place from the API
+      // // Retrieve EDA APP version from package.json.
+      // const packageJsonPathAPP = path.join(__dirname, "../../../../eda_app/package.json");
+      // info["edaAppVersion"] = JSON.parse(fs.readFileSync(packageJsonPathAPP, "utf8")).version;
 
       // Retrieve the last synchronization date with SinergiaCRM.
       let connection: any;

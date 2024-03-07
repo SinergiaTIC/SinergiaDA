@@ -130,7 +130,6 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
             }
         );
 
-
         this.permissionsColumn = new EdaTable({
             contextMenu: new EdaContextMenu({
                 contextMenuItems: [
@@ -154,14 +153,12 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
 
                             const groups = this.modelPanel.metadata.model_granted_roles.filter(r => r.groups !== undefined && r.groups.length > 0  )
                             .filter(r => r.groups.reduce((a, b)=> a + b) !== elem);
-
                             let tmpPermissions = [];
                             dynValue.forEach(dyn => tmpPermissions.push(dyn))
                             groups.forEach(group => tmpPermissions.push(group));
                             users.forEach(user => tmpPermissions.push(user));
 
                             this.modelPanel.metadata.model_granted_roles = tmpPermissions;
-
                             this.update();
                             this.permissionsColumn._hideContexMenu();
                         }
@@ -175,7 +172,6 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
                 new EdaColumnText({ field: 'value', header: $localize`:@@valueTable:VALOR` }),
             ]
         });
-
 
 
 
@@ -197,7 +193,6 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
 
                             this.modelPanel.metadata.model_granted_roles = tmpPermissions;
                             this.update();
-
                             this.permissionTable._hideContexMenu();
                         }
                     })
@@ -234,7 +229,6 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
                 ]
             }),
             cols: [
-
                 new EdaColumnContextMenu(),
                 new EdaColumnText({ field: 'user', header: $localize`:@@userTable:USUARIO` }),
                 new EdaColumnText({ field: 'group', header: $localize`:@@groupTable:GRUPO` }),
@@ -365,7 +359,6 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
                     } else if(!this.relationsTable.value.map(value => value.origin).includes(relation.source_column)){
                         this.relationsTable.value.push(row);
                     }
-
                 });
                 //Update to contain only actual values
                 this.relationsTable.value = this.relationsTable.value.filter(table => this.tmpRelations.includes(table._id))
@@ -643,7 +636,6 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
             }
         });
     }
-
     openPermissionsRelationDialog() {
         const table = this.dataModelService.getTable(this.columnPanel);
         this.permissionsController = new EdaDialogController({

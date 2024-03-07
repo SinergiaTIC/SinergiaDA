@@ -68,7 +68,7 @@ export class EdaTable {
     public onlyPercentages: boolean = false;
     public percentageColumns: Array<any> = [];
 
-    public noRepetitions: boolean; 
+    public noRepetitions: boolean;
 
     public autolayout: boolean = true;
     public sortedSerie: any = null;
@@ -222,10 +222,17 @@ export class EdaTable {
         if (this.withColSubTotals) {
             event ? this.colSubTotals(event.first / event.rows + 1) : this.colSubTotals(1);
 
-        } 
-        if (this.noRepetitions || !this.noRepetitions) {
-            this.noRepeatedRows();
         }
+        // SDA CUSTOM Este código produce repeticiones en tabnlas normales y tablas cruzadas  Issue 96 y 101
+        // SDA CUSTOM if (this.noRepetitions || !this.noRepetitions) {
+        // SDA CUSTOM    this.noRepeatedRows();
+        // SDA CUSTOM }
+        // Nueva propuesta
+        // if ( !this.pivot) {
+        // console.log('desactivadas las no repeticiones');
+        // this.noRepeatedRows();
+        // }
+        // END SDA CUSTOM
 
     }
 
@@ -308,7 +315,7 @@ export class EdaTable {
                     valuesKeys.forEach(valueKey => {
                       let keyArray = key.split('~');
                         if (keyArray.includes(valueKey)) {
-                            let decimalplaces =  0;  /** esto se hace  para ajustar el número de dicimales porque 3.1+2.5 puede dar 5.600004 */
+                            let decimalplaces = new EdaColumnNumber({}).decimals;  /** esto se hace  para ajustar el número de dicimales porque 3.1+2.5 puede dar 5.600004 */
                             try{
                                 if(  row[key].toString().split(".")[1].length > 0){
                                     decimalplaces =  row[key].toString().split(".")[1].length;
@@ -435,8 +442,6 @@ export class EdaTable {
         const values = this._value;
         const keys = this.cols.map(col => col.field);
 
-
-
         for (let i = 0; i < values.length; i++) {
             for (let j = 0; j < keys.length; j++) {
                 if (i < values.length) {
@@ -522,7 +527,7 @@ export class EdaTable {
     }
     //usamos la extracción de labels para el noRepetitions
     extractLabels(val) {
-        let labels = [];      
+        let labels = [];
         labels.push(Object.keys(val[0])); //insertamos el primer objeto con el cabecero para iterar y extraer los datos
         labels.forEach(e => {
             e.forEach(function(key,val) {
@@ -532,15 +537,15 @@ export class EdaTable {
         })
         return labels;
     }
-    
+
     noRepeatedRows() {
 
         //separamos valores de claves
         let values = this.extractDataValues(this.value);
-                
+
         //tomamos claves que serán el cabecero
         let labels = this.extractLabels(this.value)
-        
+
         labels.shift(); //borramos el primer objeto.
         let first  = _.cloneDeep(values[0]);
         let output = [];
@@ -558,25 +563,25 @@ export class EdaTable {
                 const obj = {};
                 if (i == 0) {
                     for (let e = 0; e < values[i].length; e += 1) {
-                        obj[labels[e]] = values[i][e];       
+                        obj[labels[e]] = values[i][e];
                 }
                 } else {
-                    for (let e = 0; e < values[i].length; e += 1) {            
+                    for (let e = 0; e < values[i].length; e += 1) {
                         if (values[i][e] == ""){
                             obj[labels[e]] = first[e];
                         } else {
                             obj[labels[e]] = values[i][e];
                             first[e] = values[i][e];
-                        }   
+                        }
                     }
                 }
-                
+
                 output.push(obj);
             }
             return this.value = output;
-          
+
         } else {
-            // ESTO SE HACE PARA EVITAR REPETIDOS EN LA TABLA. SI UN CAMPO TIENE UNA COLUMNA QUE SE REPITE 
+            // ESTO SE HACE PARA EVITAR REPETIDOS EN LA TABLA. SI UN CAMPO TIENE UNA COLUMNA QUE SE REPITE
             let first  = _.cloneDeep(values[0]);
             for (let i = 0; i < values.length; i += 1) {
                 const obj = [];
@@ -597,11 +602,11 @@ export class EdaTable {
                 output.push(obj);
             }
 
-            this.value = output;  
-            
-        }   
+            this.value = output;
+
+        }
         return this.value;
-       
+
 
     }
 

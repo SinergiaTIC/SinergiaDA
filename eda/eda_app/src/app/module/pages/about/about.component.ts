@@ -12,14 +12,16 @@ import { UserService } from "@eda/services/service.index";
   styleUrls: ["./about.component.css"]
 })
 export class AboutComponent implements OnInit {
+  public lang: String;
   public user: User;
   public isAdmin: boolean;
-  sinergiaDaVersion: string = "XXXX"; // Placeholder value, replace with actual data.
-  edaApiVersion: string = "XXXX"; // Placeholder value, replace with actual data.
-  edaAppVersion: string = "XXXX"; // Placeholder value, replace with actual data.
-  lastRebuildDate: string = "XXXX"; // Placeholder value, replace with actual data.
-  sinergiaCRMDatabaseName: string = "XXXX"; // Placeholder value, replace with actual data.
-  lastUpdateModelRun: string = "XXXX"; // Placeholder value, replace with actual data.
+  sinergiaDaVersion: string = "XXXX";
+  edaApiVersion: string = "XXXX";
+  edaApiPort: string = "XXXX";
+  // edaAppVersion: string = "XXXX";
+  lastRebuildDate: string = "XXXX";
+  sinergiaCRMDatabaseName: string = "XXXX";
+  lastUpdateModelRun: string = "XXXX";
 
   /**
    * Constructs the AboutComponent with injected services for HTTP requests and user services.
@@ -43,25 +45,33 @@ export class AboutComponent implements OnInit {
     interface InfoResponse {
       info: {
         sinergiaDaVersion: string;
-        edaAppVersion: string;
+        // edaAppVersion: string;
         edaApiVersion: string;
+        edaApiPort: string;
         lastRebuildDate: string;
         sinergiaCRMDatabaseName: string;
         lastUpdateModelRun: string;
       };
     }
 
+    // get lang
+    let lang = window.location.pathname;
+    lang = lang.replace(/[^a-zA-Z]/g, "");
+    this.lang = lang || "es";
+
+
+
     // Fetches information from the backend and updates component properties accordingly.
-    this.http.get<InfoResponse>("http://localhost:8666/getsdainfo/getinfo").subscribe({
+    this.http.get<InfoResponse>("/edapi/getsdainfo/getinfo").subscribe({
       next: data => {
         this.sinergiaDaVersion = data.info.sinergiaDaVersion;
         this.edaApiVersion = data.info.edaApiVersion;
-        this.edaAppVersion = data.info.edaAppVersion;
+        this.edaApiPort = data.info.edaApiPort;
+        // this.edaAppVersion = data.info.edaAppVersion;
         this.lastRebuildDate = data.info.lastRebuildDate;
         this.lastUpdateModelRun = data.info.lastUpdateModelRun;
         // Conditionally displays the database name based on admin status.
         this.sinergiaCRMDatabaseName = this.userService.isAdmin ? data.info.sinergiaCRMDatabaseName : '';
-        console.log('data',data)
       },
       error: error => {
         console.error("Error fetching information from the backend", error);
