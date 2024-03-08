@@ -1015,7 +1015,7 @@ export class DashboardController {
       })
       if (notAllowedQuery) {
         console.log('Not allowed table in query')
-        return res.status(200).json("[['noDataAllowed'],[]]")
+        return res.status(555).json("[['noDataAllowed'],[]]")
       } else {
         const query = connection.BuildSqlQuery(
           req.body.query,
