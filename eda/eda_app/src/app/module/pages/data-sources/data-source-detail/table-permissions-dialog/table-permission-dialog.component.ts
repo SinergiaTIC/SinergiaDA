@@ -37,7 +37,7 @@ export class TablePermissionDialogComponent extends EdaDialogAbstract {
     /* filterProps */
     private table: any;
 
-    constructor(public dataSourceService: DataSourceService,
+    /*SDA CUSTOM*/ constructor(public dataSourceService: DataSourceService,
                 private userService: UserService,
                 private groupService: GroupService) {
         super();
