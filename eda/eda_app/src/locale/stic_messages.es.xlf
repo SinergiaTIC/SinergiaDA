@@ -124,7 +124,7 @@
       <trans-unit id="aboutPageLastRebuildDate" datatype="html">
         <source>Última reconstrucción de origenes de datos en SinergiaCRM
           (rebuild)</source>
-        <target>Última reconstrucción de los orígenes de datos en SinergiaCRM
+        <target>Última reconstrucción de las fuentes de datos en SinergiaCRM
           (rebuild)</target>
       </trans-unit>
       <trans-unit id="aboutPageDB" datatype="html">
@@ -144,6 +144,11 @@
         <target>Algunas áreas de la configuración de la fuente de datos SinergiaDA se encuentran desactivadas porque se configuran automáticamente durante el proceso de sincronización de datos con SinergiaCRM.</target>
       </trans-unit>
       <!-- END PARTIAL SDA DATASOURCE EDIT-->
+
+      <trans-unit id="DataModelHeader">
+        <source> Configurar nuevo orígen de datos </source>
+        <target> Configurar nueva fuente de datos</target>
+      </trans-unit>
 
     </body>
   </file>

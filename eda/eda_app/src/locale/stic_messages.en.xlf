@@ -143,6 +143,12 @@
         </target>
       </trans-unit>
       <!-- END PARTIAL SDA DATASOURCE EDIT-->
+
+      <trans-unit id="DataModelHeader">
+        <source> Configurar nuevo orígen de datos </source>
+        <target> Configure new data source</target>
+      </trans-unit>
+
     </body>
   </file>
 </xliff>

@@ -203,7 +203,7 @@
       <trans-unit id="aboutPageLastRebuildDate" datatype="html">
         <source>Última reconstrucción de origenes de datos en SinergiaCRM
           (rebuild)</source>
-        <target>Última reconstrucció dels orígens de dades a SinergiaCRM (rebuild)
+        <target>Última reconstrucció dels fonts de dades a SinergiaCRM (rebuild)
         </target>
       </trans-unit>
       <trans-unit id="aboutPageDB" datatype="html">
@@ -228,6 +228,12 @@
         </target>
       </trans-unit>
       <!-- END PARTIAL SDA DATASOURCE EDIT-->
+
+      <trans-unit id="DataModelHeader">
+        <source> Configurar nuevo orígen de datos </source>
+        <target> Configurar nou font de dades </target>
+      </trans-unit>
+
     </body>
   </file>
 </xliff>
