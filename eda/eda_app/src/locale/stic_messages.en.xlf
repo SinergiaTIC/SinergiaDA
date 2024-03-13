@@ -89,9 +89,7 @@
         <source>Definir la visibilidad del filtro. Público: todos pueden usarlo. Deshabilitado: El
           resto de usuarios pueden ver el filtro pero no pueden modificarlo. Oculto: El resto de
           usuario no pueden ver el filtro. pero se les aplica</source>
-        <target>Define the filter visibility. Public: everyone can use it. Read-only: Non-admin
-          users can see the filter but cannot modify it. Hidden: Non-admin users cannot see the
-          filter, but it is applied to them.</target>
+        <target>Define the visibility of the filter.  Public: everyone can use it.  Disabled: other users can see the filter but cannot modify it.  Hidden: other users cannot see the filter but it applies to them.</target>
       </trans-unit>
 
       <!-- ABOUT PAGE -->
@@ -134,6 +132,23 @@
         <target>Sinergia Data Analytics Logo</target>
       </trans-unit>
       <!-- END ABOUT PAGE -->
+
+       <!-- PARTIAL SDA DATASOURCE EDIT-->
+       <trans-unit id="partialEditDataSourceNotice" datatype="html">
+        <source>Algunas áreas de la configuración de la fuente de datos SinergiaDA se encuentran
+          desactivadas porque se configuran automáticamente durante el proceso de sincronización de
+          datos con SinergiaCRM.</source>
+        <target>Some areas of the SinergiaDA data source settings are disabled because they are
+          automatically configured during the data synchronization process with SinergiaCRM.
+        </target>
+      </trans-unit>
+      <!-- END PARTIAL SDA DATASOURCE EDIT-->
+
+      <trans-unit id="DataModelHeader">
+        <source> Configurar nuevo orígen de datos </source>
+        <target> Configure new data source</target>
+      </trans-unit>
+
     </body>
   </file>
 </xliff>
