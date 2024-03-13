@@ -772,13 +772,20 @@ export abstract class QueryBuilderService {
     public mergeFilterStrings = (filtersString, equalfilters ) => {
         if (equalfilters.toRemove.length > 0) {
             equalfilters.map.forEach((value, key) => {
-                let filterSTR = '\nand ('
-                value.forEach(f => {
-                    filterSTR += this.filterToString(f) + '\n  or ';
+                let filterSTR = '\nand ( '
+                value.forEach(( f, index) => {
+                    if(index > 0){
+                        if(f.filter_column_type != 'date' && f.filter_type != 'is_null'){
+                            filterSTR +=  '\n  and';
+                        }else{
+                            filterSTR +=  '\n   or';
+                        }
+                    }
+                    filterSTR += this.filterToString(f) ;
+
                 });
 
-                filterSTR = filterSTR.slice(0, -3);
-                filterSTR += ') ';
+                filterSTR += ' ) ';
                 filtersString += filterSTR;
             });
 
