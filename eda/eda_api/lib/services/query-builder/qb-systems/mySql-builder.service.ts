@@ -309,7 +309,7 @@ export class MySqlBuilderService extends QueryBuilderService {
         column.minimumFractionDigits = 0;
       }
       const colname=this.getFilterColname(column);
-      let colType = column.column_type;
+      let colType = column.filter_column_type;
   
       switch (this.setFilterType(filterObject.filter_type)) {
         case 0:
