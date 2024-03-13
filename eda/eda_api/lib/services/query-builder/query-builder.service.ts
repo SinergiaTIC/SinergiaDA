@@ -1,6 +1,4 @@
-import { Console } from 'console';
 import * as _ from 'lodash';
-import { filter } from 'lodash';
 
 class TreeNode {
     public value: string;
@@ -48,7 +46,7 @@ export abstract class QueryBuilderService {
 
     public builder() {
 
-        const graph = this.buildGraph();
+        let graph = this.buildGraph();
         /* Agafem els noms de les taules, origen i destí (és arbitrari), les columnes i el tipus d'agregació per construïr la consulta */
         let origin = this.queryTODO.fields.find(x => x.order === 0).table_id;
         let dest = [];
@@ -68,8 +66,8 @@ export abstract class QueryBuilderService {
         const valueListJoins = [];
 
 
+       /** Reviso si cap columna de la  consulta es un multivalueliest..... */
 
-        /** Reviso si cap columna de la  consulta es un multivalueliest..... */
         this.queryTODO.fields.forEach( e=>{
                 if( e.valueListSource ){
                     valueListList.push( JSON.parse(JSON.stringify(e)) );
@@ -137,11 +135,19 @@ export abstract class QueryBuilderService {
         }
 
         
+
         /** SEPAREM ENTRE AGGREGATION COLUMNS/GROUPING COLUMNS */
         const separedCols = this.getSeparedColumns(origin, dest);
         const columns = separedCols[0];
         const grouping = separedCols[1];
 
+
+        // Las taules de les consultes van primer per potenciar relacions directes
+        const vals = [...dest];
+        const firs = [];
+        vals.forEach(v => firs.push(  graph.filter( e => v == e.name )[0])   );
+        firs.forEach(e => graph = graph.filter(f=> f.name != e.name)   );
+        graph  = [...firs, ...graph];
 
         /** ARBRE DELS JOINS A FER */
         let joinTree = this.dijkstraAlgorithm(graph, origin, dest.slice(0));
@@ -166,8 +172,16 @@ export abstract class QueryBuilderService {
                 dest = [...new_dest];
                 joinTree = new_joinTree;
             }
-
         }
+
+        /**poso les taules de la consulta al principi del joinTree per potenciar relacions directes */
+        const my_tables = [...dest ];
+        const firsts = [];
+        my_tables.forEach( e => firsts.push(  joinTree.filter( t => e == t.name )[0])  );
+        firsts.forEach(e =>   joinTree = joinTree.filter(f=> f.name != e.name)  );
+        joinTree  = [...firsts, ...joinTree];
+        
+
 
         //to WHERE CLAUSE
         const filters = this.queryTODO.filters.filter(f => {
