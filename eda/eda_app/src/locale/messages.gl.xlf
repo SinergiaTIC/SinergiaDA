@@ -12,7 +12,7 @@
       </trans-unit>
       <trans-unit id="placeholderInputPassword" datatype="html">
         <source>Contraseña</source>
-        <target>Contrasinal</target>
+        <target>Contraseña</target>
         <context-group purpose="location">
           <context context-type="sourcefile">app/core/pages/login/login.component.html</context>
           <context context-type="linenumber">31</context>
@@ -36,7 +36,7 @@
       </trans-unit>
       <trans-unit id="e369e13629132e32dcd958b82261059243f21d58" datatype="html">
         <source>Contraseña</source>
-        <target>Contrasinal</target>
+        <target>Contraseña</target>
         <context-group purpose="location">
           <context context-type="sourcefile">app/core/pages/register/register.component.html</context>
           <context context-type="linenumber">31</context>
@@ -557,7 +557,7 @@
       <trans-unit id="colorsChartH6" datatype="html">
         <source>
           Colores
-</source>
+        </source>
         <target>
           Colores
 </target>
@@ -1028,10 +1028,8 @@
         </context-group>
       </trans-unit>
       <trans-unit id="tituloNuevoInforme" datatype="html">
-        <source>
-          Crear nuevo informe
-      </source>
-        <target>Crear nuevo informe</target>
+        <source>CREAR UN NUEVO INFORME</source>
+        <target>Crear un nuevo informe</target>
         <context-group purpose="location">
           <context context-type="sourcefile">app/module/pages/home/home.component.html</context>
           <context context-type="linenumber">7</context>
@@ -2347,7 +2345,7 @@
 
       <trans-unit id="passwordLogin" datatype="html">
         <source>Contraseña</source>
-        <target>Contrasinal</target>
+        <target>Contraseña</target>
         <context-group purpose="location">
           <context context-type="sourcefile">app/core/pages/login/login.component.html</context>
           <context context-type="linenumber">28</context>
@@ -2530,7 +2528,7 @@
 
       <trans-unit id="col">
         <source>Atributo</source>
-        <target>Atributo:</target>
+        <target>Columna:</target>
       </trans-unit>
       <trans-unit id="table">
         <source>de la entidad</source>
@@ -3587,11 +3585,11 @@
       </trans-unit>
 
       <trans-unit id="removeRowTotals">
-        <source>Quitar totales de columna</source>
-        <target>Quitar totales de columna</target>
+        <source>Quitar totales de fila</source>
+        <target>Quitar totales de fila</target>
       </trans-unit>
 
-      <trans-unit id="removeRowSubtotals">
+      <trans-unit id="removeColSubtotals">
         <source>Quitar subtotales de columna</source>
         <target>Quitar subtotales de columna</target>
       </trans-unit>
@@ -3601,9 +3599,9 @@
         <target>Totales de fila</target>
       </trans-unit>
 
-      <trans-unit id="addRowSubtotals">
-        <source>Subtotales de fila</source>
-        <target>Subtotales de fila</target>
+      <trans-unit id="addColSubtotals">
+        <source>Subtotales de columna</source>
+        <target>Subtotales de columna</target>
       </trans-unit>
 
       <trans-unit id="addColTotals">
@@ -4239,7 +4237,7 @@
 
       <trans-unit id="hiddenAttributes">
         <source>Atributos ocultos</source>
-        <target>Mostar/ocultar columnas ocultas</target>
+        <target>Mostrar/ocultar columnas ocultas</target>
       </trans-unit>
 
       <trans-unit id="atributosH4+" datatype="html">
@@ -4259,6 +4257,15 @@
         </target>
       </trans-unit>
 
+      <trans-unit id="positionFilterInReport">
+        <source>Posición del filtro en el informe</source>
+        <target>Posición del filtro en el informe</target>
+      </trans-unit>
+
+      <trans-unit id="filterVisibleScope">
+        <source>Definir la visibilidad del filtro.  Público: todos pueden usarlo.  Deshabilitado: El resto de usuarios pueden ver el filtro pero no pueden modificarlo.  Oculto: El resto de usuario no pueden ver el filtro, pero se les aplica</source>
+        <target>Definir la visibilidad del filtro.  Público: todos pueden usarlo.  Deshabilitado: los demás usuarios pueden ver el filtro pero no pueden modificarlo.  Oculto: los demás usuarios no pueden ver el filtro pero les aplica.</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>
