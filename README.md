@@ -56,7 +56,7 @@ git clone https://github.com/SinergiaTIC/SinergiaDA.git sinergiada
    npm run start:pm2
    ```
 
-7. **Configurar las credenciales de acceso a la base de datos de SinergiaCR:** Se deben indicar las credenciales de acceso en el fichero `./sinergiada/eda/eda_api/config/sinergiacrm.config.js`, reemplazando los valores existentes por las credenciales válidas.
+7. **Configurar las credenciales de acceso a la base de datos de SinergiaCRM:** Se deben indicar las credenciales de acceso en el fichero `./sinergiada/eda/eda_api/config/sinergiacrm.config.js`, reemplazando los valores existentes por las credenciales válidas.
 
 8. **Configurar la semilla aleatoría (salt)** que será usada para cifrar los datos en la base de datos de MongoDB y en las comunicaciones enter la instancia de SinergiaCRM y SinergiaDA. 
 Este cambio debe hacerse en el fichero `./sinergiada/eda/eda_api/config/seed.js` y debe añadirse una cadena personalizada del siguiente modo
@@ -89,7 +89,7 @@ Esta misma cadena deberá ser configurada más tarde en la instancia de Sinergia
    RewriteEngine On
    RewriteRule ^sinergiada($|/) - [R=403,L]
    ```
-   Verificar **que no es posible acceder** mediante el navegador a la url http(s)://<servidor>/sinergiada/...
+   Verificar **que no es posible acceder** mediante el navegador a la url `http(s)://<servidor>/sinergiada/...`
 
 4. **Crear enlaces simbólicos en la raíz del host para cada uno de los idiomas y para el fichero `index.html`:**
    - Situarse en la raíz del host y ejecutar:
