@@ -108,13 +108,24 @@ Para que SinergiaDA pueda utilizar los datos de SinergiaCRM, debe realizarse var
    1. **En SinergiaCRM:** 
       - **Habilitada la conexión con SinergiaDA**, lo cual debe hacerse añadiendo al fichero `config_override.php` las siguientes líneas:
          ```php
-         $sugar_config['stic_sinergiada']['enabled'] = true;$sugar_config['stic_sinergiada_public']['url']='https://<sinergiada_host>'
+         $sugar_config['stic_sinergiada']['enabled'] = true;
+         $sugar_config['stic_sinergiada_public']['url']='https://<sinergiada_host>'
          $sugar_config['stic_sinergiada']['seed_string'] = '<custom-salt-string>';
          ```
       - Ejecutar el proceso de reconstrucción de fuentes de datos, lo que preparará las vistas y tablas necesarias en MySQL para que sean consumidas por SinergiaDA. Estas vistas y tablas tienen como prefijo `sda_` por lo que no puede haber en el servidor objetos que comiencen por este prefijo, ya que serían borradas. Para lanzarlo usar la siguiente URL, con un usuario administrador de SinergiaCRM: 
       `https://<sinergiacrm_host>/index.php?module=Administration&action=createReportingMySQLViews&debug=1&update_model=1&print_debug=1&rebuild_filter=all`
 
 En este punto, el backend de SinergiaDA debería poder conectar con SinergiaCRM para utilizarlos como una fuente de datos y poder generar informes con los datos de SinergiaCRM.
+
+### Instalar los infomrmes de ejemplo
+En la carpeta `docs/reports/base-reports/` existe un volcado con ejemplos de informes con datos de los principales módulos de SinergiaCRM, estos ejemplos pueden ser cargados en la instancia de SinergiaDA usando el siguiente comando:
+
+**Importante: <span style="color:red;">Al cargar los informes de este modo, se eliminarán los informes previamente existentes</span>**
+
+```bash
+mongorestore --host=localhost --port=27017 --username=***** --password=***** --authenticat
+ionDatabase=admin --drop  --db=SDA docs/reports/base-reports/dashboard.bson
+```
 
 ## Documentación de usuarios
 Puede consultarse la documentación de SinegiaDA en https://wiki.sinergiacrm.org
