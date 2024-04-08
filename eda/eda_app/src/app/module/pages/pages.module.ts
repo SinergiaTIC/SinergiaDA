@@ -47,8 +47,6 @@ import { SaveAsDialogComponent } from './dashboard/saveAsDialog/save-as-dialog.c
 import { EditStylesDialogComponent } from './dashboard/edit-styles-dialog/edit-styles.dialog.component';
 import { GlobalFilterComponent } from './dashboard/global-filter/global-filter.component';
 
-// Routes
-import { PAGES_ROUTES } from './pages.routes';
 
 
 @NgModule({
