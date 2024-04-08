@@ -17,4 +17,5 @@ export interface Column {
     cumulativeSum: boolean;
     valueListSource: {};
     hidden: number;
+    joins: string[];
 }

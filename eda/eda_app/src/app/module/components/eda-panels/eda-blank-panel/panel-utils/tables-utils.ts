@@ -52,15 +52,11 @@ export const TableUtils = {
    */
 
   getTablesData: (tables: Array<any>, applyToAllfilter: { present: boolean, refferenceTable: string, id: string }) => {
-
-    let allTables = tables.filter(table => table.visible === true)
-      .sort(TableUtils.sortTables);
+    let allTables = tables.filter(table => table.visible === true).sort(TableUtils.sortTables);
 
     if (applyToAllfilter.present) {
-
       const originTable = allTables.filter(t => t.table_name === applyToAllfilter.refferenceTable)[0];
       allTables = TableUtils.filterTables(tables, originTable).filter(table => table.visible === true);
-
     }
 
     let sqlOriginTables = allTables.map(table => {
