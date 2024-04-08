@@ -28,7 +28,7 @@ export const QueryUtils = {
       ordenation_type: 'No',
       tableCount: 0,
       visible: true,
-      hidden: false
+ /* SDA CUSTOM*/   hidden: false
     }
     return column;
   },

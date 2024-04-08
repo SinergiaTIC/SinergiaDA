@@ -75,6 +75,7 @@ export class EdaBlankPanelComponent implements OnInit {
     public sunburstController: EdaDialogController;
     public contextMenu: EdaContextMenu;
     public lodash: any = _;
+/* SDA CUSTOM  */ public hiddenColumn: number;
 
 
 
@@ -119,6 +120,7 @@ export class EdaBlankPanelComponent implements OnInit {
     public draggFields: string = $localize`:@@dragFields:Arrastre aquí los atributos que quiera ver en su panel`;
     public draggFilters: string = $localize`:@@draggFilters:Arrastre aquí los atributos sobre los que quiera filtrar`;
     public ptooltipSQLmode: string = $localize`:@@sqlTooltip:Al cambiar de modo perderás la configuración de la consulta actual`;
+/* SDA CUSTOM  */ public ptooltipHiddenColumn: string = $localize`:@@hiddenColumn:Al cambiar de modo se verán las columnas marcadas como ocultas`;
     public ptooltipViewQuery: string = $localize`:@@ptooltipViewQuery:Ver consulta SQL`
 
     /** Query Variables */
@@ -169,7 +171,7 @@ export class EdaBlankPanelComponent implements OnInit {
     public colorsDeepCopy: any = {};
 
     public queryFromServer: string = '';
-    public showHiddId: boolean;
+/* SDA CUSTOM  */    public showHiddId: boolean;
 
     // join types 
     joinTypeOptions: any[] = [
@@ -202,6 +204,8 @@ export class EdaBlankPanelComponent implements OnInit {
     ngOnInit(): void {
         this.index = 0;
         // this.modeSQL = false;
+/* SDA CUSTOM  */ this.hiddenColumn = 0;
+/* SDA CUSTOM  */ this.showIdForHiddenMode();
 
         this.setTablesData();
 
@@ -259,7 +263,7 @@ export class EdaBlankPanelComponent implements OnInit {
             this.selectedTableNode = event.node;
             let table_id = node.table_id || node.child_id //.split('.')[0];
 
-            PanelInteractionUtils.loadColumns(this, this.findTable(table_id), true);
+/* SDA CUSTOM */            PanelInteractionUtils.loadColumns(this, this.findTable(table_id), this.hiddenColumn,  true);
 
             if (node.joins) {
                 // Add the sourceJoins from this node.
@@ -608,7 +612,7 @@ export class EdaBlankPanelComponent implements OnInit {
 
     public onColumnInputKey(event: any) {
         if (!_.isNil(this.userSelectedTable)) {
-            PanelInteractionUtils.loadColumns(this, this.tablesToShow.filter(table => table.table_name === this.userSelectedTable)[0]);
+/* SDA CUSTOM */      PanelInteractionUtils.loadColumns(this, this.tablesToShow.filter(table => table.table_name === this.userSelectedTable)[0], this.hiddenColumn) ;
             if (event.target.value) {
                 this.columns = this.columns
                     .filter(col => col.display_name.default.toLowerCase().includes(event.target.value.toLowerCase()));
@@ -777,6 +781,8 @@ export class EdaBlankPanelComponent implements OnInit {
         this.display_v.page_dialog = true;
         this.ableBtnSave();
         PanelInteractionUtils.verifyData(this);
+/* SDA CUSTOM  */       this.hiddenColumn = 1;
+/* SDA CUSTOM  */       this.columns = this.columns.filter (c => !c.hidden) ;
     }
 
     /**
@@ -1024,7 +1030,7 @@ export class EdaBlankPanelComponent implements OnInit {
 
     public searchRelations = (c: Column) => PanelInteractionUtils.searchRelations(this, c);
 
-    public loadColumns = (table: any) => PanelInteractionUtils.loadColumns(this, table);
+/* SDA CUSTOM */ public loadColumns = (table: any) => PanelInteractionUtils.loadColumns(this, table, this.hiddenColumn);
 
     public removeColumn = (c: Column, list?: string, event?: Event) => PanelInteractionUtils.removeColumn(this, c, list);
 
@@ -1106,12 +1112,32 @@ export class EdaBlankPanelComponent implements OnInit {
         this.rootTreeTable = undefined;
     }
 
+/** Esta función permite al switch en la columna atributos ver u ocultar las columnas con el atributo hidden */
+/* SDA CUSTOM  */    public async changeHiddenMode(): Promise<void> {
+/* SDA CUSTOM  */        if(this.hiddenColumn == 0){
+/* SDA CUSTOM  */           this.hiddenColumn = 1 ;
+/* SDA CUSTOM  */        }else{
+/* SDA CUSTOM  */           this.hiddenColumn = 0;
+/* SDA CUSTOM  */        }
+/* SDA CUSTOM  */       let table = this.tablesToShow.find(table => table.table_name === this.userSelectedTable)
+/* SDA CUSTOM  */       this.loadColumns(table);
+/* SDA CUSTOM  */    }
+
+
     public accopen(e) { }
 
     /** This funciton return the display name for a given table. Its used for the query resumen      */
     public getNiceTableName(table: any){
         return this.tables.find( t => t.table_name === table)?.display_name?.default;
     }
+
+/* SDA CUSTOM */     public showIdForHiddenMode() {
+/* SDA CUSTOM */         if (this.inject.dataSource._id == "111111111111111111111111") {
+/* SDA CUSTOM */             this.showHiddId = true;
+/* SDA CUSTOM */         } else {
+/* SDA CUSTOM */             this.showHiddId = false;
+/* SDA CUSTOM */         }
+/* SDA CUSTOM */     }
 
     public onWhatIfDialog(): void {
         this.display_v.whatIf_dialog = true;

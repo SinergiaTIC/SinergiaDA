@@ -10,6 +10,7 @@ export const PanelOptions = {
       icon: 'fa fa-cog',
       command: () => {
         if (panelComponent.panel.content) {
+/* SDA CUSTOM */ panelComponent.hiddenColumn = 0;
           panelComponent.panelDeepCopy = _.cloneDeep(panelComponent.panel.content, true);
           if (panelComponent.selectedQueryMode == 'EDA2') {
             panelComponent.panelDeepCopy.rootTreeTable = _.cloneDeep(panelComponent.rootTreeTable);
@@ -199,6 +200,7 @@ export const PanelOptions = {
             charttype : panelComponent.panelChart.props.chartType,
             queryMode: panelComponent.panel.content.query.query.queryMode,
             // modeSQL : panelComponent.panel.content.query.query.modeSQL,
+/* SDA CUSTOM */ hiddenColumn: panelComponent.hiddenColumn,
             dashboard_id : panelComponent.inject.dashboard_id,
             linkedDashboard : panelComponent.panel.linkedDashboardProps
           },
