@@ -65,17 +65,6 @@ export abstract class QueryBuilderService {
         let valueListJoins = [];
 
 
-        /** ............................................................................... */
-        /** ............................PER ELS VALUE LISTS................................ */
-        /** si es una consulta de llista de valors es retorna la llista de valors possibles */
-        /** ............................................................................... */
-        /*
-        if( this.queryTODO.fields.length == 1 && this.queryTODO.fields[0].valueListSource   && this.queryTODO.fields[0].column_type === 'text'   && this.permissions.length == 0&& this.queryTODO.filters.length == 0){
-            nO APLICA PORQUE NO APLICA LA SEGURDAD
-            this.query = this.valueListQuery( );
-            return this.query;
-        }
-*/
         /** Reviso si cap columna de la  consulta es un multivalueliest..... */
         this.queryTODO.fields.forEach( e=>{
                 if( e.valueListSource ){
@@ -167,15 +156,15 @@ export abstract class QueryBuilderService {
             }
         }
     
-        // console.log(JSON.stringify( [...new Set(tree)] ));
-
-        // Las taules de les consultes van primer per potenciar relacions directes
-        const vals = [...dest];
-        const firs = [];
-        vals.forEach(v => firs.push(  graph.filter( e => v == e.name )[0])   );
-        firs.forEach(e => graph = graph.filter(f=> f.name != e.name)   );
-        graph  = [...firs, ...graph];
-        
+        console.log(this.queryTODO);
+        if( (this.queryTODO.queryMode == 'EDA' ) || (this.queryTODO.queryMode === undefined ) ){ 
+            // Las taules de les consultes van primer per potenciar relacions directes en consultes tipus EDA
+            const vals = [...dest];
+            const firs = [];
+            vals.forEach(v => firs.push(  graph.filter( e => v == e.name )[0])   );
+            firs.forEach(e => graph = graph.filter(f=> f.name != e.name)   );
+            graph  = [...firs, ...graph];
+        }
 
         if (tree.length === 0) {
             /** ARBRE DELS JOINS A FER */
