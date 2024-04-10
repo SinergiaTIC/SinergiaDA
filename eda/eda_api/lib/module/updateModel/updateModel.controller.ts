@@ -512,7 +512,7 @@ export class updateModel {
               "visible": true,
               "bridge": relations[i].label=="bridge"?true:false,
               "display_name": {
-                "default": relations[i].label,
+                "default": relations[i].source_table === table ? relations[i].label.split('|')[0] : relations[i].label.split('|')[1] ,
                  "localized": []
         },
             }
