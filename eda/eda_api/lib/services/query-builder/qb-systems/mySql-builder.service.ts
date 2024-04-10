@@ -26,10 +26,12 @@ export class MySqlBuilderService extends QueryBuilderService {
     let joinString: any[];
     let alias: any;
     if (this.queryTODO.joined) {
+      /**tree */
       const responseJoins = this.setJoins(joinTree, joinType, schema, valueListJoins);
       joinString = responseJoins.joinString;
       alias = responseJoins.aliasTables;
     } else {
+      /*EDA Normal*/
       joinString = this.getJoins(joinTree, dest, tables, joinType,  valueListJoins, schema);
     }
 
@@ -73,6 +75,14 @@ export class MySqlBuilderService extends QueryBuilderService {
     }
 
     if (limit) myQuery += `\nlimit ${limit}`;
+
+    if (alias) {
+      console.log(alias);
+      for (const key in alias) {
+        myQuery = myQuery.split(key).join(`\`${alias[key]}\``);
+      }
+    }
+
 
     return myQuery;
   };
@@ -225,9 +235,9 @@ export class MySqlBuilderService extends QueryBuilderService {
 
         if (aliasTargetTable) {
           targetJoin = `\`${aliasTargetTable}\`.\`${targetColumn}\``;
-          joinStr = `${joinType} JOIN \`${targetTable}\` \`${aliasTargetTable}\` ON \`${sourceJoin}\` = \`${targetJoin}\``;
+          joinStr = `${joinType} JOIN \`${targetTable}\` \`${aliasTargetTable}\` ON  ${sourceJoin}  =  ${targetJoin} `;
         } else {
-          joinStr = `${joinType} JOIN \`${targetTable}\` ON \`${sourceJoin}\` = \`${targetJoin}\``;
+          joinStr = `${joinType} JOIN \`${targetTable}\` ON  ${sourceJoin} = ${targetJoin} `;
         }
 
         // Si la join no se ha incluido ya, se añade al array

@@ -224,7 +224,7 @@ export class GlobalFiltersService {
 
             const rootTree = tree.map((n) => n.table_id);
             const childrenId = getAllChildIds(expandNode);
-
+            table.relations = table.relations.filter(f=>f.bridge==false );
             for (const relation of table.relations) {
                 // Init child_id
                 const child_id = relation.target_table + '.' + relation.target_column[0];

@@ -49,7 +49,12 @@
 <eda-page-dialog  #pdialog [inject]="{display: this.display_v.page_dialog, title:  this.panel.title.trim().length  > 0  ? panel.title : '\uD83D\uDD89'  }">
     <div (window:resize)="onResize($event)" class="grid">
 
-        <p-tabView [activeIndex]="index" (onChange)="handleTabChange($event)" class="col-11 ">
+        <div id="queryModelSelector" class="col-12">
+            <p-dropdown  class="float-right"  [(ngModel)]="selectedQueryMode" [options]="queryModes" (ngModelChange)="changeQueryMode()">
+            </p-dropdown >
+        </div>
+
+        <p-tabView [activeIndex]="index" (onChange)="handleTabChange($event)" class="col-12 ">
 
             <p-tabPanel i18n-header="@@vistaSeleccionador" header="{{ selectedQueryMode != 'SQL' ? editQuery : editSQLQuery}}">
 
@@ -558,20 +563,7 @@
             </p-tabPanel>
 
         </p-tabView>
-        <div class="col-1">
-            <!-- <div i18n="@@edaMode" *ngIf="!modeSQL">Modo EDA</div>
-            <div i18n="@@sqlMode" *ngIf="modeSQL">Modo SQL</div> -->
-<!--
-            <p-selectButton  [(ngModel)]="selectedQueryMode" [options]="queryModes" (ngModelChange)="changeQueryMode()" [style]="{'width': '100%'}">
-            </p-selectButton >
--->
-            <p-dropdown  [(ngModel)]="selectedQueryMode" [options]="queryModes" (ngModelChange)="changeQueryMode()" [style]="{'width': '100%'}">
-            </p-dropdown >
-            
-            <!-- <p-inputSwitch id="switchQueryMode" class="col-1 sql-switch" (onChange)="changeQueryMode()" #switchMode
-                [(ngModel)]="modeSQL" [pTooltip]="ptooltipSQLmode" tooltipPosition="left">
-            </p-inputSwitch> -->
-        </div>
+
 
     </div>
 

@@ -510,6 +510,7 @@ export class updateModel {
               "target_table": relations[i].target_table,
               "target_column": [relations[i].target_column],
               "visible": true,
+              "bridge": relations[i].label=="bridge"?true:false,
               "display_name": {
                 "default": relations[i].label,
                  "localized": []
