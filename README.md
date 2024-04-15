@@ -17,7 +17,7 @@ git clone https://github.com/SinergiaTIC/SinergiaDA.git sinergiada
 
 ### Configuración del backend - API
 
-1. **Modificar el fichero de configuración de la base de datos:** Para configurar la conexión a la base de datos MongoDB, se debe modificar el fichero `./sinergiada/eda/eda_api/database.config.js`, incluyendo los datos de conexión adecuados:
+1. **Modificar el fichero de configuración de la base de datos:** Para configurar la conexión a la base de datos MongoDB, se debe modificar el fichero `./sinergiada/eda/eda_api/config/database.config.js`, incluyendo los datos de conexión adecuados:
 
    ```javascript
    module.exports = {
