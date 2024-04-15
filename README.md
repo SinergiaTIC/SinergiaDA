@@ -21,7 +21,7 @@ git clone https://github.com/SinergiaTIC/SinergiaDA.git sinergiada
 
    ```javascript
    module.exports = {
-      url: "mongodb://usuario:contraseña@localhost:27017/SDA"
+      url: "mongodb://usuario:contraseña@localhost:27017/SDA?authSource=admin"
    };
    ```
 
