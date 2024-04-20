@@ -263,7 +263,8 @@ export class EdaBlankPanelComponent implements OnInit {
             this.selectedTableNode = event.node;
             let table_id = node.table_id || node.child_id //.split('.')[0];
 
-/* SDA CUSTOM */            PanelInteractionUtils.loadColumns(this, this.findTable(table_id), this.hiddenColumn,  true);
+            
+            /* SDA CUSTOM */ PanelInteractionUtils.loadColumns(this, this.findTable(table_id), this.hiddenColumn);
 
             if (node.joins) {
                 // Add the sourceJoins from this node.
@@ -429,6 +430,7 @@ export class EdaBlankPanelComponent implements OnInit {
                     for (const column of currentQuery) {
                         PanelInteractionUtils.assertTable(this, column);
                     }
+
                     PanelInteractionUtils.handleCurrentQuery2(this);
                     this.reloadTablesData();
                     PanelInteractionUtils.loadTableNodes(this);
@@ -598,6 +600,18 @@ export class EdaBlankPanelComponent implements OnInit {
         }
     }
 
+    public getUserSelectedTable(): any {
+        let selectedTable: any;
+        if (this.selectedQueryMode !== 'EDA2') {
+          selectedTable = this.tablesToShow.filter(table => table.table_name === this.userSelectedTable)[0];
+          if (!selectedTable) selectedTable = this.tablesToShow.filter(table => table.table_name === this.userSelectedTable.split('.')[0])[0];
+        } else {
+          selectedTable = this.tables.find((table) => table.table_name === this.userSelectedTable);
+        }
+
+        return selectedTable;
+    }
+
     /**
      * 
      */
@@ -612,7 +626,8 @@ export class EdaBlankPanelComponent implements OnInit {
 
     public onColumnInputKey(event: any) {
         if (!_.isNil(this.userSelectedTable)) {
-/* SDA CUSTOM */      PanelInteractionUtils.loadColumns(this, this.tablesToShow.filter(table => table.table_name === this.userSelectedTable)[0], this.hiddenColumn) ;
+            const selectedTable = this.getUserSelectedTable();
+/* SDA CUSTOM */      PanelInteractionUtils.loadColumns(this, selectedTable, this.hiddenColumn) ;
             if (event.target.value) {
                 this.columns = this.columns
                     .filter(col => col.display_name.default.toLowerCase().includes(event.target.value.toLowerCase()));
@@ -633,9 +648,7 @@ export class EdaBlankPanelComponent implements OnInit {
             //obor dialeg o filre
             const column = <Column><unknown>event.container.data[event.currentIndex];
             if(event.container.element.nativeElement.className.toString().includes('select-list')) {
-
                 this.moveItem(column);
-                // this.openColumnDialog(column);
             } else {
                 this.openColumnDialog(column, true);
                 // Trec la agregació si puc.
@@ -649,8 +662,6 @@ export class EdaBlankPanelComponent implements OnInit {
                 }
             }
         }
-
-        PanelInteractionUtils.loadTableNodes(this);
     }
 
 
@@ -1026,7 +1037,13 @@ export class EdaBlankPanelComponent implements OnInit {
     */
     public runManualQuery = () => QueryUtils.runManualQuery(this);
 
-    public moveItem = (column: any) => PanelInteractionUtils.moveItem(this, column);
+    public moveItem = (column: any) => {
+        PanelInteractionUtils.moveItem(this, column);
+
+        if (this.selectedQueryMode == 'EDA2' && this.currentQuery.length === 1) {
+            PanelInteractionUtils.loadTableNodes(this);
+       }
+    }
 
     public searchRelations = (c: Column) => PanelInteractionUtils.searchRelations(this, c);
 

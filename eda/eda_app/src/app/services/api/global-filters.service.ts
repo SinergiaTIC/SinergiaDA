@@ -154,9 +154,9 @@ export class GlobalFiltersService {
 
             filteredPanels.forEach((panel: any) => {
                 let panelIncluded = true;
-                panel.active = true;
-                panel.avaliable = true;
-                panel.visible = true;
+                panel.active = panel.active || true;
+                panel.avaliable = panel.avaliable || true;
+                panel.visible = panel.visible || true;
 
 
                 const fields = panel.content.query.query.fields;
@@ -277,6 +277,8 @@ export class GlobalFiltersService {
                     expandNode.children.push(childNode);
                 }
             }
+            
+            expandNode.children.sort((a, b) => a.label.localeCompare(b.label));
         }
     }
 

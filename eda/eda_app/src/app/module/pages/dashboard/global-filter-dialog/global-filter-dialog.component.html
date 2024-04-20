@@ -10,7 +10,7 @@
                     <p-dropdown id="selectFilerTable" [options]="tables" [(ngModel)]="globalFilter.selectedTable"
                         filter="true" optionLabel="display_name.default" [style]="{'width': '100%'}"
                         i18n-placeholder="@@placeholderTables" placeholder="Entidades"
-                        (onChange)="getColumnsByTable()" appendTo="body">
+                        (onChange)="getColumnsByTable(); clearFilterPaths();" appendTo="body">
                     </p-dropdown>
                 </div>
     
@@ -30,8 +30,19 @@
                         [panelStyle]="{minWidth:'15em'}" maxSelectedLabels="1" defaultLabel="Valor por defecto" appendTo="body">
                     </p-multiSelect>
                 </div>
+
+                <div class="col-4">
+                    <div i18n-title="@@filterVisibleScope" title="Definir la visibilidad del filtro. Público: todos pueden usarlo.  Deshabilitado: El resto de usuarios pueden ver el filtro pero no pueden modificarlo.  Oculto: El resto de usuario no pueden ver el filtro. Pero se les aplica" class="filterDialogTitles">
+                        {{header4}}
+                    </div>
+                    <p-dropdown id="applyToOneFilterDropdown" 
+                        i18n-title="@@filterVisibleScope" title="Definir la visibilidad del filtro. Público: todos pueden usarlo.  Deshabilitado: El resto de usuarios pueden ver el filtro pero no pueden modificarlo.  Oculto: El resto de usuarios no pueden ver el filtro, pero se les aplica"
+                        [options]="publicRoHidden" [(ngModel)]="globalFilter.visible" [style]="{'width': '100%'}" selected="publicRoHiddenOption" autoWidth="false">
+                    </p-dropdown>
+                </div>
             </div>
         </p-card>
+
 
         <div style="margin: 1rem;"></div>
 

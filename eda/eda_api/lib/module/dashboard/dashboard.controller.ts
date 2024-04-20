@@ -712,13 +712,16 @@ export class DashboardController {
 
       /** por compatibilidad. Si no tengo el tipo de columna en el filtro lo añado */
       if(myQuery.filters){
-        myQuery.filters.forEach(f => { 
-          if(!f.filter_column_type){
+        for (const filter of myQuery.filters) {
+          if (!filter.filter_column_type) {
+            const filterTable = dataModelObject.ds.model.tables.find((t) => t.table_name == filter.filter_table.split('.')[0]);
 
-            f.filter_column_type = dataModelObject.ds.model.tables.filter( t=> t.table_name == f.filter_table)[0]
-            .columns.filter(c=> c.column_name == f.filter_column   )[0].column_type;
+            if (filterTable) {
+              const filterColumn = filterTable.columns.find((c) => c.column_name == filter.filter_column);
+              filter.filter_column_type = filterColumn?.column_type || 'text';
+            }
           }
-        });
+        }
       }
 
       const query = await connection.getQueryBuilded(

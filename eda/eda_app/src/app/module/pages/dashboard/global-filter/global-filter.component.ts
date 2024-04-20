@@ -117,14 +117,18 @@ export class GlobalFilterComponent implements OnInit {
             } else {
 
                 for (const key in this.globalFilter.pathList) {
-                    const selectedTableNodes = this.globalFilter.pathList[key].selectedTableNodes;
-                    delete (selectedTableNodes.parent);
+                    if (this.globalFilter.pathList[key]?.selectedTableNodes) {
+                        const selectedTableNodes = this.globalFilter.pathList[key].selectedTableNodes;
+                        delete (selectedTableNodes.parent);
+                    }
                 }
 
                 if (this.globalFilter.isnew) {
                     this.globalFilters.push(this.globalFilter);
                 } else {
-                    this.globalFilters.find((f) => f.id === this.globalFilter.id).selectedItems = this.globalFilter.selectedItems;
+                    const globalFilterUpdated = this.globalFilters.find((f) => f.id === this.globalFilter.id);
+                    globalFilterUpdated.selectedItems = this.globalFilter.selectedItems;
+                    globalFilterUpdated.visible = this.globalFilter.visible;
                 }
 
                 delete (this.globalFilter.isnew);

@@ -257,7 +257,8 @@
                                     Atributos
                                 </h4>
                                 <h5 *ngIf="userSelectedTable"  i18n-title="@@atributsTitle+" title="Clique sobre un entidad para ver sus atributos." >
-                                    <span i18n="@@atributosH4+">Columnas de:</span> <span class="d-block font-weight-bold" i18n="@@atributosH4interpolation" i18n-title="@@atributsTitle+">{{getNiceTableName(userSelectedTable)}}</span>
+                                    <span i18n="@@atributosH4">Columnas de:</span>
+                                    <span class="d-block font-weight-bold" i18n="@@atributosH4interpolation" i18n-title="@@atributsTitle">{{getNiceTableName(userSelectedTable)}}</span>
                                 </h5>
  <!--SDA CUSTOM-->          <div *ngIf="userService.isAdmin && showHiddId">
  <!--SDA CUSTOM-->              <span i18n-title="@@hiddenAttributes" title="Mostrar/ocultar campos ocultos" class="pointer icon-hover" (click)="changeHiddenMode()">

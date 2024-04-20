@@ -43,6 +43,12 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
     public columnValues: any[] = [];
     public tableNodes: any[] = [];
 
+    //valors del dropdown de filtrat de visiblitat
+    public publicRoHidden = [
+        { label: $localize`:@@public:público`, value: `public` },
+        { label: $localize`:@@readOnly:deshabilitado`, value: `readOnly` },
+        { label: $localize`:@@hidden:oculto`, value: `hidden` }
+    ];
 
     public formReady: boolean = false;
 
@@ -52,7 +58,7 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
         private queryBuilderService: QueryBuilderService,
         private alertService: AlertService,
         private fileUtils: FileUtiles,
-    ) {  }
+    ) { }
 
     private sortByTittle = (a: any, b: any) => {
         if (a.title < b.title) { return -1; }
@@ -77,8 +83,7 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
                 type: '',
                 // selectedRange:this.selectedRange,
                 isGlobal: true,
-                // applyToAll: !this.applyToAll,
-                // visible: this.publicRoHiddenOption,
+                visible: null,
             };
 
             this.initPanels();
@@ -89,7 +94,7 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
 
             const tableName = this.globalFilter.selectedTable.table_name;
             this.globalFilter.selectedTable = _.cloneDeep(this.tables.find((table) => table.table_name == tableName));
-            
+
             const columnName = this.globalFilter.selectedColumn.column_name;
             this.globalFilter.selectedColumn = _.cloneDeep(this.globalFilter.selectedTable.columns.find((col: any) => col.column_name == columnName));
 
@@ -111,8 +116,7 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
     public initPanels() {
         this.allPanels = this.globalFilterService.filterPanels(this.modelTables, this.panels);
         this.allPanels = this.allPanels.sort(this.sortByTittle);
-        this.filteredPanels = this.allPanels.filter((p: any) => p.avaliable === true && p.active === true);
-        
+
         if (this.globalFilter.isnew) {
             for (const panel of this.allPanels) {
                 this.globalFilter.pathList[panel.id] = {
@@ -120,7 +124,13 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
                     path: []
                 };
             }
+        } else {
+            for (const panel of this.allPanels) {
+                panel.active = this.globalFilter.panelList.includes(panel.id);
+            }
         }
+
+        this.filteredPanels = this.allPanels.filter((p: any) => p.avaliable && p.active);
     }
 
     public initTablesForFilter() {
@@ -130,7 +140,7 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
         for (const panel of this.filteredPanels) {
             //tables const tmpPanel = this.params.panels.find(p => p.id === panel.id);
             const panelQuery = panel.content.query.query;
-            
+
             for (const field of panelQuery.fields) {
                 const table_id = field.table_id.split('.')[0];
                 if (!queryTables.includes(table_id)) queryTables.push(table_id);
@@ -149,18 +159,26 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
     }
 
     public onAddPanelForFilter(panel: any) {
+        if (panel.avaliable) {
+            panel.active = !panel.active;
+            this.filteredPanels = this.allPanels.filter((p: any) => p.avaliable && p.active);
+            this.initTablesForFilter();
+            this.findPanelPathTables()
+        }
+
         if (!panel.avaliable) {
             this.clear();
 
             this.allPanels = this.globalFilterService.filterPanels(this.modelTables, this.panels, panel);
             this.allPanels = this.allPanels.sort(this.sortByTittle);
-            this.filteredPanels = this.allPanels.filter((p: any) => p.avaliable === true && p.active === true);
+            this.filteredPanels = this.allPanels.filter((p: any) => p.avaliable && p.active);
             this.initTablesForFilter();
         }
 
     }
 
     public getColumnsByTable() {
+
         this.columns = [];
 
         this.globalFilter.selectedTable.columns
@@ -218,11 +236,11 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
         } else {
             pathList[panel.id].table_id = table_id;
             pathList[panel.id].path = node.joins || [];
-            
-            if (!this.globalFilter.panelList.includes(panel.id)) {~
+
+            if (!this.globalFilter.panelList.includes(panel.id)) {
                 this.globalFilter.panelList.push(panel.id);
             }
-    
+
             // const existsPath = pathList.find((path: any) => path.panel_id == panel.id);
             // pathList.push({ panel_id: panel.id, path: node.joins || [] });
             // this.globalFilter.table_id = table_id;
@@ -279,9 +297,13 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
         this.globalFilter.selectedTable = {};
         this.globalFilter.selectedColumn = {};
         this.globalFilter.selectedItems = [];
+        this.globalFilter.type = '';
+        this.clearFilterPaths();
+    }
+
+    private clearFilterPaths() {
         this.globalFilter.panelList = [];
         this.globalFilter.pathList = {};
-        this.globalFilter.type = '';
 
         for (const panel of this.allPanels) {
             panel.content.globalFilterPaths = [];
@@ -302,7 +324,7 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
             this.alertService.addWarning(`Invalid`);
         }
     }
-        
+
     public onClose(): void {
         this.display = false;
         this.close.emit(false);

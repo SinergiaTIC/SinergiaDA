@@ -33,7 +33,7 @@ export const PanelInteractionUtils = {
     }
   },
 
- /* SDA CUSTOM */  loadColumns: (ebp: EdaBlankPanelComponent, table: any,  hideColumns : number, treeClick?:boolean) => {
+ /* SDA CUSTOM */  loadColumns: (ebp: EdaBlankPanelComponent, table: any,  hideColumns: number) => {
     // Set the user-selected table and disable the save button
     ebp.userSelectedTable = table.table_name;
     ebp.disableBtnSave();
@@ -58,9 +58,6 @@ export const PanelInteractionUtils = {
     // Sort columns by default display name
     ebp.columns = filteredColumns.sort((a, b) => a.display_name.default.localeCompare(b.display_name.default));
 
-    if(!treeClick){
-      PanelInteractionUtils.loadTableNodes(ebp);
-    }
     // Reset input and update table data if the findTable ngModel is not empty
     if (!_.isEqual(ebp.inputs.findTable.ngModel, '')) {
         // console.log('reset?')
@@ -105,7 +102,7 @@ export const PanelInteractionUtils = {
 
   assertTable: (ebp: EdaBlankPanelComponent, column: Column) => {
     if (column.joins.length > 0 && !ebp.tables.some((t) => t.table_name == column.table_id)) {
-      const rootJoin = column.joins[0];
+      const rootJoin = column.joins[column.joins.length-1];
       const rootTable = (rootJoin[0]||'').split('.')[0];
       const sourceTable = ebp.tables.find((table: any) => table.table_name == rootTable);
 
@@ -208,6 +205,8 @@ export const PanelInteractionUtils = {
           expandNode.children.push(childNode);
         }
       }
+
+      expandNode.children.sort((a, b) => a.label.localeCompare(b.label));
     }
   },
 
@@ -364,7 +363,7 @@ export const PanelInteractionUtils = {
             ebp.currentQuery.push(_.cloneDeep(handleColumn));
           }
 
-          PanelInteractionUtils.loadColumns(ebp, table,ebp.hiddenColumn, true);
+          PanelInteractionUtils.loadColumns(ebp, table, ebp.hiddenColumn);
         }
       }
 
@@ -425,10 +424,12 @@ export const PanelInteractionUtils = {
       });
     }
     if (!voidPanel) {
-      const colInCurrentQuery = ebp.currentQuery.find(c => c.table_id === tableId && c.column_name === colName  && c.display_name.default === displayName ).aggregation_type.find(agg => agg.selected === true);
+      const colInCurrentQuery = ebp.currentQuery.filter(c => c.table_id === tableId && c.column_name === colName && c.display_name.default === displayName);
+      const aggInCurrentQuery = colInCurrentQuery.find((agg) => agg.selected === true);
+
       const queryFromServer = ebp.panel.content.query.query.fields;
       // Column is in currentQuery
-      if (colInCurrentQuery) {
+      if (aggInCurrentQuery) {
         column.aggregation_type.forEach(agg => tmpAggTypes.push(agg));
         ebp.aggregationsTypes = tmpAggTypes;
         //Column isn't in currentQuery
@@ -450,9 +451,11 @@ export const PanelInteractionUtils = {
       initializeAgregations(column, tmpAggTypes);
       ebp.aggregationsTypes = tmpAggTypes;
     }
-    ebp.currentQuery.find(c => {
-      return   c.table_id === tableId && colName === c.column_name   && c.display_name.default == displayName
-    }).aggregation_type = _.cloneDeep(ebp.aggregationsTypes);
+
+    const findColumn =  ebp.currentQuery.find((c) => c.table_id === tableId && colName === c.column_name && c.display_name.default == displayName);
+    if (findColumn) {
+      findColumn.aggregation_type = _.cloneDeep(ebp.aggregationsTypes);
+    }
   },
 
   
@@ -586,9 +589,8 @@ export const PanelInteractionUtils = {
     ebp.inputs.findColumn.reset();
 
     // Torna a carregar les columnes de la taula
-    let table = ebp.tablesToShow.filter(table => table.table_name === ebp.userSelectedTable)[0];
-    if (!table) table = ebp.tablesToShow.filter(table => table.table_name === ebp.userSelectedTable.split('.')[0])[0];
-/* SDA CUSTOM*/    PanelInteractionUtils.loadColumns(ebp, table, ebp.hiddenColumn );
+    const selectedTable = ebp.getUserSelectedTable();
+    /* SDA CUSTOM*/    PanelInteractionUtils.loadColumns(ebp, selectedTable, ebp.hiddenColumn);
   },
 
   /**
