@@ -262,8 +262,8 @@
                                 </h5>
  <!--SDA CUSTOM-->          <div *ngIf="userService.isAdmin && showHiddId">
  <!--SDA CUSTOM-->              <span i18n-title="@@hiddenAttributes" title="Mostrar/ocultar campos ocultos" class="pointer icon-hover" (click)="changeHiddenMode()">
- <!--SDA CUSTOM-->                  <i *ngIf="hiddenColumn==0" class="pi pi-eye" style="font-size: 1.5rem"></i>
- <!--SDA CUSTOM-->                  <i *ngIf="hiddenColumn==1" class="pi pi-eye-slash" style="font-size: 1.5rem"></i>
+ <!--SDA CUSTOM-->                  <i *ngIf="showHiddenColumn" class="pi pi-eye" style="font-size: 1.5rem"></i>
+ <!--SDA CUSTOM-->                  <i *ngIf="!showHiddenColumn" class="pi pi-eye-slash" style="font-size: 1.5rem"></i>
  <!--SDA CUSTOM-->              </span>
  <!--SDA CUSTOM-->          </div>
 
@@ -286,7 +286,7 @@
  SDA CUSTOM                                       (cdkDragDropped)="openColumnDialog(column)" -->  
 <!--SDA CUSTOM-->                                        
 <!--SDA CUSTOM-->            <div class="column-box"  
-                                *ngIf='(column.column_type === "numeric" || column.column_type === "date" ) && ( column.hidden != hiddenColumn || hiddenColumn==0) '
+                                *ngIf="(column.column_type === 'numeric' || column.column_type === 'date' )"
                                 (click)="moveItem(column)" 
                                 (mouseover)="showDescription(column)" 
                                 (mouseout)="description= ''" 
@@ -311,7 +311,7 @@
                                     SDA CUSTOM                  cdkDrag
                                     SDA CUSTOM                  (cdkDragDropped)="searchRelations(column, $event)" --> 
                                     <!--SDA CUSTOM-->           <div class="column-box"
-                                    *ngIf='(column.column_type != "numeric" && column.column_type !="date" ) && ( column.hidden != hiddenColumn || hiddenColumn==0) '
+                                    *ngIf="(column.column_type != 'numeric' && column.column_type !='date' )"
                                     (click)="moveItem(column)"
                                     (mouseover)="showDescription(column)"
                                     (mouseout)="description= ''"

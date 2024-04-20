@@ -75,7 +75,7 @@ export class EdaBlankPanelComponent implements OnInit {
     public sunburstController: EdaDialogController;
     public contextMenu: EdaContextMenu;
     public lodash: any = _;
-/* SDA CUSTOM  */ public hiddenColumn: number;
+/* SDA CUSTOM  */ public showHiddenColumn: boolean = false;
 
 
 
@@ -204,7 +204,7 @@ export class EdaBlankPanelComponent implements OnInit {
     ngOnInit(): void {
         this.index = 0;
         // this.modeSQL = false;
-/* SDA CUSTOM  */ this.hiddenColumn = 0;
+/* SDA CUSTOM  */ this.showHiddenColumn = false;
 /* SDA CUSTOM  */ this.showIdForHiddenMode();
 
         this.setTablesData();
@@ -263,8 +263,7 @@ export class EdaBlankPanelComponent implements OnInit {
             this.selectedTableNode = event.node;
             let table_id = node.table_id || node.child_id //.split('.')[0];
 
-            
-            /* SDA CUSTOM */ PanelInteractionUtils.loadColumns(this, this.findTable(table_id), this.hiddenColumn);
+            PanelInteractionUtils.loadColumns(this, this.findTable(table_id));
 
             if (node.joins) {
                 // Add the sourceJoins from this node.
@@ -627,7 +626,7 @@ export class EdaBlankPanelComponent implements OnInit {
     public onColumnInputKey(event: any) {
         if (!_.isNil(this.userSelectedTable)) {
             const selectedTable = this.getUserSelectedTable();
-/* SDA CUSTOM */      PanelInteractionUtils.loadColumns(this, selectedTable, this.hiddenColumn) ;
+            PanelInteractionUtils.loadColumns(this, selectedTable) ;
             if (event.target.value) {
                 this.columns = this.columns
                     .filter(col => col.display_name.default.toLowerCase().includes(event.target.value.toLowerCase()));
@@ -792,7 +791,7 @@ export class EdaBlankPanelComponent implements OnInit {
         this.display_v.page_dialog = true;
         this.ableBtnSave();
         PanelInteractionUtils.verifyData(this);
-/* SDA CUSTOM  */       this.hiddenColumn = 1;
+/* SDA CUSTOM  */       this.showHiddenColumn = false;
 /* SDA CUSTOM  */       this.columns = this.columns.filter (c => !c.hidden) ;
     }
 
@@ -1047,7 +1046,7 @@ export class EdaBlankPanelComponent implements OnInit {
 
     public searchRelations = (c: Column) => PanelInteractionUtils.searchRelations(this, c);
 
-/* SDA CUSTOM */ public loadColumns = (table: any) => PanelInteractionUtils.loadColumns(this, table, this.hiddenColumn);
+    public loadColumns = (table: any) => PanelInteractionUtils.loadColumns(this, table);
 
     public removeColumn = (c: Column, list?: string, event?: Event) => PanelInteractionUtils.removeColumn(this, c, list);
 
@@ -1131,13 +1130,9 @@ export class EdaBlankPanelComponent implements OnInit {
 
 /** Esta función permite al switch en la columna atributos ver u ocultar las columnas con el atributo hidden */
 /* SDA CUSTOM  */    public async changeHiddenMode(): Promise<void> {
-/* SDA CUSTOM  */        if(this.hiddenColumn == 0){
-/* SDA CUSTOM  */           this.hiddenColumn = 1 ;
-/* SDA CUSTOM  */        }else{
-/* SDA CUSTOM  */           this.hiddenColumn = 0;
-/* SDA CUSTOM  */        }
-/* SDA CUSTOM  */       let table = this.tablesToShow.find(table => table.table_name === this.userSelectedTable)
-/* SDA CUSTOM  */       this.loadColumns(table);
+/* SDA CUSTOM  */       this.showHiddenColumn = !this.showHiddenColumn;
+/* SDA CUSTOM  */       const selectedTable = this.getUserSelectedTable();
+/* SDA CUSTOM  */       this.loadColumns(selectedTable);
 /* SDA CUSTOM  */    }
 
 
