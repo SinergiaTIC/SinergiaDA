@@ -203,25 +203,30 @@ export abstract class QueryBuilderService {
         } else {
             valueListJoins = []; 
             
-            for (const field of this.queryTODO.fields) {
-                if(field.valueListSource) {
-                    field.valueListSource.source_column = field.column_name;
-                    field.valueListSource.source_table = field.table_id;
-                    if( field.valueListSource.bridge_table?.length > 0){
-                        console.log(field.valueListSource);
-                        const j = {
-                            source_column:   field.valueListSource.source_bridge ,
-                            source_table: field.valueListSource.source_table ,
-                            target_id_column:  field.valueListSource.target_bridge, 
-                            target_table: field.valueListSource.bridge_table
+            const processFields = (fields) => {
+                for (const field of fields) {
+                    if (field.valueListSource) {
+                        field.valueListSource.source_column = field.column_name;
+                        field.valueListSource.source_table = field.table_id;
+                        if (field.valueListSource.bridge_table?.length > 0) {
+                            const j = {
+                                source_column: field.valueListSource.source_bridge,
+                                source_table: field.valueListSource.source_table,
+                                target_id_column: field.valueListSource.target_bridge,
+                                target_table: field.valueListSource.bridge_table
+                            };
+                            valueListJoins.push(j);
+                            field.valueListSource.source_column = field.valueListSource.target_bridge;
+                            field.valueListSource.source_table = field.valueListSource.bridge_table;
                         }
-                        valueListJoins.push(j);
-                        field.valueListSource.source_column =  field.valueListSource.target_bridge;
-                        field.valueListSource.source_table =  field.valueListSource.bridge_table;
+                        valueListJoins.push(field.valueListSource);
                     }
-                    valueListJoins.push(field.valueListSource);
                 }
-            }
+            };
+            
+            processFields(this.queryTODO.fields);
+            processFields(this.queryTODO.filters);
+
             for (const value of valueListJoins) {
                 const multiSourceJoin = `${value.source_table}.${value.source_column}`;
                 const multiTargetJoin = `${value.target_table}.${value.target_id_column}`;

@@ -41,7 +41,8 @@
                     </eda-date-picker>
                 </div>
                 <div *ngSwitchDefault>
-                    <p-multiSelect
+                    <!-- {{ filter | json }} -->
+                    <p-multiSelect *ngIf="filter.data"
                         [options]="filter.data"
                         [(ngModel)]="filter.selectedItems"
                         [maxSelectedLabels]="3"
@@ -62,14 +63,6 @@
                                 (click)="onShowGlobalFilter(false, filter)"
                                 class="p-button-rounded p-button-outlined filters-size">
                             </button>
-
-                            <!-- <button id="dashFilterConf"
-                                pButton pRipple type="button"
-                                icon="pi pi-cog"
-                                (click)="onShowGlobalFilter(false, filter)"
-                                class="p-button-rounded p-button-outlined filters-size">
-                            </button> -->
-        
                         </p-footer>
                     </p-multiSelect>
                 </div>
