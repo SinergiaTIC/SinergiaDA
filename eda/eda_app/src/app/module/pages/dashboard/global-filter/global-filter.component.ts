@@ -115,6 +115,9 @@ export class GlobalFilterComponent implements OnInit {
                 this.applyGlobalFilter(this.globalFilter);
                 this.removeGlobalFilter(this.globalFilter);
             } else {
+                this.dashboard.edaPanels.forEach(panel => {
+                    panel.globalFilters = panel.globalFilters.filter((f: any) => f.filter_id !== this.globalFilter.id);
+                });
 
                 for (const key in this.globalFilter.pathList) {
                     if (this.globalFilter.pathList[key]?.selectedTableNodes) {
@@ -129,6 +132,7 @@ export class GlobalFilterComponent implements OnInit {
                     const globalFilterUpdated = this.globalFilters.find((f) => f.id === this.globalFilter.id);
                     globalFilterUpdated.selectedItems = this.globalFilter.selectedItems;
                     globalFilterUpdated.visible = this.globalFilter.visible;
+                    globalFilterUpdated.panelList = this.globalFilter.panelList;
                 }
 
                 delete (this.globalFilter.isnew);
