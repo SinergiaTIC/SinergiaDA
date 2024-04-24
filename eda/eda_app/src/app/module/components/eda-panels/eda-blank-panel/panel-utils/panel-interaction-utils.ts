@@ -353,6 +353,11 @@ export const PanelInteractionUtils = {
             handleColumn.whatif_column = contentColumn.whatif_column || false;
             handleColumn.whatif = contentColumn.whatif || {};
             handleColumn.joins = contentColumn.joins || [];
+            handleColumn.ordenation_type = contentColumn.ordenation_type;
+            
+            const existsAgg = handleColumn.aggregation_type.find((agg) => agg.value === contentColumn.aggregation_type);
+            if (existsAgg) existsAgg.selected = true;
+
             if (handleColumn.column_type === 'text' && ![null, 'none'].includes(contentColumn.aggregation_type)) {
               handleColumn.column_type = 'numeric';
               handleColumn.old_column_type = 'text';
@@ -421,6 +426,7 @@ export const PanelInteractionUtils = {
         tmpAggTypes.push({ display_name: agg.display_name, value: agg.value, selected: agg.value === 'sum' });
       });
     }
+
     if (!voidPanel) {
       const colInCurrentQuery = ebp.currentQuery.filter(c => c.table_id === tableId && c.column_name === colName && c.display_name.default === displayName);
       const aggInCurrentQuery = colInCurrentQuery.find((agg) => agg.selected === true);

@@ -314,8 +314,8 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
         this.groupService.getGroupsByUser().subscribe(
             res => {
                 this.grups = res.sort((a, b) => {
-                    let va = a.name.toLowerCase();
-                    let vb = b.name.toLowerCase();
+                    let va = (a.name||'').toLowerCase();
+                    let vb = (b.name||'').toLowerCase();
                     return va < vb ?  -1 : va > vb ? 1 : 0
                 });
                 if (this.grups.length === 0) {

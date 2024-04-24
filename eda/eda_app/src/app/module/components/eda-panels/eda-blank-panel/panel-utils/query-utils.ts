@@ -132,7 +132,7 @@ export const QueryUtils = {
       ebp.chartLabels = ebp.chartUtils.uniqueLabels(response[0]);   // Chart labels
       ebp.chartData = response[1];       // Chart data
       ebp.ableBtnSave();                 // Button save
-
+      console.log('currentQuery->',ebp.currentQuery)
       /* Labels i Data - Arrays */
       if (!globalFilters) {
 
