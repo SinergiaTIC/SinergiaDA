@@ -253,6 +253,9 @@ export class EdaBlankPanelComponent implements OnInit {
      * @param event selected node. Can be rootNode (table_id) or childNode (child_id). 
      */
     public tableNodeSelect(event: any): void {
+        // clean columns filter.
+        this.inputs.findColumn.reset();
+
         if (this.currentQuery.length == 0) {
             this.nodeJoins = [];
             this.rootTreeTable = undefined;
