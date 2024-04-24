@@ -162,8 +162,13 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
         if (panel.avaliable) {
             panel.active = !panel.active;
             this.filteredPanels = this.allPanels.filter((p: any) => p.avaliable && p.active);
-            this.initTablesForFilter();
-            this.findPanelPathTables()
+            
+            if (panel.active) {
+                this.initTablesForFilter();
+                this.findPanelPathTables();
+            } else {
+                this.clearFilterPaths(panel);
+            }
         }
 
         if (!panel.avaliable) {
@@ -301,17 +306,26 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
         this.clearFilterPaths();
     }
 
-    private clearFilterPaths() {
-        this.globalFilter.panelList = [];
-        this.globalFilter.pathList = {};
-
-        for (const panel of this.allPanels) {
-            panel.content.globalFilterPaths = [];
-
-            this.globalFilter.pathList[panel.id] = {
+    private clearFilterPaths(clearPanel?: any) {
+        if (clearPanel) {
+            this.globalFilter.panelList = this.globalFilter.panelList.filter((p) => p !== clearPanel.id);
+            this.globalFilter.pathList[clearPanel.id] = {
                 selectedTableNodes: {},
                 path: []
             };
+            clearPanel.content.globalFilterPaths = [];
+        } else {
+            this.globalFilter.panelList = [];
+            this.globalFilter.pathList = {};
+
+            for (const panel of this.allPanels) {
+                panel.content.globalFilterPaths = [];
+    
+                this.globalFilter.pathList[panel.id] = {
+                    selectedTableNodes: {},
+                    path: []
+                };
+            }
         }
     }
 
