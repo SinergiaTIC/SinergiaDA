@@ -11,7 +11,7 @@
                                 [(ngModel)]="globalFilter.selectedTable" filter="true"
                                 optionLabel="display_name.default" [style]="{'width': '100%'}"
                                 i18n-placeholder="@@placeholderTables" placeholder="Entidades"
-                                (onChange)="getColumnsByTable(); clearFilterPaths();" appendTo="body">
+                                (onChange)="onChangeSelectedTable()" appendTo="body">
                             </p-dropdown>
                         </div>
                         <div class="col-4">

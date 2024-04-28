@@ -155,7 +155,7 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
         });
 
         // this.tables = this.tables.slice();
-        this.tables.sort((a, b) => a.value < b.value ? -1 : a.value > b.value ? 1 : 0);
+        this.tables.sort((a, b) => a.display_name.default.localeCompare(b.display_name.default));
     }
 
     public onAddPanelForFilter(panel: any) {
@@ -182,8 +182,13 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
 
     }
 
-    public getColumnsByTable() {
+    public onChangeSelectedTable(): void {
+        this.globalFilter.selectedColumn = {};
+        this.getColumnsByTable();
+        this.clearFilterPaths();
+    }
 
+    public getColumnsByTable() {
         this.columns = [];
 
         this.globalFilter.selectedTable.columns
@@ -219,6 +224,15 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
     public findPanelPathTables() {
         for (const panel of this.filteredPanels) {
             panel.content.globalFilterPaths = this.globalFilterService.loadTablePaths(this.modelTables, panel);
+
+            if (this.globalFilter.pathList[panel.id] && this.isEmpty(this.globalFilter.pathList[panel.id].selectedTableNodes)) {
+                const panelQuery = panel.content.query.query;
+                const rootTable = panelQuery.rootTable;
+
+                if (this.globalFilter.selectedTable.table_name == rootTable) {
+                    this.globalFilter.pathList[panel.id].selectedTableNodes = panel.content.globalFilterPaths[0];
+                }
+            }
         }
     }
 
@@ -280,7 +294,7 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
     }
 
     public isEmpty(obj: any): boolean {
-        return Object.keys(obj).length === 0;
+        return !obj || Object.keys(obj).length === 0;
     }
 
     private validateGlobalFilter(): boolean {
