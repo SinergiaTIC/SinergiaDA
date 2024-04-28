@@ -577,7 +577,7 @@ export const PanelInteractionUtils = {
     }
 
     if (c.table_id !== ebp.rootTreeTable?.table_name) {
-      c.joins = (c.joins||[]).length == 0 ? ebp.nodeJoins.pop() : c.joins;
+      c.joins = (c.joins||[]).length == 0 ? ebp.nodeJoins[ebp.nodeJoins.length-1] : c.joins;
     }
 
     // Col·loca la nova columna a l'array Select

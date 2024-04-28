@@ -433,15 +433,18 @@
                                                 Resumen de atributos
                                             </h5>
     
-                                            <div *ngFor='let column of this.currentQuery'>
-                                                <span> {{ getNiceTableName( column.table_id )  }} - {{column.display_name.default}}</span>
+                                            <div *ngFor="let column of this.currentQuery">
+                                                <span> <strong>{{ getColumnJoins(column) }}</strong> </span>
+
+                                                <span> <strong>{{ getNiceTableName(column.table_id) }}</strong> → {{column.display_name.default}}</span>
     
-                                                <span *ngFor='let aggregation of column.aggregation_type'>
+                                                <span *ngFor="let aggregation of column.aggregation_type">
                                                     <span
-                                                        *ngIf='aggregation.selected === true && aggregation.display_name !== "no"'>
+                                                        *ngIf="aggregation.selected && aggregation.display_name !== 'no'">
                                                         ( {{aggregation.display_name}} )
                                                     </span>
                                                 </span>
+
                                             </div>
                                         </div>
     
@@ -451,7 +454,7 @@
                                                 Resumen de filtros del panel
                                             </h5>
     
-                                            <div *ngFor='let filter of this.selectedFilters'>
+                                            <div *ngFor="let filter of this.selectedFilters">
                                                 <span> {{filter.filter_table}} . {{filter.filter_column}} (
                                                     {{filter.filter_type}} )</span>
                                             </div>
@@ -462,7 +465,7 @@
                                                 Resumen de filtros del informe
                                             </h5>
     
-                                            <div *ngFor='let filter of this.globalFilters'>
+                                            <div *ngFor="let filter of this.globalFilters">
                                                 <span> {{filter.filter_table}} . {{filter.filter_column}} (
                                                     {{filter.filter_type}} )</span>
                                             </div>

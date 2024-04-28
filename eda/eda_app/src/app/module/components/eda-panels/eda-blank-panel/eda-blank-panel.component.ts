@@ -1144,8 +1144,27 @@ export class EdaBlankPanelComponent implements OnInit {
     public accopen(e) { }
 
     /** This funciton return the display name for a given table. Its used for the query resumen      */
-    public getNiceTableName(table: any){
+    public getNiceTableName(table: any) {
         return this.tables.find( t => t.table_name === table)?.display_name?.default;
+    }
+
+    public getColumnJoins(column: Column) {
+        let pathStr = '';
+        if (column.joins?.length > 0) {
+
+            for (const path of column.joins) {
+                const table = (path[0]||'');
+                let tableName = this.getNiceTableName(table);
+                if (!tableName) tableName = this.getNiceTableName(table.split('.')[0]);
+
+                pathStr += ` ${tableName} → `;
+            }
+        } else if (column.valueListSource) {
+            const tableName = this.getNiceTableName(column.valueListSource.target_table);
+            if (tableName) pathStr += ` ${tableName} → `;
+        }
+
+        return pathStr
     }
 
 /* SDA CUSTOM */     public showIdForHiddenMode() {
