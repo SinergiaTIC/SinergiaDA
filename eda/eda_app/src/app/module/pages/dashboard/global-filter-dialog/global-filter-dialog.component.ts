@@ -279,6 +279,10 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
         return label;
     }
 
+    public isEmpty(obj: any): boolean {
+        return Object.keys(obj).length === 0;
+    }
+
     private validateGlobalFilter(): boolean {
         let valid = true;
 

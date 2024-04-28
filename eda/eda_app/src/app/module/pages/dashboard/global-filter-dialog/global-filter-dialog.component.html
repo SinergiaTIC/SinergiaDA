@@ -74,11 +74,9 @@
                                     <p-treeSelect [(ngModel)]="globalFilter.pathList[panel.id].selectedTableNodes"
                                         [options]="panel.content.globalFilterPaths"
                                         (onNodeExpand)="onNodeExpand(panel, $event)"
-                                        (onNodeSelect)="onNodeSelect(panel, $event)" appendTo="body">
+                                        (onNodeSelect)="onNodeSelect(panel, $event)" appendTo="body"
+                                        [disabled]="!panel.active || !panel.avaliable">
                                     </p-treeSelect>
-                                    <!-- <p-dropdown [options]="globalFilterPaths" [(ngModel)]="globalFilter.selectedTableNodes"
-                                filter="true" optionLabel="label" [style]="{'width': '100%'}" appendTo="body">
-                            </p-dropdown> -->
                                 </td>
                             </tr>
                         </ng-template>
@@ -97,7 +95,10 @@
                         </div>
                     </div>
                 </p-card>
+
+                <div *ngIf="isEmpty(globalFilter.selectedTable) || isEmpty(globalFilter.selectedColumn)" class="disabled-div"></div>
             </div>
+
         </div>
 
         <div class="row">
