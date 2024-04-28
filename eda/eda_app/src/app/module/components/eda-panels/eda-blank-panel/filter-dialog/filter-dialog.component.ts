@@ -67,12 +67,10 @@ export class FilterDialogComponent extends EdaDialogAbstract {
         this.selectedColumn = this.controller.params.selectedColumn;
         const title = this.selectedColumn.display_name.default;
         this.dialog.title = `Atributo ${title} de la entidad ${this.controller.params.table}`;
-
         this.carrega();
     }
 
     addFilter() {
-
         const table =  this.selectedColumn.table_id;
         const columnType  = this.selectedColumn.column_type;
         const column = this.selectedColumn.column_name;
@@ -80,11 +78,26 @@ export class FilterDialogComponent extends EdaDialogAbstract {
         const range = this.filter.range;
         if(this.selectedColumn.valueListSource){
             this.filter.selecteds.push(
-                this.columnUtils.addFilter(this.filterValue, table, column, columnType, type, range, this.selectedColumn.valueListSource)
+                this.columnUtils.addFilter(
+                    this.filterValue,
+                    table,
+                    column,
+                    columnType,
+                    type,
+                    range,
+                    this.selectedColumn.valueListSource
+                )
             );
         }else{
             this.filter.selecteds.push(
-                this.columnUtils.addFilter(this.filterValue, table, column, columnType, type, range)
+                this.columnUtils.addFilter(
+                    this.filterValue, 
+                    table, 
+                    column,
+                    columnType,
+                    type, 
+                    range
+                )
             );
         }
 
@@ -102,6 +115,21 @@ export class FilterDialogComponent extends EdaDialogAbstract {
         this.carregarFilters();
         this.handleInputTypes();
     }
+
+    handleInputTypes() {
+        const type = this.selectedColumn.column_type;
+        this.inputType = this.columnUtils.handleInputTypes(type);
+    }
+
+    carregarFilters() {
+        this.filter.selecteds = this.controller.params.filters;
+        this.filter.forDisplay = this.filter.selecteds.filter(f =>
+            f.filter_table === this.selectedColumn.table_id &&
+            f.filter_column === this.selectedColumn.column_name &&
+            !f.removed
+        );
+    }
+
 
     removeFilter(item: any) {
         this.filter.selecteds.find(f => _.startsWith(f.filter_id, item.filter_id) ).removed = true;
@@ -147,20 +175,6 @@ export class FilterDialogComponent extends EdaDialogAbstract {
         } else {
             this.resetDisplay();
         }
-    }
-
-    handleInputTypes() {
-        const type = this.selectedColumn.column_type;
-        this.inputType = this.columnUtils.handleInputTypes(type);
-    }
-
-    carregarFilters() {
-        this.filter.selecteds = this.controller.params.filters;
-        this.filter.forDisplay = this.filter.selecteds.filter(f => {
-            return f.filter_table === this.selectedColumn.table_id &&
-                f.filter_column === this.selectedColumn.column_name &&
-                !f.removed;
-        });
     }
 
     resetDisplay() {
@@ -213,7 +227,6 @@ export class FilterDialogComponent extends EdaDialogAbstract {
     }
 
     closeDialog() {
-
         this.filter.switch = false;
         this.filterSelected = undefined;
         this.filterValue = {};

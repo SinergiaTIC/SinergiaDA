@@ -651,6 +651,7 @@ export class EdaBlankPanelComponent implements OnInit {
             const column = <Column><unknown>event.container.data[event.currentIndex];
             if(event.container.element.nativeElement.className.toString().includes('select-list')) {
                 this.moveItem(column);
+                this.openColumnDialog(column);
             } else {
                 this.openColumnDialog(column, true);
                 // Trec la agregació si puc.
@@ -742,6 +743,7 @@ export class EdaBlankPanelComponent implements OnInit {
                             }
                         });
                     }
+
                     this.filterController = undefined;
                 }
             });
