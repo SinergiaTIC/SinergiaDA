@@ -121,7 +121,7 @@ export class EdaBlankPanelComponent implements OnInit {
     public draggFilters: string = $localize`:@@draggFilters:Arrastre aquí los atributos sobre los que quiera filtrar`;
     public ptooltipSQLmode: string = $localize`:@@sqlTooltip:Al cambiar de modo perderás la configuración de la consulta actual`;
 /* SDA CUSTOM  */ public ptooltipHiddenColumn: string = $localize`:@@hiddenColumn:Al cambiar de modo se verán las columnas marcadas como ocultas`;
-    public ptooltipViewQuery: string = $localize`:@@ptooltipViewQuery:Ver consulta SQL`
+    public ptooltipViewQuery: string = $localize`:@@ptooltipViewQuery:Ver consulta SQL`;
 
     /** Query Variables */
     public tables: any[] = [];

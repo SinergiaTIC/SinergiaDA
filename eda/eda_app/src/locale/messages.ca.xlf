@@ -4265,6 +4265,11 @@
         <target>Definir la visibilitat del filtre.  Públic: tots poden utilitzar-lo.  Deshabilitat: els altres usuaris poden veure el filtre però no el poden modificar.  Ocult: els altres usuaris no poden veure el filtre però els aplica.</target>
       </trans-unit>
 
+      <trans-unit id="removeColumnGlobalFilter">
+        <source>No se puede eliminar la columna porque hay vinculado un Filtro</source>
+        <target>No es pot eliminar la columna perquè hi ha vinculat un Filtre</target>
+      </trans-unit>
+
     </body>
   </file>
 </xliff>

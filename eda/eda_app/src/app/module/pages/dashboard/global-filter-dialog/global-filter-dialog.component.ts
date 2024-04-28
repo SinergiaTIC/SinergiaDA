@@ -335,7 +335,7 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
             this.display = false;
             this.close.emit(true);
         } else {
-            this.alertService.addWarning(`Invalid`);
+            this.alertService.addWarning($localize`:@@IncorrectForm:Formulario incorrecto. Revise los campos obligatorios.`);
         }
     }
 
