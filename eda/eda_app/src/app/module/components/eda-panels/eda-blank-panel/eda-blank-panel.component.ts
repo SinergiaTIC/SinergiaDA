@@ -759,10 +759,10 @@ export class EdaBlankPanelComponent implements OnInit {
     }
 
     /**
-     * Sets global filter (called from dashboardComponent)
+     * Adds or Updates a globalFilter (called from dashboardComponent)
      * @param filter filter so set
      */
-    public setGlobalFilter(_filter: any) {
+    public assertGlobalFilter(_filter: any) {
         const globalFilter = _.cloneDeep(_filter);
 
         if (_filter.pathList) {

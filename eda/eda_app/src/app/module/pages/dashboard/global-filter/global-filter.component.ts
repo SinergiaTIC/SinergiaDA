@@ -88,7 +88,7 @@ export class GlobalFilterComponent implements OnInit {
         filter.panelList
             .map((id: string) => this.dashboard.edaPanels.toArray().find(p => p.panel.id === id))
             .forEach((panel: EdaBlankPanelComponent) => {
-                if (panel) panel.setGlobalFilter(formatedFilter);
+                if (panel) panel.assertGlobalFilter(formatedFilter);
             });
     }
 
@@ -96,9 +96,13 @@ export class GlobalFilterComponent implements OnInit {
     public onShowGlobalFilter(isnew: boolean, filter?: any): void {
         if (this.dashboard.validateDashboard('GLOBALFILTER')) {
             const treeQueryMode = this.dashboard.edaPanels.some((panel) => panel.selectedQueryMode === 'EDA2');
+
             if (treeQueryMode) {
                 if (isnew) this.globalFilter = { isnew: true };
-                else this.globalFilter = { isnew: false, ...filter };
+                else {
+                    filter.isnew = false;
+                    this.globalFilter = _.cloneDeep(filter);
+                }
 
                 this.dashboard.display_v.rightSidebar = false;
             } else {
@@ -110,52 +114,49 @@ export class GlobalFilterComponent implements OnInit {
     // Global Filter Tree
     public async onCloseGlobalFilter(apply: boolean): Promise<void> {
         if (apply) {
-            if (this.globalFilter.isdeleted) {
-                this.globalFilter.selectedItems = [];
-                this.applyGlobalFilter(this.globalFilter);
-                this.removeGlobalFilter(this.globalFilter);
-            } else {
-                this.dashboard.edaPanels.forEach(panel => {
-                    panel.globalFilters = panel.globalFilters.filter((f: any) => f.filter_id !== this.globalFilter.id);
-                });
+            this.dashboard.edaPanels.forEach(panel => {
+                panel.globalFilters = panel.globalFilters.filter((f: any) => f.filter_id !== this.globalFilter.id);
+            });
 
-                for (const key in this.globalFilter.pathList) {
-                    if (this.globalFilter.pathList[key]?.selectedTableNodes) {
-                        const selectedTableNodes = this.globalFilter.pathList[key].selectedTableNodes;
-                        delete (selectedTableNodes.parent);
-                    }
-                }
-
-                if (this.globalFilter.isnew) {
-                    this.globalFilters.push(this.globalFilter);
-                } else {
-                    const globalFilterUpdated = this.globalFilters.find((f) => f.id === this.globalFilter.id);
-                    globalFilterUpdated.selectedItems = this.globalFilter.selectedItems;
-                    globalFilterUpdated.visible = this.globalFilter.visible;
-                    globalFilterUpdated.panelList = this.globalFilter.panelList;
-                }
-
-                delete (this.globalFilter.isnew);
-
-                // Load Filter dropdwons option s
-                if (this.globalFilter.selectedColumn.column_type === 'date' && this.globalFilter.selectedItems.length > 0) {
-                    this.loadDatesFromFilter(this.globalFilter);
-                } else {
-                    await this.loadGlobalFiltersData();
-                }
-
-                // If default values are selected filter is applied
-                // if (this.globalFilter.selectedItems.length > 0) {
-                    this.applyGlobalFilter(this.globalFilter);
-                // }
-
-                // If filter apply to all panels and this dashboard hasn't any 'apllyToAllFilter' new 'apllyToAllFilter' is set
-                // if (this.globalFilter.applyToAll && (this.applyToAllfilter.present === false)) {
-                //     this.applyToAllfilter = { present: true, refferenceTable: this.globalFilter.selectedTable.table_name, id: this.globalFilter.id };
-                //     this.updateApplyToAllFilterInPanels();
-                // }
-
+            if (this.globalFilter.isnew) {
+                this.globalFilters.push(this.globalFilter);
             }
+
+            for (const filter of this.globalFilters) {
+                if (this.globalFilter.id == filter.id && !filter.isdeleted) {
+                    filter.data = this.globalFilter.data;
+                    filter.selectedTable = this.globalFilter.selectedTable;
+                    filter.selectedColumn = this.globalFilter.selectedColumn;
+                    filter.selectedItems = this.globalFilter.selectedItems;
+                    filter.panelList = this.globalFilter.panelList;
+                    filter.pathList = this.globalFilter.pathList;
+                    filter.type = this.globalFilter.type;
+                    filter.isGlobal = this.globalFilter.isGlobal;
+                    filter.visible = this.globalFilter.visible;
+
+                    for (const key in filter.pathList) {
+                        if (filter.pathList[key]?.selectedTableNodes) {
+                            const selectedTableNodes = filter.pathList[key].selectedTableNodes;
+                            delete (selectedTableNodes.parent);
+                        }
+                    }
+
+                    delete (filter.isnew);
+                } else if (filter.isdeleted) {
+                    filter.selectedItems = [];
+                    this.applyGlobalFilter(filter);
+                    this.removeGlobalFilter(filter);
+                }
+            }
+
+            // Load Filter dropdwons option s
+            if (this.globalFilter.selectedColumn.column_type === 'date' && this.globalFilter.selectedItems.length > 0) {
+                this.loadDatesFromFilter(this.globalFilter);
+            } else {
+                await this.loadGlobalFiltersData();
+            }
+
+            this.applyGlobalFilter(this.globalFilter);
         }
 
         this.globalFilter = undefined;
@@ -276,7 +277,7 @@ export class GlobalFilterComponent implements OnInit {
         if (reload) {
             //not saved alert message
             // TODO
-            // this.dashboardService._notSaved.next(true);
+            this.dashboardService._notSaved.next(true);
             // this.reloadPanels();
         }
     }

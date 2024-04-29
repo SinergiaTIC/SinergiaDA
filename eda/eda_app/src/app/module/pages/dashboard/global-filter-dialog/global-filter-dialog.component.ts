@@ -224,13 +224,19 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
     public findPanelPathTables() {
         for (const panel of this.filteredPanels) {
             panel.content.globalFilterPaths = this.globalFilterService.loadTablePaths(this.modelTables, panel);
-
+            
             if (this.globalFilter.pathList[panel.id] && this.isEmpty(this.globalFilter.pathList[panel.id].selectedTableNodes)) {
                 const panelQuery = panel.content.query.query;
                 const rootTable = panelQuery.rootTable;
 
                 if (this.globalFilter.selectedTable.table_name == rootTable) {
-                    this.globalFilter.pathList[panel.id].selectedTableNodes = panel.content.globalFilterPaths[0];
+                    const node = panel.content.globalFilterPaths[0];
+
+                    this.globalFilter.pathList[panel.id].table_id = node.table_id;
+                    this.globalFilter.pathList[panel.id].path = node.joins || [];
+                    this.globalFilter.pathList[panel.id].selectedTableNodes = node;
+
+                    if (!this.globalFilter.panelList.includes(panel.id)) this.globalFilter.panelList.push(panel.id);
                 }
             }
         }
@@ -273,7 +279,7 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
     public removeFilter(filter: any): void {
         filter.isdeleted = true;
 
-        if (filter.id == this.globalFilter.id) {
+        if (this.globalFilter.id == filter.id) {
             this.globalFilter.isdeleted = true;
         }
 

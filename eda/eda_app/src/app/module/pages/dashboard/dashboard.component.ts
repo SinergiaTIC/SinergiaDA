@@ -166,7 +166,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
                         if (panel) {
                             filter.panelList.push(panel.panel.id);
                             const formatedFilter = this.globalFiltersService.formatFilter(filter);
-                            panel.setGlobalFilter(formatedFilter)
+                            panel.assertGlobalFilter(formatedFilter)
                         }
                     });
                 });

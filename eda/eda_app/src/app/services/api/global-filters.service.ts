@@ -8,7 +8,6 @@ export class GlobalFiltersService {
     constructor() { }
 
     public panelsToDisplay(modelTables: any[], panels: any[], refferencePanel: any) {
-
         const panelsTables = [];
         const panelsToDisplay: Array<{ title, id, active, avaliable, visible }> = [];
 
@@ -52,15 +51,16 @@ export class GlobalFiltersService {
     public relatedTables(queryTables: any[], modelTables: any[], rootTable?: string): Map<string, any> {
         let visited = new Map();
         const startTable = modelTables.find(t => t.table_name === (rootTable || queryTables[0]));
+        
+        if (startTable) {
+            visited = this.findRelations(modelTables, startTable, visited);
 
-
-        visited = this.findRelations(modelTables, startTable, visited);
-
-        for (const table of queryTables) {
-            const id_table = table.split('.')[0];
-
-            if (!visited.has(id_table)) {
-                return new Map();
+            for (const table of queryTables) {
+                const id_table = table.split('.')[0];
+    
+                if (!visited.has(id_table)) {
+                    return new Map();
+                }
             }
         }
 
@@ -69,13 +69,12 @@ export class GlobalFiltersService {
 
     public findRelations(modelTables: any, table: any, vMap: any) {
         vMap.set(table.table_name, table);
-
         const tableRelations = table.relations.filter((rel: any) => rel.visible);
 
         for (const rel of tableRelations) {
             let newTable = modelTables.find((t: any) => t.table_name === rel.target_table || t.table_name === `${rel.target_table}.${rel.target_column[0]}`);
 
-            if (!vMap.has(newTable.table_name)) {
+            if (newTable.table_name && !vMap.has(newTable.table_name)) {
                 this.findRelations(modelTables, newTable, vMap);
             }
         }
