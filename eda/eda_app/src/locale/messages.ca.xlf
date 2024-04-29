@@ -4270,6 +4270,10 @@
         <target>No es pot eliminar la columna perquè hi ha vinculat un Filtre</target>
       </trans-unit>
 
+      <trans-unit id="invalidPathForm">
+        <source>Ruta incorrecta para el filtro seleccionado</source>
+        <target>Ruta incorrecte per el filtre seleccionat</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>

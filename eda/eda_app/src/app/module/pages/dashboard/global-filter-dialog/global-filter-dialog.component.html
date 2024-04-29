@@ -53,7 +53,7 @@
 
 
         <div class="row">
-            <div class="col-12">
+            <div *ngIf="!isEmpty(globalFilter.selectedTable) && !isEmpty(globalFilter.selectedColumn)" class="col-12">
                 <p-card *ngIf="formReady && !globalFilter.isdeleted" [header]="header2" id="anywhereClick">
                     <p-table [value]="allPanels">
                         <ng-template pTemplate="header">
@@ -97,7 +97,7 @@
                     </div>
                 </p-card>
 
-                <div *ngIf="isEmpty(globalFilter.selectedTable) || isEmpty(globalFilter.selectedColumn)" class="disabled-div"></div>
+                <!-- <div *ngIf="isEmpty(globalFilter.selectedTable) || isEmpty(globalFilter.selectedColumn)" class="disabled-div"></div> -->
             </div>
 
         </div>

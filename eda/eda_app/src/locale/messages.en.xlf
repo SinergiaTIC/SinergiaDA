@@ -4244,6 +4244,10 @@
         <target>Can not remove this column cause there is a GlobalFilter linked</target>
       </trans-unit>
 
+      <trans-unit id="invalidPathForm">
+        <source>Ruta incorrecta para el filtro seleccionado</source>
+        <target>Invalid path for selected filter</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>

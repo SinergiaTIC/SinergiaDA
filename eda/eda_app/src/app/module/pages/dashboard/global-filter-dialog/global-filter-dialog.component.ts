@@ -256,8 +256,11 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
         const pathList = this.globalFilter.pathList;
 
         if (this.globalFilter.selectedTable.table_name !== table_id.split('.')[0]) {
-            this.alertService.addWarning(`Invalid path for selected filter`);
-            pathList[panel.id].selectedTableNodes = undefined;
+            this.alertService.addWarning($localize`:@@invalidPathForm: Ruta incorrecta para el filtro seleccionado`);
+            setTimeout(() => {
+                pathList[panel.id].table_id = null;
+                pathList[panel.id].selectedTableNodes = undefined;
+            }, 100);
         } else {
             pathList[panel.id].table_id = table_id;
             pathList[panel.id].path = node.joins || [];
@@ -300,7 +303,7 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
     }
 
     public isEmpty(obj: any): boolean {
-        return !obj || Object.keys(obj).length === 0;
+        return Object.keys(obj||{}).length === 0;
     }
 
     private validateGlobalFilter(): boolean {
