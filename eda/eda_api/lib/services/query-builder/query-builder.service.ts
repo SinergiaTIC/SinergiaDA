@@ -158,16 +158,14 @@ export abstract class QueryBuilderService {
         }
     
 
-        if( (this.queryTODO.queryMode == 'EDA' ) || (this.queryTODO.queryMode === undefined ) ){ 
+        if (!this.queryTODO.queryMode || this.queryTODO.queryMode == 'EDA') {
             // Las taules de les consultes van primer per potenciar relacions directes en consultes tipus EDA
             const vals = [...dest];
             const firs = [];
             vals.forEach(v => firs.push(  graph.filter( e => v == e.name )[0])   );
             firs.forEach(e => graph = graph.filter(f=> f.name != e.name)   );
             graph  = [...firs, ...graph];
-        }
-
-        if (tree.length === 0) {
+            
             /** ARBRE DELS JOINS A FER */
             joinTree = this.dijkstraAlgorithm(graph, origin, dest.slice(0));
             // Busco relacions directes.
@@ -215,9 +213,9 @@ export abstract class QueryBuilderService {
 
                         if (field.valueListSource.bridge_table?.length > 0) {
                             const j = {
-                                source_column: field.valueListSource.source_bridge || field.column_name,
-                                source_table: field.valueListSource.source_table || field.table_id,
-                                target_id_column: field.valueListSource.target_bridge,
+                                source_column: field.valueListSource.source_bridge,
+                                source_table: field.valueListSource.source_table,
+                                target_id_column: field.valueListSource.source_bridge, //field.valueListSource.target_bridge,
                                 target_table: field.valueListSource.bridge_table
                             };
                             valueListJoins.push(j);
