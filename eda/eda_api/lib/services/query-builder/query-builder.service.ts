@@ -64,51 +64,52 @@ export abstract class QueryBuilderService {
         /** joins per els value list */
         let valueListJoins = [];
 
-
-        /** Reviso si cap columna de la  consulta es un multivalueliest..... */
-        this.queryTODO.fields.forEach( e=>{
+        if (!this.queryTODO.queryMode || this.queryTODO.queryMode == 'EDA') {
+            /** Reviso si cap columna de la  consulta es un multivalueliest..... */
+            this.queryTODO.fields.forEach( e=>{
                 if( e.valueListSource ){
-                    valueListList.push( JSON.parse(JSON.stringify(e)) );
+                    valueListList.push(JSON.parse(JSON.stringify(e)));
                         e.table_id =  e.valueListSource.target_table;
                         e.column_name = e.valueListSource.target_description_column;
                     if (!dest.includes( e.valueListSource.target_table) &&  e.valueListSource.target_table !== origin) {
                         dest.push( e.valueListSource.target_table);
                     }
                 }
-        })
-
-        /** Reviso si cap FILTRE de la  consulta es un multivalueliest.....  */
-        this.queryTODO.filters.forEach( e=>{
-            if( e.valueListSource ){
-                e.table_id =  e.filter_table;
-                e.column_name = e.filter_column;
-                valueListList.push( JSON.parse(JSON.stringify(e)) );
-                if (!dest.includes( e.valueListSource.target_table) &&  e.valueListSource.target_table !== origin) {
-                    dest.push( e.valueListSource.target_table);
-                }
-            }
-    })
-   
-        /** revisió dels filtres per si hi ha un multivaluelist */
-        if( valueListList.length > 0 && this.queryTODO.filters ){
-            this.queryTODO.filters.forEach(f=>{
-                valueListList.forEach(v=>{
-                    if(f.filter_table == v.table_id && f.filter_column == v.column_name  ){
-                        f.filter_table =  v.valueListSource.target_table;
-                        f.filter_column =  v.valueListSource.target_description_column;
-                    }
-                })
             })
-        }
 
-        /** Ajusto els joins per que siguin left join en cas els value list*/
-        if( valueListList.length > 0   ){
+            /** Reviso si cap FILTRE de la  consulta es un multivalueliest.....  */
+            this.queryTODO.filters.forEach(e=>{
+                if(e.valueListSource){
+                    e.table_id = e.filter_table;
+                    e.column_name = e.filter_column;
+                    valueListList.push(JSON.parse(JSON.stringify(e)));
+                    if (!dest.includes(e.valueListSource.target_table) &&  e.valueListSource.target_table !== origin) {
+                        dest.push(e.valueListSource.target_table);
+                    }
+                }
+            })
+
+            /** revisió dels filtres per si hi ha un multivaluelist */
+            if(valueListList.length > 0 && this.queryTODO.filters){
+                this.queryTODO.filters.forEach(f=>{
+                    valueListList.forEach(v=>{
+                        if(f.filter_table == v.table_id && f.filter_column == v.column_name  ){
+                            f.filter_table =  v.valueListSource.target_table;
+                            f.filter_column =  v.valueListSource.target_description_column;
+                        }
+                    })
+                })
+            }
+
+            /** Ajusto els joins per que siguin left join en cas els value list*/
+            if(valueListList.length > 0){
                 valueListList.forEach(v=>{
                     valueListJoins.push(v.valueListSource.target_table);
-                    if(v.valueListSource.bridge_table && v.valueListSource.bridge_table != undefined && v.valueListSource.bridge_table.length >= 1  ){ // les taules pont també han de ser left joins
+                    if(v.valueListSource.bridge_table && v.valueListSource.bridge_table != undefined && v.valueListSource.bridge_table.length >= 1){ // les taules pont també han de ser left joins
                         valueListJoins.push(v.valueListSource.bridge_table );
                     }
                 });
+            }
         }
 
         /** ..........................PER ELS VALUE LISTS................................ */
@@ -133,9 +134,9 @@ export abstract class QueryBuilderService {
 
         
         /** SEPAREM ENTRE AGGREGATION COLUMNS/GROUPING COLUMNS */
-        const separedCols = this.getSeparedColumns(origin, dest);
-        const columns = separedCols[0];
-        const grouping = separedCols[1];
+        let separedCols = this.getSeparedColumns(origin, dest);
+        let columns = separedCols[0];
+        let grouping = separedCols[1];
 
         
         let joinTree = [];
@@ -207,11 +208,15 @@ export abstract class QueryBuilderService {
                 for (const field of fields) {
                     if (field.valueListSource) {
                         field.valueListSource.source_column = field.column_name;
-                        field.valueListSource.source_table = field.table_id;
+                        field.valueListSource.source_table = field.table_id.split('.')[0];
+
+                        field.table_id =  field.valueListSource.target_table;
+                        field.column_name = field.valueListSource.target_description_column;
+
                         if (field.valueListSource.bridge_table?.length > 0) {
                             const j = {
-                                source_column: field.valueListSource.source_bridge,
-                                source_table: field.valueListSource.source_table,
+                                source_column: field.valueListSource.source_bridge || field.column_name,
+                                source_table: field.valueListSource.source_table || field.table_id,
                                 target_id_column: field.valueListSource.target_bridge,
                                 target_table: field.valueListSource.bridge_table
                             };
@@ -249,6 +254,12 @@ export abstract class QueryBuilderService {
             tree = [...new Set(tree)];
             joinTree = tree;
             this.queryTODO.joined = true;
+
+            dest = valueListJoins;
+            /** SEPAREM ENTRE AGGREGATION COLUMNS/GROUPING COLUMNS */
+            separedCols = this.getSeparedColumns(origin, dest);
+            columns = separedCols[0];
+            grouping = separedCols[1];
         }
 
         //to WHERE CLAUSE
