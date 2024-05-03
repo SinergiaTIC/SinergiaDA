@@ -13,7 +13,7 @@ import * as _ from 'lodash';
 export class GroupListComponent implements OnInit {
     public fitxa: EdaDialogController;
     public table: EdaTable;
-/* SDA CUSTOM */ public protectedGroups: any = ["135792467811111111111110","135792467811111111111113","135792467811111111111115","135792467811111111111117"]
+/* SDA CUSTOM */ public protectedGroups: any = ["135792467811111111111110","135792467811111111111113","135792467811111111111115"]
 
     constructor( private userService: UserService,
                  private groupService: GroupService,
@@ -21,8 +21,8 @@ export class GroupListComponent implements OnInit {
 /* SDA CUSTOM*/         let cellStyle = (value, row) => {
 /* SDA CUSTOM*/             let style: any = {};
 /* SDA CUSTOM*/             if (row.protected) style = { opacity: '0.5' };
-/* SDA CUSTOM*/             return style;          
-/* SDA CUSTOM*/         };                                
+/* SDA CUSTOM*/             return style;
+/* SDA CUSTOM*/         };
         this.table = new EdaTable({
             alertService: this.alertService,
             search: true,
@@ -60,7 +60,7 @@ export class GroupListComponent implements OnInit {
 /* SDA CUSTOM*/ for (let group of groups) {
 /* SDA CUSTOM*/ group.protected = this.protectedGroups.includes(group._id);
 /* SDA CUSTOM*/ }
-            this.table.value = groups;        
+            this.table.value = groups;
     }
 
     crateNewGroup() {
