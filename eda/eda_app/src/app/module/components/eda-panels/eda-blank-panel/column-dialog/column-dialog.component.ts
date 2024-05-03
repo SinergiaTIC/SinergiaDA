@@ -51,7 +51,7 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
     public formatDate: FormatDates;
     public aggregationsTypes: any[] = [];
     public inputType: string;
-    public dropDownFields: SelectItem[];
+    public dropDownFields: SelectItem[] = [];
     public limitSelectionFields: number;
     public cumulativeSum: boolean;
     public cumulativeSumTooltip: string = $localize`:@@cumulativeSumTooltip:Si activas ésta función se calculará la suma acumulativa 
@@ -528,22 +528,37 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
     }
 
     /** Query per dropdown  */
-    loadDropDrownData() {
+    async loadDropDrownData() {
         this.filterValue.value1 = null;
         this.filterValue.value2 = null;
         if (this.filter.switch) {
+            const column = _.cloneDeep(this.selectedColumn);
+            column.table_id = column.table_id.split('.')[0];
+            column.ordenation_type = 'ASC';
+
             const params = {
-                table: this.selectedColumn.table_id,
+                table: column.table_id,
                 dataSource: this.controller.params.inject.dataSource._id,
                 dashboard: this.controller.params.inject.dashboard_id,
                 panel: this.controller.params.panel._id,
                 forSelector: true,
                 filters: []
             };
-            this.dashboardService.executeQuery(this.queryBuilder.normalQuery([this.selectedColumn], params)).subscribe(
-                res => this.dropDownFields = res[1].map(item => ({ label: item[0], value: item[0] })),
-                err => this.alertService.addError(err)
-            );
+
+            try {
+                const res = await this.dashboardService.executeQuery(this.queryBuilder.normalQuery([column], params)).toPromise();
+
+                if (res.length > 1) {
+                    for (const item of res[1]) {
+                        if (item[0]) {
+                            this.dropDownFields.push({ label : item[0], value: item[0] });
+                        }
+                    }
+                }
+            } catch (err) {
+                this.alertService.addError(err);
+                throw err;
+            }
         }
     }
 

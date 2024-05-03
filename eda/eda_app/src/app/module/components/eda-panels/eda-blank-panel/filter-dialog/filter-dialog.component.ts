@@ -41,7 +41,7 @@ export class FilterDialogComponent extends EdaDialogAbstract {
     public inputType: string;
     public filterValue: any = {};
     public filterSelected: FilterType;
-    public dropDownFields: SelectItem[];
+    public dropDownFields: SelectItem[] = [];
     public limitSelectionFields: number;
 
     constructor( private dashboardService: DashboardService,
@@ -186,23 +186,38 @@ export class FilterDialogComponent extends EdaDialogAbstract {
         this.filter.switch = false; // options switch
     }
 
-    loadDropDrownData() {
+    async loadDropDrownData() {
         this.filterValue.value1 = null;
         this.filterValue.value2 = null;
         if (this.filter.switch) {
+            const column = _.cloneDeep(this.selectedColumn);
+            column.table_id = column.table_id.split('.')[0];
+            column.joins = [];
+            column.ordenation_type = 'ASC';
+
             const params = {
-                table: this.selectedColumn.table_id,
+                table: column.table_id,
                 dataSource: this.controller.params.inject.dataSource._id,
                 dashboard: this.controller.params.inject.dashboard_id,
                 panel: this.controller.params.panel._id,
                 filters: [],
                 forSelector: true
             };
-            this.selectedColumn.ordenation_type= 'ASC' ;
-            this.dashboardService.executeQuery(this.queryBuilder.normalQuery([this.selectedColumn], params)).subscribe(
-                res => this.dropDownFields = res[1].map(item => ({label : item[0], value: item[0]}) ),
-                err => this.alertService.addError(err)
-            );
+
+            try {
+                const res = await this.dashboardService.executeQuery(this.queryBuilder.normalQuery([column], params)).toPromise();
+            
+                if (res.length > 1) {
+                    for (const item of res[1]) {
+                        if (item[0]) {
+                            this.dropDownFields.push({ label : item[0], value: item[0] });
+                        }
+                    }
+                }
+            } catch (err) {
+                this.alertService.addError(err);
+                throw err;
+            }
         }
     }
 

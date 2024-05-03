@@ -115,7 +115,9 @@ export class GlobalFilterComponent implements OnInit {
     public async onCloseGlobalFilter(apply: boolean): Promise<void> {
         if (apply) {
             this.dashboard.edaPanels.forEach(panel => {
-                panel.globalFilters = panel.globalFilters.filter((f: any) => f.filter_id !== this.globalFilter.id);
+                if (!this.globalFilter.isdeleted) {
+                    panel.globalFilters = panel.globalFilters.filter((f: any) => f.filter_id !== this.globalFilter.id);
+                }
             });
 
             if (this.globalFilter.isnew) {
@@ -123,7 +125,7 @@ export class GlobalFilterComponent implements OnInit {
             }
 
             for (const filter of this.globalFilters) {
-                if (this.globalFilter.id == filter.id && !filter.isdeleted) {
+                if (this.globalFilter.id == filter.id && !filter.isdeleted && !this.globalFilter.isdeleted) {
                     filter.data = this.globalFilter.data;
                     filter.selectedTable = this.globalFilter.selectedTable;
                     filter.selectedColumn = this.globalFilter.selectedColumn;
@@ -156,7 +158,9 @@ export class GlobalFilterComponent implements OnInit {
                 await this.loadGlobalFiltersData();
             }
 
-            this.applyGlobalFilter(this.globalFilter);
+            if (!this.globalFilter.isdeleted) {
+                this.applyGlobalFilter(this.globalFilter);
+            }
         }
 
         this.globalFilter = undefined;
@@ -266,13 +270,14 @@ export class GlobalFilterComponent implements OnInit {
             this.dashboard.applyToAllfilter = { present: false, refferenceTable: null, id: null };
             // this.updateApplyToAllFilterInPanels(); TODO
         }
-
+        
         // Update fileterList and clean panels' filters
         this.globalFilters = this.globalFilters.filter((f: any) => f.id !== filter.id);
-
+        
         this.dashboard.edaPanels.forEach(panel => {
             panel.globalFilters = panel.globalFilters.filter((f: any) => f.filter_id !== filter.id);
         });
+
 
         if (reload) {
             //not saved alert message
