@@ -205,8 +205,9 @@ export abstract class QueryBuilderService {
             const processFields = (fields) => {
                 for (const field of fields) {
                     if (field.valueListSource) {
-                        field.valueListSource.source_column = field.column_name;
-                        field.valueListSource.source_table = field.table_id.split('.')[0];
+                        
+                        field.valueListSource.source_column = field.column_name?field.column_name:field.filter_column;
+                        field.valueListSource.source_table = field.table_id?field.table_id.split('.')[0]:field.filter_table.split('.')[0];
 
                         field.table_id =  field.valueListSource.target_table;
                         field.column_name = field.valueListSource.target_description_column;
@@ -273,6 +274,18 @@ export abstract class QueryBuilderService {
                 return true;
             }
             });
+
+        // para los filtros en los value list
+        filters.forEach(f => {
+            if (f.valueListSource) {
+                        
+                f.filter_table = f.valueListSource.target_table;
+                f.filter_column = f.valueListSource.target_description_column;
+            }
+        });
+
+
+
 
         //TO HAVING CLAUSE 
         const havingFilters = this.queryTODO.filters.filter(f => {
@@ -349,18 +362,13 @@ export abstract class QueryBuilderService {
                 elem = workingGrapth.filter(e => e.name === new_origin )[0];
                 if(elem.rel.length > 1 ){
                     elem.rel.forEach( 
-                       e=>{ console.log( e); console.log(ruta.paths[i]);
-                            const currentLenght = ruta.paths[i].length;
+                       e=>{ const currentLenght = ruta.paths[i].length;
                             let dup =  [...ruta.paths[i]];
                             dup.push(e);
                             let unique = new Set(dup);
                             dup = [...unique];
                             const newLenght = dup.length;
                             if( newLenght > currentLenght){
-                                console.log('Crece');
-                                console.log( 'Tamaños: '  + currentLenght  + ' - ' + newLenght  );
-                                console.log(ruta.paths[i]);
-                                console.log(dup);
                                 grow = 1;
                             }
                             ruta.paths.push( dup );
@@ -377,10 +385,6 @@ export abstract class QueryBuilderService {
           
         }
 
-
-        //console.log('rutas posibles ==================');
-        //console.log(ruta.paths);
-        //console.log('rutas==================');
 
 
 
@@ -411,9 +415,6 @@ export abstract class QueryBuilderService {
 
         
      
-
-        console.log('Rutas finales:');
-        console.log(finalPaths);
         ruta.paths = finalPaths;
         //        { name: 'orders', dist: Infinity, path: [] }
      
