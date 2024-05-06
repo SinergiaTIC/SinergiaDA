@@ -54,10 +54,11 @@ export class DashboardController {
   static async cleanDashboards(dashboards: any[], user: any) {
     const allowedDashboards = [];
     for (const dashboard of dashboards) {
-      console.log(dashboard);
+
       const datasourceId = dashboard.config?.ds?._id;
       const sourceMetadata = await DataSourceController.GetDataSourceMetadata(datasourceId);
       const modelGrantedRoles = sourceMetadata?.model_granted_roles || [];
+
 
       // Inicializamos variable "allowed" por defecto en true
       user.allowed = false;
@@ -67,6 +68,8 @@ export class DashboardController {
       // Si modelGrantedRoles esta lleno hay que revisar la query, sino el dashboard es visible
       if (modelGrantedRoles.length > 0) {
         if(dashboard.config.panel){
+          
+
           const panels = dashboard.config.panel;
           for (const panel of panels) {
             const query: any[] = panel.content?.query?.query?.fields;
@@ -115,6 +118,7 @@ export class DashboardController {
                 user.allowed = true;
                 user.groupAllowed = true;   
               }
+
               
               // Recorremos el objeto queryRoles
               for (const key of Object.keys(queryRoles)) {
@@ -150,6 +154,13 @@ export class DashboardController {
               }
             }
           }
+
+         
+          
+          if ( dashboard.user.toString() == user.id.toString()){ /** owner can see it */
+            user.allowed = true;
+            user.groupAllowed = true;
+          } 
         }else{
           user.allowed = true;
           user.groupAllowed = true;
@@ -158,6 +169,8 @@ export class DashboardController {
         user.allowed = true;
         user.groupAllowed = true;
       }
+
+
 
       if (user.allowed || user.groupAllowed) {
         addDashboard(dashboard)
@@ -178,7 +191,7 @@ export class DashboardController {
     try {
       const dashboards = await Dashboard.find(
         { user: req.user._id },
-        'config.title config.visible config.tag config.onlyIcanEdit config.ds'
+        'config.title config.visible config.tag config.onlyIcanEdit config.ds user'
       ).exec()
       const privates = []
       for (const dashboard of dashboards) {
@@ -199,7 +212,7 @@ export class DashboardController {
       }).exec()
       const dashboards = await Dashboard.find(
         { group: { $in: userGroups.map(g => g._id) } },
-        'config.title config.visible group config.tag config.onlyIcanEdit config.ds config.panel'
+        'config.title config.visible group config.tag config.onlyIcanEdit config.ds config.panel user'
       ).exec()
       const groupDashboards = []
       for (let i = 0, n = dashboards.length; i < n; i += 1) {
@@ -226,7 +239,7 @@ export class DashboardController {
     try {
       const dashboards = await Dashboard.find(
         {},
-        'config.title config.visible config.tag config.onlyIcanEdit config.ds config.panel'
+        'config.title config.visible config.tag config.onlyIcanEdit config.ds config.panel user'
       ).exec()
       const publics = []
 
@@ -245,7 +258,7 @@ export class DashboardController {
     try {
       const dashboards = await Dashboard.find(
         {},
-        'config.title config.visible config.tag config.onlyIcanEdit config.ds config.panel'
+        'config.title config.visible config.tag config.onlyIcanEdit config.ds config.panel user'
       ).exec()
       const shared = []
       for (const dashboard of dashboards) {
@@ -263,7 +276,7 @@ export class DashboardController {
     try {
       const dashboards = await Dashboard.find(
         {},
-        'user config.title config.visible group config.tag config.onlyIcanEdit'
+        'config.title config.visible group config.tag config.onlyIcanEdit user'
       ).exec()
       const publics = []
       const privates = []
