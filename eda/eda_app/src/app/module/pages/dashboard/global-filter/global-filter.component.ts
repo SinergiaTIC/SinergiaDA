@@ -152,14 +152,14 @@ export class GlobalFilterComponent implements OnInit {
                 }
             }
 
-            // Load Filter dropdwons option s
-            if (this.globalFilter.selectedColumn.column_type === 'date' && this.globalFilter.selectedItems.length > 0) {
-                this.loadDatesFromFilter(this.globalFilter);
-            } else {
-                await this.loadGlobalFiltersData();
-            }
-
             if (!this.globalFilter.isdeleted) {
+                // Load Filter dropdwons option s
+                if (this.globalFilter.selectedColumn.column_type === 'date' && this.globalFilter.selectedItems.length > 0) {
+                    this.loadDatesFromFilter(this.globalFilter);
+                } else {
+                    await this.loadGlobalFiltersData();
+                }
+
                 this.applyGlobalFilter(this.globalFilter);
             }
         }
