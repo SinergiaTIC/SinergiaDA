@@ -679,6 +679,7 @@ export class EdaBlankPanelComponent implements OnInit {
      */
     public openColumnDialog(column: Column, isFilter?: boolean): void {
         this.disableBtnSave();
+        
         const p = {
             selectedColumn: _.cloneDeep(column),
             currentQuery: this.currentQuery,
@@ -687,6 +688,10 @@ export class EdaBlankPanelComponent implements OnInit {
             table: this.findTable(column.table_id)?.display_name?.default,
             filters: this.selectedFilters
         };
+
+        if (p.selectedColumn.table_id !== this.rootTreeTable?.table_name) {
+            p.selectedColumn.joins = (p.selectedColumn.joins||[]).length == 0 ? this.nodeJoins[this.nodeJoins.length-1] : p.selectedColumn.joins;
+        }
 
         if (!isFilter) {
             this.configController = new EdaDialogController({

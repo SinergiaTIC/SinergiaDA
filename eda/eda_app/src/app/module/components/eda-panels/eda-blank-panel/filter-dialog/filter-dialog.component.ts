@@ -44,11 +44,13 @@ export class FilterDialogComponent extends EdaDialogAbstract {
     public dropDownFields: SelectItem[] = [];
     public limitSelectionFields: number;
 
-    constructor( private dashboardService: DashboardService,
-                 private chartUtils: ChartUtilsService,
-                 private columnUtils: ColumnUtilsService,
-                 private queryBuilder: QueryBuilderService,
-                 private alertService: AlertService) {
+    constructor(
+        private dashboardService: DashboardService,
+        private chartUtils: ChartUtilsService,
+        private columnUtils: ColumnUtilsService,
+        private queryBuilder: QueryBuilderService,
+        private alertService: AlertService
+    ) {
         super();
 
         this.filter.types = this.chartUtils.filterTypes;
@@ -60,7 +62,6 @@ export class FilterDialogComponent extends EdaDialogAbstract {
         });
 
         this.dialog.style = { width: '50%', height: '70%', top:"-4em", left:'1em'};
-
     }
 
     onShow(): void {
@@ -72,36 +73,26 @@ export class FilterDialogComponent extends EdaDialogAbstract {
 
     addFilter() {
         const table =  this.selectedColumn.table_id;
-        const columnType  = this.selectedColumn.column_type;
+        const column_type  = this.selectedColumn.column_type;
         const column = this.selectedColumn.column_name;
         const type = this.filterSelected.value;
-        const range = this.filter.range;
-        if(this.selectedColumn.valueListSource){
-            this.filter.selecteds.push(
-                this.columnUtils.addFilter(
-                    this.filterValue,
-                    table,
-                    column,
-                    columnType,
-                    type,
-                    range,
-                    this.selectedColumn.valueListSource
-                )
-            );
-        }else{
-            this.filter.selecteds.push(
-                this.columnUtils.addFilter(
-                    this.filterValue, 
-                    table, 
-                    column,
-                    columnType,
-                    type, 
-                    range
-                )
-            );
-        }
+        const selectedRange = this.filter.range;
+        const valueListSource = this.selectedColumn.valueListSource;
+        const joins = this.selectedColumn.joins;
 
+        const filter = this.columnUtils.setFilter({
+            obj: this.filterValue,
+            table,
+            column,
+            column_type,
+            type,
+            selectedRange,
+            valueListSource,
+            joins
+        });
         
+        this.filter.selecteds.push(filter);
+
         this.carregarFilters();
 
         /* Reset Filter Form */
