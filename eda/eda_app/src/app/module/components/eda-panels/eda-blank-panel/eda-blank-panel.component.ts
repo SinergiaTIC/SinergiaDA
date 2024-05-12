@@ -294,10 +294,20 @@ export class EdaBlankPanelComponent implements OnInit {
 
     public checkNodeSelected(node: any) {
         if (node?.child_id) {
-            return this.currentQuery.some((query: any) => query.table_id == node.child_id);
+            const nodeJoins = JSON.stringify((node.joins || ['root'])[0]);
+            const nodeTableId = node.child_id;
+
+
+            return this.currentQuery.some((query: any) => {
+                const queryJoins = JSON.stringify((query.joins || ['root'])[0]);
+                return query.table_id === nodeTableId && queryJoins === nodeJoins;
+            }) || this.filtredColumns.some((filter: any) => {
+                const filterJoins = JSON.stringify((filter.joins || ['root'])[0]);
+                return filter.table_id === nodeTableId && filterJoins === nodeJoins;
+            });
         } else {
             return false;
-        }   
+        }
     }
 
     getEditMode() {
@@ -450,7 +460,6 @@ export class EdaBlankPanelComponent implements OnInit {
         this.queryLimit = panelContent.query.query.queryLimit;
         PanelInteractionUtils.handleFilters(this, panelContent.query.query);
         PanelInteractionUtils.handleFilterColumns(this, panelContent.query.query.filters, panelContent.query.query.fields);
-        // PanelInteractionUtils.handleCurrentQuery(this);
         this.chartForm.patchValue({chart: this.chartUtils.chartTypes.find(o => o.subValue === panelContent.edaChart)});
         PanelInteractionUtils.verifyData(this);
 
@@ -680,6 +689,10 @@ export class EdaBlankPanelComponent implements OnInit {
     public openColumnDialog(column: Column, isFilter?: boolean): void {
         this.disableBtnSave();
         
+        if (column.table_id !== this.rootTreeTable?.table_name) {
+            column.joins = (column.joins||[]).length == 0 ? this.nodeJoins[this.nodeJoins.length-1] : column.joins;
+        }
+
         const p = {
             selectedColumn: _.cloneDeep(column),
             currentQuery: this.currentQuery,
@@ -688,10 +701,6 @@ export class EdaBlankPanelComponent implements OnInit {
             table: this.findTable(column.table_id)?.display_name?.default,
             filters: this.selectedFilters
         };
-
-        if (p.selectedColumn.table_id !== this.rootTreeTable?.table_name) {
-            p.selectedColumn.joins = (p.selectedColumn.joins||[]).length == 0 ? this.nodeJoins[this.nodeJoins.length-1] : p.selectedColumn.joins;
-        }
 
         if (!isFilter) {
             this.configController = new EdaDialogController({
