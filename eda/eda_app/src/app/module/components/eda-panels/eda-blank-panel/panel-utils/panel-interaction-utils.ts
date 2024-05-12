@@ -219,25 +219,43 @@ export const PanelInteractionUtils = {
     ebp.selectedFilters = ebp.selectedFilters.filter(f => f.isGlobal === false);
   },
 
-  handleFilterColumns: (
-    ebp: EdaBlankPanelComponent,
-    filterList: Array<any>,
-    query: Array<any>
-  ): void => {
-    try{
-      filterList.forEach(filter => {
-        const table = ebp.tables.filter(table => table.table_name === filter.filter_table)[0];
-        const column = table.columns? table.columns.filter(column => column.column_name === filter.filter_column)[0] : [];
-        const columnInQuery = query.filter(col => col.column_name === filter.filter_column).length > 0;
-        if (!filter.isGlobal && !columnInQuery && column != undefined) {
-          ebp.filtredColumns.push(column);
-        }
-        if(column == undefined){
-          console.log('WARNING\nWARING. YOU HAVE A COLUMN IN THE FILTERS NOT PRESENT IN THE MODEL!!!!!!!!!!!!\nWARNING');
-          console.log(filter);
-        }
-      });
-    }catch(e){
+  handleFilterColumns: (ebp: EdaBlankPanelComponent, filterList: Array<any>, query: Array<any>): void => {
+    try {
+        // Realizar el assertTable antes de recorrer filterList
+        filterList.forEach(filter => {
+            const table = ebp.tables.find(table => table.table_name === filter.filter_table);
+            if (!table) {
+                const assertTable = ebp.tables.find(table => table.table_name === filter.filter_table.split('.')[0]);
+                if (assertTable) {
+                    const column = assertTable.columns.find(c => c.column_name === filter.filter_column);
+                    if (column) {
+                        column.table_id = filter.filter_table;
+                        column.joins = filter.joins || [];
+                        PanelInteractionUtils.assertTable(ebp, column);
+                    } else {
+                        console.warn('WARNING\nWARNING. YOU HAVE A COLUMN IN THE FILTERS NOT PRESENT IN THE MODEL!!!!!!!!!!!!\nWARNING');
+                        console.warn(filter);
+                    }
+                }
+            }
+        });
+
+        // Luego, procesar filterList
+        filterList.forEach(filter => {
+            const table = ebp.tables.find(table => table.table_name === filter.filter_table);
+            if (table) {
+                const column = table.columns?.find(column => column.column_name === filter.filter_column);
+                const columnInQuery = query.some(col => col.column_name === filter.filter_column);
+                if (!filter.isGlobal && !columnInQuery && column) {
+                    ebp.filtredColumns.push(column);
+                }
+                if (!column) {
+                    console.warn('WARNING\nWARNING. YOU HAVE A COLUMN IN THE FILTERS NOT PRESENT IN THE MODEL!!!!!!!!!!!!\nWARNING');
+                    console.warn(filter);
+                }
+            }
+        });
+    } catch (e) {
         console.error('Error loading filters');
         console.error(e);
     }
