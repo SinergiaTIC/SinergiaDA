@@ -161,9 +161,10 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
             const unsetPanels = this.edaPanels.filter(panel => _.isNil(panel.panel.content));
 
             setTimeout(() => {
+                const treeQueryMode = this.edaPanels.some((panel) => panel.selectedQueryMode === 'EDA2');
                 unsetPanels.forEach(panel => {
                     globalFilters.forEach(filter => {
-                        if (panel) {
+                        if (panel && !treeQueryMode) {
                             filter.panelList.push(panel.panel.id);
                             const formatedFilter = this.globalFiltersService.formatFilter(filter);
                             panel.assertGlobalFilter(formatedFilter)

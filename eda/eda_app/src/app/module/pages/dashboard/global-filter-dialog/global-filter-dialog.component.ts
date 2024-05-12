@@ -127,6 +127,13 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
         } else {
             for (const panel of this.allPanels) {
                 panel.active = this.globalFilter.panelList.includes(panel.id);
+
+                if (!Object.keys(this.globalFilter.pathList).includes(panel.id)) {
+                    this.globalFilter.pathList[panel.id] = {
+                        selectedTableNodes: {},
+                        path: []
+                    };
+                }
             }
         }
 
@@ -179,7 +186,6 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
             this.filteredPanels = this.allPanels.filter((p: any) => p.avaliable && p.active);
             this.initTablesForFilter();
         }
-
     }
 
     public onChangeSelectedTable(): void {
