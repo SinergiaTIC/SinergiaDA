@@ -130,6 +130,7 @@ export class GlobalFilterComponent implements OnInit {
                     filter.selectedTable = this.globalFilter.selectedTable;
                     filter.selectedColumn = this.globalFilter.selectedColumn;
                     filter.selectedItems = this.globalFilter.selectedItems;
+                    filter.selectedRange = this.globalFilter.selectedRange;
                     filter.panelList = this.globalFilter.panelList;
                     filter.pathList = this.globalFilter.pathList;
                     filter.type = this.globalFilter.type;

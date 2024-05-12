@@ -2,6 +2,7 @@ import { CdkDragDrop, moveItemInArray } from "@angular/cdk/drag-drop";
 import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from "@angular/core";
 import { EdaPanel } from "@eda/models/model.index";
 import { AlertService, DashboardService, FileUtiles, GlobalFiltersService, QueryBuilderService } from "@eda/services/service.index";
+import { EdaDatePickerConfig } from "@eda/shared/components/eda-date-picker/datePickerConfig";
 import * as _ from 'lodash';
 
 @Component({
@@ -51,6 +52,7 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
     ];
 
     public formReady: boolean = false;
+    public datePickerConfigs: any = {};
 
     constructor(
         private globalFilterService: GlobalFiltersService,
@@ -194,6 +196,17 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
         this.clearFilterPaths();
     }
 
+    public onChangeSelectedColumn(): void {
+        this.globalFilter.selectedItems = [];
+        if (this.globalFilter.selectedColumn.column_type == 'date') {
+            this.loadDatesFromFilter();
+        } else {
+            this.loadColumnValues();
+        }
+
+        this.findPanelPathTables();
+    }
+
     public getColumnsByTable() {
         this.columns = [];
 
@@ -224,6 +237,42 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
         } catch (err) {
             this.alertService.addError(err)
             throw err;
+        }
+    }
+
+    private loadDatesFromFilter() {
+        const filter = this.globalFilter;
+
+        this.datePickerConfigs[filter.id] = new EdaDatePickerConfig();
+        const config = this.datePickerConfigs[filter.id];
+        config.dateRange = [];
+        config.range = filter.selectedRange;
+        config.filter = filter;
+        if (filter.selectedItems.length > 0) {
+            if (!filter.selectedRange) {
+                let firstDate = filter.selectedItems[0];
+                let lastDate = filter.selectedItems[filter.selectedItems.length - 1];
+                config.dateRange.push(new Date(firstDate.replace(/-/g, '/')));
+                config.dateRange.push(new Date(lastDate.replace(/-/g, '/')));
+            }
+        }
+    }
+
+    public processPickerEvent(event): void {
+        if (event.dates) {
+            const dtf = new Intl.DateTimeFormat('en', { year: 'numeric', month: '2-digit', day: '2-digit' });
+            if (!event.dates[1]) {
+                event.dates[1] = event.dates[0];
+            }
+
+            let stringRange = [event.dates[0], event.dates[1]]
+                .map(date => {
+                    let [{ value: mo }, , { value: da }, , { value: ye }] = dtf.formatToParts(date);
+                    return `${ye}-${mo}-${da}`
+                });
+
+            this.globalFilter.selectedItems = stringRange;
+            this.globalFilter.selectedRange = event.range;
         }
     }
 
