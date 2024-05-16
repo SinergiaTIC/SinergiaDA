@@ -106,7 +106,7 @@ export class QueryBuilderService extends ApiService {
             labels.push(select[i].column_name);
         }
 
-        const filters = params.filters.filter((f) => f.filter_elements[0].value1 && f.filter_elements[0].value1.length !== 0);
+        const filters = params.filters.filter((f) => f.filter_elements[0]?.value1 && f.filter_elements[0].value1.length !== 0);
         
         return {
             id: '1',

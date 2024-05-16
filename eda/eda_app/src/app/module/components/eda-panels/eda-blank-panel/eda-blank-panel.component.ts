@@ -212,21 +212,24 @@ export class EdaBlankPanelComponent implements OnInit {
         /**If panel comes from server */
         if (this.panel.content) {
             try{
-                const query = this.panel.content.query;
-                const modeSQL = query.query.modeSQL;
-                const queryMode = query.query.queryMode;
-
-                if (queryMode) {
-                    this.selectedQueryMode = queryMode;
+                const contentQuery = this.panel.content.query;
+                const modeSQL = contentQuery.query.modeSQL;
+                let queryMode = contentQuery.query.queryMode;
+                
+                if (!queryMode) {
+                    queryMode = modeSQL ? 'SQL' : 'EDA';
                 }
+
+                this.selectedQueryMode = queryMode;
 
                 if (queryMode == 'EDA2') {
-                    this.rootTreeTable = query.query.rootTreeTable;
+                    this.rootTreeTable = contentQuery.query.rootTreeTable;
                 }
 
+
                 if (modeSQL || queryMode=='SQL') {
-                    this.currentSQLQuery = query.query.SQLexpression;
-                    this.sqlOriginTable = this.tables.filter(t => t.table_name === query.query.fields[0].table_id)
+                    this.currentSQLQuery = contentQuery.query.SQLexpression;
+                    this.sqlOriginTable = this.tables.filter(t => t.table_name === contentQuery.query.fields[0].table_id)
                         .map(table => ({ label: table.display_name.default, value: table.table_name }))[0];
                 }
 
@@ -434,6 +437,7 @@ export class EdaBlankPanelComponent implements OnInit {
     public buildGlobalconfiguration(panelContent: any) {
         const modeSQL = panelContent.query.query.modeSQL;
         const queryMode = panelContent.query.query.queryMode;
+        this.showHiddenColumn = true;
         if ((queryMode && queryMode != 'SQL') || !modeSQL) {
             try {
                 if (queryMode == 'EDA2') {
@@ -466,6 +470,7 @@ export class EdaBlankPanelComponent implements OnInit {
         const config = ChartsConfigUtils.recoverConfig(panelContent.chart, panelContent.query.output.config);
         this.changeChartType(panelContent.chart, panelContent.edaChart, config);
 
+        this.showHiddenColumn = false;
         this.display_v.saved_panel = true;
         this.display_v.minispinner = false;
     }
@@ -831,7 +836,7 @@ export class EdaBlankPanelComponent implements OnInit {
             
             const queryMode = this.panelDeepCopy.query.query.queryMode;
             const modeSQL = this.panelDeepCopy.query.query.modeSQL;
-            
+
             this.selectedQueryMode = _.isNil(queryMode) ? (modeSQL ? 'SQL' : 'EDA') : queryMode;
             this.rootTreeTable = this.panelDeepCopy.rootTreeTable;
         }

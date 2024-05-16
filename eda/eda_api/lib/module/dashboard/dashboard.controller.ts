@@ -862,9 +862,8 @@ export class DashboardController {
    */
   static async execSqlQuery(req: Request, res: Response, next: NextFunction) {
     try {
-      const connection = await ManagerConnectionService.getConnection(
-        req.body.model_id
-      )
+    console.log('execSqlQuery');
+      const connection = await ManagerConnectionService.getConnection(req.body.model_id);
       const dataModel = await connection.getDataSource(req.body.model_id)
 
       /**Security check */
@@ -914,23 +913,12 @@ export class DashboardController {
 
         /**If query is in format select foo from a, b queryBuilder returns null */
         if (!query) {
-          return next(
-            new HttpException(
-              500,
-              'Queries in format "select x from A, B" are not suported'
-            )
-          )
+          return next(new HttpException(500,'Queries in format "select x from A, B" are not suported'));
         }
 
-        console.log(
-          '\x1b[32m%s\x1b[0m',
-          `QUERY for user ${req.user.name}, with ID: ${req.user._id
-          },  at: ${formatDate(new Date())} `
-        )
+        console.log('\x1b[32m%s\x1b[0m', `QUERY for user ${req.user.name}, with ID: ${req.user._id},  at: ${formatDate(new Date())} `);
         console.log(query)
-        console.log(
-          '\n-------------------------------------------------------------------------------\n'
-        )
+        console.log('\n-------------------------------------------------------------------------------\n');
 
         /**cached query */
         let cacheEnabled =
