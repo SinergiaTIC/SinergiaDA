@@ -82,6 +82,18 @@
                                         (onNodeExpand)="onNodeExpand(panel, $event)"
                                         (onNodeSelect)="onNodeSelect(panel, $event)" appendTo="body"
                                         [disabled]="!panel.active || !panel.avaliable">
+
+                                        <ng-template pTemplate="value">
+                                            <span class="d-flex align-items-center" [innerHTML]="getDisplayPathStr(globalFilter.pathList[panel.id].selectedTableNodes)"></span>
+                                        </ng-template>
+
+                                        <ng-template let-node pTemplate="child">
+                                            <span [ngClass]="checkNodeSelected(globalFilter.pathList[panel.id].selectedTableNodes, node) ? 'font-weight-bold' : ''"> {{node.label}} </span>
+                                        </ng-template>
+
+                                        <ng-template let-node pTemplate="default">
+                                            <b>{{node.label}}</b>
+                                        </ng-template>
                                     </p-treeSelect>
                                 </td>
                             </tr>

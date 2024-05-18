@@ -827,9 +827,10 @@ export class EdaBlankPanelComponent implements OnInit {
         this.display_v.saved_panel = false;
         this.columns = [];
         this.currentQuery = [];
-        if (this.panelDeepCopy.query) {
 
+        if (this.panelDeepCopy.query) {
             this.panelDeepCopy.query.query.filters = this.mergeFilters(this.panelDeepCopy.query.query.filters, this.globalFilters);
+
             this.filtredColumns = [];
             //Reassing sqlQuery -if exists
             this.currentSQLQuery = this.panelDeepCopy.query.query.SQLexpression;
@@ -1176,7 +1177,7 @@ export class EdaBlankPanelComponent implements OnInit {
                 let tableName = this.getNiceTableName(table);
                 if (!tableName) tableName = this.getNiceTableName(table.split('.')[0]);
 
-                pathStr += ` ${tableName} → `;
+                pathStr += ` ${tableName} <i class="pi pi-angle-right"></i> `;
             }
         } else if (column.valueListSource) {
             const tableName = this.getNiceTableName(column.valueListSource.target_table);
@@ -1184,6 +1185,63 @@ export class EdaBlankPanelComponent implements OnInit {
         }
 
         return pathStr
+    }
+
+    public getFilterJoins(filter: any) {
+        let pathStr = '';
+        if (filter.joins?.length > 0) {
+
+            for (const path of filter.joins) {
+                const table = (path[0]||'');
+                let tableName = this.getNiceTableName(table);
+                if (!tableName) tableName = this.getNiceTableName(table.split('.')[0]);
+
+                pathStr += ` ${tableName} <i class="pi pi-angle-right"></i> `;
+            }
+        } else if (filter.valueListSource) {
+            const tableName = this.getNiceTableName(filter.valueListSource.target_table);
+            if (tableName) pathStr += ` ${tableName} → `;
+        }
+
+        return pathStr
+    }
+
+    public getDisplayFilterStr(filter: any) {
+        let str = '';
+
+        const table = this.findTable(filter.filter_table.split('.')[0]);
+
+        if (table.table_name) {
+            const tableName = table.display_name?.default;
+            const columnName = table.columns.find((c) => c.column_name == filter.filter_column)?.display_name?.default;
+
+            const values = filter.filter_elements[0]?.value1;
+            const values2 = filter.filter_elements[1]?.value2;
+            let valueStr = '';
+
+            if (values) {
+                if (values.length == 1 && !['in', 'not_in'].includes(filter.filter_type)) {
+                    valueStr = `"${values[0]}"`;
+                }  else if (values.length > 1 || ['in', 'not_in'].includes(filter.filter_type)) {
+                    valueStr = `[${values.map((v: string) => (`"${v}"`) ).join(', ')}]`;
+                }
+
+                if (values2) {
+                    if (values2.length == 1) {
+                        valueStr = `AND "${values2[0]}"`;
+                    }  else if (values2.length > 1) {
+                        valueStr = `AND [${values2.map((v: string) => (`"${v}"`) ).join(', ')}]`;
+                    }
+                }
+
+            }
+
+
+            str = `<strong>${tableName}</strong>&nbsp[${columnName}]&nbsp<strong>${filter.filter_type}</strong>&nbsp${valueStr}`;
+        }
+
+
+        return str;
     }
 
 /* SDA CUSTOM */     public showIdForHiddenMode() {

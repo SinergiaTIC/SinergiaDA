@@ -411,6 +411,44 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
         }
     }
 
+    public checkNodeSelected(selectedPath: any, node: any) {
+        if (node?.child_id) {
+            let selected = false;
+            for (const join of selectedPath.joins) {
+                if (join[1] == node.child_id) {
+                    selected = true;
+                }
+            }
+            return selected;
+        } else {
+            return false;
+        }
+    }
+
+    private findTable(tableName: string) {
+        return this.modelTables.find((table: any) => table.table_name === tableName);
+    }
+
+    public getDisplayPathStr(node: any) {
+        let str = '';
+
+        if ((node.joins||[]).length > 0) {
+            for (const join of node.joins) {
+                const table = this.findTable(join[0]?.split('.')[0]);
+
+                if (table) {
+                    str += `<strong>${table.display_name.default}</strong>&nbsp <i class="pi pi-angle-right"></i>`
+                }
+            }
+
+            str += `<strong>${node.label}</strong>`;
+        } else {
+            str = `<strong>${node.label}</strong>`;
+        }
+
+        return str;
+    }
+
     public onApply(): void {
         if (this.validateGlobalFilter()) {
             this.globalFilterChange.emit(this.globalFilter);

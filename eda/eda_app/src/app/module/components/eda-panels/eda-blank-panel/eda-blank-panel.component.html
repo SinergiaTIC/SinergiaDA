@@ -433,17 +433,21 @@
                                                 Resumen de atributos
                                             </h5>
     
-                                            <div *ngFor="let column of this.currentQuery">
-                                                <span> <strong>{{ getColumnJoins(column) }}</strong> </span>
+                                            <div *ngFor="let column of currentQuery" class="d-flex align-items-center">
+                                                
+                                                <strong class="d-flex align-items-center" [innerHTML]="getColumnJoins(column)"></strong>
 
-                                                <span> <strong>{{ getNiceTableName(column.table_id) }}</strong> → {{column.display_name.default}}</span>
+                                                <span class="d-flex align-items-center">
+                                                    <strong> {{ getNiceTableName(column.table_id) }} </strong>
+                                                    <i class="pi pi-angle-right"></i>
+                                                    {{column.display_name.default}}
+                                                </span>
     
-                                                <span *ngFor="let aggregation of column.aggregation_type">
-                                                    <span
-                                                        *ngIf="aggregation.selected && aggregation.display_name !== 'no'">
+                                                <ng-container *ngFor="let aggregation of column.aggregation_type">
+                                                    <span *ngIf="aggregation.selected && aggregation.display_name !== 'no'" class="d-flex align-items-center">
                                                         ( {{aggregation.display_name}} )
                                                     </span>
-                                                </span>
+                                                </ng-container>
 
                                             </div>
                                         </div>
@@ -454,9 +458,12 @@
                                                 Resumen de filtros del panel
                                             </h5>
     
-                                            <div *ngFor="let filter of this.selectedFilters">
-                                                <span> {{filter.filter_table}} . {{filter.filter_column}} (
-                                                    {{filter.filter_type}} )</span>
+
+                                            
+                                            <div *ngFor="let filter of selectedFilters" class="d-flex align-items-center">
+                                                <strong class="d-flex align-items-center" [innerHTML]="getFilterJoins(filter)"></strong>
+
+                                                <span class="d-flex align-items-center" [innerHTML]="getDisplayFilterStr(filter)"></span>
                                             </div>
                                         </div>
     
@@ -465,9 +472,10 @@
                                                 Resumen de filtros del informe
                                             </h5>
     
-                                            <div *ngFor="let filter of this.globalFilters">
-                                                <span> {{filter.filter_table}} . {{filter.filter_column}} (
-                                                    {{filter.filter_type}} )</span>
+                                            <div *ngFor="let filter of globalFilters" class="d-flex align-items-center">
+                                                <strong class="d-flex align-items-center" [innerHTML]="getFilterJoins(filter)"></strong>
+
+                                                <span class="d-flex align-items-center" [innerHTML]="getDisplayFilterStr(filter)"></span>
                                             </div>
                                         </div>
                                     </div>
