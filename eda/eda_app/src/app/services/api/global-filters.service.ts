@@ -51,13 +51,13 @@ export class GlobalFiltersService {
     public relatedTables(queryTables: any[], modelTables: any[], rootTable?: string): Map<string, any> {
         let visited = new Map();
         const startTable = modelTables.find(t => t.table_name === (rootTable || queryTables[0]));
-        
+
         if (startTable) {
             visited = this.findRelations(modelTables, startTable, visited);
 
             for (const table of queryTables) {
                 const id_table = table.split('.')[0];
-    
+
                 if (!visited.has(id_table)) {
                     return new Map();
                 }
@@ -223,7 +223,7 @@ export class GlobalFiltersService {
 
             const rootTree = tree.map((n) => n.table_id);
             const childrenId = getAllChildIds(expandNode);
-            table.relations = table.relations.filter(f=>f.bridge==false );
+            table.relations = table.relations.filter(f => f.bridge == false);
             for (const relation of table.relations) {
                 // Init child_id
                 const child_id = relation.target_table + '.' + relation.target_column[0];
@@ -259,11 +259,11 @@ export class GlobalFiltersService {
                     };
 
                     if (!childNode.parent) childNode.parent = expandNode;
-                    
+
                     // Check if the childNode have more possible paths to explore
                     const isexpandible = dataSource.some((source) => {
                         return source.table_name == childNode.child_id &&
-                            (source.relations||[]).some((rel: any) => rel.target_table != table_id);
+                            (source.relations || []).some((rel: any) => rel.target_table != table_id);
                     });
 
                     // If it's expandable, we add properties to expand the node. 
@@ -276,7 +276,7 @@ export class GlobalFiltersService {
                     expandNode.children.push(childNode);
                 }
             }
-            
+
             expandNode.children.sort((a, b) => a.label.localeCompare(b.label));
         }
     }
@@ -294,41 +294,15 @@ export class GlobalFiltersService {
 
     private formatGlobalFilter(globalFilter: any) {
         const isDate = globalFilter.column.value.column_type === 'date';
-        const year_length = 4;
-        const year_month_length = 7;
-
-        if (isDate && globalFilter.selectedItems[0] && !globalFilter.selectedItems[1]) {
-            const year = globalFilter.selectedItems[0];
-            if (globalFilter.selectedItems[0].length === year_length) {
-                globalFilter.selectedItems[0] = `${year}-01-01`;
-                globalFilter.selectedItems[1] = `${year}-12-31`;
-            }
-            else if (globalFilter.selectedItems[0].length === year_month_length) {
-                const year_month = globalFilter.selectedItems[0];
-                const year = parseInt(year_month.slice(0, 5))
-                const month = parseInt(year_month.slice(5, 7));
-                let days = new Date(year, month, 0).getDate();
-                let daysstr = days < 10 ? `0${days}` : `${days}`
-                globalFilter.selectedItems[0] = `${year_month}-01`;
-                globalFilter.selectedItems[1] = `${year_month}-${daysstr}`;
-            } else {
-                globalFilter.selectedItems[1] = globalFilter.selectedItems[0]
-            }
-        }
 
         const formatedFilter = {
             filter_id: globalFilter.id,
             filter_table: globalFilter.table.value,
             filter_column: globalFilter.column.value.column_name,
             filter_type: isDate ? 'between' : 'in',
-            filter_elements: isDate ?
-                [
-                    { value1: globalFilter.selectedItems[0] ? [globalFilter.selectedItems[0]] : [] },
-                    { value2: globalFilter.selectedItems[1] ? [globalFilter.selectedItems[1]] : [] }
-                ]
-                : [{ value1: globalFilter.selectedItems }],
+            filter_elements: this.assertGlobalFilterItems(globalFilter),
             isGlobal: true,
-            applyToAll: globalFilter.applyToAll,  
+            applyToAll: globalFilter.applyToAll,
             valueListSource: globalFilter.column.value.valueListSource
         }
 
@@ -337,27 +311,6 @@ export class GlobalFiltersService {
 
     private formatGlobalFilterTree(globalFilter: any) {
         const isDate = globalFilter.selectedColumn.column_type === 'date';
-        const year_length = 4;
-        const year_month_length = 7;
-
-        if (isDate && globalFilter.selectedItems[0] && !globalFilter.selectedItems[1]) {
-            const year = globalFilter.selectedItems[0];
-            if (globalFilter.selectedItems[0].length === year_length) {
-                globalFilter.selectedItems[0] = `${year}-01-01`;
-                globalFilter.selectedItems[1] = `${year}-12-31`;
-            }
-            else if (globalFilter.selectedItems[0].length === year_month_length) {
-                const year_month = globalFilter.selectedItems[0];
-                const year = parseInt(year_month.slice(0, 5))
-                const month = parseInt(year_month.slice(5, 7));
-                let days = new Date(year, month, 0).getDate();
-                let daysstr = days < 10 ? `0${days}` : `${days}`
-                globalFilter.selectedItems[0] = `${year_month}-01`;
-                globalFilter.selectedItems[1] = `${year_month}-${daysstr}`;
-            } else {
-                globalFilter.selectedItems[1] = globalFilter.selectedItems[0]
-            }
-        }
 
         const pathList = _.cloneDeep(globalFilter.pathList);
         for (const key in pathList) {
@@ -369,19 +322,45 @@ export class GlobalFiltersService {
             filter_table: globalFilter.table_id || globalFilter.selectedTable.table_name,
             filter_column: globalFilter.selectedColumn.column_name,
             filter_type: isDate ? 'between' : 'in',
-            filter_elements: isDate ?
-                [
-                    { value1: globalFilter.selectedItems[0] ? [globalFilter.selectedItems[0]] : [] },
-                    { value2: globalFilter.selectedItems[1] ? [globalFilter.selectedItems[1]] : [] }
-                ]
-                : [{ value1: globalFilter.selectedItems }],
+            filter_elements: this.assertGlobalFilterItems(globalFilter),
             pathList: pathList,
             isGlobal: true,
-            applyToAll: globalFilter.applyToAll,  
+            applyToAll: globalFilter.applyToAll,
             valueListSource: globalFilter.selectedColumn.valueListSource
         }
 
         return formatedFilter;
+    }
+
+    public assertGlobalFilterItems(globalFilter: any) {
+        const columnType = globalFilter.column?.value?.column_type || globalFilter.selectedColumn?.column_type;
+        const isDate = columnType === 'date';
+        const year_length = 4;
+        const year_month_length = 7;
+
+
+        if (isDate && globalFilter.selectedItems[0] && !globalFilter.selectedItems[1]) {
+            const year = globalFilter.selectedItems[0];
+            if (globalFilter.selectedItems[0].length === year_length) {
+                globalFilter.selectedItems[0] = `${year}-01-01`;
+                globalFilter.selectedItems[1] = `${year}-12-31`;
+            }
+            else if (globalFilter.selectedItems[0].length === year_month_length) {
+                const year_month = globalFilter.selectedItems[0];
+                const year = parseInt(year_month.slice(0, 5))
+                const month = parseInt(year_month.slice(5, 7));
+                let days = new Date(year, month, 0).getDate();
+                let daysstr = days < 10 ? `0${days}` : `${days}`
+                globalFilter.selectedItems[0] = `${year_month}-01`;
+                globalFilter.selectedItems[1] = `${year_month}-${daysstr}`;
+            } else {
+                globalFilter.selectedItems[1] = globalFilter.selectedItems[0]
+            }
+        }
+
+        return isDate
+            ? [{ value1: globalFilter.selectedItems[0] ? [globalFilter.selectedItems[0]] : [] }, { value2: globalFilter.selectedItems[1] ? [globalFilter.selectedItems[1]] : [] }]
+            : [{ value1: globalFilter.selectedItems }];
     }
 
 }

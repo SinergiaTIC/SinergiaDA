@@ -54,7 +54,7 @@
                         class="customMultiselect filters-size"
                         [style]="{'max-width': '250px', 'min-width':'200px', 'font-family':'var(--eda-filters-font-family)'}"
                         [Show]="dropdownFiltersSize(filter)"
-                        (onChange)="applyGlobalFilter(filter)">
+                        (onChange)="setGlobalFilterItems(filter)">
         
                         <p-footer>
                             <button *ngIf="dashboard.canIedit()" id="dashFilterConf"

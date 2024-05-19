@@ -92,6 +92,21 @@ export class GlobalFilterComponent implements OnInit {
             });
     }
 
+    public setGlobalFilterItems(filter: any) {
+        this.dashboard.edaPanels.forEach((panel: EdaBlankPanelComponent) => {
+            if (filter.panelList.includes(panel.panel.id)) {
+                const filterApplied = panel.globalFilters.find((gf: any) => gf.filter_id === filter.id);
+
+                if (filterApplied) {
+                    filterApplied.filter_elements = this.globalFilterService.assertGlobalFilterItems(filter);
+                } else {
+                    const formatedFilter = this.globalFilterService.formatFilter(filter);
+                    panel.assertGlobalFilter(formatedFilter);
+                }
+            }
+        })
+    }
+
     // Main Global Filter
     public onShowGlobalFilter(isnew: boolean, filter?: any): void {
         if (this.dashboard.validateDashboard('GLOBALFILTER')) {
