@@ -412,7 +412,7 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
     }
 
     public checkNodeSelected(selectedPath: any, node: any) {
-        if (node?.child_id) {
+        if (node?.child_id && selectedPath?.joins) {
             let selected = false;
             for (const join of selectedPath.joins) {
                 if (join[1] == node.child_id) {
