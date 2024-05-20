@@ -430,21 +430,24 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
     }
 
     public getDisplayPathStr(node: any) {
-        let str = '';
+        let str = ' ';
 
-        if ((node.joins||[]).length > 0) {
-            for (const join of node.joins) {
-                const table = this.findTable(join[0]?.split('.')[0]);
-
-                if (table) {
-                    str += `<strong>${table.display_name.default}</strong>&nbsp <i class="pi pi-angle-right"></i>`
+        if (node) {
+            if ((node.joins||[]).length > 0) {
+                for (const join of node.joins) {
+                    const table = this.findTable(join[0]?.split('.')[0]);
+    
+                    if (table) {
+                        str += `<strong>${table.display_name.default}</strong>&nbsp <i class="pi pi-angle-right"></i>`
+                    }
                 }
+    
+                str += `<strong>${node.label}</strong>`;
+            } else {
+                str = `<strong>${node.label}</strong>`;
             }
-
-            str += `<strong>${node.label}</strong>`;
-        } else {
-            str = `<strong>${node.label}</strong>`;
         }
+
 
         return str;
     }
