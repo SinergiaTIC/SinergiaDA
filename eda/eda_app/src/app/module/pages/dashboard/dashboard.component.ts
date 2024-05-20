@@ -151,7 +151,31 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
         //JJ: Inicialitzo a false...
         this.dashboardService._notSaved.next(false);
         // this.display_v.notSaved = false;
-        
+    }
+
+    private setPanelsQueryMode(): void {
+        const treeQueryMode = this.edaPanels.some((panel) => panel.selectedQueryMode === 'EDA2');
+        const standardQueryMode = this.edaPanels.some((panel) => panel.selectedQueryMode === 'EDA');
+
+        for (const panel of this.edaPanels) {
+            if (treeQueryMode) {
+                panel.queryModes = [
+                    { label: 'Tree Query', value: 'EDA2' },
+                    { label: 'SQL Query', value: 'SQL' },
+                ];
+            } else if (standardQueryMode) {
+                panel.queryModes = [
+                    { label: 'EDA Query', value: 'EDA' },
+                    { label: 'SQL Query', value: 'SQL' },
+                ];
+            } else if (!standardQueryMode && !treeQueryMode) {
+                panel.queryModes = [
+                    { label: 'EDA Query', value: 'EDA' },
+                    { label: 'SQL Query', value: 'SQL' },
+                    { label: 'Tree Query', value: 'EDA2' }
+                ];
+            }
+        }
     }
 
     /* Set applyToAllFilters for new panel when it's created */
@@ -160,8 +184,11 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
             const globalFilters = this.gFilter?.globalFilters.filter(filter => filter.isGlobal === true);
             const unsetPanels = this.edaPanels.filter(panel => _.isNil(panel.panel.content));
 
+            this.setPanelsQueryMode();
+
             setTimeout(() => {
                 const treeQueryMode = this.edaPanels.some((panel) => panel.selectedQueryMode === 'EDA2');
+
                 unsetPanels.forEach(panel => {
                     globalFilters.forEach(filter => {
                         if (panel && !treeQueryMode) {
@@ -171,6 +198,8 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
                         }
                     });
                 });
+
+
             }, 0);
         });
     }
@@ -733,6 +762,8 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
                     this.reloadOnGlobalFilter();
                 }
             }
+        } else if (event.code === 'QUERYMODE') {
+            this.setPanelsQueryMode();
         }
     }
     

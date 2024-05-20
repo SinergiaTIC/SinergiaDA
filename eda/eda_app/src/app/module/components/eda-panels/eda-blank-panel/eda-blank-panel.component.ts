@@ -198,7 +198,6 @@ export class EdaBlankPanelComponent implements OnInit {
     ) {
         this.initializeBlankPanelUtils();
         this.initializeInputs();
-
     }
 
     ngOnInit(): void {
@@ -1152,6 +1151,7 @@ export class EdaBlankPanelComponent implements OnInit {
         this.filtredColumns = [];
         this.display_v.btnSave = true;
         this.rootTreeTable = undefined;
+        this.action.emit({ code: 'QUERYMODE', data: { queryMode: this.selectedQueryMode, panel: this.panel } })
     }
 
 /** Esta función permite al switch en la columna atributos ver u ocultar las columnas con el atributo hidden */
