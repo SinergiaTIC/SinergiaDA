@@ -219,7 +219,7 @@
                             <!-- EDA JOINS TREE MODE -->
                             <ng-container *ngIf="selectedQueryMode=='EDA2'">
                                 <ng-container *ngIf="currentQuery.length > 0">
-                                    <p-tree selectionMode="single" [filter]="true" filterMode="strict"
+                                    <p-tree selectionMode="single"
                                         [value]="tableNodes"
                                         [loading]="loadingNodes"
                                         (onNodeExpand)="tableNodeExpand($event)"
