@@ -430,7 +430,7 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
     }
 
     public getDisplayPathStr(node: any) {
-        let str = ' ';
+        let str = '&nbsp';
 
         if (node) {
             if ((node.joins||[]).length > 0) {
