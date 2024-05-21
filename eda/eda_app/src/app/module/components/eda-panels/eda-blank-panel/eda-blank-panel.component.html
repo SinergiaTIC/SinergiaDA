@@ -327,7 +327,7 @@
                                 (mouseout)="description = ''"
                                 cdkDrag
                                 [cdkDragData]="column">
-
+                                <div class="col">
 
                                   <span class="fa fa-close pull-right" style="z-index: 9999;" (click)="removeColumn( item, 'select' )"></span>
                                   <span *ngIf='item.column_type == "text" ' class="mdi mdi-alphabetical" style="margin-right:4px;"></span>
@@ -338,7 +338,7 @@
                                   <span class="text-center eda-col-class-{{item.column_type}}" title="{{item.description.default}}"  >
                                     {{item.display_name.default}}
                                   </span>
-
+                                </div>
 
                             </div>
                             </div>
