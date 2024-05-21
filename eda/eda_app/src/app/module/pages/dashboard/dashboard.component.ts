@@ -168,7 +168,9 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
                     { label: 'EDA Query', value: 'EDA' },
                     { label: 'SQL Query', value: 'SQL' },
                 ];
-            } else if (!standardQueryMode && !treeQueryMode) {
+            }
+            
+            if ((!standardQueryMode && !treeQueryMode) || this.edaPanels.length === 1) {
                 panel.queryModes = [
                     { label: 'EDA Query', value: 'EDA' },
                     { label: 'SQL Query', value: 'SQL' },

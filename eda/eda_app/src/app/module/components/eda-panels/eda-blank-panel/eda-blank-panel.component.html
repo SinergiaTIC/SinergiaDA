@@ -50,9 +50,7 @@
     <div (window:resize)="onResize($event)" class="grid">
 
         <div id="queryModelSelector" class="col-12">
-            <p-dropdown  class="float-right" [(ngModel)]="selectedQueryMode" [options]="queryModes"
-                [autoDisplayFirst]="false" [showClear]="true"
-                (ngModelChange)="changeQueryMode()" (onClear)="selectedQueryMode=null">
+            <p-dropdown  class="float-right" [(ngModel)]="selectedQueryMode" [options]="queryModes" (ngModelChange)="changeQueryMode()">
             </p-dropdown >
         </div>
 
