@@ -105,9 +105,6 @@ export class QueryBuilderService extends ApiService {
             queryColumns.push(col);
             labels.push(select[i].column_name);
         }
-
-        const filters = params.filters.filter((f) => f.filter_elements[0]?.value1 && f.filter_elements[0].value1.length !== 0);
-        
         return {
             id: '1',
             model_id: params.dataSource,
@@ -121,7 +118,7 @@ export class QueryBuilderService extends ApiService {
             },
             query: {
                 fields: queryColumns,
-                filters,
+                filters : params.filters,
                 simple: false,
                 queryMode,
                 // modeSQL : modeSQL,

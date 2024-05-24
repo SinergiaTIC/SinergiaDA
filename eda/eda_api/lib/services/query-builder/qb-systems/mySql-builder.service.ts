@@ -97,10 +97,9 @@ export class MySqlBuilderService extends QueryBuilderService {
       let filtersString = `\nwhere 1 = 1 `;
 
       filters.forEach(f => {
-
         const column = this.findColumn(f.filter_table, f.filter_column);
         const colname = this.getFilterColname(column);
-        if (f.filter_type === 'not_null') {
+        if (f.filter_type === 'not_null' || f.filter_type === 'not_null_nor_empty' || f.filter_type === 'null_or_empty') {
           filtersString += '\nand ' + this.filterToString(f);
         } else {
           /* Control de nulos... se genera la consutla de forma diferente */
@@ -427,6 +426,10 @@ export class MySqlBuilderService extends QueryBuilderService {
                       ${this.processFilter(filterObject.filter_elements[0].value1, colType)} and ${this.processFilterEndRange(filterObject.filter_elements[1].value2, colType)}`;
         case 3:
           return `${colname} is not null`;
+        case 4:
+          return `${colname} is not null and ${colname} != ''`;
+        case 5:
+          return `${colname} is null or ${colname} = ''`;
       }
     }
 
@@ -467,7 +470,11 @@ export class MySqlBuilderService extends QueryBuilderService {
         const colname = this.getHavingColname(column);
         if (f.filter_type === 'not_null') {
           filtersString += `\nand ${colname}  is not null `;
-        } else {
+        } else if (f.filter_type === 'not_null_nor_empty'){
+          filtersString += `\nand ${colname}  is not null and ${colname} != '' `;
+        } else if (f.filter_type === 'null_or_empty') {
+          filtersString += `\nand ${colname}  is null or ${colname} = '' `;
+        } else{
           /* Control de nulos... se genera la consutla de forma diferente */
           let nullValueIndex = f.filter_elements[0].value1.indexOf(null);
           if (nullValueIndex != - 1) {
@@ -550,6 +557,10 @@ public getHavingColname(column: any){
                     ${this.processFilter(filterObject.filter_elements[0].value1, colType)} and ${this.processFilterEndRange(filterObject.filter_elements[1].value2, colType)}`;
       case 3:
         return `${colname} is not null`;
+      case 4:
+        return `${colname} is not null and ${colname} != ''`;
+      case 5:
+        return `${colname} is null or ${colname} = ''`;
     }
 
 }

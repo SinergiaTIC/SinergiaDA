@@ -4238,6 +4238,14 @@
         <source>Definir la visibilidad del filtro.  Público: todos pueden usarlo.  Deshabilitado: El resto de usuarios pueden ver el filtro pero no pueden modificarlo.  Oculto: El resto de usuario no pueden ver el filtro, pero se les aplica</source>
         <target>Define the visibility of the filter.  Public: everyone can use it.  Disabled: other users can see the filter but cannot modify it.  Hidden: other users cannot see the filter but it applies to them.</target>
       </trans-unit>
+      <trans-unit id="filters13">
+        <source>VALORES NO NULOS NI VACÍOS (not null and != '')</source>
+        <target>VALUES NOR NULL NOR EMPTY (not null and != '')</target>
+      </trans-unit>
+      <trans-unit id="filters14">
+        <source>VALORES NULOS O VACÍOS (null or = '')</source>
+        <target>NULL OR EMPTY VALUES (null or = '')</target>
+      </trans-unit>
 
       <trans-unit id="removeColumnGlobalFilter">
         <source>No se puede eliminar la columna porque hay vinculado un Filtro</source>
