@@ -4264,14 +4264,6 @@
         <source>Definir la visibilidad del filtro.  Público: todos pueden usarlo.  Deshabilitado: El resto de usuarios pueden ver el filtro pero no pueden modificarlo.  Oculto: El resto de usuario no pueden ver el filtro. pero se les aplica</source>
         <target>Definir la visibilitat del filtre.  Públic: tots poden utilitzar-lo.  Deshabilitat: els altres usuaris poden veure el filtre però no el poden modificar.  Ocult: els altres usuaris no poden veure el filtre però els aplica.</target>
       </trans-unit>
-      <trans-unit id="filters13">
-        <source>VALORES NO NULOS NI VACÍOS (not null and != '')</source>
-        <target>VALORS NO NULS NI BUITS (not null and != '')</target>
-      </trans-unit>
-      <trans-unit id="filters14">
-        <source>VALORES NULOS O VACÍOS (null or = '')</source>
-        <target>VALORS NULS O BUITS (null or = '')</target>
-      </trans-unit>
 
       <trans-unit id="removeColumnGlobalFilter">
         <source>No se puede eliminar la columna porque hay vinculado un Filtro</source>
@@ -4281,6 +4273,14 @@
       <trans-unit id="invalidPathForm">
         <source>Ruta incorrecta para el filtro seleccionado</source>
         <target>Ruta incorrecte per el filtre seleccionat</target>
+      </trans-unit>
+      <trans-unit id="filters13">
+        <source>VALORES NO NULOS NI VACÍOS (not null and != '')</source>
+        <target>VALORS NO NULS NI BUITS (not null and != '')</target>
+      </trans-unit>
+      <trans-unit id="filters14">
+        <source>VALORES NULOS O VACÍOS (null or = '')</source>
+        <target>VALORS NULS O BUITS (null or = '')</target>
       </trans-unit>
     </body>
   </file>
