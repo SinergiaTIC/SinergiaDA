@@ -153,9 +153,10 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
         // this.display_v.notSaved = false;
     }
 
+    /** Selecciona el modo en el que se permitirá hacer consultas. Teniendo en cuenta que no se pueden mezclar consultas de tipo EDA y Abrol en un mismo informe. */
     private setPanelsQueryMode(): void {
-        const treeQueryMode = this.edaPanels.some((panel) => panel.selectedQueryMode === 'EDA2');
-        const standardQueryMode = this.edaPanels.some((panel) => panel.selectedQueryMode === 'EDA');
+        const treeQueryMode = this.panels.some((p) => p.content?.query?.query?.queryMode === 'EDA2');
+        const standardQueryMode = this.panels.some((p) => p.content?.query?.query?.queryMode === 'EDA');
 
         for (const panel of this.edaPanels) {
             if (treeQueryMode) {
