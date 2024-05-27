@@ -48,6 +48,9 @@ export class DashboardFilterDialogComponent extends EdaDialogAbstract {
     public selectedRange : string = null;
     public selectedFilter: any;
     public datePickerConfigs: any = {};
+    public aliasValue : string = "";
+    public aliasValueDis : string;
+    public aliasValueSelcted : string;
     
     // Global filters vars
     public filtersList: Array<{ table, column, panelList, data, selectedItems, selectedRange, id, isGlobal, applyToAll, visible }> = [];
@@ -182,7 +185,10 @@ export class DashboardFilterDialogComponent extends EdaDialogAbstract {
             if (this.panelstoFilter.length === 0 || !this.targetTable || !this.targetCol) {
                 return this.alertService.addWarning($localize`:@@mandatoryFields:Recuerde rellenar los campos obligatorios`);
             }
-    
+
+        if (this.aliasValue != "") {
+            this.targetCol.label = this.aliasValue;
+        }
             this.filtersList.push({
                 id: this.fileUtils.generateUUID(),
                 table: this.targetTable,
@@ -204,6 +210,9 @@ export class DashboardFilterDialogComponent extends EdaDialogAbstract {
 
             this.onClose(EdaDialogCloseEvent.NEW, response);
         } else {
+            if (this.aliasValue != "") {
+                this.targetCol.label = this.aliasValue;
+            }
             if (this.selectedFilter) {
                 this.selectedFilter.table = this.targetTable;
                 this.selectedFilter.column = this.targetCol;
@@ -315,6 +324,9 @@ export class DashboardFilterDialogComponent extends EdaDialogAbstract {
         if (filter.column.value.column_type === 'date') {
             this.loadDatesFromFilter(filter)
         }
+    }
+
+    private saveAlias(aliasValue) {
     }
 
     private loadDatesFromFilter(filter) {
