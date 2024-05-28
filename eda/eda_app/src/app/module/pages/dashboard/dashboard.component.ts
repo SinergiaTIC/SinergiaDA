@@ -50,7 +50,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     public onlyIcanEdit: boolean = false;
     public queryParams: any = {};
 
-    public isDashboardCreator: boolean = false; 
+    public isDashboardCreator: boolean = false;
 
     // Grid Global Variables
     public inject: InjectEdaPanel;
@@ -124,7 +124,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
         private globalFiltersService: GlobalFiltersService,
         private stylesProviderService: StyleProviderService
     ) {
-        
+
         this.initializeResponsiveSizes();
         this.initializeGridsterOptions();
         this.initializeForm();
@@ -161,21 +161,21 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
         for (const panel of this.edaPanels) {
             if (treeQueryMode) {
                 panel.queryModes = [
-                    { label: 'Tree Query', value: 'EDA2' },
-                    { label: 'SQL Query', value: 'SQL' },
+                    { label: $localize`:@@PanelModeSelectorTree:Modo Árbol`, value: 'EDA2' },
+                    { label: $localize`:@@PanelModeSelectorSQL:Modo SQL`, value: 'SQL' },
                 ];
             } else if (standardQueryMode) {
                 panel.queryModes = [
-                    { label: 'EDA Query', value: 'EDA' },
-                    { label: 'SQL Query', value: 'SQL' },
+                    { label: $localize`:@@PanelModeSelectorEDA:Modo EDA`, value: 'EDA' },
+                    { label: $localize`:@@PanelModeSelectorSQL:Modo SQL`, value: 'SQL' },
                 ];
             }
-            
+
             if ((!standardQueryMode && !treeQueryMode) || this.edaPanels.length === 1) {
                 panel.queryModes = [
-                    { label: 'EDA Query', value: 'EDA' },
-                    { label: 'SQL Query', value: 'SQL' },
-                    { label: 'Tree Query', value: 'EDA2' }
+                    { label: $localize`:@@PanelModeSelectorEDA:Modo EDA`, value: 'EDA' },
+                    { label: $localize`:@@PanelModeSelectorSQL:Modo SQL`, value: 'SQL' },
+                    { label: $localize`:@@PanelModeSelectorTree:Modo Árbol`, value: 'EDA2' }
                 ];
             }
         }
@@ -272,7 +272,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
         });
 
         this.stylesProviderService.customCss.subscribe((css) => {
-           this.stylesProviderService.setCustomCss(css); 
+           this.stylesProviderService.setCustomCss(css);
         });
 
 
@@ -357,7 +357,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
 
 
 
-                
+
                 // pot ser que no estinguin disponibles encara els grups... per això  es crida des de els dos llocs
                 // i es crida també des de aqui.... a mes a mes des de la inicilialització del dashboard
                 // per estar segurn que es tenen disponibles.
@@ -406,7 +406,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
                     me.sendViaMailConfig = config.sendViaMailConfig || this.sendViaMailConfig;
                     me.styles = config.styles || this.stylesProviderService.generateDefaultStyles();
                     this.stylesProviderService.setStyles(me.styles);
-                    
+
                     // pot ser que no estinguin disponibles encara els grups... per això de vegades es perd
                     // i es crida també des de els subscribe del groupcontroller ... a mes a mes des de la inicilialització del dashboard
                     // per estar segurn que es tenen disponibles.
@@ -415,7 +415,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
                     if (config.visible === 'group' && res.dashboard.group) {
                         grp = res.dashboard.group;
                     }
-           
+
                     // Si el dashboard no te cap panel es crea un automatic
                     if (!res.dashboard.config.panel) {
                         me.panels.push(
@@ -669,7 +669,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
                     panel.tamanyMobil.y = height;
                 }
                 pannelHeight = _.round(panel.h * 1.6);
-                // si el panell es mes gran que la pantalla ho ajusto a la pantalla. 
+                // si el panell es mes gran que la pantalla ho ajusto a la pantalla.
                 // tot això es fa per tenir el tamany d'una cela i multiplicar-ho per el 70% de la pantalla
                 // vertical
                 if ((pannelHeight * (window.innerWidth / this.lanes) > window.innerHeight) && (window.innerHeight > window.innerWidth)) {
@@ -747,15 +747,15 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
             if (!_.isNil(data?.inx)) {
                 const column = event.data.query.find((query: any) => query?.display_name?.default === data.filterBy);
                 const table = this.dataSource.model.tables.find((table: any) => table.table_name === column?.table_id);
-    
+
                 if (column && table) {
                     let config = this.setPanelsToFilter(panel);
-                    
+
                     let globalFilter = {
                         id: `${table.table_name}_${column.column_name}`,  //this.fileUtils.generateUUID(),
                         isGlobal: true,
                         applyToAll: config.applyToAll,
-                        panelList: config.panelList.map(p => p.id), 
+                        panelList: config.panelList.map(p => p.id),
                         table: { label: table.display_name.default, value: table.table_name },
                         column: { label: column.display_name.default, value: column },
                         selectedItems: [data.label]
@@ -769,12 +769,12 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
             this.setPanelsQueryMode();
         }
     }
-    
+
     private setPanelsToFilter(panel: any): any {
         const newPanel = this.panels.find(p => p.id === panel.id);
         const panels = this.globalFiltersService.panelsToDisplay(this.dataSource.model.tables, this.panels, newPanel);
         const panelsToFilter = panels.filter(p => p.avaliable === true);
-    
+
         return {
             panelList: panelsToFilter,
             applyToAll: (panels.length === panelsToFilter.length)
@@ -861,7 +861,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
                     this.stylesProviderService.setStyles(response);
                     this.styles = response;
                     this.dashboardService._notSaved.next(true);
-                }     
+                }
                 this.editStylesController = null;
             }
         })
@@ -880,7 +880,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
 
         for (const _globalFilter of this.gFilter?.globalFilters) {
             const globalFilter = _.cloneDeep(_globalFilter);
-            
+
             delete (globalFilter.isnew);
 
             if (globalFilter.pathList) {
@@ -889,11 +889,11 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
                     delete (selectedTableNodes.parent);
                 }
             }
-            
+
             if (globalFilter.selectedTable) {
                 delete (globalFilter.selectedTable.columns);
             }
-            
+
             globalFilter.data = null;
             filtersCleaned.push(globalFilter);
         }
@@ -1155,7 +1155,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
             && !$event.isNew) {
             found.savePanel();
         }
-        
+
         // found.onGridsterResize($event);
         if (panel.type === 1) {
             let elements = document.querySelectorAll(`.eda-text-panel`);
@@ -1224,7 +1224,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     public canIedit(): boolean {
         let result: boolean = false;
         result = this.userService.isAdmin;
-        // si no es admin...  
+        // si no es admin...
         if (!result) {
             if (this.dashboard.onlyIcanEdit) {
                 result = this.userService.user._id === this.dashboard.user
@@ -1236,7 +1236,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
         }
         return result;
     }
-    
+
     public setDashboardCreator(dashboard : any) : void {
         if (this.userService.user._id === dashboard.user)  {
             this.isDashboardCreator = true;

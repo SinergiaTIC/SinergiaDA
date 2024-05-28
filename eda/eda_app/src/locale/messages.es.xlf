@@ -4274,6 +4274,20 @@
         <source>Ruta incorrecta para el filtro seleccionado</source>
         <target>Ruta incorrecta para el filtro seleccionado</target>
       </trans-unit>
+
+      <trans-unit id="PanelModeSelectorEDA">
+        <source>Modo EDA</source>
+        <target>Modo EDA</target>
+      </trans-unit>
+      <trans-unit id="PanelModeSelectorSQL">
+        <source>Modo SQL</source>
+        <target>Modo SQL</target>
+      </trans-unit>
+      <trans-unit id="PanelModeSelectorTree">
+        <source>Modo Árbol</source>
+        <target>Modo Árbol</target>
+      </trans-unit>
+
     </body>
   </file>
 </xliff>
