@@ -4269,7 +4269,7 @@
 
       <trans-unit id="removeColumnGlobalFilter">
         <source>No se puede eliminar la columna porque hay vinculado un Filtro</source>
-        <target>No se puede eliminar la columna porque hay vinculado un Filtro</target>
+        <target>No se puede eliminar la columna porque tiene un filtro vinculado</target>
       </trans-unit>
 
       <trans-unit id="invalidPathForm">
