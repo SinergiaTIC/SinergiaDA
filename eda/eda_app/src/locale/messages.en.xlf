@@ -4241,12 +4241,12 @@
 
       <trans-unit id="removeColumnGlobalFilter">
         <source>No se puede eliminar la columna porque hay vinculado un Filtro</source>
-        <target>Can not remove this column cause there is a GlobalFilter linked</target>
+        <target>The column can not be removed because it has a linked filter</target>
       </trans-unit>
 
       <trans-unit id="invalidPathForm">
         <source>Ruta incorrecta para el filtro seleccionado</source>
-        <target>Invalid path for selected filter</target>
+        <target>Invalid path for the selected filter</target>
       </trans-unit>
 
       <trans-unit id="PanelModeSelectorEDA">
