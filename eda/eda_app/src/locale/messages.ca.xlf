@@ -4287,6 +4287,14 @@
         <source>Modo Árbol</source>
         <target>Mode Arbre</target>
       </trans-unit>
+      <trans-unit id="filters13">
+        <source>VALORES NO NULOS NI VACÍOS (not null and != '')</source>
+      <target>VALORS NO NULS NI BUITS (not null and != '')</target>
+      </trans-unit>
+      <trans-unit id="filters14">
+        <source>VALORES NULOS O VACÍOS (null or = '')</source>
+        <target>VALORS NULS O BUITS (null or = '')</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>
