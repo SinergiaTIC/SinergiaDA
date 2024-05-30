@@ -130,10 +130,25 @@ export const QueryUtils = {
       if (!globalFilters) {
 
         PanelInteractionUtils.verifyData(ebp);
-        ebp.changeChartType('table', 'table', null);
-        ebp.chartForm.patchValue({
-          chart: ebp.chartUtils.chartTypes.find(o => o.value === 'table')
-        });
+
+        // Este if y else permiten mantener el gráfico que ya estaba configurado a pesar de que sean otros datos
+        // en caso de que query no cumpla con el grádico correspondiente, se proyectara una tabla con los datos.
+        if(!ebp.chartForm.value.chart.ngIf && !ebp.chartForm.value.chart.tooManyData){
+          setTimeout(() => {
+            ebp.changeChartType(ebp.chartForm.value.chart.value, ebp.chartForm.value.chart.subValue, ebp.panelChartConfig.config);
+          })
+          ebp.chartForm.patchValue({
+            chart: ebp.chartUtils.chartTypes.find(o => o.subValue === ebp.chartForm.value.chart.subValue)
+           });
+         }
+         
+         else {
+           ebp.changeChartType('table', 'table', null);
+           ebp.chartForm.patchValue({
+             chart: ebp.chartUtils.chartTypes.find(o => o.value === 'table')
+           });
+       }
+
         ebp.spinnerService.off();
 
       } else {
