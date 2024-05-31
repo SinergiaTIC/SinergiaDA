@@ -79,7 +79,7 @@ export class MySqlBuilderService extends QueryBuilderService {
       filters.forEach(f => {
         const column = this.findColumn(f.filter_table, f.filter_column);
         const colname = this.getFilterColname(column);
-        if (f.filter_type === 'not_null') {
+        if (f.filter_type === 'not_null' || f.filter_type === 'not_null_nor_empty' || f.filter_type === 'null_or_empty') {
           filtersString += '\nand ' + this.filterToString(f);
         } else {
           /* Control de nulos... se genera la consutla de forma diferente */
@@ -332,6 +332,10 @@ export class MySqlBuilderService extends QueryBuilderService {
           return `${colname} is not null`;
         case 4:
             return `${colname} is null`;
+        case 5:
+          return `${colname} is not null and ${colname} != ''`;
+        case 6:
+          return `${colname} is null or ${colname} = ''`;
       }
     }
 

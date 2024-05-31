@@ -69,7 +69,7 @@ export abstract class QueryBuilderService {
        /** Reviso si cap columna de la  consulta es un multivalueliest..... */
 
         this.queryTODO.fields.forEach( e=>{
-                if( e.valueListSource ){
+            if (!_.isEmpty(e.valueListSource)) {       
                     valueListList.push( JSON.parse(JSON.stringify(e)) );
                         e.table_id =  e.valueListSource.target_table;
                         e.column_name = e.valueListSource.target_description_column;
@@ -81,7 +81,7 @@ export abstract class QueryBuilderService {
 
         /** Reviso si cap FILTRE de la  consulta es un multivalueliest.....  */
         this.queryTODO.filters.forEach( e=>{
-            if( e.valueListSource ){
+            if (!_.isEmpty(e.valueListSource)) {  
                 e.table_id =  e.filter_table;
                 e.column_name = e.filter_column;
                 valueListList.push( JSON.parse(JSON.stringify(e)) );
@@ -445,6 +445,8 @@ export abstract class QueryBuilderService {
         else if (filter === 'between') return 2;
         else if (filter === 'not_null') return 3;
         else if (filter === 'is_null') return 4;
+        else if (filter === 'not_null_nor_empty') return 5;
+        else if (filter === 'null_or_empty') return 6;
     }
 
 
@@ -772,17 +774,17 @@ export abstract class QueryBuilderService {
     public mergeFilterStrings = (filtersString, equalfilters ) => {
         if (equalfilters.toRemove.length > 0) {
             equalfilters.map.forEach((value, key) => {
-                let filterSTR = '\nand ( '
-                value.forEach(( f, index) => {
-                    if(index > 0){
-                        if(f.filter_column_type != 'date' && f.filter_type != 'is_null'){
-                            filterSTR +=  '\n  and';
-                        }else{
-                            filterSTR +=  '\n   or';
-                        }
-                    }
-                    filterSTR += this.filterToString(f) ;
+                let filterSTR = '\nand ( '    
+                let n = value.filter( f=> (f.filter_type == 'not_null'  || f.filter_type == 'not_null_nor_empty' || f.filter_type == 'null_or_empty') );
+                let values = [...n, ...value.filter( f=> f.filter_type != 'not_null')];            
+                values.forEach((f) => {
+                    if (f.filter_type == 'not_null' || f.filter_type == 'not_null_nor_empty' || f.filter_type == 'null_or_empty') {                        //Fins que no es pugi determinar el tipus de conjunció. Els filtres sobre una mateixa columna es un or perque vull dos grups. EXCEPTE QUAN ES UN NULL
+                        filterSTR += this.filterToString(f) + '\n  and ';
+                    } else {
+                        filterSTR += this.filterToString(f) + '\n  or ';
 
+                        filterSTR += this.filterToString(f);
+                    }
                 });
 
                 filterSTR += ' ) ';

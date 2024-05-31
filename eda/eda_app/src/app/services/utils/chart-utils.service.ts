@@ -84,7 +84,9 @@ export class ChartUtilsService {
         { label: $localize`:@@filters9:FUERA DE (not in)`, value: 'not_in', typeof: ['numeric', 'date', 'text'] },
         { label: $localize`:@@filters10:PARECIDO A (like)`, value: 'like', typeof: ['text'] },
         { label: $localize`:@@filters11:NO PARECIDO A (not like)`, value: 'not_like', typeof: ['text'] },
-        { label: $localize`:@@filters12:VALORES NO NULOS (not null)`, value: 'not_null', typeof: ['numeric', 'date', 'text'] }
+        { label: $localize`:@@filters12:VALORES NO NULOS (not null)`, value: 'not_null', typeof: ['numeric', 'date', 'text'] },
+        { label: $localize`:@@filters13:VALORES NO NULOS NI VACÍOS (not null and != '')`, value: 'not_null_nor_empty', typeof:  ['numeric', 'date', 'text']},
+        { label: $localize`:@@filters14:VALORES NULOS O VACÍOS (null or = '')`, value: 'null_or_empty', typeof:  ['numeric', 'date', 'text']},
     ];
 
     public ordenationTypes: OrdenationType[] = [

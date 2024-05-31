@@ -100,6 +100,9 @@ export class QueryBuilderService extends ApiService {
             labels.push(select[i].column_name);
         }
 
+        const filters = params.filters.filter((f) => (f.filter_elements[0]?.value1 && f.filter_elements[0].value1.length !== 0) 
+        || f.filter_type === 'not_null' || f.filter_type === 'not_null_nor_empty' || f.filter_type === 'null_or_empty');
+
         return {
             id: '1',
             model_id: params.dataSource,
@@ -113,7 +116,7 @@ export class QueryBuilderService extends ApiService {
             },
             query: {
                 fields: queryColumns,
-                filters: params.filters,
+                filters: filters,
                 simple: false,
                 modeSQL : modeSQL,
                 SQLexpression : SQLexpression,
