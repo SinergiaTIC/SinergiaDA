@@ -21,7 +21,7 @@
 
 
 <ng-template #filterTemplate>
-    <p-card [header]="header1">
+    <p-card>
         <div class="grid">
             <div class="col-12">
                 <div class="grid">
@@ -97,10 +97,6 @@
                         [style]="{'vertical-align' : 'bottom', width: '100%' }"
                         *ngIf="targetCol" [(ngModel)]="aliasValue" 
                         placeholder="Alias del filtro (opcional)"/>
-                     <!--   <button id="saveFilterButton" type="submit" pButton  i18n-label="@@guardarBtn"
-                        *ngIf="targetCol" 
-                        label="Confirmar" icon="fa fa-check" class="p-button-raised p-button-success" [disabled]="true && !aliasValue"
-                        [style]="{ width: '50%'}"  (click)="saveAlias(aliasValue)"></button> -->
                     </div>
 
                     <div class="col-3">

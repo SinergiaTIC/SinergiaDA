@@ -53,6 +53,7 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
 
     public formReady: boolean = false;
     public datePickerConfigs: any = {};
+    public aliasValue: string = "";
 
     constructor(
         private globalFilterService: GlobalFiltersService,
@@ -365,7 +366,7 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
         let valid = true;
 
         const availablePanels = this.filteredPanels.map((p) => p.id);
-
+        if (this.aliasValue != "") this.globalFilter.selectedColumn.display_name.default = this.aliasValue;
         if (!this.globalFilter.isdeleted) {
             for (const key in this.globalFilter.pathList) {
                 if (availablePanels.includes(key) && _.isEmpty(this.globalFilter.pathList[key].selectedTableNodes)) {

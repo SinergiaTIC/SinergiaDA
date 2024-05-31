@@ -49,8 +49,6 @@ export class DashboardFilterDialogComponent extends EdaDialogAbstract {
     public selectedFilter: any;
     public datePickerConfigs: any = {};
     public aliasValue : string = "";
-    public aliasValueDis : string;
-    public aliasValueSelcted : string;
     
     // Global filters vars
     public filtersList: Array<{ table, column, panelList, data, selectedItems, selectedRange, id, isGlobal, applyToAll, visible }> = [];
@@ -214,6 +212,9 @@ export class DashboardFilterDialogComponent extends EdaDialogAbstract {
                 this.targetCol.label = this.aliasValue;
             }
             if (this.selectedFilter) {
+                if (this.aliasValue != "") {
+                    this.targetCol.label = this.aliasValue;
+                }
                 this.selectedFilter.table = this.targetTable;
                 this.selectedFilter.column = this.targetCol;
                 this.selectedFilter.panelList = this.panelstoFilter.map(p => p.id);
