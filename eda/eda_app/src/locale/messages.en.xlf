@@ -4243,6 +4243,15 @@
         <target>Define the visibility of the filter.  Public: everyone can use it.  Disabled: other users can see the filter but cannot modify it.  Hidden: other users cannot see the filter but it applies to them.</target>
       </trans-unit>
 
+      <trans-unit id="filters13">
+        <source>VALORES NO NULOS NI VACÍOS (not null and != '')</source>
+        <target>VALUES NOR NULL NOR EMPTY (not null and != '')</target>
+      </trans-unit>
+      <trans-unit id="filters14">
+        <source>VALORES NULOS O VACÍOS (null or = '')</source>
+        <target>NULL OR EMPTY VALUES (null or = '')</target>
+      </trans-unit>
+
     </body>
   </file>
 </xliff>
