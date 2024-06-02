@@ -205,51 +205,57 @@ export class MySqlBuilderService extends QueryBuilderService {
     const joinString = [];
     const targetTableJoin = [];
 
+    console.log('joinTree', joinTree);
+
     for (const join of joinTree) {
-      // División de las partes de la join
-      const [sourceTable, sourceColumn] = join[0].split('.');
-      const [targetTable, targetColumn] = join[1].split('.');
 
-      // Construcción de las partes de la join
-      const sourceJoin = `\`${sourceTable}\`.\`${sourceColumn}\``;
-      let targetJoin = `\`${targetTable}\`.\`${targetColumn}\``;
+        // División de las partes de la join
+        const sourceLastDotInx = join[0].lastIndexOf('.');
+        // sourceTableAlias === join relation table_id
+        const [sourceTable, sourceColumn] = [join[0].substring(0, sourceLastDotInx), join[0].substring(sourceLastDotInx + 1)];
+        const [targetTable, targetColumn] = join[1].split('.');
 
-      // Si la join no existe ya, se añade
-      if (!joinExists.has(`${sourceJoin}=${targetJoin}`)) {
-        joinExists.add(`${sourceJoin}=${targetJoin}`);
+        // Construcción de las partes de la join
+        let sourceJoin = `\`${sourceTable}\`.\`${sourceColumn}\``;
+        let targetJoin = `\`${targetTable}\`.\`${targetColumn}\``;
 
-        // Construcción de los alias
-        const alias = `\`${targetTable}.${targetColumn}\``;
-        aliasTables[alias] = targetTable;
+        // Si la join no existe ya, se añade
+        if (!joinExists.has(`${sourceJoin}=${targetJoin}`)) {
+            joinExists.add(`${sourceJoin}=${targetJoin}`);
 
-        let aliasTargetTable: string;
-        if (targetTableJoin.includes(targetTable)) {
-          aliasTargetTable = `${targetTable}${targetTableJoin.indexOf(targetTable)}`;
-          aliasTables[alias] = aliasTargetTable;
+            // Construcción de los alias
+            const alias = `\`${targetTable}.${targetColumn}\``;
+            aliasTables[alias] = targetTable;
+
+            let aliasTargetTable: string;
+            // targetTable and sourceTable can be the same table (autorelation)
+            if (targetTableJoin.includes(targetTable) || targetTable == sourceTable) {
+                aliasTargetTable = `${targetTable}${targetTableJoin.indexOf(targetTable)}`;
+                aliasTables[alias] = aliasTargetTable;
+            }
+
+            let joinStr: string;
+
+            joinType = valueListJoins.includes(targetTable) ? 'LEFT' : joinType;
+
+            if (aliasTargetTable) {
+                targetJoin = `\`${aliasTargetTable}\`.\`${targetColumn}\``;
+                joinStr = `${joinType} JOIN \`${targetTable}\` \`${aliasTargetTable}\` ON  ${sourceJoin}  =  ${targetJoin} `;
+            } else {
+                joinStr = `${joinType} JOIN \`${targetTable}\` ON  ${sourceJoin} = ${targetJoin} `;
+            }
+
+            // Si la join no se ha incluido ya, se añade al array
+            if (!joinString.includes(joinStr)) {
+                targetTableJoin.push(aliasTargetTable || targetTable);
+                joinString.push(joinStr);
+            }
         }
-
-        let joinStr: string;
-
-        joinType = valueListJoins.includes(targetTable) ? 'LEFT' : joinType;
-
-        if (aliasTargetTable) {
-          targetJoin = `\`${aliasTargetTable}\`.\`${targetColumn}\``;
-          joinStr = `${joinType} JOIN \`${targetTable}\` \`${aliasTargetTable}\` ON  ${sourceJoin}  =  ${targetJoin} `;
-        } else {
-          joinStr = `${joinType} JOIN \`${targetTable}\` ON  ${sourceJoin} = ${targetJoin} `;
-        }
-
-        // Si la join no se ha incluido ya, se añade al array
-        if (!joinString.includes(joinStr)) {
-          targetTableJoin.push(aliasTargetTable || targetTable);
-          joinString.push(joinStr);
-        }
-      }
     }
 
     return {
-      joinString,
-      aliasTables
+        joinString,
+        aliasTables
     };
   }
 

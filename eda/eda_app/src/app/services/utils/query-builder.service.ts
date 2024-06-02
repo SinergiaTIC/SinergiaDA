@@ -102,6 +102,7 @@ export class QueryBuilderService extends ApiService {
             col.whatif_column = select[i].whatif_column || false;
             col.whatif = select[i].whatif;
             col.joins = select[i].joins || [];
+            col.autorelation = select[i].autorelation;
             queryColumns.push(col);
             labels.push(select[i].column_name);
         }
