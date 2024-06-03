@@ -200,7 +200,7 @@ export class FilterDialogComponent extends EdaDialogAbstract {
             
                 if (res.length > 1) {
                     for (const item of res[1]) {
-                        if (item[0]) {
+                        if (item[0] === '' || item[0] ) { 
                             this.dropDownFields.push({ label : item[0], value: item[0] });
                         }
                     }
