@@ -4274,6 +4274,11 @@
         <source>Ruta incorrecta para el filtro seleccionado</source>
         <target>Ruta incorrecte per el filtre seleccionat</target>
       </trans-unit>
+
+      <trans-unit id="aliasValuePh">
+        <source>Alias del filtro (opcional)</source>
+        <target>Alias del filtre (opcional)</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>

@@ -34,6 +34,7 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
     public greendot: string = $localize`:@@greendot:Paneles filtrados`;
     public reddot: string = $localize`:@@reddot:Paneles no relacionados`;
     public unselecteddot: string = $localize`:@@unselecteddot:Paneles no filtrados`;
+    public aliasValuePh : string = $localize`:@@aliasValuePh: Alias del filtro (opcional)`;
 
     public tables: any[] = [];
     public selectedTable: any;

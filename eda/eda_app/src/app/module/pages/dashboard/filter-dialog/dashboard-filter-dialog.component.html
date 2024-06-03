@@ -95,8 +95,9 @@
                     <div class="col-3" >
                         <input class = "d-flex justify-content-center" type="text" pInputText id="aliasName"
                         [style]="{'vertical-align' : 'bottom', width: '100%' }"
-                        *ngIf="targetCol" [(ngModel)]="aliasValue" 
-                        placeholder="Alias del filtro (opcional)"/>
+                        *ngIf="targetCol" [(ngModel)]="aliasValue" placeholder="Alias del filtro (opcional)"
+                        i18n-placeholder="@@aliasValuePh"
+                        />
                     </div>
 
                     <div class="col-3">

@@ -3912,6 +3912,11 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <target>Określ widoczność filtra. Publiczny: każdy może z niego korzystać.  Wyłączone: Inni użytkownicy mogą zobaczyć filtr, ale nie mogą go modyfikować.  Ukryty: Inni użytkownicy nie mogą zobaczyć filtra, ale to ich dotyczy</target>
 </trans-unit>
 
+<trans-unit id="aliasValuePh">
+<source>Alias del filtro (opcional)</source>
+<target>Alias ​​filtra (opcjonalnie)</target>
+</trans-unit>
+
 </body>
 </file>
 </xliff>
