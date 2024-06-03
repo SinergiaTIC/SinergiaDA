@@ -212,7 +212,9 @@ export class EdaBlankPanelComponent implements OnInit {
         if (this.panel.content) {
             try{
                 const contentQuery = this.panel.content.query;
-                const modeSQL = contentQuery.query.modeSQL; // Comptabilitzar dashboard antics sense queryMode informat
+
+               const modeSQL = contentQuery.query.modeSQL; // Comptabilitzar dashboard antics sense queryMode informat
+
                 let queryMode = contentQuery.query.queryMode;
 
                 if (!queryMode) {
@@ -438,7 +440,9 @@ export class EdaBlankPanelComponent implements OnInit {
         const modeSQL = panelContent.query.query.modeSQL;
         const queryMode = panelContent.query.query.queryMode;
         this.showHiddenColumn = true;
+      
         if ((queryMode && queryMode != 'SQL') || modeSQL === false) {
+
             try {
                 if (queryMode == 'EDA2') {
                     // Assert Relation Tables
@@ -1174,6 +1178,7 @@ export class EdaBlankPanelComponent implements OnInit {
         let pathStr = '';
         if (column.joins?.length > 0) {
 
+
             for (const path of column.joins) {
                 const table = (path[0]||'');
                 let tableName = this.getNiceTableName(table);
@@ -1185,6 +1190,7 @@ export class EdaBlankPanelComponent implements OnInit {
             const tableName = this.getNiceTableName(column.valueListSource.target_table);
             if (tableName) pathStr += ` ${tableName} → `;
         }
+
 
         return pathStr
     }
