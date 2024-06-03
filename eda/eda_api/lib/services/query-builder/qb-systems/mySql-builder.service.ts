@@ -45,7 +45,6 @@ export class MySqlBuilderService extends QueryBuilderService {
     myQuery += this.getFilters(filters);
 
 
-
     // GroupBy
     if (grouping.length > 0) {
       myQuery += '\ngroup by ' + grouping.join(', ');
@@ -86,7 +85,7 @@ export class MySqlBuilderService extends QueryBuilderService {
     return myQuery;
   };
 
-  public getFilters(filters): any {
+  public getFilters(filters): any {  
     if (this.permissions.length > 0) {
       this.permissions.forEach(permission => { filters.push(permission); });
     }
@@ -96,33 +95,21 @@ export class MySqlBuilderService extends QueryBuilderService {
       filters = filters.filter(f => !equalfilters.toRemove.includes(f.filter_id));
       let filtersString = `\nwhere 1 = 1 `;
 
-      filters.forEach(f => {
 
+      filters.forEach(f => {
         const column = this.findColumn(f.filter_table, f.filter_column);
         const colname = this.getFilterColname(column);
-        if (f.filter_type === 'not_null') {
+        if (f.filter_type === 'not_null' || f.filter_type === 'not_null_nor_empty' || f.filter_type === 'null_or_empty') {
           filtersString += '\nand ' + this.filterToString(f);
         } else {
           /* Control de nulos... se genera la consutla de forma diferente */
-          let nullValueIndex = f.filter_elements[0].value1.indexOf(null);
-          if (nullValueIndex != - 1) {
-            if (f.filter_elements[0].value1.length === 1) {
-              /* puedo haber escogido un nulo en la igualdad */
-              if (f.filter_type == '=') {
-                filtersString += `\nand ${colname}  is null `;
-              } else {
-                filtersString += `\nand ${colname}  is not null `;
-              }
-            } else {
-              if (f.filter_type == '=') {
-                filtersString += `\nand (${this.filterToString(f)} or ${colname}  is null) `;
-              } else {
-                filtersString += `\nand (${this.filterToString(f)} or ${colname}  is not null) `;
-              }
+            if (   f.filter_type == 'is_null' && f.filter_elements[0].value1.length === 1 && filters.length >1 ) {// Si tengo varios filtors es filtro por X o es nulo.
+                   filtersString += `\nor ${colname}  is null `;
+            } if (   f.filter_type == 'is_null' && f.filter_elements[0].value1.length === 1 && filters.length ==1 ) { // si soolo tengo el filtro de nulo es un and poqque digo 1=1 y es nulo.
+              filtersString += `\nand ${colname}  is null `;
+            } else {  
+                filtersString += `\nand (${this.filterToString(f)} ) `;
             }
-          } else {
-            filtersString += '\nand ' + this.filterToString(f);
-          }
         }
       });
 
@@ -412,7 +399,7 @@ export class MySqlBuilderService extends QueryBuilderService {
         column.minimumFractionDigits = 0;
       }
       const colname=this.getFilterColname(column);
-      let colType = column.column_type;
+      let colType = column.filter_column_type;
   
       switch (this.setFilterType(filterObject.filter_type)) {
         case 0:
@@ -433,6 +420,12 @@ export class MySqlBuilderService extends QueryBuilderService {
                       ${this.processFilter(filterObject.filter_elements[0].value1, colType)} and ${this.processFilterEndRange(filterObject.filter_elements[1].value2, colType)}`;
         case 3:
           return `${colname} is not null`;
+        case 4:
+            return `${colname} is null`;
+        case 5:
+          return `${colname} is not null and ${colname} != ''`;
+        case 6:
+          return `${colname} is null or ${colname} = ''`;
       }
     }
 
@@ -564,7 +557,7 @@ public getHavingColname(column: any){
 
   public processFilter(filter: any, columnType: string) {
     filter = filter.map(elem => {
-      if (elem === null || elem === undefined) return 'ihatenulos';
+      if (elem === null || elem === undefined || elem === 'null') return 'null'; //aqui poner 'null'
       else return elem;
     });
 

@@ -29,6 +29,8 @@ import { EbpUtils } from './panel-utils/ebp-utils';
 import { ChartsConfigUtils } from './panel-utils/charts-config-utils';
 import { PanelInteractionUtils } from './panel-utils/panel-interaction-utils'
 
+import {NULL_VALUE} from '../../../../config/personalitzacio/customizables'
+
 export interface IPanelAction {
     code: string;
     data: any;
@@ -422,7 +424,7 @@ export class EdaBlankPanelComponent implements OnInit {
             try {
                 const response = await QueryUtils.switchAndRun(this, panelContent.query);
                 this.chartLabels = this.chartUtils.uniqueLabels(response[0]);
-                this.chartData = response[1];
+                this.chartData = response[1].map(item => item.map(a => a == null ? NULL_VALUE : a)); // canviem els null per valor customitzable
                 this.buildGlobalconfiguration(panelContent);
             } catch (err) {
                 this.alertService.addError(err);
@@ -440,7 +442,6 @@ export class EdaBlankPanelComponent implements OnInit {
         const modeSQL = panelContent.query.query.modeSQL;
         const queryMode = panelContent.query.query.queryMode;
         this.showHiddenColumn = true;
-      
         if ((queryMode && queryMode != 'SQL') || modeSQL === false) {
 
             try {
