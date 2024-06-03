@@ -132,6 +132,7 @@
         <source>Base de datos de SinergiaCRM</source>
         <target>Base de datos de SinergiaCRM</target>
       </trans-unit>
+
       <trans-unit id="logotipoSdaAlt" datatype="html">
         <source>Logotipo de Sinergia Data Analytics</source>
         <target>Logotipo de Sinergia Data Analytics</target>
