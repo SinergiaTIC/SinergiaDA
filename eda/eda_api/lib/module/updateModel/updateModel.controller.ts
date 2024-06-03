@@ -514,7 +514,8 @@ export class updateModel {
               "display_name": {
                 "default": relations[i].direccion === 0 ? relations[i].label.split('|')[0] : relations[i].label.split('|')[1] ,
                  "localized": []
-        },
+              },
+              "autorelation" : relations[i].source_table === relations[i].target_table ? true : false
             }
             destRelations.push(rr);
             
