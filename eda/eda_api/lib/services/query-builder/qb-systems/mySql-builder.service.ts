@@ -192,7 +192,6 @@ export class MySqlBuilderService extends QueryBuilderService {
     const joinString = [];
     const targetTableJoin = [];
 
-    console.log('joinTree', joinTree);
 
     for (const join of joinTree) {
 
