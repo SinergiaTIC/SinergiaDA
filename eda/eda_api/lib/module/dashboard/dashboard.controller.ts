@@ -265,12 +265,9 @@ export class DashboardController {
                   // Poso taules prohivides a false
                   for (let x = 0; x < toJson.ds.model.tables.length; x++) {
                     try {
-
                       if (
                         uniquesForbiddenTables.includes(
                           toJson.ds.model.tables[x].table_name
-
-
                         )
                       ) {
                         toJson.ds.model.tables[x].visible = false
@@ -318,18 +315,12 @@ export class DashboardController {
                           i
                         ].content.query.query.fields = MyFields
                       }
-
-
-
-
-
                     }
                   }
                 }
               } catch (error) {
                 console.log('no pannels in dashboard')
               }
-
 
             }
 
@@ -637,7 +628,6 @@ export class DashboardController {
    */
   static async execQuery(req: Request, res: Response, next: NextFunction) {
 
-
     try {
       const connection = await ManagerConnectionService.getConnection(req.body.model_id);
       const dataModel = await connection.getDataSource(req.body.model_id)
@@ -667,11 +657,10 @@ export class DashboardController {
        uniquesForbiddenTables = [];
       }
 	  
-	  if( req.user._id == '135792467811111111111112'){
-        console.log('ANONYMOUS USER QUERY....NO PERMISSIONS APPLY HERE.....');
-        uniquesForbiddenTables = [];
-
-      }
+/* SDA CUSTOM*/	  if( req.user._id == '135792467811111111111112'){
+/* SDA CUSTOM*/        console.log('ANONYMOUS USER QUERY....NO PERMISSIONS APPLY HERE.....');
+/* SDA CUSTOM*/        uniquesForbiddenTables = [];
+/* SDA CUSTOM*/      }
 	  
 	  
       
@@ -713,7 +702,26 @@ export class DashboardController {
 
       if (myQuery.fields.length == 0) {
         console.log('you cannot see any data');
-        return res.status(200).json([['noData'], [[]]]);
+        return res.status(200).json([['noDataAllowed'], [[]]]);
+      }
+      if( req.body.query.hasOwnProperty('forSelector') && req.body.query.forSelector===true ){
+          myQuery.forSelector = true;
+      }else{
+          myQuery.forSelector = false;
+      }
+
+      /** por compatibilidad. Si no tengo el tipo de columna en el filtro lo añado */
+      if(myQuery.filters){
+        for (const filter of myQuery.filters) {
+          if (!filter.filter_column_type) {
+            const filterTable = dataModelObject.ds.model.tables.find((t) => t.table_name == filter.filter_table.split('.')[0]);
+
+            if (filterTable) {
+              const filterColumn = filterTable.columns.find((c) => c.column_name == filter.filter_column);
+              filter.filter_column_type = filterColumn?.column_type || 'text';
+            }
+          }
+        }
       }
 
       const query = await connection.getQueryBuilded(
@@ -727,8 +735,8 @@ export class DashboardController {
       console.log(
         '\x1b[32m%s\x1b[0m',
         `QUERY for user ${req.user.name}, with ID: ${req.user._id
-
-        },  at: ${formatDate(new Date())} `
+        },  at: ${formatDate(new Date())}  for Dashboard:${req.body.dashboard.dashboard_id
+        } and Panel:${req.body.dashboard.panel_id}  `
       )
       console.log(query)
       console.log(
@@ -817,7 +825,6 @@ export class DashboardController {
         console.log(
           '\x1b[32m%s\x1b[0m',
           `Date: ${formatDate(new Date())} Dashboard:${req.body.dashboard.dashboard_id
-
           } Panel:${req.body.dashboard.panel_id} DONE\n`
         )
 
@@ -831,7 +838,7 @@ export class DashboardController {
          * Si hay fechas agregadas por mes o dia
          * y el flag cumulative está activo se hace la suma acumulativa en todos los campos numéricos
          */
-        console.log('\x1b[36m%s\x1b[0m', '💾 Chached query 💾')
+        console.log('\x1b[36m%s\x1b[0m', '💾 Cached query 💾')
         DashboardController.cumulativeSum(
           cachedQuery.cachedQuery.response,
           req.body.query
@@ -839,7 +846,6 @@ export class DashboardController {
         console.log(
           '\x1b[32m%s\x1b[0m',
           `Date: ${formatDate(new Date())} Dashboard:${req.body.dashboard.dashboard_id
-
           } Panel:${req.body.dashboard.panel_id} DONE\n`
         )
         return res.status(200).json(cachedQuery.cachedQuery.response)
@@ -856,9 +862,8 @@ export class DashboardController {
    */
   static async execSqlQuery(req: Request, res: Response, next: NextFunction) {
     try {
-      const connection = await ManagerConnectionService.getConnection(
-        req.body.model_id
-      )
+    console.log('execSqlQuery');
+      const connection = await ManagerConnectionService.getConnection(req.body.model_id);
       const dataModel = await connection.getDataSource(req.body.model_id)
 
       /**Security check */
@@ -875,11 +880,21 @@ export class DashboardController {
       const dataModelObject = JSON.parse(JSON.stringify(dataModel))
 
       /** Forbidden tables  */
-      const uniquesForbiddenTables = DashboardController.getForbiddenTables(
+      let uniquesForbiddenTables = DashboardController.getForbiddenTables(
         dataModelObject,
         req['user'].role,
         req.user._id
       )
+      const includesAdmin = req['user'].role.includes("135792467811111111111110")
+      if(includesAdmin){
+        // el admin ve todo
+       uniquesForbiddenTables = [];
+      }
+/* SDA CUSTOM */      if( req.user._id == '135792467811111111111112'){
+/* SDA CUSTOM */        console.log('ANONYMOUS USER QUERY....NO PERMISSIONS APPLY HERE.....');
+/* SDA CUSTOM */       uniquesForbiddenTables = [];
+/* SDA CUSTOM */      }
+
       let notAllowedQuery = false
       uniquesForbiddenTables.forEach(table => {
         if (req.body.query.SQLexpression.indexOf(table) >= 0) {
@@ -888,7 +903,7 @@ export class DashboardController {
       })
       if (notAllowedQuery) {
         console.log('Not allowed table in query')
-        return res.status(200).json("[['noData'],[]]")
+        return res.status(200).json("[['noDataAllowed'],[]]")
       } else {
         const query = connection.BuildSqlQuery(
           req.body.query,
@@ -898,24 +913,12 @@ export class DashboardController {
 
         /**If query is in format select foo from a, b queryBuilder returns null */
         if (!query) {
-          return next(
-            new HttpException(
-              500,
-              'Queries in format "select x from A, B" are not suported'
-            )
-          )
+          return next(new HttpException(500,'Queries in format "select x from A, B" are not suported'));
         }
 
-        console.log(
-          '\x1b[32m%s\x1b[0m',
-          `QUERY for user ${req.user.name}, with ID: ${req.user._id
-
-          },  at: ${formatDate(new Date())} `
-        )
+        console.log('\x1b[32m%s\x1b[0m', `QUERY for user ${req.user.name}, with ID: ${req.user._id},  at: ${formatDate(new Date())} `);
         console.log(query)
-        console.log(
-          '\n-------------------------------------------------------------------------------\n'
-        )
+        console.log('\n-------------------------------------------------------------------------------\n');
 
         /**cached query */
         let cacheEnabled =
@@ -997,21 +1000,18 @@ export class DashboardController {
           console.log(
             '\x1b[32m%s\x1b[0m',
             `Date: ${formatDate(new Date())} Dashboard:${req.body.dashboard.dashboard_id
-
             } Panel:${req.body.dashboard.panel_id} DONE\n`
           )
           //console.log('Query output');
           //console.log(output);
           return res.status(200).json(output)
         } else {
-          console.log('\x1b[36m%s\x1b[0m', '💾 Chached query 💾')
+          console.log('\x1b[36m%s\x1b[0m', '💾 Cached query 💾')
           console.log(
             '\x1b[32m%s\x1b[0m',
             `Date: ${formatDate(new Date())} Dashboard:${req.body.dashboard.dashboard_id
-
             } Panel:${req.body.dashboard.panel_id} DONE\n`
           )
-          console.log(cachedQuery.cachedQuery.response);
           return res.status(200).json(cachedQuery.cachedQuery.response)
         }
       }
@@ -1032,15 +1032,12 @@ export class DashboardController {
       if (
         isNaN(val) || val.toString().indexOf('-') >= 0 || val.toString().indexOf('/') >= 0 ||
         val.toString().indexOf('|') >= 0 || val.toString().indexOf(':') >= 0 || val.toString().indexOf('T') >= 0 ||
-        val.toString().indexOf('Z') >= 0 || val.toString().indexOf('Z') >= 0) {
+        val.toString().indexOf('Z') >= 0 || val.toString().indexOf('Z') >= 0 || val.toString().replace(/['"]+/g, '').length == 0 ) {
         isNotNumeric = true;
       }
     } catch (e) {
       // Null values are...NULL
     }
-
-
-
 
     return isNotNumeric;
 
@@ -1049,6 +1046,10 @@ export class DashboardController {
   /**Check if an user can or not see a data model. */
   static securityCheck(dataModel: any, user: any) {
 
+    /** un admin  lo ve todo */
+    if( user.role.includes('135792467811111111111110') ){
+      return true;
+    }
     if(user._id== '135792467811111111111112'){
       console.log('Anonymous access');
       return true;

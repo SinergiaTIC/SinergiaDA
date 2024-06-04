@@ -8,6 +8,7 @@ import es from '@angular/common/locales/es';
 import * as _ from 'lodash';
 import { StyleService } from '@eda/services/service.index';
 import { EdaColumnChartOptions } from './eda-columns/eda-column-chart-options';
+import { EdaColumn } from './eda-columns/eda-column';
 
 @Component({
     selector: 'eda-table',
@@ -31,8 +32,6 @@ export class EdaTableComponent implements OnInit {
         this.chartOptions = EdaColumnChartOptions;
     }
     ngOnInit(): void {
-        
-        
         if(this.inject.styles && !this.inject.pivot){
             this.applyStyles(this.inject.styles)
         }else if(this.inject.styles && this.inject.pivot){
@@ -50,15 +49,12 @@ export class EdaTableComponent implements OnInit {
     }
 
     handleClick(item: any, colname: string) {
-
-        if (this.inject.linkedDashboardProps && this.inject.linkedDashboardProps.sourceCol === colname) {
-
-            const props = this.inject.linkedDashboardProps;
-            const url = window.location.href.substr(0, window.location.href.indexOf('/dashboard')) + `/dashboard/${props.dashboardID}?${props.table}.${props.col}=${item}`;
-
-            window.open(url, "_blank");
-
-        }
+  
+            if (this.inject.linkedDashboardProps && this.inject.linkedDashboardProps.sourceCol === colname) {
+                        const props = this.inject.linkedDashboardProps;
+                        const url = window.location.href.substr(0, window.location.href.indexOf('/dashboard')) + `/dashboard/${props.dashboardID}?${props.table}.${props.col}=${item}`;
+                        window.open(url, "_blank");
+                    }
     }
 
     getTooltip = (col) => `${col.description}` || ``;
@@ -69,16 +65,16 @@ export class EdaTableComponent implements OnInit {
     }
 
     getStyle(col, rowData) {
-      
         if (this.styles[col.field]) {
 
             let cellClass = null;
             let field = col.field;
             if(this.inject.pivot) field = this.styles[col.field].value;
-            field =  field.replace('%', 'percent').replace(/ /g, '') ;
+
+            field = this.getNiceName(field);
             
             if(!parseFloat(rowData[col.field])) cellClass = null;
-            else if (parseFloat(rowData[col.field]) < parseFloat(this.styles[col.field].ranges[0])) cellClass = `table-gradient-${field}-${0}`
+            else if (parseFloat(rowData[col.field]) < parseFloat(this.styles[col.field].ranges[0])) cellClass = `table-gradient-${field}-${0}`;
             else if (parseFloat(rowData[col.field]) < parseFloat(this.styles[col.field].ranges[1])) cellClass = `table-gradient-${field}-${1}`;
             else if (parseFloat(rowData[col.field]) < parseFloat(this.styles[col.field].ranges[2])) cellClass = `table-gradient-${field}-${2}`;
             else if (parseFloat(rowData[col.field]) < parseFloat(this.styles[col.field].ranges[3])) cellClass = `table-gradient-${field}-${3}`;
@@ -90,14 +86,20 @@ export class EdaTableComponent implements OnInit {
         return null;
     }
 
-    public applyStyles(styles: Array<any>) {
-        //console.log('Los estilos que me llegan son ');
-        //console.log(styles.toString())
+    public getItemStyle(col: EdaColumn, row: any) {
+        const style = col.cellStyle(_.get(row, col.field), row);
+        if (!_.isEmpty(style)) {
+            return style;
+        } else {
+            return {};
+        }
+    }
 
+    public applyStyles(styles: Array<any>) {
+ 
         const fields = styles.map(style => style.col);
         const limits = {};
 
-        
         //Initialize 
         fields.forEach(field => {
             limits[field] = { min: Infinity, max: -Infinity, rangeValue: 0, ranges: []};
@@ -131,7 +133,7 @@ export class EdaTableComponent implements OnInit {
             const colors = this.generateColor(styles[i].max, styles[i].min, 5);
   
             colors.forEach((color, i) => {
-                let name = key.replace('%', 'percent').replace(/ /g, '').replace(/[^a-zA-Z0-9 ]/g, '') ;
+                const name = this.getNiceName(key)
                 this.elementRef.nativeElement.style.setProperty(`--table-gradient-bg-color-${name}-${i}`, `#${color} `);
                 this.styleService.setStyles(`.table-gradient-${name}-${i}`, 
                 {
@@ -144,18 +146,14 @@ export class EdaTableComponent implements OnInit {
             });
 
         })
-
         this.styles = limits;
 
     }
 
     applyPivotSyles(styles){
-        //console.log('Los estilos que me llegan son ');
-        //console.log(styles.toString());
 
         const fields = styles.map(style => style.col);
         const limits = {};
-        console.log(fields);
         //Initialize 
         fields.forEach(field => {
             limits[field] = { min: Infinity, max: -Infinity, rangeValue: 0, ranges: [], cols:styles.filter(s => s.col === field)[0].cols  };
@@ -194,7 +192,8 @@ export class EdaTableComponent implements OnInit {
             const colors = this.generateColor(styles[i].max, styles[i].min, 5);
   
             colors.forEach((color, i) => {
-                let name = key.replace('%', 'percent').replace(/ /g, '').replace(/[^a-zA-Z0-9 ]/g, '') ;
+                const name = this.getNiceName(key)
+                console.log(name)
                 this.elementRef.nativeElement.style.setProperty(`--table-gradient-bg-color-${name}-${i}`, `#${color}`);
                 this.styleService.setStyles(`.table-gradient-${name}-${i}`, 
                 {
@@ -205,9 +204,7 @@ export class EdaTableComponent implements OnInit {
                     backgroundColor:`var(--table-gradient-bg-color-${name}-${i})`,
                 });
             });
-
         });
-
         let tmpStyles = {};
 
         Object.keys(limits).forEach(key => {
@@ -225,7 +222,6 @@ export class EdaTableComponent implements OnInit {
             });
 
         });
-
         this.styles = tmpStyles;
     }
 
@@ -287,6 +283,10 @@ export class EdaTableComponent implements OnInit {
 
         return saida;
 
+    }
+
+    private getNiceName(name) {
+        return name.replace('%', 'percent').replace(/ /g, '').replace(/[^a-zA-Z0-9-_-\wáéíóúüñÁÉÍÓÚÜÑ ]/g, '').replace('_','');
     }
 
 

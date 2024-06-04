@@ -1,4 +1,3 @@
- import { filter } from 'rxjs/operators';
 import { EdaKnob } from './../../../eda-knob/edaKnob';
 import { EdaKnobComponent } from './../../../eda-knob/eda-knob.component';
 import { EdaScatter } from './../../../eda-scatter/eda-scatter.component';
@@ -19,7 +18,6 @@ import { ChartUtilsService, StyleConfig, StyleProviderService } from '@eda/servi
 
 import { Column } from '@eda/models/model.index';
 import { EdaChartComponent } from '@eda/components/eda-chart/eda-chart.component';
-import ChartDataLabels from 'chartjs-plugin-datalabels';
 import { EdaColumnDate } from '@eda/components/eda-table/eda-columns/eda-column-date';
 import { EdaColumnNumber } from '@eda/components/eda-table/eda-columns/eda-column-number';
 import { EdaColumnText } from '@eda/components/eda-table/eda-columns/eda-column-text';
@@ -71,7 +69,8 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
     public histoGramDescTxt2: string = $localize`:@@histoGramDescTxt2:en este rango`;
 
 
-    constructor(public resolver: ComponentFactoryResolver,
+    constructor(
+        public resolver: ComponentFactoryResolver,
         private chartUtils: ChartUtilsService,
         @Self() private ownRef: ElementRef,
         public styleProviderService: StyleProviderService) {
@@ -98,7 +97,6 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
     }
 
     ngOnChanges(changes: SimpleChanges): void {
-
         /**
          * If data change chart type
          */
@@ -231,13 +229,18 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
             dataDescription.otherColumns.push(newCol);
             dataDescription.totalColumns++;
 
-            }
+        }
 
         const chartData = this.chartUtils.transformDataQuery(this.props.chartType, this.props.edaChart,  values, dataTypes, dataDescription, isbarline, cfg.numberOfColumns);
 
+        if (chartData.length == 0) {
+            chartData.push([], []);
+        }
+
         const minMax = this.props.chartType !== 'line' ? { min: null, max: null } : this.chartUtils.getMinMax(chartData);
 
-        const manySeries = chartData[1].length > 10 ? true : false;
+        const manySeries = chartData[1]?.length > 10 ? true : false;
+
         const styles:StyleConfig = {
             fontFamily: this.fontFamily,
             fontSize: this.fontSize,
@@ -245,7 +248,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         }
       
       
-        const config = this.chartUtils.initChartOptions(this.props.chartType, dataDescription.numericColumns[0].name,
+        const config = this.chartUtils.initChartOptions(this.props.chartType, dataDescription.numericColumns[0]?.name,
             dataDescription.otherColumns, manySeries, isstacked, this.getDimensions(), this.props.linkedDashboardProps, 
             minMax, styles, cfg.showLabels, cfg.showLabelsPercent, cfg.numberOfColumns, this.props.edaChart);
 
@@ -271,7 +274,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         chartConfig.chartOptions = config.chartOptions;
         chartConfig.chartColors = this.chartUtils.recoverChartColors(this.props.chartType, this.props.config);
         
-        if(!chartData[1][0].backgroundColor){
+        if(!chartData[1][0]?.backgroundColor){
             chartData[1].forEach(( e,i) => {
                 try{
                     e.backgroundColor = chartConfig.chartColors[i].backgroundColor;
@@ -319,7 +322,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         const factory = this.resolver.resolveComponentFactory(EdaTableComponent);
         this.componentRef = this.entry.createComponent(factory);
         this.componentRef.instance.inject = this.initializeTable(type, this.props.config.getConfig());
-        this.componentRef.instance.inject.value = this.chartUtils.transformDataQueryForTable(this.componentRef.instance.inject.noRepetitions, this.props.data.labels, this.props.data.values);
+        this.componentRef.instance.inject.value = this.chartUtils.transformDataQueryForTable(  this.props.data.labels, this.props.data.values);
         const config = this.props.config.getConfig();
 
         if (config) {
@@ -381,7 +384,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
     private renderEdaKpi() {
         let chartConfig: any = {};
         chartConfig.value = this.props.data.values[0][0];
-        chartConfig.header = this.props.query[0].display_name.default;
+        chartConfig.header = this.props.query[0]?.display_name?.default;
         const config: any = this.props.config;
         let alertLimits = [];
         try{
@@ -659,6 +662,16 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
     public destroyComponent() {
         if (this.componentRef) {
             this.componentRef.destroy();
+        }
+    }
+
+    public updateComponent() {
+        if (this.componentRef && !['table', 'crosstable'].includes(this.props.chartType)) {
+            try {
+                this.componentRef.instance?.updateChart();
+            } catch(err) {
+                console.error(err);
+            }
         }
     }
 

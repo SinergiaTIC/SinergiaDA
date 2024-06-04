@@ -9,12 +9,10 @@ import * as _ from 'lodash';
 import { Column } from '@eda/models/model.index';
 import { EdaColumnNumber } from './eda-columns/eda-column-number';
 import { EdaColumnPercentage } from './eda-columns/eda-column-percentage';
-import { Output, EventEmitter, Component } from '@angular/core';
+import { EventEmitter } from '@angular/core';
 import { EdaColumnChart } from './eda-columns/eda-column-chart';
-import { ToastModule } from 'primeng/toast';
-import { Key } from 'protractor';
-import { FindValueSubscriber } from 'rxjs/internal/operators/find';
-import { values } from 'd3';
+
+
 
 interface PivotTableSerieParams {
     mainCol: any,
@@ -36,7 +34,6 @@ export class EdaTable {
     public onSortColEvent: EventEmitter<any> = new EventEmitter();
 
     public _value: any[] = [];
-    public _value_copy: any[] = [];
     
     public cols: EdaColumn[] = [];
     public rows: number = 10;
@@ -68,7 +65,11 @@ export class EdaTable {
     public resultAsPecentage: boolean = false;
     public onlyPercentages: boolean = false;
     public percentageColumns: Array<any> = [];
-    public noRepetitions: boolean = false; 
+    public noRepetitions: boolean; 
+
+    public origValues: any[] = [];
+
+
     public autolayout: boolean = true;
     public sortedSerie: any = null;
     public sortedColumn: any = { field: null, order: null };
@@ -78,7 +79,6 @@ export class EdaTable {
     public Totals:string = $localize`:@@addTotals:Totales`;
     public SubTotals:string = $localize`:@@SubTotals:SubTotales`;
     public Trend:string = $localize`:@@addtrend:Tendencia`;
-
 
     public constructor(init: Partial<EdaTable>) {
         Object.assign(this, init);
@@ -91,6 +91,9 @@ export class EdaTable {
     }
 
     set value(values: any[]) {
+        if( this.origValues.length == 0 ){
+            this.origValues = _.cloneDeep(values);
+        } 
         this.clear();
         this._value = values;
         /* Inicialitzar filtres */
@@ -108,6 +111,7 @@ export class EdaTable {
         if (this.sortedSerie) {
             this.loadSort();
         }
+
 
     }
 
@@ -221,11 +225,9 @@ export class EdaTable {
         if (this.withColSubTotals) {
             event ? this.colSubTotals(event.first / event.rows + 1) : this.colSubTotals(1);
         } 
-        if (this.noRepetitions) {
+
+        if (!this.pivot) {
             this.noRepeatedRows();
-        }
-        if (!this.noRepetitions) {
-            this.withRepeatedRows();
         }
 
     }
@@ -307,8 +309,9 @@ export class EdaTable {
 
                 numericCols.forEach(key => {
                     valuesKeys.forEach(valueKey => {
-                        if (key.includes(valueKey)) {     
-                            let decimalplaces =  0;  /** esto se hace  para ajustar el número de dicimales porque 3.1+2.5 puede dar 5.600004 */
+                      let keyArray = key.split('~');
+                        if (keyArray.includes(valueKey)) {
+                            let decimalplaces = new EdaColumnNumber({}).decimals;  /** esto se hace  para ajustar el número de dicimales porque 3.1+2.5 puede dar 5.600004 */ 
                             try{
                                 if(  row[key].toString().split(".")[1].length > 0){
                                     decimalplaces =  row[key].toString().split(".")[1].length;
@@ -435,8 +438,6 @@ export class EdaTable {
         const values = this._value;
         const keys = this.cols.map(col => col.field);
 
-      
-
         for (let i = 0; i < values.length; i++) {
             for (let j = 0; j < keys.length; j++) {
                 if (i < values.length) {
@@ -471,7 +472,7 @@ export class EdaTable {
                         border: '',
                         type: col.type
                     });
-            }
+            } 
             else {
                 if (firstNonNumericRow) {
                     this.totalsRow.push({ data: `${this.Totals} `, border: " ", class: 'total-row-header', type: col.type });
@@ -509,36 +510,17 @@ export class EdaTable {
         return row;
     }
 
-    makeCopy(val) : void {
-        this._value_copy = val;
-    }
-    
-    getCopy() {
-        return this._value_copy;
-    }
-
-    withRepeatedRows() {
-        const val = this.getCopy();
-       
-        if (_.isEmpty(val) == true) {
-            return this._value;
-        } else {
-            this._value = val;
-            return this._value;
-        }
-    }
-
-    noRepeatedRows() {
-        
-        this.makeCopy(this._value); //hacemos una copia del valor original que nos entra, por si tenemos que reutilizarlo en la vista opuesta
-        let val = this._value;
+    //usamos la extracción de valores para el noRepetitions
+    extractDataValues(val) {
         //separamos valores de claves
         let values = [];
         for (let i=0; i<val.length;i++) {
             values.push(Object.values(val[i]));
         }
-        
-        //tomamos claves que serán el cabecero
+        return values;
+    }
+    //usamos la extracción de labels para el noRepetitions
+    extractLabels(val) {
         let labels = [];      
         labels.push(Object.keys(val[0])); //insertamos el primer objeto con el cabecero para iterar y extraer los datos
         labels.forEach(e => {
@@ -546,12 +528,24 @@ export class EdaTable {
                 labels.push(key);
                 
             })
-        
         })
-        labels.shift(); //borramos el primer objeto.
+        return labels;
+    }
+    
+    noRepeatedRows() {
 
-        let output = [];
 
+        //esta primera iteración con this.noRepetitions en false se hace para devolver las palabras repetidas al diálogo.
+        //Es una secuencia similar a la de quitar los valores, pero opuesta.
+        if (!this.noRepetitions) {
+           this.value = this.origValues  ;
+        } else {
+            //separamos valores de claves
+            let values = this.extractDataValues(this.value);
+            //tomamos claves que serán el cabecero
+            let labels = this.extractLabels(this.value)
+            labels.shift(); //borramos el primer objeto.
+            let output = [];
             // ESTO SE HACE PARA EVITAR REPETIDOS EN LA TABLA. SI UN CAMPO TIENE UNA COLUMNA QUE SE REPITE 
             let first  = _.cloneDeep(values[0]);
             for (let i = 0; i < values.length; i += 1) {
@@ -572,12 +566,12 @@ export class EdaTable {
                 }
                 output.push(obj);   
             }
+            this.value = output;  
+        }   
 
-            this._value = output;        
 
-        return this._value;
-       
     }
+
 
     colsPercentages() {
         if (this.percentageColumns.length !== 0) {
@@ -843,7 +837,7 @@ export class EdaTable {
             return this.buildSubMapTree(cols[0], cols[1]);
         } else {
             const unsetCols = cols.slice(1);
-            cols[0].forEach(col => {
+            cols[0]?.forEach(col => {
                 map.set(col, this.buildMapRecursive(unsetCols));
             });
         }
