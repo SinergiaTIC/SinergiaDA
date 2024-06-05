@@ -100,11 +100,13 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
             this.globalFilter.selectedTable = _.cloneDeep(this.tables.find((table) => table.table_name == tableName));
 
             const columnName = this.globalFilter.selectedColumn.column_name;
+            // Recupero el display name que le haya podido poner.
+            const display_name_alias = this.globalFilter.selectedColumn.display_name.default;
             this.globalFilter.selectedColumn = _.cloneDeep(this.globalFilter.selectedTable.columns.find((col: any) => col.column_name == columnName));
-
             this.getColumnsByTable();
             this.loadColumnValues();
             this.findPanelPathTables();
+            this.aliasValue = display_name_alias;
         }
 
         this.formReady = true;
