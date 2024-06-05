@@ -968,11 +968,10 @@ export abstract class QueryBuilderService {
                         filterSTR += this.filterToString(f) + '\n  and ';
                     } else {
                         filterSTR += this.filterToString(f) + '\n  or ';
-
-                        filterSTR += this.filterToString(f);
                     }
                 });
 
+                filterSTR = filterSTR.slice(0, -4);
                 filterSTR += ' ) ';
                 filtersString += filterSTR;
             });
