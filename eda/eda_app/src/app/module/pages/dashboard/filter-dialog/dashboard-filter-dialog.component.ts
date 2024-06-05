@@ -248,6 +248,8 @@ export class DashboardFilterDialogComponent extends EdaDialogAbstract {
             panel: '',
             filters: []
         };
+        //Recupero el alias value para restaurarlo a la hora de editarlo.
+        this.aliasValue = this.params.filter.column.label;
         this.dashboardService.executeQuery(
             this.queryBuilderService.normalQuery([this.targetCol.value], params)
         ).subscribe(
@@ -304,6 +306,7 @@ export class DashboardFilterDialogComponent extends EdaDialogAbstract {
     }
 
     public onEditFilter(filter: any): void {
+
         this.targetTable = filter.table;
         this.getColumnsByTable();
         this.targetCol = this.targetCols.find((col) => col.value?.column_name === filter.column.value?.column_name);
