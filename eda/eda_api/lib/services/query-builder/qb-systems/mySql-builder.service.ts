@@ -392,14 +392,13 @@ export class MySqlBuilderService extends QueryBuilderService {
    * @returns filter to string.  
    */
     public filterToString(filterObject: any): any {
-
       const column = this.findColumn(filterObject.filter_table, filterObject.filter_column);
+      const colType = filterObject.filter_column_type;
       if (!column.hasOwnProperty('minimumFractionDigits')) {
         column.minimumFractionDigits = 0;
       }
       const colname=this.getFilterColname(column);
-      let colType = column.filter_column_type;
-  
+      
       switch (this.setFilterType(filterObject.filter_type)) {
         case 0:
           if (filterObject.filter_type === '!=') { filterObject.filter_type = '<>' }
