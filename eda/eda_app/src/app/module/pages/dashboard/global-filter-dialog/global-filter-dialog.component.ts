@@ -34,6 +34,7 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
     public greendot: string = $localize`:@@greendot:Paneles filtrados`;
     public reddot: string = $localize`:@@reddot:Paneles no relacionados`;
     public unselecteddot: string = $localize`:@@unselecteddot:Paneles no filtrados`;
+    public aliasValuePh : string = $localize`:@@aliasValuePh: Alias del filtro (opcional)`;
 
     public tables: any[] = [];
     public selectedTable: any;
@@ -53,6 +54,7 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
 
     public formReady: boolean = false;
     public datePickerConfigs: any = {};
+    public aliasValue: string = "";
 
     constructor(
         private globalFilterService: GlobalFiltersService,
@@ -365,7 +367,7 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
 
     private validateGlobalFilter(): boolean {
         let valid = true;
-
+        if (this.aliasValue != "") this.globalFilter.selectedColumn.display_name.default = this.aliasValue;
         const availablePanels = this.filteredPanels.map((p) => p.id);
 
         if (!this.globalFilter.isdeleted) {
