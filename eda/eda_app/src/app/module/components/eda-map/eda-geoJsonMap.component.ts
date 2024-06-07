@@ -2,7 +2,7 @@ import { OnInit, Input, AfterViewChecked, SecurityContext } from '@angular/core'
 import { Component, AfterViewInit } from '@angular/core';
 import { MapUtilsService } from '@eda/services/service.index';
 import { EdaMap } from './eda-map';
-import { LatLngExpression } from 'leaflet';
+import { Draggable, LatLngExpression } from 'leaflet';
 import { animate, style, transition, trigger } from '@angular/animations';
 import { DomSanitizer } from '@angular/platform-browser';
 
@@ -46,6 +46,7 @@ export class EdaGeoJsonMapComponent implements OnInit, AfterViewInit, AfterViewC
   public loading: boolean;
   public legendPosition: string;
   public boundaries: Array<any> = [];
+  public draggable : boolean = true;
 
   constructor(
     private mapUtilsService: MapUtilsService, private _sanitizer: DomSanitizer
@@ -64,6 +65,7 @@ export class EdaGeoJsonMapComponent implements OnInit, AfterViewInit, AfterViewC
     this.logarithmicScale = this.inject.logarithmicScale ? this.inject.logarithmicScale : false;
     this.legendPosition = this.inject.legendPosition ? this.inject.legendPosition : 'bottomright';
     this.legend = new L.Control({ position: this.legendPosition });
+    this.draggable = this.inject.draggable;
   }
 
   ngAfterViewInit(): void {
@@ -140,8 +142,9 @@ export class EdaGeoJsonMapComponent implements OnInit, AfterViewInit, AfterViewC
         minZoom: 0,
         center: this.getCenter(this.inject.data),
         zoom: this.inject.zoom ? this.inject.zoom : 0,
-        dragging: !L.Browser.mobile,
-        tap: !L.Browser.mobile
+        dragging: this.draggable,
+        tap: !L.Browser.mobile,
+        scrollWheelZoom: this.draggable 
       });
       this.map.options.minZoom = this.setMinZoom();
       //tiles.addTo(this.map);
@@ -320,7 +323,15 @@ export class EdaGeoJsonMapComponent implements OnInit, AfterViewInit, AfterViewC
     this.initShapesLayer();
     this.initLegend(this.groups, this.inject.labels[this.dataIndex], this.color);
   }
+  
+  public switchNoMouse(option : boolean) {
+    this.draggable = !option;
+    this.map.options.dragging = this.draggable;
+    this.map.options.scrollWheelZoom = this.draggable;
+    this.initLegend(this.groups, this.inject.labels[this.dataIndex], this.color);
 
+  }
+ 
   public changeLegend = (legendPosition: string) => {
     // this.map.removeLayer(this.geoJson);
     this.map.removeControl(this.legend);

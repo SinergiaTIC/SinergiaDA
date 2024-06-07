@@ -3,8 +3,6 @@ import { Component, ViewChild } from '@angular/core';
 import { PanelChartComponent } from '../panel-charts/panel-chart.component';
 import { PanelChart } from '../panel-charts/panel-chart';
 
-
-
 @Component({
   selector: 'app-mapedit-dialog',
   templateUrl: './mapedit-dialog.component.html'
@@ -19,7 +17,8 @@ export class MapEditDialogComponent extends EdaDialogAbstract {
 
   public color:string = '';
   public logarithmicScale :boolean = false;
-
+  public noMouseOptions : boolean;
+  public draggable : boolean; 
   public legendPosition : string;
 
   public display:boolean=false;
@@ -37,7 +36,7 @@ export class MapEditDialogComponent extends EdaDialogAbstract {
   }
 
   saveChartConfig() {
-    this.onClose(EdaDialogCloseEvent.UPDATE, {color:this.color, logarithmicScale :  this.logarithmicScale, legendPosition : this.legendPosition});
+    this.onClose(EdaDialogCloseEvent.UPDATE, {color:this.color, logarithmicScale :  this.logarithmicScale, legendPosition : this.legendPosition, draggable : !this.draggable});
   }
 
   handleInputColor() {
@@ -51,6 +50,12 @@ export class MapEditDialogComponent extends EdaDialogAbstract {
     const leafletMap = this.myPanelChartComponent.componentRef.instance;
     leafletMap.changeScale(this.logarithmicScale);
   }
+
+  nullMouseOptions() {
+    const leafletMap = this.myPanelChartComponent.componentRef.instance;
+    leafletMap.switchNoMouse(!this.draggable);
+  }
+
   changeLegend(){
     const leafletMap = this.myPanelChartComponent.componentRef.instance;
     leafletMap.changeLegend(this.legendPosition);
@@ -66,6 +71,8 @@ export class MapEditDialogComponent extends EdaDialogAbstract {
     this.logarithmicScale = this.controller.params.logarithmicScale;
     this.panelChartConfig = this.controller.params.panelChart;
     this.display = true;
+    this.draggable = this.controller.params.draggable === false ? true : false;
+   // setTimeout(() => this.getMouseOption(), 100) 
   }
   onClose(event: EdaDialogCloseEvent, response?: any): void {
     return this.controller.close(event, response);

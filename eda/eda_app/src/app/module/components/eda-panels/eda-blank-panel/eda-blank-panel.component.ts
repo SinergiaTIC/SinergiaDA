@@ -493,9 +493,7 @@ export class EdaBlankPanelComponent implements OnInit {
             const query = this.initObjectQuery();
             const chart = this.chartForm.value.chart.value ? this.chartForm.value.chart.value : this.chartForm.value.chart;
             const edaChart = this.panelChart.props.edaChart;
-
             this.panel.content = { query, chart, edaChart };
-
             /**This is to repaint on panel redimension */
             if (['parallelSets', 'kpi','dynamicText', 'treeMap', 'scatterPlot', 'knob', 'funnel','bubblechart', 'sunburst'].includes(chart)) {
                 this.renderChart(this.currentQuery, this.chartLabels, this.chartData, chart, edaChart, this.panelChartConfig.config);
@@ -886,11 +884,12 @@ export class EdaBlankPanelComponent implements OnInit {
         this.tableController = undefined;
     }
 
-    public onCloseMapProperties(event, response: { color: string, logarithmicScale: boolean, legendPosition: string }): void {
+    public onCloseMapProperties(event, response: { color: string, logarithmicScale: boolean, legendPosition: string, draggable: boolean }): void {
         if (!_.isEqual(event, EdaDialogCloseEvent.NONE)) {
             this.panel.content.query.output.config.color = response.color;
             this.panel.content.query.output.config.logarithmicScale = response.logarithmicScale;
             this.panel.content.query.output.config.legendPosition = response.legendPosition;
+            this.panel.content.query.output.config.draggable = response.draggable;
             const config = new ChartConfig(this.panel.content.query.output.config);
             this.renderChart(this.currentQuery, this.chartLabels, this.chartData, this.graficos.chartType, this.graficos.edaChart, config);
             this.dashboardService._notSaved.next(true);

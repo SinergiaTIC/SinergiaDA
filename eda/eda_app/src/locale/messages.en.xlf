@@ -4261,6 +4261,10 @@
         <source>Modo Árbol</source>
         <target>Tree mode</target>
       </trans-unit>
+      <trans-unit id="noMouseH6">
+        <source>Desactivar funciones del mouse</source>
+        <target>Desactivate mouse functions</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>
