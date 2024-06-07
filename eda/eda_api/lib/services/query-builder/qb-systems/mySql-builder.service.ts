@@ -1,6 +1,5 @@
 import { QueryBuilderService } from './../query-builder.service';
 import * as _ from 'lodash';
-import { filter, values } from 'lodash';
 
  /*SDA CUSTOM*/ import * as custom from '../../custom/custom';
 
@@ -35,7 +34,11 @@ export class MySqlBuilderService extends QueryBuilderService {
       joinString = this.getJoins(joinTree, dest, tables, joinType,  valueListJoins, schema);
     }
 
-
+    console.log('alias-->', alias);
+    console.log('jooiiiiins');
+    console.log(joinString);
+    console.log('===================');
+    console.log('===================');
 
     joinString.forEach(x => {
       myQuery = myQuery + '\n' + x;
@@ -222,15 +225,29 @@ export class MySqlBuilderService extends QueryBuilderService {
         // Si la join no existe ya, se añade
         if (!joinExists.has(`${sourceJoin}=${targetJoin}`)) {
             joinExists.add(`${sourceJoin}=${targetJoin}`);
+            console.log('sourceJoin', sourceJoin);
+            console.log('targetJoin', targetJoin);
 
+            let aliasSource;
+            if (sourceJoin.split('.')[0] == targetJoin.split('.')[0]) {
+                aliasSource = `\`${sourceTable}.${sourceColumn}\``;
+            }
+            
             // Construcción de los alias
-            const alias = `\`${targetTable}.${targetColumn}\``;
+            let alias = `\`${targetTable}.${targetColumn}\``;
+
+            if (aliasSource) {
+                alias = aliasSource;
+            }
+
             aliasTables[alias] = targetTable;
+            // aliasTables[sourceJoin] = targetTable;
 
             let aliasTargetTable: string;
             // targetTable and sourceTable can be the same table (autorelation)
             if (targetTableJoin.includes(targetTable) || targetTable == sourceTable) {
-                aliasTargetTable = `${targetTable}${targetTableJoin.indexOf(targetTable)}`;
+                // aliasTargetTable = `${targetTable}${targetTableJoin.indexOf(targetTable)}`;
+                aliasTargetTable = `${targetTable}${sourceColumn}`;
                 aliasTables[alias] = aliasTargetTable;
             }
 
@@ -274,8 +291,14 @@ export class MySqlBuilderService extends QueryBuilderService {
 
     this.queryTODO.fields.forEach(el => {
       el.order !== 0 && el.table_id !== origin && !dest.includes(el.table_id) ? dest.push(el.table_id) : false;
-
-      const table_column = `\`${el.table_id}\`.\`${el.column_name}\``;
+    //   console.log(el);
+      let table_column;
+    console.log(el);
+      if (el.autorelation && !el.valueListSource) {
+        table_column = `\`${el.joins[0][0]}\`.\`${el.column_name}\``;
+      } else {
+        table_column = `\`${el.table_id}\`.\`${el.column_name}\``;
+      }
 
       let whatIfExpression = '';
       if (el.whatif_column) whatIfExpression = `${el.whatif.operator} ${el.whatif.value}`;

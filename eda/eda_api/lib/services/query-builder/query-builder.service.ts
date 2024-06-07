@@ -131,13 +131,13 @@ export abstract class QueryBuilderService {
                 }
             });
         }
-
+        
         
         /** SEPAREM ENTRE AGGREGATION COLUMNS/GROUPING COLUMNS */
         let separedCols = this.getSeparedColumns(origin, dest);
         let columns = separedCols[0];
         let grouping = separedCols[1];
-
+        console.log(columns);
         
         let joinTree = [];
         let tree = [];
@@ -212,6 +212,10 @@ export abstract class QueryBuilderService {
 
                         field.table_id = field.valueListSource.target_table;
                         field.column_name = field.valueListSource.target_description_column;
+
+                        if (field.autorelation) {
+                            field.valueListSource.source_table = field.joins[0][0]; //, join[0].substring(sourceLastDotInx + 1)];
+                        }
                         
                         if (field.valueListSource.bridge_table?.length > 0) {
                             const j = {
@@ -250,7 +254,9 @@ export abstract class QueryBuilderService {
                     tree.push([multiSourceJoin, multiTargetJoin]);
                 }
             }
+            console.log('before ValueListJoins ->' ,valueListJoins);
             valueListJoins = [...new Set(valueListJoins.map((value) => value.target_table))];
+            console.log('after ValueListJoins ->' ,valueListJoins);
             
             tree = [...new Set(tree)];
             joinTree = tree;
