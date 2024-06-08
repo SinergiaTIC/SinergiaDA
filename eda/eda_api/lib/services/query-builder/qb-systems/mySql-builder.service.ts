@@ -234,7 +234,7 @@ export class MySqlBuilderService extends QueryBuilderService {
             }
             
             // Construcción de los alias
-            let alias = `\`${targetTable}.${targetColumn}\``;
+            let alias = `\`${targetTable}.${targetColumn}.${sourceColumn}\``;
 
             if (aliasSource) {
                 alias = aliasSource;

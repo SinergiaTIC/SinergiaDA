@@ -155,7 +155,7 @@ export const PanelInteractionUtils = {
       table.relations = table.relations.filter(f=>f.bridge==false );
       for (const relation of table.relations) {
         // Init child_id
-        const child_id = relation.target_table+'.'+relation.target_column[0];
+        const child_id = `${relation.target_table}.${relation.target_column[0]}.${relation.source_column[0]}`;
 
         /** Checks if the current child_node is included before.
          * This prevents duplicated paths. */
@@ -168,7 +168,8 @@ export const PanelInteractionUtils = {
           /** This creates the path to relate this node with the previous tables.
            * It will be used later to generate the query. */
           let sourceJoin = relation.source_table+'.'+relation.source_column[0];
-          let joins = expandNode.joins ? [].concat(expandNode.joins, [[sourceJoin, child_id]]) : [[sourceJoin, child_id]];
+          const joinChildId = child_id.substring(0, child_id.lastIndexOf('.'));
+          let joins = expandNode.joins ? [].concat(expandNode.joins, [[sourceJoin, joinChildId]]) : [[sourceJoin, joinChildId]];
           
           if (!ebp.tables.some((t) => t.table_name == child_id)) {
             let assertTable = _.cloneDeep(ebp.tables.find((t) => t.table_name == relation.target_table))

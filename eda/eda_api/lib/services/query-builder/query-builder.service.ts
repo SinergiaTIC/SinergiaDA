@@ -208,7 +208,9 @@ export abstract class QueryBuilderService {
                         
                         field.valueListSource.source_column = field.column_name?field.column_name:field.filter_column;
                         // field.valueListSource.source_table = field.table_id?field.table_id.split('.')[0]:field.filter_table.split('.')[0];
-                        field.valueListSource.source_table = field.table_id?field.table_id:field.filter_table;
+                        const sourceTable = (field.table_id||field.filter_table)
+                        // const sourceTable = table.substring(0, table.lastIndexOf('.'));
+                        field.valueListSource.source_table = sourceTable;
 
                         field.table_id = field.valueListSource.target_table;
                         field.column_name = field.valueListSource.target_description_column;

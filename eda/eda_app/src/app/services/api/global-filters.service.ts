@@ -226,11 +226,11 @@ export class GlobalFiltersService {
             table.relations = table.relations.filter(f => f.bridge == false);
             for (const relation of table.relations) {
                 // Init child_id
-                const child_id = relation.target_table + '.' + relation.target_column[0];
+                const child_id = `${relation.target_table}.${relation.target_column[0]}.${relation.source_column[0]}`;
 
                 /** Checks if the current child_node is included before.
                  * This prevents duplicated paths.*/
-                if (!rootTree.includes(relation.target_table) && !childrenId.includes(child_id)) {
+                if ((!rootTree.includes(relation.target_table) || relation.autorelation) && !childrenId.includes(child_id)) {
                     // Label to show on the treeComponent 
                     let childLabel = relation.display_name?.default
                         ? `${relation.display_name.default}`
@@ -239,7 +239,8 @@ export class GlobalFiltersService {
                     /** This creates the path to relate this node with the previous tables.
                      * It will be used later to generate the query. */
                     let sourceJoin = relation.source_table + '.' + relation.source_column[0];
-                    let joins = expandNode.joins ? [].concat(expandNode.joins, [[sourceJoin, child_id]]) : [[sourceJoin, child_id]];
+                    const joinChildId = child_id.substring(0, child_id.lastIndexOf('.'));
+                    let joins = expandNode.joins ? [].concat(expandNode.joins, [[sourceJoin, joinChildId]]) : [[sourceJoin, joinChildId]];
 
                     if (!dataSource.some((t) => t.table_name == child_id)) {
                         let assertTable = _.cloneDeep(dataSource.find((t) => t.table_name == relation.target_table))
@@ -247,6 +248,7 @@ export class GlobalFiltersService {
                             assertTable.table_name = child_id;
                             assertTable.display_name.default = childLabel;
                             assertTable.description.default = childLabel;
+                            assertTable.autorelation = relation.autorelation;
                             dataSource.push(assertTable)
                         }
                     }
