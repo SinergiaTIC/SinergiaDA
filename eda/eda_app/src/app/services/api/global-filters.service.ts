@@ -269,7 +269,7 @@ export class GlobalFiltersService {
                     });
 
                     // If it's expandable, we add properties to expand the node. 
-                    if (isexpandible) {
+                    if (isexpandible && !relation.autorelation) {
                         childNode.expandedIcon = "pi pi-folder-open";
                         childNode.collapsedIcon = "pi pi-folder";
                         childNode.children = [{}];
