@@ -208,6 +208,7 @@ export abstract class QueryBuilderService {
                         
                         field.valueListSource.source_column = field.column_name?field.column_name:field.filter_column;
                         // field.valueListSource.source_table = field.table_id?field.table_id.split('.')[0]:field.filter_table.split('.')[0];
+
                         const sourceTable = (field.table_id||field.filter_table)
                         // const sourceTable = table.substring(0, table.lastIndexOf('.'));
                         field.valueListSource.source_table = sourceTable;
@@ -218,6 +219,7 @@ export abstract class QueryBuilderService {
                         if (field.autorelation) {
                             field.valueListSource.source_table = field.joins[0][0]; //, join[0].substring(sourceLastDotInx + 1)];
                         }
+
                         
                         if (field.valueListSource.bridge_table?.length > 0) {
                             const j = {
@@ -258,7 +260,7 @@ export abstract class QueryBuilderService {
             }
             console.log('before ValueListJoins ->' ,valueListJoins);
             valueListJoins = [...new Set(valueListJoins.map((value) => value.target_table))];
-            console.log('after ValueListJoins ->' ,valueListJoins);
+
             
             tree = [...new Set(tree)];
             joinTree = tree;
@@ -638,6 +640,9 @@ export abstract class QueryBuilderService {
         else if (['not_in', 'in'].includes(filter)) return 1;
         else if (filter === 'between') return 2;
         else if (filter === 'not_null') return 3;
+        else if (filter === 'is_null') return 4;
+        else if (filter === 'not_null_nor_empty') return 5;
+        else if (filter === 'null_or_empty') return 6;
     }
 
 
@@ -964,27 +969,20 @@ export abstract class QueryBuilderService {
 
     public mergeFilterStrings = (filtersString, equalfilters ) => {
         if (equalfilters.toRemove.length > 0) {
-
             equalfilters.map.forEach((value, key) => {
-                let filterSTR = '\nand ('
-
-                //poso els nulls al principi
-                let n = value.filter( f=> f.filter_type == 'not_null');
-                let values = [...n, ...value.filter( f=> f.filter_type != 'not_null')];
-   
-                values.forEach(f => {
-                    if(f.filter_type == 'not_null'){
-                        //Fins que no es pugi determinar el tipus de conjunció. Els filtres sobre una mateixa columna es un or perque vull dos grups. EXCEPTE QUAN ES UN NULL
-                        filterSTR += this.filterToString(f ) + '\n  and ';
-                    }else{
-                        filterSTR += this.filterToString(f ) + '\n  or ';
+                let filterSTR = '\nand ( '    
+                let n = value.filter( f=> (f.filter_type == 'not_null'  || f.filter_type == 'not_null_nor_empty' || f.filter_type == 'null_or_empty') );
+                let values = [...n, ...value.filter( f=> f.filter_type != 'not_null')];            
+                values.forEach((f) => {
+                    if (f.filter_type == 'not_null' || f.filter_type == 'not_null_nor_empty' || f.filter_type == 'null_or_empty') {                        //Fins que no es pugi determinar el tipus de conjunció. Els filtres sobre una mateixa columna es un or perque vull dos grups. EXCEPTE QUAN ES UN NULL
+                        filterSTR += this.filterToString(f) + '\n  and ';
+                    } else {
+                        filterSTR += this.filterToString(f) + '\n  or ';
                     }
-                    
-
                 });
 
                 filterSTR = filterSTR.slice(0, -4);
-                filterSTR += ') ';
+                filterSTR += ' ) ';
                 filtersString += filterSTR;
             });
 
