@@ -328,8 +328,12 @@ export class EdaGeoJsonMapComponent implements OnInit, AfterViewInit, AfterViewC
     this.draggable = !option;
     this.map.options.dragging = this.draggable;
     this.map.options.scrollWheelZoom = this.draggable;
+    if (!this.draggable) {
+      this.map.dragging.enable();
+    } else{
+      this.map.dragging.disable();
+    }
     this.initLegend(this.groups, this.inject.labels[this.dataIndex], this.color);
-
   }
  
   public changeLegend = (legendPosition: string) => {

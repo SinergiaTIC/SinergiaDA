@@ -17,7 +17,6 @@ export class MapEditDialogComponent extends EdaDialogAbstract {
 
   public color:string = '';
   public logarithmicScale :boolean = false;
-  public noMouseOptions : boolean;
   public draggable : boolean; 
   public legendPosition : string;
 
