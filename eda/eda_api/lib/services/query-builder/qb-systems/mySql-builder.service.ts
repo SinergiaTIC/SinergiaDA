@@ -281,7 +281,7 @@ export class MySqlBuilderService extends QueryBuilderService {
       let table_column;
     console.log(el);
       if (el.autorelation && !el.valueListSource) {
-        table_column = `\`${el.joins[0][0]}\`.\`${el.column_name}\``;
+        table_column = `\`${el.joins[el.joins.length-1][0]}\`.\`${el.column_name}\``;
       } else {
         table_column = `\`${el.table_id}\`.\`${el.column_name}\``;
       }

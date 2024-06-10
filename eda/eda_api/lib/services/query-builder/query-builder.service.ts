@@ -217,7 +217,7 @@ export abstract class QueryBuilderService {
                         field.column_name = field.valueListSource.target_description_column;
 
                         if (field.autorelation) {
-                            field.valueListSource.source_table = field.joins[0][0]; //, join[0].substring(sourceLastDotInx + 1)];
+                            field.valueListSource.source_table = field.joins[field.joins.length-1][0]; //, join[0].substring(sourceLastDotInx + 1)];
                         }
 
                         
