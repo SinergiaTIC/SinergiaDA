@@ -4300,7 +4300,6 @@
         <source>VALORES NULOS O VACÍOS (null or = '')</source>
         <target>VALORES NULOS O VACÍOS (null or = '')</target>
       </trans-unit>
-      
       <trans-unit id="aliasValuePh">
         <source>Alias del filtro (opcional)</source>
         <target>Alias del filtro (opcional)</target>

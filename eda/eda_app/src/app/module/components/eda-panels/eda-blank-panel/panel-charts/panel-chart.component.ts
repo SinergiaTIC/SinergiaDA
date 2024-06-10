@@ -491,7 +491,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         try{
             inject.draggable = this.props.config['config']['draggable'];
         }catch{
-            inject.draggable = false;
+            inject.draggable = true;
         }
         
         inject.linkedDashboard = this.props.linkedDashboardProps;
