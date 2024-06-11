@@ -156,12 +156,12 @@
 
     <trans-unit id="dragFields">
         <source>Arrastre aquí los atributos que quiera ver en su panel</source>
-        <target>Drag the columns you want to see in your panel here</target>
+        <target>Drag here the columns that you want to show in your panel.</target>
     </trans-unit>
 
     <trans-unit id="draggFilters">
         <source>Arrastre aquí los atributos sobre los que quiera filtrar</source>
-        <target>Drag the columns you want to filter by here</target>
+        <target>Drag here the columns that you want to filter by.</target>
     </trans-unit>
 
     <trans-unit id="placeholderColumns" datatype="html">
@@ -177,15 +177,14 @@
     <trans-unit id="atributsTitle">
         <source>Atributos de una entidad.Arrastre los atrubutos a la selección o los filtros para
             consultarlos. Haciendo click sobre el atributo se accede a sus propiedaes.</source>
-        <target>Columns of an table. Drag the columns to the selection or filters to
-            query them. Clicking on the column accesses its properties</target>
+        <target>Columns of a table. Drag the columns to the selection or filters to
+            query them. Click on the column to get its properties.</target>
     </trans-unit>
 
     <trans-unit id="entidadesH4" datatype="html">
         <source> Entidades </source>
         <target> Tables </target>
     </trans-unit>
-
 
     </body>
   </file>
