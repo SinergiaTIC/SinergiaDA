@@ -157,12 +157,12 @@
 
     <trans-unit id="dragFields">
         <source>Arrastre aquí los atributos que quiera ver en su panel</source>
-        <target>Arrastre aquí las columnas que quiera ver en su panel</target>
+        <target>Arrastre aquí las columnas que quiera ver en su panel.</target>
     </trans-unit>
 
     <trans-unit id="draggFilters">
         <source>Arrastre aquí los atributos sobre los que quiera filtrar</source>
-        <target>Arrastre aquí las columnas por las que quiera filtrar</target>
+        <target>Arrastre aquí las columnas por las que quiera filtrar.</target>
     </trans-unit>
 
     <trans-unit id="placeholderColumns" datatype="html">
@@ -179,7 +179,7 @@
         <source>Atributos de una entidad.Arrastre los atrubutos a la selección o los filtros para
             consultarlos. Haciendo click sobre el atributo se accede a sus propiedaes.</source>
         <target>Columnas de una tabla. Arrastre las columnas a la selección o los filtros para
-            consultarlos. Haciendo clic sobre la columna se accede a sus propiedades</target>
+            consultarlos. Haciendo clic sobre la columna se accede a sus propiedades.</target>
     </trans-unit>
 
     <trans-unit id="entidadesH4" datatype="html">
