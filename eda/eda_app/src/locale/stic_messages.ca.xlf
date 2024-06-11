@@ -234,6 +234,43 @@
         <target> Configurar nou font de dades </target>
       </trans-unit>
 
+      <trans-unit id="seleccionH4" datatype="html">
+        <source> Mostrar los siguientes atributos: </source>
+        <target> Mostrar les següents columnes: </target>
+      </trans-unit>
+
+      <trans-unit id="dragFields">
+        <source>Arrastre aquí los atributos que quiera ver en su panel</source>
+        <target>Arrossegueu aquí les columnes que vulgueu veure al vostre panell</target>
+      </trans-unit>
+
+      <trans-unit id="draggFilters">
+        <source>Arrastre aquí los atributos sobre los que quiera filtrar</source>
+        <target>Arrossegueu aquí les columnes per les quals vulgueu filtrar</target>
+      </trans-unit>
+
+      <trans-unit id="placeholderColumns" datatype="html">
+        <source>Atributos</source>
+        <target>Columnes</target>
+      </trans-unit>
+
+      <trans-unit id="resumenAtrH6" datatype="html">
+        <source> Resumen de atributos </source>
+        <target> Resum de columnes </target>
+      </trans-unit>
+
+      <trans-unit id="atributsTitle">
+        <source>Atributos de una entidad.Arrastre los atrubutos a la selección o los filtros para
+          consultarlos. Haciendo click sobre el atributo se accede a sus propiedaes.</source>
+        <target>Columnes d'una taula. Arrossegueu les columnes a la selecció o els filtres per
+          consultar-los. Feu clic a la columna per accedir a les seves propietats</target>
+      </trans-unit>
+
+      <trans-unit id="entidadesH4" datatype="html">
+        <source> Entidades </source>
+        <target> Taules </target>
+      </trans-unit>
+
     </body>
   </file>
 </xliff>
