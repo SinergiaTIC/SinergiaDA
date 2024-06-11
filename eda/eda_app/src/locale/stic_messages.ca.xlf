@@ -171,7 +171,7 @@
         <source>Definir la visibilidad del filtro. Público: todos pueden usarlo. Deshabilitado: El
           resto de usuarios pueden ver el filtro pero no pueden modificarlo. Oculto: El resto de
           usuario no pueden ver el filtro. pero se les aplica</source>
-        <target>Definir la visibilitat del filtre.  Públic: tots poden utilitzar-lo.  Deshabilitat: els altres usuaris poden veure el filtre però no el poden modificar.  Ocult: els altres usuaris no poden veure el filtre però els aplica.</target>
+        <target>Defineix la visibilitat del filtre.  Públic: tots poden utilitzar-lo.  Deshabilitat: els altres usuaris poden veure el filtre però no el poden modificar.  Ocult: els altres usuaris no poden veure el filtre però els és d'aplicació.</target>
       </trans-unit>
 
       <!-- ABOUT PAGE -->
@@ -203,7 +203,7 @@
       <trans-unit id="aboutPageLastRebuildDate" datatype="html">
         <source>Última reconstrucción de origenes de datos en SinergiaCRM
           (rebuild)</source>
-        <target>Última reconstrucció dels fonts de dades a SinergiaCRM (rebuild)
+        <target>Última reconstrucció de les fonts de dades a SinergiaCRM (rebuild)
         </target>
       </trans-unit>
       <trans-unit id="aboutPageDB" datatype="html">
@@ -231,22 +231,22 @@
 
       <trans-unit id="DataModelHeader">
         <source> Configurar nuevo orígen de datos </source>
-        <target> Configurar nou font de dades </target>
+        <target> Configura una nova font de dades </target>
       </trans-unit>
 
       <trans-unit id="seleccionH4" datatype="html">
         <source> Mostrar los siguientes atributos: </source>
-        <target> Mostrar les següents columnes: </target>
+        <target> Mostra les següents columnes: </target>
       </trans-unit>
 
       <trans-unit id="dragFields">
         <source>Arrastre aquí los atributos que quiera ver en su panel</source>
-        <target>Arrossegueu aquí les columnes que vulgueu veure al vostre panell</target>
+        <target>Arrossegueu aquí les columnes que vulgueu veure al vostre panell.</target>
       </trans-unit>
 
       <trans-unit id="draggFilters">
         <source>Arrastre aquí los atributos sobre los que quiera filtrar</source>
-        <target>Arrossegueu aquí les columnes per les quals vulgueu filtrar</target>
+        <target>Arrossegueu aquí les columnes per les quals vulgueu filtrar.</target>
       </trans-unit>
 
       <trans-unit id="placeholderColumns" datatype="html">
@@ -263,7 +263,7 @@
         <source>Atributos de una entidad.Arrastre los atrubutos a la selección o los filtros para
           consultarlos. Haciendo click sobre el atributo se accede a sus propiedaes.</source>
         <target>Columnes d'una taula. Arrossegueu les columnes a la selecció o els filtres per
-          consultar-los. Feu clic a la columna per accedir a les seves propietats</target>
+          consultar-los. Feu clic a la columna per accedir a les seves propietats.</target>
       </trans-unit>
 
       <trans-unit id="entidadesH4" datatype="html">
