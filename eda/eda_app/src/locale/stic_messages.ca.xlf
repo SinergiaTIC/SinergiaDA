@@ -262,8 +262,7 @@
       <trans-unit id="atributsTitle">
         <source>Atributos de una entidad.Arrastre los atrubutos a la selección o los filtros para
           consultarlos. Haciendo click sobre el atributo se accede a sus propiedaes.</source>
-        <target>Columnes d'una taula. Arrossegueu les columnes a la selecció o els filtres per
-          consultar-los. Feu clic a la columna per accedir a les seves propietats.</target>
+        <target>Columnes de la taula seleccionada. Per afegir-les al panell, feu-hi clic o arrossegueu-les a "Mostra les següents columnes". Per fer-les servir com a filtre, arrossegueu-les a "Filtra els resultats per".</target>
       </trans-unit>
 
       <trans-unit id="entidadesH4" datatype="html">
