@@ -361,6 +361,7 @@ export const PanelInteractionUtils = {
                   duplicatedColumn.whatif_column = contentColumn.whatif_column || false;
                   duplicatedColumn.whatif = contentColumn.whatif || {};
                   duplicatedColumn.joins = contentColumn.joins || [];
+                  duplicatedColumn.autorelation = contentColumn.autorelation || false;
                   PanelInteractionUtils.handleAggregationType4DuplicatedColumns(ebp, duplicatedColumn);
                   // Moc la columna directament perque es una duplicada.... o no....
                   ebp.currentQuery.push(duplicatedColumn);
@@ -377,7 +378,8 @@ export const PanelInteractionUtils = {
             handleColumn.whatif = contentColumn.whatif || {};
             handleColumn.joins = contentColumn.joins || [];
             handleColumn.ordenation_type = contentColumn.ordenation_type;
-            
+            handleColumn.autorelation = contentColumn.autorelation || false;
+
             const existsAgg = handleColumn.aggregation_type.find((agg) => agg.value === contentColumn.aggregation_type);
             if (existsAgg) existsAgg.selected = true;
 

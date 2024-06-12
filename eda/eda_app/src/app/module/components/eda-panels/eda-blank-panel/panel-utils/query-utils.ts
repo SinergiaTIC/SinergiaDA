@@ -67,6 +67,7 @@ export const QueryUtils = {
             break;
           }
         }
+
         ebp.currentQuery = [];
         types.forEach((type, i) => {
           ebp.currentQuery.push(QueryUtils.createColumn(response[0][i], type, ebp.sqlOriginTable));
