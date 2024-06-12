@@ -177,8 +177,7 @@
     <trans-unit id="atributsTitle">
         <source>Atributos de una entidad.Arrastre los atrubutos a la selección o los filtros para
             consultarlos. Haciendo click sobre el atributo se accede a sus propiedaes.</source>
-        <target>Columns of a table. Drag the columns to the selection or filters to
-            query them. Click on the column to get its properties.</target>
+        <target>Columns of the selected table. To add them to the panel, click or drag them to "Show the following columns". To use them as a filter, drag them to "Filter results by".</target>
     </trans-unit>
 
     <trans-unit id="entidadesH4" datatype="html">
