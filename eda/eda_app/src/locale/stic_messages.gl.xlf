@@ -179,8 +179,7 @@
     <trans-unit id="atributsTitle">
         <source>Atributos de una entidad.Arrastre los atrubutos a la selección o los filtros para
             consultarlos. Haciendo click sobre el atributo se accede a sus propiedaes.</source>
-        <target>Columnas dunha taboa. Arrastre as columnas á selección ou aos filtros para
-            consultalos. Facendo clic na columna accédese ás súas propiedades.</target>
+        <target>Columnas de la tabla seleccionada. Para incorporarlas al panel, haga clic en ellas o arrástrelas a "Mostrar las siguientes columnas". Para usarlas como filtro, arrástrelas a "Filtrar los resultados por".</target>
     </trans-unit>
 
     <trans-unit id="entidadesH4" datatype="html">
