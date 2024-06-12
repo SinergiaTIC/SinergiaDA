@@ -72,7 +72,8 @@ export const PanelInteractionUtils = {
   loadTableNodes: (ebp: EdaBlankPanelComponent) => {
     if (ebp.currentQuery.length > 0) {
       const idTables = [...new Set(ebp.currentQuery.map((q) => q.table_id))];
-      const rootTable = idTables.find((idTable: string) => ebp.rootTreeTable?.table_name == idTable);
+      const rootTable = idTables.find((idTable: string) => ebp.rootTable?.table_name == idTable);
+      
       if (rootTable) {
         const dataSource = ebp.inject.dataSource.model.tables;
   
@@ -105,7 +106,7 @@ export const PanelInteractionUtils = {
       const rootTable = (rootJoin[0]||'').split('.')[0];
       const sourceTable = ebp.tables.find((table: any) => table.table_name == rootTable);
 
-      const relation = sourceTable?.relations.find((rel) => `${rel.target_table}.${rel.target_column[0]}` == column.table_id);
+      const relation = sourceTable?.relations.find((rel) => `${rel.target_table}.${rel.target_column[0]}.${rel.source_column[0]}` == column.table_id);
       if (relation) {
         let assertTable = _.cloneDeep(ebp.tables.find((t) => t.table_name == relation.target_table));
 
@@ -327,8 +328,8 @@ export const PanelInteractionUtils = {
         const table = ebp.tables.find((table) => table.table_name == contentColumn.table_id);
 
         if (table && table?.columns) {
-          if (!ebp.rootTreeTable && contentColumn.joins.length == 0) {
-            ebp.rootTreeTable = table;
+          if (!ebp.rootTable && contentColumn.joins.length == 0) {
+            ebp.rootTable = table;
           }
 
           const columns = table.columns;
@@ -594,11 +595,11 @@ export const PanelInteractionUtils = {
     if (match) match.isdeleted = true; // Marco la columna com a borrada
 
 
-    if (!ebp.rootTreeTable) {
-      ebp.rootTreeTable = ebp.tables.find((table) => table.table_name == c.table_id);
+    if (!ebp.rootTable) {
+      ebp.rootTable = ebp.tables.find((table) => table.table_name == c.table_id);
     }
 
-    if (c.table_id !== ebp.rootTreeTable?.table_name) {
+    if (c.table_id !== ebp.rootTable?.table_name) {
       c.joins = (c.joins||[]).length == 0 ? ebp.nodeJoins[ebp.nodeJoins.length-1] : c.joins;
     }
 
@@ -694,7 +695,7 @@ export const PanelInteractionUtils = {
     if (list === 'select') {
       if (ebp.selectedQueryMode == 'EDA2') {
 
-        const rootTable = ebp.rootTreeTable.table_name;
+        const rootTable = ebp.rootTable.table_name;
 
         // Remove column is from rootTable then check currentQuery columns to allow or not.
         if (c.table_id === rootTable) {
@@ -707,7 +708,7 @@ export const PanelInteractionUtils = {
           }
         }
 
-        if (ebp.rootTreeTable && ebp.rootTreeTable.column_name == c.column_name && rootTable == c.table_id) {
+        if (ebp.rootTable && ebp.rootTable.column_name == c.column_name && rootTable == c.table_id) {
           // ebp.selectedQueryMode = 'EDA';
           ebp.currentQuery.forEach((query) => query.table_id = query.table_id.split('.')[0]);
           ebp.reloadTablesData();
@@ -730,7 +731,7 @@ export const PanelInteractionUtils = {
 
     // Buscar relacións per tornar a mostrar totes les taules
     if (ebp.currentQuery.length === 0 && ebp.filtredColumns.length === 0) {
-      ebp.rootTreeTable = undefined;
+      ebp.rootTable = undefined;
       ebp.tablesToShow = ebp.tables;
 
     } else {

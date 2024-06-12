@@ -34,12 +34,6 @@ export class MySqlBuilderService extends QueryBuilderService {
       joinString = this.getJoins(joinTree, dest, tables, joinType,  valueListJoins, schema);
     }
 
-    console.log('alias-->', alias);
-    console.log('jooiiiiins');
-    console.log(joinString);
-    console.log('===================');
-    console.log('===================');
-
     joinString.forEach(x => {
       myQuery = myQuery + '\n' + x;
     });
@@ -277,9 +271,8 @@ export class MySqlBuilderService extends QueryBuilderService {
 
     this.queryTODO.fields.forEach(el => {
       el.order !== 0 && el.table_id !== origin && !dest.includes(el.table_id) ? dest.push(el.table_id) : false;
-    //   console.log(el);
+
       let table_column;
-    console.log(el);
       if (el.autorelation && !el.valueListSource) {
         table_column = `\`${el.joins[el.joins.length-1][0]}\`.\`${el.column_name}\``;
       } else {

@@ -74,7 +74,6 @@ export const QueryUtils = {
         return response;
       }
     } catch (err) {
-      console.log(err);
       throw err;
     }
   },
@@ -229,7 +228,7 @@ export const QueryUtils = {
       config: config.getConfig(),
       queryLimit: ebp.queryLimit,
       joinType: ebp.joinType,
-      rootTable: ebp.rootTreeTable?.table_name,
+      rootTable: ebp.rootTable?.table_name,
     };
     return ebp.queryBuilder.normalQuery(ebp.currentQuery, params, ebp.selectedQueryMode);
   },

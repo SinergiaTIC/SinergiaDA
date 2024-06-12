@@ -96,13 +96,13 @@ export class GlobalFiltersService {
             const rootTable = modelTables.find((t) => t.table_name == rootTableName);
 
             for (const relation of rootTable.relations) {
-                const idRelation = `${relation.target_table}.${relation.target_column[0]}`;
+                const idRelation = `${relation.target_table}.${relation.target_column[0]}.${relation.source_column[0]}`;
 
                 if (assertTablesNames.includes(idRelation)) {
                     const assertTable = _.cloneDeep(modelTables.find((t: any) => t.table_name == relation.target_table));
                     assertTable.table_name = idRelation;
                     assertTable.display_name.default = relation.display_name.default;
-                    assertTable.description.default = relation.display_name.default;;
+                    assertTable.description.default = relation.display_name.default;
                     modelTables.push(assertTable);
                 }
             }

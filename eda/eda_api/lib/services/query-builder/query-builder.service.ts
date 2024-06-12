@@ -137,7 +137,6 @@ export abstract class QueryBuilderService {
         let separedCols = this.getSeparedColumns(origin, dest);
         let columns = separedCols[0];
         let grouping = separedCols[1];
-        console.log(columns);
         
         let joinTree = [];
         let tree = [];
@@ -258,10 +257,8 @@ export abstract class QueryBuilderService {
                     tree.push([multiSourceJoin, multiTargetJoin]);
                 }
             }
-            console.log('before ValueListJoins ->' ,valueListJoins);
             valueListJoins = [...new Set(valueListJoins.map((value) => value.target_table))];
 
-            
             tree = [...new Set(tree)];
             joinTree = tree;
             this.queryTODO.joined = true;
