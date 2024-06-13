@@ -311,6 +311,7 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
 
     public onNodeSelect(panel: any, event: any): void {
         const node = event?.node;
+
         const table_id = node.table_id || node.child_id;
         const pathList = this.globalFilter.pathList;
 
@@ -324,6 +325,8 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
             pathList[panel.id].table_id = table_id;
             pathList[panel.id].path = node.joins || [];
 
+            this.globalFilter.autorelation = node.autorelation; 
+            
             if (!this.globalFilter.panelList.includes(panel.id)) {
                 this.globalFilter.panelList.push(panel.id);
             }
