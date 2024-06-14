@@ -92,13 +92,12 @@ import { GlobalFilterComponent } from './dashboard/global-filter/global-filter.c
         DashboardMailDialogComponent,
         SaveAsDialogComponent,
         EditStylesDialogComponent,
-<<<<<<< HEAD
-        SdareportsComponent
-=======
+
         // SDA CUSTOM
+        SdareportsComponent,
         AboutComponent
         // END SDA CUSTOM
->>>>>>> reporting
+
     ]
 })
 export class PagesModule { }
