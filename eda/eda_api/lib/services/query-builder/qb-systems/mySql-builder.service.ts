@@ -275,7 +275,9 @@ export class MySqlBuilderService extends QueryBuilderService {
       el.order !== 0 && el.table_id !== origin && !dest.includes(el.table_id) ? dest.push(el.table_id) : false;
 
       let table_column;
+
       if (el.autorelation && !el.valueListSource && !this.queryTODO.forSelector ) {
+
         table_column = `\`${el.joins[el.joins.length-1][0]}\`.\`${el.column_name}\``;
       } else {
         table_column = `\`${el.table_id}\`.\`${el.column_name}\``;
