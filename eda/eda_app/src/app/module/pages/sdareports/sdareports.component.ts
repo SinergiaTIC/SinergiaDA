@@ -1,3 +1,4 @@
+// Importación de servicios y módulos necesarios
 import { GroupService } from './../../../services/api/group.service';
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
@@ -64,17 +65,18 @@ export class SdareportsComponent implements OnInit {
 
   }
 
+  // Método que se ejecuta al iniciar el componente
   public ngOnInit() {
       this.init();
       this.ifAnonymousGetOut();
   }
 
   private init() {
-
       this.initDatasources();
       this.initDashboards();
   }
 
+  // Método para establecer si el usuario es observador
   private setIsObserver = async () => {
       this.groupService.getGroupsByUser().subscribe(
           res => {
@@ -87,6 +89,7 @@ export class SdareportsComponent implements OnInit {
       );
   }
 
+  // Método para redirigir a usuarios anónimos
   private ifAnonymousGetOut(): void {
       const user = sessionStorage.getItem('user');
       const userName = JSON.parse(user).name;
@@ -96,6 +99,7 @@ export class SdareportsComponent implements OnInit {
       }
   }
 
+  // Método para inicializar las fuentes de datos
   private initDatasources(): void {
       this.sidebarService.currentDatasourcesDB.subscribe(
           data => this.dss = data,
@@ -103,6 +107,7 @@ export class SdareportsComponent implements OnInit {
       );
   }
 
+  // Método para inicializar los dashboards
   private initDashboards(): void {
       this.dashboardService.getDashboards().subscribe(
           res => {
@@ -115,7 +120,7 @@ export class SdareportsComponent implements OnInit {
               this.isAdmin = res.isAdmin;
               this.IsDataSourceCreator = res.isDataSourceCreator;
 
-              /**Get unique tags */
+              // Obtener etiquetas únicas
               this.tags = Array.from(new Set([].concat.apply([], [...this.dashboards.privats, this.dashboards.publics, this.dashboards.grups, this.dashboards.shared])
                   .map(db => db.config.tag))).sort();
               this.tags = this.tags.map(tag => { return { value: tag, label: tag } })
@@ -131,6 +136,7 @@ export class SdareportsComponent implements OnInit {
       );
   }
 
+  // Método para inicializar el diálogo
   public initDialog(): void {
       this.dashController = new EdaDialogController({
           params: { dataSources: this.dss },
@@ -144,6 +150,7 @@ export class SdareportsComponent implements OnInit {
       });
   }
 
+  // Método para eliminar un dashboard
   public deleteDashboard(dashboard): void {
       let text = $localize`:@@deleteDashboardWarning: Estás a punto de borrar el informe: `;
       Swal.fire({
@@ -165,9 +172,9 @@ export class SdareportsComponent implements OnInit {
               );
           }
       });
-
   }
 
+  // Método para navegar a un dashboard específico
   public goToDashboard(dashboard): void {
       if (dashboard) {
           this.router.navigate(['/dashboard', dashboard._id]);
@@ -176,10 +183,12 @@ export class SdareportsComponent implements OnInit {
       }
   }
 
+  // Método para obtener los nombres de los grupos por dashboard
   public getGroupsNamesByDashboard(group: any[]): string {
       return group.map((elem: any) => elem.name).join(' , ');
   }
 
+  // Método para filtrar dashboards por etiqueta
   public filterDashboards(tag: any) {
       this.selectedTag = tag.value;
       if (tag.value === 0) tag.value = null;
@@ -192,6 +201,7 @@ export class SdareportsComponent implements OnInit {
       }
   }
 
+  // Método para filtrar dashboards por título
   public filterTitle(text: any){
       const stringToFind = text.target.value.toString().toUpperCase();
       if(stringToFind.length >  1) {
@@ -208,8 +218,8 @@ export class SdareportsComponent implements OnInit {
       }
   }
 
-
-  public canIEdit( dashboard ) {
+  // Método para verificar si se puede editar un dashboard
+  public canIEdit(dashboard): boolean {
       let result: boolean = false;
       result = this.isAdmin ;
       // si no es admin...
@@ -221,12 +231,8 @@ export class SdareportsComponent implements OnInit {
           } else {
               result = true;
           }
-
       }
       return result;
   }
-
-
-
 
 }
