@@ -315,7 +315,7 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
         const table_id = node.table_id || node.child_id;
         const pathList = this.globalFilter.pathList;
 
-        if (this.globalFilter.selectedTable.table_name !== table_id.split('.')[0]) {
+        if (node.autorelation || this.globalFilter.selectedTable.table_name !== table_id.split('.')[0]) {
             this.alertService.addWarning($localize`:@@invalidPathForm: Ruta incorrecta para el filtro seleccionado`);
             setTimeout(() => {
                 pathList[panel.id].table_id = null;
