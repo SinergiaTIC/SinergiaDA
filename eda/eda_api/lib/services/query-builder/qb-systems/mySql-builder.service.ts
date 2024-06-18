@@ -98,6 +98,7 @@ export class MySqlBuilderService extends QueryBuilderService {
         const column = this.findColumn(f.filter_table, f.filter_column);
         column.autorelation = f.autorelation;
         column.joins = f.joins;
+        column.valueListSource = f.valueListSource;
         const colname = this.getFilterColname(column);
         if (f.filter_type === 'not_null' || f.filter_type === 'not_null_nor_empty' || f.filter_type === 'null_or_empty') {
           filtersString += '\nand ' + this.filterToString(f);
@@ -421,6 +422,7 @@ export class MySqlBuilderService extends QueryBuilderService {
 
       column.autorelation = filterObject.autorelation;
       column.joins = filterObject.joins || [];
+      column.valueListSource = filterObject.valueListSource;
       const colname=this.getFilterColname(column);
       
       switch (this.setFilterType(filterObject.filter_type)) {
