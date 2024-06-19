@@ -289,6 +289,7 @@ export const PanelInteractionUtils = {
                 column.whatif_column = contentColumn.whatif_column || false;
                 column.whatif = contentColumn.whatif || {};
                 column.joins = contentColumn.joins || [];
+                column.column_type = contentColumn.column_type;
                 PanelInteractionUtils.moveItem(ebp, column);
             } else {
                 if(contentColumn.table_id === idTable) {
