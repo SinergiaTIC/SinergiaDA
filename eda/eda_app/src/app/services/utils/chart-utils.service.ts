@@ -57,6 +57,7 @@ export class ChartUtilsService {
         { label: $localize`:@@chartTypes5:Gráfico de Barras`, value: 'bar', subValue: 'bar', icon: 'pi pi-exclamation-triangle', ngIf: true, tooManyData: true },
         { label: $localize`:@@chartTypesHistograma:Histograma`, value: 'bar', subValue: 'histogram', icon: 'pi pi-exclamation-triangle', ngIf: true, tooManyData: true },
         { label: $localize`:@@chartTypes6:Gráfico de Barras Apiladas`, value: 'bar', subValue: 'stackedbar', icon: 'pi pi-exclamation-triangle', ngIf: true, tooManyData: true },
+        { label: $localize`:@@chartTypes19:Gráfico de Barras Apiladas al 100%`, value: 'bar', subValue: 'stackedbar100', icon: 'pi pi-exclamation-triangle', ngIf: true, tooManyData: true },
         { label: $localize`:@@chartTypes7:Gráfico de Barras Horizontales`, value: 'bar', subValue: 'horizontalBar', icon: 'pi pi-exclamation-triangle', ngIf: true, tooManyData: true },
         { label: $localize`:@@chartTypesPyramid:Gráfico de Barras Horizontales Contrapuestas`, value: 'bar', subValue: 'pyramid', icon: 'pi pi-exclamation-triangle', ngIf: true, tooManyData: true },
         { label: $localize`:@@chartTypes8:Gráfico de Lineas`, value: 'line', subValue: 'line', icon: 'pi pi-exclamation-triangle', ngIf: true, tooManyData: true },
@@ -216,7 +217,48 @@ export class ChartUtilsService {
             output =  _output;
 
 
-        } else if (['bar', 'line', 'area', 'horizontalBar', 'barline', 'histogram'  ].includes(type)  &&  dataTypes.length >  1) {
+        } else if(['bar'].includes(type) && ['stackedbar100'].includes(subType)) {
+            const l = Array.from(new Set(values.map(v => v[label_idx])));
+            const s = serie_idx !== -1 ? Array.from(new Set(values.map(v => v[serie_idx]))) : null;
+            const _output = [[], []];
+            _output[0] = l;
+            let total = 0;
+
+            values.forEach(i => {
+                total = total + i[number_idx];
+            });
+
+            console.log('values:', values)
+            console.log('number_idx:', number_idx)
+            console.log('valor de l: ', l)
+            console.log('valor de s: ', s)
+            console.log('dataDescription: ', dataDescription)
+            console.log('---------- Detalles ------');
+            // console.log('type:',type);
+            // console.log('subType:',subType);
+            // console.log('values:',values);
+            // console.log('dataTypes:',dataTypes);
+            // console.log('dataDescription:',dataDescription);
+            // console.log('isBarline:',isBarline);
+            // console.log('numberOfColumns:',numberOfColumns);
+            
+            //If only is one text serie
+            if(dataDescription.otherColumns.length === 1 && dataDescription.numericColumns.length === 1){
+                _output[0] = [dataDescription.otherColumns[0].name+' 100%'];
+                _output[1] = values.map(v => {
+                    return {
+                            data: [(v[number_idx]*100)/total],
+                            label: v[number_idx-1]
+                           }
+                });
+            } else if (dataDescription.otherColumns.length === 2 && dataDescription.numericColumns.length === 1) {
+                console.log('Ahora son dos columnas')
+            }
+
+            console.log('_output: prueba 1', _output)
+            output =  _output;
+
+        } else if (['bar', 'line', 'area', 'horizontalBar', 'barline', 'histogram'  ].includes(type)  &&  dataTypes.length >  1 ) {
 
             const l = Array.from(new Set(values.map(v => v[label_idx])));
             const s = serie_idx !== -1 ? Array.from(new Set(values.map(v => v[serie_idx]))) : null;
@@ -281,7 +323,7 @@ export class ChartUtilsService {
             output =  _output;
 
             /* Histograma  */
-        } else if (  ['bar' ].includes(type)    &&  dataTypes.length ==  1 && dataTypes[0]== 'numeric'   ) {
+        } else if (  ['bar'].includes(type) &&  dataTypes.length ==  1 && dataTypes[0]== 'numeric'   ) {
             let distinctNumbers  = Array.from(new Set(values.map(v => v[number_idx]))).filter(element => {
                 return element !== null;
               });;
@@ -358,7 +400,7 @@ export class ChartUtilsService {
 
 
             output =  _output;
-        }
+        } 
 
         return output;
     }
@@ -527,7 +569,7 @@ export class ChartUtilsService {
                 'table', 'crosstable', 'kpi','dynamicText', 'geoJsonMap', 'coordinatesMap',
                 'doughnut', 'polarArea', 'line', 'area', 'bar', 'histogram',  'funnel', 'bubblechart',
                 'horizontalBar', 'barline', 'stackedbar', 'parallelSets', 'treeMap', 'scatterPlot', 'knob' ,
-                'pyramid'
+                'pyramid', 'stackedbar100'
             ];
 
 
@@ -557,6 +599,7 @@ export class ChartUtilsService {
             notAllowed.splice(notAllowed.indexOf('line'), 1);
             notAllowed.splice(notAllowed.indexOf('area'), 1);
             notAllowed.splice(notAllowed.indexOf('stackedbar'), 1);
+            notAllowed.splice(notAllowed.indexOf('stackedbar100'), 1);
         }
         // això es per els histogrames.....
         if (dataDescription.numericColumns.length == 1 && dataDescription.totalColumns == 1 ) {
@@ -567,8 +610,10 @@ export class ChartUtilsService {
         if (dataDescription.numericColumns.length > 1 && dataDescription.otherColumns.length < 2) {
             notAllowed.splice(notAllowed.indexOf('barline'), 1);
             const idx = notAllowed.indexOf('stackedbar');
-            if (idx >= 0) {
+            const idx100 = notAllowed.indexOf('stackedbar100');
+            if (idx >= 0 || idx100 >= 0) {
                 notAllowed.splice(notAllowed.indexOf('stackedbar'), 1);
+                notAllowed.splice(notAllowed.indexOf('stackedbar100'), 1);
             }
 
         }
