@@ -224,38 +224,64 @@ export class ChartUtilsService {
             _output[0] = l;
             let total = 0;
 
-            values.forEach(i => {
+            values.forEach((i,j) => {
                 total = total + i[number_idx];
             });
 
-            console.log('values:', values)
-            console.log('number_idx:', number_idx)
-            console.log('valor de l: ', l)
-            console.log('valor de s: ', s)
-            console.log('dataDescription: ', dataDescription)
-            console.log('---------- Detalles ------');
-            // console.log('type:',type);
-            // console.log('subType:',subType);
-            // console.log('values:',values);
-            // console.log('dataTypes:',dataTypes);
-            // console.log('dataDescription:',dataDescription);
-            // console.log('isBarline:',isBarline);
-            // console.log('numberOfColumns:',numberOfColumns);
-            
             //If only is one text serie
             if(dataDescription.otherColumns.length === 1 && dataDescription.numericColumns.length === 1){
-                _output[0] = [dataDescription.otherColumns[0].name+' 100%'];
+                _output[0] = [dataDescription.otherColumns[0].name+' 100%']; // verificar si se retira el 100%
                 _output[1] = values.map(v => {
                     return {
                             data: [(v[number_idx]*100)/total],
-                            label: v[number_idx-1]
+                            label: v[label_idx]
                            }
                 });
-            } else if (dataDescription.otherColumns.length === 2 && dataDescription.numericColumns.length === 1) {
-                console.log('Ahora son dos columnas')
+            } 
+            //If are two text series
+            else if (dataDescription.otherColumns.length === 2 && dataDescription.numericColumns.length === 1) {
+                let series = [];
+
+                s.forEach((s) => {
+                    _output[1].push({ data: [], label: s });
+                    let serie = values.filter(v => v[serie_idx] === s);
+                    series.push(serie);
+                });
+
+                l.forEach((l) => {
+                    // let data_point = null;
+                    series.forEach((serie, i) => {
+                        const t = serie.filter(s => s[label_idx] === l).map(e => e[number_idx])[0];
+                        t !== undefined ? _output[1][i].data.push(t) : _output[1][i].data.push(0);
+                    });
+                });
+
+                // calibrar los valores al 100%
+                let totales = [];
+                for (var k = 0; k < l.length; k++) totales[k] = 0; // inicializando totales
+                
+                // recolectando todas las sumas
+                _output[1].forEach((e:any) => {
+                    e.data.forEach((v:any,j:number) => {
+                        totales[j]=totales[j]+v;
+                    })
+                })
+
+                // Agregando los valores de porcentaje
+                const _outputTemporal = _output[1];
+
+                _outputTemporal.forEach((e:any, k:number) => {
+                    e.data.forEach((v:any, j:number) => {
+                        if(totales[j]===0) {
+                            _output[1][k].data[j]=0;
+                        }
+                        else {
+                            _output[1][k].data[j] = v*100/totales[j]
+                        }
+                    })
+                })
             }
 
-            console.log('_output: prueba 1', _output)
             output =  _output;
 
         } else if (['bar', 'line', 'area', 'horizontalBar', 'barline', 'histogram'  ].includes(type)  &&  dataTypes.length >  1 ) {
@@ -318,7 +344,6 @@ export class ChartUtilsService {
                             pointHoverBorderWidth: 2
                         });
                 });
-
             }
             output =  _output;
 
