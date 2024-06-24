@@ -1,6 +1,5 @@
 import { QueryBuilderService } from './../query-builder.service';
 import * as _ from 'lodash';
-import { filter, values } from 'lodash';
 
  /*SDA CUSTOM*/ import * as custom from '../../custom/custom';
 
@@ -25,6 +24,7 @@ export class MySqlBuilderService extends QueryBuilderService {
     // JOINS
     let joinString: any[];
     let alias: any;
+    // joined == EDA2
     if (this.queryTODO.joined) {
       /**tree */
       const responseJoins = this.setJoins(joinTree, joinType, schema, valueListJoins);
@@ -34,8 +34,6 @@ export class MySqlBuilderService extends QueryBuilderService {
       /*EDA Normal*/
       joinString = this.getJoins(joinTree, dest, tables, joinType,  valueListJoins, schema);
     }
-
-
 
     joinString.forEach(x => {
       myQuery = myQuery + '\n' + x;
@@ -98,6 +96,9 @@ export class MySqlBuilderService extends QueryBuilderService {
 
       filters.forEach(f => {
         const column = this.findColumn(f.filter_table, f.filter_column);
+        column.autorelation = f.autorelation;
+        column.joins = f.joins;
+        column.valueListSource = f.valueListSource;
         const colname = this.getFilterColname(column);
         if (f.filter_type === 'not_null' || f.filter_type === 'not_null_nor_empty' || f.filter_type === 'null_or_empty') {
           filtersString += '\nand ' + this.filterToString(f);
@@ -185,7 +186,6 @@ export class MySqlBuilderService extends QueryBuilderService {
 
   
   public setJoins(joinTree: any[], joinType: string, schema: string, valueListJoins: string[]) {
-
     // Inicialización de variables
     const joinExists = new Set();
     const aliasTables = {};
@@ -209,20 +209,34 @@ export class MySqlBuilderService extends QueryBuilderService {
         if (!joinExists.has(`${sourceJoin}=${targetJoin}`)) {
             joinExists.add(`${sourceJoin}=${targetJoin}`);
 
+
+            let aliasSource;
+            if (sourceJoin.split('.')[0] == targetJoin.split('.')[0]) {
+                aliasSource = `\`${sourceTable}.${sourceColumn}\``;
+            }
+            
             // Construcción de los alias
-            const alias = `\`${targetTable}.${targetColumn}\``;
+            let alias = `\`${targetTable}.${targetColumn}.${sourceColumn}\``;
+
+            if (aliasSource) {
+                alias = aliasSource;
+            }
+
             aliasTables[alias] = targetTable;
+            // aliasTables[sourceJoin] = targetTable;
 
             let aliasTargetTable: string;
             // targetTable and sourceTable can be the same table (autorelation)
             if (targetTableJoin.includes(targetTable) || targetTable == sourceTable) {
-                aliasTargetTable = `${targetTable}${targetTableJoin.indexOf(targetTable)}`;
+                // aliasTargetTable = `${targetTable}${targetTableJoin.indexOf(targetTable)}`;
+                aliasTargetTable = `${targetTable}${sourceColumn}`;
                 aliasTables[alias] = aliasTargetTable;
             }
 
             let joinStr: string;
 
             joinType = valueListJoins.includes(targetTable) ? 'LEFT' : joinType;
+
 
             if (aliasTargetTable) {
                 targetJoin = `\`${aliasTargetTable}\`.\`${targetColumn}\``;
@@ -238,7 +252,7 @@ export class MySqlBuilderService extends QueryBuilderService {
             }
         }
     }
-
+    
     return {
         joinString,
         aliasTables
@@ -261,7 +275,14 @@ export class MySqlBuilderService extends QueryBuilderService {
     this.queryTODO.fields.forEach(el => {
       el.order !== 0 && el.table_id !== origin && !dest.includes(el.table_id) ? dest.push(el.table_id) : false;
 
-      const table_column = `\`${el.table_id}\`.\`${el.column_name}\``;
+      let table_column;
+
+      if (el.autorelation && !el.valueListSource && !this.queryTODO.forSelector ) {
+
+        table_column = `\`${el.joins[el.joins.length-1][0]}\`.\`${el.column_name}\``;
+      } else {
+        table_column = `\`${el.table_id}\`.\`${el.column_name}\``;
+      }
 
       let whatIfExpression = '';
       if (el.whatif_column) whatIfExpression = `${el.whatif.operator} ${el.whatif.value}`;
@@ -394,9 +415,14 @@ export class MySqlBuilderService extends QueryBuilderService {
     public filterToString(filterObject: any): any {
       const column = this.findColumn(filterObject.filter_table, filterObject.filter_column);
       const colType = filterObject.filter_column_type;
+
       if (!column.hasOwnProperty('minimumFractionDigits')) {
         column.minimumFractionDigits = 0;
       }
+
+      column.autorelation = filterObject.autorelation;
+      column.joins = filterObject.joins || [];
+      column.valueListSource = filterObject.valueListSource;
       const colname=this.getFilterColname(column);
       
       switch (this.setFilterType(filterObject.filter_type)) {
@@ -423,7 +449,7 @@ export class MySqlBuilderService extends QueryBuilderService {
         case 5:
           return `${colname} is not null and ${colname} != ''`;
         case 6:
-          return `${colname} is null or ${colname} = ''`;
+          return `( ${colname} is null or ${colname} = '')`;
       }
     }
 
@@ -435,7 +461,13 @@ export class MySqlBuilderService extends QueryBuilderService {
   public getFilterColname(column: any){
     let colname:String ;
     if( column.computed_column == 'no'  || ! column.hasOwnProperty('computed_column') ){
-      colname =   `\`${column.table_id}\`.\`${column.column_name}\`` ;
+
+      if (column.autorelation && !column.valueListSource) {
+        colname = `\`${column.joins[column.joins.length-1][0]}\`.\`${column.column_name}\``;
+      } else {
+        colname = `\`${column.table_id}\`.\`${column.column_name}\`` ;
+      }
+      
     }else{
       if(column.column_type == 'numeric'){
         colname = `CAST( ${column.SQLexpression} as decimal(32,${column.minimumFractionDigits}))`;
@@ -459,12 +491,17 @@ export class MySqlBuilderService extends QueryBuilderService {
       let filtersString = `\nhaving 1=1 `;
 
       filters.forEach(f => {
-
         const column = this.findHavingColumn(f.filter_table, f.filter_column);
+        column.autorelation = f.autorelation;
+        column.joins = f.joins;
         const colname = this.getHavingColname(column);
         if (f.filter_type === 'not_null') {
           filtersString += `\nand ${colname}  is not null `;
-        } else {
+        }else if (f.filter_type === 'not_null_nor_empty') {
+          filtersString += `\nand ${colname}  is not null and ${colname} != ''  `;
+        }else if (f.filter_type === 'null_or_empty') {
+          filtersString += `\nand ( ${colname}  is null or ${colname} != ''  ) `;
+        }  else {
           /* Control de nulos... se genera la consutla de forma diferente */
           let nullValueIndex = f.filter_elements[0].value1.indexOf(null);
           if (nullValueIndex != - 1) {
@@ -501,8 +538,14 @@ export class MySqlBuilderService extends QueryBuilderService {
    */
 public getHavingColname(column: any){
   let colname:String  ;
-  if( column.computed_column === 'no'  || ! column.hasOwnProperty('computed_column')   ){
-    colname =  `cast(${column.aggregation_type}(\`${column.table_id}\`.\`${column.column_name}\`) as decimal(32,${column.minimumFractionDigits||0}) ) ` ;
+  if( column.computed_column === 'no'  || !column.hasOwnProperty('computed_column') ){
+    let table_id = column.table_id;
+
+    if (column.autorelation && !column.valueListSource) {
+        table_id = column.joins[column.joins.length-1][0];
+    }
+
+    colname = `cast(${column.aggregation_type}(\`${table_id}\`.\`${column.column_name}\`) as decimal(32,${column.minimumFractionDigits||0}) ) ` ;
   }else{
     if(column.column_type == 'numeric'){
       colname = `CAST( ${column.SQLexpression} as decimal(32,${column.minimumFractionDigits}))`;
@@ -520,6 +563,8 @@ public getHavingColname(column: any){
    */
  public havingToString(filterObject: any) {
     const column = this.findHavingColumn(filterObject.filter_table, filterObject.filter_column);
+    column.autorelation = filterObject.autorelation;
+    column.joins = filterObject.joins;
 
     if (!column.hasOwnProperty('minimumFractionDigits')) {
       column.minimumFractionDigits = 0;

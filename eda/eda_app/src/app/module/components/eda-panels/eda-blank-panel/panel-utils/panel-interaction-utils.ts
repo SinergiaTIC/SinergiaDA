@@ -72,7 +72,8 @@ export const PanelInteractionUtils = {
   loadTableNodes: (ebp: EdaBlankPanelComponent) => {
     if (ebp.currentQuery.length > 0) {
       const idTables = [...new Set(ebp.currentQuery.map((q) => q.table_id))];
-      const rootTable = idTables.find((idTable: string) => ebp.rootTreeTable?.table_name == idTable);
+      const rootTable = idTables.find((idTable: string) => ebp.rootTable?.table_name == idTable);
+      
       if (rootTable) {
         const dataSource = ebp.inject.dataSource.model.tables;
   
@@ -105,7 +106,7 @@ export const PanelInteractionUtils = {
       const rootTable = (rootJoin[0]||'').split('.')[0];
       const sourceTable = ebp.tables.find((table: any) => table.table_name == rootTable);
 
-      const relation = sourceTable?.relations.find((rel) => `${rel.target_table}.${rel.target_column[0]}` == column.table_id);
+      const relation = sourceTable?.relations.find((rel) => `${rel.target_table}.${rel.target_column[0]}.${rel.source_column[0]}` == column.table_id);
       if (relation) {
         let assertTable = _.cloneDeep(ebp.tables.find((t) => t.table_name == relation.target_table));
 
@@ -117,6 +118,7 @@ export const PanelInteractionUtils = {
           assertTable.table_name = column.table_id;
           assertTable.display_name.default = displayName;
           assertTable.description.default = displayName;
+          assertTable.autorelation = relation.autorelation;
           ebp.assertedTables.push(assertTable);
           ebp.tables.push(assertTable);
         }
@@ -155,7 +157,7 @@ export const PanelInteractionUtils = {
       table.relations = table.relations.filter(f=>f.bridge==false );
       for (const relation of table.relations) {
         // Init child_id
-        const child_id = relation.target_table+'.'+relation.target_column[0];
+        const child_id = `${relation.target_table}.${relation.target_column[0]}.${relation.source_column[0]}`;
 
         /** Checks if the current child_node is included before.
          * This prevents duplicated paths. */
@@ -168,7 +170,8 @@ export const PanelInteractionUtils = {
           /** This creates the path to relate this node with the previous tables.
            * It will be used later to generate the query. */
           let sourceJoin = relation.source_table+'.'+relation.source_column[0];
-          let joins = expandNode.joins ? [].concat(expandNode.joins, [[sourceJoin, child_id]]) : [[sourceJoin, child_id]];
+          const joinChildId = child_id.substring(0, child_id.lastIndexOf('.'));
+          let joins = expandNode.joins ? [].concat(expandNode.joins, [[sourceJoin, joinChildId]]) : [[sourceJoin, joinChildId]];
           
           if (!ebp.tables.some((t) => t.table_name == child_id)) {
             let assertTable = _.cloneDeep(ebp.tables.find((t) => t.table_name == relation.target_table))
@@ -185,6 +188,7 @@ export const PanelInteractionUtils = {
             type: 'child',
             label: childLabel,
             child_id: child_id.trim(),
+            autorelation: relation.autorelation,
             joins
           };
 
@@ -197,7 +201,7 @@ export const PanelInteractionUtils = {
           });
           
           // If it's expandable, we add properties to expand the node. 
-          if (isexpandible) {
+          if (isexpandible && !relation.autorelation) {
             childNode.expandedIcon = "pi pi-folder-open";
             childNode.collapsedIcon = "pi pi-folder";
             childNode.children = [{}];
@@ -285,6 +289,10 @@ export const PanelInteractionUtils = {
                 column.whatif_column = contentColumn.whatif_column || false;
                 column.whatif = contentColumn.whatif || {};
                 column.joins = contentColumn.joins || [];
+                if(column.column_type!= contentColumn.column_type){
+                  column.old_column_type = column.column_type;
+                  column.column_type = contentColumn.column_type;
+                }
                 PanelInteractionUtils.moveItem(ebp, column);
             } else {
                 if(contentColumn.table_id === idTable) {
@@ -326,8 +334,8 @@ export const PanelInteractionUtils = {
         const table = ebp.tables.find((table) => table.table_name == contentColumn.table_id);
 
         if (table && table?.columns) {
-          if (!ebp.rootTreeTable && contentColumn.joins.length == 0) {
-            ebp.rootTreeTable = table;
+          if (!ebp.rootTable && contentColumn.joins.length == 0) {
+            ebp.rootTable = table;
           }
 
           const columns = table.columns;
@@ -359,6 +367,7 @@ export const PanelInteractionUtils = {
                   duplicatedColumn.whatif_column = contentColumn.whatif_column || false;
                   duplicatedColumn.whatif = contentColumn.whatif || {};
                   duplicatedColumn.joins = contentColumn.joins || [];
+                  duplicatedColumn.autorelation = contentColumn.autorelation || false;
                   PanelInteractionUtils.handleAggregationType4DuplicatedColumns(ebp, duplicatedColumn);
                   // Moc la columna directament perque es una duplicada.... o no....
                   ebp.currentQuery.push(duplicatedColumn);
@@ -375,7 +384,8 @@ export const PanelInteractionUtils = {
             handleColumn.whatif = contentColumn.whatif || {};
             handleColumn.joins = contentColumn.joins || [];
             handleColumn.ordenation_type = contentColumn.ordenation_type;
-            
+            handleColumn.autorelation = contentColumn.autorelation || false;
+
             const existsAgg = handleColumn.aggregation_type.find((agg) => agg.value === contentColumn.aggregation_type);
             if (existsAgg) existsAgg.selected = true;
 
@@ -593,11 +603,11 @@ export const PanelInteractionUtils = {
     if (match) match.isdeleted = true; // Marco la columna com a borrada
 
 
-    if (!ebp.rootTreeTable) {
-      ebp.rootTreeTable = ebp.tables.find((table) => table.table_name == c.table_id);
+    if (!ebp.rootTable) {
+      ebp.rootTable = ebp.tables.find((table) => table.table_name == c.table_id);
     }
 
-    if (c.table_id !== ebp.rootTreeTable?.table_name) {
+    if (c.table_id !== ebp.rootTable?.table_name) {
       c.joins = (c.joins||[]).length == 0 ? ebp.nodeJoins[ebp.nodeJoins.length-1] : c.joins;
     }
 
@@ -693,7 +703,7 @@ export const PanelInteractionUtils = {
     if (list === 'select') {
       if (ebp.selectedQueryMode == 'EDA2') {
 
-        const rootTable = ebp.rootTreeTable.table_name;
+        const rootTable = ebp.rootTable.table_name;
 
         // Remove column is from rootTable then check currentQuery columns to allow or not.
         if (c.table_id === rootTable) {
@@ -706,7 +716,7 @@ export const PanelInteractionUtils = {
           }
         }
 
-        if (ebp.rootTreeTable && ebp.rootTreeTable.column_name == c.column_name && rootTable == c.table_id) {
+        if (ebp.rootTable && ebp.rootTable.column_name == c.column_name && rootTable == c.table_id) {
           // ebp.selectedQueryMode = 'EDA';
           ebp.currentQuery.forEach((query) => query.table_id = query.table_id.split('.')[0]);
           ebp.reloadTablesData();
@@ -729,7 +739,7 @@ export const PanelInteractionUtils = {
 
     // Buscar relacións per tornar a mostrar totes les taules
     if (ebp.currentQuery.length === 0 && ebp.filtredColumns.length === 0) {
-      ebp.rootTreeTable = undefined;
+      ebp.rootTable = undefined;
       ebp.tablesToShow = ebp.tables;
 
     } else {

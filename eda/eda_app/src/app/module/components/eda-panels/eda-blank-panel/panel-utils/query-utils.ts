@@ -44,8 +44,10 @@ export const QueryUtils = {
     try {
       if (ebp.selectedQueryMode != 'SQL') {
         const queryData = JSON.parse(JSON.stringify(query));
-        queryData.query.filters = query.query.filters.filter((f) => (f.filter_elements[0]?.value1 && f.filter_elements[0].value1.length !== 0) 
-        || f.filter_type === 'not_null' || f.filter_type === 'not_null_nor_empty' || f.filter_type === 'null_or_empty');
+        queryData.query.filters = query.query.filters.filter((f) => 
+          (f.filter_elements[0]?.value1 && f.filter_elements[0].value1.length !== 0) 
+          || ['not_null', 'not_null_nor_empty', 'null_or_empty'].includes(f.filter_type)
+        );
         const response = await ebp.dashboardService.executeQuery(queryData).toPromise();
         return response;
       } else {
@@ -67,6 +69,7 @@ export const QueryUtils = {
             break;
           }
         }
+
         ebp.currentQuery = [];
         types.forEach((type, i) => {
           ebp.currentQuery.push(QueryUtils.createColumn(response[0][i], type, ebp.sqlOriginTable));
@@ -74,7 +77,6 @@ export const QueryUtils = {
         return response;
       }
     } catch (err) {
-      console.log(err);
       throw err;
     }
   },
@@ -229,7 +231,7 @@ export const QueryUtils = {
       config: config.getConfig(),
       queryLimit: ebp.queryLimit,
       joinType: ebp.joinType,
-      rootTable: ebp.rootTreeTable?.table_name,
+      rootTable: ebp.rootTable?.table_name,
     };
     return ebp.queryBuilder.normalQuery(ebp.currentQuery, params, ebp.selectedQueryMode);
   },

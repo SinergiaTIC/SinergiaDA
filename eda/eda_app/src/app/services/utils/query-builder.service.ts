@@ -107,8 +107,11 @@ export class QueryBuilderService extends ApiService {
             labels.push(select[i].column_name);
         }
 
-        const filters = params.filters.filter((f) => (f.filter_elements[0]?.value1 && f.filter_elements[0].value1.length !== 0) 
-        || f.filter_type === 'not_null' || f.filter_type === 'not_null_nor_empty' || f.filter_type === 'null_or_empty');
+
+        const filters = params.filters.filter((f) => 
+            (f.filter_elements[0]?.value1 && f.filter_elements[0].value1.length !== 0) 
+            || ['not_null', 'not_null_nor_empty', 'null_or_empty'].includes(f.filter_type)
+        );
 
         return {
             id: '1',
