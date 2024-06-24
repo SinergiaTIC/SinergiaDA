@@ -61,153 +61,76 @@
   <table class="table table-striped" id="report-table">
     <thead>
       <tr>
-        <th>Nombre del Informe</th>
-        <th>Tipo</th>
-        <th>Autor</th>
+        <th (click)="sortTable('config.title')">
+          Nombre del Informe
+          <i class="fa" [ngClass]="{'fa-sort-asc': sortColumn === 'config.title' && sortDirection === 'asc', 'fa-sort-desc': sortColumn === 'config.title' && sortDirection === 'desc'}"></i>
+        </th>
+        <th (click)="sortTable('type')">
+          Tipo
+          <i class="fa" [ngClass]="{'fa-sort-asc': sortColumn === 'type' && sortDirection === 'asc', 'fa-sort-desc': sortColumn === 'type' && sortDirection === 'desc'}"></i>
+        </th>
+        <th (click)="sortTable('user')">
+          Autor
+          <i class="fa" [ngClass]="{'fa-sort-asc': sortColumn === 'user' && sortDirection === 'asc', 'fa-sort-desc': sortColumn === 'user' && sortDirection === 'desc'}"></i>
+        </th>
         <th>Fecha creación</th>
         <th>Edición privada</th>
         <th>Grupos</th>
-        <th>Etiquetas</th>
+        <th (click)="sortTable('config.tag')">
+          Etiquetas
+          <i class="fa" [ngClass]="{'fa-sort-asc': sortColumn === 'config.tag' && sortDirection === 'asc', 'fa-sort-desc': sortColumn === 'config.tag' && sortDirection === 'desc'}"></i>
+        </th>
         <th>Acciones</th>
+
+
+
       </tr>
     </thead>
     <tbody>
-      <!-- Informes Públicos -->
-      <ng-container *ngFor="let dashboard of visibleDashboards.shared">
-        <tr>
-          <td (click)="goToDashboard(dashboard)" class="pointer">
-            {{ dashboard.config.title }}
-          </td>
-          <td><i class="fa fa-circle text-danger"></i> Público</td>
-          <td>{{ dashboard.user.name }}</td>
-          <td></td>
-          <td></td>
-          <td></td>
-          <td><span class="badge badge-primary">{{ dashboard.config.tag }}</span></td>
-          <td>
-            <span
-              *ngIf="!isObserver && canIEdit(dashboard)"
-              (click)="deleteDashboard(dashboard)"
-              class="pointer"
-            >
-              <i class="fa fa-trash text-danger"></i>
-            </span>
-            <span
-              *ngIf="!isObserver && canIEdit(dashboard)"
-              (click)="clone(dashboard)"
-              class="pointer"
-            >
-              <i class="fa fa-clone text-info"></i>
-            </span>
-          </td>
-        </tr>
-      </ng-container>
+      <tr *ngFor="let dashboard of visibleDashboards">
+        <td (click)="goToDashboard(dashboard)" class="pointer">
+          {{ dashboard.config.title }}
+        </td>
+        <td>
+          <i class="fa fa-circle" [ngClass]="{
+            'text-danger': dashboard.type === 'public',
+            'text-primary': dashboard.type === 'common',
+            'text-default': dashboard.type === 'group' || dashboard.type === 'private'
+          }"></i>
+          {{ dashboard.type | titlecase }}
+        </td>
+        <td>{{ getAuthorName(dashboard.user) }}</td>
+        <td></td>
+        <td></td>
+        <td>{{ dashboard.group ? getGroupsNamesByDashboard([dashboard.group]) : '' }}</td>
+        <td><span class="badge badge-primary">{{ dashboard.config.tag }}</span></td>
+        <td>
+          <span
+            *ngIf="!isObserver && canIEdit(dashboard)"
+            (click)="deleteDashboard(dashboard)"
+            class="pointer"
+          >
+            <i class="fa fa-trash text-danger"></i>
+          </span>
+          <span
+            *ngIf="!isObserver && canIEdit(dashboard)"
+            (click)="clone(dashboard)"
+            class="pointer"
+          >
+            <i class="fa fa-clone text-info"></i>
+          </span>
+        </td>
 
-      <!-- Informes Comunes -->
-      <ng-container *ngFor="let dashboard of visibleDashboards.publics">
-        <tr>
-          <td (click)="goToDashboard(dashboard)" class="pointer">
-            {{ dashboard.config.title }}
-          </td>
-          <td><i class="fa fa-circle text-primary"></i> Común</td>
-          <td>{{ dashboard.user }}</td>
-          <td></td>
-          <td></td>
-          <td></td>
-          <td><span class="badge badge-primary">{{ dashboard.config.tag }}</span></td>
-
-          <td>
-            <span
-              *ngIf="!isObserver && canIEdit(dashboard)"
-              (click)="deleteDashboard(dashboard)"
-              class="pointer"
-            >
-              <i class="fa fa-trash text-danger"></i>
-            </span>
-            <span
-              *ngIf="!isObserver && canIEdit(dashboard)"
-              (click)="clone(dashboard)"
-              class="pointer"
-            >
-              <i class="fa fa-clone text-info"></i>
-            </span>
-          </td>
-        </tr>
-      </ng-container>
-
-      <!-- Informes de Grupos -->
-      <ng-container *ngFor="let group of groups">
-        <ng-container
-          *ngFor="
-            let dashboard of visibleDashboards.grups | ids : 'group' : group
-          "
-        >
-          <tr>
-            <td (click)="goToDashboard(dashboard)" class="pointer">
-              {{ dashboard.config.title }}
-            </td>
-            <td><i class="fa fa-circle text-default"> </i> Mis Grupos</td>
-            <td>{{ dashboard.user }}</td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td><span class="badge badge-primary">{{ dashboard.config.tag }}</span></td>
-            <td>
-              <span
-                *ngIf="!isObserver && canIEdit(dashboard)"
-                (click)="deleteDashboard(dashboard)"
-                class="pointer"
-              >
-                <i class="fa fa-trash text-danger"></i>
-              </span>
-              <span
-                *ngIf="!isObserver && canIEdit(dashboard)"
-                (click)="clone(dashboard)"
-                class="pointer"
-              >
-                <i class="fa fa-clone text-info"></i>
-              </span>
-            </td>
-          </tr>
-        </ng-container>
-      </ng-container>
-
-      <!-- Informes Privados -->
-      <ng-container *ngFor="let dashboard of visibleDashboards.privats">
-        <tr>
-          <td (click)="goToDashboard(dashboard)" class="pointer">
-            {{ dashboard.config.title }}
-          </td>
-          <td><i class="fa fa-circle text-default"></i> Privado</td>
-          <td>{{ dashboard.user.name }}</td>
-          <td></td>
-          <td></td>
-          <td></td>
-          <td><span class="badge badge-primary">{{ dashboard.config.tag }}</span></td>
-          <td>
-            <span
-              *ngIf="!isObserver && canIEdit(dashboard)"
-              (click)="deleteDashboard(dashboard)"
-              class="pointer"
-            >
-              <i class="fa fa-trash text-danger"></i>
-            </span>
-            <span
-              *ngIf="!isObserver && canIEdit(dashboard)"
-              (click)="clone(dashboard)"
-              class="pointer"
-            >
-              <i class="fa fa-clone text-info"></i>
-            </span>
-          </td>
-        </tr>
-      </ng-container>
+      </tr>
     </tbody>
   </table>
 </div>
 <!-- Fin de la tabla de Bootstrap -->
 
+
 <app-create-dashboard
   *ngIf="dashController"
   [controller]="dashController"
 ></app-create-dashboard>
+
+

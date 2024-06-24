@@ -10,3 +10,11 @@
   text-decoration: underline;
   font-weight: 900;
 }
+
+#report-table th {
+  cursor: pointer;
+}
+
+#report-table th:hover {
+  background-color: #f5f5f5;
+}
