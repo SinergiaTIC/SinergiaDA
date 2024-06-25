@@ -294,3 +294,74 @@
   border-radius: 50%;
   margin-right: 5px;
 }
+
+.title-container {
+  display: flex;
+  align-items: center;
+}
+
+.info-icon-container {
+  position: relative;
+  margin-left: 8px;
+}
+
+.fa-info-circle {
+  color: #007bff;
+  cursor: pointer;
+  transition: color 0.3s ease;
+}
+
+.info-icon-container:hover .fa-info-circle {
+  color: #0056b3;
+}
+
+.custom-tooltip {
+  visibility: hidden;
+  width: 300px;
+  background-color: #333;
+  color: #fff;
+  text-align: center;
+  border-radius: 6px;
+  padding: 10px;
+  position: absolute;
+  z-index: 1;
+  bottom: 125%;
+  left: 50%;
+  margin-left: -100px;
+  opacity: 0;
+  transition: opacity 0.3s, visibility 0.3s;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+
+.custom-tooltip::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  margin-left: -5px;
+  border-width: 5px;
+  border-style: solid;
+  border-color: #333 transparent transparent transparent;
+}
+
+.info-icon-container:hover .custom-tooltip {
+  visibility: visible;
+  opacity: 1;
+}
+
+/* Animación para el tooltip */
+@keyframes fadeIn {
+  from {opacity: 0;}
+  to {opacity: 1;}
+}
+
+.info-icon-container:hover .custom-tooltip {
+  animation: fadeIn 0.5s;
+}
+
+/* Estilo para el texto dentro del tooltip */
+.custom-tooltip p {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.4;
+}

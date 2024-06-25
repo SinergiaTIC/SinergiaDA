@@ -154,8 +154,16 @@
     </thead>
     <tbody>
       <tr *ngFor="let dashboard of visibleDashboards">
-        <td (click)="goToDashboard(dashboard)" class="pointer">
-          {{ dashboard.config.title }}
+        <td>
+          <div class="title-container">
+            {{ dashboard.config.title }}
+            <div *ngIf="dashboard.config.description" class="info-icon-container">
+              <i class="fa fa-info-circle"></i>
+              <div class="custom-tooltip">
+                <p>{{ dashboard.config.description }}</p>
+              </div>
+            </div>
+          </div>
         </td>
         <td>
           <span class="type-indicator" [style.background-color]="getDashboardTypeColor(dashboard.type)"></span>
@@ -196,7 +204,17 @@
       [ngClass]="getDashboardTypeClass(dashboard.type)"
       (dblclick)="goToDashboard(dashboard)">
         <div class="card-body d-flex flex-column">
-          <h5 class="card-title">{{ dashboard.config.title }}</h5>
+          <h5 class="card-title">
+            <div class="title-container">
+              {{ dashboard.config.title }}
+              <div *ngIf="dashboard.config.description" class="info-icon-container">
+                <i class="fa fa-info-circle"></i>
+                <div class="custom-tooltip">
+                  <p>{{ dashboard.config.description }}</p>
+                </div>
+              </div>
+            </div>
+          </h5>
           <p class="card-text">
             <strong>Tipo:</strong> {{ dashboard.type | titlecase }}
           </p>
