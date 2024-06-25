@@ -161,7 +161,7 @@
           <span class="type-indicator" [style.background-color]="getDashboardTypeColor(dashboard.type)"></span>
           {{ dashboard.type | titlecase }}
         </td>
-        <td>{{ getAuthorName(dashboard.user) }}</td>
+        <td>{{ dashboard.user.name }}</td>
         <td></td>
         <td></td>
         <td>{{ dashboard.group ? getGroupsNamesByDashboard([dashboard.group]) : '' }}</td>
@@ -200,7 +200,7 @@
           <p class="card-text">
             <strong>Tipo:</strong> {{ dashboard.type | titlecase }}
           </p>
-          <p class="card-text"><strong>Autor:</strong> {{ getAuthorName(dashboard.user) }}</p>
+          <p class="card-text"><strong>Autor:</strong> {{ dashboard.user.name }}</p>
           <p class="card-text"><strong>Grupos:</strong> {{ dashboard.group ? getGroupsNamesByDashboard([dashboard.group]) : '' }}</p>
           <p class="card-text"><strong>Etiquetas:</strong> <span class="badge badge-primary">{{ dashboard.config.tag }}</span></p>
           <div class="mt-auto">

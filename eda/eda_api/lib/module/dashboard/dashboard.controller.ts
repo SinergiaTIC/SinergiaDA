@@ -145,28 +145,29 @@ export class DashboardController {
       const privates = []
       const groups = []
       const shared = []
-
+  
       for (const dashboard of dashboards) {
+        // Buscar información del usuario para todos los dashboards
+        dashboard.user = await User.findById(
+          { _id: dashboard.user },
+          'name'
+        ).exec()
+        if (dashboard.user == null) {
+          dashboard.user = new User({
+            name: 'N/A',
+            email: '',
+            password: '',
+            img: '',
+            role: '',
+            active: ''
+          })
+        }
+        
         switch (dashboard.config.visible) {
           case 'public':
             publics.push(dashboard)
             break
           case 'private':
-            dashboard.user = await User.findById(
-              { _id: dashboard.user },
-              'name'
-            ).exec()
-            if (dashboard.user == null) {
-              dashboard.user = new User(
-                {
-                  name: 'N/A',
-                  email: '',
-                  password: '',
-                  img: '',
-                  role: '',
-                  active: ''
-                })
-            };
             privates.push(dashboard)
             break
           case 'group':
@@ -178,7 +179,7 @@ export class DashboardController {
             break
         }
       }
-
+  
       return [publics, privates, groups, shared]
     } catch (err) {
       throw new HttpException(400, 'Error loading dashboards for admin')
