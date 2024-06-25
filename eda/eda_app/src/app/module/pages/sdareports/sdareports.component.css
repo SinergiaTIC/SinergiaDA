@@ -142,3 +142,155 @@
     flex: 0 0 calc(100% - 20px);
   }
 }
+
+
+.dropdown-menu {
+  min-width: 200px;
+  padding: 10px;
+}
+
+.dropdown-menu .form-control {
+  margin-bottom: 10px;
+}
+
+.dropdown-item {
+  padding: 0.25rem 1.5rem;
+}
+
+.dropdown-item:hover {
+  background-color: #f8f9fa;
+}
+
+.form-check {
+  padding-left: 0;
+}
+
+.form-check-input {
+  margin-top: 0.3rem;
+  margin-left: 0;
+}
+
+.form-check-label {
+  margin-left: 1.25rem;
+}
+
+
+.btn-group .btn {
+  margin-right: 5px;
+}
+
+.btn-group .btn:last-child {
+  margin-right: 0;
+}
+
+.btn-group .btn-outline-light {
+  border-color: #6c757d;
+  color: #6c757d;
+}
+
+.btn-group .btn-outline-light:hover,
+.btn-group .btn-outline-light:focus,
+.btn-group .btn-outline-light.active {
+  background-color: #6c757d;
+  color: #fff;
+}
+
+.btn-group .btn-outline-light:not(:last-child) {
+  border-right: none;
+}
+
+.btn-group .btn-outline-light:first-child {
+  border-top-left-radius: 0.25rem;
+  border-bottom-left-radius: 0.25rem;
+}
+
+.btn-group .btn-outline-light:last-child {
+  border-top-right-radius: 0.25rem;
+  border-bottom-right-radius: 0.25rem;
+}
+
+/* ... estilos existentes ... */
+
+.dropdown-menu {
+  min-width: 200px;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.dropdown-menu .form-control {
+  margin-bottom: 10px;
+}
+
+.dropdown-item {
+  padding: 0.25rem 1.5rem;
+}
+
+.dropdown-item:hover {
+  background-color: #f8f9fa;
+}
+
+.form-check {
+  padding-left: 0;
+}
+
+.form-check-input {
+  margin-top: 0.3rem;
+  margin-left: 0;
+}
+
+.form-check-label {
+  margin-left: 1.25rem;
+}
+
+.btn-group .btn {
+  margin-right: 5px;
+}
+
+.btn-group .btn:last-child {
+  margin-right: 0;
+}
+
+.navbar .dropdown {
+  margin-right: 10px;
+}
+
+/* Estilos para los botones de filtro */
+.navbar .btn-secondary {
+  background-color: #6c757d;
+  border-color: #6c757d;
+}
+
+.navbar .btn-secondary:hover,
+.navbar .btn-secondary:focus {
+  background-color: #5a6268;
+  border-color: #545b62;
+}
+
+/* Estilos para el menú desplegable */
+.dropdown-menu {
+  background-color: #f8f9fa;
+  border: 1px solid #ced4da;
+}
+
+.dropdown-menu .form-control {
+  border: 1px solid #ced4da;
+}
+
+.dropdown-item:hover {
+  background-color: #e9ecef;
+}
+
+
+.card-border-common { border-left-color: #007bff; }
+.card-border-public { border-left-color: #dc3545; }
+.card-border-group { border-left-color: #28a745; }
+.card-border-private { border-left-color: #ffc107; }
+.card-border-archived { border-left-color: #6c757d; }
+
+.type-indicator {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  margin-right: 5px;
+}

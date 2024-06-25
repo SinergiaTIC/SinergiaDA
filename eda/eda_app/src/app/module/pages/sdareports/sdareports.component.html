@@ -8,7 +8,85 @@
   </div>
 
   <!-- Barra de Tags -->
-  <div *ngIf="tags.length !== 2" class="ml-3">
+  <div class="ml-3">
+    <div class="dropdown">
+      <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        Etiqueta: {{ selectedTags.length > 0 ? selectedTags.length + ' seleccionados' : 'Todos' }}
+      </button>
+      <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+        <div class="px-3 py-2">
+          <input type="text" class="form-control" placeholder="Buscar tipo" [(ngModel)]="tagSearchTerm" (input)="filterTags()">
+        </div>
+        <div class="dropdown-divider"></div>
+        <div *ngFor="let tag of filteredTags" class="dropdown-item">
+          <div class="form-check">
+            <input class="form-check-input" type="checkbox" [id]="'tag-' + tag.value"
+                   [checked]="selectedTags.includes(tag)"
+                   (change)="toggleTagSelection(tag)">
+            <label class="form-check-label" [for]="'tag-' + tag.value">
+              {{ tag.label }}
+            </label>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+ <!-- Nuevo Filtro de Grupos -->
+ <div class="ml-auto ml-3">
+  <div class="dropdown">
+    <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownGroupButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+      Grupo: {{ selectedGroups.length > 0 ? selectedGroups.length + ' seleccionados' : 'Todos' }}
+    </button>
+    <div class="dropdown-menu" aria-labelledby="dropdownGroupButton">
+      <div class="px-3 py-2">
+        <input type="text" class="form-control" placeholder="Buscar grupo" [(ngModel)]="groupSearchTerm" (input)="filterGroups()">
+      </div>
+      <div class="dropdown-divider"></div>
+      <div *ngFor="let group of filteredGroups" class="dropdown-item">
+        <div class="form-check">
+          <input class="form-check-input" type="checkbox" [id]="'group-' + group.value"
+                 [checked]="selectedGroups.includes(group)"
+                 (change)="toggleGroupSelection(group)">
+          <label class="form-check-label" [for]="'group-' + group.value">
+            {{ group.label }}
+          </label>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+  <div class=" ml-auto ml-3">
+    <div class="btn-group" role="group" aria-label="Filtrar por tipo">
+      <button *ngFor="let typeObj of dashboardTypes"
+              type="button"
+              class="btn btn-outline-light"
+              title="{{typeObj.label}}"
+              [class.active]="typeObj.active"
+              (click)="toggleTypeSelection(typeObj.type)"
+              [style.color]="typeObj.color">
+        <i class="fa {{typeObj.icon}} mr-1"></i>
+      </button>
+    </div>
+  </div>
+
+<!-- Botones para cambiar el modo de visualización -->
+<div class="ml-auto mr-3">
+  <div class="btn-group" role="group" aria-label="Modo de visualización">
+    <button type="button" class="btn btn-outline-light" [class.active]="viewMode === 'table'" (click)="setViewMode('table')" title="Vista de tabla">
+      <i class="fa fa-table"></i>
+    </button>
+    <button type="button" class="btn btn-outline-light" [class.active]="viewMode === 'card'" (click)="setViewMode('card')" title="Vista de fichas">
+      <i class="fa fa-th-large"></i>
+    </button>
+  </div>
+</div>
+
+
+
+  <!-- <div *ngIf="tags.length !== 2" class="ml-3">
     <div class="navbar-text mr-2">Tags:</div>
     <div class="btn-group" role="group">
       <button
@@ -23,19 +101,9 @@
         {{ tag.label }}
       </button>
     </div>
-  </div>
+  </div> -->
 
-  <!-- Botones para cambiar el modo de visualización -->
-  <div class="ml-auto mr-3">
-    <div class="btn-group" role="group" aria-label="Modo de visualización">
-      <button type="button" class="btn btn-outline-light" [class.active]="viewMode === 'table'" (click)="setViewMode('table')" title="Vista de tabla">
-        <i class="fa fa-table"></i>
-      </button>
-      <button type="button" class="btn btn-outline-light" [class.active]="viewMode === 'card'" (click)="setViewMode('card')" title="Vista de fichas">
-        <i class="fa fa-th-large"></i>
-      </button>
-    </div>
-  </div>
+
 
    <!-- Buscador -->
    <div class="ml-auto">
@@ -90,11 +158,7 @@
           {{ dashboard.config.title }}
         </td>
         <td>
-          <i class="fa fa-circle" [ngClass]="{
-            'text-danger': dashboard.type === 'public',
-            'text-primary': dashboard.type === 'common',
-            'text-default': dashboard.type === 'group' || dashboard.type === 'private'
-          }"></i>
+          <span class="type-indicator" [style.background-color]="getDashboardTypeColor(dashboard.type)"></span>
           {{ dashboard.type | titlecase }}
         </td>
         <td>{{ getAuthorName(dashboard.user) }}</td>
@@ -129,8 +193,8 @@
   <div class="card-container">
     <div *ngFor="let dashboard of visibleDashboards" class="card-wrapper">
       <div class="card"
-        [ngClass]="getDashboardTypeClass(dashboard.type)"
-       (dblclick)="goToDashboard(dashboard)">
+      [ngClass]="getDashboardTypeClass(dashboard.type)"
+      (dblclick)="goToDashboard(dashboard)">
         <div class="card-body d-flex flex-column">
           <h5 class="card-title">{{ dashboard.config.title }}</h5>
           <p class="card-text">
@@ -147,7 +211,7 @@
             <button *ngIf="!isObserver && canIEdit(dashboard)" class="btn btn-info btn-sm mr-2" (click)="clone(dashboard)">
               <i class="fa fa-clone"></i>
             </button>
-            <button *ngIf="dashboard.type=='public'" class="btn btn-default btn-sm" publicUrl="/#/public/{{ dashboard._id }}" title="Copiar url pública " (click)="clone(dashboard)">
+            <button *ngIf="dashboard.type=='public'" class="btn btn-default btn-sm" publicUrl="/#/public/{{ dashboard._id }}" title="Copiar url pública " (click)="copyUrl(dashboard)">
               <i class="fa fa-link"></i>
             </button>
           </div>

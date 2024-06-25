@@ -25,7 +25,6 @@ export class SdareportsComponent implements OnInit {
   // Propiedades para el ordenamiento y filtrado
   public sortColumn: string = "config.title";
   public sortDirection: "asc" | "desc" = "asc";
-  public selectedTag: any;
   public filteringByName: boolean = false;
 
   // Propiedades para la gestión de usuarios y grupos
@@ -33,13 +32,34 @@ export class SdareportsComponent implements OnInit {
   public isAdmin: boolean;
   public IsDataSourceCreator: boolean;
   public isObserver: boolean = false;
-  public tags: Array<any> = [];
   public grups: Array<any> = [];
+
+  // Propiedades para el filtro de etiquetas
+  public tags: Array<any> = [];
+  public selectedTags: Array<any> = [];
+  public filteredTags: Array<any> = [];
+  public tagSearchTerm: string = '';
+
+  // Nuevas propiedades para el filtro de grupos
+  public groupOptions: Array<any> = [];
+  public selectedGroups: Array<any> = [];
+  public filteredGroups: Array<any> = [];
+  public groupSearchTerm: string = '';
+
+  // Propiedades para el filtro por tipo con iconos
+  public dashboardTypes: Array<{type: string, label: string, active: boolean, icon: string, color: string}> = [
+    {type: 'common', label: 'Común', active: true, icon: 'fa-globe', color: '#007bff'},
+    {type: 'public', label: 'Público', active: true, icon: 'fa-share', color: '#dc3545'},
+    {type: 'group', label: 'Grupo', active: true, icon: 'fa-users', color: '#28a745'},
+    {type: 'private', label: 'Privado', active: true, icon: 'fa-lock', color: '#ffc107'},
+    // {type: 'archived', label: 'Archivado', active: true, icon: 'fa-archive', color: '#6c757d'}
+  ];
 
   // Etiquetas para los filtros
   public noTagLabel = $localize`:@@NoTag:Sin Etiqueta`;
   public AllTags = $localize`:@@AllTags:Todos`;
   public NoneTags = $localize`:@@NoneTags:Ninguno`;
+  public noGroupLabel = $localize`:@@NoGroup:Sin Grupo`;
 
   constructor(
     private dashboardService: DashboardService,
@@ -49,27 +69,24 @@ export class SdareportsComponent implements OnInit {
     private groupService: GroupService,
     private stylesProviderService: StyleProviderService
   ) {
-    // Inicialización de servicios
     this.sidebarService.getDataSourceNames();
     this.sidebarService.getDataSourceNamesForDashboard();
     this.stylesProviderService.setStyles(this.stylesProviderService.generateDefaultStyles());
     this.viewMode = localStorage.getItem('preferredViewMode') as 'table' | 'card' || 'table';
-
   }
 
   public ngOnInit() {
-    // Inicialización del componente
     this.init();
     this.ifAnonymousGetOut();
   }
 
   private init() {
-    // Inicialización de datos
     this.initDatasources();
     this.initDashboards();
+    this.initTags();
+    this.initGroups();
   }
 
-  // Verifica si el usuario es un observador
   private setIsObserver = async () => {
     this.groupService.getGroupsByUser().subscribe(
       res => {
@@ -83,7 +100,6 @@ export class SdareportsComponent implements OnInit {
     );
   };
 
-  // Redirige a la página de login si el usuario es anónimo
   private ifAnonymousGetOut(): void {
     const user = sessionStorage.getItem("user");
     const userName = JSON.parse(user).name;
@@ -93,7 +109,6 @@ export class SdareportsComponent implements OnInit {
     }
   }
 
-  // Inicializa las fuentes de datos
   private initDatasources(): void {
     this.sidebarService.currentDatasourcesDB.subscribe(
       data => (this.dss = data),
@@ -101,11 +116,9 @@ export class SdareportsComponent implements OnInit {
     );
   }
 
-  // Inicializa los dashboards
   private initDashboards(): void {
     this.dashboardService.getDashboards().subscribe(
       res => {
-        // Procesa y organiza los dashboards recibidos
         this.allDashboards = [
           ...res.publics.map(d => ({ ...d, type: "common" })),
           ...res.shared.map(d => ({ ...d, type: "public" })),
@@ -114,19 +127,14 @@ export class SdareportsComponent implements OnInit {
         ].sort((a, b) => (a.config.title > b.config.title ? 1 : b.config.title > a.config.title ? -1 : 0));
 
         this.groups = _.map(_.uniqBy(res.group, "group._id"), "group");
+        console.log('Grupos obtenidos del servicio:', this.groups); // Nuevo log
+
         this.isAdmin = res.isAdmin;
         this.IsDataSourceCreator = res.isDataSourceCreator;
 
-        // Procesa las etiquetas para el filtrado
-        this.tags = Array.from(new Set(this.allDashboards.map(db => db.config.tag))).sort();
-        this.tags = this.tags.map(tag => {
-          return { value: tag, label: tag };
-        });
-        this.tags.unshift({ label: this.noTagLabel, value: 0 });
-        this.tags.push({ label: this.AllTags, value: 1 });
-        this.tags = this.tags.filter(tag => tag.value !== null);
-        sessionStorage.setItem("tags", JSON.stringify(this.tags));
-        this.filterDashboards({ label: this.AllTags, value: 1 });
+        this.initTags();
+        this.initGroups();
+        this.filterDashboards();
 
         this.setIsObserver();
       },
@@ -134,7 +142,34 @@ export class SdareportsComponent implements OnInit {
     );
   }
 
-  // Inicializa el diálogo para crear un nuevo dashboard
+  private initTags(): void {
+    const uniqueTags = Array.from(new Set(this.allDashboards.map(db => db.config.tag))).sort();
+    this.tags = [
+      { value: null, label: this.noTagLabel },
+      ...uniqueTags.map(tag => ({ value: tag, label: tag }))
+    ];
+    this.filteredTags = [...this.tags];
+  }
+
+  private initGroups(): void {
+    const uniqueGroups = Array.from(new Set(
+      this.allDashboards
+        .filter(db => db.group && db.group.name) // Aseguramos que group y name existan
+        .map(db => db.group.name)
+    )).sort();
+
+    console.log('Grupos únicos encontrados:', uniqueGroups); // Nuevo log
+
+    this.groupOptions = [
+      { value: null, label: this.noGroupLabel },
+      ...uniqueGroups.map(group => ({ value: group, label: group }))
+    ];
+
+    console.log('Opciones de grupo:', this.groupOptions); // Nuevo log
+
+    this.filteredGroups = [...this.groupOptions];
+  }
+
   public initDialog(): void {
     this.dashController = new EdaDialogController({
       params: { dataSources: this.dss },
@@ -148,7 +183,6 @@ export class SdareportsComponent implements OnInit {
     });
   }
 
-  // Elimina un dashboard
   public deleteDashboard(dashboard): void {
     let text = $localize`:@@deleteDashboardWarning: Estás a punto de borrar el informe: `;
     Swal.fire({
@@ -177,7 +211,6 @@ export class SdareportsComponent implements OnInit {
     });
   }
 
-  // Navega a un dashboard específico
   public goToDashboard(dashboard): void {
     if (dashboard) {
       this.router.navigate(["/dashboard", dashboard._id]);
@@ -186,24 +219,86 @@ export class SdareportsComponent implements OnInit {
     }
   }
 
-  // Obtiene los nombres de los grupos de un dashboard
   public getGroupsNamesByDashboard(group: any[]): string {
     return group.map((elem: any) => elem.name).join(" , ");
   }
 
-  // Filtra los dashboards por etiqueta
-  public filterDashboards(tag: any) {
-    this.selectedTag = tag.value;
-    if (tag.value === 0) tag.value = null;
-    if (tag.value === 1) {
+  public filterTags() {
+    this.filteredTags = this.tags.filter(tag =>
+      tag.label.toLowerCase().includes(this.tagSearchTerm.toLowerCase())
+    );
+  }
+
+  public filterGroups() {
+    this.filteredGroups = this.groupOptions.filter(group =>
+      group.label.toLowerCase().includes(this.groupSearchTerm.toLowerCase())
+    );
+  }
+
+  public toggleTagSelection(tag: any) {
+    const index = this.selectedTags.findIndex(t => t.value === tag.value);
+    if (index > -1) {
+      this.selectedTags.splice(index, 1);
+    } else {
+      this.selectedTags.push(tag);
+    }
+    this.filterDashboards();
+  }
+
+  public toggleGroupSelection(group: any) {
+    const index = this.selectedGroups.findIndex(g => g.value === group.value);
+    if (index > -1) {
+      this.selectedGroups.splice(index, 1);
+    } else {
+      this.selectedGroups.push(group);
+    }
+    this.filterDashboards();
+  }
+
+  public toggleTypeSelection(type: string) {
+    this.dashboardTypes.forEach(typeObj => {
+      if (typeObj.type === type) {
+        typeObj.active = !typeObj.active;
+      } else {
+        typeObj.active = false;
+      }
+    });
+    this.filterDashboards();
+  }
+
+  public filterDashboards() {
+    // Si ningún tipo está activo, mostramos todos los dashboards
+    const anyTypeActive = this.dashboardTypes.some(t => t.active);
+
+    if (!anyTypeActive) {
       this.visibleDashboards = [...this.allDashboards];
     } else {
-      this.visibleDashboards = this.allDashboards.filter(db => db.config.tag === tag.value);
+      // Filtramos por el tipo activo
+      this.visibleDashboards = this.allDashboards.filter(db =>
+        this.dashboardTypes.find(t => t.type === db.type && t.active)
+      );
     }
+
+    // Aplicamos el filtro de etiquetas
+    if (this.selectedTags.length > 0) {
+      this.visibleDashboards = this.visibleDashboards.filter(db =>
+        this.selectedTags.some(tag => tag.value === db.config.tag || (tag.value === null && !db.config.tag))
+      );
+    }
+
+    // Aplicamos el filtro de grupos
+  if (this.selectedGroups.length > 0) {
+    this.visibleDashboards = this.visibleDashboards.filter(db =>
+      this.selectedGroups.some(group =>
+        (group.value === null && (!db.group || !db.group.name)) ||
+        (db.group && db.group.name === group.value)
+      )
+    );
+  }
+
     this.sortTable(this.sortColumn);
   }
 
-  // Filtra los dashboards por título
   public filterTitle(text: any) {
     const stringToFind = text.target.value.toString().toUpperCase();
     if (stringToFind.length > 1) {
@@ -220,7 +315,6 @@ export class SdareportsComponent implements OnInit {
     this.sortTable(this.sortColumn);
   }
 
-  // Verifica si el usuario puede editar un dashboard
   public canIEdit(dashboard): boolean {
     let result: boolean = false;
     result = this.isAdmin;
@@ -236,7 +330,6 @@ export class SdareportsComponent implements OnInit {
     return result;
   }
 
-  // Obtiene el nombre del autor del dashboard
   public getAuthorName(user: string | { name: string }): string {
     if (typeof user === "string") {
       return `Usuario ${user}`;
@@ -247,7 +340,6 @@ export class SdareportsComponent implements OnInit {
     }
   }
 
-  // Ordena la tabla de dashboards
   public sortTable(column: string): void {
     if (this.sortColumn === column) {
       this.sortDirection = this.sortDirection === 'asc' ? 'desc' : 'asc';
@@ -269,14 +361,8 @@ export class SdareportsComponent implements OnInit {
     });
   }
 
-  // Obtiene una propiedad anidada de un objeto
   private getNestedProperty(obj: any, path: string): any {
     return path.split('.').reduce((o, key) => (o && o[key] !== undefined) ? o[key] : null, obj);
-  }
-
-  // Cambia el modo de visualización
-  public toggleViewMode(): void {
-    this.viewMode = this.viewMode === 'table' ? 'card' : 'table';
   }
 
   public setViewMode(mode: 'table' | 'card'): void {
@@ -285,17 +371,12 @@ export class SdareportsComponent implements OnInit {
   }
 
   public getDashboardTypeClass(type: string): string {
-    switch (type) {
-      case 'public':
-        return 'card-border-danger';
-      case 'common':
-        return 'card-border-primary';
-      case 'group':
-      case 'private':
-        return 'card-border-default';
-      default:
-        return '';
-    }
+    const dashboardType = this.dashboardTypes.find(t => t.type === type);
+    return dashboardType ? `card-border-${dashboardType.type}` : '';
   }
 
+  public getDashboardTypeColor(type: string): string {
+    const dashboardType = this.dashboardTypes.find(t => t.type === type);
+    return dashboardType ? dashboardType.color : '';
+  }
 }
