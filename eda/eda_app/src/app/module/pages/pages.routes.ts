@@ -23,7 +23,7 @@ import { MailManagementComponent } from './mail-management/mail-management.compo
 
 const pagesRoutes: Routes = [
 
-    { path: 'home', component: HomeComponent, canActivate: [VerifyTokenGuard] },
+    /*SDA CUSTOM*/ { path: 'old-home', component: HomeComponent, canActivate: [VerifyTokenGuard] },
     { path: 'dashboard/:id', component: DashboardComponent, canActivate: [VerifyTokenGuard] },
     { path: 'account-settings', component: AccountSettingsComponent, canActivate: [VerifyTokenGuard] },
     { path: 'profile', component: ProfileComponent, canActivate: [VerifyTokenGuard] },
@@ -36,7 +36,7 @@ const pagesRoutes: Routes = [
     { path: 'alerts-management', component: AlertsManagementComponent, canActivate:[VerifyTokenGuard]},
     { path: 'mail-management', component: MailManagementComponent, canActivate:[VerifyTokenGuard]},
     /*SDA CUSTOM*/ { path: 'about', component: AboutComponent, canActivate: [VerifyTokenGuard] },
-    /*SDA CUSTOM*/ { path: 'sdareports', component: SdareportsComponent, canActivate: [VerifyTokenGuard] },
+    /*SDA CUSTOM*/ { path: 'home', component: SdareportsComponent, canActivate: [VerifyTokenGuard] },
     { path: '', redirectTo: 'home', pathMatch: 'full' }
 ];
 
