@@ -19,6 +19,9 @@ export class SdareportsComponent implements OnInit {
   public allDashboards: Array<any> = [];
   public visibleDashboards: Array<any> = [];
 
+  // Propiedades para el modo de visualización
+  public viewMode: 'table' | 'card' = 'table';
+
   // Propiedades para el ordenamiento y filtrado
   public sortColumn: string = "config.title";
   public sortDirection: "asc" | "desc" = "asc";
@@ -50,6 +53,8 @@ export class SdareportsComponent implements OnInit {
     this.sidebarService.getDataSourceNames();
     this.sidebarService.getDataSourceNamesForDashboard();
     this.stylesProviderService.setStyles(this.stylesProviderService.generateDefaultStyles());
+    this.viewMode = localStorage.getItem('preferredViewMode') as 'table' | 'card' || 'table';
+
   }
 
   public ngOnInit() {
@@ -268,4 +273,29 @@ export class SdareportsComponent implements OnInit {
   private getNestedProperty(obj: any, path: string): any {
     return path.split('.').reduce((o, key) => (o && o[key] !== undefined) ? o[key] : null, obj);
   }
+
+  // Cambia el modo de visualización
+  public toggleViewMode(): void {
+    this.viewMode = this.viewMode === 'table' ? 'card' : 'table';
+  }
+
+  public setViewMode(mode: 'table' | 'card'): void {
+    this.viewMode = mode;
+    localStorage.setItem('preferredViewMode', mode);
+  }
+
+  public getDashboardTypeClass(type: string): string {
+    switch (type) {
+      case 'public':
+        return 'card-border-danger';
+      case 'common':
+        return 'card-border-primary';
+      case 'group':
+      case 'private':
+        return 'card-border-default';
+      default:
+        return '';
+    }
+  }
+
 }

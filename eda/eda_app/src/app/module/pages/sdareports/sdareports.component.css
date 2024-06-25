@@ -1,12 +1,19 @@
-.btn.btn-outline-light.active, .btn.btn-outline-light:hover{
-  color:black;
+/* Estilos generales */
+.btn-group .btn-outline-light,
+.btn-sm {
+  padding: 0.375rem 0.75rem;
 }
 
+.btn-sm {
+  font-size: 0.8rem;
+}
 
-#report-table td{
+/* Estilos de la tabla de informes */
+#report-table td {
   font-size: 16px;
 }
-#report-table td:hover{
+
+#report-table td:hover {
   text-decoration: underline;
   font-weight: 900;
 }
@@ -17,4 +24,121 @@
 
 #report-table th:hover {
   background-color: #f5f5f5;
+}
+
+/* Estilos de las tarjetas */
+.card-container {
+  display: flex;
+  flex-wrap: wrap;
+  margin: -10px;
+  margin-top: 10px;
+}
+
+.card-wrapper {
+  flex: 0 0 calc(20% - 20px);
+  padding: 10px;
+  box-sizing: border-box;
+}
+
+.card {
+  height: 100%;
+  border-width: 0px;
+  border-style: solid;
+  transition: all 0.3s ease;
+  border-left-width: 10px;
+  cursor: pointer;
+}
+.card:active {
+  transform: scale(0.98);
+}
+
+.card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+
+.card-body {
+  display: flex;
+  flex-direction: column;
+}
+
+.card-title {
+  font-size: 1.1rem;
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+}
+
+.card-text {
+  font-size: 0.9rem;
+  margin-bottom: 0.3rem;
+}
+
+.card-border-danger { border-color: #dc3545; }
+.card-border-primary { border-color: #007bff; }
+.card-border-default { border-color: #6c757d; }
+
+/* Estilos del buscador */
+.search-container {
+  position: relative;
+  width: 300px;
+  background-color: #343a40;
+  padding: 5px;
+  border-radius: 25px;
+}
+
+.search-input {
+  width: 100%;
+  padding: 10px 40px 10px 15px;
+  border: none;
+  border-radius: 20px;
+  background-color: #fff;
+  color: #333;
+  font-size: 14px;
+  transition: all 0.3s ease;
+}
+
+.search-input:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.2);
+}
+
+.search-icon {
+  position: absolute;
+  right: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #666;
+  pointer-events: none;
+}
+
+/* Estilos de botones y switches */
+.btn.btn-outline-light.active,
+.btn.btn-outline-light:hover {
+  color: black;
+}
+
+.btn-group .btn-outline-light.active {
+  background-color: #f8f9fa;
+  color: #343a40;
+}
+
+.btn-group .btn-outline-light:hover:not(.active) {
+  background-color: rgba(248, 249, 250, 0.1);
+}
+
+.custom-switch .custom-control-label {
+  padding-top: 3px;
+}
+
+/* Media queries */
+@media (max-width: 992px) {
+  .card-wrapper {
+    flex: 0 0 calc(50% - 20px);
+  }
+}
+
+@media (max-width: 768px) {
+  .card-wrapper {
+    flex: 0 0 calc(100% - 20px);
+  }
 }
