@@ -1307,7 +1307,8 @@ export class DashboardController {
       const clonedDashboard: IDashboard = new Dashboard({
         config: {
           ...originalDashboard.config,
-          title: `${originalDashboard.config.title}_Copia`
+          title: `${originalDashboard.config.title} copy`,
+          createdAt: new Date()
         },
         user: req.user._id,
         group: originalDashboard.group

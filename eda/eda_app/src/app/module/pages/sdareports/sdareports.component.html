@@ -166,6 +166,7 @@
         class="form-control search-input"
         id="buscador"
         name="buscador"
+        [(ngModel)]="searchTerm"
         (keyup)="filterTitle($event)"
         i18n-placeholder="@@buscarPorNombre"
         placeholder="Buscar por nombre del informe"
@@ -231,7 +232,7 @@
       </tr>
     </thead>
     <tbody>
-      <tr *ngFor="let dashboard of visibleDashboards" >
+      <tr *ngFor="let dashboard of visibleDashboards">
         <td>
           <div class="title-container">
             {{ dashboard.config.title }}

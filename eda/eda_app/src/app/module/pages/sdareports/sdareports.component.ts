@@ -26,6 +26,7 @@ export class SdareportsComponent implements OnInit {
   public sortColumn: string = "config.title";
   public sortDirection: "asc" | "desc" = "asc";
   public filteringByName: boolean = false;
+  public searchTerm: string = '';
 
   // Propiedades para la gestión de usuarios y grupos
   public groups: IGroup[] = [];
@@ -299,16 +300,16 @@ export class SdareportsComponent implements OnInit {
     this.sortTable(this.sortColumn);
   }
 
-  public filterTitle(text: any) {
-    const stringToFind = text.target.value.toString().toUpperCase();
-    if (stringToFind.length > 1) {
+  public filterTitle(event: any) {
+    this.searchTerm = event.target.value.toString().toUpperCase();
+    if (this.searchTerm.length > 1) {
       this.visibleDashboards = this.allDashboards.filter(
-        db => db.config.title.toUpperCase().indexOf(stringToFind) >= 0
+        db => db.config.title.toUpperCase().indexOf(this.searchTerm) >= 0
       );
       this.filteringByName = true;
     } else {
       this.visibleDashboards = [...this.allDashboards];
-      if (stringToFind.length == 0) {
+      if (this.searchTerm.length == 0) {
         this.filteringByName = false;
       }
     }
@@ -383,56 +384,58 @@ export class SdareportsComponent implements OnInit {
   }
 
   public cloneDashboard(dashboard: any): void {
-  console.log('Intentando clonar dashboard:', dashboard);
-  this.dashboardService.cloneDashboard(dashboard._id).subscribe(
-    (response) => {
-      console.log('Respuesta de clonación:', response);
-      if (response.ok && response.dashboard) {
-        // Añadir la propiedad isNewlyCloned
-        response.dashboard.isNewlyCloned = true;
+    console.log('Intentando clonar dashboard:', dashboard);
+    this.dashboardService.cloneDashboard(dashboard._id).subscribe(
+      (response) => {
+        console.log('Respuesta de clonación:', response);
+        if (response.ok && response.dashboard) {
+          // Añadir la propiedad isNewlyCloned
+          response.dashboard.isNewlyCloned = true;
 
-        // Añadir el nuevo dashboard clonado a la lista
-        this.allDashboards.push(response.dashboard);
+          // Añadir el nuevo dashboard clonado a la lista
+          this.allDashboards.push(response.dashboard);
 
-        // Actualizar los filtros para incluir el nuevo dashboard
-        this.initTags();
-        this.initGroups();
+          // Actualizar los filtros para incluir el nuevo dashboard
+          this.initTags();
+          this.initGroups();
 
-        // Aplicar los filtros actuales
-        this.filterDashboards();
+          // Obtener el nombre del informe original
+          const originalName = dashboard.config.title;
 
-        // Asegurarse de que el nuevo dashboard sea visible al principio
-        this.visibleDashboards = [response.dashboard, ...this.visibleDashboards];
+          // Aplicar el filtro por nombre
+          this.filterTitle({ target: { value: originalName } });
 
-        // Desplazarse al inicio de la lista
-        window.scrollTo(0, 0);
+          // Asegurarse de que el nuevo dashboard sea visible al principio
+          this.visibleDashboards = [response.dashboard, ...this.visibleDashboards.filter(d => d._id !== response.dashboard._id)];
 
-        // Eliminar la propiedad isNewlyCloned después de 2 segundos
-        setTimeout(() => {
-          const index = this.visibleDashboards.findIndex(d => d._id === response.dashboard._id);
-          if (index !== -1) {
-            this.visibleDashboards[index].isNewlyCloned = false;
-          }
-        }, 2000);
+          // Desplazarse al inicio de la lista
+          window.scrollTo(0, 0);
 
+          // Eliminar la propiedad isNewlyCloned después de 2 segundos
+          setTimeout(() => {
+            const index = this.visibleDashboards.findIndex(d => d._id === response.dashboard._id);
+            if (index !== -1) {
+              this.visibleDashboards[index].isNewlyCloned = false;
+            }
+          }, 2000);
+
+          Swal.fire(
+            'Clonado!',
+            `El informe "${dashboard.config.title}" ha sido clonado con éxito.`,
+            'success'
+          );
+        } else {
+          throw new Error('Respuesta inválida del servidor');
+        }
+      },
+      (error) => {
+        console.error('Error al clonar el dashboard:', error);
         Swal.fire(
-          'Clonado!',
-          `El informe "${dashboard.config.title}" ha sido clonado con éxito.`,
-          'success'
+          'Error',
+          'No se pudo clonar el informe. Por favor, inténtalo de nuevo.',
+          'error'
         );
-      } else {
-        throw new Error('Respuesta inválida del servidor');
       }
-    },
-    (error) => {
-      console.error('Error al clonar el dashboard:', error);
-      Swal.fire(
-        'Error',
-        'No se pudo clonar el informe. Por favor, inténtalo de nuevo.',
-        'error'
-      );
-    }
-  );
-}
-
+    );
+  }
 }
