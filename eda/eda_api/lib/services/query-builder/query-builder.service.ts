@@ -526,7 +526,8 @@ export abstract class QueryBuilderService {
         let filters = [];
         const permissions = this.getUserPermissions(modelPermissions);
 
-        const relatedTables = this.checkRelatedTables(modelTables, originTable);
+       /*SDA CUSTOM*/ /*const relatedTables = this.checkRelatedTables(modelTables, originTable); */
+       /*SDA CUSTOM*/ const relatedTables = [];
 
         let found = -1;
         if (relatedTables !== null && permissions !== null) {
