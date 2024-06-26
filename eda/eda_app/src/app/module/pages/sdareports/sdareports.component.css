@@ -365,3 +365,12 @@
   font-size: 14px;
   line-height: 1.4;
 }
+
+.newly-cloned {
+  animation: highlightNew 2s ease-in-out;
+}
+
+@keyframes highlightNew {
+  0% { background-color: #ffff99; }
+  100% { background-color: transparent; }
+}

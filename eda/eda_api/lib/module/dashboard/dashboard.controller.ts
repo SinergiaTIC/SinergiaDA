@@ -1292,7 +1292,37 @@ export class DashboardController {
       data[1] = newRows
     }
   }
-
+  
+  static async clone(req: Request, res: Response, next: NextFunction) {
+    try {
+      const dashboardId = req.params.id;
+      console.log('Intentando clonar dashboard con ID:', dashboardId);
+      const originalDashboard = await Dashboard.findById(dashboardId).exec();
+  
+      if (!originalDashboard) {
+        console.log('Dashboard original no encontrado');
+        return next(new HttpException(404, 'Dashboard no encontrado'));
+      }
+  
+      const clonedDashboard: IDashboard = new Dashboard({
+        config: {
+          ...originalDashboard.config,
+          title: `${originalDashboard.config.title}_Copia`
+        },
+        user: req.user._id,
+        group: originalDashboard.group
+      });
+  
+      console.log('Dashboard clonado antes de guardar:', clonedDashboard);
+      const savedDashboard = await clonedDashboard.save();
+      console.log('Dashboard clonado guardado:', savedDashboard);
+  
+      return res.status(201).json({ ok: true, dashboard: savedDashboard });
+    } catch (err) {
+      console.error('Error al clonar dashboard:', err);
+      next(new HttpException(500, 'Error al clonar dashboard'));
+    }
+  }
   static async cleanDashboardCache(
     req: Request,
     res: Response,
