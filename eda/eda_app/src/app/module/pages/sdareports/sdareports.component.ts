@@ -355,6 +355,12 @@ export class SdareportsComponent implements OnInit {
       let valueA = this.getNestedProperty(a, column);
       let valueB = this.getNestedProperty(b, column);
 
+      // Manejo especial para la fecha de creación
+      if (column === 'config.createdAt') {
+        valueA = valueA ? new Date(valueA).getTime() : 0;
+        valueB = valueB ? new Date(valueB).getTime() : 0;
+      }
+
       if (typeof valueA === 'string') valueA = valueA.toLowerCase();
       if (typeof valueB === 'string') valueB = valueB.toLowerCase();
 
@@ -438,4 +444,29 @@ export class SdareportsComponent implements OnInit {
       }
     );
   }
+
+  public copyUrl(dashboard: any): void {
+    if (dashboard.type === 'public') {
+      const url = `${window.location.origin}/#/public/${dashboard._id}`;
+      navigator.clipboard.writeText(url).then(() => {
+        this.alertService.addSuccess($localize`:@@URLCopied:URL copiada al portapapeles`);
+      }, (err) => {
+        console.error('Error al copiar URL: ', err);
+        this.alertService.addError($localize`:@@ErrorCopyingURL:Error al copiar la URL`);
+      });
+    }
+  }
+
+  public formatDate(date: string | Date): string {
+    if (!date) return '';
+    const dateObj = typeof date === 'string' ? new Date(date) : date;
+    return dateObj.toLocaleString('es-ES', {
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+  }
+
 }

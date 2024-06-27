@@ -54,7 +54,7 @@ export class DashboardController {
     try {
       const dashboards = await Dashboard.find(
         { user: req.user._id },
-        'config.title config.visible config.tag config.onlyIcanEdit config.description'
+        'config.title config.visible config.tag config.onlyIcanEdit config.description config.createdAt'
       ).exec()
       const privates = []
       for (const dashboard of dashboards) {
@@ -75,7 +75,7 @@ export class DashboardController {
       }).exec()
       const dashboards = await Dashboard.find(
         { group: { $in: userGroups.map(g => g._id) } },
-        'config.title config.visible group config.tag config.onlyIcanEdit config.description'
+        'config.title config.visible group config.tag config.onlyIcanEdit config.description config.createdAt'
       ).exec()
       const groupDashboards = []
       for (let i = 0, n = dashboards.length; i < n; i += 1) {
@@ -102,7 +102,7 @@ export class DashboardController {
     try {
       const dashboards = await Dashboard.find(
         {},
-        'config.title config.visible config.tag config.onlyIcanEdit config.description'
+        'config.title config.visible config.tag config.onlyIcanEdit config.description config.createdAt'
       ).exec()
       const publics = []
 
@@ -121,7 +121,7 @@ export class DashboardController {
     try {
       const dashboards = await Dashboard.find(
         {},
-        'config.title config.visible config.tag config.onlyIcanEdit config.description'
+        'config.title config.visible config.tag config.onlyIcanEdit config.description config.createdAt'
       ).exec()
       const shared = []
       for (const dashboard of dashboards) {
@@ -139,7 +139,7 @@ export class DashboardController {
     try {
       const dashboards = await Dashboard.find(
         {},
-        'user config.title config.visible group config.tag config.onlyIcanEdit config.description'
+        'user config.title config.visible group config.tag config.onlyIcanEdit config.description config.createdAt'
       ).exec()
       const publics = []
       const privates = []

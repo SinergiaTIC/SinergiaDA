@@ -213,7 +213,13 @@
             }"
           ></i>
         </th>
-        <th>Fecha creación</th>
+        <th (click)="sortTable('config.createdAt')">
+          Fecha creación
+          <i class="fa" [ngClass]="{
+            'fa-sort-asc': sortColumn === 'config.createdAt' && sortDirection === 'asc',
+            'fa-sort-desc': sortColumn === 'config.createdAt' && sortDirection === 'desc'
+          }"></i>
+        </th>
         <th>Edición privada</th>
         <th>Grupos</th>
         <th (click)="sortTable('config.tag')">
@@ -255,7 +261,7 @@
           {{ dashboard.type | titlecase }}
         </td>
         <td>{{ dashboard.user.name }}</td>
-        <td></td>
+        <td>{{ dashboard.config.createdAt ? formatDate(dashboard.config.createdAt) : '' }}</td>
         <td></td>
         <td>
           {{
@@ -269,16 +275,25 @@
           <span
             *ngIf="!isObserver && canIEdit(dashboard)"
             (click)="deleteDashboard(dashboard)"
-            class="pointer"
+            class="btn btn-default btn-sm"
           >
             <i class="fa fa-trash text-danger"></i>
           </span>
           <span
             *ngIf="!isObserver && canIEdit(dashboard)"
             (click)="cloneDashboard(dashboard)"
-            class="pointer"
+            class="btn btn-default btn-sm"
           >
             <i class="fa fa-clone text-info"></i>
+          </span>
+
+          <span
+            *ngIf="dashboard.type === 'public'"
+            class="btn btn-default btn-sm"
+            (click)="copyUrl(dashboard)"
+            title="Copiar url pública"
+          >
+            <i class="fa fa-link"></i>
           </span>
         </td>
       </tr>
@@ -311,19 +326,19 @@
             </div>
           </h5>
           <p class="card-text">
-            <strong>Tipo:</strong> {{ dashboard.type | titlecase }}
+            <span> {{ dashboard.type | titlecase }} </span>
+            <span class="pull-right"> {{ dashboard.config.createdAt ? formatDate(dashboard.config.createdAt) : '' }}</span>
           </p>
           <p class="card-text">
-            <strong>Autor:</strong> {{ dashboard.user.name }}
-          </p>
-          <p class="card-text">
-            <strong>Grupos:</strong>
-            {{
+            <span> {{
               dashboard.group
                 ? getGroupsNamesByDashboard([dashboard.group])
                 : ""
-            }}
+            }} </span>
+            <span class="pull-right"> {{ dashboard.user.name }} </span>
+
           </p>
+
           <p class="card-text">
             <strong>Etiquetas:</strong>
             <span class="badge badge-primary">{{ dashboard.config.tag }}</span>
@@ -351,11 +366,10 @@
               <i class="fa fa-clone"></i>
             </button>
             <button
-              *ngIf="dashboard.type == 'public'"
+              *ngIf="dashboard.type === 'public'"
               class="btn btn-default btn-sm"
-              publicUrl="/#/public/{{ dashboard._id }}"
-              title="Copiar url pública "
               (click)="copyUrl(dashboard)"
+              title="Copiar url pública"
             >
               <i class="fa fa-link"></i>
             </button>

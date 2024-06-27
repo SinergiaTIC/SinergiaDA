@@ -374,3 +374,15 @@
   0% { background-color: #ffff99; }
   100% { background-color: transparent; }
 }
+
+th {
+  cursor: pointer;
+}
+
+th:hover {
+  background-color: #f5f5f5;
+}
+
+th i.fa {
+  margin-left: 5px;
+}

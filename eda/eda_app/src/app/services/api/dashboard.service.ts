@@ -28,7 +28,6 @@ export class DashboardService extends ApiService {
     }
 
     deleteDashboard( id ): Observable<any> {
-      console.log('BOrrando',`${this.route}${id}`)
         return this.delete( `${this.route}${id}` );
     }
 
@@ -51,9 +50,9 @@ export class DashboardService extends ApiService {
         return this.post(`${this.route}clean-refresh`, body);
     }
 
-    cloneDashboard(id: string): Observable<any> {
-      console.log(`Clonando dashboard con ID: ${id}`);
-      return this.post(`${this.route}${id}/clone`, {});
-    }
+    /*SDA CUSTOM*/ cloneDashboard(id: string): Observable<any> {
+    /*SDA CUSTOM*/  console.log(`Clonando dashboard con ID: ${id}`);
+    /*SDA CUSTOM*/  return this.post(`${this.route}${id}/clone`, {});
+    /*SDA CUSTOM*/ }
 
 }
