@@ -4293,7 +4293,6 @@
         <source>Modo Árbol</source>
         <target>Modo Árbore</target>
       </trans-unit>
-
       <trans-unit id="filters13">
         <source>VALORES NO NULOS NI VACÍOS (not null and != '')</source>
         <target>VALORES NON NULOS OU BALEIROS (not null and != '')</target>
@@ -4302,11 +4301,14 @@
         <source>VALORES NULOS O VACÍOS (null or = '')</source>
         <target>VALORES NULOS OU BALEIROS (null or = '')</target>
       </trans-unit>
-      
       <trans-unit id="aliasValuePh">
         <source>Alias del filtro (opcional)</source>
         <target>Filtrar alias (opcional)</target>
       </trans-unit>
+      <trans-unit id="noMouseH6">
+        <source>Desactivar funciones del mouse</source>
+        <target>Desactivar as funcións do rato</target>
+      </trans-unit>   
     </body>
   </file>
 </xliff>

@@ -13,5 +13,6 @@ export class EdaMap{
   maps : Array<Object>;
   query: Array<any>;
   linkedDashboard : LinkedDashboardProps;
+  draggable: boolean;
 
 }
