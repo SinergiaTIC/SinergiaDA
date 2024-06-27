@@ -124,20 +124,17 @@ export class updateModel {
                                                                             let permissionsColumns = permiCol
                                                                             /**Ahora que ya tengo todos los datos, monto el modelo */
                                                                             // montamos el modelo
-                                                                            console.log('Recuperando usuarios');
+                                                                            //console.log('Recuperando usuarios');
                                                                             try {
                                                                               crm_to_eda = await userAndGroupsToMongo.crm_to_eda_UsersAndGroups(users_crm, roles)  
                                                                             } catch (e) {
-                                                                              console.log(e)
+                                                                              console.log('Error 1',e);
                                                                               res.status(500).json({'status' : 'ko'})
                                                                             }
-                                                                            
-
-                                                                            console.log('Recuperando roles');
                                                                             try {
-                                                                            grantedRolesAt = await updateModel.grantedRolesToModel(grantedRoles, tables, permissions, permissionsColumns)
+                                                                              grantedRolesAt = await updateModel.grantedRolesToModel(grantedRoles, tables, permissions, permissionsColumns)
                                                                             } catch (e) {
-                                                                              console.log(e)
+                                                                              console.log('Error 2',e);
                                                                               res.status(500).json({'status' : 'ko'})
                                                                             }
 
@@ -146,7 +143,7 @@ export class updateModel {
                                                                             try {
                                                                             modelToExport = updateModel.createModel(tables, columns, relations, grantedRolesAt, ennumeration, res);
                                                                             } catch (e) {
-                                                                              console.log(e)
+                                                                              console.log('Error 3',e);
                                                                               res.status(500).json({'status' : 'ko'})
                                                                             }                                                                      
 
@@ -166,8 +163,7 @@ export class updateModel {
 
         } catch (e) {
             //res.send(500)
-            console.log('error');
-            console.log(e);
+            console.log('Error : ', e);
         }
         
     }
@@ -187,7 +183,7 @@ export class updateModel {
                     columns = [...new Set(dataset.map(item => tabla === item.tabla ? item.column : null))].filter(item => item != null);
                     const sql = ' select ' + columns.toString() + ' from ' + tabla + ' limit 1   \n'
                     let nexSql = sql.replace("select ,", "select ").replace(", from", " from ");
-                    console.log(nexSql);
+                   // console.log(nexSql);
                     await con.query(nexSql).then((ress, errrr) => {
                         if (errrr) throw errrr;
                         //console.log(ress);
@@ -271,15 +267,12 @@ export class updateModel {
             let found = false;
             try {
                 found = destGrantedRoles.find(e => e.table === line.table && e.groupsName[0] === "EDA_ADMIN")
-            } catch (e) { }
+            } catch (e) { console.log( 'error finding', e) }
 
             if (!found) {
                 destGrantedRoles.push(gr2);
 
-            } else {
-
-            }
-
+            } 
         })
 
 
@@ -530,8 +523,6 @@ export class updateModel {
       
   static async extractJsonModelAndPushToMongo(tables: any,   grantedRoles: any, res: any) {
     
-console.log('la base de datos es :================> ');
-console.log(sinergiaDatabase);
 
     //le damos formato json a nuestras tablas
     let main_model = await JSON.parse(fs.readFileSync('config/base_datamodel.json', 'utf-8'));
@@ -549,10 +540,10 @@ console.log(sinergiaDatabase);
         const cleanM = new CleanModel; 
         main_model = await cleanM.cleanModel(main_model);
         fs.writeFile(`metadata.json`, JSON.stringify(main_model), { encoding: `utf-8` }, (err) => { if (err) {throw err} else { }})
-        await new pushModelToMongo().pushModel(main_model,res)
+        await new pushModelToMongo().pushModel(main_model,res);
         res.status(200).json({'status' : 'ok'})
          } catch (e) {        
-            console.log(e)
+            console.log('Error :',e);
             res.status(500).json({'status' : 'ko'})
         }
       
