@@ -125,28 +125,35 @@ export class updateModel {
                                                                             /**Ahora que ya tengo todos los datos, monto el modelo */
                                                                             // montamos el modelo
                                                                             //console.log('Recuperando usuarios');
-                                                                            try {
-                                                                              crm_to_eda = await userAndGroupsToMongo.crm_to_eda_UsersAndGroups(users_crm, roles)  
-                                                                            } catch (e) {
-                                                                              console.log('Error 1',e);
-                                                                              res.status(500).json({'status' : 'ko'})
-                                                                            }
-                                                                            try {
-                                                                              grantedRolesAt = await updateModel.grantedRolesToModel(grantedRoles, tables, permissions, permissionsColumns)
-                                                                            } catch (e) {
-                                                                              console.log('Error 2',e);
-                                                                              res.status(500).json({'status' : 'ko'})
-                                                                            }
+                                                                            const query='select user_name as name, `table` as tabla , `column` as columna  from sda_def_permissions where stic_permission_source in ("ACL_ALLOW_GROUP_priv", "ACL_ALLOW_OWNER")';
 
-                                                                            console.log('Generando el modelo');
-                                                                            
-                                                                            try {
-                                                                            modelToExport = updateModel.createModel(tables, columns, relations, grantedRolesAt, ennumeration, res);
-                                                                            } catch (e) {
-                                                                              console.log('Error 3',e);
-                                                                              res.status(500).json({'status' : 'ko'})
-                                                                            }                                                                      
+                                                                            await connection.query(query)
+                                                                              .then(async customUserPermissionsValue => {
 
+                                                                                let customUserPermissions = customUserPermissionsValue
+
+                                                                                try {
+                                                                                  crm_to_eda = await userAndGroupsToMongo.crm_to_eda_UsersAndGroups(users_crm, roles)  
+                                                                                } catch (e) {
+                                                                                  console.log('Error 1',e);
+                                                                                  res.status(500).json({'status' : 'ko'})
+                                                                                }
+                                                                                try {
+                                                                                  grantedRolesAt = await updateModel.grantedRolesToModel(grantedRoles, tables, permissions, permissionsColumns, customUserPermissions )
+                                                                                } catch (e) {
+                                                                                  console.log('Error 2',e);
+                                                                                  res.status(500).json({'status' : 'ko'})
+                                                                                }
+    
+                                                                                console.log('Generando el modelo');
+                                                                                
+                                                                                try {
+                                                                                modelToExport = updateModel.createModel(tables, columns, relations, grantedRolesAt, ennumeration, res);
+                                                                                } catch (e) {
+                                                                                  console.log('Error 3',e);
+                                                                                  res.status(500).json({'status' : 'ko'})
+                                                                                }                                                                      
+                                                                              })
 
                                                                             connection.end()
                                                                         })
@@ -199,8 +206,11 @@ export class updateModel {
     }
 
     /** Genera los roles  */
-    static async grantedRolesToModel(grantedRoles: any, crmTables: any, permissions: any, permissionsColumns: any) {
+    static async grantedRolesToModel(grantedRoles: any, crmTables: any, permissions: any, permissionsColumns: any, customUserPermissions: any) {
         
+        console.log('customUserPermissions --> : ',customUserPermissions);
+
+
         const destGrantedRoles = [];
         let gr = {}
         let gr2 = {}
@@ -262,6 +272,7 @@ export class updateModel {
                 permission: true,
                 type: "groups"
 
+                
             }
             //Evitar duplicados
             let found = false;
