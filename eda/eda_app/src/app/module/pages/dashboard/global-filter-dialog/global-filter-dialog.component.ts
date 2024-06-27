@@ -179,7 +179,9 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
 
     public onAddPanelForFilter(panel: any) {
         if (panel.avaliable) {
-            panel.active = !panel.active;
+            if(panel.content.query.query.queryMode != 'SQL') { // los paneles SQL no se pueden activar
+                panel.active = !panel.active;
+            }
             this.filteredPanels = this.allPanels.filter((p: any) => p.avaliable && p.active);
             
             if (panel.active) {
