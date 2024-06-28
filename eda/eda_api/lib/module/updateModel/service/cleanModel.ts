@@ -51,7 +51,8 @@ export class CleanModel {
             
             } else {
                 
-                const match = model_granted_roles.find(r => r.table == roles[i].table && r.column == roles[i].column && r.type == roles[i].type )
+                const match = model_granted_roles.find(r => r.table == roles[i].table && r.column == roles[i].column && r.type == roles[i].type 
+                    &&   r.global == roles[i].global    )
                 
                 if (_.isEmpty(match) == false && roles[i].type == "users") {
                     if (!match.users.includes(roles[i].users[0])) {match.users.push(roles[i].users[0]) } ;

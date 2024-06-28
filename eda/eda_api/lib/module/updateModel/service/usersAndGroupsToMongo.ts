@@ -76,7 +76,7 @@ export class userAndGroupsToMongo {
           )
         }
       } else {
-        console.log(' grupo ' + unique_groups[i] + ' Ya existe')
+        //console.log(' grupo ' + unique_groups[i] + ' Ya existe')
       }
     }
 
@@ -206,7 +206,7 @@ export class userAndGroupsToMongo {
          try {
           await User.updateOne({ email: y.email }, { $unset : {role: {}} })
           .then(function () {
-            console.log(y.name + ' Unset ') 
+           // console.log(y.name + ' Unset ') 
           })
           .catch(function (error) {
             console.log(error) 
@@ -214,7 +214,7 @@ export class userAndGroupsToMongo {
         
         await User.updateOne({ email: y.email }, { $addToSet : {role: totalRolesIds} })
           .then(function () {
-            console.log(y.name + ' Updated')
+            //console.log(y.name + ' Updated')
           })
           .catch(function (error) {
             console.log(error) 

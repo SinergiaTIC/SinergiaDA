@@ -31,7 +31,7 @@ export class pushModelToMongo {
                 
             }else {
                 try {
-                    console.log('El modelo ya existe.....')
+                    //console.log('El modelo ya existe.....')
                     if (model_ds != null || model_ds != undefined) {
                         await DataSource.updateOne({_id: model_id}, {ds: model_ds})  
                         console.log('actualizado.....');

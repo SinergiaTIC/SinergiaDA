@@ -124,7 +124,6 @@ export class updateModel {
                                                                             let permissionsColumns = permiCol
                                                                             /**Ahora que ya tengo todos los datos, monto el modelo */
                                                                             // montamos el modelo
-                                                                            //console.log('Recuperando usuarios');
                                                                             const query='select user_name as name, `table` as tabla , `column` as columna  from sda_def_permissions where stic_permission_source in ("ACL_ALLOW_GROUP_priv", "ACL_ALLOW_OWNER")';
 
                                                                             await connection.query(query)
@@ -208,14 +207,10 @@ export class updateModel {
     /** Genera los roles  */
     static async grantedRolesToModel(grantedRoles: any, crmTables: any, permissions: any, permissionsColumns: any, customUserPermissions: any) {
         
-        console.log('customUserPermissions --> : ',customUserPermissions);
-
 
         const destGrantedRoles = [];
-        let gr = {}
-        let gr2 = {}
-        let gr3 = {}
-        let gr4 = {}
+        let gr, gr2, gr3, gr4, gr5 = {};
+    
 
         //con este permiso todos los usuarios pueden ver el modelo
         const all = {
@@ -308,6 +303,9 @@ export class updateModel {
 
         })
 
+
+
+
         permissionsColumns.forEach(line => {
 
             const match = mongoGroups.filter(i => { return i.name === line.group })
@@ -341,7 +339,31 @@ export class updateModel {
             }
 
         })
-        
+
+        customUserPermissions.forEach(line => {
+
+          const found = usersFound.find(i => i.email == line.name)
+
+            if (found) {
+              let valueAt: String = "select `"+ line.columna + "` from " + line.tabla + 
+                  " where `"+ line.columna + "` = '${app_user_name}' " ;
+
+              gr5 = {
+                  users: [found._id],
+                  usersName: [line.name],
+                  none: false,
+                  table: line.tabla,
+                  column: line.columna,
+                  global: false,
+                  permission: true,
+                  type: "users",
+                  value: [valueAt]
+              }
+
+              destGrantedRoles.push(gr5);
+            }
+        })
+
         return destGrantedRoles;
     }
 
@@ -545,8 +567,7 @@ export class updateModel {
     main_model.ds.connection.password = EnCrypterService.encrypt(sinergiaDatabase.sinergiaConn.password);
     main_model.ds.model.tables = tables; //añadimos el parámetro en la columna adecuada
     main_model.ds.metadata.model_granted_roles = await grantedRoles;
-    
-    
+        
     try {
         const cleanM = new CleanModel; 
         main_model = await cleanM.cleanModel(main_model);
