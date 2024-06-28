@@ -49,10 +49,10 @@ export class SdareportsComponent implements OnInit {
 
   // Propiedades para el filtro por tipo con iconos
   public dashboardTypes: Array<{type: string, label: string, active: boolean, icon: string, color: string}> = [
-    {type: 'common', label: 'Común', active: true, icon: 'fa-globe', color: '#007bff'},
-    {type: 'public', label: 'Público', active: true, icon: 'fa-share', color: '#dc3545'},
-    {type: 'group', label: 'Grupo', active: true, icon: 'fa-users', color: '#28a745'},
-    {type: 'private', label: 'Privado', active: true, icon: 'fa-lock', color: '#ffc107'},
+    {type: 'common', label: $localize`:@@Common:Común`, active: true, icon: 'fa-globe', color: '#007bff'},
+    {type: 'public', label: $localize`:@@Public:Público`, active: true, icon: 'fa-share', color: '#dc3545'},
+    {type: 'group', label: $localize`:@@Group:Grupo`, active: true, icon: 'fa-users', color: '#28a745'},
+    {type: 'private', label: $localize`:@@Private:Privado`, active: true, icon: 'fa-lock', color: '#ffc107'},
     // {type: 'archived', label: 'Archivado', active: true, icon: 'fa-archive', color: '#6c757d'}
   ];
 
@@ -284,14 +284,14 @@ export class SdareportsComponent implements OnInit {
     }
 
     // Aplicamos el filtro de grupos
-  if (this.selectedGroups.length > 0) {
-    this.visibleDashboards = this.visibleDashboards.filter(db =>
-      this.selectedGroups.some(group =>
-        (group.value === null && (!db.group || !db.group.name)) ||
-        (db.group && db.group.name === group.value)
-      )
-    );
-  }
+    if (this.selectedGroups.length > 0) {
+      this.visibleDashboards = this.visibleDashboards.filter(db =>
+        this.selectedGroups.some(group =>
+          (group.value === null && (!db.group || !db.group.name)) ||
+          (db.group && db.group.name === group.value)
+        )
+      );
+    }
 
     this.sortTable(this.sortColumn);
   }
@@ -419,14 +419,14 @@ export class SdareportsComponent implements OnInit {
 
           this.alertService.addSuccess($localize`:@@REPORTCloned:Informe clonado correctamente`);
         } else {
-          throw new Error('Respuesta inválida del servidor');
+          throw new Error($localize`:@@InvalidServerResponse:Respuesta inválida del servidor`);
         }
       },
       (error) => {
-        console.error('Error al clonar el dashboard:', error);
+        console.error($localize`:@@ErrorCloningDashboard:Error al clonar el dashboard:`, error);
         Swal.fire(
-          'Error',
-          'No se pudo clonar el informe. Por favor, inténtalo de nuevo.',
+          $localize`:@@Error:Error`,
+          $localize`:@@CouldNotCloneReport:No se pudo clonar el informe. Por favor, inténtalo de nuevo.`,
           'error'
         );
       }
@@ -439,7 +439,7 @@ export class SdareportsComponent implements OnInit {
       navigator.clipboard.writeText(url).then(() => {
         this.alertService.addSuccess($localize`:@@URLCopied:URL copiada al portapapeles`);
       }, (err) => {
-        console.error('Error al copiar URL: ', err);
+        console.error($localize`:@@ErrorCopyingURL:Error al copiar URL: `, err);
         this.alertService.addError($localize`:@@ErrorCopyingURL:Error al copiar la URL`);
       });
     }

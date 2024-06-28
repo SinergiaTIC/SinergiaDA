@@ -17,6 +17,7 @@
         data-toggle="dropdown"
         aria-haspopup="true"
         aria-expanded="false"
+        i18n="@@etiqueta"
       >
         Etiqueta:
         {{
@@ -33,6 +34,7 @@
             placeholder="Buscar tipo"
             [(ngModel)]="tagSearchTerm"
             (input)="filterTags()"
+            i18n-placeholder="@@buscarTipo"
           />
         </div>
         <div class="dropdown-divider"></div>
@@ -64,6 +66,7 @@
         data-toggle="dropdown"
         aria-haspopup="true"
         aria-expanded="false"
+        i18n="@@grupo"
       >
         Grupo:
         {{
@@ -80,6 +83,7 @@
             placeholder="Buscar grupo"
             [(ngModel)]="groupSearchTerm"
             (input)="filterGroups()"
+            i18n-placeholder="@@buscarGrupo"
           />
         </div>
         <div class="dropdown-divider"></div>
@@ -126,6 +130,7 @@
         [class.active]="viewMode === 'table'"
         (click)="setViewMode('table')"
         title="Vista de tabla"
+        i18n-title="@@vistaTabla"
       >
         <i class="fa fa-table"></i>
       </button>
@@ -135,28 +140,12 @@
         [class.active]="viewMode === 'card'"
         (click)="setViewMode('card')"
         title="Vista de fichas"
+        i18n-title="@@vistaFichas"
       >
         <i class="fa fa-th-large"></i>
       </button>
     </div>
   </div>
-
-  <!-- <div *ngIf="tags.length !== 2" class="ml-3">
-    <div class="navbar-text mr-2">Tags:</div>
-    <div class="btn-group" role="group">
-      <button
-        type="button"
-        class="btn btn-outline-light"
-        *ngFor="let tag of tags"
-        [class.active]="
-          selectedTag === tag.value || (tag.value === null && selectedTag === 0)
-        "
-        (click)="filterDashboards(tag)"
-      >
-        {{ tag.label }}
-      </button>
-    </div>
-  </div> -->
 
   <!-- Buscador -->
   <div class="ml-auto">
@@ -181,7 +170,7 @@
   <table class="table table-striped" id="report-table">
     <thead>
       <tr>
-        <th (click)="sortTable('config.title')">
+        <th (click)="sortTable('config.title')" i18n="@@nombreInforme">
           Nombre del Informe
           <i
             class="fa"
@@ -193,7 +182,7 @@
             }"
           ></i>
         </th>
-        <th (click)="sortTable('type')">
+        <th (click)="sortTable('type')" i18n="@@tipo">
           Tipo
           <i
             class="fa"
@@ -203,7 +192,7 @@
             }"
           ></i>
         </th>
-        <th (click)="sortTable('user')">
+        <th (click)="sortTable('user')" i18n="@@autor">
           Autor
           <i
             class="fa"
@@ -213,16 +202,16 @@
             }"
           ></i>
         </th>
-        <th (click)="sortTable('config.createdAt')">
+        <th (click)="sortTable('config.createdAt')" i18n="@@fechaCreacion">
           Fecha creación
           <i class="fa" [ngClass]="{
             'fa-sort-asc': sortColumn === 'config.createdAt' && sortDirection === 'asc',
             'fa-sort-desc': sortColumn === 'config.createdAt' && sortDirection === 'desc'
           }"></i>
         </th>
-        <th>Edición privada</th>
-        <th>Grupos</th>
-        <th (click)="sortTable('config.tag')">
+        <th i18n="@@edicionPrivada">Edición privada</th>
+        <th i18n="@@grupos">Grupos</th>
+        <th (click)="sortTable('config.tag')" i18n="@@etiquetas">
           Etiquetas
           <i
             class="fa"
@@ -234,7 +223,7 @@
             }"
           ></i>
         </th>
-        <th>Acciones</th>
+        <th i18n="@@acciones">Acciones</th>
       </tr>
     </thead>
     <tbody>
@@ -285,6 +274,8 @@
             *ngIf="!isObserver && canIEdit(dashboard)"
             (click)="cloneDashboard(dashboard)"
             class="btn btn-default btn-sm"
+            i18n-title="@@clonarInforme"
+            title="Clonar informe"
           >
             <i class="fa fa-clone text-info"></i>
           </span>
@@ -293,6 +284,7 @@
             *ngIf="dashboard.type === 'public'"
             class="btn btn-default btn-sm"
             (click)="copyUrl(dashboard)"
+            i18n-title="@@copiarUrlPublica"
             title="Copiar url pública"
           >
             <i class="fa fa-link"></i>
@@ -345,13 +337,14 @@
           </p>
 
           <p class="card-text">
-            <strong>Etiquetas:</strong>
+            <strong i18n="@@etiquetas">Etiquetas:</strong>
             <span class="badge badge-primary">{{ dashboard.config.tag }}</span>
           </p>
           <div class="mt-auto">
             <button
               class="btn btn-primary btn-sm mr-2"
               (click)="goToDashboard(dashboard)"
+              i18n="@@ver"
             >
               Ver
             </button>
@@ -359,6 +352,8 @@
               *ngIf="!isObserver && canIEdit(dashboard)"
               class="btn btn-danger btn-sm mr-2"
               (click)="deleteDashboard(dashboard)"
+              i18n-title="@@eliminarInforme"
+              title="Eliminar informe"
             >
               <i class="fa fa-trash"></i>
             </button>
@@ -366,6 +361,7 @@
               *ngIf="!isObserver && canIEdit(dashboard)"
               class="btn btn-info btn-sm mr-2"
               (click)="cloneDashboard(dashboard)"
+              i18n-title="@@clonarInforme"
               title="Clonar informe"
             >
               <i class="fa fa-clone"></i>
@@ -374,6 +370,7 @@
               *ngIf="dashboard.type === 'public'"
               class="btn btn-default btn-sm"
               (click)="copyUrl(dashboard)"
+              i18n-title="@@copiarUrlPublica"
               title="Copiar url pública"
             >
               <i class="fa fa-link"></i>
