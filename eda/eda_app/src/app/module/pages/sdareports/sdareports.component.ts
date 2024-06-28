@@ -309,7 +309,7 @@ export class SdareportsComponent implements OnInit {
         this.filteringByName = false;
       }
     }
-    this.sortTable(this.sortColumn);
+    // this.sortTable(this.sortColumn);
   }
 
   public canIEdit(dashboard): boolean {
@@ -394,7 +394,7 @@ export class SdareportsComponent implements OnInit {
           this.visibleDashboards.push(response.dashboard);
 
           // Ordenar la lista según el criterio actual
-          this.sortTable(this.sortColumn);
+          // this.sortTable(this.sortColumn);
 
           // Encontrar el índice del dashboard clonado en la lista visible
           const index = this.visibleDashboards.findIndex(d => d._id === response.dashboard._id);

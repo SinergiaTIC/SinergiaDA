@@ -9,6 +9,10 @@
 }
 
 /* Estilos de la tabla de informes */
+#report-table {
+  /* Estilos para la tabla */
+}
+
 #report-table td {
   font-size: 16px;
 }
@@ -42,12 +46,13 @@
 
 .card {
   height: 100%;
-  border-width: 0px;
+  border-width: 0;
   border-style: solid;
   transition: all 0.3s ease;
   border-left-width: 10px;
   cursor: pointer;
 }
+
 .card:active {
   transform: scale(0.98);
 }
@@ -73,9 +78,11 @@
   margin-bottom: 0.3rem;
 }
 
-.card-border-danger { border-color: #dc3545; }
-.card-border-primary { border-color: #007bff; }
-.card-border-default { border-color: #6c757d; }
+/* Estilos de bordes de tarjetas por tipo */
+.card-border-common { border-left-color: #007bff; }
+.card-border-public { border-left-color: #dc3545; }
+.card-border-group { border-left-color: #28a745; }
+.card-border-private { border-left-color: #ffc107; }
 
 /* Estilos del buscador */
 .search-container {
@@ -112,11 +119,6 @@
 }
 
 /* Estilos de botones y switches */
-.btn.btn-outline-light.active,
-.btn.btn-outline-light:hover {
-  color: black;
-}
-
 .btn-group .btn-outline-light.active {
   background-color: #f8f9fa;
   color: #343a40;
@@ -126,99 +128,19 @@
   background-color: rgba(248, 249, 250, 0.1);
 }
 
-.custom-switch .custom-control-label {
-  padding-top: 3px;
-}
-
-/* Media queries */
-@media (max-width: 992px) {
-  .card-wrapper {
-    flex: 0 0 calc(50% - 20px);
-  }
-}
-
-@media (max-width: 768px) {
-  .card-wrapper {
-    flex: 0 0 calc(100% - 20px);
-  }
-}
-
-
-.dropdown-menu {
-  min-width: 200px;
-  padding: 10px;
-}
-
-.dropdown-menu .form-control {
-  margin-bottom: 10px;
-}
-
-.dropdown-item {
-  padding: 0.25rem 1.5rem;
-}
-
-.dropdown-item:hover {
-  background-color: #f8f9fa;
-}
-
-.form-check {
-  padding-left: 0;
-}
-
-.form-check-input {
-  margin-top: 0.3rem;
-  margin-left: 0;
-}
-
-.form-check-label {
-  margin-left: 1.25rem;
-}
-
-
-.btn-group .btn {
-  margin-right: 5px;
-}
-
-.btn-group .btn:last-child {
-  margin-right: 0;
-}
-
-.btn-group .btn-outline-light {
-  border-color: #6c757d;
-  color: #6c757d;
-}
-
-.btn-group .btn-outline-light:hover,
-.btn-group .btn-outline-light:focus,
-.btn-group .btn-outline-light.active {
-  background-color: #6c757d;
-  color: #fff;
-}
-
-.btn-group .btn-outline-light:not(:last-child) {
-  border-right: none;
-}
-
-.btn-group .btn-outline-light:first-child {
-  border-top-left-radius: 0.25rem;
-  border-bottom-left-radius: 0.25rem;
-}
-
-.btn-group .btn-outline-light:last-child {
-  border-top-right-radius: 0.25rem;
-  border-bottom-right-radius: 0.25rem;
-}
-
-/* ... estilos existentes ... */
-
+/* Estilos para el menú desplegable */
 .dropdown-menu {
   min-width: 200px;
   max-height: 300px;
   overflow-y: auto;
+  padding: 10px;
+  background-color: #f8f9fa;
+  border: 1px solid #ced4da;
 }
 
 .dropdown-menu .form-control {
   margin-bottom: 10px;
+  border: 1px solid #ced4da;
 }
 
 .dropdown-item {
@@ -226,7 +148,7 @@
 }
 
 .dropdown-item:hover {
-  background-color: #f8f9fa;
+  background-color: #e9ecef;
 }
 
 .form-check {
@@ -242,19 +164,11 @@
   margin-left: 1.25rem;
 }
 
-.btn-group .btn {
-  margin-right: 5px;
-}
-
-.btn-group .btn:last-child {
-  margin-right: 0;
-}
-
+/* Estilos para los botones de filtro en la barra de navegación */
 .navbar .dropdown {
   margin-right: 10px;
 }
 
-/* Estilos para los botones de filtro */
 .navbar .btn-secondary {
   background-color: #6c757d;
   border-color: #6c757d;
@@ -266,27 +180,7 @@
   border-color: #545b62;
 }
 
-/* Estilos para el menú desplegable */
-.dropdown-menu {
-  background-color: #f8f9fa;
-  border: 1px solid #ced4da;
-}
-
-.dropdown-menu .form-control {
-  border: 1px solid #ced4da;
-}
-
-.dropdown-item:hover {
-  background-color: #e9ecef;
-}
-
-
-.card-border-common { border-left-color: #007bff; }
-.card-border-public { border-left-color: #dc3545; }
-.card-border-group { border-left-color: #28a745; }
-.card-border-private { border-left-color: #ffc107; }
-.card-border-archived { border-left-color: #6c757d; }
-
+/* Estilos para el indicador de tipo */
 .type-indicator {
   display: inline-block;
   width: 10px;
@@ -295,6 +189,7 @@
   margin-right: 5px;
 }
 
+/* Estilos para el contenedor del título y el icono de información */
 .title-container {
   display: flex;
   align-items: center;
@@ -315,6 +210,7 @@
   color: #0056b3;
 }
 
+/* Estilos para el tooltip personalizado */
 .custom-tooltip {
   visibility: hidden;
   width: 300px;
@@ -359,13 +255,13 @@
   animation: fadeIn 0.5s;
 }
 
-/* Estilo para el texto dentro del tooltip */
 .custom-tooltip p {
   margin: 0;
   font-size: 14px;
   line-height: 1.4;
 }
 
+/* Estilos para los encabezados de la tabla */
 th {
   cursor: pointer;
 }
@@ -378,7 +274,7 @@ th i.fa {
   margin-left: 5px;
 }
 
-
+/* Animación para resaltar elementos recién clonados */
 @keyframes shake-highlight {
   0%, 100% { transform: translateX(0); opacity: 1; }
   10%, 30%, 50%, 70%, 90% { transform: translateX(-15px); }
@@ -388,4 +284,17 @@ th i.fa {
 
 .newly-cloned {
   animation: shake-highlight 5s ease-in-out;
+}
+
+/* Media queries para diseño responsivo */
+@media (max-width: 992px) {
+  .card-wrapper {
+    flex: 0 0 calc(50% - 20px);
+  }
+}
+
+@media (max-width: 768px) {
+  .card-wrapper {
+    flex: 0 0 calc(100% - 20px);
+  }
 }
