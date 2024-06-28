@@ -54,7 +54,7 @@ export class DashboardController {
     try {
       const dashboards = await Dashboard.find(
         { user: req.user._id },
-        'config.title config.visible config.tag config.onlyIcanEdit'
+        'config.title config.visible config.tag config.onlyIcanEdit config.description config.createdAt'
       ).exec()
       const privates = []
       for (const dashboard of dashboards) {
@@ -75,7 +75,7 @@ export class DashboardController {
       }).exec()
       const dashboards = await Dashboard.find(
         { group: { $in: userGroups.map(g => g._id) } },
-        'config.title config.visible group config.tag config.onlyIcanEdit'
+        'config.title config.visible group config.tag config.onlyIcanEdit config.description config.createdAt'
       ).exec()
       const groupDashboards = []
       for (let i = 0, n = dashboards.length; i < n; i += 1) {
@@ -102,7 +102,7 @@ export class DashboardController {
     try {
       const dashboards = await Dashboard.find(
         {},
-        'config.title config.visible config.tag config.onlyIcanEdit'
+        'config.title config.visible config.tag config.onlyIcanEdit config.description config.createdAt'
       ).exec()
       const publics = []
 
@@ -121,7 +121,7 @@ export class DashboardController {
     try {
       const dashboards = await Dashboard.find(
         {},
-        'config.title config.visible config.tag config.onlyIcanEdit'
+        'config.title config.visible config.tag config.onlyIcanEdit config.description config.createdAt'
       ).exec()
       const shared = []
       for (const dashboard of dashboards) {
@@ -139,34 +139,35 @@ export class DashboardController {
     try {
       const dashboards = await Dashboard.find(
         {},
-        'user config.title config.visible group config.tag config.onlyIcanEdit'
+        'user config.title config.visible group config.tag config.onlyIcanEdit config.description config.createdAt'
       ).exec()
       const publics = []
       const privates = []
       const groups = []
       const shared = []
-
+  
       for (const dashboard of dashboards) {
+        // Buscar información del usuario para todos los dashboards
+        dashboard.user = await User.findById(
+          { _id: dashboard.user },
+          'name'
+        ).exec()
+        if (dashboard.user == null) {
+          dashboard.user = new User({
+            name: 'N/A',
+            email: '',
+            password: '',
+            img: '',
+            role: '',
+            active: ''
+          })
+        }
+        
         switch (dashboard.config.visible) {
           case 'public':
             publics.push(dashboard)
             break
           case 'private':
-            dashboard.user = await User.findById(
-              { _id: dashboard.user },
-              'name'
-            ).exec()
-            if (dashboard.user == null) {
-              dashboard.user = new User(
-                {
-                  name: 'N/A',
-                  email: '',
-                  password: '',
-                  img: '',
-                  role: '',
-                  active: ''
-                })
-            };
             privates.push(dashboard)
             break
           case 'group':
@@ -178,7 +179,7 @@ export class DashboardController {
             break
         }
       }
-
+  
       return [publics, privates, groups, shared]
     } catch (err) {
       throw new HttpException(400, 'Error loading dashboards for admin')
@@ -1291,7 +1292,38 @@ export class DashboardController {
       data[1] = newRows
     }
   }
-
+  
+  static async clone(req: Request, res: Response, next: NextFunction) {
+    try {
+      const dashboardId = req.params.id;
+      console.log('Intentando clonar dashboard con ID:', dashboardId);
+      const originalDashboard = await Dashboard.findById(dashboardId).exec();
+  
+      if (!originalDashboard) {
+        console.log('Dashboard original no encontrado');
+        return next(new HttpException(404, 'Dashboard no encontrado'));
+      }
+  
+      const clonedDashboard: IDashboard = new Dashboard({
+        config: {
+          ...originalDashboard.config,
+          title: `${originalDashboard.config.title} copy`,
+          createdAt: new Date()
+        },
+        user: req.user._id,
+        group: originalDashboard.group
+      });
+  
+      console.log('Dashboard clonado antes de guardar:', clonedDashboard);
+      const savedDashboard = await clonedDashboard.save();
+      console.log('Dashboard clonado guardado:', savedDashboard);
+  
+      return res.status(201).json({ ok: true, dashboard: savedDashboard });
+    } catch (err) {
+      console.error('Error al clonar dashboard:', err);
+      next(new HttpException(500, 'Error al clonar dashboard'));
+    }
+  }
   static async cleanDashboardCache(
     req: Request,
     res: Response,

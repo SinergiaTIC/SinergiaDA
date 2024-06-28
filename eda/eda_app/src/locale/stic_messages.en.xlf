@@ -163,6 +163,170 @@
     <source> Entidades </source>
     <target> Tables </target>
   </trans-unit>
+  <trans-unit id="Common">
+    <source>Común</source>
+    <target>Common</target>
+  </trans-unit>
+  <trans-unit id="Public">
+    <source>Público</source>
+    <target>Public</target>
+  </trans-unit>
+  <trans-unit id="Group">
+    <source>Grupo</source>
+    <target>Group</target>
+  </trans-unit>
+  <trans-unit id="Private">
+    <source>Privado</source>
+    <target>Private</target>
+  </trans-unit>
+  <trans-unit id="NoTag">
+    <source>Sin Etiqueta</source>
+    <target>No Tag</target>
+  </trans-unit>
+  <trans-unit id="AllTags">
+    <source>Todos</source>
+    <target>All</target>
+  </trans-unit>
+  <trans-unit id="NoneTags">
+    <source>Ninguno</source>
+    <target>None</target>
+  </trans-unit>
+  <trans-unit id="NoGroup">
+    <source>Sin Grupo</source>
+    <target>No Group</target>
+  </trans-unit>
+  <trans-unit id="deleteDashboardWarning">
+    <source>Estás a punto de borrar el informe: </source>
+    <target>You are about to delete the report: </target>
+  </trans-unit>
+  <trans-unit id="Sure">
+    <source>¿Estás seguro?</source>
+    <target>Are you sure?</target>
+  </trans-unit>
+  <trans-unit id="ConfirmDeleteModel">
+    <source>Si, ¡Eliminalo!</source>
+    <target>Yes, delete it!</target>
+  </trans-unit>
+  <trans-unit id="DeleteGroupCancel">
+    <source>Cancelar</source>
+    <target>Cancel</target>
+  </trans-unit>
+  <trans-unit id="DashboardDeletedInfo">
+    <source>Informe eliminado correctamente.</source>
+    <target>Report deleted successfully.</target>
+  </trans-unit>
+  <trans-unit id="ErrorMessage">
+    <source>Ha ocurrido un error</source>
+    <target>An error has occurred</target>
+  </trans-unit>
+  <trans-unit id="REPORTCloned">
+    <source>Informe clonado correctamente</source>
+    <target>Report cloned successfully</target>
+  </trans-unit>
+  <trans-unit id="InvalidServerResponse">
+    <source>Respuesta inválida del servidor</source>
+    <target>Invalid server response</target>
+  </trans-unit>
+  <trans-unit id="ErrorCloningDashboard">
+    <source>Error al clonar el dashboard:</source>
+    <target>Error cloning the dashboard:</target>
+  </trans-unit>
+  <trans-unit id="CouldNotCloneReport">
+    <source>No se pudo clonar el informe. Por favor, inténtalo de nuevo.</source>
+    <target>Could not clone the report. Please try again.</target>
+  </trans-unit>
+  <trans-unit id="Error">
+    <source>Error</source>
+    <target>Error</target>
+  </trans-unit>
+  <trans-unit id="URLCopied">
+    <source>URL copiada al portapapeles</source>
+    <target>URL copied to clipboard</target>
+  </trans-unit>
+  <trans-unit id="ErrorCopyingURL">
+    <source>Error al copiar la URL</source>
+    <target>Error copying the URL</target>
+  </trans-unit>
+  <trans-unit id="tituloNuevoInforme">
+    <source>Nuevo informe</source>
+    <target>New report</target>
+  </trans-unit>
+  <trans-unit id="etiqueta">
+    <source>Etiqueta:</source>
+    <target>Tag:</target>
+  </trans-unit>
+  <trans-unit id="buscarTipo">
+    <source>Buscar tipo</source>
+    <target>Search type</target>
+  </trans-unit>
+  <trans-unit id="grupo">
+    <source>Grupo:</source>
+    <target>Group:</target>
+  </trans-unit>
+  <trans-unit id="buscarGrupo">
+    <source>Buscar grupo</source>
+    <target>Search group</target>
+  </trans-unit>
+  <trans-unit id="vistaTabla">
+    <source>Vista de tabla</source>
+    <target>Table view</target>
+  </trans-unit>
+  <trans-unit id="vistaFichas">
+    <source>Vista de fichas</source>
+    <target>Card view</target>
+  </trans-unit>
+  <trans-unit id="buscarPorNombre">
+    <source>Buscar por nombre del informe</source>
+    <target>Search by report name</target>
+  </trans-unit>
+  <trans-unit id="nombreInforme">
+    <source>Nombre del Informe</source>
+    <target>Report Name</target>
+  </trans-unit>
+  <trans-unit id="tipo">
+    <source>Tipo</source>
+    <target>Type</target>
+  </trans-unit>
+  <trans-unit id="autor">
+    <source>Autor</source>
+    <target>Author</target>
+  </trans-unit>
+  <trans-unit id="fechaCreacion">
+    <source>Fecha creación</source>
+    <target>Creation Date</target>
+  </trans-unit>
+  <trans-unit id="edicionPrivada">
+    <source>Edición privada</source>
+    <target>Private editing</target>
+  </trans-unit>
+  <trans-unit id="grupos">
+    <source>Grupos</source>
+    <target>Groups</target>
+  </trans-unit>
+  <trans-unit id="etiquetas">
+    <source>Etiquetas</source>
+    <target>Tags</target>
+  </trans-unit>
+  <trans-unit id="acciones">
+    <source>Acciones</source>
+    <target>Actions</target>
+  </trans-unit>
+  <trans-unit id="ver">
+    <source>Ver</source>
+    <target>View</target>
+  </trans-unit>
+  <trans-unit id="eliminarInforme">
+    <source>Eliminar informe</source>
+    <target>Delete report</target>
+  </trans-unit>
+  <trans-unit id="clonarInforme">
+    <source>Clonar informe</source>
+    <target>Clone report</target>
+  </trans-unit>
+  <trans-unit id="copiarUrlPublica">
+    <source>Copiar url pública</source>
+    <target>Copy public URL</target>
+  </trans-unit>
 </body>
 </file>
 </xliff>

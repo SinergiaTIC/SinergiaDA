@@ -45,6 +45,7 @@ import { CalculatedColumnDialogComponent } from './data-sources/data-source-deta
 import { UploadFileComponent } from './data-sources/data-source-detail/upload-file/upload-file.component';
 import { SaveAsDialogComponent } from './dashboard/saveAsDialog/save-as-dialog.component';
 import { EditStylesDialogComponent } from './dashboard/edit-styles-dialog/edit-styles.dialog.component';
+import { SdareportsComponent } from './sdareports/sdareports.component';
 import { GlobalFilterComponent } from './dashboard/global-filter/global-filter.component';
 
 
@@ -91,9 +92,12 @@ import { GlobalFilterComponent } from './dashboard/global-filter/global-filter.c
         DashboardMailDialogComponent,
         SaveAsDialogComponent,
         EditStylesDialogComponent,
+
         // SDA CUSTOM
+        SdareportsComponent,
         AboutComponent
         // END SDA CUSTOM
+
     ]
 })
 export class PagesModule { }
