@@ -238,7 +238,9 @@
       </tr>
     </thead>
     <tbody>
-      <tr *ngFor="let dashboard of visibleDashboards">
+      <tr *ngFor="let dashboard of visibleDashboards"
+      [id]="'dashboard-' + dashboard._id"
+      [class.newly-cloned]="dashboard.isNewlyCloned">
         <td>
           <div class="title-container">
             {{ dashboard.config.title }}
@@ -307,8 +309,11 @@
     <div *ngFor="let dashboard of visibleDashboards" class="card-wrapper">
       <div
         class="card"
+        [id]="'dashboard-' + dashboard._id"
+        [class.newly-cloned]="dashboard.isNewlyCloned"
         [ngClass]="getDashboardTypeClass(dashboard.type)"
         (dblclick)="goToDashboard(dashboard)"
+
       >
         <div class="card-body d-flex flex-column">
           <h5 class="card-title">

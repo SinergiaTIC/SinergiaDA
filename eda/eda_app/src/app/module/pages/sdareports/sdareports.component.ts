@@ -199,11 +199,7 @@ export class SdareportsComponent implements OnInit {
       if (borrado.value) {
         this.dashboardService.deleteDashboard(dashboard._id).subscribe(
           () => {
-            Swal.fire(
-              $localize`:@@Deleted:¡Eliminado!`,
-              $localize`:@@DashboardDeletedInfo:Informe eliminado correctamente.`,
-              "success"
-            );
+            this.alertService.addSuccess($localize`:@@DashboardDeletedInfo:Informe eliminado correctamente.`);
             this.initDashboards();
           },
           err => this.alertService.addError(err)
@@ -390,46 +386,38 @@ export class SdareportsComponent implements OnInit {
   }
 
   public cloneDashboard(dashboard: any): void {
-    console.log('Intentando clonar dashboard:', dashboard);
     this.dashboardService.cloneDashboard(dashboard._id).subscribe(
       (response) => {
-        console.log('Respuesta de clonación:', response);
         if (response.ok && response.dashboard) {
-          // Añadir la propiedad isNewlyCloned
-          response.dashboard.isNewlyCloned = true;
-
           // Añadir el nuevo dashboard clonado a la lista
           this.allDashboards.push(response.dashboard);
+          this.visibleDashboards.push(response.dashboard);
 
-          // Actualizar los filtros para incluir el nuevo dashboard
-          this.initTags();
-          this.initGroups();
+          // Ordenar la lista según el criterio actual
+          this.sortTable(this.sortColumn);
 
-          // Obtener el nombre del informe original
-          const originalName = dashboard.config.title;
+          // Encontrar el índice del dashboard clonado en la lista visible
+          const index = this.visibleDashboards.findIndex(d => d._id === response.dashboard._id);
 
-          // Aplicar el filtro por nombre
-          this.filterTitle({ target: { value: originalName } });
+          if (index !== -1) {
+            // Marcar el dashboard como recién clonado
+            this.visibleDashboards[index].isNewlyCloned = true;
 
-          // Asegurarse de que el nuevo dashboard sea visible al principio
-          this.visibleDashboards = [response.dashboard, ...this.visibleDashboards.filter(d => d._id !== response.dashboard._id)];
+            // Desplazar el foco al dashboard clonado
+            setTimeout(() => {
+              const element = document.getElementById(`dashboard-${response.dashboard._id}`);
+              if (element) {
+                element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+              }
+            }, 100);
 
-          // Desplazarse al inicio de la lista
-          window.scrollTo(0, 0);
-
-          // Eliminar la propiedad isNewlyCloned después de 2 segundos
-          setTimeout(() => {
-            const index = this.visibleDashboards.findIndex(d => d._id === response.dashboard._id);
-            if (index !== -1) {
+            // Eliminar la marca después de 5 segundos
+            setTimeout(() => {
               this.visibleDashboards[index].isNewlyCloned = false;
-            }
-          }, 2000);
+            }, 5000);
+          }
 
-          Swal.fire(
-            'Clonado!',
-            `El informe "${dashboard.config.title}" ha sido clonado con éxito.`,
-            'success'
-          );
+          this.alertService.addSuccess($localize`:@@REPORTCloned:Informe clonado correctamente`);
         } else {
           throw new Error('Respuesta inválida del servidor');
         }
