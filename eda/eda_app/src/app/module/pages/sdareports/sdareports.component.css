@@ -193,6 +193,7 @@
 .title-container {
   display: flex;
   align-items: center;
+  cursor:pointer;
 }
 
 .info-icon-container {

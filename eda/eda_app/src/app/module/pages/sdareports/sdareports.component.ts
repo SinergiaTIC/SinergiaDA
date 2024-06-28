@@ -20,13 +20,13 @@ export class SdareportsComponent implements OnInit {
   public visibleDashboards: Array<any> = [];
 
   // Propiedades para el modo de visualización
-  public viewMode: 'table' | 'card' = 'table';
+  public viewMode: "table" | "card" = "table";
 
   // Propiedades para el ordenamiento y filtrado
   public sortColumn: string = "config.title";
   public sortDirection: "asc" | "desc" = "asc";
   public filteringByName: boolean = false;
-  public searchTerm: string = '';
+  public searchTerm: string = "";
 
   // Propiedades para la gestión de usuarios y grupos
   public groups: IGroup[] = [];
@@ -39,20 +39,20 @@ export class SdareportsComponent implements OnInit {
   public tags: Array<any> = [];
   public selectedTags: Array<any> = [];
   public filteredTags: Array<any> = [];
-  public tagSearchTerm: string = '';
+  public tagSearchTerm: string = "";
 
   // Nuevas propiedades para el filtro de grupos
   public groupOptions: Array<any> = [];
   public selectedGroups: Array<any> = [];
   public filteredGroups: Array<any> = [];
-  public groupSearchTerm: string = '';
+  public groupSearchTerm: string = "";
 
   // Propiedades para el filtro por tipo con iconos
-  public dashboardTypes: Array<{type: string, label: string, active: boolean, icon: string, color: string}> = [
-    {type: 'common', label: $localize`:@@Common:Común`, active: true, icon: 'fa-globe', color: '#007bff'},
-    {type: 'public', label: $localize`:@@Public:Público`, active: true, icon: 'fa-share', color: '#dc3545'},
-    {type: 'group', label: $localize`:@@Group:Grupo`, active: true, icon: 'fa-users', color: '#28a745'},
-    {type: 'private', label: $localize`:@@Private:Privado`, active: true, icon: 'fa-lock', color: '#ffc107'},
+  public dashboardTypes: Array<{ type: string; label: string; active: boolean; icon: string; color: string }> = [
+    { type: "common", label: $localize`:@@Common:Común`, active: true, icon: "fa-globe", color: "#007bff" },
+    { type: "public", label: $localize`:@@Public:Público`, active: true, icon: "fa-share", color: "#dc3545" },
+    { type: "group", label: $localize`:@@Group:Grupo`, active: true, icon: "fa-users", color: "#28a745" },
+    { type: "private", label: $localize`:@@Private:Privado`, active: true, icon: "fa-lock", color: "#ffc107" }
     // {type: 'archived', label: 'Archivado', active: true, icon: 'fa-archive', color: '#6c757d'}
   ];
 
@@ -73,7 +73,7 @@ export class SdareportsComponent implements OnInit {
     this.sidebarService.getDataSourceNames();
     this.sidebarService.getDataSourceNamesForDashboard();
     this.stylesProviderService.setStyles(this.stylesProviderService.generateDefaultStyles());
-    this.viewMode = localStorage.getItem('preferredViewMode') as 'table' | 'card' || 'table';
+    this.viewMode = (localStorage.getItem("preferredViewMode") as "table" | "card") || "table";
   }
 
   public ngOnInit() {
@@ -128,7 +128,7 @@ export class SdareportsComponent implements OnInit {
         ].sort((a, b) => (a.config.title > b.config.title ? 1 : b.config.title > a.config.title ? -1 : 0));
 
         this.groups = _.map(_.uniqBy(res.group, "group._id"), "group");
-        console.log('Grupos obtenidos del servicio:', this.groups); // Nuevo log
+        console.log("Grupos obtenidos del servicio:", this.groups); // Nuevo log
 
         this.isAdmin = res.isAdmin;
         this.IsDataSourceCreator = res.isDataSourceCreator;
@@ -145,28 +145,27 @@ export class SdareportsComponent implements OnInit {
 
   private initTags(): void {
     const uniqueTags = Array.from(new Set(this.allDashboards.map(db => db.config.tag))).sort();
-    this.tags = [
-      { value: null, label: this.noTagLabel },
-      ...uniqueTags.map(tag => ({ value: tag, label: tag }))
-    ];
+    this.tags = [{ value: null, label: this.noTagLabel }, ...uniqueTags.map(tag => ({ value: tag, label: tag }))];
     this.filteredTags = [...this.tags];
   }
 
   private initGroups(): void {
-    const uniqueGroups = Array.from(new Set(
-      this.allDashboards
-        .filter(db => db.group && db.group.name) // Aseguramos que group y name existan
-        .map(db => db.group.name)
-    )).sort();
+    const uniqueGroups = Array.from(
+      new Set(
+        this.allDashboards
+          .filter(db => db.group && db.group.name) // Aseguramos que group y name existan
+          .map(db => db.group.name)
+      )
+    ).sort();
 
-    console.log('Grupos únicos encontrados:', uniqueGroups); // Nuevo log
+    console.log("Grupos únicos encontrados:", uniqueGroups); // Nuevo log
 
     this.groupOptions = [
       { value: null, label: this.noGroupLabel },
       ...uniqueGroups.map(group => ({ value: group, label: group }))
     ];
 
-    console.log('Opciones de grupo:', this.groupOptions); // Nuevo log
+    console.log("Opciones de grupo:", this.groupOptions); // Nuevo log
 
     this.filteredGroups = [...this.groupOptions];
   }
@@ -221,9 +220,7 @@ export class SdareportsComponent implements OnInit {
   }
 
   public filterTags() {
-    this.filteredTags = this.tags.filter(tag =>
-      tag.label.toLowerCase().includes(this.tagSearchTerm.toLowerCase())
-    );
+    this.filteredTags = this.tags.filter(tag => tag.label.toLowerCase().includes(this.tagSearchTerm.toLowerCase()));
   }
 
   public filterGroups() {
@@ -286,9 +283,9 @@ export class SdareportsComponent implements OnInit {
     // Aplicamos el filtro de grupos
     if (this.selectedGroups.length > 0) {
       this.visibleDashboards = this.visibleDashboards.filter(db =>
-        this.selectedGroups.some(group =>
-          (group.value === null && (!db.group || !db.group.name)) ||
-          (db.group && db.group.name === group.value)
+        this.selectedGroups.some(
+          group =>
+            (group.value === null && (!db.group || !db.group.name)) || (db.group && db.group.name === group.value)
         )
       );
     }
@@ -341,10 +338,10 @@ export class SdareportsComponent implements OnInit {
 
   public sortTable(column: string): void {
     if (this.sortColumn === column) {
-      this.sortDirection = this.sortDirection === 'asc' ? 'desc' : 'asc';
+      this.sortDirection = this.sortDirection === "asc" ? "desc" : "asc";
     } else {
       this.sortColumn = column;
-      this.sortDirection = 'asc';
+      this.sortDirection = "asc";
     }
 
     this.visibleDashboards.sort((a, b) => {
@@ -352,42 +349,48 @@ export class SdareportsComponent implements OnInit {
       let valueB = this.getNestedProperty(b, column);
 
       // Manejo especial para la fecha de creación
-      if (column === 'config.createdAt') {
+      if (column === "config.createdAt") {
         valueA = valueA ? new Date(valueA).getTime() : 0;
         valueB = valueB ? new Date(valueB).getTime() : 0;
       }
 
-      if (typeof valueA === 'string') valueA = valueA.toLowerCase();
-      if (typeof valueB === 'string') valueB = valueB.toLowerCase();
+      // Manejo especial para el autor
+      if (column === "user.name") {
+        valueA = valueA || "";
+        valueB = valueB || "";
+      }
 
-      if (valueA < valueB) return this.sortDirection === 'asc' ? -1 : 1;
-      if (valueA > valueB) return this.sortDirection === 'asc' ? 1 : -1;
+      if (typeof valueA === "string") valueA = valueA.toLowerCase();
+      if (typeof valueB === "string") valueB = valueB.toLowerCase();
+
+      if (valueA < valueB) return this.sortDirection === "asc" ? -1 : 1;
+      if (valueA > valueB) return this.sortDirection === "asc" ? 1 : -1;
       return 0;
     });
   }
 
   private getNestedProperty(obj: any, path: string): any {
-    return path.split('.').reduce((o, key) => (o && o[key] !== undefined) ? o[key] : null, obj);
+    return path.split(".").reduce((o, key) => (o && o[key] !== undefined ? o[key] : null), obj);
   }
 
-  public setViewMode(mode: 'table' | 'card'): void {
+  public setViewMode(mode: "table" | "card"): void {
     this.viewMode = mode;
-    localStorage.setItem('preferredViewMode', mode);
+    localStorage.setItem("preferredViewMode", mode);
   }
 
   public getDashboardTypeClass(type: string): string {
     const dashboardType = this.dashboardTypes.find(t => t.type === type);
-    return dashboardType ? `card-border-${dashboardType.type}` : '';
+    return dashboardType ? `card-border-${dashboardType.type}` : "";
   }
 
   public getDashboardTypeColor(type: string): string {
     const dashboardType = this.dashboardTypes.find(t => t.type === type);
-    return dashboardType ? dashboardType.color : '';
+    return dashboardType ? dashboardType.color : "";
   }
 
   public cloneDashboard(dashboard: any): void {
     this.dashboardService.cloneDashboard(dashboard._id).subscribe(
-      (response) => {
+      response => {
         if (response.ok && response.dashboard) {
           // Añadir el nuevo dashboard clonado a la lista
           this.allDashboards.push(response.dashboard);
@@ -407,7 +410,7 @@ export class SdareportsComponent implements OnInit {
             setTimeout(() => {
               const element = document.getElementById(`dashboard-${response.dashboard._id}`);
               if (element) {
-                element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                element.scrollIntoView({ behavior: "smooth", block: "center" });
               }
             }, 100);
 
@@ -422,39 +425,41 @@ export class SdareportsComponent implements OnInit {
           throw new Error($localize`:@@InvalidServerResponse:Respuesta inválida del servidor`);
         }
       },
-      (error) => {
+      error => {
         console.error($localize`:@@ErrorCloningDashboard:Error al clonar el dashboard:`, error);
         Swal.fire(
           $localize`:@@Error:Error`,
           $localize`:@@CouldNotCloneReport:No se pudo clonar el informe. Por favor, inténtalo de nuevo.`,
-          'error'
+          "error"
         );
       }
     );
   }
 
   public copyUrl(dashboard: any): void {
-    if (dashboard.type === 'public') {
+    if (dashboard.type === "public") {
       const url = `${window.location.origin}/#/public/${dashboard._id}`;
-      navigator.clipboard.writeText(url).then(() => {
-        this.alertService.addSuccess($localize`:@@URLCopied:URL copiada al portapapeles`);
-      }, (err) => {
-        console.error($localize`:@@ErrorCopyingURL:Error al copiar URL: `, err);
-        this.alertService.addError($localize`:@@ErrorCopyingURL:Error al copiar la URL`);
-      });
+      navigator.clipboard.writeText(url).then(
+        () => {
+          this.alertService.addSuccess($localize`:@@URLCopied:URL copiada al portapapeles`);
+        },
+        err => {
+          console.error($localize`:@@ErrorCopyingURL:Error al copiar URL: `, err);
+          this.alertService.addError($localize`:@@ErrorCopyingURL:Error al copiar la URL`);
+        }
+      );
     }
   }
 
   public formatDate(date: string | Date): string {
-    if (!date) return '';
-    const dateObj = typeof date === 'string' ? new Date(date) : date;
-    return dateObj.toLocaleString('es-ES', {
-      year: 'numeric',
-      month: '2-digit',
-      day: '2-digit',
-      hour: '2-digit',
-      minute: '2-digit'
+    if (!date) return "";
+    const dateObj = typeof date === "string" ? new Date(date) : date;
+    return dateObj.toLocaleString("es-ES", {
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+      hour: "2-digit",
+      minute: "2-digit"
     });
   }
-
 }

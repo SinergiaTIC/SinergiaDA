@@ -192,13 +192,13 @@
             }"
           ></i>
         </th>
-        <th (click)="sortTable('user')" i18n="@@autor">
+        <th (click)="sortTable('user.name')" i18n="@@autor">
           Autor
           <i
             class="fa"
             [ngClass]="{
-              'fa-sort-asc': sortColumn === 'user' && sortDirection === 'asc',
-              'fa-sort-desc': sortColumn === 'user' && sortDirection === 'desc'
+              'fa-sort-asc': sortColumn === 'user.name' && sortDirection === 'asc',
+              'fa-sort-desc': sortColumn === 'user.name' && sortDirection === 'desc'
             }"
           ></i>
         </th>
@@ -231,11 +231,12 @@
       [id]="'dashboard-' + dashboard._id"
       [class.newly-cloned]="dashboard.isNewlyCloned">
         <td>
-          <div class="title-container">
+          <div class="title-container"  (click)="goToDashboard(dashboard)">
             {{ dashboard.config.title }}
             <div
               *ngIf="dashboard.config.description"
               class="info-icon-container"
+
             >
               <i class="fa fa-info-circle"></i>
               <div class="custom-tooltip">
