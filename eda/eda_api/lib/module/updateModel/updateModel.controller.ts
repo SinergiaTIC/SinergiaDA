@@ -337,31 +337,7 @@ export class updateModel {
             }
 
         })
-
-        customUserPermissions.forEach(line => {
-
-          const found = usersFound.find(i => i.email == line.name)
-
-            if (found) {
-              let valueAt: String = "select `"+ line.columna + "` from " + line.tabla + 
-                  " where `"+ line.columna + "` = 'EDA_USER' " ;
-
-              gr5 = {
-                  users: [found._id],
-                  usersName: [line.name],
-                  none: false,
-                  table: line.tabla,
-                  column: line.columna,
-                  global: false,
-                  permission: true,
-                  type: "users",
-                  value: [valueAt]
-              }
-
-              destGrantedRoles.push(gr5);
-            }
-        })
-
+        
         return destGrantedRoles;
     }
 
