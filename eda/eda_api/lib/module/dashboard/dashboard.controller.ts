@@ -444,46 +444,34 @@ export class DashboardController {
   ) {
     let forbiddenTables = []
     const allTables = []
-    let allowedTablesBySecurityForOthers = []
+    let allowedTablesBySecurityForOthers = [] // Si otros lo ven. Yo no lo puedo ver (en modelos exclusivos)
     let allowedTablesBySecurityForMe = []
     dataModelObject.ds.model.tables.forEach(e => {
       allTables.push(e.table_name)
     })
     if (dataModelObject.ds.metadata.model_granted_roles !== undefined) {
       for (
-        var i = 0;
-        i < dataModelObject.ds.metadata.model_granted_roles.length;
-        i++
-      ) {
+        var i = 0; i < dataModelObject.ds.metadata.model_granted_roles.length;  i++  ) {
         if (
-          dataModelObject.ds.metadata.model_granted_roles[i].column ===
-          'fullTable' &&
-          dataModelObject.ds.metadata.model_granted_roles[i].permission ===
-          false
+          /** Si NO puedo ver la tabla */
+          dataModelObject.ds.metadata.model_granted_roles[i].column === 'fullTable' &&
+          dataModelObject.ds.metadata.model_granted_roles[i].permission === false
         ) {
-          if (
-            dataModelObject.ds.metadata.model_granted_roles[i].users !==
-            undefined
-          ) {
-            for (
-              var j = 0;
-              j <
-              dataModelObject.ds.metadata.model_granted_roles[i].users.length;
-              j++
-            ) {
+          if ( dataModelObject.ds.metadata.model_granted_roles[i].users !== undefined  ) {
+            for ( var j = 0; j<dataModelObject.ds.metadata.model_granted_roles[i].users.length; j++ ) {
               if (
-                dataModelObject.ds.metadata.model_granted_roles[i].users[j] ==
-                user
+                dataModelObject.ds.metadata.model_granted_roles[i].users[j] == user
               ) {
-                forbiddenTables.push(
-                  dataModelObject.ds.metadata.model_granted_roles[i].table
-                )
+                forbiddenTables.push( dataModelObject.ds.metadata.model_granted_roles[i].table );
               }
             }
           }
         }
       }
     }
+    //console.log('Tablas prohividas para el usuario');
+    //console.log(forbiddenTables);
+
     /** TAULES OCULTES PER EL GRUP */
     if (dataModelObject.ds.metadata.model_granted_roles !== undefined) {
       for (
@@ -492,29 +480,38 @@ export class DashboardController {
         i++
       ) {
         if (
-          dataModelObject.ds.metadata.model_granted_roles[i].column ===
-          'fullTable' &&
-          dataModelObject.ds.metadata.model_granted_roles[i].permission ===
-          false
+          dataModelObject.ds.metadata.model_granted_roles[i].column === 'fullTable' &&
+          dataModelObject.ds.metadata.model_granted_roles[i].permission === false
         ) {
           if (
             dataModelObject.ds.metadata.model_granted_roles[i].groups !==
             undefined
           ) {
-            for (
-              var j = 0;
-              j <
-              dataModelObject.ds.metadata.model_granted_roles[i].groups.length;
-              j++
-            ) {
-              if (
-                userGroups.includes(
-                  dataModelObject.ds.metadata.model_granted_roles[i].groups[j]
-                )
-              ) {
-                forbiddenTables.push(
-                  dataModelObject.ds.metadata.model_granted_roles[i].table
-                )
+            for ( var j = 0; j < dataModelObject.ds.metadata.model_granted_roles[i].groups.length; j++ ) {
+              if ( userGroups.includes( dataModelObject.ds.metadata.model_granted_roles[i].groups[j] ) ) {
+                forbiddenTables.push( dataModelObject.ds.metadata.model_granted_roles[i].table );
+              }
+            }
+          }
+        }
+      }
+    }
+    //console.log('Tablas prohividas para el grupo');
+    //console.log(forbiddenTables);
+    /** allowed tables by security */
+    if (dataModelObject.ds.metadata.model_granted_roles !== undefined) {
+      for (var i = 0; i < dataModelObject.ds.metadata.model_granted_roles.length; i++ ) {
+        if (
+          dataModelObject.ds.metadata.model_granted_roles[i].column === 'fullTable' &&
+          dataModelObject.ds.metadata.model_granted_roles[i].permission === true
+        ) {
+          if (
+            dataModelObject.ds.metadata.model_granted_roles[i].users !== undefined ) {
+            for (var j = 0; j < dataModelObject.ds.metadata.model_granted_roles[i].users.length; j++ ) {
+              if ( dataModelObject.ds.metadata.model_granted_roles[i].users[j] != user  ) {
+                allowedTablesBySecurityForOthers.push(  dataModelObject.ds.metadata.model_granted_roles[i].table );
+              } else {
+                allowedTablesBySecurityForMe.push( dataModelObject.ds.metadata.model_granted_roles[i].table );
               }
             }
           }
@@ -522,105 +519,76 @@ export class DashboardController {
       }
     }
 
-    /** allowed tables by security */
+    /** puedo ver la tabla porque puedo ver datos de una columna */
     if (dataModelObject.ds.metadata.model_granted_roles !== undefined) {
-      for (
-        var i = 0;
-        i < dataModelObject.ds.metadata.model_granted_roles.length;
-        i++
-      ) {
-        if (
-          dataModelObject.ds.metadata.model_granted_roles[i].column ===
-          'fullTable' &&
-          dataModelObject.ds.metadata.model_granted_roles[i].permission === true
+      for (var i = 0; i < dataModelObject.ds.metadata.model_granted_roles.length; i++ ) {
+        if ( /** puedo ver valores de una columna de la tabla */
+          dataModelObject.ds.metadata.model_granted_roles[i].global === false &&
+          dataModelObject.ds.metadata.model_granted_roles[i].none === false &&
+          dataModelObject.ds.metadata.model_granted_roles[i].value.length > 0
         ) {
           if (
-            dataModelObject.ds.metadata.model_granted_roles[i].users !==
-            undefined
-          ) {
-            for (
-              var j = 0;
-              j <
-              dataModelObject.ds.metadata.model_granted_roles[i].users.length;
-              j++
-            ) {
-              if (
-                dataModelObject.ds.metadata.model_granted_roles[i].users[j] !=
-                user
-              ) {
-                allowedTablesBySecurityForOthers.push(
-                  dataModelObject.ds.metadata.model_granted_roles[i].table
-                )
+            dataModelObject.ds.metadata.model_granted_roles[i].users !== undefined ) {
+            for (var j = 0; j < dataModelObject.ds.metadata.model_granted_roles[i].users.length; j++ ) {
+              if ( dataModelObject.ds.metadata.model_granted_roles[i].users[j] != user  ) {
+                allowedTablesBySecurityForOthers.push(  dataModelObject.ds.metadata.model_granted_roles[i].table );
               } else {
-                allowedTablesBySecurityForMe.push(
-                  dataModelObject.ds.metadata.model_granted_roles[i].table
-                )
+                allowedTablesBySecurityForMe.push( dataModelObject.ds.metadata.model_granted_roles[i].table );
               }
             }
           }
         }
       }
     }
+
+
+    //console.log('Tablas PERMITIDAS PARA EL USUARIO para el usuario');
+    //console.log(allowedTablesBySecurityForMe);
 
     /** TAULES PERMESES PER EL GRUP */
     if (dataModelObject.ds.metadata.model_granted_roles !== undefined) {
-      for (
-        var i = 0;
-        i < dataModelObject.ds.metadata.model_granted_roles.length;
-        i++
-      ) {
-        if (
-          dataModelObject.ds.metadata.model_granted_roles[i].column ===
-          'fullTable' &&
-          dataModelObject.ds.metadata.model_granted_roles[i].permission === true
-        ) {
-          if (
-            dataModelObject.ds.metadata.model_granted_roles[i].groups !==
-            undefined
-          ) {
-            for (
-              var j = 0;
-              j <
-              dataModelObject.ds.metadata.model_granted_roles[i].groups.length;
-              j++
-            ) {
-              if (
-                !userGroups.includes(
-                  dataModelObject.ds.metadata.model_granted_roles[i].groups[j]
-                )
-              ) {
-                allowedTablesBySecurityForOthers.push(
-                  dataModelObject.ds.metadata.model_granted_roles[i].table
-                )
+      for ( var i = 0; i < dataModelObject.ds.metadata.model_granted_roles.length;  i++ ) {
+        if ( dataModelObject.ds.metadata.model_granted_roles[i].column === 'fullTable' &&
+          dataModelObject.ds.metadata.model_granted_roles[i].permission === true ) {
+          if (  dataModelObject.ds.metadata.model_granted_roles[i].groups !==  undefined ) {
+            for ( var j = 0; j < dataModelObject.ds.metadata.model_granted_roles[i].groups.length;  j++ ) {
+              if ( !userGroups.includes( dataModelObject.ds.metadata.model_granted_roles[i].groups[j] ) ) {
+                allowedTablesBySecurityForOthers.push( dataModelObject.ds.metadata.model_granted_roles[i].table );
               } else {
-                allowedTablesBySecurityForMe.push(
-                  dataModelObject.ds.metadata.model_granted_roles[i].table
-                )
+                allowedTablesBySecurityForMe.push(  dataModelObject.ds.metadata.model_granted_roles[i].table )
               }
             }
           }
         }
       }
     }
+    //console.log('Tablas PERMITIDAS PARA el usuario');
+    //console.log(allowedTablesBySecurityForMe);
 
     const unique = (value, index, self) => {
       return self.indexOf(value) === index
     }
-    let uniquesForbiddenTables = forbiddenTables.filter(unique)
-    allowedTablesBySecurityForOthers = allowedTablesBySecurityForOthers.filter(
-      unique
-    )
+    let uniquesForbiddenTables = forbiddenTables.filter(unique);
+
+    //  si un modelo permite ver todas las tablas fullModel  las tablas permitidas para otros no penalizan.
+    if (dataModelObject.ds.metadata.model_granted_roles !== undefined) {
+      if( dataModelObject.ds.metadata.model_granted_roles.filter( e => e.column ==  'fullModel' ).length > 0  ){
+        allowedTablesBySecurityForOthers = [];
+        //console.log('limpio los filtros para los otros');
+      }
+    }
+
+    allowedTablesBySecurityForOthers = allowedTablesBySecurityForOthers.filter(  unique   )
     allowedTablesBySecurityForMe = allowedTablesBySecurityForMe.filter(unique)
     allowedTablesBySecurityForMe.forEach(e => {
       allowedTablesBySecurityForOthers = allowedTablesBySecurityForOthers.filter(
         item => item != e
       )
     })
-    uniquesForbiddenTables = uniquesForbiddenTables.concat(
-      allowedTablesBySecurityForOthers
-    )
-    uniquesForbiddenTables = uniquesForbiddenTables.filter(unique)
-    return uniquesForbiddenTables
+    uniquesForbiddenTables = uniquesForbiddenTables.concat(  allowedTablesBySecurityForOthers    );
+    uniquesForbiddenTables = uniquesForbiddenTables.filter(unique);
+    //console.log('tablas prohividas final', uniquesForbiddenTables)
+    return uniquesForbiddenTables;
   }
 
   /**
@@ -650,6 +618,9 @@ export class DashboardController {
         req.user._id
       )
 
+    //console.log('uniquesForbiddenTables', uniquesForbiddenTables);
+    //console.log('req.body.query', req.body.query);
+
 
       const includesAdmin = req['user'].role.includes("135792467811111111111110")
       if(includesAdmin){
@@ -662,9 +633,8 @@ export class DashboardController {
 /* SDA CUSTOM*/        uniquesForbiddenTables = [];
 /* SDA CUSTOM*/      }
 	  
-	  
       
-      let mylabels = []
+      let mylabels = [];
       let myQuery: any
       if (uniquesForbiddenTables.length > 0) {
         myQuery = { fields: [], filters: [] }
@@ -693,7 +663,8 @@ export class DashboardController {
           mylabels.push(req.body.query.fields[c].column_name)
         }
       }
-      
+      myQuery.queryMode = req.body.query.queryMode? req.body.query.queryMode: 'EDA'; /** lo añado siempre */
+      myQuery.rootTable = req.body.query.rootTable? req.body.query.rootTable: ''; /** lo añado siempre */
       myQuery.simple = req.body.query.simple;
       myQuery.queryLimit = req.body.query.queryLimit;
       myQuery.joinType = req.body.query.joinType ? req.body.query.joinType : 'inner';
