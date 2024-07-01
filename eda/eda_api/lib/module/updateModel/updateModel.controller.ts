@@ -329,6 +329,7 @@ export class updateModel {
                     table: line.table,
                     column: line.column,
                     global: false,
+                    dynamic: true,
                     type: "groups",
                     value: [valueAt]
 
@@ -346,7 +347,7 @@ export class updateModel {
 
             if (found) {
               let valueAt: String = "select `"+ line.columna + "` from " + line.tabla + 
-                  " where `"+ line.columna + "` = '${app_user_name}' " ;
+                  " where `"+ line.columna + "` = 'EDA_USER' " ;
 
               gr5 = {
                   users: [found._id],
@@ -356,6 +357,7 @@ export class updateModel {
                   column: line.columna,
                   global: false,
                   permission: true,
+                  dynamic: true,
                   type: "users",
                   value: [valueAt]
               }
