@@ -319,6 +319,7 @@ export class DashboardController {
                   }
                 }
               } catch (error) {
+
                 console.log('no pannels in dashboard')
               }
 
@@ -434,6 +435,7 @@ export class DashboardController {
     }
   }
 
+
   /**
    *  Filtra tablas prohividas en un modelo de datos. Devuelve el listado de tablas prohividas para un usuario.
    */
@@ -442,10 +444,35 @@ export class DashboardController {
     userGroups: Array<String>,
     user: string
   ) {
-    let forbiddenTables = []
-    const allTables = []
-    let allowedTablesBySecurityForOthers = [] // Si otros lo ven. Yo no lo puedo ver (en modelos exclusivos)
-    let allowedTablesBySecurityForMe = []
+    let forbiddenTables = [];
+    if( dataModelObject.ds.metadata.model_granted_roles.filter( r=>r.type == "anyoneCanSee" && r.permission == true ).length > 0 ){
+      // En el caso de que cualquier usuario pueda ver el modelo y tengamos un esquema benevolente
+      forbiddenTables = this.getForbiddenTablesOpen( dataModelObject, userGroups, user ); 
+    }else{
+      // En el caso de que tan sólo pueda ver las tablas para las que tengo permiso explicito
+      forbiddenTables = this.getForbiddenTablesClose( dataModelObject, userGroups, user ); 
+    }
+
+    return forbiddenTables;
+  }
+
+
+
+  
+  /**
+   *  Filtra tablas prohividas en un modelo de datos. Devuelve el listado de tablas prohividas para un usuario. 
+   *  SUPONIENDO QUE PUEDE VER TODAS EN LAS QUE NO HAY SEGURIDAD Y LAS SUYAS FILTRADAS. 
+   *  TAN SÓLO NO VE AQUELLAS EN LAS QUE SE LE HA NEGADO EL ACCESO.
+   */
+  static getForbiddenTablesOpen(
+    dataModelObject: any,
+    userGroups: Array<String>,
+    user: string
+  ) {
+    let forbiddenTables = [];
+    const allTables = [];
+    let allowedTablesBySecurityForOthers = []; // Si otros lo ven. Yo no lo puedo ver (en modelos exclusivos)
+    let allowedTablesBySecurityForMe = [];
     dataModelObject.ds.model.tables.forEach(e => {
       allTables.push(e.table_name)
     })
@@ -469,8 +496,6 @@ export class DashboardController {
         }
       }
     }
-    //console.log('Tablas prohividas para el usuario');
-    //console.log(forbiddenTables);
 
     /** TAULES OCULTES PER EL GRUP */
     if (dataModelObject.ds.metadata.model_granted_roles !== undefined) {
@@ -498,6 +523,8 @@ export class DashboardController {
     }
     //console.log('Tablas prohividas para el grupo');
     //console.log(forbiddenTables);
+
+
     /** allowed tables by security */
     if (dataModelObject.ds.metadata.model_granted_roles !== undefined) {
       for (var i = 0; i < dataModelObject.ds.metadata.model_granted_roles.length; i++ ) {
@@ -518,6 +545,11 @@ export class DashboardController {
         }
       }
     }
+
+    //console.log('Tablas permitidas para otros');
+    //console.log(allowedTablesBySecurityForOthers);
+    //console.log('Tablas permitidas para mi');
+    //console.log(allowedTablesBySecurityForMe);
 
     /** puedo ver la tabla porque puedo ver datos de una columna */
     if (dataModelObject.ds.metadata.model_granted_roles !== undefined) {
@@ -541,8 +573,9 @@ export class DashboardController {
       }
     }
 
-
-    //console.log('Tablas PERMITIDAS PARA EL USUARIO para el usuario');
+    //console.log('Tablas permitidas para otros');
+    //console.log(allowedTablesBySecurityForOthers);
+    //console.log('Tablas permitidas para mi');
     //console.log(allowedTablesBySecurityForMe);
 
     /** TAULES PERMESES PER EL GRUP */
@@ -562,24 +595,22 @@ export class DashboardController {
         }
       }
     }
-    //console.log('Tablas PERMITIDAS PARA el usuario');
-    //console.log(allowedTablesBySecurityForMe);
 
     const unique = (value, index, self) => {
       return self.indexOf(value) === index
     }
+
     let uniquesForbiddenTables = forbiddenTables.filter(unique);
 
-    //  si un modelo permite ver todas las tablas fullModel  las tablas permitidas para otros no penalizan.
-    if (dataModelObject.ds.metadata.model_granted_roles !== undefined) {
-      if( dataModelObject.ds.metadata.model_granted_roles.filter( e => e.column ==  'fullModel' ).length > 0  ){
-        allowedTablesBySecurityForOthers = [];
-        //console.log('limpio los filtros para los otros');
-      }
-    }
 
     allowedTablesBySecurityForOthers = allowedTablesBySecurityForOthers.filter(  unique   )
-    allowedTablesBySecurityForMe = allowedTablesBySecurityForMe.filter(unique)
+    allowedTablesBySecurityForMe = allowedTablesBySecurityForMe.filter( unique )
+
+    //console.log('Tablas permitidas para otros por grupo');
+    //console.log(allowedTablesBySecurityForOthers);
+    //console.log('Tablas permitidas para mi');
+    //console.log(allowedTablesBySecurityForMe);
+
     allowedTablesBySecurityForMe.forEach(e => {
       allowedTablesBySecurityForOthers = allowedTablesBySecurityForOthers.filter(
         item => item != e
@@ -587,9 +618,97 @@ export class DashboardController {
     })
     uniquesForbiddenTables = uniquesForbiddenTables.concat(  allowedTablesBySecurityForOthers    );
     uniquesForbiddenTables = uniquesForbiddenTables.filter(unique);
-    //console.log('tablas prohividas final', uniquesForbiddenTables)
+
     return uniquesForbiddenTables;
   }
+
+
+
+
+  /**
+   *  Filtra tablas prohividas en un modelo de datos. Devuelve el listado de tablas prohividas para un usuario. 
+   *  SUPONIENDO QUE PUEDE VER SOLO AQUELLAS TABLAS PARA LAS QUE TIENE PERMISO EXPLICITO.
+   */
+  static getForbiddenTablesClose(
+    dataModelObject: any,
+    userGroups: Array<String>,
+    user: string
+  ) {
+    const allTables = [];
+    let allowedTablesBySecurityForMe = [];
+    let forbiddenTables = [];
+    dataModelObject.ds.model.tables.forEach(e => {
+      allTables.push(e.table_name)
+    })
+
+    // Aqui marco las tablas que si que puedo ver. El resto están prohividas
+
+    /** allowed tables by security */
+    if (dataModelObject.ds.metadata.model_granted_roles !== undefined) {
+      for (var i = 0; i < dataModelObject.ds.metadata.model_granted_roles.length; i++ ) {
+        if (
+          dataModelObject.ds.metadata.model_granted_roles[i].column === 'fullTable' &&
+          dataModelObject.ds.metadata.model_granted_roles[i].permission === true
+        ) {
+          if (
+            dataModelObject.ds.metadata.model_granted_roles[i].users !== undefined ) {
+            for (var j = 0; j < dataModelObject.ds.metadata.model_granted_roles[i].users.length; j++ ) {
+              if ( dataModelObject.ds.metadata.model_granted_roles[i].users[j] == user  ) {
+                allowedTablesBySecurityForMe.push(  dataModelObject.ds.metadata.model_granted_roles[i].table );
+              } 
+            }
+          }
+        }
+      }
+    }
+    //console.log('Tablas que el usuario puede ver', allowedTablesBySecurityForMe );
+
+    /** puedo ver la tabla porque puedo ver datos de una columna */
+    if (dataModelObject.ds.metadata.model_granted_roles !== undefined) {
+      for (var i = 0; i < dataModelObject.ds.metadata.model_granted_roles.length; i++ ) {
+        if ( /** puedo ver valores de una columna de la tabla */
+          dataModelObject.ds.metadata.model_granted_roles[i].global === false &&
+          dataModelObject.ds.metadata.model_granted_roles[i].none === false &&
+          dataModelObject.ds.metadata.model_granted_roles[i].value.length > 0
+        ) {
+          if (dataModelObject.ds.metadata.model_granted_roles[i].users !== undefined ) {
+            for (var j = 0; j < dataModelObject.ds.metadata.model_granted_roles[i].users.length; j++ ) {
+              if ( dataModelObject.ds.metadata.model_granted_roles[i].users[j] == user  ) {
+                allowedTablesBySecurityForMe.push(  dataModelObject.ds.metadata.model_granted_roles[i].table );
+              }  
+            }
+          }
+        }
+      }
+    }
+    //console.log('Tablas PERMITIDAS   para el usuario porque pueden ver una columna',allowedTablesBySecurityForMe );
+
+
+    /** TAULES PERMESES PER EL GRUP */
+    if (dataModelObject.ds.metadata.model_granted_roles !== undefined) {
+      for ( var i = 0; i < dataModelObject.ds.metadata.model_granted_roles.length;  i++ ) {
+        if ( dataModelObject.ds.metadata.model_granted_roles[i].column === 'fullTable' &&
+          dataModelObject.ds.metadata.model_granted_roles[i].permission === true ) {
+          if (  dataModelObject.ds.metadata.model_granted_roles[i].groups !==  undefined ) {
+            for ( var j = 0; j < dataModelObject.ds.metadata.model_granted_roles[i].groups.length;  j++ ) {
+              if ( userGroups.includes( dataModelObject.ds.metadata.model_granted_roles[i].groups[j] ) ) {
+                allowedTablesBySecurityForMe.push( dataModelObject.ds.metadata.model_granted_roles[i].table );
+              } 
+            }
+          }
+        }
+      }
+    }
+    //console.log('Tablas PERMITIDAS PARA el usuario por el');
+    //console.log(allowedTablesBySecurityForMe);
+    forbiddenTables = allTables.filter( t => !allowedTablesBySecurityForMe.includes( t )  );
+    return forbiddenTables;
+  }
+
+
+
+
+
 
   /**
    * Executa una consulta EDA per un dashboard
@@ -892,7 +1011,6 @@ export class DashboardController {
    */
   static async execSqlQuery(req: Request, res: Response, next: NextFunction) {
     try {
-    console.log('execSqlQuery');
       const connection = await ManagerConnectionService.getConnection(req.body.model_id);
       const dataModel = await connection.getDataSource(req.body.model_id)
 
