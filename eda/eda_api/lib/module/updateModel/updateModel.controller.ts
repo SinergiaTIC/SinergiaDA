@@ -223,7 +223,7 @@ export class updateModel {
             type: "anyoneCanSee"
         }
 
-        destGrantedRoles.push(all);
+       // destGrantedRoles.push(all);
 
         const mongoGroups = await  Group.find();
 
