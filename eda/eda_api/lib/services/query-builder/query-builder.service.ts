@@ -586,7 +586,7 @@ export abstract class QueryBuilderService {
         let found = -1;
         if (columns.length > 0  && permissions !== null) {
             permissions.forEach(permission => {
-                found = columns.findIndex((t: any) => t.table_name === permission.table);
+                found = columns.findIndex((t: any) => t.table_name.split('.')[0] === permission.table);
                 if (found >= 0) {
                     if(permission.dynamic){
                             permission.value[0] =  permission.value[0].toString().replace("EDA_USER", this.usercode) 
