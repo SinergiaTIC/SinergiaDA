@@ -544,6 +544,7 @@ export abstract class QueryBuilderService {
                     let filter = {
                         filter_table: permission.table,
                         filter_column: permission.column,
+                        filter_dynamic: permission.dynamic?permission.dynamic:false,
                         filter_type: 'in',
                         filter_elements: [{ value1: permission.value }]
                     };
