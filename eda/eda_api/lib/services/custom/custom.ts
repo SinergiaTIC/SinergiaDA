@@ -78,6 +78,7 @@ export function queryBuilderServiceCustomGetTreePermissions(target: Object, prop
                  filter_table: permission.table,
                  filter_column: permission.column,
                  filter_type: 'in',
+                 filter_dynamic: permission.dynamic?permission.dynamic:false,
                  filter_elements: [{ value1: permission.value }]
              };
  
