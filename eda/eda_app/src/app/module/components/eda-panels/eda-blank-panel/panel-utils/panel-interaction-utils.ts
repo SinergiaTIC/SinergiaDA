@@ -744,6 +744,8 @@ export const PanelInteractionUtils = {
     if (ebp.currentQuery.length === 0 && ebp.filtredColumns.length === 0) {
       ebp.rootTable = undefined;
       ebp.tablesToShow = ebp.inject.dataSource.model.tables.filter( t => t.visible == true);
+      ebp.tablesToShow.sort((a, b) => (a.display_name.default > b.display_name.default) ? 1 : ((b.display_name.default > a.display_name.default) ? -1 : 0));
+
     } else {
       _.map(ebp.currentQuery, selected => selected.table_id === c.table_id);
     }
