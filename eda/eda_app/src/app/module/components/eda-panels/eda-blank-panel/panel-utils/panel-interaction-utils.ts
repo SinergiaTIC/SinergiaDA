@@ -261,6 +261,7 @@ export const PanelInteractionUtils = {
                 const column = table.columns?.find(column => column.column_name === filter.filter_column);
                 const columnInQuery = query.some(col => col.column_name === filter.filter_column);
                 if (!filter.isGlobal && !columnInQuery && column) {
+                    column.table_id?column.table_id=column.table_id:column.table_id=filter.filter_table;  /** Si no tengo la tabla se la pongo */
                     ebp.filtredColumns.push(column);
                 }
                 if (!column) {
@@ -407,25 +408,6 @@ export const PanelInteractionUtils = {
           PanelInteractionUtils.loadColumns(ebp, table);
         }
       }
-
-      // for (let i = 0, n = fields.length; i < n; i++) {
-      //   const field = fields[i];
-      //   try{
-      //     if (field) {
-      //       ebp.currentQuery[i].format = field.format;
-      //       ebp.currentQuery[i].cumulativeSum = field.cumulativeSum;
-      //       ebp.currentQuery[i].joins = field.joins;
-      //       if (ebp.currentQuery[i].column_type === 'text' && ![null, 'none'].includes(field.aggregation_type)) {
-      //         ebp.currentQuery[i].column_type = 'numeric';
-      //         ebp.currentQuery[i].old_column_type = 'text';
-      //       }
-      //     }
-      //   }catch(e){
-      //     console.error('ERROR handling current query .... handleCurrentQuery.... did you changed the query model?');
-      //     console.error(e);
-
-      //   }
-      // }
     }
   },
 
