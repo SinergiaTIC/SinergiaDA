@@ -330,7 +330,6 @@ export class updateModel {
                     column: line.column,
                     dynamic: true,
                     global: false,
-                    dynamic: true,
                     type: "groups",
                     value: [valueAt]
 
