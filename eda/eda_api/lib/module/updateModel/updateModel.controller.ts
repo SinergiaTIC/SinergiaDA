@@ -118,10 +118,10 @@ export class updateModel {
                                                             await connection.query(' select user_name as name, `table` from sda_def_permissions ')
                                                                 .then(async permi => {
                                                                     let permissions = permi
-                                                                    //select distinct `table`, 'id' as 'column',  `group` from sda_def_security_group_records where 
-                                                                    await connection.query("select distinct `table`, 'id' as 'column',  `group` from sda_def_security_group_records ")
+                                                                    //select distinct `table`, 'id' as 'column',  `group` from sda_def_security_group_records
+                                                                    await connection.query(" select distinct `table`, 'id' as `column`,  `group` from sda_def_permissions  where `group` != ''  ")
                                                                         .then(async permiCol => {
-                                                                            let permissionsColumns = permiCol
+                                                                            let permissionsColumns = permiCol;
                                                                             /**Ahora que ya tengo todos los datos, monto el modelo */
                                                                             // montamos el modelo
                                                                             const query='select user_name as name, `table` as tabla , `column` as columna  from sda_def_permissions where stic_permission_source in ("ACL_ALLOW_GROUP_priv", "ACL_ALLOW_OWNER")';
@@ -223,8 +223,8 @@ export class updateModel {
             permission: true,
             type: "anyoneCanSee"
         }
-
-        destGrantedRoles.push(all);
+      // Los permisos determinan que tablas puedo ver.
+      // destGrantedRoles.push(all);
 
         const mongoGroups = await  Group.find();
 
@@ -328,6 +328,7 @@ export class updateModel {
                     none: false,
                     table: line.table,
                     column: line.column,
+                    dynamic: true,
                     global: false,
                     dynamic: true,
                     type: "groups",
