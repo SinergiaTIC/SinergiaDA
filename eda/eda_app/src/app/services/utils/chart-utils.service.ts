@@ -330,9 +330,16 @@ export class ChartUtilsService {
                         totalGenerico[j] = totalGenerico[j] + v
                     })
                 })
+
+                console.log('totalGenerico', totalGenerico);
                 
                 // ejecutando el porcentaje 100%
-                
+                _output[1].forEach((e) => {
+                    // console.log('e.data: ',e.data);
+                    for (var i = 0; i < l.length; i++) {
+                        e.data[i] = (e.data[i] * 100)/totalGenerico[i];
+                    }
+                })
 
 
                 console.log('idx --->:', idx);
