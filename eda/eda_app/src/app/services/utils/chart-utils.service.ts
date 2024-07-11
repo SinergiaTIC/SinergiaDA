@@ -218,17 +218,25 @@ export class ChartUtilsService {
 
 
         } else if(['bar'].includes(type) && ['stackedbar100'].includes(subType)) {
-            const l = Array.from(new Set(values.map(v => v[label_idx])));
-            const s = serie_idx !== -1 ? Array.from(new Set(values.map(v => v[serie_idx]))) : null;
+
+            // console.log('values: ',values)
+            // console.log('dataDescription: ',dataDescription)
+
+            const l = serie_idx !== null ? Array.from(new Set(values.map(v => v[label_idx]))) :  Array.from(new Set(dataDescription.numericColumns.map(v => v.name)));
+            const s = serie_idx !== null ? Array.from(new Set(values.map(v => v[serie_idx]))) : Array.from(new Set(values.map(v => v[label_idx])));
+
+            console.log(' s:',s)
+            console.log(' l:',l)
+
             const _output = [[], []];
             _output[0] = l;
-            let total = 0;
 
+            let total = 0;
             values.forEach((i,j) => {
                 total = total + i[number_idx];
             });
 
-            //If only is one text serie
+            //If only is one text serie and one number category
             if(dataDescription.otherColumns.length === 1 && dataDescription.numericColumns.length === 1){
                 _output[0] = [dataDescription.otherColumns[0].name+' 100%']; // verificar si se retira el 100%
                 _output[1] = values.map(v => {
@@ -238,7 +246,7 @@ export class ChartUtilsService {
                            }
                 });
             } 
-            //If are two text series
+            //If are two text series and one number category
             else if (dataDescription.otherColumns.length === 2 && dataDescription.numericColumns.length === 1) {
                 let series = [];
 
@@ -280,7 +288,59 @@ export class ChartUtilsService {
                         }
                     })
                 })
+
             }
+            //If is one text series and more than two number categories
+            else if (dataDescription.otherColumns.length === 1 && dataDescription.numericColumns.length >= 2) {
+                let series = [];
+                let totalGenerico = [];
+
+                for (var i = 0; i < l.length; i++) {
+                    totalGenerico[i] = 0;
+                }
+
+                console.log('idx: ', idx);
+
+                let label_idx = idx.label;
+                let serie_idx = idx.label; // El unico valor de texto
+                // console.log('Este es el valor de la serie: ', serie_idx);
+                // s => ['Alta', 'Formación']
+                // l => ['Asignado a', '(n) Acciones SEPE']
+
+                s.forEach((s) => {
+                    _output[1].push({ data: [], label: s });
+                    let serie = values.filter(v => v[serie_idx] === s);
+                    series.push(serie);
+                });
+
+                series.forEach(v => {
+                    _output[1].forEach(p => {
+
+                        if(v[0][label_idx] === p.label){
+                            p.data = v[0].filter(i => i!==p.label)
+                        }
+                    })
+                })
+
+                // calibrar los valores al 100%
+
+                // Calculando las sumas de cada campo
+                _output[1].forEach((e) => {
+                    e.data.forEach((v,j) => {
+                        totalGenerico[j] = totalGenerico[j] + v
+                    })
+                })
+                
+                // ejecutando el porcentaje 100%
+                
+
+
+                console.log('idx --->:', idx);
+                console.log('series --->: ',series);
+                console.log('_output --->: ', _output);
+
+            }
+
 
             output =  _output;
 
