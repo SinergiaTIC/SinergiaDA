@@ -4,7 +4,7 @@
 
 # SinergiaDA 2.0.0
 
-[![Wiki](https://img.shields.io/badge/Information-Wiki-lightgray)](https://wiki.sinergiacrm.org/index.php?title=SinergiaDA)
+[![Wiki](https://img.shields.io/badge/Information-Wiki-lightgray)]((https://wiki.sinergiacrm.org/index.php?title=Manual_de_SinergiaDA)
 [![LICENSE](https://img.shields.io/badge/License-AGPL_v3-orange.svg)](./LICENSE.txt)
 [![LinkedIn](https://img.shields.io/badge/LinkedIn-0077B5)](https://www.linkedin.com/company/sinergiatic)
 [![Twitter](https://img.shields.io/twitter/follow/sinergiacrm?style=social&label=Follow)](https://twitter.com/SinergiaCRM)
