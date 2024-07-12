@@ -12,7 +12,7 @@
 
 [Website](https://www.sinergiacrm.org/sinergia-data-analytics) | 
 [Manual de uso](https://wiki.sinergiacrm.org/index.php?title=Manual_de_SinergiaDA) |
-[Manual de instalación](https://github.com/SinergiaTIC/SinergiaDA/wiki)
+[Manual de instalación](https://github.com/SinergiaTIC/SinergiaDA/wiki/Instalaci%C3%B3n-de-SinergiaDA)
 
 [Español](#español) | [Català](#català) | [English](#english) | [Galego](#galego)
 
