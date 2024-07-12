@@ -4306,6 +4306,10 @@
         <source>Alias del filtro (opcional)</source>
         <target>Alias del filtro (opcional)</target>
       </trans-unit>
+      <trans-unit id="noDataAllowed">
+        <source>Este panel no está disponible por falta de permisos</source>
+        <target>Este panel no está disponible por falta de permisos</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>
