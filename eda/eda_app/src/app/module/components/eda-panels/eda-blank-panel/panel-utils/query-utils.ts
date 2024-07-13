@@ -154,9 +154,6 @@ export const QueryUtils = {
       ebp.index = 1;
       ebp.display_v.saved_panel = true;
     } catch (err) {
-      if (err.status === 555) {
-        err.text =  $localize`:@@noPermitsAlert:No tiene acceso a una o varias de las tablas de la consulta`
-      }
       ebp.alertService.addError(err); 
       ebp.spinnerService.off();
     }
