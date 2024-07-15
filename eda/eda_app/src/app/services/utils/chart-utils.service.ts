@@ -216,17 +216,10 @@ export class ChartUtilsService {
             _output[1] = u
             output =  _output;
 
-
         } else if(['bar'].includes(type) && ['stackedbar100'].includes(subType)) {
-
-            // console.log('values: ',values)
-            // console.log('dataDescription: ',dataDescription)
 
             const l = serie_idx !== null ? Array.from(new Set(values.map(v => v[label_idx]))) :  Array.from(new Set(dataDescription.numericColumns.map(v => v.name)));
             const s = serie_idx !== null ? Array.from(new Set(values.map(v => v[serie_idx]))) : Array.from(new Set(values.map(v => v[label_idx])));
-
-            console.log(' s:',s)
-            console.log(' l:',l)
 
             const _output = [[], []];
             _output[0] = l;
@@ -236,22 +229,12 @@ export class ChartUtilsService {
                 total = total + i[number_idx];
             });
 
-            //If only is one text serie and one number category
-            if(dataDescription.otherColumns.length === 1 && dataDescription.numericColumns.length === 1){
-                _output[0] = [dataDescription.otherColumns[0].name+' 100%']; // verificar si se retira el 100%
-                _output[1] = values.map(v => {
-                    return {
-                            data: [(v[number_idx]*100)/total],
-                            label: v[label_idx]
-                           }
-                });
-            } 
             //If are two text series and one number category
-            else if (dataDescription.otherColumns.length === 2 && dataDescription.numericColumns.length === 1) {
+            if (dataDescription.otherColumns.length === 2 && dataDescription.numericColumns.length === 1) {
                 let series = [];
 
                 s.forEach((s) => {
-                    _output[1].push({ data: [], label: s });
+                    _output[1].push({ data: [], label: s, value: [], mode: 'textTwoNumericOne' });
                     let serie = values.filter(v => v[serie_idx] === s);
                     series.push(serie);
                 });
@@ -281,17 +264,20 @@ export class ChartUtilsService {
                 _outputTemporal.forEach((e:any, k:number) => {
                     e.data.forEach((v:any, j:number) => {
                         if(totales[j]===0) {
+
+                            _output[1][k].value[j]=0;
                             _output[1][k].data[j]=0;
                         }
                         else {
-                            _output[1][k].data[j] = v*100/totales[j]
+                            _output[1][k].value[j] = v;
+                            _output[1][k].data[j] = v*100/totales[j];
                         }
                     })
                 })
-
             }
+
             //If is one text series and more than two number categories
-            else if (dataDescription.otherColumns.length === 1 && dataDescription.numericColumns.length >= 2) {
+            else if (dataDescription.otherColumns.length === 1 && dataDescription.numericColumns.length >= 1) {
                 let series = [];
                 let totalGenerico = [];
 
@@ -299,16 +285,11 @@ export class ChartUtilsService {
                     totalGenerico[i] = 0;
                 }
 
-                console.log('idx: ', idx);
-
                 let label_idx = idx.label;
                 let serie_idx = idx.label; // El unico valor de texto
-                // console.log('Este es el valor de la serie: ', serie_idx);
-                // s => ['Alta', 'Formación']
-                // l => ['Asignado a', '(n) Acciones SEPE']
 
                 s.forEach((s) => {
-                    _output[1].push({ data: [], label: s });
+                    _output[1].push({ data: [], label: s , value: [],  mode: 'textOneNumericN' });
                     let serie = values.filter(v => v[serie_idx] === s);
                     series.push(serie);
                 });
@@ -323,31 +304,23 @@ export class ChartUtilsService {
                 })
 
                 // calibrar los valores al 100%
-
                 // Calculando las sumas de cada campo
                 _output[1].forEach((e) => {
                     e.data.forEach((v,j) => {
                         totalGenerico[j] = totalGenerico[j] + v
                     })
                 })
-
-                console.log('totalGenerico', totalGenerico);
                 
                 // ejecutando el porcentaje 100%
                 _output[1].forEach((e) => {
-                    // console.log('e.data: ',e.data);
                     for (var i = 0; i < l.length; i++) {
-                        e.data[i] = (e.data[i] * 100)/totalGenerico[i];
+                        e.value[i] = (e.data[i]); // Valor numérico
+                        e.data[i] = ((e.data[i] * 100)/totalGenerico[i]); // Valor numérico en porcetaje
                     }
                 })
-
-
-                console.log('idx --->:', idx);
-                console.log('series --->: ',series);
-                console.log('_output --->: ', _output);
-
             }
 
+            console.log('_output: ', _output);
 
             output =  _output;
 
@@ -1329,93 +1302,205 @@ export class ChartUtilsService {
                         }
                     }else{
                             dataLabelsObjt =   { display: false }
-
                     }
 
-                    options.chartOptions = {
-                        animation: {
-                            duration: 3000
-                        },
+                    if(chartSubType=='stackedbar100') {
 
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        devicePixelRatio: 2,
-
-
-                        tooltips: {
-                            callbacks: {
-                                title: (tooltipItem, data) => {
-                                    if (data && tooltipItem)
-                                        return ` ${labelColum[0].name} : ${data.labels[tooltipItem[0].index]}`;
-                                },
-                                label: (tooltipItem, data) => {
-                                    if (data && tooltipItem) {
-                                        const realData = data.datasets[tooltipItem.datasetIndex].data;
-                                        const total = realData.reduce((a, b) => {
-                                            if(isNaN(a)){a=0;}
-                                            if(isNaN(b)){b=0;}
-                                            return a + b;
-                                        }, 0);
-                                        const elem = data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index];
-                                        const percentage = elem / total * 100;
-                                        return ` ${data.labels[tooltipItem.index]}, ${numericColumn} : ${parseFloat(elem).toLocaleString('de-DE', { maximumFractionDigits: 6 })} (${percentage.toFixed(2)}%)`;
-                                    }
-
-                                },
-
-                                afterLabel: (t, d) => {
-                                },
-                                footer: () => { return linked },
-                            }
-                        },
-
-                        scales: {
-                            x: {
-                                stacked: stacked || false,
-                                grid: { display: false },
-
-                                ticks: {
-                                    callback: function(val, index) {
-                                        if (this.getLabelForValue(val))
-                                        return  this.getLabelForValue(val).length > 30 ? (this.getLabelForValue(val).substr(0, 17) + '...') : this.getLabelForValue(val);
+                        options.chartOptions = {
+                            animation: {
+                                duration: 3000
+                            },
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            devicePixelRatio: 2,
+                            tooltips: {
+                                enabled: true,
+                                callbacks: {
+                                    title: (tooltipItem, data) => {
+                                        if (data && tooltipItem)
+                                            return ` ${labelColum[0].name} : ${data.labels[tooltipItem[0].index]}`;
                                     },
-                                    fontSize: edaFontSize, fontStyle: edafontStyle,
-                                    fontFamily: styles.fontFamily,
-                                    fontColor: styles.fontColor,
-                                    maxTicksLimit: maxTicksLimit,
-                                    autoSkip: true,
+                                    label: (tooltipItem, data) => {
+                                        if (data && tooltipItem) {
+                                            const realData = data.datasets[tooltipItem.datasetIndex].data;
+                                            const total = realData.reduce((a, b) => {
+                                                if(isNaN(a)){a=0;}
+                                                if(isNaN(b)){b=0;}
+                                                return a + b;
+                                            }, 0);
+                                            const elem = data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index];
+                                            const percentage = elem / total * 100;
+                                            return ` ${data.labels[tooltipItem.index]}, ${numericColumn} : ${parseFloat(elem).toLocaleString('de-DE', { maximumFractionDigits: 6 })} (${percentage.toFixed(2)}%)`;
+                                        }
+    
+                                    },
+    
+                                    afterLabel: (t, d) => {
+                                    },
+                                    footer: () => { return linked },
                                 }
                             },
-
-                            y: {
-                                stacked: stacked || false,
-                                grid: {
-                                    drawBorder: false,
+                            scales: {
+                                x: {
+                                    stacked: stacked || false,
+                                    grid: { display: false },
+    
+                                    ticks: {
+                                        callback: function(val, index) {
+                                            if (this.getLabelForValue(val))
+                                            return  this.getLabelForValue(val).length > 30 ? (this.getLabelForValue(val).substr(0, 17) + '...') : this.getLabelForValue(val);
+                                        },
+                                        fontSize: edaFontSize, fontStyle: edafontStyle,
+                                        fontFamily: styles.fontFamily,
+                                        fontColor: styles.fontColor,
+                                        maxTicksLimit: maxTicksLimit,
+                                        autoSkip: true,
+                                    }
                                 },
-                                display: true,
-                                grace: (showLabels || showLabelsPercent )?'1%': '0%',
-                                ticks: {
-                                    autoSkip: true,
-                                    maxTicksLimit: maxTicksLimitY,
-                                    beginAtZero: true,
-                                    callback: (value) => {
-                                        if (value)
-                                            return isNaN(value) ? value : this.format10thPowers(parseFloat(value)) //.toLocaleString('de-DE', { maximumFractionDigits: 6 });
+    
+                                y: {
+                                    stacked: stacked || false,
+                                    grid: {
+                                        drawBorder: false,
                                     },
-                                    fontSize: edaFontSize,
-                                    fontFamily: styles.fontFamily,
-                                    fontColor: styles.fontColor,
+                                    display: true,
+                                    grace: (showLabels || showLabelsPercent )?'1%': '0%',
+                                    ticks: {
+                                        autoSkip: true,
+                                        maxTicksLimit: maxTicksLimitY,
+                                        beginAtZero: true,
+                                        callback: (value) => {
+                                            if (value)
+                                                return isNaN(value) ? value : this.format10thPowers(parseFloat(value)) //.toLocaleString('de-DE', { maximumFractionDigits: 6 });
+                                        },
+                                        fontSize: edaFontSize,
+                                        fontFamily: styles.fontFamily,
+                                        fontColor: styles.fontColor,
+                                    }
                                 }
-                            }
+    
+                            },
+                            plugins: {
+                                datalabels: dataLabelsObjt,
+                                legend: edaBarLineLegend,
+                                tooltip: {
+                                    mode: 'nearest',
+                                    intersect: true,
+                                    callbacks : {
+                                        label: function(context) {
+                                            let mode = context.dataset.mode;
+                                            
+                                            if (mode == 'textTwoNumericOne') {
+                                                let dataIndex = context.dataIndex;
+                                                let label = context.label;
+                                                let serie = context.dataset.label;
+                                                let value = context.dataset.value[dataIndex];
+                                                let percentage = context.dataset.data[dataIndex];
 
-                        },
+                                                return `${serie} : ${parseFloat(value).toLocaleString('de-DE', { maximumFractionDigits: 6 })} - ${percentage.toFixed(2)}% `;
 
-                        plugins: {
-                            datalabels: dataLabelsObjt,
-                            legend: edaBarLineLegend
-                        },
+                                            } else if(mode == 'textOneNumericN') {
+                                                let dataIndex = context.dataIndex;
+                                                let label = context.label;
+                                                let serie = context.dataset.label;
+                                                let value = context.dataset.value[dataIndex];
+                                                let percentage =context.dataset.data[dataIndex];
 
-                    };
+                                                return `${serie} : ${parseFloat(value).toLocaleString('de-DE', { maximumFractionDigits: 6 })} - ${percentage.toFixed(2)}% `;
+                                            }
+                                        }
+                                    }
+                                }
+                            },
+                        };
+                    }else {
+                        options.chartOptions = {
+                            animation: {
+                                duration: 3000
+                            },
+    
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            devicePixelRatio: 2,
+    
+    
+                            tooltips: {
+                                callbacks: {
+                                    title: (tooltipItem, data) => {
+                                        if (data && tooltipItem)
+                                            return ` ${labelColum[0].name} : ${data.labels[tooltipItem[0].index]}`;
+                                    },
+                                    label: (tooltipItem, data) => {
+                                        if (data && tooltipItem) {
+                                            const realData = data.datasets[tooltipItem.datasetIndex].data;
+                                            const total = realData.reduce((a, b) => {
+                                                if(isNaN(a)){a=0;}
+                                                if(isNaN(b)){b=0;}
+                                                return a + b;
+                                            }, 0);
+                                            const elem = data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index];
+                                            const percentage = elem / total * 100;
+                                            return ` ${data.labels[tooltipItem.index]}, ${numericColumn} : ${parseFloat(elem).toLocaleString('de-DE', { maximumFractionDigits: 6 })} (${percentage.toFixed(2)}%)`;
+                                        }
+    
+                                    },
+    
+                                    afterLabel: (t, d) => {
+                                    },
+                                    footer: () => { return linked },
+                                }
+                            },
+    
+                            scales: {
+                                x: {
+                                    stacked: stacked || false,
+                                    grid: { display: false },
+    
+                                    ticks: {
+                                        callback: function(val, index) {
+                                            if (this.getLabelForValue(val))
+                                            return  this.getLabelForValue(val).length > 30 ? (this.getLabelForValue(val).substr(0, 17) + '...') : this.getLabelForValue(val);
+                                        },
+                                        fontSize: edaFontSize, fontStyle: edafontStyle,
+                                        fontFamily: styles.fontFamily,
+                                        fontColor: styles.fontColor,
+                                        maxTicksLimit: maxTicksLimit,
+                                        autoSkip: true,
+                                    }
+                                },
+    
+                                y: {
+                                    stacked: stacked || false,
+                                    grid: {
+                                        drawBorder: false,
+                                    },
+                                    display: true,
+                                    grace: (showLabels || showLabelsPercent )?'1%': '0%',
+                                    ticks: {
+                                        autoSkip: true,
+                                        maxTicksLimit: maxTicksLimitY,
+                                        beginAtZero: true,
+                                        callback: (value) => {
+                                            if (value)
+                                                return isNaN(value) ? value : this.format10thPowers(parseFloat(value)) //.toLocaleString('de-DE', { maximumFractionDigits: 6 });
+                                        },
+                                        fontSize: edaFontSize,
+                                        fontFamily: styles.fontFamily,
+                                        fontColor: styles.fontColor,
+                                    }
+                                }
+    
+                            },
+    
+                            plugins: {
+                                datalabels: dataLabelsObjt,
+                                legend: edaBarLineLegend
+                            },
+    
+                        };
+                    }
+
+
                 }else{
                     // horizontalBar Since chart.js 3 there is no more horizontal bar. Its just  barchart with horizonal axis
                     // buscar en chart.js las opciones
