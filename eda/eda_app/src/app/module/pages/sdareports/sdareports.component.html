@@ -197,17 +197,24 @@
           <i
             class="fa"
             [ngClass]="{
-              'fa-sort-asc': sortColumn === 'user.name' && sortDirection === 'asc',
-              'fa-sort-desc': sortColumn === 'user.name' && sortDirection === 'desc'
+              'fa-sort-asc':
+                sortColumn === 'user.name' && sortDirection === 'asc',
+              'fa-sort-desc':
+                sortColumn === 'user.name' && sortDirection === 'desc'
             }"
           ></i>
         </th>
         <th (click)="sortTable('config.createdAt')" i18n="@@fechaCreacion">
           Fecha creación
-          <i class="fa" [ngClass]="{
-            'fa-sort-asc': sortColumn === 'config.createdAt' && sortDirection === 'asc',
-            'fa-sort-desc': sortColumn === 'config.createdAt' && sortDirection === 'desc'
-          }"></i>
+          <i
+            class="fa"
+            [ngClass]="{
+              'fa-sort-asc':
+                sortColumn === 'config.createdAt' && sortDirection === 'asc',
+              'fa-sort-desc':
+                sortColumn === 'config.createdAt' && sortDirection === 'desc'
+            }"
+          ></i>
         </th>
         <th i18n="@@edicionPrivada">Edición privada</th>
         <th i18n="@@grupos">Grupos</th>
@@ -227,16 +234,17 @@
       </tr>
     </thead>
     <tbody>
-      <tr *ngFor="let dashboard of visibleDashboards"
-      [id]="'dashboard-' + dashboard._id"
-      [class.newly-cloned]="dashboard.isNewlyCloned">
+      <tr
+        *ngFor="let dashboard of visibleDashboards"
+        [id]="'dashboard-' + dashboard._id"
+        [class.newly-cloned]="dashboard.isNewlyCloned"
+      >
         <td>
-          <div class="title-container"  (click)="goToDashboard(dashboard)">
+          <div class="title-container" (click)="goToDashboard(dashboard)">
             {{ dashboard.config.title }}
             <div
               *ngIf="dashboard.config.description"
               class="info-icon-container"
-
             >
               <i class="fa fa-info-circle"></i>
               <div class="custom-tooltip">
@@ -253,7 +261,13 @@
           {{ dashboard.type | titlecase }}
         </td>
         <td>{{ dashboard.user.name }}</td>
-        <td>{{ dashboard.config.createdAt ? formatDate(dashboard.config.createdAt) : '' }}</td>
+        <td>
+          {{
+            dashboard.config.createdAt
+              ? formatDate(dashboard.config.createdAt)
+              : ""
+          }}
+        </td>
         <td></td>
         <td>
           {{
@@ -306,7 +320,6 @@
         [class.newly-cloned]="dashboard.isNewlyCloned"
         [ngClass]="getDashboardTypeClass(dashboard.type)"
         (dblclick)="goToDashboard(dashboard)"
-
       >
         <div class="card-body d-flex flex-column">
           <h5 class="card-title">
@@ -325,16 +338,23 @@
           </h5>
           <p class="card-text">
             <span> {{ dashboard.type | titlecase }} </span>
-            <span class="pull-right"> {{ dashboard.config.createdAt ? formatDate(dashboard.config.createdAt) : '' }}</span>
+            <span class="pull-right">
+              {{
+                dashboard.config.createdAt
+                  ? formatDate(dashboard.config.createdAt)
+                  : ""
+              }}</span
+            >
           </p>
           <p class="card-text">
-            <span> {{
-              dashboard.group
-                ? getGroupsNamesByDashboard([dashboard.group])
-                : ""
-            }} </span>
+            <span>
+              {{
+                dashboard.group
+                  ? getGroupsNamesByDashboard([dashboard.group])
+                  : ""
+              }}
+            </span>
             <span class="pull-right"> {{ dashboard.user.name }} </span>
-
           </p>
 
           <p class="card-text">
