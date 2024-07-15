@@ -1224,7 +1224,7 @@ export class EdaBlankPanelComponent implements OnInit {
 
         const table = this.findTable(filter.filter_table.split('.')[0]);
 
-        if (table.table_name) {
+        if (table && table.table_name) {
             const tableName = table.display_name?.default;
             const columnName = table.columns.find((c) => c.column_name == filter.filter_column)?.display_name?.default;
 
