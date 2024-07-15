@@ -9,15 +9,16 @@
 }
 
 /* Estilos de la tabla de informes */
-#report-table {
-  /* Estilos para la tabla */
+
+#report-table tr:hover td{
+  font-weight: bold;
 }
 
 #report-table td {
   font-size: 16px;
 }
 
-#report-table td:hover {
+#report-table td:first-child:hover {
   text-decoration: underline;
   font-weight: 900;
 }
@@ -298,4 +299,21 @@ th i.fa {
   .card-wrapper {
     flex: 0 0 calc(100% - 20px);
   }
+}
+
+
+#report-counter {
+
+  color: white;
+  font-size: 0.9em;
+  padding: 0.4em 0.6em;
+  border-radius: 12px;
+}
+
+#report-counter.badge-warning{
+  color:black;
+}
+
+#report-counter.badge-info{
+  background-color:transparent;
 }
