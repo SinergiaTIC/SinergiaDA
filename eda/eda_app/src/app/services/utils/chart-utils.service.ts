@@ -308,8 +308,6 @@ export class ChartUtilsService {
                     })
                 })
 
-                console.log('series: ', series);
-
                 // calibrar los valores al 100%
                 // Calculando las sumas de cada campo
                 _output[1].forEach((e) => {
@@ -326,8 +324,6 @@ export class ChartUtilsService {
                     }
                 })
             }
-
-            console.log('_output: ', _output);
 
             output =  _output;
 
