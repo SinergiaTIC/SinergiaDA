@@ -798,6 +798,7 @@ export class DashboardController {
           myQuery.forSelector = false;
       }
 
+
       /** por compatibilidad. Si no tengo el tipo de columna en el filtro lo añado */
       if(myQuery.filters){
         for (const filter of myQuery.filters) {
@@ -870,6 +871,14 @@ export class DashboardController {
       }) 
 
       myQuery.filters = filters;
+
+
+      /** aqui ronald. */
+      console.log(myQuery.filters);
+      console.log(uniquesForbiddenTables);
+      //  return res.status(200).json([['noFilterAllowed'], [[]]]);
+
+
       const query = await connection.getQueryBuilded(
         myQuery,
         dataModelObject,

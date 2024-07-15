@@ -58,6 +58,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
     public currentConfig: any;
     public NO_DATA: boolean;
     public NO_DATA_ALLOWED: boolean;
+    public NO_FILTER_ALLOWED: boolean;
 
     /**Styles */
     public fontColor: string;
