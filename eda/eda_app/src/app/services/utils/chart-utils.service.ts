@@ -392,6 +392,7 @@ export class ChartUtilsService {
 
             /* Histograma  */
         } else if (  ['bar'].includes(type) &&  dataTypes.length ==  1 && dataTypes[0]== 'numeric'   ) {
+
             let distinctNumbers  = Array.from(new Set(values.map(v => v[number_idx]))).filter(element => {
                 return element !== null;
               });;
@@ -430,12 +431,10 @@ export class ChartUtilsService {
                 num_cols=50;
             }
 
-
             //No me llega el numero de columnas fijo el numero de columnas
-            if(!isNaN(numberOfColumns) &&  numberOfColumns !== null ){
+            if(!isNaN(numberOfColumns) &&  numberOfColumns !== null  &&  numberOfColumns !== undefined  ){
                 num_cols=numberOfColumns;
             }
-
 
            if( this.esEntero(distinctNumbers)){
                 salto =  Math.ceil( max/num_cols )  ;

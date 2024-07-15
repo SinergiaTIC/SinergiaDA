@@ -96,7 +96,7 @@ export class ChartDialogComponent extends EdaDialogAbstract  {
         this.addTrend = this.controller.params.config.config.getConfig()['addTrend'] || false;
         this.showLabels = this.controller.params.config.config.getConfig()['showLabels'] || false;
         this.showLabelsPercent = this.controller.params.config.config.getConfig()['showLabelsPercent'] || false;
-        this.numberOfColumns = this.controller.params.config.config.getConfig()['numberOfColumns'] ||false;
+        this.numberOfColumns = this.controller.params.config.config.getConfig()['numberOfColumns'] ||null;
         this.addComparative = this.controller.params.config.config.getConfig()['addComparative'] || false;
         this.oldChart = _.cloneDeep(this.controller.params.chart);
         this.chart = this.controller.params.chart;
@@ -289,7 +289,9 @@ export class ChartDialogComponent extends EdaDialogAbstract  {
     setShowLables(){
 
         const properties = this.panelChartConfig;
+        console.log('properties', properties);
         let c: ChartConfig = properties.config;
+        
         let config: any = c.getConfig();
         config.showLabels = this.showLabels;
         config.showLabelsPercent = this.showLabelsPercent;
@@ -298,6 +300,8 @@ export class ChartDialogComponent extends EdaDialogAbstract  {
         properties.config = c;
         /**Update chart */
         this.panelChartConfig = new PanelChart(this.panelChartConfig);
+        console.log('panelChartConfig', this.panelChartConfig);
+        
         setTimeout(_ => {
             this.chart = this.panelChartComponent.componentRef.instance.inject;
             this.load();
