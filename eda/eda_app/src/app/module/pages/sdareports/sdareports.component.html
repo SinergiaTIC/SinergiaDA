@@ -1,7 +1,11 @@
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
   <!-- Botón para crear un nuevo informe -->
   <div *ngIf="!isObserver">
-    <button type="button" class="btn btn-success" (click)="createDashboard = true;">
+    <button
+      type="button"
+      class="btn btn-success"
+      (click)="createDashboard = true"
+    >
       <i class="fa fa-plus-circle mr-2 fa-lg"></i>
       <span i18n="@@tituloNuevoInforme">Nuevo informe</span>
     </button>
@@ -147,15 +151,19 @@
     </div>
   </div>
 
-
   <div class="ml-auto ml-2">
-    <span id="report-counter" class="badge" [ngClass]="[visibleDashboards.length < allDashboards.length ? 'badge-warning':'badge-info']">
+    <span
+      id="report-counter"
+      class="badge"
+      [ngClass]="[
+        visibleDashboards.length < allDashboards.length
+          ? 'badge-warning'
+          : 'badge-info'
+      ]"
+    >
       {{ visibleDashboards.length }} / {{ allDashboards.length }}
-
     </span>
   </div>
-
-
 
   <!-- Buscador -->
   <div class="ml-auto">
@@ -180,65 +188,61 @@
   <table class="table table-striped" id="report-table">
     <thead>
       <tr>
-        <th (click)="sortTable('config.title')" i18n="@@nombreInforme">
+        <th
+          (click)="sortTable('config.title')"
+          [ngClass]="{
+            'sort-asc':
+              sortColumn === 'config.title' && sortDirection === 'asc',
+            'sort-desc':
+              sortColumn === 'config.title' && sortDirection === 'desc'
+          }"
+          i18n="@@nombreInforme"
+        >
           Nombre del Informe
-          <i
-            class="fa"
-            [ngClass]="{
-              'fa-sort-asc':
-                sortColumn === 'config.title' && sortDirection === 'asc',
-              'fa-sort-desc':
-                sortColumn === 'config.title' && sortDirection === 'desc'
-            }"
-          ></i>
         </th>
-        <th (click)="sortTable('type')" i18n="@@tipo">
+        <th
+          (click)="sortTable('type')"
+          [ngClass]="{
+            'sort-asc': sortColumn === 'type' && sortDirection === 'asc',
+            'sort-desc': sortColumn === 'type' && sortDirection === 'desc'
+          }"
+          i18n="@@tipo"
+        >
           Tipo
-          <i
-            class="fa"
-            [ngClass]="{
-              'fa-sort-asc': sortColumn === 'type' && sortDirection === 'asc',
-              'fa-sort-desc': sortColumn === 'type' && sortDirection === 'desc'
-            }"
-          ></i>
         </th>
-        <th (click)="sortTable('user.name')" i18n="@@autor">
+        <th
+          (click)="sortTable('user.name')"
+          [ngClass]="{
+            'sort-asc': sortColumn === 'user.name' && sortDirection === 'asc',
+            'sort-desc': sortColumn === 'user.name' && sortDirection === 'desc'
+          }"
+          i18n="@@autor"
+        >
           Autor
-          <i
-            class="fa"
-            [ngClass]="{
-              'fa-sort-asc':
-                sortColumn === 'user.name' && sortDirection === 'asc',
-              'fa-sort-desc':
-                sortColumn === 'user.name' && sortDirection === 'desc'
-            }"
-          ></i>
         </th>
-        <th (click)="sortTable('config.createdAt')" i18n="@@fechaCreacion">
+        <th
+          (click)="sortTable('config.createdAt')"
+          [ngClass]="{
+            'sort-asc':
+              sortColumn === 'config.createdAt' && sortDirection === 'asc',
+            'sort-desc':
+              sortColumn === 'config.createdAt' && sortDirection === 'desc'
+          }"
+          i18n="@@fechaCreacion"
+        >
           Fecha creación
-          <i
-            class="fa"
-            [ngClass]="{
-              'fa-sort-asc':
-                sortColumn === 'config.createdAt' && sortDirection === 'asc',
-              'fa-sort-desc':
-                sortColumn === 'config.createdAt' && sortDirection === 'desc'
-            }"
-          ></i>
         </th>
         <th i18n="@@edicionPrivada">Edición privada</th>
         <th i18n="@@grupos">Grupos</th>
-        <th (click)="sortTable('config.tag')" i18n="@@etiquetas">
+        <th
+          (click)="sortTable('config.tag')"
+          [ngClass]="{
+            'sort-asc': sortColumn === 'config.tag' && sortDirection === 'asc',
+            'sort-desc': sortColumn === 'config.tag' && sortDirection === 'desc'
+          }"
+          i18n="@@etiquetas"
+        >
           Etiquetas
-          <i
-            class="fa"
-            [ngClass]="{
-              'fa-sort-asc':
-                sortColumn === 'config.tag' && sortDirection === 'asc',
-              'fa-sort-desc':
-                sortColumn === 'config.tag' && sortDirection === 'desc'
-            }"
-          ></i>
         </th>
         <th i18n="@@acciones">Acciones</th>
       </tr>
@@ -347,10 +351,12 @@
             </div>
           </h5>
           <p class="card-text">
-            <span> {{ dashboardTypeTranslations[dashboard.type] || dashboard.type }} </span>
+            <span>
+              {{ dashboardTypeTranslations[dashboard.type] || dashboard.type }}
+            </span>
             <span class="pull-right"> {{ dashboard.user?.name }} </span>
           </p>
-         <p class="card-text">
+          <p class="card-text">
             <span>
               {{
                 dashboard.group
@@ -365,12 +371,11 @@
                   : ""
               }}</span
             >
-
           </p>
 
-         <p class="card-text">
-            <strong i18n="@@etiquetas">Etiquetas:</strong>
-            <span class="badge badge-primary">{{ dashboard.config.tag }}</span>
+          <p class="card-text">
+
+            <span class="badge badge-info">{{ dashboard.config.tag }}</span>
           </p>
           <div class="mt-auto">
             <button
@@ -409,8 +414,6 @@
             </button>
           </div>
         </div>
-
-
       </div>
     </div>
   </div>
@@ -421,4 +424,7 @@
   [controller]="dashController"
 ></app-create-dashboard>
 
-<app-create-dashboard *ngIf="createDashboard" (close)="onCloseCreateDashboard($event)"></app-create-dashboard>
+<app-create-dashboard
+  *ngIf="createDashboard"
+  (close)="onCloseCreateDashboard($event)"
+></app-create-dashboard>
