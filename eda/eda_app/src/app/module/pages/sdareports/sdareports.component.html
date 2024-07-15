@@ -1,7 +1,7 @@
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
   <!-- Botón para crear un nuevo informe -->
   <div *ngIf="!isObserver">
-    <button type="button" class="btn btn-success" (click)="initDialog()">
+    <button type="button" class="btn btn-success" (click)="createDashboard = true;">
       <i class="fa fa-plus-circle mr-2 fa-lg"></i>
       <span i18n="@@tituloNuevoInforme">Nuevo informe</span>
     </button>
@@ -420,3 +420,5 @@
   *ngIf="dashController"
   [controller]="dashController"
 ></app-create-dashboard>
+
+<app-create-dashboard *ngIf="createDashboard" (close)="onCloseCreateDashboard($event)"></app-create-dashboard>

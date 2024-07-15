@@ -71,6 +71,10 @@ export class SdareportsComponent implements OnInit {
   public NoneTags = $localize`:@@NoneTags:Ninguno`;
   public noGroupLabel = $localize`:@@NoGroup:Sin Grupo`;
 
+
+  public createDashboard: boolean = false;
+
+
   constructor(
     private dashboardService: DashboardService,
     private sidebarService: SidebarService,
@@ -471,4 +475,10 @@ export class SdareportsComponent implements OnInit {
       minute: "2-digit"
     });
   }
+
+
+  public onCloseCreateDashboard(event?: any): void {
+    this.createDashboard = false;
+    if (event) this.router.navigate(['/dashboard', event._id]);
+}
 }
