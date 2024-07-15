@@ -56,6 +56,15 @@ export class SdareportsComponent implements OnInit {
     // {type: 'archived', label: 'Archivado', active: true, icon: 'fa-archive', color: '#6c757d'}
   ];
 
+  // Traduccion para los valores de los informes
+  public dashboardTypeTranslations = {
+    'common': $localize`:@@Common:Común`,
+    'public': $localize`:@@Public:Público`,
+    'group': $localize`:@@Group:Grupo`,
+    'private': $localize`:@@Private:Privado`
+  };
+
+
   // Etiquetas para los filtros
   public noTagLabel = $localize`:@@NoTag:Sin Etiqueta`;
   public AllTags = $localize`:@@AllTags:Todos`;

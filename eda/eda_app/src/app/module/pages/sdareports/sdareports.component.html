@@ -347,14 +347,8 @@
             </div>
           </h5>
           <p class="card-text">
-            <span> {{ dashboard.type | titlecase }} </span>
-            <span class="pull-right">
-              {{
-                dashboard.config.createdAt
-                  ? formatDate(dashboard.config.createdAt)
-                  : ""
-              }}</span
-            >
+            <span> {{ dashboardTypeTranslations[dashboard.type] || dashboard.type }} </span>
+            <span class="pull-right"> {{ dashboard.user?.name }} </span>
           </p>
          <p class="card-text">
             <span>
@@ -364,7 +358,14 @@
                   : ""
               }}
             </span>
-            <span class="pull-right"> {{ dashboard.user?.name }} </span>
+            <span class="pull-right">
+              {{
+                dashboard.config.createdAt
+                  ? formatDate(dashboard.config.createdAt)
+                  : ""
+              }}</span
+            >
+
           </p>
 
          <p class="card-text">
