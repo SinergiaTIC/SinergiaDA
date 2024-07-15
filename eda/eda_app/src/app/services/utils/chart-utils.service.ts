@@ -298,10 +298,17 @@ export class ChartUtilsService {
                     _output[1].forEach(p => {
 
                         if(v[0][label_idx] === p.label){
-                            p.data = v[0].filter(i => i!==p.label)
+                            p.data = v[0].filter(i => i!==p.label);
+                            p.data.forEach((c, j) => {
+                                if(typeof c !== 'number') {
+                                    p.data[j] = 0
+                                }
+                            })
                         }
                     })
                 })
+
+                console.log('series: ', series);
 
                 // calibrar los valores al 100%
                 // Calculando las sumas de cada campo
