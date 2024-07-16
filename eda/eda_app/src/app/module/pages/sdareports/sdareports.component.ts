@@ -77,6 +77,8 @@ export class SdareportsComponent implements OnInit {
 
   public createDashboard: boolean = false;
 
+  public lastSortCriteria: { column: string; direction: "asc" | "desc" };
+
   constructor(
     private dashboardService: DashboardService,
     private sidebarService: SidebarService,
@@ -216,14 +218,16 @@ export class SdareportsComponent implements OnInit {
         this.dashboardService.deleteDashboard(dashboard._id).subscribe(
           () => {
             this.alertService.addSuccess($localize`:@@DashboardDeletedInfo:Informe eliminado correctamente.`);
-            this.initDashboards();
+            // Eliminar el dashboard del array allDashboards
+            this.allDashboards = this.allDashboards.filter(d => d._id !== dashboard._id);
+            // Aplicar los filtros actuales
+            this.applyCurrentFilters();
           },
           err => this.alertService.addError(err)
         );
       }
     });
   }
-
   public goToDashboard(dashboard): void {
     if (dashboard) {
       this.router.navigate(["/dashboard", dashboard._id]);
@@ -278,14 +282,15 @@ export class SdareportsComponent implements OnInit {
   }
 
   public filterDashboards() {
+    // Resetear visibleDashboards
+    this.visibleDashboards = [...this.allDashboards];
+
     // Si ningún tipo está activo, mostramos todos los dashboards
     const anyTypeActive = this.dashboardTypes.some(t => t.active);
 
-    if (!anyTypeActive) {
-      this.visibleDashboards = [...this.allDashboards];
-    } else {
+    if (anyTypeActive) {
       // Filtramos por el tipo activo
-      this.visibleDashboards = this.allDashboards.filter(db =>
+      this.visibleDashboards = this.visibleDashboards.filter(db =>
         this.dashboardTypes.find(t => t.type === db.type && t.active)
       );
     }
@@ -312,18 +317,8 @@ export class SdareportsComponent implements OnInit {
 
   public filterTitle(event: any) {
     this.searchTerm = event.target.value.toString().toUpperCase();
-    if (this.searchTerm.length > 1) {
-      this.visibleDashboards = this.allDashboards.filter(
-        db => db.config.title.toUpperCase().indexOf(this.searchTerm) >= 0
-      );
-      this.filteringByName = true;
-    } else {
-      this.visibleDashboards = [...this.allDashboards];
-      if (this.searchTerm.length == 0) {
-        this.filteringByName = false;
-      }
-    }
-    // this.sortTable(this.sortColumn);
+    this.applyCurrentFilters();
+    this.filteringByName = this.searchTerm.length > 1;
   }
 
   public canIEdit(dashboard): boolean {
@@ -516,6 +511,18 @@ export class SdareportsComponent implements OnInit {
           );
           console.error("Error updating dashboard title:", error);
         }
+      );
+    }
+  }
+
+  private applyCurrentFilters(): void {
+    // Aplicar filtros de tipo, etiquetas y grupos
+    this.filterDashboards();
+
+    // Aplicar filtro de texto si existe
+    if (this.searchTerm && this.searchTerm.length > 1) {
+      this.visibleDashboards = this.visibleDashboards.filter(
+        db => db.config.title.toUpperCase().indexOf(this.searchTerm) >= 0
       );
     }
   }
