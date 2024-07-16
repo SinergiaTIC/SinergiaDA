@@ -336,9 +336,11 @@
         (dblclick)="goToDashboard(dashboard)"
       >
         <div class="card-body d-flex flex-column">
-          <h5 class="card-title">
+          <h5 class="card-title" title="{{ dashboard.config.title }}">
             <div class="title-container">
-              {{ dashboard.config.title }}
+              {{ (dashboard.config.title.length > 70) ?
+                (dashboard.config.title | slice:0:70) + '...' :
+                dashboard.config.title }}
               <div
                 *ngIf="dashboard.config.description"
                 class="info-icon-container"
@@ -374,7 +376,6 @@
           </p>
 
           <p class="card-text">
-
             <span class="badge badge-info">{{ dashboard.config.tag }}</span>
           </p>
           <div class="mt-auto">
