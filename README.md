@@ -24,14 +24,6 @@ Sinergia Data Analytics (SinergiaDA) es una herramienta de reporting de código 
 
 SinergiaDA se basa en [Enterprise Data Analytics (EDA)](https://eda.jortilles.com/) y está diseñada para integrarse perfectamente con SinergiaCRM, aunque facilita un alcance incluso más amplio.
 
-## Características principales
-
-- Permite a las organizaciones que trabajan con SinergiaCRM explotar los datos alojados en el CRM.
-- Ofrece una visualización potente y una interfaz extremadamente sencilla de utilizar.
-- Facilita la visibilidad de los principales indicadores (KPI) de la actividad de la organización.
-- Ayuda a medir el impacto, aumentar la transparencia con diferentes grupos de interés y tomar decisiones basadas en datos.
-- Permite detectar errores o anomalías y visualizar la evolución de aspectos clave de la organización.
-
 ## Seguridad
 
 #### Informar sobre vulnerabilidades
@@ -58,14 +50,6 @@ SinergiaDA se distribuye bajo la [Licencia Pública General Affero de GNU (AGPLv
 Sinergia Data Analytics (SinergiaDA) és una eina de reporting de codi obert desenvolupada per l'Associació SinergiaTIC, una entitat sense ànim de lucre que té com a missió potenciar la capacitat de les organitzacions no lucratives d'adoptar estratègicament i utilitzar eficientment les Tecnologies de la Informació i la Comunicació (TIC).
 
 SinergiaDA es basa en [Enterprise Data Analytics (EDA)](https://eda.jortilles.com/) i està dissenyada per integrar-se perfectament amb SinergiaCRM, tot i que facilita un abast encara més ampli.
-
-## Característiques principals
-
-- Permet a les organitzacions que treballen amb SinergiaCRM explotar les dades allotjades al CRM.
-- Ofereix una visualització potent i una interfície extremadament senzilla d'utilitzar.
-- Facilita la visibilitat dels principals indicadors (KPI) de l'activitat de l'organització.
-- Ajuda a mesurar l'impacte, augmentar la transparència amb diferents grups d'interès i prendre decisions basades en dades.
-- Permet detectar errors o anomalies i visualitzar l'evolució d'aspectes clau de l'organització.
 
 ## Seguretat
 
@@ -94,14 +78,6 @@ Sinergia Data Analytics (SinergiaDA) is an open-source reporting tool developed 
 
 SinergiaDA is based on [Enterprise Data Analytics (EDA)](https://eda.jortilles.com/) and is designed to integrate seamlessly with SinergiaCRM, although it facilitates an even broader scope.
 
-## Main features
-
-- Allows organizations working with SinergiaCRM to exploit data stored in the CRM.
-- Offers powerful visualization and an extremely user-friendly interface.
-- Facilitates visibility of the main indicators (KPIs) of the organization's activity.
-- Helps measure impact, increase transparency with different stakeholders, and make data-driven decisions.
-- Allows detection of errors or anomalies and visualization of the evolution of key aspects of the organization.
-
 ## Security
 
 #### Reporting vulnerabilities
@@ -128,14 +104,6 @@ SinergiaDA is distributed under the [GNU Affero General Public License (AGPLv3)]
 Sinergia Data Analytics (SinergiaDA) é unha ferramenta de reporting de código aberto desenvolvida pola Asociación SinergiaTIC, unha entidade sen ánimo de lucro cuxa misión é potenciar a capacidade das organizacións non lucrativas de adoptar estratexicamente e utilizar eficientemente as Tecnoloxías da Información e a Comunicación (TIC).
 
 SinergiaDA baséase en [Enterprise Data Analytics (EDA)](https://eda.jortilles.com/) e está deseñada para integrarse perfectamente con SinergiaCRM, aínda que facilita un alcance aínda máis amplo.
-
-## Características principais
-
-- Permite ás organizacións que traballan con SinergiaCRM explotar os datos aloxados no CRM.
-- Ofrece unha visualización potente e unha interface extremadamente sinxela de utilizar.
-- Facilita a visibilidade dos principais indicadores (KPI) da actividade da organización.
-- Axuda a medir o impacto, aumentar a transparencia con diferentes grupos de interese e tomar decisións baseadas en datos.
-- Permite detectar erros ou anomalías e visualizar a evolución de aspectos clave da organización.
 
 ## Seguridade
 
