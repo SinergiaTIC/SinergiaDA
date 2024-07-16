@@ -1,8 +1,8 @@
 <a href="https://www.sinergiacrm.org/sinergia-data-analytics">
-  <img  src="eda/eda_app/src/assets/images/logos/sda-color.png"  />
+  <img  src="eda/eda_app/src/assets/images/logos/stic_200x67.png" align="right"  />
 </a>
 
-# SinergiaDA 2.0.0
+# SinergiaDA
 
 [![Wiki](https://img.shields.io/badge/Information-Wiki-lightgray)](https://wiki.sinergiacrm.org/index.php?title=Manual_de_SinergiaDA)
 [![LICENSE](https://img.shields.io/badge/License-AGPL_v3-orange.svg)](./LICENSE.txt)
