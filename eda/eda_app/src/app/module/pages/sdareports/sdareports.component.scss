@@ -399,3 +399,33 @@ th i.fa {
   margin: none;
   background-color: #333;
 }
+
+.dashboard-title-container {
+  position: relative;
+  display: inline-block;
+}
+.card-body:hover {
+  .edit-icon {
+    opacity: 1;
+  }
+}
+.edit-icon {
+  position: absolute;
+  right: -20px;
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: pointer;
+  opacity: 0;
+  &:hover {
+    opacity: .4;
+  }
+}
+
+[contenteditable] {
+  outline: none;
+  &:focus {
+    background-color: #f1dc9f;
+    border: 1px dashed #af8a19;
+    padding: 1px 3px;
+  }
+}

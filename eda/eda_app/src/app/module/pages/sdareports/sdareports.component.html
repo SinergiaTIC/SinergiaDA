@@ -256,6 +256,7 @@
         <td>
           <div class="title-container" (click)="goToDashboard(dashboard)">
             {{ dashboard.config.title }}
+
             <div
               *ngIf="dashboard.config.description"
               class="info-icon-container"
@@ -337,19 +338,25 @@
       >
         <div class="card-body d-flex flex-column">
           <h5 class="card-title" title="{{ dashboard.config.title }}">
-            <div class="title-container">
-              {{ (dashboard.config.title.length > 70) ?
-                (dashboard.config.title | slice:0:70) + '...' :
-                dashboard.config.title }}
-              <div
-                *ngIf="dashboard.config.description"
-                class="info-icon-container"
+            <div
+              class="dashboard-title-container"
+              (mouseenter)="showEditIcon = true"
+              (mouseleave)="showEditIcon = false"
+            >
+              <span
+                #titleSpan
+                [attr.contenteditable]="isEditing ? true : null"
+                (blur)="updateDashboardTitle(dashboard, $event)"
+                (keydown.enter)="$event.target.blur()"
+                >{{ dashboard.config.title }}</span
               >
-                <i class="fa fa-info-circle"></i>
-                <div class="custom-tooltip">
-                  <p>{{ dashboard.config.description }}</p>
-                </div>
-              </div>
+              <i
+                *ngIf="canIEdit(dashboard) && !isEditing"
+                class="fa fa-pencil edit-icon"
+                (click)="startEditing(titleSpan)"
+                i18n-title="@@ClickToEditName"
+                title="Pulse para editar el nombre"
+              ></i>
             </div>
           </h5>
           <p class="card-text">

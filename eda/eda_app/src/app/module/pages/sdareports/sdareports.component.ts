@@ -31,6 +31,7 @@ export class SdareportsComponent implements OnInit {
   // Propiedades para la gestión de usuarios y grupos
   public groups: IGroup[] = [];
   public isAdmin: boolean;
+  public currentUser: any;
   public IsDataSourceCreator: boolean;
   public isObserver: boolean = false;
   public grups: Array<any> = [];
@@ -58,12 +59,15 @@ export class SdareportsComponent implements OnInit {
 
   // Traduccion para los valores de los informes
   public dashboardTypeTranslations = {
-    'common': $localize`:@@Common:Común`,
-    'public': $localize`:@@Public:Público`,
-    'group': $localize`:@@Group:Grupo`,
-    'private': $localize`:@@Private:Privado`
+    common: $localize`:@@Common:Común`,
+    public: $localize`:@@Public:Público`,
+    group: $localize`:@@Group:Grupo`,
+    private: $localize`:@@Private:Privado`
   };
 
+  // Propiedades para edición de título
+  public showEditIcon: boolean = false;
+  public isEditing: boolean = false;
 
   // Etiquetas para los filtros
   public noTagLabel = $localize`:@@NoTag:Sin Etiqueta`;
@@ -71,9 +75,7 @@ export class SdareportsComponent implements OnInit {
   public NoneTags = $localize`:@@NoneTags:Ninguno`;
   public noGroupLabel = $localize`:@@NoGroup:Sin Grupo`;
 
-
   public createDashboard: boolean = false;
-
 
   constructor(
     private dashboardService: DashboardService,
@@ -92,6 +94,7 @@ export class SdareportsComponent implements OnInit {
   public ngOnInit() {
     this.init();
     this.ifAnonymousGetOut();
+    this.currentUser = JSON.parse(sessionStorage.getItem("user"));
   }
 
   private init() {
@@ -144,6 +147,7 @@ export class SdareportsComponent implements OnInit {
         console.log("Grupos obtenidos del servicio:", this.groups); // Nuevo log
 
         this.isAdmin = res.isAdmin;
+
         this.IsDataSourceCreator = res.isDataSourceCreator;
 
         this.initTags();
@@ -476,9 +480,43 @@ export class SdareportsComponent implements OnInit {
     });
   }
 
-
   public onCloseCreateDashboard(event?: any): void {
     this.createDashboard = false;
-    if (event) this.router.navigate(['/dashboard', event._id]);
-}
+    if (event) this.router.navigate(["/dashboard", event._id]);
+  }
+
+  public startEditing(titleSpan: HTMLElement): void {
+    this.isEditing = true;
+    setTimeout(() => {
+      titleSpan.focus();
+      // Coloca el cursor al final del texto
+      const range = document.createRange();
+      range.selectNodeContents(titleSpan);
+      range.collapse(false);
+      const selection = window.getSelection();
+      selection.removeAllRanges();
+      selection.addRange(range);
+    }, 0);
+  }
+
+  public updateDashboardTitle(dashboard: any, event: any): void {
+    const newTitle = event.target.textContent.trim();
+    this.isEditing = false;
+    if (newTitle !== dashboard.config.title) {
+      dashboard.config.title = newTitle;
+      this.dashboardService.updateDashboard(dashboard._id, { config: dashboard.config }).subscribe(
+        () => {
+          this.alertService.addSuccess(
+            $localize`:@@DashboardTitleUpdated:Título del informe actualizado correctamente.`
+          );
+        },
+        error => {
+          this.alertService.addError(
+            $localize`:@@ErrorUpdatingDashboardTitle:Error al actualizar el título del informe.`
+          );
+          console.error("Error updating dashboard title:", error);
+        }
+      );
+    }
+  }
 }

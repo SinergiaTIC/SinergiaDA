@@ -327,6 +327,10 @@
     <source>Copiar url pública</source>
     <target>Copiar url pública</target>
   </trans-unit>
+  <trans-unit id="ClickToEditName" datatype="html">
+    <source>Pulse para editar el nombre</source>
+    <target>Feu clic per editar el nom</target>
+  </trans-unit>
 </body>
 </file>
 </xliff>
