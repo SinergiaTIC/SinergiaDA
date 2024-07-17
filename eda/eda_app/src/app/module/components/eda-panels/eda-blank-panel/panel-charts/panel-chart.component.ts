@@ -97,12 +97,14 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
     ngOnInit(): void {
         this.NO_DATA = false;
         this.NO_DATA_ALLOWED = false;
+        this.NO_FILTER_ALLOWED = false;
     }
 
     ngOnChanges(changes: SimpleChanges): void {
         /**
          * If data change chart type
          */
+
         if (this.props.data && this.props.data.values.length !== 0
             && !this.props.data.values.reduce((a, b) => a && b.every(element => element === null), true)) {
 
@@ -122,7 +124,12 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
                 this.NO_DATA = true;
                 if( this.props.data.labels[0]== "noDataAllowed") {
                     this.NO_DATA = false;    
-                    this.NO_DATA_ALLOWED = true;    
+                    this.NO_DATA_ALLOWED = true;   
+                    this.NO_FILTER_ALLOWED = false; 
+                }else if( this.props.data.labels[0]== "noFilterAllowed") {
+                    this.NO_DATA = false;    
+                    this.NO_DATA_ALLOWED = false;    
+                    this.NO_FILTER_ALLOWED = true;
                 }
             })
 

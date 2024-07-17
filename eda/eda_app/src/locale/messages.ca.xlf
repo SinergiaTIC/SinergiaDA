@@ -4307,6 +4307,10 @@
         <source>Este panel no está disponible por falta de permisos</source>
         <target>Aquest panell no està disponible per manca de permisos</target>
       </trans-unit>
+      <trans-unit id="noFilterAllowed">
+        <source>Este panel no está disponible por falta de permisos en un filtro</source>
+        <target>Aquest panell no està disponible per manca de permisos en un filtre</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>

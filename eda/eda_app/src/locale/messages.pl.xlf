@@ -3935,6 +3935,11 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
     <source>Este panel no está disponible por falta de permisos</source>
     <target>Ten Panel nie jest dostępny ze względu na brak uprawnień</target>
   </trans-unit>
+
+  <trans-unit id="noFilterAllowed">
+    <source>Este panel no está disponible por falta de permisos en un filtro</source>
+    <target>Ten panel jest niedostępny ze względu na brak uprawnień do filtra</target>
+  </trans-unit>
 </body>
 </file>
 </xliff>
