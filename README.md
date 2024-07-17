@@ -20,9 +20,9 @@
 
 ## Acerca de SinergiaDA
 
-Sinergia Data Analytics (SinergiaDA) es una herramienta de reporting de código abierto desarrollada por la Asociación SinergiaTIC, una entidad sin ánimo de lucro cuya misión es potenciar la capacidad de las organizaciones no lucrativas de adoptar estratégicamente y utilizar eficientemente las Tecnologías de la Información y la Comunicación (TIC).
+Sinergia Data Analytics (SinergiaDA) es una herramienta de inteligencia de negocio de código abierto desarrollada por la Asociación SinergiaTIC, una entidad sin ánimo de lucro cuya misión es potenciar la capacidad de las organizaciones no lucrativas de adoptar estratégicamente y utilizar eficientemente las Tecnologías de la Información y la Comunicación (TIC).
 
-SinergiaDA se basa en [Enterprise Data Analytics (EDA)](https://eda.jortilles.com/) y está diseñada para integrarse perfectamente con SinergiaCRM, aunque facilita un alcance incluso más amplio.
+SinergiaDA se basa en [Enterprise Data Analytics (EDA)](https://eda.jortilles.com/). Se integra de forma nativa con SinergiaCRM, facilitando el análisis de sus datos y la elaboración de informes.
 
 ## Seguridad
 
@@ -47,9 +47,9 @@ SinergiaDA se distribuye bajo la [Licencia Pública General Affero de GNU (AGPLv
 
 ## Sobre SinergiaDA
 
-Sinergia Data Analytics (SinergiaDA) és una eina de reporting de codi obert desenvolupada per l'Associació SinergiaTIC, una entitat sense ànim de lucre que té com a missió potenciar la capacitat de les organitzacions no lucratives d'adoptar estratègicament i utilitzar eficientment les Tecnologies de la Informació i la Comunicació (TIC).
+Sinergia Data Analytics (SinergiaDA) és una eina d'intel·ligència de negoci de codi obert desenvolupada per l'Associació SinergiaTIC, una entitat sense ànim de lucre que té com a missió potenciar la capacitat de les organitzacions no lucratives d'adoptar estratègicament i utilitzar eficientment les Tecnologies de la Informació i la Comunicació (TIC).
 
-SinergiaDA es basa en [Enterprise Data Analytics (EDA)](https://eda.jortilles.com/) i està dissenyada per integrar-se perfectament amb SinergiaCRM, tot i que facilita un abast encara més ampli.
+SinergiaDA es basa en [Enterprise Data Analytics (EDA)](https://eda.jortilles.com/). S'integra de forma nativa amb SinergiaCRM, facilitant-ne l'anàlisi de les dades i l'elaboració d'informes.
 
 ## Seguretat
 
@@ -74,9 +74,9 @@ SinergiaDA es distribueix sota la [Llicència Pública General Affero de GNU (AG
 
 ## About SinergiaDA
 
-Sinergia Data Analytics (SinergiaDA) is an open-source reporting tool developed by the SinergiaTIC Association, a non-profit organization whose mission is to enhance the capacity of non-profit organizations to strategically adopt and efficiently use Information and Communication Technologies (ICT).
+Sinergia Data Analytics (SinergiaDA) is an open-source business intelligence tool developed by the SinergiaTIC Association, a non-profit organization whose mission is to enhance the capacity of non-profit organizations to strategically adopt and efficiently use Information and Communication Technologies (ICT).
 
-SinergiaDA is based on [Enterprise Data Analytics (EDA)](https://eda.jortilles.com/) and is designed to integrate seamlessly with SinergiaCRM, although it facilitates an even broader scope.
+SinergiaDA is based on [Enterprise Data Analytics (EDA)](https://eda.jortilles.com/). It natively integrates with SinergiaCRM, making it easy to analyze its data and develop reports upon it.
 
 ## Security
 
@@ -101,9 +101,9 @@ SinergiaDA is distributed under the [GNU Affero General Public License (AGPLv3)]
 
 ## Sobre SinergiaDA
 
-Sinergia Data Analytics (SinergiaDA) é unha ferramenta de reporting de código aberto desenvolvida pola Asociación SinergiaTIC, unha entidade sen ánimo de lucro cuxa misión é potenciar a capacidade das organizacións non lucrativas de adoptar estratexicamente e utilizar eficientemente as Tecnoloxías da Información e a Comunicación (TIC).
+Sinergia Data Analytics (SinergiaDA) é unha ferramenta de intelixencia empresarial de código aberto desenvolvida pola Asociación SinergiaTIC, unha entidade sen ánimo de lucro cuxa misión é potenciar a capacidade das organizacións non lucrativas de adoptar estratexicamente e utilizar eficientemente as Tecnoloxías da Información e a Comunicación (TIC).
 
-SinergiaDA baséase en [Enterprise Data Analytics (EDA)](https://eda.jortilles.com/) e está deseñada para integrarse perfectamente con SinergiaCRM, aínda que facilita un alcance aínda máis amplo.
+SinergiaDA baséase en [Enterprise Data Analytics (EDA)](https://eda.jortilles.com/). Intégrase de forma nativa con SinergiaCRM, facilitando a análise dos seus datos e a elaboración de informes.
 
 ## Seguridade
 
