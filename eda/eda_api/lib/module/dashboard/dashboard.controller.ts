@@ -699,7 +699,26 @@ export class DashboardController {
         }
       }
     }
-    //console.log('Tablas PERMITIDAS PARA el usuario por el');
+    /** puedo ver la tabla porque puedo ver datos de una columna */
+    if (dataModelObject.ds.metadata.model_granted_roles !== undefined) {
+      for (var i = 0; i < dataModelObject.ds.metadata.model_granted_roles.length; i++ ) {
+        if ( /** puedo ver valores de una columna de la tabla */
+          dataModelObject.ds.metadata.model_granted_roles[i].global === false &&
+          dataModelObject.ds.metadata.model_granted_roles[i].none === false &&
+          dataModelObject.ds.metadata.model_granted_roles[i].value.length > 0
+        ) {
+          if (dataModelObject.ds.metadata.model_granted_roles[i].groups !== undefined ) {
+            for (var j = 0; j < dataModelObject.ds.metadata.model_granted_roles[i].groups.length; j++ ) {
+              if (  userGroups.includes( dataModelObject.ds.metadata.model_granted_roles[i].groups[j] )  ) {
+                allowedTablesBySecurityForMe.push(  dataModelObject.ds.metadata.model_granted_roles[i].table );
+              }  
+            }
+          }
+        }
+      }
+    }
+
+    //console.log('Tablas PERMITIDAS PARA el usuario por el GRUPO ');
     //console.log(allowedTablesBySecurityForMe);
     forbiddenTables = allTables.filter( t => !allowedTablesBySecurityForMe.includes( t )  );
     return forbiddenTables;
