@@ -1,1 +1,30 @@
-<p>Aqui el componente Drag and Drop</p>
+<div cdkDropListGroup>
+    <div class="example-container">
+      <h2>Test 1</h2>
+  
+      <div
+        cdkDropList
+        [cdkDropListData]="todo"
+        class="example-list"
+        (cdkDropListDropped)="drop($event)">
+
+        <div *ngFor="let item of todo" class="example-box" cdkDrag>{{item}}</div>
+        
+      </div>
+    </div>
+  
+    <div class="example-container">
+      <h2>Test 2</h2>
+  
+      <div
+        cdkDropList
+        [cdkDropListData]="done"
+        class="example-list"
+        (cdkDropListDropped)="drop($event)">
+
+          <div *ngFor="let item of done" class="example-box" cdkDrag>{{item}}</div>
+        
+      </div>
+    </div>
+  </div>
+  

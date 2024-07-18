@@ -57,7 +57,6 @@ import { DragDropComponent } from './drag-drop/drag-drop.component';
     imports: [
         CoreModule,
         SharedModule,
-        DragDropModule
     ],
     declarations: [
         EdaBlankPanelComponent,
