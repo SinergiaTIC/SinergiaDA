@@ -9,7 +9,7 @@ import { CdkDragDrop, moveItemInArray, transferArrayItem, CdkDrag } from '@angul
 })
 export class DragDropComponent implements OnInit {
 
-  todo = ['Tipo', 'Confirmado', 'Estado'];
+  todo = ['Tipo', 'Confirma', 'Estado'];
 
   done = [];
 
