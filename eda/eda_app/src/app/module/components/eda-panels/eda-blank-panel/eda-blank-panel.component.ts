@@ -187,6 +187,10 @@ export class EdaBlankPanelComponent implements OnInit {
     /**panel chart component configuration */
     public panelChartConfig: PanelChart = new PanelChart();
 
+
+    // for the drag-drop component
+    public attributes:any[]=[];
+
     constructor(
         public queryBuilder: QueryBuilderService,
         public fileUtiles: FileUtiles,
@@ -447,7 +451,12 @@ export class EdaBlankPanelComponent implements OnInit {
                 if (queryMode == 'EDA2') {
                     this.rootTable = this.tables.find((t) => t.table_name == this.rootTable);
                     // Assert Relation Tables
-                    const currentQuery = panelContent.query.query.fields;
+                    const currentQuery = panelContent.query.query.fields;   
+
+                    console.log('currentQuery: ', currentQuery);
+                    this.attributes = currentQuery.map((e:any) => { return { display_name: e.display_name, column_type: e.column_type } }); // Extraemos attributes del panelContent
+                    console.log('this.attributes: ', this.attributes);
+
                     for (const column of currentQuery) {
                         PanelInteractionUtils.assertTable(this, column);
                     }
@@ -1081,7 +1090,13 @@ export class EdaBlankPanelComponent implements OnInit {
     /**
     * Runs actual query when execute button is pressed to check for heavy queries
     */
-    public runManualQuery = () => QueryUtils.runManualQuery(this);
+    public runManualQuery = () => {
+        console.log('this.currentQuery: ', this.currentQuery)
+        this.attributes = this.currentQuery.map((e:any) => { return { display_name: e.display_name.default, column_type: e.column_type } }); // Al accionar Ejecutar se actualiza attributes para el componente drag-drop
+        console.log('this.attributes: ', this.attributes)
+
+        QueryUtils.runManualQuery(this)
+    };
 
     public moveItem = (column: any) => {
         PanelInteractionUtils.moveItem(this, column);

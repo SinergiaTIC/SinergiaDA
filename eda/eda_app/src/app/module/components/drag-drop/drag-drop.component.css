@@ -9,7 +9,7 @@
   .example-list-1 {
     border: solid 1px #ffffff;
     min-height: 40px;
-    background: rgb(255, 255, 255); /* cambiar de color */
+    background: #ccc; /* cambiar de color */
     border-radius: 4px;
     overflow: hidden;
     display: block;
@@ -42,7 +42,7 @@
   
   .example-list-2 {
     border: solid 1px #ffffff;
-    min-height: 130px;
+    min-height: 132px;
     background: rgb(98, 97, 97); /* cambiar de color */
     border-radius: 4px;
     overflow: hidden;
@@ -110,7 +110,7 @@
   
   .example-list-4 {
     border: solid 1px #ffffff;
-    min-height: 84px;
+    min-height: 86px;
     background: rgb(98, 97, 97); /* cambiar de color */
     border-radius: 4px;
     overflow: hidden;

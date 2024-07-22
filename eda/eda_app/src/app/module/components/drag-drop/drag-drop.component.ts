@@ -1,5 +1,5 @@
-import { Component, OnInit } from '@angular/core';
-import { CdkDragDrop, moveItemInArray, transferArrayItem, CdkDrag } from '@angular/cdk/drag-drop';
+import { Component, Input } from '@angular/core';
+import { CdkDrag, CdkDragDrop, moveItemInArray, transferArrayItem } from '@angular/cdk/drag-drop';
 
 
 @Component({
@@ -7,17 +7,17 @@ import { CdkDragDrop, moveItemInArray, transferArrayItem, CdkDrag } from '@angul
   templateUrl: './drag-drop.component.html',
   styleUrls: ['./drag-drop.component.css']
 })
-export class DragDropComponent implements OnInit {
+export class DragDropComponent {
 
-  todo = ['Tipo', 'Confirma', 'Estado'];
+  @Input() attributes?:any[];
 
-  done = [];
+  itemX = [];
+  itemY = []
+  itemZ = [];
 
   constructor() { }
 
-  ngOnInit(): void {
-  }
-
+  // Pasar items de un contenido a otro
   drop(event: CdkDragDrop<string[]>) {
     if (event.previousContainer === event.container) {
       moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
@@ -30,5 +30,13 @@ export class DragDropComponent implements OnInit {
       );
     }
   }
+
+  isNumeric(item: CdkDrag<any>) {
+    const data = item.dropContainer.data;
+    const value = item.element.nativeElement.innerText.toString();
+    if(data.filter(e => e.display_name==value)[0].column_type==='numeric') return false;
+    return true;
+  }
+
 
 }
