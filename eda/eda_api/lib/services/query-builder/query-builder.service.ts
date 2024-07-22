@@ -546,6 +546,8 @@ export abstract class QueryBuilderService {
                         filter_column: permission.column,
                         filter_dynamic: permission.dynamic?permission.dynamic:false,
                         filter_type: 'in',
+                        isGlobal: 'security',
+                        filter_id: permission.table + '-' + permission.column + '-' +   'security',
                         filter_elements: [{ value1: permission.value }]
                     };
 
@@ -597,6 +599,8 @@ export abstract class QueryBuilderService {
                         filter_table: permission.table,
                         filter_column: permission.column,
                         filter_type: 'in',
+                        isGlobal: 'security',
+                        filter_id: permission.table + '-' + permission.column + '-' +   'security',
                         filter_dynamic: permission.dynamic?permission.dynamic:false,
                         filter_elements: [{ value1: permission.value }]
                     };
@@ -994,8 +998,10 @@ export abstract class QueryBuilderService {
         let filterMap = new Map();
         let toRemove = [];
         filters.forEach(filter => {
-
             let myKey = filter.filter_table + filter.filter_column + filter.isGlobal;
+            if(filter.isGlobal == 'security'){
+                myKey = 'security' /**   si es de seguridad se deben combinar todos los filtros. */
+            }
             let node = filterMap.get(myKey);
             if (node) {
                 node.push(filter);
