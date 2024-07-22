@@ -1006,7 +1006,7 @@ export abstract class QueryBuilderService {
         filters.forEach(filter => {
             let myKey = filter.filter_table + filter.filter_column + filter.isGlobal;
             if(filter.isGlobal == 'security'){
-                myKey = 'security' /**   si es de seguridad se deben combinar todos los filtros. */
+                myKey = filter.filter_table +'security'  /**   si es de seguridad se deben combinar todos los filtros. */
             }
             let node = filterMap.get(myKey);
             if (node) {
