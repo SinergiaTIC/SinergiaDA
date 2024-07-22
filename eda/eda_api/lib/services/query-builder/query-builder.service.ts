@@ -995,6 +995,12 @@ export abstract class QueryBuilderService {
     }
 
     public getEqualFilters = (filters) => {
+        /**
+         * LOS FILTROS TIENEN DIFERENTES NIVELES GLOBAL = A NIVEL DE DASHBOARD - LOCAL = A NIVEL DE PANEL - SEGURIDAD = QUE VIENEN DE LA SEGURIDAD
+         * LOS FILTORS SE CONCATENAN CON UN AND NORMALMENTE. PERO SI PONGO FILTROS SOBRE LA MISMA COLUMNA AL MISMO NIVEL (ISGLOBAL) SE CONCATENAN
+         * CON UN OR. QUE ES EL FUNCIONAMIENTO ESPERADO.
+         * 
+          */
         let filterMap = new Map();
         let toRemove = [];
         filters.forEach(filter => {
