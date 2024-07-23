@@ -34,7 +34,7 @@ export class DragDropComponent {
   isNumeric(item: CdkDrag<any>) {
     const data = item.dropContainer.data;
     const value = item.element.nativeElement.innerText.toString();
-    if(data.filter(e => e.display_name==value)[0].column_type==='numeric') return false;
+    if(data.filter(e => e.display_name==value)[0].column_type!=='numeric') return false;
     return true;
   }
 
