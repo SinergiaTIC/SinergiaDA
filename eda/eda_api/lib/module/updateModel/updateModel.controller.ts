@@ -62,40 +62,41 @@ export class updateModel {
                         let columns = rows;
                         // seleccionamos Relaciones
                         await connection.query(` 
-                    SELECT distinct source_table, source_column, target_table, target_column 
+                    SELECT distinct source_table, source_column, target_table, target_column, label , 0 as direccion
                     FROM sda_def_relationships
                     union 
                     SELECT target_table as source_table, target_column as source_column , 
-                    source_table as target_table , source_column as target_column
+                    source_table as target_table , source_column as target_column, label as label , 1 as direccion
                     FROM sda_def_relationships 
+                    where source_table != target_table
                     union 
                     SELECT source_table , source_column  , 
-                            master_table  , master_id as target_column
+                            master_table  , master_id as target_column, 'xx-bridge|xx-bridge' , 2 as direccion
                             FROM sda_def_enumerations 
                             where bridge_table is null or bridge_table = ''
                     union 
                     SELECT master_table  , master_id  ,
-                            source_table , source_column  
+                            source_table , source_column , 'xx-bridge|xx-bridge' , 2 as direccion
                             FROM sda_def_enumerations 
                             where bridge_table is null or bridge_table = ''
                     union 
                     SELECT source_table , source_bridge as source_column   , 
-                            bridge_table  , source_bridge
+                            bridge_table  , source_bridge, 'xx-bridge|xx-bridge' , 2 as direccion
                             FROM sda_def_enumerations 
                             where bridge_table   != ''
                     union 
                     SELECT bridge_table  , source_bridge,
-                                source_table , source_bridge as source_column 
+                                source_table , source_bridge as source_column , 'xx-bridge|xx-bridge' , 2 as direccion
                             FROM sda_def_enumerations 
                             where bridge_table != ''
                     union 
                     SELECT bridge_table  , target_bridge,
-                            master_table , master_id  
+                            master_table , master_id  , 'xx-bridge|xx-bridge' , 2 as direccion
                             FROM sda_def_enumerations 
                             where bridge_table != ''
                     union 
                     SELECT  master_table , master_id,
-                        bridge_table  , target_bridge 
+                        bridge_table  , target_bridge , 'xx-bridge|xx-bridge' , 2 as direccion
                             FROM sda_def_enumerations 
                             where bridge_table   != ''  `).then(async rows => {
                             let relations = rows;
@@ -104,23 +105,23 @@ export class updateModel {
                                 .then(async users => {
                                     let users_crm = users
                                     //seleccionamos roles de EDA
-                                    await connection.query('select "EDA_USER_ROLE" as role, g.name as name , g.user_name from sda_def_user_groups g;')
+                                    await connection.query('select "EDA_USER_ROLE" as role, b.name, "" as user_name  from sda_def_groups b union select "EDA_USER_ROLE" as role, g.name as name , g.user_name from sda_def_user_groups g; ')
                                         .then(async role => {
                                             let roles = role;
-                                            await connection.query('  SELECT DISTINCT  a.`table`, a.`group`  FROM sda_def_security_group_records a  inner join sda_def_user_groups  b on a.`group`  = b.name   inner join   sda_def_tables t on a.`table`  = t.`table`  ')
+                                            await connection.query('  select distinct a.`table`,  "id" as  `column`,  a.`group` from  sda_def_permissions a left join sda_def_security_group_records b on a.`table`  = b.`table` and a.`group`  = b.`group` where a.`group` != ""; ' )
                                                 .then(async granted => {
                                                     let grantedRoles = granted;
                                                     //seleccionamos enumeraciones
                                                     await connection.query(' select source_table , source_column , master_table, master_id, master_column, bridge_table, source_bridge, target_bridge, stic_type, info from sda_def_enumerations sde ;')
                                                         .then(async enums => {
                                                             let ennumeration = enums;
-                                                            await connection.query(' select user_name as name, `table` from sda_def_permissions  ')
+                                                            await connection.query(' select user_name as name, `table` from sda_def_permissions ')
                                                                 .then(async permi => {
                                                                     let permissions = permi
-                                                                    //select distinct `table`, 'id' as 'column',  `group` from sda_def_security_group_records where 
-                                                                    await connection.query("select distinct `table`, 'id' as 'column',  `group` from sda_def_security_group_records ")
+                                                                    //select distinct `table`, 'id' as 'column',  `group` from sda_def_security_group_records
+                                                                    await connection.query(" select distinct `table`, 'id' as `column`,  `group` from sda_def_permissions  where `group` != ''  ")
                                                                         .then(async permiCol => {
-                                                                            let permissionsColumns = permiCol
+                                                                            let permissionsColumns = permiCol;
                                                                             /**Ahora que ya tengo todos los datos, monto el modelo */
                                                                             // montamos el modelo
                                                                             console.log('Recuperando usuarios');
@@ -203,7 +204,7 @@ export class updateModel {
 
     /** Genera los roles  */
     static async grantedRolesToModel(grantedRoles: any, crmTables: any, permissions: any, permissionsColumns: any) {
-
+        
         const destGrantedRoles = [];
         let gr = {}
         let gr2 = {}
@@ -221,11 +222,10 @@ export class updateModel {
             permission: true,
             type: "anyoneCanSee"
         }
-
-        destGrantedRoles.push(all);
+      // Los permisos determinan que tablas puedo ver.
+      // destGrantedRoles.push(all);
 
         const mongoGroups = await  Group.find();
-
 
         grantedRoles.forEach((line) => {
 
@@ -326,6 +326,7 @@ export class updateModel {
                     none: false,
                     table: line.table,
                     column: line.column,
+                    dynamic: true,
                     global: false,
                     type: "groups",
                     value: [valueAt]
@@ -509,7 +510,13 @@ export class updateModel {
               "source_column": [relations[i].source_column],
               "target_table": relations[i].target_table,
               "target_column": [relations[i].target_column],
-              "visible": true
+              "visible": true,
+              "bridge": relations[i].label=="xx-bridge|xx-bridge"?true:false,
+              "display_name": {
+                "default": relations[i].direccion === 0 ? relations[i].label.split('|')[0] : relations[i].label.split('|')[1] ,
+                 "localized": []
+              },
+              "autorelation" : relations[i].source_table === relations[i].target_table ? true : false
             }
             destRelations.push(rr);
             
@@ -543,16 +550,9 @@ console.log(sinergiaDatabase);
         const cleanM = new CleanModel; 
         main_model = await cleanM.cleanModel(main_model);
         fs.writeFile(`metadata.json`, JSON.stringify(main_model), { encoding: `utf-8` }, (err) => { if (err) {throw err} else { }})
-        try {
-          await new pushModelToMongo().pushModel(main_model,res)
-          } catch (e) {
-            console.log(e)
-            res.status(500).json({'status' : 'ko'})
-          } finally {
-            res.status(200).json({'status' : 'ok'})
-          }
-        
-        } catch (e) {        
+        await new pushModelToMongo().pushModel(main_model,res)
+        res.status(200).json({'status' : 'ok'})
+         } catch (e) {        
             console.log(e)
             res.status(500).json({'status' : 'ko'})
         }
