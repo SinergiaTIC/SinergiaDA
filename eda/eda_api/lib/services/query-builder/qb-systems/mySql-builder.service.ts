@@ -91,8 +91,6 @@ export class MySqlBuilderService extends QueryBuilderService {
     if (filters.length) {
 
       let equalfilters = this.getEqualFilters(filters);
-      console.log('Filter: ', filters);
-      console.log('equalfilters: ', equalfilters);
       filters = filters.filter(f => !equalfilters.toRemove.includes(f.filter_id));
       let filtersString = `\nwhere 1 = 1 `;
 

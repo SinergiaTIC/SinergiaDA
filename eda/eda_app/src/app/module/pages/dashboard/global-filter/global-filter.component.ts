@@ -62,7 +62,7 @@ export class GlobalFilterComponent implements OnInit {
                 return (f.visible != "hidden" && f.visible == "readOnly") ||
                     (f.visible != "hidden" && f.visible == "public")
             });
-         }, 1);
+         }, 5);
 
 
         this.globalFilters.forEach(a => {
