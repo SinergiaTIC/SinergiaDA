@@ -560,7 +560,9 @@
                         </div>
                     </div>
                     <div class="col-12 p-1">
-                        <drag-drop [attributes]="attributes"></drag-drop>
+                        <div class="col-8">
+                            <drag-drop *ngIf="graphicType==='crosstable'" [attributes]="attributes"></drag-drop>
+                        </div>
                     </div>
                 </div>
             </p-tabPanel>

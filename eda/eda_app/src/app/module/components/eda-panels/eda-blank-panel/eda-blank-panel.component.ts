@@ -190,6 +190,7 @@ export class EdaBlankPanelComponent implements OnInit {
 
     // for the drag-drop component
     public attributes:any[]=[];
+    public graphicType: string;
 
     constructor(
         public queryBuilder: QueryBuilderService,
@@ -255,6 +256,7 @@ export class EdaBlankPanelComponent implements OnInit {
             header: $localize`:@@panelOptions0:OPCIONES DEL PANEL`,
             contextMenuItems: PanelOptions.generateMenu(this)
         });
+
     }
 
     /**
@@ -491,6 +493,8 @@ export class EdaBlankPanelComponent implements OnInit {
         this.showHiddenColumn = false;
         this.display_v.saved_panel = true;
         this.display_v.minispinner = false;
+
+        this.graphicType = this.chartForm.value.chart.value;//iniciamos el tipo de gráfico para el componente drag-drop
     }
 
 
@@ -607,6 +611,8 @@ export class EdaBlankPanelComponent implements OnInit {
      * @param content panel content
      */
     public changeChartType(type: string, subType: string, config?: ChartConfig) {
+        this.graphicType = type; // Actualizamos el tipo de variable para el componente drag-drop
+        // console.log('type:', type)
         this.graficos = {};
         let allow = _.find(this.chartTypes, c => c.value === type && c.subValue == subType);
         this.display_v.chart = type;
