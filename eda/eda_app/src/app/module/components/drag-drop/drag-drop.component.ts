@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, OnInit, OnChanges, SimpleChanges } from '@angular/core';
 import { CdkDrag, CdkDragDrop, moveItemInArray, transferArrayItem } from '@angular/cdk/drag-drop';
 
 
@@ -7,15 +7,39 @@ import { CdkDrag, CdkDragDrop, moveItemInArray, transferArrayItem } from '@angul
   templateUrl: './drag-drop.component.html',
   styleUrls: ['./drag-drop.component.css']
 })
-export class DragDropComponent {
+export class DragDropComponent implements OnInit, OnChanges {
 
   @Input() attributes?:any[];
 
+  itemGroup = [];
   itemX = [];
-  itemY = []
+  itemY = [];
   itemZ = [];
 
   constructor() { }
+
+  ngOnInit(): void {
+    
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    this.afterExecutionEBP();
+  }
+  
+  initialization() {
+
+  }
+  
+  afterExecutionEBP() {
+    this.itemGroup = this.attributes;
+    this.itemX = [];
+    this.itemY = [];
+    this.itemZ = [];
+  }
+
+  temporalExecution(){
+    console.log('heyyyyy');
+  }
 
   // Pasar items de un contenido a otro
   drop(event: CdkDragDrop<string[]>) {

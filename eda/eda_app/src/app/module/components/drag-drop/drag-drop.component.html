@@ -10,10 +10,10 @@
             <div
               class="example-list-1"
               cdkDropList
-              [cdkDropListData]="attributes"
+              [cdkDropListData]="itemGroup"
               (cdkDropListDropped)="drop($event)">
       
-              <div *ngFor="let item of attributes" class="example-box-1" cdkDrag>{{item.display_name}}</div>
+              <div *ngFor="let item of itemGroup" class="example-box-1" cdkDrag>{{item.display_name}}</div>
               
             </div>
           </div>
@@ -91,6 +91,10 @@
       </div>
       
     </div>
-
+</div>
+<div>
+  <button (click)="temporalExecution()">
+    Prueba
+  </button>
 </div>
   

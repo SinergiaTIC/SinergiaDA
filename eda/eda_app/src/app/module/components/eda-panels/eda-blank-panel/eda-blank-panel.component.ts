@@ -189,8 +189,8 @@ export class EdaBlankPanelComponent implements OnInit {
 
 
     // for the drag-drop component
-    public attributes:any[]=[];
-    public graphicType: string;
+    public attributes:any[]=[]; 
+    public graphicType: string; // extraemos el tipo de gráfico al inicio y al ejecutar
 
     constructor(
         public queryBuilder: QueryBuilderService,
