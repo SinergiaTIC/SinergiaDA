@@ -1,6 +1,8 @@
 
 import { Injectable } from '@angular/core';
 import moment from 'moment';
+
+
 @Injectable()
 export class DateUtils {
 
@@ -26,12 +28,14 @@ export class DateUtils {
             case 'monthFullPreviousYear': return this.setMonthFullPreviousYear();
             case 'yearStart': return this.setYearStart();
             case 'yearStartPreviousYear': return this.setYearStartPreviousYear();
+            case 'yearStartPreviousYearFull': return this.setYearStartPreviousYearFull();
             case 'last3': return this.setLast3();
             case 'last7': return this.setLast7();
             case 'last15': return this.setLast15();
             case 'last30': return this.setLast30();
             case 'last60': return this.setLast60();
             case 'last120': return this.setLast120();
+            case 'null': return this.nullDate();
         }
     }
 
@@ -167,6 +171,12 @@ export class DateUtils {
         return [yearStart, today];
     }
 
+    public setYearStartPreviousYearFull(): Array<Date> {
+        const pastYearStart = moment().subtract(1,'years').startOf('year').toDate();
+        const pastYearEnd = moment().subtract(1,'years').endOf('year').toDate();
+        return [pastYearStart, pastYearEnd];
+    }
+
     public setLast3(): Array<Date> {
         const today = new Date();
         const last3 = new Date(today.getTime() - (2 * 24 * 60 * 60 * 1000));
@@ -217,4 +227,10 @@ export class DateUtils {
         return stringRange;
     }
 
+
+    public nullDate() {
+        return [moment('1900-01-01').toDate(), moment('1900-01-01').toDate()];
+    }
+
 }
+
