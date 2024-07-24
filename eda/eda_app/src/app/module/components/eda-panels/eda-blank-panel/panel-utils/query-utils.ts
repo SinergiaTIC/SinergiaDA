@@ -149,6 +149,10 @@ export const QueryUtils = {
             })
             ebp.chartForm.patchValue({chart: ebp.chartUtils.chartTypes.find(o => o.subValue === ebp.chartForm.value.chart.subValue)});
           }
+          else {
+            ebp.changeChartType('table', 'table', null);
+            ebp.chartForm.patchValue({chart: ebp.chartUtils.chartTypes.find(o => o.value === 'table')});
+          }
 
         } catch (error) {
           ebp.changeChartType('table', 'table', null);
