@@ -3,7 +3,7 @@
 
       <div class="row">
 
-        <div class="col-3 p-2" style="width: 81px;">
+        <div class="col-3 p-2 mr-2" style="width: 82px;">
           <h3>Test 1</h3>
 
           <div class="example-container-1">
@@ -26,7 +26,7 @@
           <div class="container">
             <div class="row">
 
-              <div class="col-4 pt-0 pr-0" style="width: 75px;">
+              <div class="col-4 pt-0 pr-0" style="width: 95px;">
 
                 <div class="example-container-2">
                   <div
@@ -47,7 +47,7 @@
 
                 <div class="container">
                   <div class="row">
-                    <div class="col pt-0 pl-0" style="height: 45px;">
+                    <div class="col pt-0 pl-0" style="height: 68px;">
 
                       <div class="example-container-3">
                         <div
@@ -55,6 +55,7 @@
                           cdkDropList
                           [cdkDropListData]="itemY"
                           (cdkDropListDropped)="drop($event)"
+                          cdkDropListOrientation="horizontal"
                           >
                   
                             <div *ngFor="let item of itemY" class="example-box-3" cdkDrag>{{item.display_name}}</div>

@@ -1,6 +1,5 @@
 .example-container-1 {
-    width: 70px;
-    max-width: 100%;
+    width: 90px;
     margin: 0 25px 25px 0;
     display: inline-block;
     vertical-align: top;
@@ -33,7 +32,7 @@
   }
 
   .example-container-2 {
-    width: 70px;
+    width: 90px;
     max-width: 100%;
     margin: 0 25px 25px 0;
     display: inline-block;
@@ -42,7 +41,7 @@
   
   .example-list-2 {
     border: solid 1px #ffffff;
-    min-height: 132px;
+    min-height: 198px;
     background: rgb(98, 97, 97); /* cambiar de color */
     border-radius: 4px;
     overflow: hidden;
@@ -67,7 +66,7 @@
   }
 
   .example-container-3 {
-    width: 160px;
+    width: 350px;
     max-width: 100%;
     margin: 0 25px 25px 0;
     display: inline-block;
@@ -76,16 +75,16 @@
   
   .example-list-3 {
     border: solid 1px #ffffff;
-    min-height: 46px;
+    min-height: 69px;
     background: rgb(98, 97, 97); /* cambiar de color */
+    display: flex;
+    flex-direction: row;
     border-radius: 4px;
     overflow: hidden;
-    display: block;
   }
   
   .example-box-3 {
     padding: 10px 10px;
-    width: 30px;
     border: solid 1px #ccc;
     border-radius: 5px;
     color: rgba(0, 0, 0, 0.87);
@@ -102,7 +101,7 @@
   }
 
   .example-container-4 {
-    width: 160px;
+    width: 350px;
     max-width: 100%;
     margin: 0 25px 25px 0;
     display: inline-block;
@@ -111,11 +110,12 @@
   
   .example-list-4 {
     border: solid 1px #ffffff;
-    min-height: 86px;
+    min-height: 129px;
     background: rgb(98, 97, 97); /* cambiar de color */
+    display: flex;
+    flex-direction: row;
     border-radius: 4px;
     overflow: hidden;
-    display: block;
     margin-top: 1px;
   }
   
