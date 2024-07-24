@@ -699,8 +699,27 @@ export class DashboardController {
         }
       }
     }
-    //console.log('Tablas PERMITIDAS PARA el usuario por el');
-    //console.log(allowedTablesBySecurityForMe);
+    
+    // Check if the user has permission to view the table based on column visibility
+    if (dataModelObject.ds.metadata.model_granted_roles !== undefined) {
+      for (var i = 0; i < dataModelObject.ds.metadata.model_granted_roles.length; i++) {
+        // Verify if the user has access to at least one column in the table
+        if (
+          dataModelObject.ds.metadata.model_granted_roles[i].global === false &&
+          dataModelObject.ds.metadata.model_granted_roles[i].none === false &&
+          dataModelObject.ds.metadata.model_granted_roles[i].value.length > 0
+        ) {
+          if (dataModelObject.ds.metadata.model_granted_roles[i].groups !== undefined) {
+            for (var j = 0; j < dataModelObject.ds.metadata.model_granted_roles[i].groups.length; j++) {
+              if (userGroups.includes(dataModelObject.ds.metadata.model_granted_roles[i].groups[j])) {
+                allowedTablesBySecurityForMe.push(dataModelObject.ds.metadata.model_granted_roles[i].table);
+              }  
+            }
+          }
+        }
+      }
+    }
+
     forbiddenTables = allTables.filter( t => !allowedTablesBySecurityForMe.includes( t )  );
     return forbiddenTables;
   }
@@ -1246,8 +1265,8 @@ export class DashboardController {
 
 
     if (dataModel.ds.metadata.model_granted_roles.length > 0) {
-      const users = []
-      const roles = []
+      const users = [];
+      const roles = [];
       let anyOne = 'false'
 
       //Get users with permission
@@ -1259,14 +1278,14 @@ export class DashboardController {
             }
             break
           case 'users':
-            permission.users.forEach(user => {
-              if (!users.includes(user)) users.push(user)
+            permission.users.forEach(u => {
+              if ( !users.includes(u.toString()) )  users.push(u.toString());
             })
             break
           case 'groups':
             user.role.forEach(role => {
               if (permission.groups.includes(role)) {
-                if (!roles.includes(role)) roles.push(role)
+                if (!roles.includes(role.toString())) roles.push(role.toString())
               }
             })
         }
