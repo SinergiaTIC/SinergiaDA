@@ -447,17 +447,15 @@ export class EdaBlankPanelComponent implements OnInit {
         const queryMode = this.selectedQueryMode;
         this.showHiddenColumn = true;
 
+        const currentQuery = panelContent.query.query.fields;
+
         if ((queryMode && queryMode != 'SQL') || modeSQL === false) {
 
             try {
                 if (queryMode == 'EDA2') {
                     this.rootTable = this.tables.find((t) => t.table_name == this.rootTable);
                     // Assert Relation Tables
-                    const currentQuery = panelContent.query.query.fields;   
-
-                    console.log('currentQuery: ', currentQuery);
                     this.attributes = currentQuery.map((e:any) => { return { display_name: e.display_name, column_type: e.column_type } }); // Extraemos attributes del panelContent
-                    console.log('this.attributes: ', this.attributes);
 
                     for (const column of currentQuery) {
                         PanelInteractionUtils.assertTable(this, column);
@@ -469,6 +467,7 @@ export class EdaBlankPanelComponent implements OnInit {
                     this.userSelectedTable = undefined;
                     this.columns = [];
                 } else {
+                    this.attributes = currentQuery.map((e:any) => { return { display_name: e.display_name, column_type: e.column_type } }); // Extraemos attributes del panelContent
                     PanelInteractionUtils.handleCurrentQuery(this);
                     this.columns = this.columns.filter((c) => !c.isdeleted);
                 }
