@@ -10,10 +10,10 @@
             <div
               class="example-list-1"
               cdkDropList
-              [cdkDropListData]="itemGroup"
+              [cdkDropListData]="temporalAttributes"
               (cdkDropListDropped)="drop($event)">
       
-              <div *ngFor="let item of itemGroup" class="example-box-1" cdkDrag>{{item.display_name}}</div>
+              <div *ngFor="let item of temporalAttributes" class="example-box-1" cdkDrag>{{item.display_name}}</div>
               
             </div>
           </div>
@@ -72,6 +72,7 @@
                           cdkDropList
                           [cdkDropListData]="itemZ"
                           (cdkDropListDropped)="drop($event)"
+                          cdkDropListOrientation="horizontal"
                           [cdkDropListEnterPredicate]="isNumeric">
                   
                             <div *ngFor="let item of itemZ" class="example-box-4" cdkDrag>{{item.display_name}}</div>
@@ -89,13 +90,15 @@
           </div>
         </div>
 
+        <div class="col-12">
+          <div>
+            <button type="button" pButton (click)="temporalExecution()" [disabled]="!validated"
+                icon="fa fa-flask" class="p-button-success ml-2" i18n-label="@@otro" label="temporalButton">
+            </button>
+          </div>
+        </div>
+
       </div>
-      
     </div>
-</div>
-<div>
-  <button (click)="temporalExecution()">
-    Prueba
-  </button>
 </div>
   

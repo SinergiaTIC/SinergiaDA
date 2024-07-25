@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, Input, Output, OnInit, OnChanges, SimpleChanges, EventEmitter } from '@angular/core';
 import { CdkDrag, CdkDragDrop, moveItemInArray, transferArrayItem } from '@angular/cdk/drag-drop';
 
 
@@ -10,11 +10,13 @@ import { CdkDrag, CdkDragDrop, moveItemInArray, transferArrayItem } from '@angul
 export class DragDropComponent implements OnInit, OnChanges {
 
   @Input() attributes?:any[];
+  @Output() sortedAttributes: EventEmitter<any[]> = new EventEmitter();
 
-  itemGroup = [];
+  temporalAttributes = [];
   itemX = [];
   itemY = [];
   itemZ = [];
+  validated: boolean = false;
 
   constructor() { }
 
@@ -29,9 +31,21 @@ export class DragDropComponent implements OnInit, OnChanges {
   initialization() {
 
   }
+
+  ordering() {
+    console.log('----------------------------------------------------------------------');
+    console.log('Verifica si todos estan llenos con almenos 1 y el principal vacio');
+    console.log('temporalAttributes',this.temporalAttributes, this.temporalAttributes.length);
+    console.log('itemX',this.itemX, this.itemX.length);
+    console.log('itemY',this.itemY, this.itemY.length);
+    console.log('itemZ',this.itemZ, this.itemZ.length);
+
+    if(this.temporalAttributes.length==0 && this.itemX.length>=1 && this.itemY.length>=1 && this.itemZ.length>=1) this.validated = true;
+    else this.validated = false;
+  }
   
   afterExecutionEBP() {
-    this.itemGroup = this.attributes;
+    this.temporalAttributes = this.attributes;
     this.itemX = [];
     this.itemY = [];
     this.itemZ = [];
@@ -52,6 +66,7 @@ export class DragDropComponent implements OnInit, OnChanges {
         event.previousIndex,
         event.currentIndex,
       );
+      this.ordering();
     }
   }
 
