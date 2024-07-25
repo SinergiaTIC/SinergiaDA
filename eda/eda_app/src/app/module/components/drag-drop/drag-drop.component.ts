@@ -13,6 +13,7 @@ export class DragDropComponent implements OnInit, OnChanges {
   @Output() sortedAttributes: EventEmitter<any[]> = new EventEmitter();
 
   temporalAttributes = [];
+  newSortedAttributes = [];
   itemX = [];
   itemY = [];
   itemZ = [];
@@ -33,15 +34,11 @@ export class DragDropComponent implements OnInit, OnChanges {
   }
 
   ordering() {
-    console.log('----------------------------------------------------------------------');
-    console.log('Verifica si todos estan llenos con almenos 1 y el principal vacio');
-    console.log('temporalAttributes',this.temporalAttributes, this.temporalAttributes.length);
-    console.log('itemX',this.itemX, this.itemX.length);
-    console.log('itemY',this.itemY, this.itemY.length);
-    console.log('itemZ',this.itemZ, this.itemZ.length);
+    this.validated = (this.temporalAttributes.length==0 && this.itemX.length>=1 && this.itemY.length>=1 && this.itemZ.length>=1) ? true : false;  
 
-    if(this.temporalAttributes.length==0 && this.itemX.length>=1 && this.itemY.length>=1 && this.itemZ.length>=1) this.validated = true;
-    else this.validated = false;
+    if(this.validated) {
+      this.newSortedAttributes = [{itemX: this.itemX, itemY: this.itemY, itemZ: this.itemZ}]
+    }
   }
   
   afterExecutionEBP() {
@@ -52,7 +49,8 @@ export class DragDropComponent implements OnInit, OnChanges {
   }
 
   temporalExecution(){
-    console.log('heyyyyy');
+    console.log('Emitiendo la nueva forma de consulta -->  ');
+    this.sortedAttributes.emit(this.newSortedAttributes);
   }
 
   // Pasar items de un contenido a otro
