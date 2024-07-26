@@ -10,10 +10,9 @@ import { CdkDrag, CdkDragDrop, moveItemInArray, transferArrayItem } from '@angul
 export class DragDropComponent implements OnInit, OnChanges {
 
   @Input() attributes?:any[];
-  @Output() sortedAttributes: EventEmitter<any[]> = new EventEmitter();
 
   temporalAttributes = [];
-  newSortedAttributes = [];
+  public newSortedAttributes = [];
   itemX = [];
   itemY = [];
   itemZ = [];
@@ -33,7 +32,7 @@ export class DragDropComponent implements OnInit, OnChanges {
 
   }
 
-  ordering() {
+  public ordering() {
     this.validated = (this.temporalAttributes.length==0 && this.itemX.length>=1 && this.itemY.length>=1 && this.itemZ.length>=1) ? true : false;  
 
     if(this.validated) {
@@ -49,8 +48,7 @@ export class DragDropComponent implements OnInit, OnChanges {
   }
 
   temporalExecution(){
-    console.log('Emitiendo la nueva forma de consulta -->  ');
-    this.sortedAttributes.emit(this.newSortedAttributes);
+    console.log('Lo que se tendra que ejecutarse en pivot:  -->  ', this.newSortedAttributes);
   }
 
   // Pasar items de un contenido a otro

@@ -1140,13 +1140,6 @@ export class EdaBlankPanelComponent implements OnInit {
         this.duplicate.emit(duplicatedPanel);
     }
 
-    public executeSortedAttributes(sortedAttributes: any[]): void {
-        console.log('Imprimiendo nueva ordenación de los elementos: ', sortedAttributes);
-        console.log('AQUI el THIS: ', this)
-        console.log('currentQuery Listo para hacerle un reordenamiento --==> ', this.currentQuery)
-        QueryUtils.runManualQuery(this)
-    }
-
 
     public removePanel(): void {
         this.remove.emit(this.panel.id);
