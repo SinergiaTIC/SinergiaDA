@@ -4285,6 +4285,10 @@
         <source>Este panel no está disponible por falta de permisos en un filtro</source>
         <target>This panel is not available due to lack of permissions on a filter</target>
       </trans-unit>
+      <trans-unit id="DatePickerYearPreviousYearFull">
+        <source>El año pasado, completo</source>
+        <target>Last year, complete</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>

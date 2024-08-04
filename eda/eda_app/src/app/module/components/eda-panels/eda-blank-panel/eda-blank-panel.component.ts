@@ -700,6 +700,7 @@ export class EdaBlankPanelComponent implements OnInit {
      * @param isFilter is filter column or normal column
      */
     public openColumnDialog(column: Column, isFilter?: boolean): void {
+
         this.disableBtnSave();
 
         if (column.table_id !== this.rootTable?.table_name) {
@@ -745,6 +746,17 @@ export class EdaBlankPanelComponent implements OnInit {
 
                             if (field.old_column_type === 'text' && aggregationSelected.value === 'none') {
                                 field.column_type = 'text';
+                                field.old_column_type = 'numeric';
+                            }
+
+                            if (field.column_type === 'date' && aggregationSelected.value !== 'none') {
+                                field.old_column_type = 'date';
+                                field.column_type = 'numeric';
+                            }
+
+                            if (field.old_column_type === 'date' && aggregationSelected.value === 'none') {
+                                field.column_type = 'date';
+                                field.old_column_type = 'numeric';
                             }
                         }
                     }
