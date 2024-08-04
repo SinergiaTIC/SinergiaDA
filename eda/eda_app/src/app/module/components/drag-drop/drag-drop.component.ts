@@ -1,4 +1,4 @@
-import { Component, Input, Output, OnInit, OnChanges, SimpleChanges, EventEmitter } from '@angular/core';
+import { Component, Input, Output, OnChanges, SimpleChanges, EventEmitter } from '@angular/core';
 import { CdkDrag, CdkDragDrop, moveItemInArray, transferArrayItem } from '@angular/cdk/drag-drop';
 
 
@@ -7,12 +7,14 @@ import { CdkDrag, CdkDragDrop, moveItemInArray, transferArrayItem } from '@angul
   templateUrl: './drag-drop.component.html',
   styleUrls: ['./drag-drop.component.css']
 })
-export class DragDropComponent implements OnInit, OnChanges {
+export class DragDropComponent implements OnChanges {
 
   @Input() attributes?:any[];
+  @Output() newCurrentQuery: EventEmitter<any[]> = new EventEmitter();
+
 
   temporalAttributes = [];
-  public newSortedAttributes = [];
+  newSortedAttributes = [];
   itemX = [];
   itemY = [];
   itemZ = [];
@@ -20,16 +22,16 @@ export class DragDropComponent implements OnInit, OnChanges {
 
   constructor() { }
 
-  ngOnInit(): void {
-    
-  }
-
   ngOnChanges(changes: SimpleChanges): void {
-    this.afterExecutionEBP();
+    this.initialization();
   }
   
   initialization() {
-
+    this.temporalAttributes = this.attributes;
+    this.itemX = [];
+    this.itemY = [];
+    this.itemZ = [];
+    this.validated = false
   }
 
   public ordering() {
@@ -39,16 +41,19 @@ export class DragDropComponent implements OnInit, OnChanges {
       this.newSortedAttributes = [{itemX: this.itemX, itemY: this.itemY, itemZ: this.itemZ}]
     }
   }
-  
-  afterExecutionEBP() {
-    this.temporalAttributes = this.attributes;
-    this.itemX = [];
-    this.itemY = [];
-    this.itemZ = [];
-  }
 
   temporalExecution(){
-    console.log('Lo que se tendra que ejecutarse en pivot:  -->  ', this.newSortedAttributes);
+    this.attributes = [];
+    this.itemX.forEach(e => this.attributes.push(e));
+    this.itemY.forEach(e => this.attributes.push(e));
+    this.itemZ.forEach(e => this.attributes.push(e));
+
+    // Agregamos el ordenamiento
+    this.attributes.forEach(e =>  {
+      e.ordering = this.newSortedAttributes
+    })
+
+    this.newCurrentQuery.emit(this.attributes);
   }
 
   // Pasar items de un contenido a otro
@@ -69,7 +74,7 @@ export class DragDropComponent implements OnInit, OnChanges {
   isNumeric(item: CdkDrag<any>) {
     const data = item.dropContainer.data;
     const value = item.element.nativeElement.innerText.toString();
-    if(data.filter(e => e.display_name==value)[0].column_type!=='numeric') return false;
+    if(data.filter((e:any) => e.description.default==value)[0].column_type!=='numeric') return false;
     return true;
   }
 

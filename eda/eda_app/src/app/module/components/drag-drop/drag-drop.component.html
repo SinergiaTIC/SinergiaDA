@@ -13,7 +13,7 @@
               [cdkDropListData]="temporalAttributes"
               (cdkDropListDropped)="drop($event)">
       
-              <div *ngFor="let item of temporalAttributes" class="example-box-1" cdkDrag>{{item.display_name}}</div>
+              <div *ngFor="let item of temporalAttributes" class="example-box-1" cdkDrag>{{item.display_name.default}}</div>
               
             </div>
           </div>
@@ -36,7 +36,7 @@
                     (cdkDropListDropped)="drop($event)"
                     >
             
-                      <div *ngFor="let item of itemX" class="example-box-2" cdkDrag>{{item.display_name}}</div>
+                      <div *ngFor="let item of itemX" class="example-box-2" cdkDrag>{{item.display_name.default}}</div>
                     
                   </div>
                 </div>
@@ -58,7 +58,7 @@
                           cdkDropListOrientation="horizontal"
                           >
                   
-                            <div *ngFor="let item of itemY" class="example-box-3" cdkDrag>{{item.display_name}}</div>
+                            <div *ngFor="let item of itemY" class="example-box-3" cdkDrag>{{item.display_name.default}}</div>
                           
                         </div>
                       </div>
@@ -75,7 +75,7 @@
                           cdkDropListOrientation="horizontal"
                           [cdkDropListEnterPredicate]="isNumeric">
                   
-                            <div *ngFor="let item of itemZ" class="example-box-4" cdkDrag>{{item.display_name}}</div>
+                            <div *ngFor="let item of itemZ" class="example-box-4" cdkDrag>{{item.display_name.default}}</div>
                           
                         </div>
                       </div>

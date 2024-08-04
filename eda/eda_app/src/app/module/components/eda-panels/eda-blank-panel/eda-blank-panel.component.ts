@@ -191,6 +191,7 @@ export class EdaBlankPanelComponent implements OnInit {
     // for the drag-drop component
     public attributes:any[]=[]; 
     public graphicType: string; // extraemos el tipo de gráfico al inicio y al ejecutar
+    public configCrossTable: any;
 
     constructor(
         public queryBuilder: QueryBuilderService,
@@ -455,8 +456,6 @@ export class EdaBlankPanelComponent implements OnInit {
                 if (queryMode == 'EDA2') {
                     this.rootTable = this.tables.find((t) => t.table_name == this.rootTable);
                     // Assert Relation Tables
-                    this.attributes = currentQuery.map((e:any) => { return { display_name: e.display_name, column_type: e.column_type } }); // Extraemos attributes del panelContent
-
                     for (const column of currentQuery) {
                         PanelInteractionUtils.assertTable(this, column);
                     }
@@ -467,7 +466,6 @@ export class EdaBlankPanelComponent implements OnInit {
                     this.userSelectedTable = undefined;
                     this.columns = [];
                 } else {
-                    this.attributes = currentQuery.map((e:any) => { return { display_name: e.display_name, column_type: e.column_type } }); // Extraemos attributes del panelContent
                     PanelInteractionUtils.handleCurrentQuery(this);
                     this.columns = this.columns.filter((c) => !c.isdeleted);
                 }
@@ -494,6 +492,8 @@ export class EdaBlankPanelComponent implements OnInit {
         this.display_v.minispinner = false;
 
         this.graphicType = this.chartForm.value.chart.value;//iniciamos el tipo de gráfico para el componente drag-drop
+
+        this.attributes = _.cloneDeep(this.currentQuery); // Recuperando el currentQuery para el componente drag-drop
     }
 
 
@@ -610,6 +610,8 @@ export class EdaBlankPanelComponent implements OnInit {
      * @param content panel content
      */
     public changeChartType(type: string, subType: string, config?: ChartConfig) {
+        this.configCrossTable = config
+
         this.graphicType = type; // Actualizamos el tipo de variable para el componente drag-drop
         // console.log('type:', type)
         this.graficos = {};
@@ -940,7 +942,6 @@ export class EdaBlankPanelComponent implements OnInit {
             this.panel.content.query.output.config.colors = response.colors;
             const config = new ChartConfig(this.panel.content.query.output.config);
             this.renderChart(this.currentQuery, this.chartLabels, this.chartData, this.graficos.chartType, this.graficos.edaChart, config);
-
             this.dashboardService._notSaved.next(true);
 
         }
@@ -979,6 +980,7 @@ export class EdaBlankPanelComponent implements OnInit {
             const config = new ChartConfig(this.panel.content.query.output.config);
             this.renderChart(this.currentQuery, this.chartLabels, this.chartData, this.graficos.chartType, this.graficos.edaChart, config);
             this.dashboardService._notSaved.next(true);
+
         }
         this.bubblechartController = undefined;
     }
@@ -993,6 +995,7 @@ export class EdaBlankPanelComponent implements OnInit {
             this.panel.content.query.output.config.colors = response.colors;
             const config = new ChartConfig(this.panel.content.query.output.config);
             this.renderChart(this.currentQuery, this.chartLabels, this.chartData, this.graficos.chartType, this.graficos.edaChart, config);
+
             this.dashboardService._notSaved.next(true);
 
         }
@@ -1003,6 +1006,7 @@ export class EdaBlankPanelComponent implements OnInit {
             this.panel.content.query.output.config.colors = response.colors;
             const config = new ChartConfig(this.panel.content.query.output.config);
             this.renderChart(this.currentQuery, this.chartLabels, this.chartData, this.graficos.chartType, this.graficos.edaChart, config);
+
             this.dashboardService._notSaved.next(true);
         }
         // Fa que desapareixi el dialeg
@@ -1032,6 +1036,7 @@ export class EdaBlankPanelComponent implements OnInit {
                 this.graficos.chartType, this.graficos.edaChart, ChartsConfigUtils.setConfig(this)
             );
 
+
             this.dashboardService._notSaved.next(true);
         }
 
@@ -1044,6 +1049,7 @@ export class EdaBlankPanelComponent implements OnInit {
             this.panel.content.query.output.config.sufix = response.sufix;
             const config = new ChartConfig(this.panel.content.query.output.config);
             this.renderChart(this.currentQuery, this.chartLabels, this.chartData, this.graficos.chartType, this.graficos.edaChart, config);
+
             this.dashboardService._notSaved.next(true);
         }
         this.kpiController = undefined;
@@ -1053,6 +1059,7 @@ export class EdaBlankPanelComponent implements OnInit {
         if (!_.isEqual(event, EdaDialogCloseEvent.NONE)) {
             const config = new ChartConfig(response.color);
             this.renderChart(this.currentQuery, this.chartLabels, this.chartData, this.graficos.chartType, this.graficos.edaChart, config);
+
             this.dashboardService._notSaved.next(true);
         }
         this.dynamicTextController = undefined;
@@ -1096,9 +1103,7 @@ export class EdaBlankPanelComponent implements OnInit {
     * Runs actual query when execute button is pressed to check for heavy queries
     */
     public runManualQuery = () => {
-        console.log('this.currentQuery: ', this.currentQuery)
-        this.attributes = this.currentQuery.map((e:any) => { return { display_name: e.display_name.default, column_type: e.column_type } }); // Al accionar Ejecutar se actualiza attributes para el componente drag-drop
-        console.log('this.attributes: ', this.attributes)
+        this.attributes = _.cloneDeep(this.currentQuery); // Clonacion profunda con lodash
 
         QueryUtils.runManualQuery(this)
     };
@@ -1319,6 +1324,11 @@ export class EdaBlankPanelComponent implements OnInit {
         }
 
         return disable;
+    }
+
+    public newCurrentQueryExecution(newCurrentQuery) {
+        this.currentQuery = newCurrentQuery;
+        QueryUtils.runManualQuery(this)
     }
 
 }

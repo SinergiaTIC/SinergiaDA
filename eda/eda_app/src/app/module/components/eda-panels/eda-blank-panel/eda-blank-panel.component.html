@@ -561,7 +561,7 @@
                         </div>
                     </div>
                     <div class="col-12 p-1">
-                        <drag-drop *ngIf="graphicType==='crosstable'" [attributes]="attributes"></drag-drop>
+                        <drag-drop *ngIf="graphicType==='crosstable'" [attributes]="attributes" (newCurrentQuery)="newCurrentQueryExecution($event)"></drag-drop>
                     </div>
                 </div>
 
