@@ -80,6 +80,7 @@ export class EdaTable {
     public Totals:string = $localize`:@@addTotals:Totales`;
     public SubTotals:string = $localize`:@@SubTotals:SubTotales`;
     public Trend:string = $localize`:@@addtrend:Tendencia`;
+    public ordering: any[];
 
 
     public constructor(init: Partial<EdaTable>) {
@@ -725,6 +726,9 @@ export class EdaTable {
     }
 
     PivotTable() {
+
+        console.log('Valores puesto en el pivot: ', this);
+
         const colsInfo = this.getColsInfo();
         const oldRows = this.getValues();
         const seriesLabels = [];

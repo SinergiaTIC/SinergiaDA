@@ -30,6 +30,7 @@ import { ChartsConfigUtils } from './panel-utils/charts-config-utils';
 import { PanelInteractionUtils } from './panel-utils/panel-interaction-utils'
 
 import {NULL_VALUE} from '../../../../config/personalitzacio/customizables'
+import { PivotDragDropService } from '@eda/services/utils/pivot-drag-drop.service';
 
 export interface IPanelAction {
     code: string;
@@ -202,7 +203,8 @@ export class EdaBlankPanelComponent implements OnInit {
         public alertService: AlertService,
         public spinnerService: SpinnerService,
         public groupService: GroupService,
-        public userService: UserService
+        public userService: UserService,
+        public pivotDragDropService: PivotDragDropService,
     ) {
         this.initializeBlankPanelUtils();
         this.initializeInputs();
@@ -491,9 +493,9 @@ export class EdaBlankPanelComponent implements OnInit {
         this.display_v.saved_panel = true;
         this.display_v.minispinner = false;
 
-        this.graphicType = this.chartForm.value.chart.value;//iniciamos el tipo de gráfico para el componente drag-drop
-
+        this.graphicType = this.chartForm.value.chart.value;// iniciamos el tipo de gráfico crossTable
         this.attributes = _.cloneDeep(this.currentQuery); // Recuperando el currentQuery para el componente drag-drop
+        this.pivotDragDropService.updatingNewOrdering(this.attributes); // Inicializando el ordenamiento 
     }
 
 
@@ -1327,8 +1329,9 @@ export class EdaBlankPanelComponent implements OnInit {
     }
 
     public newCurrentQueryExecution(newCurrentQuery) {
-        this.currentQuery = newCurrentQuery;
-        QueryUtils.runManualQuery(this)
+        this.pivotDragDropService.updatingNewOrdering(newCurrentQuery); // actualizando el nuevo orden
+        this.currentQuery = newCurrentQuery;  // actualizando el currentQuery
+        QueryUtils.runManualQuery(this) // Ejecutando con la nueva configuracion de currentQuery
     }
 
 }
