@@ -1106,7 +1106,7 @@ export class EdaBlankPanelComponent implements OnInit {
     */
     public runManualQuery = () => {
         this.attributes = _.cloneDeep(this.currentQuery); // Clonacion profunda con lodash
-
+        this.pivotDragDropService.updatingNewOrdering(this.attributes); // actualizando el nuevo orden
         QueryUtils.runManualQuery(this)
     };
 

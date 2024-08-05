@@ -28,14 +28,18 @@ export class DragDropComponent implements OnChanges {
   
   initialization() {
     this.temporalAttributes = this.attributes;
-    this.itemX = [];
-    this.itemY = [];
-    this.itemZ = [];
-    this.validated = false
+
+    console.log('attributes ==> ', this.attributes);
+
+    this.itemX = [this.attributes.find(e => e.column_type==='text')];
+    this.itemY = this.attributes.filter( e => (e.description.default !== this.itemX[0].description.default) && e.column_type !== "numeric");
+    this.itemZ = this.attributes.filter( e => e.column_type === "numeric");
+    
+    this.validated = true;
   }
 
   public ordering() {
-    this.validated = (this.temporalAttributes.length==0 && this.itemX.length>=1 && this.itemY.length>=1 && this.itemZ.length>=1) ? true : false;  
+    this.validated = (this.itemX.length>=1 && this.itemY.length>=1 && this.itemZ.length>=1) ? true : false;  
 
     if(this.validated) {
       this.newSortedAttributes = [{itemX: this.itemX, itemY: this.itemY, itemZ: this.itemZ}]

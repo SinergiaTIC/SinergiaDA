@@ -3,23 +3,6 @@
 
       <div class="row">
 
-        <div class="col-3 p-2 mr-2" style="width: 82px;">
-          <h3>Test 1</h3>
-
-          <div class="example-container-1">
-            <div
-              class="example-list-1"
-              cdkDropList
-              [cdkDropListData]="temporalAttributes"
-              (cdkDropListDropped)="drop($event)">
-      
-              <div *ngFor="let item of temporalAttributes" class="example-box-1" cdkDrag>{{item.display_name.default}}</div>
-              
-            </div>
-          </div>
-
-        </div>
-
         <div class="col-9">
           <h3>Test 2</h3>
 
