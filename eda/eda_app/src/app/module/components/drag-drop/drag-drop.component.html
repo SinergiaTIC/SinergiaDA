@@ -11,15 +11,15 @@
 
               <div class="col-4">
 
-                <div class="example-container-2">
+                <div class="container-1">
                   <div
-                    class="example-list-2"
+                    class="list-1"
                     cdkDropList
                     [cdkDropListData]="itemX"
                     (cdkDropListDropped)="drop($event)"
                     >
             
-                      <div *ngFor="let item of itemX" class="example-box-2" cdkDrag>{{item.display_name.default}}</div>
+                      <div *ngFor="let item of itemX" class="box-1" cdkDrag>{{item.display_name.default}}</div>
                     
                   </div>
                 </div>
@@ -33,16 +33,16 @@
 
                     <div class="col">
 
-                      <div class="example-container-3">
+                      <div class="container-2">
                         <div
-                          class="example-list-3"
+                          class="list-2"
                           cdkDropList
                           [cdkDropListData]="itemY"
                           (cdkDropListDropped)="drop($event)"
                           cdkDropListOrientation="horizontal"
                           >
                   
-                            <div *ngFor="let item of itemY" class="example-box-3" cdkDrag>{{item.display_name.default}}</div>
+                            <div *ngFor="let item of itemY" class="box-2" cdkDrag>{{item.display_name.default}}</div>
                           
                         </div>
                       </div>
@@ -51,16 +51,16 @@
 
                     <div class="col">
 
-                      <div class="example-container-4">
+                      <div class="container-3">
                         <div
-                          class="example-list-4"
+                          class="list-3"
                           cdkDropList
                           [cdkDropListData]="itemZ"
                           (cdkDropListDropped)="drop($event)"
                           cdkDropListOrientation="horizontal"
                           [cdkDropListEnterPredicate]="isNumeric">
                   
-                            <div *ngFor="let item of itemZ" class="example-box-4" cdkDrag>{{item.display_name.default}}</div>
+                            <div *ngFor="let item of itemZ" class="box-3" cdkDrag>{{item.display_name.default}}</div>
                           
                         </div>
                       </div>

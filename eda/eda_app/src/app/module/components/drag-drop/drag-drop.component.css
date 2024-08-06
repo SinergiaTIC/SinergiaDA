@@ -1,37 +1,5 @@
-.example-container-1 {
-    width: 90px;
-    margin: 0 25px 25px 0;
-    display: inline-block;
-    vertical-align: top;
-  }
-  
-  .example-list-1 {
-    border: solid 1px #ffffff;
-    min-height: 40px;
-    background: #ccc; /* cambiar de color */
-    border-radius: 4px;
-    overflow: hidden;
-    display: block;
-  }
-  
-  .example-box-1 {
-    padding: 10px 10px;
-    border: solid 1px #ccc;
-    border-radius: 5px;
-    color: rgba(0, 0, 0, 0.87);
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: space-between;
-    box-sizing: border-box;
-    cursor: move;
-    background: white;
-    font-size: 12px;
-    margin-top: 2px;
-    margin-bottom: 2px;
-  }
 
-  .example-container-2 {
+  .container-1 {
     width: 90px;
     max-width: 100%;
     margin: 0 25px 25px 0;
@@ -39,7 +7,7 @@
     vertical-align: top;
   }
   
-  .example-list-2 {
+  .list-1 {
     border: solid 1px #ffffff;
     min-height: 198px;
     background: #dbdfe480 !important;    /* cambiar de color */
@@ -48,7 +16,7 @@
     display: block;
   }
   
-  .example-box-2 {
+  .box-1 {
     padding: 10px 10px;
     border: solid 1px #ccc;
     border-radius: 5px;
@@ -65,7 +33,7 @@
     margin-bottom: 2px;
   }
 
-  .example-container-3 {
+  .container-2 {
     width: 350px;
     max-width: 100%;
     margin: 0 25px 25px 0;
@@ -73,7 +41,7 @@
     vertical-align: top;
   }
   
-  .example-list-3 {
+  .list-2 {
     border: solid 1px #ffffff;
     min-height: 69px;
     background: #dbdfe480 !important;    /* cambiar de color */
@@ -83,7 +51,7 @@
     overflow: hidden;
   }
   
-  .example-box-3 {
+  .box-2 {
     padding: 10px 10px;
     border: solid 1px #ccc;
     border-radius: 5px;
@@ -100,7 +68,7 @@
     margin-bottom: 2px;
   }
 
-  .example-container-4 {
+  .container-3 {
     width: 350px;
     max-width: 100%;
     margin: 0 25px 25px 0;
@@ -108,7 +76,7 @@
     vertical-align: top;
   }
   
-  .example-list-4 {
+  .list-3 {
     border: solid 1px #ffffff;
     min-height: 129px;
     background: #6f9c672e; /* cambiar de color */
@@ -119,7 +87,7 @@
     margin-top: 1px;
   }
   
-  .example-box-4 {
+  .box-3 {
     padding: 10px 10px;
     border: solid 1px #ccc;
     border-radius: 5px;
@@ -152,38 +120,30 @@
     transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
   }
   
-  .example-box-1:last-child {
+  .box-1:last-child {
     border: solid 1px #ccc;
     z-index: 10000!important;
   }
 
-  .example-box-2:last-child {
+  .box-2:last-child {
     border: solid 1px #ccc;
     z-index: 10000!important;
   }
 
-  .example-box-3:last-child {
-    border: solid 1px #ccc;
-    z-index: 10000!important;
-  }
-
-  .example-box-4:last-child {
+  .box-3:last-child {
     border: solid 1px #ccc;
     z-index: 10000!important;
   }
   
-  .example-list-1.cdk-drop-list-dragging .example-box:not(.cdk-drag-placeholder) {
+
+  .list-1.cdk-drop-list-dragging .box-1:not(.cdk-drag-placeholder) {
     transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
   }
 
-  .example-list-2.cdk-drop-list-dragging .example-box:not(.cdk-drag-placeholder) {
+  .list-2.cdk-drop-list-dragging .box-2:not(.cdk-drag-placeholder) {
     transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
   }
 
-  .example-list-3.cdk-drop-list-dragging .example-box:not(.cdk-drag-placeholder) {
-    transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
-  }
-
-  .example-list-4.cdk-drop-list-dragging .example-box:not(.cdk-drag-placeholder) {
+  .list-3.cdk-drop-list-dragging .box-3:not(.cdk-drag-placeholder) {
     transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
   }
