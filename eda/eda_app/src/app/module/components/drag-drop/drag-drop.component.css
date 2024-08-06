@@ -6,6 +6,12 @@
     display: inline-block;
     vertical-align: top;
   }
+
+  @media(min-width: 900px) {
+    .container-1 {
+      width: 280px;
+    } 
+  }
   
   .list-1 {
     border: solid 1px #ffffff;
@@ -34,11 +40,17 @@
   }
 
   .container-2 {
-    width: 350px;
+    width: 400px;
     max-width: 100%;
     margin: 0 25px 25px 0;
     display: inline-block;
     vertical-align: top;
+  }
+
+  @media(min-width: 900px) {
+    .container-2 {
+      width: 500px;
+    } 
   }
   
   .list-2 {
@@ -69,11 +81,17 @@
   }
 
   .container-3 {
-    width: 350px;
+    width: 400px;
     max-width: 100%;
     margin: 0 25px 25px 0;
     display: inline-block;
     vertical-align: top;
+  }
+
+  @media(min-width: 900px) {
+    .container-3 {
+      width: 500px;
+    } 
   }
   
   .list-3 {
@@ -158,6 +176,18 @@
     width: 182px;
   }
 
+  @media(min-width: 900px) {
+    .box-vertical {
+      width: 282px;
+    } 
+  }
+
   .box-horizontal {
     padding: 0;
+  }
+
+  @media(min-width: 900px) {
+    .box-horizontal {
+      width: 560px;
+    }
   }
