@@ -3,13 +3,13 @@
 
       <div class="row">
 
-        <div class="col-9">
-          <h3>Test 2</h3>
+        <div class="col-12 box-order">
+          <h3>Configuración de orden: </h3>
 
           <div class="container">
             <div class="row">
 
-              <div class="col-4 pt-0 pr-0" style="width: 95px;">
+              <div class="col-4 pt-0 pr-0" style="width: 95px; padding-left: 0;">
 
                 <div class="example-container-2">
                   <div
@@ -70,16 +70,17 @@
               </div>
 
             </div>
+
+            <div class="row" style="margin-bottom: 10rem;">
+              <button type="button" pButton (click)="temporalExecution()" [disabled]="!validated"
+                  icon="fa fa-flask" class="p-button-success ml-2" i18n-label="@@otro" label="temporalButton">
+              </button>
+            </div>
+
+            
           </div>
         </div>
 
-        <div class="col-12">
-          <div>
-            <button type="button" pButton (click)="temporalExecution()" [disabled]="!validated"
-                icon="fa fa-flask" class="p-button-success ml-2" i18n-label="@@otro" label="temporalButton">
-            </button>
-          </div>
-        </div>
 
       </div>
     </div>
