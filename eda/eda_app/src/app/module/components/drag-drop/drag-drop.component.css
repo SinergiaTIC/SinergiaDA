@@ -42,7 +42,7 @@
   .example-list-2 {
     border: solid 1px #ffffff;
     min-height: 198px;
-    background: rgb(98, 97, 97); /* cambiar de color */
+    background: #dbdfe480 !important;    /* cambiar de color */
     border-radius: 4px;
     overflow: hidden;
     display: block;
@@ -76,7 +76,7 @@
   .example-list-3 {
     border: solid 1px #ffffff;
     min-height: 69px;
-    background: rgb(98, 97, 97); /* cambiar de color */
+    background: #dbdfe480 !important;    /* cambiar de color */
     display: flex;
     flex-direction: row;
     border-radius: 4px;
@@ -111,7 +111,7 @@
   .example-list-4 {
     border: solid 1px #ffffff;
     min-height: 129px;
-    background: rgb(98, 97, 97); /* cambiar de color */
+    background: #6f9c672e; /* cambiar de color */
     display: flex;
     flex-direction: row;
     border-radius: 4px;
