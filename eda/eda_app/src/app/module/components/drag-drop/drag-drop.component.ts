@@ -32,7 +32,7 @@ export class DragDropComponent implements OnChanges {
     console.log('attributes ==> ', this.attributes);
 
     this.itemX = [this.attributes.find(e => e.column_type==='text')];
-    this.itemY = this.attributes.filter( e => (e.description.default !== this.itemX[0].description.default) && e.column_type !== "numeric");
+    this.itemY = this.attributes.filter( e => (e.description.default !== this.itemX[0].description.default) && (e.column_type !== "numeric") );
     this.itemZ = this.attributes.filter( e => e.column_type === "numeric");
     
     this.validated = true;
@@ -52,9 +52,11 @@ export class DragDropComponent implements OnChanges {
     this.itemY.forEach(e => this.attributes.push(e));
     this.itemZ.forEach(e => this.attributes.push(e));
 
+    this.newSortedAttributes = [{itemX: this.itemX, itemY: this.itemY, itemZ: this.itemZ}];
+
     // Agregamos el ordenamiento
     this.attributes.forEach(e =>  {
-      e.ordering = this.newSortedAttributes
+      e.axes = this.newSortedAttributes
     })
 
     this.newCurrentQuery.emit(this.attributes);
