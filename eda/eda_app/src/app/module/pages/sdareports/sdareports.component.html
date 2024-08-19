@@ -293,32 +293,33 @@
           <span class="badge badge-primary">{{ dashboard.config.tag }}</span>
         </td>
         <td>
-          <span
-            *ngIf="!isObserver && canIEdit(dashboard)"
-            (click)="deleteDashboard(dashboard)"
-            class="btn btn-default btn-sm"
-          >
-            <i class="fa fa-trash text-danger"></i>
-          </span>
-          <span
-            *ngIf="!isObserver && canIEdit(dashboard)"
-            (click)="cloneDashboard(dashboard)"
-            class="btn btn-default btn-sm"
-            i18n-title="@@clonarInforme"
-            title="Clonar informe"
-          >
-            <i class="fa fa-clone text-info"></i>
-          </span>
-
-          <span
-            *ngIf="dashboard.type === 'public'"
-            class="btn btn-default btn-sm"
-            (click)="copyUrl(dashboard)"
-            i18n-title="@@copiarUrlPublica"
-            title="Copiar url pública"
-          >
-            <i class="fa fa-link"></i>
-          </span>
+          <div class="mt-auto row-toolbar">
+            <button
+              *ngIf="!isObserver && canIEdit(dashboard)"
+              class="btn btn-danger btn-sm mr-2"
+              (click)="deleteDashboard(dashboard)"
+            >
+              <i class="fa fa-trash"></i>
+            </button>
+            <button
+              *ngIf="!isObserver && canIEdit(dashboard)"
+              class="btn btn-primary btn-sm mr-2"
+              (click)="cloneDashboard(dashboard)"
+              i18n-title="@@clonarInforme"
+              title="Clonar informe"
+            >
+              <i class="fa fa-clone"></i>
+            </button>
+            <button
+              *ngIf="dashboard.type === 'public'"
+              class="btn btn-primary btn-sm mr-2"
+              (click)="copyUrl(dashboard)"
+              i18n-title="@@copiarUrlPublica"
+              title="Copiar url pública"
+            >
+              <i class="fa fa-link"></i>
+            </button>
+          </div>
         </td>
       </tr>
     </tbody>
@@ -404,7 +405,7 @@
             </button>
             <button
               *ngIf="!isObserver && canIEdit(dashboard)"
-              class="btn btn-info btn-sm mr-2"
+              class="btn btn-primary btn-sm mr-2"
               (click)="cloneDashboard(dashboard)"
               i18n-title="@@clonarInforme"
               title="Clonar informe"
@@ -413,7 +414,7 @@
             </button>
             <button
               *ngIf="dashboard.type === 'public'"
-              class="btn btn-default btn-sm"
+              class="btn btn-primary btn-sm mr-2"
               (click)="copyUrl(dashboard)"
               i18n-title="@@copiarUrlPublica"
               title="Copiar url pública"
