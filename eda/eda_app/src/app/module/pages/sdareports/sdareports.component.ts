@@ -19,6 +19,10 @@ export class SdareportsComponent implements OnInit {
   public allDashboards: Array<any> = [];
   public visibleDashboards: Array<any> = [];
 
+  // Edición del tipo de informe
+  public editingType: { [key: string]: boolean } = {};
+  public editingTypeId: string | null = null;
+
   // Propiedades para el modo de visualización
   public viewMode: "table" | "card" = "table";
 
@@ -525,5 +529,33 @@ export class SdareportsComponent implements OnInit {
         db => db.config.title.toUpperCase().indexOf(this.searchTerm) >= 0
       );
     }
+  }
+
+  public startEditingType(dashboard: any): void {
+    this.editingTypeId = dashboard._id;
+  }
+
+  public updateDashboardType(dashboard: any, newType: string): void {
+    const oldType = dashboard.type;
+    dashboard.type = newType;
+    dashboard.config.visible = newType;
+
+    this.dashboardService.updateDashboard(dashboard._id, { config: dashboard.config }).subscribe(
+      () => {
+        this.alertService.addSuccess($localize`:@@DashboardTypeUpdated:Tipo de informe actualizado correctamente.`);
+        this.editingTypeId = null;
+        this.filterDashboards(); // Re-apply filters to update the view
+      },
+      error => {
+        this.alertService.addError($localize`:@@ErrorUpdatingDashboardType:Error al actualizar el tipo de informe.`);
+        dashboard.type = oldType;
+        dashboard.config.visible = oldType;
+        console.error("Error updating dashboard type:", error);
+      }
+    );
+  }
+
+  public cancelEditingType(): void {
+    this.editingTypeId = null;
   }
 }

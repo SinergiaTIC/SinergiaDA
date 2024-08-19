@@ -405,8 +405,9 @@ th i.fa {
   display: inline-block;
 }
 .card-body:hover {
-  .edit-icon {
-    opacity: 1;
+  .edit-icon, .edit-type-icon {
+    opacity: .4 !important;
+
   }
 }
 .edit-icon {
