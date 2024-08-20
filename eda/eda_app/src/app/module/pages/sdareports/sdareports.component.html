@@ -366,6 +366,7 @@
             >
               {{ dashboardTypeTranslations[dashboard.type] || dashboard.type }}
               <i
+                *ngIf="canIEdit(dashboard) && !isEditing"
                 class="fa fa-pencil edit-type-icon"
                 style="opacity: 0"
                 (click)="startEditingType(dashboard)"
