@@ -311,7 +311,7 @@
               <i class="fa fa-clone"></i>
             </button>
             <button
-              *ngIf="dashboard.type === 'public'"
+              *ngIf="dashboard.type === 'shared'"
               class="btn btn-primary btn-sm mr-2"
               (click)="copyUrl(dashboard)"
               i18n-title="@@copiarUrlPublica"
@@ -361,17 +361,31 @@
             </div>
           </h5>
           <p class="card-text type-container">
-            <ng-container *ngIf="editingTypeId !== dashboard._id; else editTypeTemplateCard">
+            <ng-container
+              *ngIf="editingTypeId !== dashboard._id; else editTypeTemplateCard"
+            >
               {{ dashboardTypeTranslations[dashboard.type] || dashboard.type }}
-              <i class="fa fa-pencil edit-type-icon" style="opacity:0;" (click)="startEditingType(dashboard)"></i>
+              <i
+                class="fa fa-pencil edit-type-icon"
+                style="opacity: 0"
+                (click)="startEditingType(dashboard)"
+              ></i>
             </ng-container>
             <ng-template #editTypeTemplateCard>
-              <select [(ngModel)]="dashboard.type" (change)="updateDashboardType(dashboard, dashboard.type)">
+              <select
+                [(ngModel)]="dashboard.type"
+                (change)="updateDashboardType(dashboard, dashboard.type)"
+              >
                 <option *ngFor="let type of dashboardTypes" [value]="type.type">
                   {{ type.label }}
                 </option>
               </select>
-              <button class="btn btn-sm btn-secondary ml-2" (click)="cancelEditingType()">Cancelar</button>
+              <button
+                class="btn btn-sm btn-secondary ml-2"
+                (click)="cancelEditingType()"
+              >
+                Cancelar
+              </button>
             </ng-template>
           </p>
           <p class="card-text">
@@ -421,7 +435,7 @@
               <i class="fa fa-clone"></i>
             </button>
             <button
-              *ngIf="dashboard.type === 'public'"
+              *ngIf="dashboard.type === 'shared'"
               class="btn btn-primary btn-sm mr-2"
               (click)="copyUrl(dashboard)"
               i18n-title="@@copiarUrlPublica"

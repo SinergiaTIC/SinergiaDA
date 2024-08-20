@@ -54,8 +54,8 @@ export class SdareportsComponent implements OnInit {
 
   // Propiedades para el filtro por tipo con iconos
   public dashboardTypes: Array<{ type: string; label: string; active: boolean; icon: string; color: string }> = [
-    { type: "common", label: $localize`:@@Common:Común`, active: true, icon: "fa-globe", color: "#007bff" },
-    { type: "public", label: $localize`:@@Public:Público`, active: true, icon: "fa-share", color: "#dc3545" },
+    { type: "public", label: $localize`:@@Common:Común`, active: true, icon: "fa-globe", color: "#007bff" },
+    { type: "shared", label: $localize`:@@Public:Público`, active: true, icon: "fa-share", color: "#dc3545" },
     { type: "group", label: $localize`:@@Group:Grupo`, active: true, icon: "fa-users", color: "#28a745" },
     { type: "private", label: $localize`:@@Private:Privado`, active: true, icon: "fa-lock", color: "#ffc107" }
     // {type: 'archived', label: 'Archivado', active: true, icon: 'fa-archive', color: '#6c757d'}
@@ -63,8 +63,8 @@ export class SdareportsComponent implements OnInit {
 
   // Traduccion para los valores de los informes
   public dashboardTypeTranslations = {
-    common: $localize`:@@Common:Común`,
-    public: $localize`:@@Public:Público`,
+    public: $localize`:@@Common:Común`,
+    shared: $localize`:@@Public:Público`,
     group: $localize`:@@Group:Grupo`,
     private: $localize`:@@Private:Privado`
   };
@@ -143,8 +143,8 @@ export class SdareportsComponent implements OnInit {
     this.dashboardService.getDashboards().subscribe(
       res => {
         this.allDashboards = [
-          ...res.publics.map(d => ({ ...d, type: "common" })),
-          ...res.shared.map(d => ({ ...d, type: "public" })),
+          ...res.publics.map(d => ({ ...d, type: "public" })),
+          ...res.shared.map(d => ({ ...d, type: "shared" })),
           ...res.group.map(d => ({ ...d, type: "group" })),
           ...res.dashboards.map(d => ({ ...d, type: "private" }))
         ].sort((a, b) => (a.config.title > b.config.title ? 1 : b.config.title > a.config.title ? -1 : 0));
@@ -453,7 +453,7 @@ export class SdareportsComponent implements OnInit {
   }
 
   public copyUrl(dashboard: any): void {
-    if (dashboard.type === "public") {
+    if (dashboard.type === "shared") {
       const url = `${window.location.origin}/#/public/${dashboard._id}`;
       navigator.clipboard.writeText(url).then(
         () => {
