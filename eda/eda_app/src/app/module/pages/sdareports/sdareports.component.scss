@@ -404,10 +404,10 @@ th i.fa {
   position: relative;
   display: inline-block;
 }
-.card-body:hover {
-  .edit-icon, .edit-type-icon {
-    opacity: .4 !important;
-
+.card-body:hover, #report-table tr:hover {
+  .edit-icon,
+  .edit-type-icon {
+    opacity: 0.4 !important;
   }
 }
 .edit-icon {
@@ -418,7 +418,7 @@ th i.fa {
   cursor: pointer;
   opacity: 0;
   &:hover {
-    opacity: .4;
+    opacity: 0.4;
   }
 }
 
@@ -429,4 +429,14 @@ th i.fa {
     border: 1px dashed #af8a19;
     padding: 1px 3px;
   }
+}
+.datasource-name {
+  position: absolute;
+  top: 0px;
+  right: 0px;
+  padding: 0px 3px;
+  border: 1px solid #e7e5e5;
+  border-top-width: 0px;
+  border-right-width: 0px;
+  color: #777;
 }

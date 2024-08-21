@@ -233,6 +233,7 @@
           Fecha creación
         </th>
         <th i18n="@@edicionPrivada">Edición privada</th>
+        <th i18n="@@dataSourceName">Fuente de datos</th>
         <th i18n="@@grupos">Grupos</th>
         <th
           (click)="sortTable('config.tag')"
@@ -273,7 +274,40 @@
             class="type-indicator"
             [style.background-color]="getDashboardTypeColor(dashboard.type)"
           ></span>
-          {{ dashboard.type | titlecase }}
+          {{
+            dashboardTypeTranslations[dashboard.type] || dashboard.type
+              | titlecase
+          }}
+          <!-- test -->
+          <span class="card-text type-container">
+            <ng-container
+              *ngIf="editingTypeId !== dashboard._id; else editTypeTemplateCard"
+            >
+              <i
+                *ngIf="canIEdit(dashboard) && !isEditing"
+                class="fa fa-pencil edit-type-icon"
+                style="opacity: 0"
+                (click)="startEditingType(dashboard)"
+              ></i>
+            </ng-container>
+            <ng-template #editTypeTemplateCard>
+              <select
+                [(ngModel)]="dashboard.type"
+                (change)="updateDashboardType(dashboard, dashboard.type)"
+              >
+                <option *ngFor="let type of dashboardTypes" [value]="type.type">
+                  {{ type.label }}
+                </option>
+              </select>
+              <button
+                class="btn btn-sm btn-secondary ml-2"
+                (click)="cancelEditingType()"
+              >
+                Cancelar
+              </button>
+            </ng-template>
+          </span>
+          <!-- test -->
         </td>
         <td>{{ dashboard.user?.name }}</td>
         <td>
@@ -284,6 +318,7 @@
           }}
         </td>
         <td></td>
+        <td>{{ dashboard.config.ds.name }}</td>
         <td>
           {{
             dashboard.group ? getGroupsNamesByDashboard([dashboard.group]) : ""
@@ -360,6 +395,12 @@
               ></i>
             </div>
           </h5>
+          <span
+            class="datasource-name label label-default small"
+            title="Fuente de datos"
+          >
+            {{ dashboard.config.ds.name }}</span
+          >
           <p class="card-text type-container">
             <ng-container
               *ngIf="editingTypeId !== dashboard._id; else editTypeTemplateCard"
