@@ -544,7 +544,6 @@ export class SdareportsComponent implements OnInit {
       () => {
         this.alertService.addSuccess($localize`:@@DashboardTypeUpdated:Tipo de informe actualizado correctamente.`);
         this.editingTypeId = null;
-        this.filterDashboards(); // Re-apply filters to update the view
       },
       error => {
         this.alertService.addError($localize`:@@ErrorUpdatingDashboardType:Error al actualizar el tipo de informe.`);
