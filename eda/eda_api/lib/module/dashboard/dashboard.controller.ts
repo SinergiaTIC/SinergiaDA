@@ -50,15 +50,19 @@ export class DashboardController {
     }
   }
 
+
   static async getPrivateDashboards(req: Request) {
     try {
       const dashboards = await Dashboard.find(
         { user: req.user._id },
-        'config.title config.visible config.tag config.onlyIcanEdit config.description config.createdAt'
+        'config.title config.visible config.tag config.onlyIcanEdit config.description config.createdAt config.ds'
       ).exec()
       const privates = []
       for (const dashboard of dashboards) {
         if (dashboard.config.visible === 'private') {
+          // Obtain the name of the data source
+          dashboard.config.ds.name = (await DataSource.findById(dashboard.config.ds._id, 'ds.metadata.model_name').exec())?.ds?.metadata?.model_name ?? 'N/A';
+
           privates.push(dashboard)
         }
       }
@@ -75,7 +79,7 @@ export class DashboardController {
       }).exec()
       const dashboards = await Dashboard.find(
         { group: { $in: userGroups.map(g => g._id) } },
-        'config.title config.visible group config.tag config.onlyIcanEdit config.description config.createdAt'
+        'config.title config.visible group config.tag config.onlyIcanEdit config.description config.createdAt config.ds'
       ).exec()
       const groupDashboards = []
       for (let i = 0, n = dashboards.length; i < n; i += 1) {
@@ -86,6 +90,9 @@ export class DashboardController {
             if (
               JSON.stringify(userGroup._id) === JSON.stringify(dashboardGroup)
             ) {
+              // Obtain the name of the data source
+              dashboard.config.ds.name = (await DataSource.findById(dashboard.config.ds._id, 'ds.metadata.model_name').exec())?.ds?.metadata?.model_name ?? 'N/A';
+              
               groupDashboards.push(dashboard)
             }
           }
@@ -102,12 +109,15 @@ export class DashboardController {
     try {
       const dashboards = await Dashboard.find(
         {},
-        'config.title config.visible config.tag config.onlyIcanEdit config.description config.createdAt'
+        'config.title config.visible config.tag config.onlyIcanEdit config.description config.createdAt config.ds'
       ).exec()
       const publics = []
 
       for (const dashboard of dashboards) {
         if (dashboard.config.visible === 'public') {
+          // Obtain the name of the data source
+          dashboard.config.ds.name = (await DataSource.findById(dashboard.config.ds._id, 'ds.metadata.model_name').exec())?.ds?.metadata?.model_name ?? 'N/A';
+          
           publics.push(dashboard)
         }
       }
@@ -121,11 +131,14 @@ export class DashboardController {
     try {
       const dashboards = await Dashboard.find(
         {},
-        'config.title config.visible config.tag config.onlyIcanEdit config.description config.createdAt'
+        'config.title config.visible config.tag config.onlyIcanEdit config.description config.createdAt config.ds'
       ).exec()
       const shared = []
       for (const dashboard of dashboards) {
         if (dashboard.config.visible === 'shared') {
+          // Obtain the name of the data source
+          dashboard.config.ds.name = (await DataSource.findById(dashboard.config.ds._id, 'ds.metadata.model_name').exec())?.ds?.metadata?.model_name ?? 'N/A';
+          
           shared.push(dashboard)
         }
       }
@@ -139,7 +152,7 @@ export class DashboardController {
     try {
       const dashboards = await Dashboard.find(
         {},
-        'user config.title config.visible group config.tag config.onlyIcanEdit config.description config.createdAt'
+        'user config.title config.visible group config.tag config.onlyIcanEdit config.description config.createdAt config.ds'
       ).exec()
       const publics = []
       const privates = []
@@ -163,6 +176,8 @@ export class DashboardController {
           })
         }
         
+          // Obtain the name of the data source
+          dashboard.config.ds.name = (await DataSource.findById(dashboard.config.ds._id, 'ds.metadata.model_name').exec())?.ds?.metadata?.model_name ?? 'N/A';
         switch (dashboard.config.visible) {
           case 'public':
             publics.push(dashboard)
@@ -826,7 +841,7 @@ export class DashboardController {
 
             if (filterTable) {
               const filterColumn = filterTable.columns.find((c) => c.column_name == filter.filter_column);
-              filter.filter_column_type = filterColumn?.column_type || 'text';
+                  filter.filter_column_type = filterColumn?.column_type || 'text';
             }
           }
         }
