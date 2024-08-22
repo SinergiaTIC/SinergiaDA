@@ -207,6 +207,7 @@
             'sort-desc': sortColumn === 'type' && sortDirection === 'desc'
           }"
           i18n="@@tipo"
+          class="text-center"
         >
           Tipo
         </th>
@@ -217,6 +218,7 @@
             'sort-desc': sortColumn === 'user.name' && sortDirection === 'desc'
           }"
           i18n="@@autor"
+          class="text-center"
         >
           Autor
         </th>
@@ -229,11 +231,49 @@
               sortColumn === 'config.createdAt' && sortDirection === 'desc'
           }"
           i18n="@@fechaCreacion"
+          class="text-center"
         >
           Fecha creación
         </th>
-        <th i18n="@@edicionPrivada">Edición privada</th>
-        <th i18n="@@dataSourceName">Fuente de datos</th>
+        <th
+          (click)="sortTable('config.modifiedAt')"
+          [ngClass]="{
+            'sort-asc':
+              sortColumn === 'config.modifiedAt' && sortDirection === 'asc',
+            'sort-desc':
+              sortColumn === 'config.modifiedAt' && sortDirection === 'desc'
+          }"
+          i18n="@@fechaModificación"
+          class="text-center"
+        >
+          Fecha modificación
+        </th>
+        <th
+          i18n="@@edicionPrivada"
+          class="text-center"
+          (click)="sortTable('config.onlyICanEdit')"
+          [ngClass]="{
+            'sort-asc':
+              sortColumn === 'config.onlyICanEdit' &&
+              sortDirection === 'asc',
+            'sort-desc':
+              sortColumn === 'config.onlyICanEdit' &&
+              sortDirection === 'desc'
+          }"
+        >
+          Edición privada
+        </th>
+        <th
+          i18n="@@dataSourceName"
+          (click)="sortTable('config.ds.name')"
+          [ngClass]="{
+            'sort-asc': sortColumn === 'config.ds.name' && sortDirection === 'asc',
+            'sort-desc': sortColumn === 'config.ds.name' && sortDirection === 'desc'
+          }"
+          i18n="@@etiquetas"
+        >
+          Fuente de datos
+        </th>
         <th i18n="@@grupos">Grupos</th>
         <th
           (click)="sortTable('config.tag')"
@@ -269,7 +309,7 @@
             </div>
           </div>
         </td>
-        <td>
+        <td class="text-center">
           <span
             class="type-indicator"
             [style.background-color]="getDashboardTypeColor(dashboard.type)"
@@ -309,15 +349,26 @@
           </span>
           <!-- test -->
         </td>
-        <td>{{ dashboard.user?.name }}</td>
-        <td>
+        <td class="text-center">{{ dashboard.user?.name }}</td>
+        <td class="text-center">
           {{
             dashboard.config.createdAt
               ? formatDate(dashboard.config.createdAt)
               : ""
           }}
         </td>
-        <td></td>
+        <td class="text-center">
+          {{
+            dashboard.config.modifiedAt
+              ? formatDate(dashboard.config.modifiedAt)
+              : ""
+          }}
+        </td>
+        <td class="text-center">
+          <p *ngIf="dashboard.config.onlyIcanEdit" class="text-center">
+            <i class="fa fa-check text-success"></i>
+          </p>
+        </td>
         <td>{{ dashboard.config.ds.name }}</td>
         <td>
           {{
@@ -438,13 +489,22 @@
                   : ""
               }}
             </span>
-            <span class="pull-right">
+            <span class="pull-right small">
+              <i class="fa fa-plus text-muted"></i>
               {{
                 dashboard.config.createdAt
                   ? formatDate(dashboard.config.createdAt)
                   : ""
-              }}</span
-            >
+              }} </span
+            ><br />
+            <span class="pull-right small">
+              <i class="fa fa-pencil text-muted"></i>
+              {{
+                dashboard.config.modifiedAt
+                  ? formatDate(dashboard.config.modifiedAt)
+                  : ""
+              }}
+            </span>
           </p>
 
           <p class="card-text">

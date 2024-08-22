@@ -55,7 +55,7 @@ export class DashboardController {
     try {
       const dashboards = await Dashboard.find(
         { user: req.user._id },
-        'config.title config.visible config.tag config.onlyIcanEdit config.description config.createdAt config.ds'
+        'config.title config.visible config.tag config.onlyIcanEdit config.description config.createdAt config.modifiedAt config.ds'
       ).exec()
       const privates = []
       for (const dashboard of dashboards) {
@@ -79,7 +79,7 @@ export class DashboardController {
       }).exec()
       const dashboards = await Dashboard.find(
         { group: { $in: userGroups.map(g => g._id) } },
-        'config.title config.visible group config.tag config.onlyIcanEdit config.description config.createdAt config.ds'
+        'config.title config.visible group config.tag config.onlyIcanEdit config.description config.createdAt config.modifiedAt config.ds'
       ).exec()
       const groupDashboards = []
       for (let i = 0, n = dashboards.length; i < n; i += 1) {
@@ -109,7 +109,7 @@ export class DashboardController {
     try {
       const dashboards = await Dashboard.find(
         {},
-        'config.title config.visible config.tag config.onlyIcanEdit config.description config.createdAt config.ds'
+        'config.title config.visible config.tag config.onlyIcanEdit config.description config.createdAt config.modifiedAt config.ds'
       ).exec()
       const publics = []
 
@@ -131,7 +131,7 @@ export class DashboardController {
     try {
       const dashboards = await Dashboard.find(
         {},
-        'config.title config.visible config.tag config.onlyIcanEdit config.description config.createdAt config.ds'
+        'config.title config.visible config.tag config.onlyIcanEdit config.description config.createdAt config.modifiedAt config.ds'
       ).exec()
       const shared = []
       for (const dashboard of dashboards) {
@@ -150,9 +150,38 @@ export class DashboardController {
 
   static async getAllDashboardToAdmin() {
     try {
+
+      
+      // Define the default date to be used for both createdAt and modifiedAt fields
+      const defaultDate = new Date('2024-01-01T00:00:00.000Z');
+
+      // First, update all documents that don't have a createdAt field
+      // This operation sets a default createdAt date for all dashboards missing this field
+      const createdAtUpdateResult = await Dashboard.updateMany(
+        { 'config.createdAt': { $exists: false } },
+        { $set: { 'config.createdAt': defaultDate } }
+      );
+
+      // Then, update all documents that don't have a modifiedAt field
+      // If createdAt exists, use its value; otherwise, use the default date
+      const modifiedAtUpdateResult = await Dashboard.updateMany(
+        { 'config.modifiedAt': { $exists: false } },
+        [
+          { 
+            $set: { 
+              'config.modifiedAt': { 
+                $ifNull: ['$config.createdAt', defaultDate] 
+              } 
+            } 
+          }
+        ]
+      );
+
+
+  
       const dashboards = await Dashboard.find(
         {},
-        'user config.title config.visible group config.tag config.onlyIcanEdit config.description config.createdAt config.ds'
+        'user config.title config.visible group config.tag config.onlyIcanEdit config.description config.createdAt config.modifiedAt config.ds'
       ).exec()
       const publics = []
       const privates = []
@@ -411,12 +440,17 @@ export class DashboardController {
             new HttpException(400, 'Dashboard not exist with this id')
           )
         }
-
+        const createdAt=dashboard.config.createdAt
         dashboard.config = body.config
+        dashboard.config.createdAt = createdAt
         dashboard.group = body.group
         /**avoid dashboards without name */
         if (dashboard.config.title === null) { dashboard.config.title = '-' };
-
+        
+        // Update modifiedAt with current date and time
+        dashboard.config.modifiedAt = new Date();
+        
+        
         dashboard.save((err, dashboard) => {
           if (err) {
             return next(new HttpException(500, 'Error updating dashboard'))
@@ -1431,7 +1465,9 @@ export class DashboardController {
         config: {
           ...originalDashboard.config,
           title: `${originalDashboard.config.title} copy`,
-          createdAt: new Date()
+          createdAt: new Date(),
+          modifiedAt: new Date()
+          
         },
         user: req.user._id,
         group: originalDashboard.group

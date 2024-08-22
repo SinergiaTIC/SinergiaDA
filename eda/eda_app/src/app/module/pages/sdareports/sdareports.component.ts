@@ -340,18 +340,6 @@ export class SdareportsComponent implements OnInit {
     return result;
   }
 
-  // public getAuthorName(user: string | { name: string }) {
-  //   return user;
-
-  //   // if (typeof user === "string") {
-  //   //   return `Usuario ${user}`;
-  //   // } else if (user && typeof user === "object" && "name" in user) {
-  //   //   return user.name;
-  //   // } else {
-  //   //   return "Autor desconocido";
-  //   // }
-  // }
-
   public sortTable(column: string): void {
     if (this.sortColumn === column) {
       this.sortDirection = this.sortDirection === "asc" ? "desc" : "asc";
