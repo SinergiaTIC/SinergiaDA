@@ -254,11 +254,9 @@
           (click)="sortTable('config.onlyICanEdit')"
           [ngClass]="{
             'sort-asc':
-              sortColumn === 'config.onlyICanEdit' &&
-              sortDirection === 'asc',
+              sortColumn === 'config.onlyICanEdit' && sortDirection === 'asc',
             'sort-desc':
-              sortColumn === 'config.onlyICanEdit' &&
-              sortDirection === 'desc'
+              sortColumn === 'config.onlyICanEdit' && sortDirection === 'desc'
           }"
         >
           Edición privada
@@ -267,8 +265,10 @@
           i18n="@@dataSourceName"
           (click)="sortTable('config.ds.name')"
           [ngClass]="{
-            'sort-asc': sortColumn === 'config.ds.name' && sortDirection === 'asc',
-            'sort-desc': sortColumn === 'config.ds.name' && sortDirection === 'desc'
+            'sort-asc':
+              sortColumn === 'config.ds.name' && sortDirection === 'asc',
+            'sort-desc':
+              sortColumn === 'config.ds.name' && sortDirection === 'desc'
           }"
           i18n="@@etiquetas"
         >
@@ -370,10 +370,10 @@
           </p>
         </td>
         <td>{{ dashboard.config.ds.name }}</td>
-        <td>
-          {{
-            dashboard.group ? getGroupsNamesByDashboard([dashboard.group]) : ""
-          }}
+        <td class="small">
+          <span *ngFor="let group of dashboard.group" class="group-label label label-success small">
+            {{ group.name }}
+          </span>
         </td>
         <td>
           <span class="badge badge-primary">{{ dashboard.config.tag }}</span>
