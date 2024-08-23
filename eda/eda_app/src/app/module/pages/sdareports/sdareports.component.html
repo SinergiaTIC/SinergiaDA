@@ -12,7 +12,7 @@
   </div>
 
   <!-- Barra de Tags -->
-  <div class="ml-3">
+  <div class="ml-3" id="tag-filter">
     <div class="dropdown">
       <button
         class="btn btn-secondary dropdown-toggle"
@@ -61,7 +61,7 @@
   </div>
 
   <!-- Nuevo Filtro de Grupos -->
-  <div class="ml-auto ml-3">
+  <div class="ml-auto ml-3" id="group-filter">
     <div class="dropdown">
       <button
         class="btn btn-secondary dropdown-toggle"
@@ -109,7 +109,7 @@
     </div>
   </div>
 
-  <div class="ml-auto ml-3">
+  <div class="ml-auto ml-3" id="type-filter">
     <div class="btn-group" role="group" aria-label="Filtrar por tipo">
       <button
         *ngFor="let typeObj of dashboardTypes"
@@ -125,8 +125,26 @@
     </div>
   </div>
 
+
+  <!-- Buscador -->
+  <div class="ml-auto" id="name-filter">
+    <div class="search-container" >
+      <input
+        type="text"
+        class="form-control search-input"
+        id="buscador"
+        name="buscador"
+        [(ngModel)]="searchTerm"
+        (keyup)="filterTitle($event)"
+        i18n-placeholder="@@buscarPorNombre"
+        placeholder="Buscar por nombre del informe"
+      />
+      <i class="fa fa-search search-icon"></i>
+    </div>
+  </div>
+
   <!-- Botones para cambiar el modo de visualización -->
-  <div class="ml-auto mr-3">
+  <div class="ml-auto mr-3" id="view-mode">
     <div class="btn-group" role="group" aria-label="Modo de visualización">
       <button
         type="button"
@@ -151,7 +169,7 @@
     </div>
   </div>
 
-  <div class="ml-auto ml-2">
+  <div class="ml-auto ml-2" id="count-indicator">
     <span
       id="report-counter"
       class="badge"
@@ -163,23 +181,6 @@
     >
       {{ visibleDashboards.length }} / {{ allDashboards.length }}
     </span>
-  </div>
-
-  <!-- Buscador -->
-  <div class="ml-auto">
-    <div class="search-container">
-      <input
-        type="text"
-        class="form-control search-input"
-        id="buscador"
-        name="buscador"
-        [(ngModel)]="searchTerm"
-        (keyup)="filterTitle($event)"
-        i18n-placeholder="@@buscarPorNombre"
-        placeholder="Buscar por nombre del informe"
-      />
-      <i class="fa fa-search search-icon"></i>
-    </div>
   </div>
 </nav>
 
@@ -482,12 +483,8 @@
             </ng-template>
           </p>
           <p class="card-text">
-            <span>
-              {{
-                dashboard.group
-                  ? getGroupsNamesByDashboard([dashboard.group])
-                  : ""
-              }}
+            <span *ngFor="let group of dashboard.group" class="group-label label label-success small">
+              {{ group.name }}
             </span>
             <span class="pull-right small">
               <i class="fa fa-plus text-muted"></i>
