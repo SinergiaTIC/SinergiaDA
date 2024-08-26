@@ -88,6 +88,7 @@ export class GlobalFilterComponent implements OnInit {
     /** Apply filter to panels when filter's selected value changes */
     public applyGlobalFilter(filter: any): void {
         const formatedFilter = this.globalFilterService.formatFilter(filter);
+        this.setFilterButtonVisibilty();
 
         filter.panelList
             .map((id: string) => this.dashboard.edaPanels.toArray().find(p => p.panel.id === id))
