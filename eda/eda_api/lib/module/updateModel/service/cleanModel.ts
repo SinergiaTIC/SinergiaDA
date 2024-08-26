@@ -1,5 +1,4 @@
 import _ from "lodash";
-import { Sda_Basic_Group } from "./sda_basic.group";
 import Group, { IGroup } from '../../admin/groups/model/group.model'
 import DataSourceSchema from '../../datasource/model/datasource.model'
 
@@ -17,7 +16,8 @@ export class CleanModel {
             "column": "",
             "global": "",
             "permission": "",
-            "type": ""
+            "type": "",
+            "value":[]
         }
 
         let modelAc = {
@@ -28,7 +28,8 @@ export class CleanModel {
             "column": "",
             "global": "",
             "permission": "",
-            "type": ""
+            "type": "",
+            "value":[]
         }
 
         let groupModel =  {
@@ -39,7 +40,8 @@ export class CleanModel {
             "column": "",
             "global": "",
             "permission": "",
-            "type": ""
+            "type": "",
+            "value":[]
         }
         
         let model_granted_roles = [] ;
@@ -52,8 +54,18 @@ export class CleanModel {
             
             } else {
                 
-                const match = model_granted_roles.find(r => r.table == roles[i].table && r.column == roles[i].column && r.type == roles[i].type );
+                let match = model_granted_roles.find(r => r.table == roles[i].table && r.column == roles[i].column && r.type == roles[i].type   );
+                if( _.isEmpty(match) == false ){
+                    if(roles[i].value && match.value ){
+                        roles[i].value.forEach((e,i)=> {
+                            if( e != match.value[i]){
+                                match =  false;
+                            }
+                        });
+                    }
+                }
 
+                
                 if (_.isEmpty(match) == false && roles[i].type == "users") {
                     if (!match.users.includes(roles[i].users[0])) {match.users.push(roles[i].users[0]) } ;
                     if (!match.usersName.includes(roles[i].usersName[0])) {match.usersName.push(roles[i].usersName[0]) } ;
@@ -65,39 +77,67 @@ export class CleanModel {
                     groupModel = match;        
                 } 
                 else {
-                    if (_.isEmpty(modelAc.table) == false) {model_granted_roles.push(modelAc)};
-                    if (_.isEmpty(groupModel.table) == false) {model_granted_roles.push(groupModel)};
+                    if (_.isEmpty(modelAc.table) == false) {model_granted_roles.push(modelAc) };
+                    if (_.isEmpty(groupModel.table) == false ) {model_granted_roles.push(groupModel)};
                     if (roles[i].type == "groups") {
-                        groupModel = roles[i];    
+                        groupModel = roles[i];
                         if (_.isEmpty(groupModel.table) == false) {model_granted_roles.push(groupModel)} ;
                     } else {
                         model = roles[i];
+                        if (_.isEmpty(model.table) == false) {model_granted_roles.push(model)} ;
                     }
-                    if (_.isEmpty(model.table) == false) {model_granted_roles.push(model)} ;
-
                 }
-
                 }
             }
-            
-            const sdaChecker = new Sda_Basic_Group;
-            const basicGroups =  (await sdaChecker.Checker()); //recuperdamos las tablas de grupos SDA_*
+
 
             //recuperamos los model_granted_roles de mongo, donde se han añadido permisos para SDA_*
             const finder = await DataSourceSchema.find({_id: "111111111111111111111111" }) ; 
             let mgs = [];
             const mgsmap = _.cloneDeep(finder.map(e => mgs = e.ds.metadata.model_granted_roles));
             
-            //filtramos los granted roles que coinciden con los nombres de grupos SDA_*
-            const match = mgs.filter(e => e.type == "groups" && e.groupsName.filter(a => a == basicGroups.find(q => q.name))); 
+            function objetosIgualesGrupos(objetoA: any, objetoB: any): boolean {
+                if (objetoA.groups != undefined && objetoB.groups != undefined
+                 ) return (
+                    objetoA.groups.join(',') === objetoB.groups.join(',') &&
+                    objetoA.groupsName.join(',') === objetoB.groupsName.join(',') &&
+                    objetoA.none === objetoB.none &&
+                    objetoA.table === objetoB.table &&
+                    objetoA.column === objetoB.column &&
+                    objetoA.global === objetoB.global &&
+                    objetoA.permission === objetoB.permission &&
+                    objetoA.type === objetoB.type
+                );
+            }
+   
 
-            //empujamos los permisos de los grupos SDA_* a los grantes roles filtrados anteriormente
-            if (_.isEmpty(match) == false) {
-                match.forEach(c => model_granted_roles.push(c)) ; 
-            }     
-                                
+            function objetosIgualesUsuarios(objetoA: any, objetoB: any): boolean {
+                if (objetoA.users != undefined && objetoB.users != undefined
+                 ) return (
+                    objetoA.users.join(',') === objetoB.users.join(',') &&
+                    objetoA.usersName.join(',') === objetoB.usersName.join(',') &&
+                    objetoA.none === objetoB.none &&
+                    objetoA.table === objetoB.table &&
+                    objetoA.column === objetoB.column &&
+                    objetoA.global === objetoB.global &&
+                    objetoA.permission === objetoB.permission &&
+                    objetoA.type === objetoB.type
+                );
+            }
+            
+            // Filtrar objetos únicos grupos
+            const objetosUnicosGrupos = model_granted_roles.filter((objeto, index, self) =>
+                self.findIndex(other => objetosIgualesGrupos(objeto, other)) === index
+            );
+
+             // Filtrar objetos únicos usuarios
+             const objetosUnicosUsuarios = model_granted_roles.filter((objeto, index, self) =>
+                self.findIndex(other => objetosIgualesUsuarios(objeto, other)) === index
+            );
+            
+            model_granted_roles = objetosUnicosGrupos.concat(objetosUnicosUsuarios);
+
             main_model.ds.metadata.model_granted_roles = model_granted_roles;
-
             return main_model;
 
         }
