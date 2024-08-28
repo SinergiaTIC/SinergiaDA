@@ -29,7 +29,7 @@ export class DragDropComponent implements OnChanges {
   initialization() {
     this.temporalAttributes = this.attributes;
 
-    console.log('attributes ==> ', this.attributes);
+    // console.log('attributes ==> ', this.attributes);
 
     this.itemX = [this.attributes.find(e => e.column_type==='text')];
     this.itemY = this.attributes.filter( e => (e.description.default !== this.itemX[0].description.default) && (e.column_type !== "numeric") );

@@ -93,7 +93,7 @@ export class TableDialogComponent extends EdaDialogAbstract implements AfterView
       this.noRepetitions = config.noRepetitions;
     } else {
       this.panelChartConfig.config = new ChartConfig(
-        new TableConfig(false, false, 5, false, false, false, false, null, null, null, false)
+        new TableConfig(false, false, 5, false, false, false, false, null, null, null, false, [])
       )
     }
 
@@ -273,7 +273,7 @@ export class TableDialogComponent extends EdaDialogAbstract implements AfterView
     const styles = this.styles;
 
     const properties = new TableConfig(this.onlyPercentages, this.resultAsPecentage, rows,
-      this.col_subtotals, this.col_totals, this.row_totals, this.trend, sortedSerie, sortedColumn, styles, this.noRepetitions);
+      this.col_subtotals, this.col_totals, this.row_totals, this.trend, sortedSerie, sortedColumn, styles, this.noRepetitions, []);
 
     this.onClose(EdaDialogCloseEvent.UPDATE, properties);
   }

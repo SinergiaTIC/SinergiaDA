@@ -346,6 +346,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
     }
 
     private setTableProperties(config: TableConfig) {
+        this.componentRef.instance.inject.ordering = config.ordering;
         this.componentRef.instance.inject.withColTotals = config.withColTotals;
         this.componentRef.instance.inject.withColSubTotals = config.withColSubTotals;
         this.componentRef.instance.inject.withRowTotals = config.withRowTotals;

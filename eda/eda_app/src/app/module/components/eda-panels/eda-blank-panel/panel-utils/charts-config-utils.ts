@@ -90,7 +90,7 @@ export const ChartsConfigUtils = {
 
     if (['table', 'crosstable'].includes(type)) {
 
-      return new TableConfig(false, false, 10, false, false, false, false, null, null, null, false);
+      return new TableConfig(false, false, 10, false, false, false, false, null, null, null, false, []);
 
     }
     else if (['bar', 'line','area', 'pie', 'doughnut','polarArea', 'barline', 'horizontalBar', 'pyramid', 'histogram' ].includes(type)) {

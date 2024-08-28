@@ -1107,6 +1107,8 @@ export class EdaBlankPanelComponent implements OnInit {
     public runManualQuery = () => {
         this.attributes = _.cloneDeep(this.currentQuery); // Clonacion profunda con lodash
         // this.pivotDragDropService.updatingNewOrdering(this.attributes); // actualizando el nuevo orden
+        const config = this.panelChartConfig.config.getConfig();
+        config['ordering'] = undefined;
         QueryUtils.runManualQuery(this)
     };
 
@@ -1330,8 +1332,15 @@ export class EdaBlankPanelComponent implements OnInit {
 
     public newCurrentQueryExecution(newCurrentQuery) {
         this.pivotDragDropService.updatingNewOrdering(newCurrentQuery); // actualizando el nuevo orden
+        const config = this.panelChartConfig.config.getConfig();
+        config['ordering'] = newCurrentQuery;
+
+
+        // const ordering = config['ordering'];        
         this.currentQuery = newCurrentQuery;  // actualizando el currentQuery
         QueryUtils.runManualQuery(this) // Ejecutando con la nueva configuracion de currentQuery
+        
+
     }
 
 }
