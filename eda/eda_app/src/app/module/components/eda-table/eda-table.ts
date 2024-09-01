@@ -741,7 +741,7 @@ export class EdaTable {
     PivotTable() {
 
         let axes = []
-        console.log('this.ordering: ',this.ordering)
+        // console.log('this.ordering: ',this.ordering)
         const colsInfo = this.getColsInfo();
         const oldRows = this.getValues();
 
@@ -753,7 +753,6 @@ export class EdaTable {
             seriesLabels.push(Object.keys(oldRows[0])[colsInfo.numeric[i]]);
         }
         
-        // console.log('seriesLabels :',seriesLabels)
         const rowsToMerge = [];
         const colsToMerge = [];
         let newLabels;
@@ -763,10 +762,15 @@ export class EdaTable {
             console.log('###################--- REORDENAMIENTO ---###################')
             axes = this.ordering[0].axes
 
-            console.log('axes :', axes)
+            const newSeriesLabels = [];
+            axes[0].itemZ.forEach(e => {
+                newSeriesLabels.push(e.column_name)
+            });
+
+            console.log('newSeriesLabels: ', newSeriesLabels);
 
             // NUEVA FUNCION A SER UTILIZADA --> buildCrossSerie(index, axes)
-            seriesLabels.forEach((serie, index) => {
+            newSeriesLabels.forEach((serie, index) => {
                 let colsRows = this.buildCrossSerie(index, axes)
                 // console.log(`colsRows: ---> ${index} <---` ,colsRows);
                 rowsToMerge.push(colsRows.rows);
@@ -776,9 +780,9 @@ export class EdaTable {
                 }
             });
 
-            console.log('rowsToMerge :',rowsToMerge)
-            console.log('colsToMerge :',colsToMerge)
-            console.log('newLabels :',newLabels)
+            // console.log('rowsToMerge :',rowsToMerge)
+            // console.log('colsToMerge :',colsToMerge)
+            // console.log('newLabels :',newLabels)
 
             newLabels.metricsLabels = colsInfo.numericLabels;
             newLabels.metricsDescriptions = colsInfo.numericDescriptions;
@@ -804,9 +808,9 @@ export class EdaTable {
         
         console.log('******************* --- EJECUCION NORMAL ---*******************');
         
-        console.log('rowsToMerge :',rowsToMerge)
-        console.log('colsToMerge :',colsToMerge)
-        console.log('newLabels :',newLabels)
+        // console.log('rowsToMerge :',rowsToMerge)
+        // console.log('colsToMerge :',colsToMerge)
+        // console.log('newLabels :',newLabels)
         
         newLabels.metricsLabels = colsInfo.numericLabels;
         newLabels.metricsDescriptions = colsInfo.numericDescriptions;
@@ -823,11 +827,11 @@ export class EdaTable {
     buildPivotSerie(serieIndex: number) {
 
         const params = this.generatePivotParams();
-        console.log('params ?¿?¿?¿:',params)
-        // console.log('params: ',params)
+        console.log(`params ?¿?¿?¿ con serieIndex ${serieIndex}:`, params);
         const mapTree = this.buildMainMap(params.mainColValues, params.newCols);
-        // console.log('mapTree: ',mapTree)
+        // console.log('mapTree ?¿?¿?¿:', mapTree);
         const populatedMap = this.populateMap(mapTree, params.oldRows, params.mainColLabel, params.aggregatedColLabels[serieIndex], params.pivotColsLabels);
+        console.log(`populatedMap ?¿?¿?¿ con serieIndex ${serieIndex}:`, populatedMap);
         // console.log('populatedMap: ', populatedMap)
 
         let newRows = this.buildNewRows(populatedMap, params.mainColLabel, params.aggregatedColLabels[serieIndex]);
@@ -844,14 +848,17 @@ export class EdaTable {
         return { cols: tableColumns, rows: newRows, newLabels: newLabels }
     }
 
+
     buildCrossSerie(serieIndex: number, axes: any[]) {
 
         const params = this.generateCrossParams(axes);
+        console.log(`params ===> con serieIndex ${serieIndex}:`, params)
 
-        console.log('params ESPERADOOOOOO::::::::',params)
-        console.log('axes --->:', axes)
-        console.log('serieIndex: ',serieIndex)
+        const mapTree = this.buildMapRecursive(params.newCols);
+        console.log(`mapTree ===> con serieIndex ${serieIndex}:`, mapTree);
 
+        const populatedMap = this.populateCrossMap(mapTree, params.oldRows, params.mainColsLabels, params.aggregatedColLabels[serieIndex], params.pivotColsLabels);
+        console.log(`populatedMap ===> con serieIndex ${serieIndex}:`, populatedMap);
         const tableColumns = [];
         const newRows = [];
         const newLabels = [];
@@ -921,6 +928,7 @@ export class EdaTable {
      */
     buildMapRecursive(cols: Array<Array<string>>) {
         let map = new Map();
+
         if (cols.length === 2) {
             return this.buildSubMapTree(cols[0], cols[1]);
         } else {
@@ -936,10 +944,39 @@ export class EdaTable {
      * Puts values in the tree map
      */
     populateMap(map: Map<string, any>, rows: any, mainColLabel: string, aggregatedColLabel: string, pivotColsLabels: any) {
+        console.log('AQUI EL MAP: ', map);
         rows.forEach(row => {
-            const value = row[aggregatedColLabel];
-            const pivotSteps = pivotColsLabels.length - 1;
-            const leftColTarget = map.get(row[mainColLabel]);
+            const value = row[aggregatedColLabel]; // Capturas los valores numéricos de oldRows
+            const pivotSteps = pivotColsLabels.length - 1; // Número de pasos en seccion pivot
+            const leftColTarget = map.get(row[mainColLabel]); // Captura cada mapa de la columna principal
+            // console.log('leftColTarget: ', leftColTarget);
+            let lastMapKey = leftColTarget;
+            let i;
+            for (i = 0; i < pivotSteps; i++) {
+                lastMapKey = lastMapKey.get(row[pivotColsLabels[i]]);
+            }
+            const actualValue = lastMapKey.get(row[pivotColsLabels[i]]);
+            lastMapKey.set(row[pivotColsLabels[i]], actualValue + value);
+        });
+        return map;
+    }
+
+    populateCrossMap(map: Map<string, any>, rows: any, mainColsLabels: any, aggregatedColLabel: string, pivotColsLabels: any) {
+
+        const firstMainColsLabels = mainColsLabels[0];
+
+        mainColsLabels.shift(1);
+        pivotColsLabels.forEach(v => {
+            mainColsLabels.push(v);
+        });
+
+        pivotColsLabels = mainColsLabels;
+
+        rows.forEach(row => {
+            const value = row[aggregatedColLabel]; // Capturas los valores numéricos de oldRows
+            const pivotSteps = pivotColsLabels.length - 1; // Número de pasos en seccion pivot
+            const leftColTarget = map.get(row[firstMainColsLabels]); // Captura cada mapa de la columna principal
+            // console.log('leftColTarget: ', leftColTarget);
             let lastMapKey = leftColTarget;
             let i;
             for (i = 0; i < pivotSteps; i++) {
@@ -1017,9 +1054,12 @@ export class EdaTable {
         }
         //get distinct values of pivot columns (new-columns names)
         const newCols = [];
+        console.log('pivotCols: ', pivotCols)
+
         pivotCols.forEach(pivotCol => {
             newCols.push(_.orderBy(_.uniq(_.map(this.value, pivotCol.field))));
         });
+
 
         const params = {
             mainCol: mainCol,
@@ -1035,10 +1075,8 @@ export class EdaTable {
     }
 
     generateCrossParams(axes: any[]): CrossTableSerieParams {
-        //get old rows to build new ones 
-        const oldRows = this.getValues();
-        //get index for numeric and text/date columns
-        const typesIndex = this.getColsInfo();
+        const oldRows = this.getValues(); //get old rows to build new ones 
+        // const typesIndex = this.getColsInfo(); //get index for numeric and text/date columns
 
         //get aggregation columns
         const aggregatedColLabels = [];
@@ -1046,7 +1084,6 @@ export class EdaTable {
             aggregatedColLabels.push(e.column_name);
         });
 
-        console.log('this.cols: ', this.cols)
         //get pivot columns
         const pivotCols = [];
         const pivotColsLabels = [];
@@ -1060,30 +1097,35 @@ export class EdaTable {
             });
         })
 
-        // for (let i = 1; i < typesIndex.text.length; i++) {
-        //     pivotCols.push(this.cols[typesIndex.text[i]]);
-        //     pivotColsLabels.push(Object.keys(oldRows[0])[typesIndex.text[i]]);
-        // }
+        //get main columns
+        const mainCols = [];
+        const mainColsLabels = [];
 
-        const mainCol = this.cols[typesIndex.text[0]];
-        const mainColLabel = Object.keys(oldRows[0])[typesIndex.text[0]];
-        const mainColValues = _.orderBy(_.uniq(_.map(this.value, mainCol.field)));
-
+        this.cols.forEach(e => {
+            axes[0].itemX.forEach(x => {
+                if(e.field === x.column_name) {
+                    mainCols.push(e);
+                    mainColsLabels.push(e.field)
+                }
+            });
+        })
 
         //get distinct values of pivot columns (new-columns names)
         const newCols = [];
-        pivotCols.forEach(pivotCol => {
-            newCols.push(_.orderBy(_.uniq(_.map(this.value, pivotCol.field))));
-        });
+        // console.log('this.value :',this.value);
+        // console.log('axes :',axes);
+        axes[0].itemX.forEach(e => newCols.push(_.orderBy(_.uniq(_.map(this.value, e.column_name)))));
+        axes[0].itemY.forEach(e => newCols.push(_.orderBy(_.uniq(_.map(this.value, e.column_name)))));
+        // console.log('newCols: ', newCols);
 
         const params = {
-            mainCols: [],
-            mainColsLabels: [],
+            mainCols: mainCols,
+            mainColsLabels: mainColsLabels,
             aggregatedColLabels: aggregatedColLabels,
             pivotColsLabels: pivotColsLabels,
             pivotCols: pivotCols,
             oldRows: oldRows,
-            newCols: []
+            newCols: newCols,
         }
         return params
     }
