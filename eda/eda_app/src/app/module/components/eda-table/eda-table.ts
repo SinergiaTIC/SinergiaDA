@@ -859,6 +859,7 @@ export class EdaTable {
 
         const populatedMap = this.populateCrossMap(mapTree, params.oldRows, params.mainColsLabels, params.aggregatedColLabels[serieIndex], params.pivotColsLabels);
         console.log(`populatedMap ===> con serieIndex ${serieIndex}:`, populatedMap);
+
         const tableColumns = [];
         const newRows = [];
         const newLabels = [];
@@ -963,27 +964,29 @@ export class EdaTable {
 
     populateCrossMap(map: Map<string, any>, rows: any, mainColsLabels: any, aggregatedColLabel: string, pivotColsLabels: any) {
 
-        const firstMainColsLabels = mainColsLabels[0];
+        let cloneMainColsLabels = _.cloneDeep(mainColsLabels)
+        let clonePivotColsLabels = _.cloneDeep(pivotColsLabels)
+        const firstMainColsLabels = cloneMainColsLabels[0];
 
-        mainColsLabels.shift(1);
-        pivotColsLabels.forEach(v => {
-            mainColsLabels.push(v);
+        cloneMainColsLabels.shift(1);
+        clonePivotColsLabels.forEach(v => {
+            cloneMainColsLabels.push(v);
         });
 
-        pivotColsLabels = mainColsLabels;
+        clonePivotColsLabels = cloneMainColsLabels;
 
         rows.forEach(row => {
             const value = row[aggregatedColLabel]; // Capturas los valores numéricos de oldRows
-            const pivotSteps = pivotColsLabels.length - 1; // Número de pasos en seccion pivot
+            const pivotSteps = clonePivotColsLabels.length - 1; // Número de pasos en seccion pivot
             const leftColTarget = map.get(row[firstMainColsLabels]); // Captura cada mapa de la columna principal
             // console.log('leftColTarget: ', leftColTarget);
             let lastMapKey = leftColTarget;
             let i;
             for (i = 0; i < pivotSteps; i++) {
-                lastMapKey = lastMapKey.get(row[pivotColsLabels[i]]);
+                lastMapKey = lastMapKey.get(row[clonePivotColsLabels[i]]);
             }
-            const actualValue = lastMapKey.get(row[pivotColsLabels[i]]);
-            lastMapKey.set(row[pivotColsLabels[i]], actualValue + value);
+            const actualValue = lastMapKey.get(row[clonePivotColsLabels[i]]);
+            lastMapKey.set(row[clonePivotColsLabels[i]], actualValue + value);
         });
         return map;
     }
