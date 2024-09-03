@@ -125,10 +125,9 @@
     </div>
   </div>
 
-
   <!-- Buscador -->
   <div class="ml-auto" id="name-filter">
-    <div class="search-container" >
+    <div class="search-container">
       <input
         type="text"
         class="form-control search-input"
@@ -186,7 +185,7 @@
 
 <!-- Inicio de la tabla de Bootstrap -->
 <div *ngIf="viewMode === 'table'" class="md-10">
-  <table class="table table-striped" id="report-table">
+  <table class="table table-responsive table-striped" id="report-table">
     <thead>
       <tr>
         <th
@@ -296,17 +295,39 @@
         [class.newly-cloned]="dashboard.isNewlyCloned"
       >
         <td>
-          <div class="title-container" (click)="goToDashboard(dashboard)">
-            {{ dashboard.config.title }}
-
-            <div
-              *ngIf="dashboard.config.description"
-              class="info-icon-container"
+          <!-- <div class="title-container" (click)="goToDashboard(dashboard)">
+            {{ dashboard.config.title }} -->
+          <div
+            class="dashboard-title-container"
+            (mouseenter)="showEditIcon = true"
+            (mouseleave)="showEditIcon = false"
+          >
+            <span
+              #titleSpan
+              [attr.contenteditable]="isEditing ? true : null"
+              (blur)="updateDashboardTitle(dashboard, $event)"
+              (keydown.enter)="$event.target.blur()"
+              >{{ dashboard.config.title }}</span
             >
-              <i class="fa fa-info-circle"></i>
-              <div class="custom-tooltip">
-                <p>{{ dashboard.config.description }}</p>
-              </div>
+            <i
+              *ngIf="canIEdit(dashboard) && !isEditing"
+              class="fa fa-pencil edit-icon"
+              (click)="startEditing(titleSpan)"
+              i18n-title="@@ClickToEditName"
+              title="Pulse para editar el nombre"
+            ></i>
+          </div>
+          <div *ngIf="dashboard.config.description" class="info-icon-container">
+            <small
+              ><em>
+                {{
+                  (dashboard.config.description | slice : 0 : 45) +
+                    (dashboard.config.description.length > 45 ? "..." : ".")
+                }}</em
+              ></small
+            >
+            <div class="custom-tooltip">
+              <p>{{ dashboard.config.description }}</p>
             </div>
           </div>
         </td>
@@ -372,7 +393,10 @@
         </td>
         <td>{{ dashboard.config.ds.name }}</td>
         <td class="small">
-          <span *ngFor="let group of dashboard.group" class="group-label label label-success small">
+          <span
+            *ngFor="let group of dashboard.group"
+            class="group-label label label-success small"
+          >
             {{ group.name }}
           </span>
         </td>
@@ -483,7 +507,10 @@
             </ng-template>
           </p>
           <p class="card-text">
-            <span *ngFor="let group of dashboard.group" class="group-label label label-success small">
+            <span
+              *ngFor="let group of dashboard.group"
+              class="group-label label label-success small"
+            >
               {{ group.name }}
             </span>
             <span class="pull-right small">
