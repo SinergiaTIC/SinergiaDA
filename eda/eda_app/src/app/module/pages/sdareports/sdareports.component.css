@@ -432,6 +432,6 @@ th i.fa {
   border-radius: 4px;
 }
 
-.info-icon-container {
-  margin-left: 0px;
+.has-description-icon {
+  opacity: 0.7;
 }

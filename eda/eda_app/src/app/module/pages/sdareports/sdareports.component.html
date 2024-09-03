@@ -294,21 +294,26 @@
         [id]="'dashboard-' + dashboard._id"
         [class.newly-cloned]="dashboard.isNewlyCloned"
       >
-        <td>
-          <!-- <div class="title-container" (click)="goToDashboard(dashboard)">
-            {{ dashboard.config.title }} -->
+        <td
+          pTooltip="{{ dashboard.config.description }}"
+          tooltipPosition="bottom"
+          [ngClass]="{ 'has-description': dashboard.config.description }"
+        >
           <div
             class="dashboard-title-container"
             (mouseenter)="showEditIcon = true"
             (mouseleave)="showEditIcon = false"
-          >
-            <span
+            >
+            <div
               #titleSpan
               [attr.contenteditable]="isEditing ? true : null"
               (blur)="updateDashboardTitle(dashboard, $event)"
               (keydown.enter)="$event.target.blur()"
-              >{{ dashboard.config.title }}</span
-            >
+              >{{ dashboard.config.title }} &nbsp;     <i
+              *ngIf="dashboard.config.description"
+              class="fa fa-info has-description-icon"
+
+            ></i>
             <i
               *ngIf="canIEdit(dashboard) && !isEditing"
               class="fa fa-pencil edit-icon"
@@ -316,19 +321,10 @@
               i18n-title="@@ClickToEditName"
               title="Pulse para editar el nombre"
             ></i>
-          </div>
-          <div *ngIf="dashboard.config.description" class="info-icon-container">
-            <small
-              ><em>
-                {{
-                  (dashboard.config.description | slice : 0 : 45) +
-                    (dashboard.config.description.length > 45 ? "..." : ".")
-                }}</em
-              ></small
+
+            </div
             >
-            <div class="custom-tooltip">
-              <p>{{ dashboard.config.description }}</p>
-            </div>
+
           </div>
         </td>
         <td class="text-center">
