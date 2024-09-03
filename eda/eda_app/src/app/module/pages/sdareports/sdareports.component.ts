@@ -54,11 +54,10 @@ export class SdareportsComponent implements OnInit {
 
   // Propiedades para el filtro por tipo con iconos
   public dashboardTypes: Array<{ type: string; label: string; active: boolean; icon: string; color: string }> = [
-    { type: "shared", label: $localize`:@@Public:Público`, active: true, icon: "fa-share", color: "#dc3545" },
-    { type: "public", label: $localize`:@@Common:Común`, active: true, icon: "fa-globe", color: "#007bff" },
-    { type: "group", label: $localize`:@@Group:Grupo`, active: true, icon: "fa-users", color: "#28a745" },
-    { type: "private", label: $localize`:@@Private:Privado`, active: true, icon: "fa-lock", color: "#ffc107" }
-    // {type: 'archived', label: 'Archivado', active: true, icon: 'fa-archive', color: '#6c757d'}
+    { type: "shared", label: $localize`:@@Public:Público`, active: false, icon: "fa-link", color: "#dc3545" },
+    { type: "public", label: $localize`:@@Common:Común`, active: false, icon: "fa-globe", color: "#007bff" },
+    { type: "group", label: $localize`:@@Group:Grupo`, active: false, icon: "fa-users", color: "#28a745" },
+    { type: "private", label: $localize`:@@Private:Privado`, active: false, icon: "fa-lock", color: "#ffc107" }
   ];
 
   // Traduccion para los valores de los informes
