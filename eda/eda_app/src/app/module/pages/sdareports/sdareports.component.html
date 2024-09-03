@@ -293,6 +293,7 @@
         *ngFor="let dashboard of visibleDashboards"
         [id]="'dashboard-' + dashboard._id"
         [class.newly-cloned]="dashboard.isNewlyCloned"
+        (dblclick)="goToDashboard(dashboard)"
       >
         <td
           pTooltip="{{ dashboard.config.description }}"
@@ -303,28 +304,26 @@
             class="dashboard-title-container"
             (mouseenter)="showEditIcon = true"
             (mouseleave)="showEditIcon = false"
-            >
+          >
             <div
               #titleSpan
               [attr.contenteditable]="isEditing ? true : null"
               (blur)="updateDashboardTitle(dashboard, $event)"
               (keydown.enter)="$event.target.blur()"
-              >{{ dashboard.config.title }} &nbsp;     <i
-              *ngIf="dashboard.config.description"
-              class="fa fa-info has-description-icon"
-
-            ></i>
-            <i
-              *ngIf="canIEdit(dashboard) && !isEditing"
-              class="fa fa-pencil edit-icon"
-              (click)="startEditing(titleSpan)"
-              i18n-title="@@ClickToEditName"
-              title="Pulse para editar el nombre"
-            ></i>
-
-            </div
             >
-
+              {{ dashboard.config.title }} &nbsp;
+              <i
+                *ngIf="dashboard.config.description"
+                class="fa fa-info has-description-icon"
+              ></i>
+              <i
+                *ngIf="canIEdit(dashboard) && !isEditing"
+                class="fa fa-pencil edit-icon"
+                (click)="startEditing(titleSpan)"
+                i18n-title="@@ClickToEditName"
+                title="Pulse para editar el nombre"
+              ></i>
+            </div>
           </div>
         </td>
         <td class="text-center">
@@ -402,11 +401,13 @@
         <td>
           <div class="mt-auto row-toolbar">
             <button
-              *ngIf="!isObserver && canIEdit(dashboard)"
-              class="btn btn-danger btn-sm mr-2"
-              (click)="deleteDashboard(dashboard)"
+              *ngIf="!isObserver"
+              class="btn btn-primary btn-sm mr-2"
+              (click)="goToDashboard(dashboard)"
+              i18n-title="@@goToDashboard"
+              title="Abrir informe"
             >
-              <i class="fa fa-trash"></i>
+              <i class="fa fa-eye"></i>
             </button>
             <button
               *ngIf="!isObserver && canIEdit(dashboard)"
@@ -416,6 +417,13 @@
               title="Clonar informe"
             >
               <i class="fa fa-clone"></i>
+            </button>
+            <button
+              *ngIf="!isObserver && canIEdit(dashboard)"
+              class="btn btn-danger btn-sm mr-2"
+              (click)="deleteDashboard(dashboard)"
+            >
+              <i class="fa fa-trash"></i>
             </button>
             <button
               *ngIf="dashboard.type === 'shared'"

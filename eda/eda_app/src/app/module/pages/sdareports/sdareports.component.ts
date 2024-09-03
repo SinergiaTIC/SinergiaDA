@@ -207,7 +207,7 @@ export class SdareportsComponent implements OnInit {
   }
 
   public deleteDashboard(dashboard): void {
-    let text = $localize`:@@deleteDashboardWarning: Estás a punto de borrar el informe: `;
+    let text = $localize`:@@deleteDashboardWarning:Estás a punto de borrar el informe:`;
     Swal.fire({
       title: $localize`:@@Sure:¿Estás seguro?`,
       text: `${text} ${dashboard.config.title}`,
@@ -221,17 +221,20 @@ export class SdareportsComponent implements OnInit {
       if (borrado.value) {
         this.dashboardService.deleteDashboard(dashboard._id).subscribe(
           () => {
-            this.alertService.addSuccess($localize`:@@DashboardDeletedInfo:Informe eliminado correctamente.`);
-            // Eliminar el dashboard del array allDashboards
+            // Eliminar el dashboard de allDashboards y visibleDashboards sin reordenar
             this.allDashboards = this.allDashboards.filter(d => d._id !== dashboard._id);
-            // Aplicar los filtros actuales
-            this.applyCurrentFilters();
+            this.visibleDashboards = this.visibleDashboards.filter(d => d._id !== dashboard._id);
+
+
+            this.alertService.addSuccess($localize`:@@DashboardDeletedInfo:Informe eliminado correctamente.`);
           },
           err => this.alertService.addError(err)
         );
       }
     });
   }
+
+
   public goToDashboard(dashboard): void {
     if (dashboard) {
       this.router.navigate(["/dashboard", dashboard._id]);
@@ -396,33 +399,52 @@ export class SdareportsComponent implements OnInit {
     this.dashboardService.cloneDashboard(dashboard._id).subscribe(
       response => {
         if (response.ok && response.dashboard) {
-          // Añadir el nuevo dashboard clonado a la lista
-          this.allDashboards.push(response.dashboard);
-          this.visibleDashboards.push(response.dashboard);
+          // Crear una copia profunda del dashboard original
+          const clonedDashboard = _.cloneDeep(dashboard);
 
-          // Ordenar la lista según el criterio actual
-          // this.sortTable(this.sortColumn);
+          // Actualizar los datos del dashboard clonado con la respuesta del servidor
+          Object.assign(clonedDashboard, response.dashboard);
 
-          // Encontrar el índice del dashboard clonado en la lista visible
-          const index = this.visibleDashboards.findIndex(d => d._id === response.dashboard._id);
+          // Asegurarse de que el tipo y el autor estén correctamente asignados
+          clonedDashboard.type = clonedDashboard.config.visible;
+          clonedDashboard.user = this.currentUser;
 
-          if (index !== -1) {
-            // Marcar el dashboard como recién clonado
-            this.visibleDashboards[index].isNewlyCloned = true;
+          // Actualizar la fecha de creación y modificación
+          clonedDashboard.config.createdAt = new Date().toISOString();
+          clonedDashboard.config.modifiedAt = new Date().toISOString();
 
-            // Desplazar el foco al dashboard clonado
-            setTimeout(() => {
-              const element = document.getElementById(`dashboard-${response.dashboard._id}`);
-              if (element) {
-                element.scrollIntoView({ behavior: "smooth", block: "center" });
-              }
-            }, 100);
+          // Encontrar el índice del dashboard original en ambas listas
+          const allDashboardsIndex = this.allDashboards.findIndex(d => d._id === dashboard._id);
+          const visibleDashboardsIndex = this.visibleDashboards.findIndex(d => d._id === dashboard._id);
 
-            // Eliminar la marca después de 5 segundos
-            setTimeout(() => {
-              this.visibleDashboards[index].isNewlyCloned = false;
-            }, 5000);
+          // Insertar el dashboard clonado justo después del original en ambas listas
+          if (allDashboardsIndex !== -1) {
+            this.allDashboards.splice(allDashboardsIndex + 1, 0, clonedDashboard);
+          } else {
+            this.allDashboards.push(clonedDashboard);
           }
+
+          if (visibleDashboardsIndex !== -1) {
+            this.visibleDashboards.splice(visibleDashboardsIndex + 1, 0, clonedDashboard);
+          } else {
+            this.visibleDashboards.push(clonedDashboard);
+          }
+
+          // Marcar el dashboard como recién clonado
+          clonedDashboard.isNewlyCloned = true;
+
+          // Desplazar el foco al dashboard clonado
+          setTimeout(() => {
+            const element = document.getElementById(`dashboard-${clonedDashboard._id}`);
+            if (element) {
+              element.scrollIntoView({ behavior: "smooth", block: "center" });
+            }
+          }, 100);
+
+          // Eliminar la marca después de 5 segundos
+          setTimeout(() => {
+            clonedDashboard.isNewlyCloned = false;
+          }, 5000);
 
           this.alertService.addSuccess($localize`:@@REPORTCloned:Informe clonado correctamente`);
         } else {
