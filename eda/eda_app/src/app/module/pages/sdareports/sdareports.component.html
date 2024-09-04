@@ -11,7 +11,7 @@
     </button>
   </div>
 
-  <!-- Barra de Tags -->
+  <!-- Tags filter -->
   <div class="ml-3" id="tag-filter">
     <div class="dropdown">
       <button
@@ -23,7 +23,11 @@
         aria-expanded="false"
       >
         <span i18n="@@etiqueta"> Etiquetas </span>
-        <span *ngIf="selectedTags.length > 0" class="counter bg-warning pull-right">{{selectedTags.length}}</span>
+        <span
+          *ngIf="selectedTags.length > 0"
+          class="counter bg-warning pull-right"
+          >{{ selectedTags.length }}</span
+        >
       </button>
       <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
         <div class="px-3 py-2">
@@ -53,10 +57,9 @@
         </div>
       </div>
     </div>
-
   </div>
 
-  <!-- Nuevo Filtro de Grupos -->
+  <!-- Groups filter-->
   <div class="ml-auto ml-3" id="group-filter">
     <div class="dropdown">
       <button
@@ -66,14 +69,14 @@
         data-toggle="dropdown"
         aria-haspopup="true"
         aria-expanded="false"
-        i18n="@@grupo"
+
       >
-        Grupo:
-        {{
-          selectedGroups.length > 0
-            ? selectedGroups.length + " seleccionados"
-            : "Todos"
-        }}
+        <span i18n="@@groups"> Grupos </span>
+        <span
+          *ngIf="selectedGroups.length > 0"
+          class="counter bg-warning pull-right"
+          >{{ selectedGroups.length }}</span
+        >
       </button>
       <div class="dropdown-menu" aria-labelledby="dropdownGroupButton">
         <div class="px-3 py-2">
@@ -538,9 +541,10 @@
             <button
               class="btn btn-primary btn-sm mr-2"
               (click)="goToDashboard(dashboard)"
-              i18n="@@ver"
+              i18n-title="@@showReport"
+              title="Mostrar informe"
             >
-              Ver
+            <i class="fa fa-eye"></i>
             </button>
             <button
               *ngIf="!isObserver && canIEdit(dashboard)"
