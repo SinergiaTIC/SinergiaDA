@@ -170,24 +170,30 @@ export class SdareportsComponent implements OnInit {
   }
 
   private initGroups(): void {
+    console.log("Iniciando initGroups");
+    console.log("allDashboards:", this.allDashboards);
+
     const uniqueGroups = Array.from(
       new Set(
         this.allDashboards
-          .filter(db => db.group && db.group.name) // Aseguramos que group y name existan
-          .map(db => db.group.name)
+          .filter(db => db.group && Array.isArray(db.group))
+          .reduce((acc, db) => acc.concat(db.group.map(g => g.name)), [])
       )
     ).sort();
 
-    console.log("Grupos únicos encontrados:", uniqueGroups); // Nuevo log
+    console.log("Grupos únicos encontrados:", uniqueGroups);
 
     this.groupOptions = [
       { value: null, label: this.noGroupLabel },
       ...uniqueGroups.map(group => ({ value: group, label: group }))
     ];
 
-    console.log("Opciones de grupo:", this.groupOptions); // Nuevo log
+    console.log("Opciones de grupo:", this.groupOptions);
 
     this.filteredGroups = [...this.groupOptions];
+
+    // Asegurarse de que los grupos se actualicen en la vista
+    this.filterGroups();
   }
 
   public initDialog(): void {
@@ -252,6 +258,7 @@ export class SdareportsComponent implements OnInit {
     this.filteredGroups = this.groupOptions.filter(group =>
       group.label.toLowerCase().includes(this.groupSearchTerm.toLowerCase())
     );
+    console.log("Grupos filtrados:", this.filteredGroups);
   }
 
   public toggleTagSelection(tag: any) {
@@ -306,15 +313,23 @@ export class SdareportsComponent implements OnInit {
       );
     }
 
-    // Aplicamos el filtro de grupos
-    if (this.selectedGroups.length > 0) {
-      this.visibleDashboards = this.visibleDashboards.filter(db =>
-        this.selectedGroups.some(
-          group =>
-            (group.value === null && (!db.group || !db.group.name)) || (db.group && db.group.name === group.value)
-        )
-      );
-    }
+      // Aplicamos el filtro de grupos
+  if (this.selectedGroups.length > 0) {
+    this.visibleDashboards = this.visibleDashboards.filter(db => {
+      if (this.selectedGroups.some(group => group.value === null)) {
+        // Si "Sin grupo" está seleccionado, incluir dashboards sin grupo
+        return !db.group || db.group.length === 0 ||
+               this.selectedGroups.some(group =>
+                 group.value !== null && db.group && db.group.some(g => g.name === group.value)
+               );
+      } else {
+        // Solo incluir dashboards que pertenezcan a los grupos seleccionados
+        return db.group && db.group.some(g =>
+          this.selectedGroups.some(selectedGroup => selectedGroup.value === g.name)
+        );
+      }
+    });
+  }
 
     this.sortTable(this.sortColumn);
   }
