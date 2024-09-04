@@ -857,11 +857,11 @@ export class EdaTable {
         const populatedMap = this.populateCrossMap(mapTree, params.oldRows, params.mainColsLabels, params.aggregatedColLabels[serieIndex], params.pivotColsLabels);
         console.log(`populatedMap ===> con serieIndex ${serieIndex}:`, populatedMap);
 
-        // let newRows = this.buildNewCrossRows(populatedMap, params.mainColsLabels, params.aggregatedColLabels[serieIndex]);
+        let newRows = this.buildNewCrossRows(populatedMap, params.mainColsLabels, params.aggregatedColLabels[serieIndex], params.newCols);
 
 
         const tableColumns = [];
-        const newRows = [];
+        //const newRows = [];
         const newLabels = [];
 
         return { cols: tableColumns, rows: newRows, newLabels: newLabels }
@@ -1068,36 +1068,59 @@ export class EdaTable {
     }
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    // buildNewCrossRows(map: Map<string, any>, mainColsLabels: any, serieLabel: string) {
-    //     let rows = [];
-    //     let longitud = mainColsLabels.length;
+    buildNewCrossRows(map: Map<string, any>, mainColsLabels: any, serieLabel: string, newCols: any) {
+        const arraysMain = []; // Arreglo de los nombres de las columnas principales
+        const rows = []
 
-    //     map.forEach((value, key) => {
-    //         let row = {};
-    //         row[mainColsLabels[0]] = key;
+        mainColsLabels.forEach((e, i) => {
+            arraysMain[i] = _.cloneDeep(newCols[i]);
+        });
 
-    //         let mainDynamic = this.buildNewRowsCrossRecursive(value, [], longitud)
+        //--------------------------------------------
 
-    //         console.log(mainDynamic);
-    //         rows.push(row);
-    //     })
+        const combinations = this.combineArrays(arraysMain);
 
-    //     console.log('rows ====> ', rows)
-    //     return rows;
-    // }
+        // const resultado = combinations.map(c => {
+        //     return { type: c[0], status: c[1]};
+        // })
 
-    // buildNewRowsCrossRecursive(map: Map<string, any>, row: any, longitud: number){
-    //     longitud = longitud - 1;
-    //     map.forEach((value, key) => {
-    //         if(longitud===0) {
-    //             return 
-    //         } else {
-    //             row.push(key)
-    //             this.buildNewRowsCrossRecursive(value, row, longitud);
-    //         }
-    //     })
-    //     return row
-    // }
+        combinations.forEach( element => {
+            const row = {}
+            mainColsLabels.forEach((main, j) => {
+                row[main] = element[j];
+            });
+            rows.push(row);
+        })
+
+        console.log('Serie Numérica :',serieLabel)
+        console.log('Mapeado :',map)
+        console.log('newCols :',newCols)
+        console.log('arraysMain :',arraysMain)
+        console.log('combinations :',combinations)
+        console.log('rows :',rows)
+
+
+        
+    }
+
+    combineArrays(arrays: any){
+
+        function combine(currentIndex: number, currentCombination: any){
+            if(currentIndex === arrays.length){
+                result.push(currentCombination);
+                return;
+            }
+
+            arrays[currentIndex].forEach(e => {
+                const newCombination = [ ...currentCombination, e];
+                combine(currentIndex+1,  newCombination);
+            });
+        }
+
+        const result = [];
+        combine(0, []);
+        return result;
+    }
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
