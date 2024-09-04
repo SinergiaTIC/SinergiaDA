@@ -1,5 +1,5 @@
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-  <!-- Botón para crear un nuevo informe -->
+  <!-- New report button -->
   <div *ngIf="!isObserver">
     <button
       type="button"
@@ -11,8 +11,37 @@
     </button>
   </div>
 
+  <div class="ml-auto" i18n="@@view">Vista</div>
+  <!-- View mode -->
+  <div class="ml-2" id="view-mode">
+    <div class="btn-group" role="group" aria-label="Modo de visualización">
+      <button
+        type="button"
+        class="btn btn-outline-light"
+        [class.active]="viewMode === 'table'"
+        (click)="setViewMode('table')"
+        title="Vista de tabla"
+        i18n-title="@@vistaTabla"
+      >
+        <i class="fa fa-table"></i>
+      </button>
+      <button
+        type="button"
+        class="btn btn-outline-light"
+        [class.active]="viewMode === 'card'"
+        (click)="setViewMode('card')"
+        title="Vista de fichas"
+        i18n-title="@@vistaFichas"
+      >
+        <i class="fa fa-th-large"></i>
+      </button>
+    </div>
+  </div>
+
+  <div class="ml-auto" i18n="@@filter">Filtros</div>
+
   <!-- Tags filter -->
-  <div class="ml-3" id="tag-filter">
+  <div class="ml-2" id="tag-filter">
     <div class="dropdown">
       <button
         class="btn btn-secondary dropdown-toggle"
@@ -60,7 +89,7 @@
   </div>
 
   <!-- Groups filter-->
-  <div class="ml-auto ml-3" id="group-filter">
+  <div class="ml-2" id="group-filter">
     <div class="dropdown">
       <button
         class="btn btn-secondary dropdown-toggle"
@@ -69,7 +98,6 @@
         data-toggle="dropdown"
         aria-haspopup="true"
         aria-expanded="false"
-
       >
         <span i18n="@@groups"> Grupos </span>
         <span
@@ -108,7 +136,8 @@
     </div>
   </div>
 
-  <div class="ml-auto ml-3" id="type-filter">
+  <!-- Type filter -->
+  <div class="ml-2" id="type-filter">
     <div class="btn-group" role="group" aria-label="Filtrar por tipo">
       <button
         *ngFor="let typeObj of dashboardTypes"
@@ -124,8 +153,8 @@
     </div>
   </div>
 
-  <!-- Buscador -->
-  <div class="ml-auto" id="name-filter">
+  <!-- Name filter -->
+  <div class="ml-2" id="name-filter">
     <div class="search-container">
       <input
         type="text"
@@ -134,40 +163,14 @@
         name="buscador"
         [(ngModel)]="searchTerm"
         (keyup)="filterTitle($event)"
-        i18n-placeholder="@@buscarPorNombre"
-        placeholder="Buscar por nombre del informe"
+        i18n-placeholder="@@NameFilter"
+        placeholder="Filtrar por nombre del informe"
       />
       <i class="fa fa-search search-icon"></i>
     </div>
   </div>
 
-  <!-- Botones para cambiar el modo de visualización -->
-  <div class="ml-auto mr-3" id="view-mode">
-    <div class="btn-group" role="group" aria-label="Modo de visualización">
-      <button
-        type="button"
-        class="btn btn-outline-light"
-        [class.active]="viewMode === 'table'"
-        (click)="setViewMode('table')"
-        title="Vista de tabla"
-        i18n-title="@@vistaTabla"
-      >
-        <i class="fa fa-table"></i>
-      </button>
-      <button
-        type="button"
-        class="btn btn-outline-light"
-        [class.active]="viewMode === 'card'"
-        (click)="setViewMode('card')"
-        title="Vista de fichas"
-        i18n-title="@@vistaFichas"
-      >
-        <i class="fa fa-th-large"></i>
-      </button>
-    </div>
-  </div>
-
-  <div class="ml-auto ml-2" id="count-indicator">
+  <div class="ml-2" id="count-indicator">
     <span
       id="report-counter"
       class="badge"
@@ -196,6 +199,7 @@
               sortColumn === 'config.title' && sortDirection === 'desc'
           }"
           i18n="@@nombreInforme"
+          style="min-width: 250px"
         >
           Nombre del Informe
         </th>
@@ -367,18 +371,18 @@
         </td>
         <td class="text-center">{{ dashboard.user?.name }}</td>
         <td class="text-center">
-          {{
+          <small>{{
             dashboard.config.createdAt
               ? formatDate(dashboard.config.createdAt)
               : ""
-          }}
+          }}</small>
         </td>
         <td class="text-center">
-          {{
+          <small>{{
             dashboard.config.modifiedAt
               ? formatDate(dashboard.config.modifiedAt)
               : ""
-          }}
+          }}</small>
         </td>
         <td class="text-center">
           <p *ngIf="dashboard.config.onlyIcanEdit" class="text-center">
@@ -398,7 +402,7 @@
           <span class="badge badge-primary">{{ dashboard.config.tag }}</span>
         </td>
         <td>
-          <div class="mt-auto row-toolbar">
+          <div class="btn-group">
             <button
               *ngIf="!isObserver"
               class="btn btn-primary btn-sm mr-2"
@@ -544,7 +548,7 @@
               i18n-title="@@showReport"
               title="Mostrar informe"
             >
-            <i class="fa fa-eye"></i>
+              <i class="fa fa-eye"></i>
             </button>
             <button
               *ngIf="!isObserver && canIEdit(dashboard)"
