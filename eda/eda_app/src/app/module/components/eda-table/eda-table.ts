@@ -767,8 +767,6 @@ export class EdaTable {
                 newSeriesLabels.push(e.column_name)
             });
 
-            console.log('newSeriesLabels: ', newSeriesLabels);
-
             // NUEVA FUNCION A SER UTILIZADA --> buildCrossSerie(index, axes)
             newSeriesLabels.forEach((serie, index) => {
                 let colsRows = this.buildCrossSerie(index, axes)
@@ -829,10 +827,9 @@ export class EdaTable {
         const params = this.generatePivotParams();
         console.log(`params ?¿?¿?¿ con serieIndex ${serieIndex}:`, params);
         const mapTree = this.buildMainMap(params.mainColValues, params.newCols);
-        // console.log('mapTree ?¿?¿?¿:', mapTree);
+        console.log(`mapTree ?¿?¿?¿ con serieIndex ${serieIndex}:`, mapTree);
         const populatedMap = this.populateMap(mapTree, params.oldRows, params.mainColLabel, params.aggregatedColLabels[serieIndex], params.pivotColsLabels);
         console.log(`populatedMap ?¿?¿?¿ con serieIndex ${serieIndex}:`, populatedMap);
-        // console.log('populatedMap: ', populatedMap)
 
         let newRows = this.buildNewRows(populatedMap, params.mainColLabel, params.aggregatedColLabels[serieIndex]);
         let newColNames = this.getNewColumnsNames(newRows[0]).slice(1); //For left column we want user's name, not technical
@@ -854,11 +851,14 @@ export class EdaTable {
         const params = this.generateCrossParams(axes);
         console.log(`params ===> con serieIndex ${serieIndex}:`, params)
 
-        const mapTree = this.buildMapRecursive(params.newCols);
+        const mapTree = this.buildMapCrossRecursive(params.newCols);
         console.log(`mapTree ===> con serieIndex ${serieIndex}:`, mapTree);
 
         const populatedMap = this.populateCrossMap(mapTree, params.oldRows, params.mainColsLabels, params.aggregatedColLabels[serieIndex], params.pivotColsLabels);
         console.log(`populatedMap ===> con serieIndex ${serieIndex}:`, populatedMap);
+
+        // let newRows = this.buildNewCrossRows(populatedMap, params.mainColsLabels, params.aggregatedColLabels[serieIndex]);
+
 
         const tableColumns = [];
         const newRows = [];
@@ -917,7 +917,7 @@ export class EdaTable {
         keys.forEach(key => {
             let valuesMap = new Map();
             values.forEach(value => {
-                valuesMap.set(value, 0);
+                valuesMap.set(value, 0); // para la tabla cruzada se utiliza --> ''
             });
             out.set(key, valuesMap);
         });
@@ -941,11 +941,48 @@ export class EdaTable {
         return map;
     }
 
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    /**
+     * Returns a Cross Map
+     */
+    buildSubMapCrossTree(keys: Array<any>, values: any) {
+        let out = new Map();
+        keys.forEach(key => {
+            let valuesMap = new Map();
+            values.forEach(value => {
+                valuesMap.set(value, '');
+            });
+            out.set(key, valuesMap);
+        });
+        return out;
+    }
+    /**
+     * Build a map of maps recursively
+     * @param cols 
+     */
+    buildMapCrossRecursive(cols: Array<Array<string>>) {
+        let map = new Map();
+
+        if (cols.length === 2) {
+            return this.buildSubMapCrossTree(cols[0], cols[1]);
+        } else {
+            const unsetCols = cols.slice(1);
+            cols[0]?.forEach(col => {
+                map.set(col, this.buildMapCrossRecursive(unsetCols));
+            });
+        }
+        return map;
+    }
+
+
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
     /**
      * Puts values in the tree map
      */
     populateMap(map: Map<string, any>, rows: any, mainColLabel: string, aggregatedColLabel: string, pivotColsLabels: any) {
-        console.log('AQUI EL MAP: ', map);
+        // console.log('AQUI EL MAP: ', map);
         rows.forEach(row => {
             const value = row[aggregatedColLabel]; // Capturas los valores numéricos de oldRows
             const pivotSteps = pivotColsLabels.length - 1; // Número de pasos en seccion pivot
@@ -990,7 +1027,7 @@ export class EdaTable {
         });
         return map;
     }
-
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     /**
      * Builds new rows given a tree map
      */
@@ -1000,11 +1037,13 @@ export class EdaTable {
             let row = {};
             row[mainColLabel] = key;
             let pivotedCols = this.buildNewRowsRecursive(value, '', [], serieLabel);
+            // console.log('pivotedCols: ',pivotedCols);
             pivotedCols.forEach(col => {
                 row[col.label] = col.value;
             });
             rows.push(row);
         });
+        console.log('rows ?¿?¿?¿?¿?¿: ', rows);
         return rows;
     }
     /**
@@ -1027,6 +1066,42 @@ export class EdaTable {
         });
         return row;
     }
+
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // buildNewCrossRows(map: Map<string, any>, mainColsLabels: any, serieLabel: string) {
+    //     let rows = [];
+    //     let longitud = mainColsLabels.length;
+
+    //     map.forEach((value, key) => {
+    //         let row = {};
+    //         row[mainColsLabels[0]] = key;
+
+    //         let mainDynamic = this.buildNewRowsCrossRecursive(value, [], longitud)
+
+    //         console.log(mainDynamic);
+    //         rows.push(row);
+    //     })
+
+    //     console.log('rows ====> ', rows)
+    //     return rows;
+    // }
+
+    // buildNewRowsCrossRecursive(map: Map<string, any>, row: any, longitud: number){
+    //     longitud = longitud - 1;
+    //     map.forEach((value, key) => {
+    //         if(longitud===0) {
+    //             return 
+    //         } else {
+    //             row.push(key)
+    //             this.buildNewRowsCrossRecursive(value, row, longitud);
+    //         }
+    //     })
+    //     return row
+    // }
+
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
     getNewColumnsNames(sampleRow: any) {
         return Object.keys(sampleRow);
     }
@@ -1057,7 +1132,6 @@ export class EdaTable {
         }
         //get distinct values of pivot columns (new-columns names)
         const newCols = [];
-        console.log('pivotCols: ', pivotCols)
 
         pivotCols.forEach(pivotCol => {
             newCols.push(_.orderBy(_.uniq(_.map(this.value, pivotCol.field))));
