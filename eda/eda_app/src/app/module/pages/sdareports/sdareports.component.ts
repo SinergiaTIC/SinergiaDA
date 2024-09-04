@@ -74,8 +74,6 @@ export class SdareportsComponent implements OnInit {
 
   // Etiquetas para los filtros
   public noTagLabel = $localize`:@@NoTag:Sin Etiqueta`;
-  public AllTags = $localize`:@@AllTags:Todos`;
-  public NoneTags = $localize`:@@NoneTags:Ninguno`;
   public noGroupLabel = $localize`:@@NoGroup:Sin Grupo`;
 
   public createDashboard: boolean = false;
