@@ -7,7 +7,7 @@
       (click)="createDashboard = true"
     >
       <i class="fa fa-plus-circle mr-2 fa-lg"></i>
-      <span i18n="@@tituloNuevoInforme">Nuevo informe</span>
+      <span i18n="@@newReport">Nuevo informe</span>
     </button>
   </div>
 
@@ -21,7 +21,7 @@
         [class.active]="viewMode === 'table'"
         (click)="setViewMode('table')"
         title="Vista de tabla"
-        i18n-title="@@vistaTabla"
+        i18n-title="@@tableView"
       >
         <i class="fa fa-table"></i>
       </button>
@@ -31,7 +31,7 @@
         [class.active]="viewMode === 'card'"
         (click)="setViewMode('card')"
         title="Vista de fichas"
-        i18n-title="@@vistaFichas"
+        i18n-title="@@cardView"
       >
         <i class="fa fa-th-large"></i>
       </button>
@@ -51,7 +51,7 @@
         aria-haspopup="true"
         aria-expanded="false"
       >
-        <span i18n="@@etiqueta"> Etiquetas </span>
+        <span i18n="@@tag"> Etiquetas </span>
         <span
           *ngIf="selectedTags.length > 0"
           class="counter bg-warning pull-right"
@@ -114,7 +114,7 @@
             placeholder="Buscar grupo"
             [(ngModel)]="groupSearchTerm"
             (input)="filterGroups()"
-            i18n-placeholder="@@buscarGrupo"
+            i18n-placeholder="@@groupFilter"
           />
         </div>
         <div class="dropdown-divider"></div>
@@ -163,7 +163,7 @@
         name="buscador"
         [(ngModel)]="searchTerm"
         (keyup)="filterTitle($event)"
-        i18n-placeholder="@@NameFilter"
+        i18n-placeholder="@@nameFilter"
         placeholder="Filtrar por nombre del informe"
       />
       <i class="fa fa-search search-icon"></i>
@@ -198,7 +198,7 @@
             'sort-desc':
               sortColumn === 'config.title' && sortDirection === 'desc'
           }"
-          i18n="@@nombreInforme"
+          i18n="@@reportName"
           style="min-width: 250px"
         >
           Nombre del Informe
@@ -209,7 +209,7 @@
             'sort-asc': sortColumn === 'type' && sortDirection === 'asc',
             'sort-desc': sortColumn === 'type' && sortDirection === 'desc'
           }"
-          i18n="@@tipo"
+          i18n="@@reportType"
           class="text-center"
         >
           Tipo
@@ -233,7 +233,7 @@
             'sort-desc':
               sortColumn === 'config.createdAt' && sortDirection === 'desc'
           }"
-          i18n="@@fechaCreacion"
+          i18n="@@createdAt"
           class="text-center"
         >
           Fecha creación
@@ -246,13 +246,13 @@
             'sort-desc':
               sortColumn === 'config.modifiedAt' && sortDirection === 'desc'
           }"
-          i18n="@@fechaModificación"
+          i18n="@@modifiedAt"
           class="text-center"
         >
           Fecha modificación
         </th>
         <th
-          i18n="@@edicionPrivada"
+          i18n="@@privateEdition"
           class="text-center"
           (click)="sortTable('config.onlyICanEdit')"
           [ngClass]="{
@@ -273,22 +273,22 @@
             'sort-desc':
               sortColumn === 'config.ds.name' && sortDirection === 'desc'
           }"
-          i18n="@@etiquetas"
+          i18n="@@tags"
         >
           Fuente de datos
         </th>
-        <th i18n="@@grupos">Grupos</th>
+        <th i18n="@@gropus">Grupos</th>
         <th
           (click)="sortTable('config.tag')"
           [ngClass]="{
             'sort-asc': sortColumn === 'config.tag' && sortDirection === 'asc',
             'sort-desc': sortColumn === 'config.tag' && sortDirection === 'desc'
           }"
-          i18n="@@etiquetas"
+          i18n="@@tags"
         >
           Etiquetas
         </th>
-        <th i18n="@@acciones">Acciones</th>
+        <th i18n="@@actions">Acciones</th>
       </tr>
     </thead>
     <tbody>
@@ -323,7 +323,7 @@
                 *ngIf="canIEdit(dashboard) && !isEditing"
                 class="fa fa-pencil edit-icon"
                 (click)="startEditing(titleSpan)"
-                i18n-title="@@ClickToEditName"
+                i18n-title="@@clickToEditName"
                 title="Pulse para editar el nombre"
               ></i>
             </div>
@@ -416,7 +416,7 @@
               *ngIf="!isObserver && canIEdit(dashboard)"
               class="btn btn-primary btn-sm mr-2"
               (click)="cloneDashboard(dashboard)"
-              i18n-title="@@clonarInforme"
+              i18n-title="@@cloneReport"
               title="Clonar informe"
             >
               <i class="fa fa-clone"></i>
@@ -432,7 +432,7 @@
               *ngIf="dashboard.type === 'shared'"
               class="btn btn-primary btn-sm mr-2"
               (click)="copyUrl(dashboard)"
-              i18n-title="@@copiarUrlPublica"
+              i18n-title="@@copyURL"
               title="Copiar url pública"
             >
               <i class="fa fa-link"></i>
@@ -473,7 +473,7 @@
                 *ngIf="canIEdit(dashboard) && !isEditing"
                 class="fa fa-pencil edit-icon"
                 (click)="startEditing(titleSpan)"
-                i18n-title="@@ClickToEditName"
+                i18n-title="@@clickToEditName"
                 title="Pulse para editar el nombre"
               ></i>
             </div>
@@ -554,7 +554,7 @@
               *ngIf="!isObserver && canIEdit(dashboard)"
               class="btn btn-danger btn-sm mr-2"
               (click)="deleteDashboard(dashboard)"
-              i18n-title="@@eliminarInforme"
+              i18n-title="@@deleteReport"
               title="Eliminar informe"
             >
               <i class="fa fa-trash"></i>
@@ -563,7 +563,7 @@
               *ngIf="!isObserver && canIEdit(dashboard)"
               class="btn btn-primary btn-sm mr-2"
               (click)="cloneDashboard(dashboard)"
-              i18n-title="@@clonarInforme"
+              i18n-title="@@cloneReport"
               title="Clonar informe"
             >
               <i class="fa fa-clone"></i>
@@ -572,7 +572,7 @@
               *ngIf="dashboard.type === 'shared'"
               class="btn btn-primary btn-sm mr-2"
               (click)="copyUrl(dashboard)"
-              i18n-title="@@copiarUrlPublica"
+              i18n-title="@@copyURL"
               title="Copiar url pública"
             >
               <i class="fa fa-link"></i>

@@ -163,49 +163,89 @@
     <source> Entidades </source>
     <target> Taules </target>
   </trans-unit>
-  <trans-unit id="Common">
+  <trans-unit id="newReport" datatype="html">
+    <source>Nuevo informe</source>
+    <target>Nou informe</target>
+  </trans-unit>
+  <trans-unit id="view" datatype="html">
+    <source>Vista</source>
+    <target>Vista</target>
+  </trans-unit>
+  <trans-unit id="filter" datatype="html">
+    <source>Filtros</source>
+    <target>Filtres</target>
+  </trans-unit>
+  <trans-unit id="tag" datatype="html">
+    <source>Etiquetas</source>
+    <target>Etiquetes</target>
+  </trans-unit>
+  <trans-unit id="groups" datatype="html">
+    <source>Grupos</source>
+    <target>Grups</target>
+  </trans-unit>
+  <trans-unit id="reportName" datatype="html">
+    <source>Nombre del Informe</source>
+    <target>Nom de l'Informe</target>
+  </trans-unit>
+  <trans-unit id="reportType" datatype="html">
+    <source>Tipo</source>
+    <target>Tipus</target>
+  </trans-unit>
+  <trans-unit id="autor" datatype="html">
+    <source>Autor</source>
+    <target>Autor</target>
+  </trans-unit>
+  <trans-unit id="createdAt" datatype="html">
+    <source>Fecha creación</source>
+    <target>Data de creació</target>
+  </trans-unit>
+  <trans-unit id="modifiedAt" datatype="html">
+    <source>Fecha modificación</source>
+    <target>Data de modificació</target>
+  </trans-unit>
+  <trans-unit id="privateEdition" datatype="html">
+    <source>Edición privada</source>
+    <target>Edició privada</target>
+  </trans-unit>
+  <trans-unit id="actions" datatype="html">
+    <source>Acciones</source>
+    <target>Accions</target>
+  </trans-unit>
+  <trans-unit id="Public" datatype="html">
+    <source>Público</source>
+    <target>Públic</target>
+  </trans-unit>
+  <trans-unit id="Common" datatype="html">
     <source>Común</source>
     <target>Comú</target>
   </trans-unit>
-  <trans-unit id="Public">
-    <source>Público</source>
-    <target>Public</target>
-  </trans-unit>
-  <trans-unit id="Group">
+  <trans-unit id="Group" datatype="html">
     <source>Grupo</source>
     <target>Grup</target>
   </trans-unit>
-  <trans-unit id="Private">
+  <trans-unit id="Private" datatype="html">
     <source>Privado</source>
     <target>Privat</target>
   </trans-unit>
-  <trans-unit id="NoTag">
+  <trans-unit id="NoTag" datatype="html">
     <source>Sin Etiqueta</source>
     <target>Sense Etiqueta</target>
   </trans-unit>
-  <trans-unit id="AllTags">
-    <source>Todos</source>
-    <target>Tots</target>
-  </trans-unit>
-  <trans-unit id="NoneTags">
-    <source>Ninguno</source>
-    <target>Cap</target>
-  </trans-unit>
-  <trans-unit id="NoGroup">
+  <trans-unit id="NoGroup" datatype="html">
     <source>Sin Grupo</source>
     <target>Sense Grup</target>
   </trans-unit>
   <trans-unit id="deleteDashboardWarning">
-    <source>Estás a punto de borrar el informe: </source>
-    <target>Estàs a punt d'esborrar l'informe: </target>
+    <source>Estás a punto de borrar el informe:</source>
+    <target>Estàs a punt d'esborrar l'informe:</target>
   </trans-unit>
   <trans-unit id="Sure">
     <source>¿Estás seguro?</source>
-    <target>Estàs segur?</target>
+    <target>N'estàs segur?</target>
   </trans-unit>
   <trans-unit id="ConfirmDeleteModel">
     <source>Si, ¡Eliminalo!</source>
-    <target>Sí, Elimina-ho!</target>
+    <target>Sí, elimina'l!</target>
   </trans-unit>
   <trans-unit id="DeleteGroupCancel">
     <source>Cancelar</source>
@@ -217,7 +257,7 @@
   </trans-unit>
   <trans-unit id="ErrorMessage">
     <source>Ha ocurrido un error</source>
-    <target>Ha ocorregut un error</target>
+    <target>S'ha produït un error</target>
   </trans-unit>
   <trans-unit id="REPORTCloned">
     <source>Informe clonado correctamente</source>
@@ -227,109 +267,73 @@
     <source>Respuesta inválida del servidor</source>
     <target>Resposta invàlida del servidor</target>
   </trans-unit>
-  <trans-unit id="ErrorCloningDashboard">
-    <source>Error al clonar el dashboard:</source>
-    <target>Error en clonar el dashboard:</target>
-  </trans-unit>
-  <trans-unit id="CouldNotCloneReport">
-    <source>No se pudo clonar el informe. Por favor, inténtalo de nuevo.</source>
-    <target>No s'ha pogut clonar l'informe. Si us plau, intenta-ho de nou.</target>
-  </trans-unit>
   <trans-unit id="Error">
     <source>Error</source>
     <target>Error</target>
   </trans-unit>
+  <trans-unit id="CouldNotCloneReport">
+    <source>No se pudo clonar el informe. Por favor, inténtalo de nuevo.</source>
+    <target>No s'ha pogut clonar l'informe. Si us plau, torna-ho a provar.</target>
+  </trans-unit>
   <trans-unit id="URLCopied">
     <source>URL copiada al portapapeles</source>
-    <target>URL copiada al portapapers</target>
+    <target>URL copiada al portaretalls</target>
   </trans-unit>
   <trans-unit id="ErrorCopyingURL">
     <source>Error al copiar la URL</source>
-    <target>Error en copiar la URL</target>
+    <target>Error en copiar l'URL</target>
   </trans-unit>
-  <trans-unit id="tituloNuevoInforme">
-    <source>Nuevo informe</source>
-    <target>Nou informe</target>
+  <trans-unit id="DashboardTitleUpdated">
+    <source>Título del informe actualizado correctamente.</source>
+    <target>Títol de l'informe actualitzat correctament.</target>
   </trans-unit>
-  <trans-unit id="etiqueta">
-    <source>Etiqueta:</source>
-    <target>Etiqueta:</target>
+  <trans-unit id="ErrorUpdatingDashboardTitle">
+    <source>Error al actualizar el título del informe.</source>
+    <target>Error en actualitzar el títol de l'informe.</target>
   </trans-unit>
-  <trans-unit id="buscarTipo">
-    <source>Buscar tipo</source>
-    <target>Buscar tipus</target>
+  <trans-unit id="DashboardTypeUpdated">
+    <source>Tipo de informe actualizado correctamente.</source>
+    <target>Tipus d'informe actualitzat correctament.</target>
   </trans-unit>
-  <trans-unit id="grupo">
-    <source>Grupo:</source>
-    <target>Grup:</target>
+  <trans-unit id="ErrorUpdatingDashboardType">
+    <source>Error al actualizar el tipo de informe.</source>
+    <target>Error en actualitzar el tipus d'informe.</target>
   </trans-unit>
-  <trans-unit id="buscarGrupo">
-    <source>Buscar grupo</source>
-    <target>Buscar grup</target>
+  <trans-unit id="nameFilter" datatype="html">
+    <source>Filtrar por nombre del informe.</source>
+    <target>Filtrar per nom de l'informe.</target>
   </trans-unit>
-  <trans-unit id="vistaTabla">
+  <trans-unit id="tableView" datatype="html">
     <source>Vista de tabla</source>
     <target>Vista de taula</target>
   </trans-unit>
-  <trans-unit id="vistaFichas">
+  <trans-unit id="cardView" datatype="html">
     <source>Vista de fichas</source>
     <target>Vista de fitxes</target>
   </trans-unit>
-  <trans-unit id="buscarPorNombre">
-    <source>Buscar por nombre del informe</source>
-    <target>Buscar per nom de l'informe</target>
+  <trans-unit id="clickToEditName" datatype="html">
+    <source>Pulse para editar el nombre</source>
+    <target>Feu clic per editar el nom</target>
   </trans-unit>
-  <trans-unit id="nombreInforme">
-    <source>Nombre del Informe</source>
-    <target>Nom de l'Informe</target>
+  <trans-unit id="goToDashboard" datatype="html">
+    <source>Abrir informe</source>
+    <target>Obrir informe</target>
   </trans-unit>
-  <trans-unit id="tipo">
-    <source>Tipo</source>
-    <target>Tipus</target>
-  </trans-unit>
-  <trans-unit id="autor">
-    <source>Autor</source>
-    <target>Autor</target>
-  </trans-unit>
-  <trans-unit id="fechaCreacion">
-    <source>Fecha creación</source>
-    <target>Data de creació</target>
-  </trans-unit>
-  <trans-unit id="edicionPrivada">
-    <source>Edición privada</source>
-    <target>Edició privada</target>
-  </trans-unit>
-  <trans-unit id="grupos">
-    <source>Grupos</source>
-    <target>Grups</target>
-  </trans-unit>
-  <trans-unit id="etiquetas">
-    <source>Etiquetas</source>
-    <target>Etiquetes</target>
-  </trans-unit>
-  <trans-unit id="acciones">
-    <source>Acciones</source>
-    <target>Accions</target>
-  </trans-unit>
-  <trans-unit id="ver">
-    <source>Ver</source>
-    <target>Veure</target>
-  </trans-unit>
-  <trans-unit id="eliminarInforme">
-    <source>Eliminar informe</source>
-    <target>Eliminar informe</target>
-  </trans-unit>
-  <trans-unit id="clonarInforme">
+  <trans-unit id="cloneReport" datatype="html">
     <source>Clonar informe</source>
     <target>Clonar informe</target>
   </trans-unit>
-  <trans-unit id="copiarUrlPublica">
+  <trans-unit id="copyURL" datatype="html">
     <source>Copiar url pública</source>
-    <target>Copiar url pública</target>
+    <target>Copiar URL pública</target>
   </trans-unit>
-  <trans-unit id="ClickToEditName" datatype="html">
-    <source>Pulse para editar el nombre</source>
-    <target>Feu clic per editar el nom</target>
+  <trans-unit id="showReport" datatype="html">
+    <source>Mostrar informe</source>
+    <target>Mostrar informe</target>
+  </trans-unit>
+  <trans-unit id="deleteReport" datatype="html">
+    <source>Eliminar informe</source>
+    <target>Eliminar informe</target>
   </trans-unit>
 </body>
 </file>

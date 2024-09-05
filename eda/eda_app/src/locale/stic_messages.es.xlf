@@ -163,41 +163,81 @@
     <source> Entidades </source>
     <target> Tablas </target>
   </trans-unit>
-  <trans-unit id="Common">
-    <source>Común</source>
-    <target>Común</target>
+  <trans-unit id="newReport" datatype="html">
+    <source>Nuevo informe</source>
+    <target>Nuevo informe</target>
   </trans-unit>
-  <trans-unit id="Public">
+  <trans-unit id="view" datatype="html">
+    <source>Vista</source>
+    <target>Vista</target>
+  </trans-unit>
+  <trans-unit id="filter" datatype="html">
+    <source>Filtros</source>
+    <target>Filtros</target>
+  </trans-unit>
+  <trans-unit id="tag" datatype="html">
+    <source>Etiquetas</source>
+    <target>Etiquetas</target>
+  </trans-unit>
+  <trans-unit id="groups" datatype="html">
+    <source>Grupos</source>
+    <target>Grupos</target>
+  </trans-unit>
+  <trans-unit id="reportName" datatype="html">
+    <source>Nombre del Informe</source>
+    <target>Nombre del Informe</target>
+  </trans-unit>
+  <trans-unit id="reportType" datatype="html">
+    <source>Tipo</source>
+    <target>Tipo</target>
+  </trans-unit>
+  <trans-unit id="autor" datatype="html">
+    <source>Autor</source>
+    <target>Autor</target>
+  </trans-unit>
+  <trans-unit id="createdAt" datatype="html">
+    <source>Fecha creación</source>
+    <target>Fecha creación</target>
+  </trans-unit>
+  <trans-unit id="modifiedAt" datatype="html">
+    <source>Fecha modificación</source>
+    <target>Fecha modificación</target>
+  </trans-unit>
+  <trans-unit id="privateEdition" datatype="html">
+    <source>Edición privada</source>
+    <target>Edición privada</target>
+  </trans-unit>
+  <trans-unit id="actions" datatype="html">
+    <source>Acciones</source>
+    <target>Acciones</target>
+  </trans-unit>
+  <trans-unit id="Public" datatype="html">
     <source>Público</source>
     <target>Público</target>
   </trans-unit>
-  <trans-unit id="Group">
+  <trans-unit id="Common" datatype="html">
+    <source>Común</source>
+    <target>Común</target>
+  </trans-unit>
+  <trans-unit id="Group" datatype="html">
     <source>Grupo</source>
     <target>Grupo</target>
   </trans-unit>
-  <trans-unit id="Private">
+  <trans-unit id="Private" datatype="html">
     <source>Privado</source>
     <target>Privado</target>
   </trans-unit>
-  <trans-unit id="NoTag">
+  <trans-unit id="NoTag" datatype="html">
     <source>Sin Etiqueta</source>
     <target>Sin Etiqueta</target>
   </trans-unit>
-  <trans-unit id="AllTags">
-    <source>Todos</source>
-    <target>Todos</target>
-  </trans-unit>
-  <trans-unit id="NoneTags">
-    <source>Ninguno</source>
-    <target>Ninguno</target>
-  </trans-unit>
-  <trans-unit id="NoGroup">
+  <trans-unit id="NoGroup" datatype="html">
     <source>Sin Grupo</source>
     <target>Sin Grupo</target>
   </trans-unit>
   <trans-unit id="deleteDashboardWarning">
-    <source>Estás a punto de borrar el informe: </source>
-    <target>Estás a punto de borrar el informe: </target>
+    <source>Estás a punto de borrar el informe:</source>
+    <target>Estás a punto de borrar el informe:</target>
   </trans-unit>
   <trans-unit id="Sure">
     <source>¿Estás seguro?</source>
@@ -205,7 +245,7 @@
   </trans-unit>
   <trans-unit id="ConfirmDeleteModel">
     <source>Si, ¡Eliminalo!</source>
-    <target>Sí, ¡Elíminalo!</target>
+    <target>Si, ¡Eliminalo!</target>
   </trans-unit>
   <trans-unit id="DeleteGroupCancel">
     <source>Cancelar</source>
@@ -227,17 +267,13 @@
     <source>Respuesta inválida del servidor</source>
     <target>Respuesta inválida del servidor</target>
   </trans-unit>
-  <trans-unit id="ErrorCloningDashboard">
-    <source>Error al clonar el dashboard:</source>
-    <target>Error al clonar el dashboard:</target>
+  <trans-unit id="Error">
+    <source>Error</source>
+    <target>Error</target>
   </trans-unit>
   <trans-unit id="CouldNotCloneReport">
     <source>No se pudo clonar el informe. Por favor, inténtalo de nuevo.</source>
     <target>No se pudo clonar el informe. Por favor, inténtalo de nuevo.</target>
-  </trans-unit>
-  <trans-unit id="Error">
-    <source>Error</source>
-    <target>Error</target>
   </trans-unit>
   <trans-unit id="URLCopied">
     <source>URL copiada al portapapeles</source>
@@ -247,89 +283,61 @@
     <source>Error al copiar la URL</source>
     <target>Error al copiar la URL</target>
   </trans-unit>
-  <trans-unit id="tituloNuevoInforme">
-    <source>Nuevo informe</source>
-    <target>Nuevo informe</target>
+  <trans-unit id="DashboardTitleUpdated">
+    <source>Título del informe actualizado correctamente.</source>
+    <target>Título del informe actualizado correctamente.</target>
   </trans-unit>
-  <trans-unit id="etiqueta">
-    <source>Etiqueta:</source>
-    <target>Etiqueta:</target>
+  <trans-unit id="ErrorUpdatingDashboardTitle">
+    <source>Error al actualizar el título del informe.</source>
+    <target>Error al actualizar el título del informe.</target>
   </trans-unit>
-  <trans-unit id="buscarTipo">
-    <source>Buscar tipo</source>
-    <target>Buscar tipo</target>
+  <trans-unit id="DashboardTypeUpdated">
+    <source>Tipo de informe actualizado correctamente.</source>
+    <target>Tipo de informe actualizado correctamente.</target>
   </trans-unit>
-  <trans-unit id="grupo">
-    <source>Grupo:</source>
-    <target>Grupo:</target>
+  <trans-unit id="ErrorUpdatingDashboardType">
+    <source>Error al actualizar el tipo de informe.</source>
+    <target>Error al actualizar el tipo de informe.</target>
   </trans-unit>
-  <trans-unit id="buscarGrupo">
-    <source>Buscar grupo</source>
-    <target>Buscar grupo</target>
+  <trans-unit id="nameFilter" datatype="html">
+    <source>Filtrar por nombre del informe.</source>
+    <target>Filtrar por nombre del informe.</target>
   </trans-unit>
-  <trans-unit id="vistaTabla">
+  <trans-unit id="nameFilter" datatype="html">
+    <source>Filtrar por nombre del informe.</source>
+    <target>Filter by report name.</target>
+  </trans-unit>
+  <trans-unit id="tableView" datatype="html">
     <source>Vista de tabla</source>
-    <target>Vista de tabla</target>
+    <target>Table view</target>
   </trans-unit>
-  <trans-unit id="vistaFichas">
+  <trans-unit id="cardView" datatype="html">
     <source>Vista de fichas</source>
-    <target>Vista de fichas</target>
+    <target>Card view</target>
   </trans-unit>
-  <trans-unit id="buscarPorNombre">
-    <source>Buscar por nombre del informe</source>
-    <target>Buscar por nombre del informe</target>
-  </trans-unit>
-  <trans-unit id="nombreInforme">
-    <source>Nombre del Informe</source>
-    <target>Nombre del Informe</target>
-  </trans-unit>
-  <trans-unit id="tipo">
-    <source>Tipo</source>
-    <target>Tipo</target>
-  </trans-unit>
-  <trans-unit id="autor">
-    <source>Autor</source>
-    <target>Autor</target>
-  </trans-unit>
-  <trans-unit id="fechaCreacion">
-    <source>Fecha creación</source>
-    <target>Fecha creación</target>
-  </trans-unit>
-  <trans-unit id="edicionPrivada">
-    <source>Edición privada</source>
-    <target>Edición privada</target>
-  </trans-unit>
-  <trans-unit id="grupos">
-    <source>Grupos</source>
-    <target>Grupos</target>
-  </trans-unit>
-  <trans-unit id="etiquetas">
-    <source>Etiquetas</source>
-    <target>Etiquetas</target>
-  </trans-unit>
-  <trans-unit id="acciones">
-    <source>Acciones</source>
-    <target>Acciones</target>
-  </trans-unit>
-  <trans-unit id="ver">
-    <source>Ver</source>
-    <target>Ver</target>
-  </trans-unit>
-  <trans-unit id="eliminarInforme">
-    <source>Eliminar informe</source>
-    <target>Eliminar informe</target>
-  </trans-unit>
-  <trans-unit id="clonarInforme">
-    <source>Clonar informe</source>
-    <target>Clonar informe</target>
-  </trans-unit>
-  <trans-unit id="copiarUrlPublica">
-    <source>Copiar url pública</source>
-    <target>Copiar url pública</target>
-  </trans-unit>
-  <trans-unit id="ClickToEditName" datatype="html">
+  <trans-unit id="clickToEditName" datatype="html">
     <source>Pulse para editar el nombre</source>
-    <target>Pulse para editar el nombre</target>
+    <target>Click to edit name</target>
+  </trans-unit>
+  <trans-unit id="goToDashboard" datatype="html">
+    <source>Abrir informe</source>
+    <target>Open report</target>
+  </trans-unit>
+  <trans-unit id="cloneReport" datatype="html">
+    <source>Clonar informe</source>
+    <target>Clone report</target>
+  </trans-unit>
+  <trans-unit id="copyURL" datatype="html">
+    <source>Copiar url pública</source>
+    <target>Copy public URL</target>
+  </trans-unit>
+  <trans-unit id="showReport" datatype="html">
+    <source>Mostrar informe</source>
+    <target>Show report</target>
+  </trans-unit>
+  <trans-unit id="deleteReport" datatype="html">
+    <source>Eliminar informe</source>
+    <target>Delete report</target>
   </trans-unit>
 </body>
 </file>
