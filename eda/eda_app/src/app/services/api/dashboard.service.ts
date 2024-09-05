@@ -55,4 +55,10 @@ export class DashboardService extends ApiService {
     /*SDA CUSTOM*/  return this.post(`${this.route}${id}/clone`, {});
     /*SDA CUSTOM*/ }
 
+    /*SDA CUSTOM*/ updateDashboardSpecific( id, body ): Observable<any> {
+    /*SDA CUSTOM*/   return this.put( `${this.route}${id}/updateSpecific`, body );
+    /*SDA CUSTOM*/ }
+
+
+
 }

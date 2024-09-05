@@ -313,23 +313,26 @@ export class SdareportsComponent implements OnInit {
       );
     }
 
-      // Aplicamos el filtro de grupos
-  if (this.selectedGroups.length > 0) {
-    this.visibleDashboards = this.visibleDashboards.filter(db => {
-      if (this.selectedGroups.some(group => group.value === null)) {
-        // Si "Sin grupo" está seleccionado, incluir dashboards sin grupo
-        return !db.group || db.group.length === 0 ||
-               this.selectedGroups.some(group =>
-                 group.value !== null && db.group && db.group.some(g => g.name === group.value)
-               );
-      } else {
-        // Solo incluir dashboards que pertenezcan a los grupos seleccionados
-        return db.group && db.group.some(g =>
-          this.selectedGroups.some(selectedGroup => selectedGroup.value === g.name)
-        );
-      }
-    });
-  }
+    // Aplicamos el filtro de grupos
+    if (this.selectedGroups.length > 0) {
+      this.visibleDashboards = this.visibleDashboards.filter(db => {
+        if (this.selectedGroups.some(group => group.value === null)) {
+          // Si "Sin grupo" está seleccionado, incluir dashboards sin grupo
+          return (
+            !db.group ||
+            db.group.length === 0 ||
+            this.selectedGroups.some(
+              group => group.value !== null && db.group && db.group.some(g => g.name === group.value)
+            )
+          );
+        } else {
+          // Solo incluir dashboards que pertenezcan a los grupos seleccionados
+          return (
+            db.group && db.group.some(g => this.selectedGroups.some(selectedGroup => selectedGroup.value === g.name))
+          );
+        }
+      });
+    }
 
     this.sortTable(this.sortColumn);
   }
@@ -525,19 +528,21 @@ export class SdareportsComponent implements OnInit {
     this.isEditing = false;
     if (newTitle !== dashboard.config.title) {
       dashboard.config.title = newTitle;
-      this.dashboardService.updateDashboard(dashboard._id, { config: dashboard.config }).subscribe(
-        () => {
-          this.alertService.addSuccess(
-            $localize`:@@DashboardTitleUpdated:Título del informe actualizado correctamente.`
-          );
-        },
-        error => {
-          this.alertService.addError(
-            $localize`:@@ErrorUpdatingDashboardTitle:Error al actualizar el título del informe.`
-          );
-          console.error("Error updating dashboard title:", error);
-        }
-      );
+      this.dashboardService
+        .updateDashboardSpecific(dashboard._id, { data: { key: 'config.title', newValue: newTitle } })
+        .subscribe(
+          () => {
+            this.alertService.addSuccess(
+              $localize`:@@DashboardTitleUpdated:Título del informe actualizado correctamente.`
+            );
+          },
+          error => {
+            this.alertService.addError(
+              $localize`:@@ErrorUpdatingDashboardTitle:Error al actualizar el título del informe.`
+            );
+            console.error("Error updating dashboard title:", error);
+          }
+        );
     }
   }
 
@@ -562,7 +567,7 @@ export class SdareportsComponent implements OnInit {
     dashboard.type = newType;
     dashboard.config.visible = newType;
 
-    this.dashboardService.updateDashboard(dashboard._id, { config: dashboard.config }).subscribe(
+    this.dashboardService.updateDashboardSpecific(dashboard._id, { data: { key: 'config.visible', newValue: newType } }).subscribe(
       () => {
         this.alertService.addSuccess($localize`:@@DashboardTypeUpdated:Tipo de informe actualizado correctamente.`);
         this.editingTypeId = null;

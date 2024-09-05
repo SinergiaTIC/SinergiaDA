@@ -463,6 +463,62 @@ export class DashboardController {
       next(err)
     }
   }
+  
+    /**
+     * Updates a specific field of a dashboard.
+     * 
+     * @param {Request} req - Express request object
+     * @param {Response} res - Express response object
+     * @param {NextFunction} next - Express next middleware function
+     * 
+     * @description
+     * Expects 'id' in req.params and 'data' (containing 'key' and 'newValue') in req.body.
+     * If 'config.visible' is updated to a value other than 'group', 'group' is set to an empty array.
+     * 
+     * @throws {HttpException} 400 for update errors, 404 if dashboard not found
+     */
+    static async updateSpecific(req: Request, res: Response, next: NextFunction) {
+      try {
+        const { id } = req.params;
+        const { data } = req.body;
+        const { key, newValue } = data;
+
+        let updateObj: any = { [key]: newValue };
+
+        if (key === 'config.visible' && newValue !== 'group') {
+          updateObj = {
+            ...updateObj,
+            group: []
+          };
+        }
+
+        Dashboard.findByIdAndUpdate(
+          id,
+          { $set: updateObj },
+          { new: true, runValidators: true },
+          (err, dashboard) => {
+            if (err) {
+              return next(
+                new HttpException(
+                  400,
+                  'Some error occurred while updating the dashboard'
+                )
+              );
+            }
+
+            if (!dashboard) {
+              return next(
+                new HttpException(404, 'Dashboard not found with this id')
+              );
+            }
+
+            return res.status(200).json({ ok: true, dashboard });
+          }
+        );
+      } catch (err) {
+        next(err);
+      }
+  }
 
   static async delete(req: Request, res: Response, next: NextFunction) {
     let options: QueryOptions = {}
