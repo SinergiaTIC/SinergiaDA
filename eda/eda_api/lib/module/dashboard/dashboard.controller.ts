@@ -931,7 +931,7 @@ export class DashboardController {
 
             if (filterTable) {
               const filterColumn = filterTable.columns.find((c) => c.column_name == filter.filter_column);
-                  filter.filter_column_type = filterColumn?.column_type || 'text';
+              filter.filter_column_type = filterColumn?.column_type || 'text';
             }
           }
         }
@@ -1506,39 +1506,53 @@ export class DashboardController {
     }
   }
   
+  /**
+   * Clones an existing dashboard.
+   * 
+   * @param req - Express request object containing the dashboard ID to clone
+   * @param res - Express response object
+   * @param next - Express next function
+   * @returns A Promise that resolves with the cloned dashboard or rejects with an error
+   */
   static async clone(req: Request, res: Response, next: NextFunction) {
     try {
       const dashboardId = req.params.id;
-      console.log('Intentando clonar dashboard con ID:', dashboardId);
+      console.log('Attempting to clone dashboard with ID:', dashboardId);
+      
+      // Find the original dashboard by ID
       const originalDashboard = await Dashboard.findById(dashboardId).exec();
-  
+
       if (!originalDashboard) {
-        console.log('Dashboard original no encontrado');
-        return next(new HttpException(404, 'Dashboard no encontrado'));
+        console.log('Original dashboard not found');
+        return next(new HttpException(404, 'Dashboard not found'));
       }
-  
+
+      // Create a new dashboard object with cloned properties
       const clonedDashboard: IDashboard = new Dashboard({
         config: {
           ...originalDashboard.config,
-          title: `${originalDashboard.config.title} copy`,
+          title: `${originalDashboard.config.title} copy`, // Append 'copy' to the title
           createdAt: new Date(),
           modifiedAt: new Date()
-          
         },
-        user: req.user._id,
-        group: originalDashboard.group
+        user: req.user._id, // Set the current user as the owner of the cloned dashboard
+        group: originalDashboard.group // Maintain the same group permissions
       });
-  
-      console.log('Dashboard clonado antes de guardar:', clonedDashboard);
+
+      console.log('Cloned dashboard before saving:', clonedDashboard);
+      
+      // Save the cloned dashboard to the database
       const savedDashboard = await clonedDashboard.save();
-      console.log('Dashboard clonado guardado:', savedDashboard);
-  
+      console.log('Cloned dashboard saved:', savedDashboard);
+
+      // Return the saved cloned dashboard with a 201 (Created) status
       return res.status(201).json({ ok: true, dashboard: savedDashboard });
     } catch (err) {
-      console.error('Error al clonar dashboard:', err);
-      next(new HttpException(500, 'Error al clonar dashboard'));
+      console.error('Error cloning dashboard:', err);
+      next(new HttpException(500, 'Error cloning dashboard'));
     }
-  }
+}
+
   static async cleanDashboardCache(
     req: Request,
     res: Response,
