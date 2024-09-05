@@ -56,16 +56,11 @@ export class GlobalFilterComponent implements OnInit {
     }
 
     // métode per descobrir o amagar el botó de filtrar al dashboard
-    private setFilterButtonVisibilty(): void {
-        setTimeout(() => {
-            this.globalFilters = this.globalFilters.filter((f: any) => {
-                return (f.visible != "hidden" && f.visible == "readOnly") ||
-                    (f.visible != "hidden" && f.visible == "public")
-            });
-         }, 1);
-
-
-        this.globalFilters.forEach(a => {
+    public setFilterButtonVisibilty(): void {
+        const filters = this.globalFilters.filter((f: any) => {
+            return (f.visible == "public" || f.visible == "readOnly")
+        });
+        filters.forEach(a => {
             if (a.visible == "public") {
                 this.filterButtonVisibility.public = true;
             } else if (a.visible == "readOnly") {
@@ -87,6 +82,7 @@ export class GlobalFilterComponent implements OnInit {
     /** Apply filter to panels when filter's selected value changes */
     public applyGlobalFilter(filter: any): void {
         const formatedFilter = this.globalFilterService.formatFilter(filter);
+        this.setFilterButtonVisibilty();
 
         filter.panelList
             .map((id: string) => this.dashboard.edaPanels.toArray().find(p => p.panel.id === id))
@@ -395,6 +391,13 @@ export class GlobalFilterComponent implements OnInit {
             query.query.forSelector = true;
             
             const res = await this.dashboardService.executeQuery(query).toPromise();
+            
+            if( res[0][0]=='noDataAllowed' || res[0][0]=='noFilterAllowed'){
+                this.globalFilters.find((gf: any) => gf.id == globalFilter.id).visible = 'hidden';
+                this.globalFilters.find((gf: any) => gf.id == globalFilter.id).data = false;
+                this.globalFilters;
+            }
+            
             const data = res[1].filter(item => !!item[0] || item[0] == '').map(item => ({ label: item[0], value: item[0] }));
 
             this.globalFilters.find((gf: any) => gf.id == globalFilter.id).data = data;
