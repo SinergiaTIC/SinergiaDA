@@ -55,7 +55,7 @@ export class SdareportsComponent implements OnInit {
   // Propiedades para el filtro por tipo con iconos
   public dashboardTypes: Array<{ type: string; label: string; active: boolean; icon: string; color: string }> = [
     { type: "shared", label: $localize`:@@Public:Público`, active: false, icon: "fa-link", color: "#dc3545" },
-    { type: "public", label: $localize`:@@Common:Común`, active: false, icon: "fa-globe", color: "#007bff" },
+    { type: "public", label: $localize`:@@Common:Común`, active: false, icon: "fa-shield", color: "#007bff" },
     { type: "group", label: $localize`:@@Group:Grupo`, active: false, icon: "fa-users", color: "#28a745" },
     { type: "private", label: $localize`:@@Private:Privado`, active: false, icon: "fa-lock", color: "#ffc107" }
   ];
