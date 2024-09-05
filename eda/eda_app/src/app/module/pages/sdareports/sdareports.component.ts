@@ -334,7 +334,7 @@ export class SdareportsComponent implements OnInit {
       });
     }
 
-    this.sortTable(this.sortColumn);
+    // this.sortTable(this.sortColumn);
   }
 
   public filterTitle(event: any) {
