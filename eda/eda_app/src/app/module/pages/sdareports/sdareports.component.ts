@@ -13,26 +13,27 @@ import * as _ from "lodash";
   styleUrls: ["./sdareports.component.css"]
 })
 export class SdareportsComponent implements OnInit {
-  // Propiedades para el manejo de dashboards
+  // Dashboard Management
   public dashController: EdaDialogController;
   public dss: any[];
   public allDashboards: Array<any> = [];
   public visibleDashboards: Array<any> = [];
+  public createDashboard: boolean = false;
 
-  // Edición del tipo de informe
-  public editingType: { [key: string]: boolean } = {};
-  public editingTypeId: string | null = null;
-
-  // Propiedades para el modo de visualización
+  // View Mode
   public viewMode: "table" | "card" = "table";
 
-  // Propiedades para el ordenamiento y filtrado
+  // Sorting and Filtering
   public sortColumn: string = "config.title";
   public sortDirection: "asc" | "desc" = "asc";
   public filteringByName: boolean = false;
   public searchTerm: string = "";
+  public lastSortCriteria: {
+    column: string;
+    direction: "asc" | "desc";
+  };
 
-  // Propiedades para la gestión de usuarios y grupos
+  // User and Group Management
   public groups: IGroup[] = [];
   public isAdmin: boolean;
   public currentUser: any;
@@ -40,27 +41,59 @@ export class SdareportsComponent implements OnInit {
   public isObserver: boolean = false;
   public grups: Array<any> = [];
 
-  // Propiedades para el filtro de etiquetas
+  // Tag Filtering
   public tags: Array<any> = [];
   public selectedTags: Array<any> = [];
   public filteredTags: Array<any> = [];
   public tagSearchTerm: string = "";
+  public noTagLabel = $localize`:@@NoTag:Sin Etiqueta`;
 
-  // Nuevas propiedades para el filtro de grupos
+  // Group Filtering
   public groupOptions: Array<any> = [];
   public selectedGroups: Array<any> = [];
   public filteredGroups: Array<any> = [];
   public groupSearchTerm: string = "";
+  public noGroupLabel = $localize`:@@NoGroup:Sin Grupo`;
 
-  // Propiedades para el filtro por tipo con iconos
-  public dashboardTypes: Array<{ type: string; label: string; active: boolean; icon: string; color: string }> = [
-    { type: "shared", label: $localize`:@@Public:Público`, active: false, icon: "fa-link", color: "#dc3545" },
-    { type: "public", label: $localize`:@@Common:Común`, active: false, icon: "fa-shield", color: "#007bff" },
-    { type: "group", label: $localize`:@@Group:Grupo`, active: false, icon: "fa-users", color: "#28a745" },
-    { type: "private", label: $localize`:@@Private:Privado`, active: false, icon: "fa-lock", color: "#ffc107" }
+  // Dashboard Type Filtering
+  public dashboardTypes: Array<{
+    type: string;
+    label: string;
+    active: boolean;
+    icon: string;
+    color: string;
+  }> = [
+    {
+      type: "shared",
+      label: $localize`:@@Public:Público`,
+      active: false,
+      icon: "fa-link",
+      color: "#dc3545"
+    },
+    {
+      type: "public",
+      label: $localize`:@@Common:Común`,
+      active: false,
+      icon: "fa-shield",
+      color: "#007bff"
+    },
+    {
+      type: "group",
+      label: $localize`:@@Group:Grupo`,
+      active: false,
+      icon: "fa-users",
+      color: "#28a745"
+    },
+    {
+      type: "private",
+      label: $localize`:@@Private:Privado`,
+      active: false,
+      icon: "fa-lock",
+      color: "#ffc107"
+    }
   ];
 
-  // Traduccion para los valores de los informes
+  // Dashboard Type Translations
   public dashboardTypeTranslations = {
     public: $localize`:@@Common:Común`,
     shared: $localize`:@@Public:Público`,
@@ -68,38 +101,50 @@ export class SdareportsComponent implements OnInit {
     private: $localize`:@@Private:Privado`
   };
 
-  // Propiedades para edición de título
+  // Title Editing
   public showEditIcon: boolean = false;
   public isEditing: boolean = false;
 
-  // Etiquetas para los filtros
-  public noTagLabel = $localize`:@@NoTag:Sin Etiqueta`;
-  public noGroupLabel = $localize`:@@NoGroup:Sin Grupo`;
-
-  public createDashboard: boolean = false;
-
-  public lastSortCriteria: { column: string; direction: "asc" | "desc" };
+  // Dashboard Type Editing
+  public editingType: {
+    [key: string]: boolean;
+  } = {};
+  public editingTypeId: string | null = null;
 
   constructor(
+    // Services for managing dashboards and related operations
     private dashboardService: DashboardService,
     private sidebarService: SidebarService,
+    private stylesProviderService: StyleProviderService,
+    // Services for navigation and user feedback
     private router: Router,
     private alertService: AlertService,
-    private groupService: GroupService,
-    private stylesProviderService: StyleProviderService
+    // Service for group management
+    private groupService: GroupService
   ) {
+    // Initialize data sources
     this.sidebarService.getDataSourceNames();
     this.sidebarService.getDataSourceNamesForDashboard();
+
+    // Set default styles
     this.stylesProviderService.setStyles(this.stylesProviderService.generateDefaultStyles());
+
+    // Set view mode from local storage or default to table view
     this.viewMode = (localStorage.getItem("preferredViewMode") as "table" | "card") || "table";
   }
 
+  /**
+   * Initializes the component.
+   */
   public ngOnInit() {
     this.init();
     this.ifAnonymousGetOut();
     this.currentUser = JSON.parse(sessionStorage.getItem("user"));
   }
 
+  /**
+   * Initializes all necessary data for the component.
+   */
   private init() {
     this.initDatasources();
     this.initDashboards();
@@ -107,6 +152,9 @@ export class SdareportsComponent implements OnInit {
     this.initGroups();
   }
 
+  /**
+   * Sets the isObserver flag based on the user's group membership.
+   */
   private setIsObserver = async () => {
     this.groupService.getGroupsByUser().subscribe(
       res => {
@@ -120,6 +168,9 @@ export class SdareportsComponent implements OnInit {
     );
   };
 
+  /**
+   * Redirects anonymous users to the login page.
+   */
   private ifAnonymousGetOut(): void {
     const user = sessionStorage.getItem("user");
     const userName = JSON.parse(user).name;
@@ -129,6 +180,9 @@ export class SdareportsComponent implements OnInit {
     }
   }
 
+  /**
+   * Initializes datasources from the sidebar service.
+   */
   private initDatasources(): void {
     this.sidebarService.currentDatasourcesDB.subscribe(
       data => (this.dss = data),
@@ -136,21 +190,35 @@ export class SdareportsComponent implements OnInit {
     );
   }
 
+  /**
+   * Initializes dashboards, sets up groups, and performs initial filtering.
+   */
   private initDashboards(): void {
     this.dashboardService.getDashboards().subscribe(
       res => {
         this.allDashboards = [
-          ...res.publics.map(d => ({ ...d, type: "public" })),
-          ...res.shared.map(d => ({ ...d, type: "shared" })),
-          ...res.group.map(d => ({ ...d, type: "group" })),
-          ...res.dashboards.map(d => ({ ...d, type: "private" }))
+          ...res.publics.map(d => ({
+            ...d,
+            type: "public"
+          })),
+          ...res.shared.map(d => ({
+            ...d,
+            type: "shared"
+          })),
+          ...res.group.map(d => ({
+            ...d,
+            type: "group"
+          })),
+          ...res.dashboards.map(d => ({
+            ...d,
+            type: "private"
+          }))
         ].sort((a, b) => (a.config.title > b.config.title ? 1 : b.config.title > a.config.title ? -1 : 0));
 
         this.groups = _.map(_.uniqBy(res.group, "group._id"), "group");
-        console.log("Grupos obtenidos del servicio:", this.groups); // Nuevo log
+        console.log("Groups obtained from service:", this.groups);
 
         this.isAdmin = res.isAdmin;
-
         this.IsDataSourceCreator = res.isDataSourceCreator;
 
         this.initTags();
@@ -163,14 +231,29 @@ export class SdareportsComponent implements OnInit {
     );
   }
 
+  /**
+   * Initializes the tags for filtering dashboards.
+   */
   private initTags(): void {
     const uniqueTags = Array.from(new Set(this.allDashboards.map(db => db.config.tag))).sort();
-    this.tags = [{ value: null, label: this.noTagLabel }, ...uniqueTags.map(tag => ({ value: tag, label: tag }))];
+    this.tags = [
+      {
+        value: null,
+        label: this.noTagLabel
+      },
+      ...uniqueTags.map(tag => ({
+        value: tag,
+        label: tag
+      }))
+    ];
     this.filteredTags = [...this.tags];
   }
 
+  /**
+   * Initializes the groups for filtering dashboards.
+   */
   private initGroups(): void {
-    console.log("Iniciando initGroups");
+    console.log("Starting initGroups");
     console.log("allDashboards:", this.allDashboards);
 
     const uniqueGroups = Array.from(
@@ -181,24 +264,35 @@ export class SdareportsComponent implements OnInit {
       )
     ).sort();
 
-    console.log("Grupos únicos encontrados:", uniqueGroups);
+    console.log("Unique groups found:", uniqueGroups);
 
     this.groupOptions = [
-      { value: null, label: this.noGroupLabel },
-      ...uniqueGroups.map(group => ({ value: group, label: group }))
+      {
+        value: null,
+        label: this.noGroupLabel
+      },
+      ...uniqueGroups.map(group => ({
+        value: group,
+        label: group
+      }))
     ];
 
-    console.log("Opciones de grupo:", this.groupOptions);
+    console.log("Group options:", this.groupOptions);
 
     this.filteredGroups = [...this.groupOptions];
 
-    // Asegurarse de que los grupos se actualicen en la vista
+    // Ensure groups are updated in the view
     this.filterGroups();
   }
 
+  /**
+   * Initializes the dialog for creating a new dashboard.
+   */
   public initDialog(): void {
     this.dashController = new EdaDialogController({
-      params: { dataSources: this.dss },
+      params: {
+        dataSources: this.dss
+      },
       close: (event, response) => {
         if (!_.isEqual(event, EdaDialogCloseEvent.NONE)) {
           this.initDashboards();
@@ -209,27 +303,30 @@ export class SdareportsComponent implements OnInit {
     });
   }
 
+  /**
+   * Deletes a dashboard after user confirmation.
+   * @param dashboard The dashboard to be deleted
+   */
   public deleteDashboard(dashboard): void {
-    let text = $localize`:@@deleteDashboardWarning:Estás a punto de borrar el informe:`;
+    let text = $localize`:@@deleteDashboardWarning:You are about to delete the report:`;
     Swal.fire({
-      title: $localize`:@@Sure:¿Estás seguro?`,
+      title: $localize`:@@Sure:Are you sure?`,
       text: `${text} ${dashboard.config.title}`,
       icon: "warning",
       showCancelButton: true,
       confirmButtonColor: "#3085d6",
       cancelButtonColor: "#d33",
-      confirmButtonText: $localize`:@@ConfirmDeleteModel:Si, ¡Eliminalo!`,
-      cancelButtonText: $localize`:@@DeleteGroupCancel:Cancelar`
-    }).then(borrado => {
-      if (borrado.value) {
+      confirmButtonText: $localize`:@@ConfirmDeleteModel:Yes, delete it!`,
+      cancelButtonText: $localize`:@@DeleteGroupCancel:Cancel`
+    }).then(deleted => {
+      if (deleted.value) {
         this.dashboardService.deleteDashboard(dashboard._id).subscribe(
           () => {
-            // Eliminar el dashboard de allDashboards y visibleDashboards sin reordenar
+            // Remove the dashboard from allDashboards and visibleDashboards without reordering
             this.allDashboards = this.allDashboards.filter(d => d._id !== dashboard._id);
             this.visibleDashboards = this.visibleDashboards.filter(d => d._id !== dashboard._id);
 
-
-            this.alertService.addSuccess($localize`:@@DashboardDeletedInfo:Informe eliminado correctamente.`);
+            this.alertService.addSuccess($localize`:@@DashboardDeletedInfo:Report successfully deleted.`);
           },
           err => this.alertService.addError(err)
         );
@@ -237,30 +334,48 @@ export class SdareportsComponent implements OnInit {
     });
   }
 
-
+  /**
+   * Navigates to a specific dashboard.
+   * @param dashboard The dashboard to navigate to
+   */
   public goToDashboard(dashboard): void {
     if (dashboard) {
       this.router.navigate(["/dashboard", dashboard._id]);
     } else {
-      this.alertService.addError($localize`:@@ErrorMessage:Ha ocurrido un error`);
+      this.alertService.addError($localize`:@@ErrorMessage:An error has occurred`);
     }
   }
 
+  /**
+   * Gets a string of group names for a dashboard.
+   * @param group Array of groups
+   * @returns A string of group names separated by commas
+   */
   public getGroupsNamesByDashboard(group: any[]): string {
     return group.map((elem: any) => elem.name).join(" , ");
   }
 
+  /**
+   * Filters tags based on the search term.
+   */
   public filterTags() {
     this.filteredTags = this.tags.filter(tag => tag.label.toLowerCase().includes(this.tagSearchTerm.toLowerCase()));
   }
 
+  /**
+   * Filters groups based on the search term.
+   */
   public filterGroups() {
     this.filteredGroups = this.groupOptions.filter(group =>
       group.label.toLowerCase().includes(this.groupSearchTerm.toLowerCase())
     );
-    console.log("Grupos filtrados:", this.filteredGroups);
+    console.log("Filtered groups:", this.filteredGroups);
   }
 
+  /**
+   * Toggles the selection of a tag and updates the dashboard filter.
+   * @param tag The tag to toggle
+   */
   public toggleTagSelection(tag: any) {
     const index = this.selectedTags.findIndex(t => t.value === tag.value);
     if (index > -1) {
@@ -271,6 +386,10 @@ export class SdareportsComponent implements OnInit {
     this.filterDashboards();
   }
 
+  /**
+   * Toggles the selection of a group and updates the dashboard filter.
+   * @param group The group to toggle
+   */
   public toggleGroupSelection(group: any) {
     const index = this.selectedGroups.findIndex(g => g.value === group.value);
     if (index > -1) {
@@ -281,6 +400,10 @@ export class SdareportsComponent implements OnInit {
     this.filterDashboards();
   }
 
+  /**
+   * Toggles the selection of a dashboard type and updates the dashboard filter.
+   * @param type The type to toggle
+   */
   public toggleTypeSelection(type: string) {
     this.dashboardTypes.forEach(typeObj => {
       if (typeObj.type === type) {
@@ -292,32 +415,35 @@ export class SdareportsComponent implements OnInit {
     this.filterDashboards();
   }
 
+  /**
+   * Filters dashboards based on selected types, tags, and groups.
+   */
   public filterDashboards() {
-    // Resetear visibleDashboards
+    // Reset visibleDashboards
     this.visibleDashboards = [...this.allDashboards];
 
-    // Si ningún tipo está activo, mostramos todos los dashboards
+    // Check if any type is active
     const anyTypeActive = this.dashboardTypes.some(t => t.active);
 
     if (anyTypeActive) {
-      // Filtramos por el tipo activo
+      // Filter by active type
       this.visibleDashboards = this.visibleDashboards.filter(db =>
         this.dashboardTypes.find(t => t.type === db.type && t.active)
       );
     }
 
-    // Aplicamos el filtro de etiquetas
+    // Apply tag filter
     if (this.selectedTags.length > 0) {
       this.visibleDashboards = this.visibleDashboards.filter(db =>
         this.selectedTags.some(tag => tag.value === db.config.tag || (tag.value === null && !db.config.tag))
       );
     }
 
-    // Aplicamos el filtro de grupos
+    // Apply group filter
     if (this.selectedGroups.length > 0) {
       this.visibleDashboards = this.visibleDashboards.filter(db => {
         if (this.selectedGroups.some(group => group.value === null)) {
-          // Si "Sin grupo" está seleccionado, incluir dashboards sin grupo
+          // If "No group" is selected, include dashboards without a group
           return (
             !db.group ||
             db.group.length === 0 ||
@@ -326,23 +452,30 @@ export class SdareportsComponent implements OnInit {
             )
           );
         } else {
-          // Solo incluir dashboards que pertenezcan a los grupos seleccionados
+          // Only include dashboards that belong to the selected groups
           return (
             db.group && db.group.some(g => this.selectedGroups.some(selectedGroup => selectedGroup.value === g.name))
           );
         }
       });
     }
-
-    // this.sortTable(this.sortColumn);
   }
 
+  /**
+   * Filters dashboards based on the search term
+   * @param event The input event containing the search term
+   */
   public filterTitle(event: any) {
     this.searchTerm = event.target.value.toString().toUpperCase();
     this.applyCurrentFilters();
     this.filteringByName = this.searchTerm.length > 1;
   }
 
+  /**
+   * Checks if the current user can edit a dashboard
+   * @param dashboard The dashboard to check
+   * @returns Boolean indicating if the user can edit the dashboard
+   */
   public canIEdit(dashboard): boolean {
     let result: boolean = false;
     result = this.isAdmin;
@@ -358,6 +491,10 @@ export class SdareportsComponent implements OnInit {
     return result;
   }
 
+  /**
+   * Sorts the table based on the selected column
+   * @param column The column to sort by
+   */
   public sortTable(column: string): void {
     if (this.sortColumn === column) {
       this.sortDirection = this.sortDirection === "asc" ? "desc" : "asc";
@@ -370,13 +507,13 @@ export class SdareportsComponent implements OnInit {
       let valueA = this.getNestedProperty(a, column);
       let valueB = this.getNestedProperty(b, column);
 
-      // Manejo especial para la fecha de creación
+      // Special handling for creation date
       if (column === "config.createdAt") {
         valueA = valueA ? new Date(valueA).getTime() : 0;
         valueB = valueB ? new Date(valueB).getTime() : 0;
       }
 
-      // Manejo especial para el autor
+      // Special handling for author
       if (column === "user.name") {
         valueA = valueA || "";
         valueB = valueB || "";
@@ -391,48 +528,72 @@ export class SdareportsComponent implements OnInit {
     });
   }
 
+  /**
+   * Retrieves a nested property from an object
+   * @param obj The object to retrieve the property from
+   * @param path The path to the property
+   * @returns The value of the nested property
+   */
   private getNestedProperty(obj: any, path: string): any {
     return path.split(".").reduce((o, key) => (o && o[key] !== undefined ? o[key] : null), obj);
   }
 
+  /**
+   * Sets the view mode and saves it to local storage
+   * @param mode The view mode to set
+   */
   public setViewMode(mode: "table" | "card"): void {
     this.viewMode = mode;
     localStorage.setItem("preferredViewMode", mode);
   }
 
+  /**
+   * Gets the CSS class for a dashboard type
+   * @param type The dashboard type
+   * @returns The CSS class for the dashboard type
+   */
   public getDashboardTypeClass(type: string): string {
     const dashboardType = this.dashboardTypes.find(t => t.type === type);
     return dashboardType ? `card-border-${dashboardType.type}` : "";
   }
 
+  /**
+   * Gets the color for a dashboard type
+   * @param type The dashboard type
+   * @returns The color for the dashboard type
+   */
   public getDashboardTypeColor(type: string): string {
     const dashboardType = this.dashboardTypes.find(t => t.type === type);
     return dashboardType ? dashboardType.color : "";
   }
 
+  /**
+   * Clones a dashboard
+   * @param dashboard The dashboard to clone
+   */
   public cloneDashboard(dashboard: any): void {
     this.dashboardService.cloneDashboard(dashboard._id).subscribe(
       response => {
         if (response.ok && response.dashboard) {
-          // Crear una copia profunda del dashboard original
+          // Create a deep copy of the original dashboard
           const clonedDashboard = _.cloneDeep(dashboard);
 
-          // Actualizar los datos del dashboard clonado con la respuesta del servidor
+          // Update the cloned dashboard data with the server response
           Object.assign(clonedDashboard, response.dashboard);
 
-          // Asegurarse de que el tipo y el autor estén correctamente asignados
+          // Ensure type and author are correctly assigned
           clonedDashboard.type = clonedDashboard.config.visible;
           clonedDashboard.user = this.currentUser;
 
-          // Actualizar la fecha de creación y modificación
+          // Update creation and modification dates
           clonedDashboard.config.createdAt = new Date().toISOString();
           clonedDashboard.config.modifiedAt = new Date().toISOString();
 
-          // Encontrar el índice del dashboard original en ambas listas
+          // Find the index of the original dashboard in both lists
           const allDashboardsIndex = this.allDashboards.findIndex(d => d._id === dashboard._id);
           const visibleDashboardsIndex = this.visibleDashboards.findIndex(d => d._id === dashboard._id);
 
-          // Insertar el dashboard clonado justo después del original en ambas listas
+          // Insert the cloned dashboard just after the original in both lists
           if (allDashboardsIndex !== -1) {
             this.allDashboards.splice(allDashboardsIndex + 1, 0, clonedDashboard);
           } else {
@@ -445,18 +606,21 @@ export class SdareportsComponent implements OnInit {
             this.visibleDashboards.push(clonedDashboard);
           }
 
-          // Marcar el dashboard como recién clonado
+          // Mark the dashboard as newly cloned
           clonedDashboard.isNewlyCloned = true;
 
-          // Desplazar el foco al dashboard clonado
+          // Scroll to the cloned dashboard
           setTimeout(() => {
             const element = document.getElementById(`dashboard-${clonedDashboard._id}`);
             if (element) {
-              element.scrollIntoView({ behavior: "smooth", block: "center" });
+              element.scrollIntoView({
+                behavior: "smooth",
+                block: "center"
+              });
             }
           }, 100);
 
-          // Eliminar la marca después de 5 segundos
+          // Remove the newly cloned mark after 5 seconds
           setTimeout(() => {
             clonedDashboard.isNewlyCloned = false;
           }, 5000);
@@ -477,6 +641,10 @@ export class SdareportsComponent implements OnInit {
     );
   }
 
+  /**
+   * Copies the public URL of a shared dashboard to the clipboard
+   * @param dashboard The dashboard whose URL to copy
+   */
   public copyUrl(dashboard: any): void {
     if (dashboard.type === "shared") {
       const url = `${window.location.origin}/#/public/${dashboard._id}`;
@@ -492,6 +660,11 @@ export class SdareportsComponent implements OnInit {
     }
   }
 
+  /**
+   * Formats a date string or Date object to a localized string
+   * @param date The date to format
+   * @returns A formatted date string
+   */
   public formatDate(date: string | Date): string {
     if (!date) return "";
     const dateObj = typeof date === "string" ? new Date(date) : date;
@@ -504,16 +677,24 @@ export class SdareportsComponent implements OnInit {
     });
   }
 
+  /**
+   * Handles the closing of the create dashboard dialog
+   * @param event The event object from the dialog close
+   */
   public onCloseCreateDashboard(event?: any): void {
     this.createDashboard = false;
     if (event) this.router.navigate(["/dashboard", event._id]);
   }
 
+  /**
+   * Starts the editing mode for a dashboard title
+   * @param titleSpan The HTML element containing the title
+   */
   public startEditing(titleSpan: HTMLElement): void {
     this.isEditing = true;
     setTimeout(() => {
       titleSpan.focus();
-      // Coloca el cursor al final del texto
+      // Place the cursor at the end of the text
       const range = document.createRange();
       range.selectNodeContents(titleSpan);
       range.collapse(false);
@@ -523,13 +704,23 @@ export class SdareportsComponent implements OnInit {
     }, 0);
   }
 
+  /**
+   * Updates the title of a dashboard
+   * @param dashboard The dashboard to update
+   * @param event The event object containing the new title
+   */
   public updateDashboardTitle(dashboard: any, event: any): void {
     const newTitle = event.target.textContent.trim();
     this.isEditing = false;
     if (newTitle !== dashboard.config.title) {
       dashboard.config.title = newTitle;
       this.dashboardService
-        .updateDashboardSpecific(dashboard._id, { data: { key: 'config.title', newValue: newTitle } })
+        .updateDashboardSpecific(dashboard._id, {
+          data: {
+            key: "config.title",
+            newValue: newTitle
+          }
+        })
         .subscribe(
           () => {
             this.alertService.addSuccess(
@@ -546,11 +737,14 @@ export class SdareportsComponent implements OnInit {
     }
   }
 
+  /**
+   * Applies the current filters to the dashboard list
+   */
   private applyCurrentFilters(): void {
-    // Aplicar filtros de tipo, etiquetas y grupos
+    // Apply type, tag, and group filters
     this.filterDashboards();
 
-    // Aplicar filtro de texto si existe
+    // Apply text filter if it exists
     if (this.searchTerm && this.searchTerm.length > 1) {
       this.visibleDashboards = this.visibleDashboards.filter(
         db => db.config.title.toUpperCase().indexOf(this.searchTerm) >= 0
@@ -558,29 +752,48 @@ export class SdareportsComponent implements OnInit {
     }
   }
 
+  /**
+   * Starts the editing mode for a dashboard type
+   * @param dashboard The dashboard to edit
+   */
   public startEditingType(dashboard: any): void {
     this.editingTypeId = dashboard._id;
   }
 
+  /**
+   * Updates the type of a dashboard
+   * @param dashboard The dashboard to update
+   * @param newType The new type for the dashboard
+   */
   public updateDashboardType(dashboard: any, newType: string): void {
     const oldType = dashboard.type;
     dashboard.type = newType;
     dashboard.config.visible = newType;
 
-    this.dashboardService.updateDashboardSpecific(dashboard._id, { data: { key: 'config.visible', newValue: newType } }).subscribe(
-      () => {
-        this.alertService.addSuccess($localize`:@@DashboardTypeUpdated:Tipo de informe actualizado correctamente.`);
-        this.editingTypeId = null;
-      },
-      error => {
-        this.alertService.addError($localize`:@@ErrorUpdatingDashboardType:Error al actualizar el tipo de informe.`);
-        dashboard.type = oldType;
-        dashboard.config.visible = oldType;
-        console.error("Error updating dashboard type:", error);
-      }
-    );
+    this.dashboardService
+      .updateDashboardSpecific(dashboard._id, {
+        data: {
+          key: "config.visible",
+          newValue: newType
+        }
+      })
+      .subscribe(
+        () => {
+          this.alertService.addSuccess($localize`:@@DashboardTypeUpdated:Tipo de informe actualizado correctamente.`);
+          this.editingTypeId = null;
+        },
+        error => {
+          this.alertService.addError($localize`:@@ErrorUpdatingDashboardType:Error al actualizar el tipo de informe.`);
+          dashboard.type = oldType;
+          dashboard.config.visible = oldType;
+          console.error("Error updating dashboard type:", error);
+        }
+      );
   }
 
+  /**
+   * Cancels the editing of a dashboard type
+   */
   public cancelEditingType(): void {
     this.editingTypeId = null;
   }
