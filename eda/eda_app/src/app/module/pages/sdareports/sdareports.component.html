@@ -207,21 +207,6 @@
       </div>
     </div>
   </div>
-  <!-- <div class="ml-2" id="type-filter">
-    <div class="btn-group" role="group" aria-label="Filtrar por tipo">
-      <button
-        *ngFor="let typeObj of dashboardTypes"
-        type="button"
-        class="btn btn-outline-light"
-        title="{{ typeObj.label }}"
-        [class.active]="typeObj.active"
-        (click)="toggleTypeSelection(typeObj.type)"
-        [style.color]="typeObj.color"
-      >
-        <i class="fa {{ typeObj.icon }} mr-1"></i>
-      </button>
-    </div>
-  </div> -->
 
   <!-- Name filter -->
   <div class="ml-2" id="name-filter">
@@ -283,6 +268,17 @@
           class="text-center"
         >
           Tipo
+        </th>
+        <th i18n="@@groups">Grupos</th>
+        <th
+          (click)="sortTable('config.tag')"
+          [ngClass]="{
+            'sort-asc': sortColumn === 'config.tag' && sortDirection === 'asc',
+            'sort-desc': sortColumn === 'config.tag' && sortDirection === 'desc'
+          }"
+          i18n="@@tags"
+        >
+          Etiquetas
         </th>
         <th
           (click)="sortTable('user.name')"
@@ -347,17 +343,7 @@
         >
           Fuente de datos
         </th>
-        <th i18n="@@groups">Grupos</th>
-        <th
-          (click)="sortTable('config.tag')"
-          [ngClass]="{
-            'sort-asc': sortColumn === 'config.tag' && sortDirection === 'asc',
-            'sort-desc': sortColumn === 'config.tag' && sortDirection === 'desc'
-          }"
-          i18n="@@tags"
-        >
-          Etiquetas
-        </th>
+
         <th i18n="@@actions">Acciones</th>
       </tr>
     </thead>
@@ -384,7 +370,7 @@
               (blur)="updateDashboardTitle(dashboard, $event)"
               (keydown.enter)="$event.target.blur()"
             >
-              {{ dashboard.config.title }} &nbsp;
+              <a class="report-name" (click)="goToDashboard(dashboard)">{{ dashboard.config.title }}</a> &nbsp;
               <i
                 *ngIf="dashboard.config.description"
                 class="fa fa-info has-description-icon"
@@ -439,6 +425,17 @@
           </span>
           <!-- test -->
         </td>
+        <td class="small">
+          <span
+            *ngFor="let group of dashboard.group"
+            class="group-label label label-success small"
+          >
+            {{ group.name }}
+          </span>
+        </td>
+        <td>
+          <span class="badge badge-primary">{{ dashboard.config.tag }}</span>
+        </td>
         <td class="text-center">{{ dashboard.user?.name }}</td>
         <td class="text-center">
           <small>{{
@@ -460,17 +457,7 @@
           </p>
         </td>
         <td>{{ dashboard.config.ds.name }}</td>
-        <td class="small">
-          <span
-            *ngFor="let group of dashboard.group"
-            class="group-label label label-success small"
-          >
-            {{ group.name }}
-          </span>
-        </td>
-        <td>
-          <span class="badge badge-primary">{{ dashboard.config.tag }}</span>
-        </td>
+
         <td>
           <div class="btn-group">
             <button
@@ -531,13 +518,16 @@
               class="dashboard-title-container"
               (mouseenter)="showEditIcon = true"
               (mouseleave)="showEditIcon = false"
+              x
             >
-              <span
+              <a
                 #titleSpan
                 [attr.contenteditable]="isEditing ? true : null"
                 (blur)="updateDashboardTitle(dashboard, $event)"
                 (keydown.enter)="$event.target.blur()"
-                >{{ dashboard.config.title }}</span
+                class="report-name"
+                (click)="goToDashboard(dashboard)"
+                >{{ dashboard.config.title }}</a
               >
               <i
                 *ngIf="canIEdit(dashboard) && !isEditing"

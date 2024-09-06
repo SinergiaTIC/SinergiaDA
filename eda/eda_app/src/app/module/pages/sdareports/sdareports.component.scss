@@ -84,13 +84,13 @@
   border-left-color: #007bff;
 }
 .card-border-shared {
-  border-left-color: #dc3545;
-}
-.card-border-group {
   border-left-color: #28a745;
 }
-.card-border-private {
+.card-border-group {
   border-left-color: #ffc107;
+}
+.card-border-private {
+  border-left-color: #dc3545;
 }
 
 /* Estilos del buscador */
@@ -466,4 +466,9 @@ button .counter {
   color: #000;
   font-weight: bold;
   padding: 2px;
+}
+
+.report-name:hover{
+  text-decoration: underline !important;
+  cursor:pointer;
 }
