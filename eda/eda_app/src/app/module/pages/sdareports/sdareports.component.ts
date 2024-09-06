@@ -66,7 +66,7 @@ export class SdareportsComponent implements OnInit {
       type: "shared",
       label: $localize`:@@Public:Público`,
       icon: "fa-circle",
-      color: "#28a745"
+      color: "#dc3545"
     },
     {
       type: "public",

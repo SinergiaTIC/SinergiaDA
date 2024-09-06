@@ -3,7 +3,7 @@
   <div *ngIf="!isObserver">
     <button
       type="button"
-      class="btn btn-success"
+      class="btn btn-success stic-button-green"
       (click)="createDashboard = true"
     >
       <i class="fa fa-plus-circle mr-2 fa-lg"></i>
@@ -462,7 +462,7 @@
           <div class="btn-group">
             <button
               *ngIf="!isObserver"
-              class="btn btn-primary btn-sm mr-2"
+              class="btn btn-primary btn-sm mr-2 stic-button-green"
               (click)="goToDashboard(dashboard)"
               i18n-title="@@goToDashboard"
               title="Abrir informe"
@@ -471,7 +471,7 @@
             </button>
             <button
               *ngIf="!isObserver && canIEdit(dashboard)"
-              class="btn btn-primary btn-sm mr-2"
+              class="btn btn-primary btn-sm mr-2 stic-button-green"
               (click)="cloneDashboard(dashboard)"
               i18n-title="@@cloneReport"
               title="Clonar informe"
@@ -480,14 +480,14 @@
             </button>
             <button
               *ngIf="!isObserver && canIEdit(dashboard)"
-              class="btn btn-danger btn-sm mr-2"
+              class="btn btn-danger btn-sm mr-2 stic-button-red"
               (click)="deleteDashboard(dashboard)"
             >
               <i class="fa fa-trash"></i>
             </button>
             <button
               *ngIf="dashboard.type === 'shared'"
-              class="btn btn-primary btn-sm mr-2"
+              class="btn btn-primary btn-sm mr-2 stic-button-green"
               (click)="copyUrl(dashboard)"
               i18n-title="@@copyURL"
               title="Copiar url pública"
@@ -497,6 +497,7 @@
           </div>
         </td>
       </tr>
+
     </tbody>
   </table>
 </div>
@@ -603,7 +604,7 @@
           </p>
           <div class="mt-auto">
             <button
-              class="btn btn-primary btn-sm mr-2"
+              class="btn btn-primary btn-sm mr-2 stic-button-green"
               (click)="goToDashboard(dashboard)"
               i18n-title="@@showReport"
               title="Mostrar informe"
@@ -612,7 +613,7 @@
             </button>
             <button
               *ngIf="!isObserver && canIEdit(dashboard)"
-              class="btn btn-danger btn-sm mr-2"
+              class="btn btn-danger btn-sm mr-2 stic-button-red"
               (click)="deleteDashboard(dashboard)"
               i18n-title="@@deleteReport"
               title="Eliminar informe"
@@ -621,7 +622,7 @@
             </button>
             <button
               *ngIf="!isObserver && canIEdit(dashboard)"
-              class="btn btn-primary btn-sm mr-2"
+              class="btn btn-primary btn-sm mr-2 stic-button-green"
               (click)="cloneDashboard(dashboard)"
               i18n-title="@@cloneReport"
               title="Clonar informe"
@@ -630,7 +631,7 @@
             </button>
             <button
               *ngIf="dashboard.type === 'shared'"
-              class="btn btn-primary btn-sm mr-2"
+              class="btn btn-primary btn-sm mr-2 stic-button-green"
               (click)="copyUrl(dashboard)"
               i18n-title="@@copyURL"
               title="Copiar url pública"

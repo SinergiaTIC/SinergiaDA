@@ -1,3 +1,4 @@
+$stic-color: #b4bc32;
 /* Estilos generales */
 .btn-group .btn-outline-light,
 .btn-sm {
@@ -468,7 +469,25 @@ button .counter {
   padding: 2px;
 }
 
-.report-name:hover{
+.report-name:hover {
   text-decoration: underline !important;
-  cursor:pointer;
+  cursor: pointer;
+}
+
+
+.stic-button-green {
+  background-color: $stic-color;
+  color: #000;
+  border: none;
+  &:hover {
+    background-color: lighten($stic-color, 10);
+  }
+}
+.stic-button-red {
+  background-color: #EE4E36;
+  color: #fff;
+  border: none;
+  &:hover {
+    background-color: lighten(#EE4E36, 10);
+  }
 }
