@@ -59,39 +59,39 @@ export class SdareportsComponent implements OnInit {
   public dashboardTypes: Array<{
     type: string;
     label: string;
-    active: boolean;
     icon: string;
     color: string;
   }> = [
     {
       type: "shared",
       label: $localize`:@@Public:Público`,
-      active: false,
-      icon: "fa-link",
+      icon: "fa-circle",
       color: "#dc3545"
     },
     {
       type: "public",
       label: $localize`:@@Common:Común`,
-      active: false,
-      icon: "fa-shield",
+      icon: "fa-circle",
       color: "#007bff"
     },
     {
       type: "group",
       label: $localize`:@@Group:Grupo`,
-      active: false,
-      icon: "fa-users",
+      icon: "fa-circle",
       color: "#28a745"
     },
     {
       type: "private",
       label: $localize`:@@Private:Privado`,
-      active: false,
-      icon: "fa-lock",
+      icon: "fa-circle",
       color: "#ffc107"
     }
   ];
+
+  // Type filtering
+  public selectedTypes: Array<any> = [];
+  public filteredTypes: Array<any> = [];
+  public typeSearchTerm: string = "";
 
   // Dashboard Type Translations
   public dashboardTypeTranslations = {
@@ -131,6 +131,8 @@ export class SdareportsComponent implements OnInit {
 
     // Set view mode from local storage or default to table view
     this.viewMode = (localStorage.getItem("preferredViewMode") as "table" | "card") || "table";
+
+    this.filteredTypes = [...this.dashboardTypes];
   }
 
   /**
@@ -404,14 +406,13 @@ export class SdareportsComponent implements OnInit {
    * Toggles the selection of a dashboard type and updates the dashboard filter.
    * @param type The type to toggle
    */
-  public toggleTypeSelection(type: string) {
-    this.dashboardTypes.forEach(typeObj => {
-      if (typeObj.type === type) {
-        typeObj.active = !typeObj.active;
-      } else {
-        typeObj.active = false;
-      }
-    });
+  public toggleTypeSelection(type: any) {
+    const index = this.selectedTypes.findIndex(t => t.type === type.type);
+    if (index > -1) {
+      this.selectedTypes.splice(index, 1);
+    } else {
+      this.selectedTypes.push(type);
+    }
     this.filterDashboards();
   }
 
@@ -422,13 +423,20 @@ export class SdareportsComponent implements OnInit {
     // Reset visibleDashboards
     this.visibleDashboards = [...this.allDashboards];
 
-    // Check if any type is active
-    const anyTypeActive = this.dashboardTypes.some(t => t.active);
+    // // Check if any type is active
+    // const anyTypeActive = this.dashboardTypes.some(t => t.active);
 
-    if (anyTypeActive) {
-      // Filter by active type
+    // if (anyTypeActive) {
+    //   // Filter by active type
+    //   this.visibleDashboards = this.visibleDashboards.filter(db =>
+    //     this.dashboardTypes.find(t => t.type === db.type && t.active)
+    //   );
+    // }
+
+    // Apply type filter
+    if (this.selectedTypes.length > 0) {
       this.visibleDashboards = this.visibleDashboards.filter(db =>
-        this.dashboardTypes.find(t => t.type === db.type && t.active)
+        this.selectedTypes.some(type => type.type === db.type)
       );
     }
 
@@ -796,5 +804,11 @@ export class SdareportsComponent implements OnInit {
    */
   public cancelEditingType(): void {
     this.editingTypeId = null;
+  }
+
+  public filterTypes() {
+    this.filteredTypes = this.dashboardTypes.filter(type =>
+      type.label.toLowerCase().includes(this.typeSearchTerm.toLowerCase())
+    );
   }
 }

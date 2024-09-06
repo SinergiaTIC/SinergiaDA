@@ -187,7 +187,7 @@
     <source>Nombre del Informe</source>
     <target>Nombre del Informe</target>
   </trans-unit>
-  <trans-unit id="reportType" datatype="html">
+  <trans-unit id="type" datatype="html">
     <source>Tipo</source>
     <target>Tipo</target>
   </trans-unit>

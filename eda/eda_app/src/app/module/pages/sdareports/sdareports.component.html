@@ -38,10 +38,8 @@
     </div>
   </div>
 
-  <div class="ml-auto" i18n="@@filter">Filtros</div>
-
   <!-- Tags filter -->
-  <div class="ml-2" id="tag-filter">
+  <div class="ml-auto" id="tag-filter">
     <div class="dropdown">
       <button
         class="btn btn-secondary dropdown-toggle"
@@ -51,7 +49,7 @@
         aria-haspopup="true"
         aria-expanded="false"
       >
-        <span i18n="@@tags"> Etiquetas </span>
+        <i class="fa fa-filter"></i>&nbsp;<span i18n="@@tags"> Etiquetas </span>
         <span
           *ngIf="selectedTags.length > 0"
           class="counter bg-warning pull-right"
@@ -99,7 +97,7 @@
         aria-haspopup="true"
         aria-expanded="false"
       >
-        <span i18n="@@groups"> Grupos </span>
+        <i class="fa fa-filter"></i>&nbsp;<span i18n="@@groups"> Grupos </span>
         <span
           *ngIf="selectedGroups.length > 0"
           class="counter bg-warning pull-right"
@@ -137,7 +135,54 @@
   </div>
 
   <!-- Type filter -->
-  <div class="ml-2" id="type-filter">
+  <div id="type-filter" class="ml-2">
+    <div class="dropdown">
+      <button
+        class="btn btn-secondary dropdown-toggle"
+        type="button"
+        id="dropdownTypeButton"
+        data-toggle="dropdown"
+        aria-haspopup="true"
+        aria-expanded="false"
+      >
+        <i class="fa fa-filter"></i>&nbsp; <span i18n="@@type">Tipo</span>
+        <span
+          class="counter bg-warning pull-right"
+          *ngIf="selectedTypes.length > 0"
+          >{{ selectedTypes.length }}</span
+        >
+      </button>
+      <div class="dropdown-menu" aria-labelledby="dropdownTypeButton">
+        <div class="px-3 py-2">
+          <input
+            type="text"
+            class="form-control"
+            [(ngModel)]="typeSearchTerm"
+            (ngModelChange)="filterTypes()"
+            i18n-placeholder="@@type"
+            placeholder="Tipo"
+          />
+        </div>
+        <div class="dropdown-divider"></div>
+        <div class="dropdown-item" *ngFor="let type of filteredTypes">
+          <div class="form-check">
+            <input
+              class="form-check-input"
+              type="checkbox"
+              [id]="'type-' + type.type"
+              (change)="toggleTypeSelection(type)"
+              [checked]="selectedTypes.includes(type)"
+            />
+            <label class="form-check-label" [for]="'type-' + type.type">
+              <i [class]="'fa ' + type.icon" [style.color]="type.color"></i>
+              {{ type.label }}
+            </label>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- <div class="ml-2" id="type-filter">
     <div class="btn-group" role="group" aria-label="Filtrar por tipo">
       <button
         *ngFor="let typeObj of dashboardTypes"
@@ -151,7 +196,7 @@
         <i class="fa {{ typeObj.icon }} mr-1"></i>
       </button>
     </div>
-  </div>
+  </div> -->
 
   <!-- Name filter -->
   <div class="ml-2" id="name-filter">
@@ -209,7 +254,7 @@
             'sort-asc': sortColumn === 'type' && sortDirection === 'asc',
             'sort-desc': sortColumn === 'type' && sortDirection === 'desc'
           }"
-          i18n="@@reportType"
+          i18n="@@type"
           class="text-center"
         >
           Tipo
