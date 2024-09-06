@@ -364,15 +364,20 @@ export class SdareportsComponent implements OnInit {
     this.filteredTags = this.tags.filter(tag => tag.label.toLowerCase().includes(this.tagSearchTerm.toLowerCase()));
   }
 
-  /**
-   * Filters groups based on the search term.
-   */
-  public filterGroups() {
-    this.filteredGroups = this.groupOptions.filter(group =>
-      group.label.toLowerCase().includes(this.groupSearchTerm.toLowerCase())
-    );
-    console.log("Filtered groups:", this.filteredGroups);
-  }
+/**
+ * Filters groups based on the search term.
+ */
+public filterGroups() {
+  this.filteredGroups = this.groupOptions.filter(group => {
+    // Verificar si group y group.label están definidos
+    if (group && typeof group.label === 'string') {
+      return group.label.toLowerCase().includes(this.groupSearchTerm.toLowerCase());
+    }
+    // Si group.label no es una cadena, no lo incluimos en los resultados filtrados
+    return false;
+  });
+  console.log("Filtered groups:", this.filteredGroups);
+}
 
   /**
    * Toggles the selection of a tag and updates the dashboard filter.
