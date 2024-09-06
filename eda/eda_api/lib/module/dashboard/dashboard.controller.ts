@@ -14,27 +14,23 @@ const eda_api_config = require('../../../config/eda_api_config');
 export class DashboardController {
   static async getDashboards(req: Request, res: Response, next: NextFunction) {
     try {
-      let admin,
-        privates,
-        group,
-        publics,
-        shared = []
-      const groups = await Group.find({ users: { $in: req.user._id } }).exec()
-      const isAdmin = groups.filter(g => g.role === 'EDA_ADMIN_ROLE').length > 0
-      const isDataSourceCreator = groups.filter(g => g.name === 'EDA_DATASOURCE_CREATOR').length > 0
+      let admin, privates, group, publics, shared = [];
+      const groups = await Group.find({ users: { $in: req.user._id } }).exec();
+      const isAdmin = groups.filter(g => g.role === 'EDA_ADMIN_ROLE').length > 0;
+      const isDataSourceCreator = groups.filter(g => g.name === 'EDA_DATASOURCE_CREATOR').length > 0;
 
       if (isAdmin) {
-        admin = await DashboardController.getAllDashboardToAdmin()
-        publics = admin[0]
-        privates = admin[1]
-        group = admin[2]
-        shared = admin[3]
+        [publics, privates, group, shared] = await DashboardController.getAllDashboardToAdmin();
       } else {
-        privates = await DashboardController.getPrivateDashboards(req)
-        group = await DashboardController.getGroupsDashboards(req)
-        publics = await DashboardController.getPublicsDashboards()
-        shared = await DashboardController.getSharedDashboards()
+        privates = await DashboardController.getPrivateDashboards(req);
+        group = await DashboardController.getGroupsDashboards(req);
+        publics = await DashboardController.getPublicsDashboards();
+        shared = await DashboardController.getSharedDashboards();
       }
+
+      // Asegurarse de que la información del grupo esté incluida para dashboards de tipo "group"
+      group = await DashboardController.addGroupInfo(group);
+
       return res.status(200).json({
         ok: true,
         dashboards: privates,
@@ -43,13 +39,21 @@ export class DashboardController {
         shared,
         isAdmin,
         isDataSourceCreator
-      })
+      });
     } catch (err) {
-      console.log(err)
-      next(new HttpException(400, 'Some error ocurred loading dashboards'))
+      console.log(err);
+      next(new HttpException(400, 'Some error occurred loading dashboards'));
     }
   }
 
+  static async addGroupInfo(dashboards) {
+    for (const dashboard of dashboards) {
+      if (dashboard.group && Array.isArray(dashboard.group)) {
+        dashboard.group = await Group.find({ _id: { $in: dashboard.group } }, 'name').exec();
+      }
+    }
+    return dashboards;
+  }
 
   static async getPrivateDashboards(req: Request) {
     try {
@@ -76,32 +80,17 @@ export class DashboardController {
     try {
       const userGroups = await Group.find({
         users: { $in: req.user._id }
-      }).exec()
+      }).exec();
       const dashboards = await Dashboard.find(
         { group: { $in: userGroups.map(g => g._id) } },
-        'config.title config.visible group config.tag config.onlyIcanEdit config.description config.createdAt config.modifiedAt config.ds'
-      ).exec()
-      const groupDashboards = []
-      for (let i = 0, n = dashboards.length; i < n; i += 1) {
-        const dashboard = dashboards[i]
-        for (const dashboardGroup of dashboard.group) {
-          //dashboard.group = groups.filter(g => JSON.stringify(g._id) === JSON.stringify(group));
-          for (const userGroup of userGroups) {
-            if (
-              JSON.stringify(userGroup._id) === JSON.stringify(dashboardGroup)
-            ) {
-              // Obtain the name of the data source
-              dashboard.config.ds.name = (await DataSource.findById(dashboard.config.ds._id, 'ds.metadata.model_name').exec())?.ds?.metadata?.model_name ?? 'N/A';
-              
-              groupDashboards.push(dashboard)
-            }
-          }
-        }
-      }
-      return groupDashboards
+        'config.title config.visible group config.tag config.onlyIcanEdit config.description config.createdAt config.ds'
+      ).exec();
+      
+      // Añadir información de grupo aquí también
+      return DashboardController.addGroupInfo(dashboards);
     } catch (err) {
-      console.log(err)
-      throw new HttpException(400, 'Error loading groups dashboards')
+      console.log(err);
+      throw new HttpException(400, 'Error loading groups dashboards');
     }
   }
 
