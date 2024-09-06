@@ -67,6 +67,14 @@
             i18n-placeholder="@@tagSearch"
           />
         </div>
+        <button
+          class="btn btn-link btn-sm ml-2"
+          *ngIf="selectedTags.length > 0"
+          (click)="clearTagFilter()"
+          i18n="@@removeFilter"
+        >
+          Quitar filtro
+        </button>
         <div class="dropdown-divider"></div>
         <div *ngFor="let tag of filteredTags" class="dropdown-item">
           <div *ngIf="tag.label != null" class="form-check">
@@ -77,6 +85,7 @@
               [checked]="selectedTags.includes(tag)"
               (change)="toggleTagSelection(tag)"
             />
+
             <label class="form-check-label" [for]="'tag-' + tag.value">
               {{ tag.label }}
             </label>
@@ -115,6 +124,14 @@
             i18n-placeholder="@@groupFilter"
           />
         </div>
+        <button
+          class="btn btn-link btn-sm"
+          *ngIf="selectedGroups.length > 0"
+          (click)="clearGroupFilter()"
+          i18n="@@removeFilter"
+        >
+          Quitar filtro
+        </button>
         <div class="dropdown-divider"></div>
         <div *ngFor="let group of filteredGroups" class="dropdown-item">
           <div class="form-check">
@@ -163,6 +180,14 @@
             placeholder="Tipo"
           />
         </div>
+        <button
+          class="btn btn-link btn-sm"
+          *ngIf="selectedTypes.length > 0"
+          (click)="clearTypeFilter()"
+          i18n="@@removeFilter"
+        >
+          Quitar filtro
+        </button>
         <div class="dropdown-divider"></div>
         <div class="dropdown-item" *ngFor="let type of filteredTypes">
           <div class="form-check">

@@ -343,6 +343,10 @@
     <source>Fuente de datos</source>
     <target>Fuente de datos</target>
   </trans-unit>
+  <trans-unit id="removeFilter" datatype="html">
+    <source>Quitar filtro</source>
+    <target>Quitar filtro</target>
+  </trans-unit>
 </body>
 </file>
 </xliff>

@@ -423,16 +423,6 @@ export class SdareportsComponent implements OnInit {
     // Reset visibleDashboards
     this.visibleDashboards = [...this.allDashboards];
 
-    // // Check if any type is active
-    // const anyTypeActive = this.dashboardTypes.some(t => t.active);
-
-    // if (anyTypeActive) {
-    //   // Filter by active type
-    //   this.visibleDashboards = this.visibleDashboards.filter(db =>
-    //     this.dashboardTypes.find(t => t.type === db.type && t.active)
-    //   );
-    // }
-
     // Apply type filter
     if (this.selectedTypes.length > 0) {
       this.visibleDashboards = this.visibleDashboards.filter(db =>
@@ -451,7 +441,6 @@ export class SdareportsComponent implements OnInit {
     if (this.selectedGroups.length > 0) {
       this.visibleDashboards = this.visibleDashboards.filter(db => {
         if (this.selectedGroups.some(group => group.value === null)) {
-          // If "No group" is selected, include dashboards without a group
           return (
             !db.group ||
             db.group.length === 0 ||
@@ -460,7 +449,6 @@ export class SdareportsComponent implements OnInit {
             )
           );
         } else {
-          // Only include dashboards that belong to the selected groups
           return (
             db.group && db.group.some(g => this.selectedGroups.some(selectedGroup => selectedGroup.value === g.name))
           );
@@ -810,5 +798,20 @@ export class SdareportsComponent implements OnInit {
     this.filteredTypes = this.dashboardTypes.filter(type =>
       type.label.toLowerCase().includes(this.typeSearchTerm.toLowerCase())
     );
+  }
+
+  public clearTagFilter() {
+    this.selectedTags = [];
+    this.filterDashboards();
+  }
+
+  public clearGroupFilter() {
+    this.selectedGroups = [];
+    this.filterDashboards();
+  }
+
+  public clearTypeFilter() {
+    this.selectedTypes = [];
+    this.filterDashboards();
   }
 }
