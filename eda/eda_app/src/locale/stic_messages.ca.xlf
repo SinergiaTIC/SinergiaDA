@@ -175,7 +175,7 @@
     <source>Filtros</source>
     <target>Filtres</target>
   </trans-unit>
-  <trans-unit id="tag" datatype="html">
+  <trans-unit id="tags" datatype="html">
     <source>Etiquetas</source>
     <target>Etiquetes</target>
   </trans-unit>
