@@ -461,7 +461,6 @@
         <td>
           <div class="btn-group">
             <button
-              *ngIf="!isObserver"
               class="btn btn-primary btn-sm mr-2 stic-button-green"
               (click)="goToDashboard(dashboard)"
               i18n-title="@@goToDashboard"
@@ -470,7 +469,7 @@
               <i class="fa fa-eye"></i>
             </button>
             <button
-              *ngIf="!isObserver && canIEdit(dashboard)"
+              *ngIf="!isObserver "
               class="btn btn-primary btn-sm mr-2 stic-button-green"
               (click)="cloneDashboard(dashboard)"
               i18n-title="@@cloneReport"
