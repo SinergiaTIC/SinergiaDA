@@ -66,25 +66,25 @@ export class SdareportsComponent implements OnInit {
       type: "shared",
       label: $localize`:@@Public:Público`,
       icon: "fa-circle",
-      color: "#dc3545"
+      color: "#b4bc32"
     },
     {
       type: "public",
       label: $localize`:@@Common:Común`,
       icon: "fa-circle",
-      color: "#007bff"
+      color: "#add8e7"
     },
     {
       type: "group",
       label: $localize`:@@Group:Grupo`,
       icon: "fa-circle",
-      color: "#ffc107"
+      color: "#ffd971"
     },
     {
       type: "private",
       label: $localize`:@@Private:Privado`,
       icon: "fa-circle",
-      color: "#dc3545"
+      color: "#ee4e36"
     }
   ];
 

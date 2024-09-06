@@ -82,16 +82,16 @@ $stic-color: #b4bc32;
 
 /* Estilos de bordes de tarjetas por tipo */
 .card-border-public {
-  border-left-color: #007bff;
+  border-left-color: #add8e7;
 }
 .card-border-shared {
-  border-left-color: #28a745;
+  border-left-color: #b4bc32;
 }
 .card-border-group {
-  border-left-color: #ffc107;
+  border-left-color: #ffd971;
 }
 .card-border-private {
-  border-left-color: #dc3545;
+  border-left-color: #ee4e36;
 }
 
 /* Estilos del buscador */
@@ -392,14 +392,14 @@ th i.fa {
   }
 }
 
-.card-text .badge {
-  font-size: 0.8em;
-  padding-bottom: 1px;
-  padding-top: 3px;
-  border: none;
-  margin: none;
-  background-color: #333;
-}
+// .card-text .badge {
+//   font-size: 0.8em;
+//   padding-bottom: 1px;
+//   padding-top: 3px;
+//   border: none;
+//   margin: none;
+//   background-color: #333;
+// }
 
 .dashboard-title-container {
   position: relative;
@@ -442,14 +442,6 @@ th i.fa {
   border-right-width: 0px;
   color: #777;
 }
-.group-label {
-  font-size: xx-small;
-  background-color: rgb(241, 185, 64);
-  margin: 1px;
-  padding: 2px 4px;
-  color: #000;
-  border-radius: 4px;
-}
 
 .has-description-icon {
   opacity: 0.7;
@@ -490,4 +482,17 @@ button .counter {
   &:hover {
     background-color: lighten(#EE4E36, 10);
   }
+}
+
+.tag-label{
+  background-color: $stic-color !important;
+
+}
+.group-label,.tag-label {
+  font-size: xx-small;
+  background-color: #ffd971;
+  margin: 1px;
+  padding: 2px 4px;
+  color: #000;
+  border-radius: 1px;
 }

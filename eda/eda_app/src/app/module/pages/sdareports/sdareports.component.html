@@ -434,7 +434,7 @@
           </span>
         </td>
         <td>
-          <span class="badge badge-primary">{{ dashboard.config.tag }}</span>
+          <span *ngIf="dashboard.config.tag" class="tag-label">{{ dashboard.config.tag }}</span>
         </td>
         <td class="text-center">{{ dashboard.user?.name }}</td>
         <td class="text-center">
@@ -599,7 +599,7 @@
           </p>
 
           <p class="card-text">
-            <span class="badge badge-info">{{ dashboard.config.tag }}</span>
+            <span *ngIf="dashboard.config.tag" class="tag-label">{{ dashboard.config.tag }}</span>
           </p>
           <div class="mt-auto">
             <button
