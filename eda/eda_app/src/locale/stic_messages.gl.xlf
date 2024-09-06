@@ -335,6 +335,10 @@
     <source>Eliminar informe</source>
     <target>Eliminar informe</target>
   </trans-unit>
+  <trans-unit id="dataSourceName" datatype="html">
+    <source>Fuente de datos</source>
+    <target>Fonte de datos</target>
+  </trans-unit>
 </body>
 </file>
 </xliff>
