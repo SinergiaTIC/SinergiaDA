@@ -648,7 +648,11 @@ public filterGroups() {
    */
   public copyUrl(dashboard: any): void {
     if (dashboard.type === "shared") {
-      const url = `${window.location.origin}/#/public/${dashboard._id}`;
+      const href = location.href;
+      const baseURL = href.slice(0, href.indexOf('#'));
+
+      const url = `${baseURL}#/public/${dashboard._id}`
+
       navigator.clipboard.writeText(url).then(
         () => {
           this.alertService.addSuccess($localize`:@@URLCopied:URL copiada al portapapeles`);
