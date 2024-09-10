@@ -185,7 +185,7 @@
   </trans-unit>
   <trans-unit id="reportName" datatype="html">
     <source>Nombre del Informe</source>
-    <target>Nom de l'Informe</target>
+    <target>Nom de l'informe</target>
   </trans-unit>
   <trans-unit id="type" datatype="html">
     <source>Tipo</source>
@@ -229,19 +229,19 @@
   </trans-unit>
   <trans-unit id="NoTag" datatype="html">
     <source>Sin Etiqueta</source>
-    <target>Sense Etiqueta</target>
+    <target>Sense etiqueta</target>
   </trans-unit>
   <trans-unit id="NoGroup" datatype="html">
     <source>Sin Grupo</source>
-    <target>Sense Grup</target>
+    <target>Sense grup</target>
   </trans-unit>
   <trans-unit id="deleteDashboardWarning">
     <source>Estás a punto de borrar el informe:</source>
-    <target>Estàs a punt d'esborrar l'informe:</target>
+    <target>Esteu a punt d'esborrar l'informe:</target>
   </trans-unit>
   <trans-unit id="Sure">
     <source>¿Estás seguro?</source>
-    <target>N'estàs segur?</target>
+    <target>N'esteu segur?</target>
   </trans-unit>
   <trans-unit id="ConfirmDeleteModel">
     <source>Si, ¡Eliminalo!</source>
@@ -249,23 +249,23 @@
   </trans-unit>
   <trans-unit id="DeleteGroupCancel">
     <source>Cancelar</source>
-    <target>Cancel·lar</target>
+    <target>Cancel·la</target>
   </trans-unit>
   <trans-unit id="DashboardDeletedInfo">
     <source>Informe eliminado correctamente.</source>
-    <target>Informe eliminat correctament.</target>
+    <target>L'informe s'ha eliminat correctament.</target>
   </trans-unit>
   <trans-unit id="ErrorMessage">
     <source>Ha ocurrido un error</source>
-    <target>S'ha produït un error</target>
+    <target>S'ha produït un error.</target>
   </trans-unit>
   <trans-unit id="REPORTCloned">
     <source>Informe clonado correctamente</source>
-    <target>Informe clonat correctament</target>
+    <target>L'informe s'ha clonat correctament.</target>
   </trans-unit>
   <trans-unit id="InvalidServerResponse">
     <source>Respuesta inválida del servidor</source>
-    <target>Resposta invàlida del servidor</target>
+    <target>El servidor ha emès una resposta invàlida.</target>
   </trans-unit>
   <trans-unit id="Error">
     <source>Error</source>
@@ -273,35 +273,35 @@
   </trans-unit>
   <trans-unit id="CouldNotCloneReport">
     <source>No se pudo clonar el informe. Por favor, inténtalo de nuevo.</source>
-    <target>No s'ha pogut clonar l'informe. Si us plau, torna-ho a provar.</target>
+    <target>No s'ha pogut clonar l'informe. Torneu a provar-ho.</target>
   </trans-unit>
   <trans-unit id="URLCopied">
     <source>URL copiada al portapapeles</source>
-    <target>URL copiada al portaretalls</target>
+    <target>S'ha copiat la URL al porta-retalls.</target>
   </trans-unit>
   <trans-unit id="ErrorCopyingURL">
     <source>Error al copiar la URL</source>
-    <target>Error en copiar l'URL</target>
+    <target>S'ha produït un error en copiar la URL.</target>
   </trans-unit>
   <trans-unit id="DashboardTitleUpdated">
     <source>Título del informe actualizado correctamente.</source>
-    <target>Títol de l'informe actualitzat correctament.</target>
+    <target>El títol de l'informe s'ha actualitzat correctament.</target>
   </trans-unit>
   <trans-unit id="ErrorUpdatingDashboardTitle">
     <source>Error al actualizar el título del informe.</source>
-    <target>Error en actualitzar el títol de l'informe.</target>
+    <target>S'ha produït un error en actualitzar el títol de l'informe.</target>
   </trans-unit>
   <trans-unit id="DashboardTypeUpdated">
     <source>Tipo de informe actualizado correctamente.</source>
-    <target>Tipus d'informe actualitzat correctament.</target>
+    <target>El tipus d'informe s'ha actualitzat correctament.</target>
   </trans-unit>
   <trans-unit id="ErrorUpdatingDashboardType">
     <source>Error al actualizar el tipo de informe.</source>
-    <target>Error en actualitzar el tipus d'informe.</target>
+    <target>S'ha produït un error en actualitzar el tipus d'informe.</target>
   </trans-unit>
   <trans-unit id="nameFilter" datatype="html">
     <source>Filtrar por nombre del informe.</source>
-    <target>Filtrar per nom de l'informe.</target>
+    <target>Filtra pel nom de l'informe.</target>
   </trans-unit>
   <trans-unit id="tableView" datatype="html">
     <source>Vista de tabla</source>
@@ -313,27 +313,27 @@
   </trans-unit>
   <trans-unit id="clickToEditName" datatype="html">
     <source>Pulse para editar el nombre</source>
-    <target>Feu clic per editar el nom</target>
+    <target>Feu clic per editar el nom.</target>
   </trans-unit>
   <trans-unit id="goToDashboard" datatype="html">
     <source>Abrir informe</source>
-    <target>Obrir informe</target>
+    <target>Obre l'informe</target>
   </trans-unit>
   <trans-unit id="cloneReport" datatype="html">
     <source>Clonar informe</source>
-    <target>Clonar informe</target>
+    <target>Clona l'informe</target>
   </trans-unit>
   <trans-unit id="copyURL" datatype="html">
     <source>Copiar url pública</source>
-    <target>Copiar URL pública</target>
+    <target>Copia la URL pública</target>
   </trans-unit>
   <trans-unit id="showReport" datatype="html">
     <source>Mostrar informe</source>
-    <target>Mostrar informe</target>
+    <target>Mostra l'informe</target>
   </trans-unit>
   <trans-unit id="deleteReport" datatype="html">
     <source>Eliminar informe</source>
-    <target>Eliminar informe</target>
+    <target>Elimina l'informe</target>
   </trans-unit>
   <trans-unit id="dataSourceName" datatype="html">
     <source>Fuente de datos</source>
@@ -341,7 +341,7 @@
   </trans-unit>
   <trans-unit id="removeFilter" datatype="html">
     <source>Quitar filtro</source>
-    <target>Treure filtre</target>
+    <target>Treu el filtre</target>
   </trans-unit>
 </body>
 </file>
