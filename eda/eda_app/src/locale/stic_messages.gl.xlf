@@ -185,7 +185,7 @@
   </trans-unit>
   <trans-unit id="reportName" datatype="html">
     <source>Nombre del Informe</source>
-    <target>Nome do Informe</target>
+    <target>Nome do informe</target>
   </trans-unit>
   <trans-unit id="type" datatype="html">
     <source>Tipo</source>
@@ -229,11 +229,11 @@
   </trans-unit>
   <trans-unit id="NoTag" datatype="html">
     <source>Sin Etiqueta</source>
-    <target>Sen Etiqueta</target>
+    <target>Sen etiqueta</target>
   </trans-unit>
   <trans-unit id="NoGroup" datatype="html">
     <source>Sin Grupo</source>
-    <target>Sen Grupo</target>
+    <target>Sen grupo</target>
   </trans-unit>
   <trans-unit id="deleteDashboardWarning">
     <source>Estás a punto de borrar el informe:</source>
@@ -257,15 +257,15 @@
   </trans-unit>
   <trans-unit id="ErrorMessage">
     <source>Ha ocurrido un error</source>
-    <target>Ocorreu un erro</target>
+    <target>Ocorreu un erro.</target>
   </trans-unit>
   <trans-unit id="REPORTCloned">
     <source>Informe clonado correctamente</source>
-    <target>Informe clonado correctamente</target>
+    <target>Informe clonado correctamente.</target>
   </trans-unit>
   <trans-unit id="InvalidServerResponse">
     <source>Respuesta inválida del servidor</source>
-    <target>Resposta inválida do servidor</target>
+    <target>Resposta inválida do servidor.</target>
   </trans-unit>
   <trans-unit id="Error">
     <source>Error</source>
@@ -273,15 +273,15 @@
   </trans-unit>
   <trans-unit id="CouldNotCloneReport">
     <source>No se pudo clonar el informe. Por favor, inténtalo de nuevo.</source>
-    <target>Non se puido clonar o informe. Por favor, inténtao de novo.</target>
+    <target>Non se puido clonar o informe, inténtao de novo.</target>
   </trans-unit>
   <trans-unit id="URLCopied">
     <source>URL copiada al portapapeles</source>
-    <target>URL copiada ao portapapeis</target>
+    <target>URL copiada ao portapapeis.</target>
   </trans-unit>
   <trans-unit id="ErrorCopyingURL">
     <source>Error al copiar la URL</source>
-    <target>Erro ao copiar a URL</target>
+    <target>Erro ao copiar a URL.</target>
   </trans-unit>
   <trans-unit id="DashboardTitleUpdated">
     <source>Título del informe actualizado correctamente.</source>
