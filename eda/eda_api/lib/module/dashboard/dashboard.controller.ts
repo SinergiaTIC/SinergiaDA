@@ -1539,7 +1539,6 @@ export class DashboardController {
         group: originalDashboard.group // Maintain the same group permissions
       });
 
-      console.log('Cloned dashboard before saving:', clonedDashboard);
       
       // Save the cloned dashboard to the database
       const savedDashboard = await clonedDashboard.save();
