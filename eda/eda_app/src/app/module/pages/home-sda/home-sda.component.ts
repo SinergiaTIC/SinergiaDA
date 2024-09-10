@@ -1,4 +1,4 @@
-import { GroupService } from "./../../../services/api/group.service";
+import { GroupService } from "../../../services/api/group.service";
 import { Component, OnInit } from "@angular/core";
 import { Router } from "@angular/router";
 import { AlertService, DashboardService, SidebarService, StyleProviderService } from "@eda/services/service.index";
@@ -8,11 +8,11 @@ import Swal from "sweetalert2";
 import * as _ from "lodash";
 
 @Component({
-  selector: "app-sdareports",
-  templateUrl: "./sdareports.component.html",
-  styleUrls: ["./sdareports.component.css"]
+  selector: "home-sda",
+  templateUrl: "./home-sda.component.html",
+  styleUrls: ["./home-sda.component.css"]
 })
-export class SdareportsComponent implements OnInit {
+export class HomeSdaComponent implements OnInit {
   // Dashboard Management
   public dashController: EdaDialogController;
   public dss: any[];
