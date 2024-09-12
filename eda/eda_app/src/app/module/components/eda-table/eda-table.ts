@@ -770,7 +770,7 @@ export class EdaTable {
             // NUEVA FUNCION A SER UTILIZADA --> buildCrossSerie(index, axes)
             newSeriesLabels.forEach((serie, index) => {
                 let colsRows = this.buildCrossSerie(index, axes)
-                // console.log(`colsRows: ---> ${index} <---` ,colsRows);
+                console.log(`colsRows: ---> ${index} <---` ,colsRows);
                 rowsToMerge.push(colsRows.rows);
                 colsToMerge.push(colsRows.cols);
                 if (index === 0) {
@@ -778,9 +778,9 @@ export class EdaTable {
                 }
             });
 
-            // console.log('rowsToMerge :',rowsToMerge)
-            // console.log('colsToMerge :',colsToMerge)
-            // console.log('newLabels :',newLabels)
+            console.log('rowsToMerge :',rowsToMerge)
+            console.log('colsToMerge :',colsToMerge)
+            console.log('newLabels :',newLabels)
 
             newLabels.metricsLabels = colsInfo.numericLabels;
             newLabels.metricsDescriptions = colsInfo.numericDescriptions;
@@ -796,7 +796,7 @@ export class EdaTable {
 
         seriesLabels.forEach((serie, index) => {
             let colsRows = this.buildPivotSerie(index);
-            // console.log(`colsRows: ---> ${index} <---` ,colsRows);
+            console.log(`colsRows: ---> ${index} <---` ,colsRows);
             rowsToMerge.push(colsRows.rows);
             colsToMerge.push(colsRows.cols);
             if (index === 0) {
@@ -858,6 +858,8 @@ export class EdaTable {
         console.log(`populatedMap ===> con serieIndex ${serieIndex}:`, populatedMap);
 
         let newRows = this.buildNewCrossRows(populatedMap, params.mainColsLabels, params.aggregatedColLabels[serieIndex], params.newCols);
+
+        console.log('newRows ===> ',newRows)
 
 
         const tableColumns = [];
@@ -1077,13 +1079,7 @@ export class EdaTable {
             arraysMain[i] = _.cloneDeep(newCols[i]);
         });
 
-        //--------------------------------------------
-
         const combinations = this.combineArrays(arraysMain);
-
-        // const resultado = combinations.map(c => {
-        //     return { type: c[0], status: c[1]};
-        // })
 
         combinations.forEach( element => {
             const row = {}
@@ -1093,12 +1089,12 @@ export class EdaTable {
             rows.push(row);
         })
 
-        console.log('Serie Numérica :',serieLabel)
-        console.log('Mapeado :',map)
-        console.log('newCols :',newCols)
-        console.log('arraysMain :',arraysMain)
-        console.log('combinations :',combinations)
-        console.log('rows :',rows)
+        // console.log('Serie Numérica :',serieLabel)
+        // console.log('Mapeado :',map)
+        // console.log('newCols :',newCols)
+        // console.log('arraysMain :',arraysMain)
+        // console.log('combinations :',combinations)
+        // console.log('rows :',rows)
 
 
         // Uso de una función recursiva para acceder a una posición usando una lista de claves
@@ -1115,17 +1111,15 @@ export class EdaTable {
             rowsTest.push(row);
 
         });
-
-        console.log('rowsTest :',rowsTest)
         
-        // Resultado final:
-        
-        const combinedArray = rows.map((item, index) => {
+        // totalRows:
+        const totalRows = rows.map((item, index) => {
             return { ...item, ...rowsTest[index] };
         });
 
-        console.log('combinedArray :',combinedArray)
+        //console.log('combinedArray :',totalRows)
         
+        return totalRows;
     }
 
     recursiveAccessCrossTable(map: Map<string, any>, keys: any){
