@@ -1071,6 +1071,7 @@ export class EdaTable {
     buildNewCrossRows(map: Map<string, any>, mainColsLabels: any, serieLabel: string, newCols: any) {
         const arraysMain = []; // Arreglo de los nombres de las columnas principales
         const rows = []
+        const rowsTest = []
 
         mainColsLabels.forEach((e, i) => {
             arraysMain[i] = _.cloneDeep(newCols[i]);
@@ -1100,7 +1101,51 @@ export class EdaTable {
         console.log('rows :',rows)
 
 
+        // Uso de una función recursiva para acceder a una posición usando una lista de claves
+        combinations.forEach(keys => {
+            // console.log('valor !!!!!: ', this.recursiveAccessCrossTable(map, keys))
+            let row = {};
+            let mapItem = this.recursiveAccessCrossTable(map, keys)
+
+            let pivotedCols = this.buildNewRowsRecursive(mapItem, '', [], serieLabel);
+            // console.log('pivotedCols: ',pivotedCols);
+            pivotedCols.forEach(col => {
+                row[col.label] = col.value;
+            });
+            rowsTest.push(row);
+
+        });
+
+        console.log('rowsTest :',rowsTest)
         
+        // Resultado final:
+        
+        const combinedArray = rows.map((item, index) => {
+            return { ...item, ...rowsTest[index] };
+        });
+
+        console.log('combinedArray :',combinedArray)
+        
+    }
+
+    recursiveAccessCrossTable(map: Map<string, any>, keys: any){
+        // Si no hay más claves, retornamos el mapa actual
+        if(keys.length===0) {
+            return map;
+        }
+
+        // Tomar la primera clave y eliminarla de la lista
+        const [firstKey, ...remainingKeys] = keys;
+
+        // Obtener el siguiente mapa o valor usando la clave actual
+        const nextMap = map.get(firstKey);
+
+        // Si el siguiente mapa es un `Map`, continuar recursivamente
+        if (nextMap instanceof Map) {
+            return this.recursiveAccessCrossTable(nextMap, remainingKeys);
+        }
+
+        return nextMap;
     }
 
     combineArrays(arrays: any){
