@@ -343,6 +343,18 @@
     <source>Quitar filtro</source>
     <target>Quitar filtro</target>
   </trans-unit>
+  <trans-unit id="tagSearch" datatype="html">
+    <source>Buscar etiqueta</source>
+    <target>Buscar etiqueta</target>
+  </trans-unit>
+  <trans-unit id="groupSearch" datatype="html">
+    <source>Buscar grupo</source>
+    <target>Buscar grupo</target>
+  </trans-unit>
+  <trans-unit id="typeSearch" datatype="html">
+    <source>Buscar tipo</source>
+    <target>Buscar tipo</target>
+  </trans-unit>
 </body>
 </file>
 </xliff>

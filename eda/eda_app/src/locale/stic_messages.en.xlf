@@ -299,6 +299,10 @@
     <source>Error al actualizar el tipo de informe.</source>
     <target>Error updating report type.</target>
   </trans-unit>
+  <trans-unit id="nameFilter" datatype="html">
+    <source>Filtrar por nombre del informe.</source>
+    <target>Filter by report name.</target>
+  </trans-unit>
   <trans-unit id="tableView" datatype="html">
     <source>Vista de tabla</source>
     <target>Table view</target>
@@ -338,6 +342,18 @@
   <trans-unit id="removeFilter" datatype="html">
     <source>Quitar filtro</source>
     <target>Remove filter</target>
+  </trans-unit>
+  <trans-unit id="tagSearch" datatype="html">
+    <source>Buscar etiqueta</source>
+    <target>Search tag</target>
+  </trans-unit>
+  <trans-unit id="groupSearch" datatype="html">
+    <source>Buscar grupo</source>
+    <target>Search group</target>
+  </trans-unit>
+  <trans-unit id="typeSearch" datatype="html">
+    <source>Buscar tipo</source>
+    <target>Search type</target>
   </trans-unit>
 </body>
 </file>
