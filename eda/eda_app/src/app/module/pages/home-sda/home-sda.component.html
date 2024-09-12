@@ -411,7 +411,7 @@
                 [(ngModel)]="dashboard.type"
                 (change)="updateDashboardType(dashboard, dashboard.type)"
               >
-                <option *ngFor="let type of dashboardTypes" [value]="type.type">
+              <option *ngFor="let type of dashboardTypes" [value]="type.type" [hidden]="type.type === 'shared' && !isAdmin">
                   {{ type.label }}
                 </option>
               </select>
@@ -561,8 +561,7 @@
                 [(ngModel)]="dashboard.type"
                 (change)="updateDashboardType(dashboard, dashboard.type)"
               >
-                <option *ngFor="let type of dashboardTypes" [value]="type.type">
-                  {{ type.label }}
+              <option *ngFor="let type of dashboardTypes" [value]="type.type" [hidden]="type.type === 'shared' && !isAdmin">                  {{ type.label }}
                 </option>
               </select>
               <button
