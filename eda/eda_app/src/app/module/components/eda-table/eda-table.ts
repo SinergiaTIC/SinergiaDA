@@ -806,9 +806,9 @@ export class EdaTable {
         
         console.log('******************* --- EJECUCION NORMAL ---*******************');
         
-        // console.log('rowsToMerge :',rowsToMerge)
-        // console.log('colsToMerge :',colsToMerge)
-        // console.log('newLabels :',newLabels)
+        console.log('rowsToMerge ?¿?¿?¿?¿?¿:',rowsToMerge)
+        console.log('colsToMerge ?¿?¿?¿?¿?¿:',colsToMerge)
+        console.log('newLabels ?¿?¿?¿?¿?¿:',newLabels)
         
         newLabels.metricsLabels = colsInfo.numericLabels;
         newLabels.metricsDescriptions = colsInfo.numericDescriptions;
@@ -834,6 +834,8 @@ export class EdaTable {
         let newRows = this.buildNewRows(populatedMap, params.mainColLabel, params.aggregatedColLabels[serieIndex]);
         let newColNames = this.getNewColumnsNames(newRows[0]).slice(1); //For left column we want user's name, not technical
 
+        console.log(`newColNames ?¿?¿?¿ con serieIndex ${serieIndex}:`, newColNames);
+
         const tableColumns = [];
         tableColumns.push(new EdaColumnText({ header: params.mainCol.header, field: params.mainCol.field }));
         newColNames.forEach(col => {
@@ -858,12 +860,23 @@ export class EdaTable {
         console.log(`populatedMap ===> con serieIndex ${serieIndex}:`, populatedMap);
 
         let newRows = this.buildNewCrossRows(populatedMap, params.mainColsLabels, params.aggregatedColLabels[serieIndex], params.newCols);
+        let newColNames = this.getNewColumnsNames(newRows[0]).slice(params.mainColsLabels.length); //For left column we want user's name, not technical
 
         console.log('newRows ===> ',newRows)
+        console.log('newColNames ===> ',newColNames)
 
 
         const tableColumns = [];
-        //const newRows = [];
+
+        params.mainCols.forEach(element => {
+            tableColumns.push(new EdaColumnText({ header: element['header'], field: element['field'] }))
+        })
+        newColNames.forEach(col => {
+            tableColumns.push(new EdaColumnNumber({ header: col, field: col }));
+        })
+
+        console.log('tableColumns ===> ', tableColumns);
+
         const newLabels = [];
 
         return { cols: tableColumns, rows: newRows, newLabels: newLabels }
@@ -1045,7 +1058,7 @@ export class EdaTable {
             });
             rows.push(row);
         });
-        console.log('rows ?¿?¿?¿?¿?¿: ', rows);
+        // console.log('rows ?¿?¿?¿?¿?¿: ', rows);
         return rows;
     }
     /**
