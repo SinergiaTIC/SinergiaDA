@@ -784,6 +784,7 @@ export class EdaTable {
             newLabels.metricsLabels = colsInfo.numericLabels;
             newLabels.metricsDescriptions = colsInfo.numericDescriptions;
             newLabels.textDescriptions = colsInfo.textDescriptions;
+            newLabels.axes = axes;
 
             this._value = this.mergeRows(rowsToMerge);
             this.cols = this.mergeColumns(colsToMerge);
@@ -1297,6 +1298,8 @@ export class EdaTable {
      */
     buildCrossHeaders(labels: any, colsInfo: any) {
 
+        console.log('LABELSSSS >>>> ',labels);
+
         let series = [];
         const numRows = labels.seriesLabels.length + 1 //1 for metrics labels
         // console.log('numRows: >>>>>>>>>>', numRows); // 2
@@ -1311,11 +1314,11 @@ export class EdaTable {
 
         let mains = []
 
-        labels.mainsLabels.forEach( (element, j) => {
+        labels.axes[0].itemX.forEach( element => {
             let mainColHeader = {
-                title: colsInfo.textLabels[j],
-                column: element,
-                rowspan: numRows, colspan: 1, sortable: true, description:colsInfo.textDescriptions[j]
+                title: element.description.default,
+                column: element.column_name,
+                rowspan: numRows, colspan: 1, sortable: true, description: element.description.default
             }  
             
             mains.push(mainColHeader)
@@ -1338,7 +1341,8 @@ export class EdaTable {
 
         //if there is only one metric the metric is the header
         // console.log('Prueba:::::::: >>>>> ',labels.metricsLabels.length)
-        if (labels.metricsLabels.length > 1) {
+        if (labels.axes[0].itemZ.length > 1) {
+            console.log('HAY MAS DE UN VALOR EN EL EJE Z')
             for (let i = 0; i < labels.seriesLabels[0].length; i++) {
                 series[0].labels.push({
                     title: labels.seriesLabels[0][i], description : labels.textDescriptions[0],
@@ -1347,7 +1351,7 @@ export class EdaTable {
             }
         } else {
             /**The metric is the header */
-            series[0].labels.push({ title: labels.metricsLabels[0], rowspan: 1, colspan: numCols, description:labels.metricsDescriptions[0]});
+            series[0].labels.push({ title: labels.axes[0].itemZ[0].description.default, rowspan: 1, colspan: numCols, description:labels.axes[0].itemZ[0].column_name});
 
             let serie = { labels: [] };
             for (let i = 0; i < labels.seriesLabels[0].length; i++) {
