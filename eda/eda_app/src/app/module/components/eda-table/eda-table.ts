@@ -770,7 +770,7 @@ export class EdaTable {
             // NUEVA FUNCION A SER UTILIZADA --> buildCrossSerie(index, axes)
             newSeriesLabels.forEach((serie, index) => {
                 let colsRows = this.buildCrossSerie(index, axes)
-                console.log(`colsRows: ---> ${index} <---` ,colsRows);
+                // console.log(`colsRows: ---> ${index} <---` ,colsRows);
                 rowsToMerge.push(colsRows.rows);
                 colsToMerge.push(colsRows.cols);
                 if (index === 0) {
@@ -778,9 +778,8 @@ export class EdaTable {
                 }
             });
 
-            console.log('rowsToMerge :',rowsToMerge)
-            console.log('colsToMerge :',colsToMerge)
-            console.log('newLabels :',newLabels)
+            // console.log('rowsToMerge :',rowsToMerge)
+            // console.log('colsToMerge :',colsToMerge)
 
             newLabels.metricsLabels = colsInfo.numericLabels;
             newLabels.metricsDescriptions = colsInfo.numericDescriptions;
@@ -792,7 +791,7 @@ export class EdaTable {
             console.log('newLabels ===> :',newLabels)
             console.log('colsInfo ===> :',colsInfo)
 
-            this.buildHeaders(newLabels, colsInfo);
+            this.buildCrossHeaders(newLabels, colsInfo);
 
             console.log('-------------------------------- o --------------------------------')
             return 
@@ -864,16 +863,13 @@ export class EdaTable {
         console.log(`params ===> con serieIndex ${serieIndex}:`, params)
 
         const mapTree = this.buildMapCrossRecursive(params.newCols);
-        console.log(`mapTree ===> con serieIndex ${serieIndex}:`, mapTree);
+        // console.log(`mapTree ===> con serieIndex ${serieIndex}:`, mapTree);
 
         const populatedMap = this.populateCrossMap(mapTree, params.oldRows, params.mainColsLabels, params.aggregatedColLabels[serieIndex], params.pivotColsLabels);
-        console.log(`populatedMap ===> con serieIndex ${serieIndex}:`, populatedMap);
+        // console.log(`populatedMap ===> con serieIndex ${serieIndex}:`, populatedMap);
 
         let newRows = this.buildNewCrossRows(populatedMap, params.mainColsLabels, params.aggregatedColLabels[serieIndex], params.newCols);
         let newColNames = this.getNewColumnsNames(newRows[0]).slice(params.mainColsLabels.length); //For left column we want user's name, not technical
-
-        console.log('newRows ===> ',newRows)
-        console.log('newColNames ===> ',newColNames)
 
 
         const tableColumns = [];
@@ -884,15 +880,11 @@ export class EdaTable {
         newColNames.forEach(col => {
             tableColumns.push(new EdaColumnNumber({ header: col, field: col }));
         })
-
-        console.log('tableColumns ===> ', tableColumns);
         
         let newLabels = { mainsLabels: [], seriesLabels: [], metricsLabels: [] };
         newLabels.mainsLabels = params.mainColsLabels;
         newLabels.seriesLabels = params.newCols.splice(params.mainColsLabels.length);
         
-        console.log('newLabels ===> ', newLabels);
-
         return { cols: tableColumns, rows: newRows, newLabels: newLabels }
 
     }
@@ -1106,8 +1098,6 @@ export class EdaTable {
             arraysMain[i] = _.cloneDeep(newCols[i]);
         });
 
-        console.log('AQYIIIIII: ', arraysMain);
-
         const combinations = this.combineArrays(arraysMain);
 
         combinations.forEach( element => {
@@ -1305,6 +1295,106 @@ export class EdaTable {
      * @param labels labels to set headers
      * @param colsInfo contains userName for main column
      */
+    buildCrossHeaders(labels: any, colsInfo: any) {
+
+        let series = [];
+        const numRows = labels.seriesLabels.length + 1 //1 for metrics labels
+        // console.log('numRows: >>>>>>>>>>', numRows); // 2
+        let numCols = 1;
+        labels.seriesLabels.forEach(label => {
+            numCols *= label.length;
+        });
+        numCols *= labels.metricsLabels.length;
+        // console.log('numCols: >>>>>>>>>>', numCols); // 6
+        
+        //Main header props (incuding first label headers row)
+
+        let mains = []
+
+        labels.mainsLabels.forEach( (element, j) => {
+            let mainColHeader = {
+                title: colsInfo.textLabels[j],
+                column: element,
+                rowspan: numRows, colspan: 1, sortable: true, description:colsInfo.textDescriptions[j]
+            }  
+            
+            mains.push(mainColHeader)
+        })
+
+        // let mainColHeader1 = {
+        //     title: colsInfo.textLabels[0],
+        //     column: labels.mainsLabels[0],
+        //     rowspan: numRows, colspan: 1, sortable: true, description:colsInfo.textDescriptions[0]
+        // }
+        // let mainColHeader2 = {
+        //     title: colsInfo.textLabels[1],
+        //     column: labels.mainsLabels[1],
+        //     rowspan: numRows, colspan: 1, sortable: true, description:colsInfo.textDescriptions[1]
+        // }
+        series.push({ labels: mains });
+        colsInfo.textDescriptions.splice(0, 1);
+
+        // console.log('series >>>>> ',series);  ---> hasta aquí ==> labels: (2) [{…}, {…}]
+
+        //if there is only one metric the metric is the header
+        // console.log('Prueba:::::::: >>>>> ',labels.metricsLabels.length)
+        if (labels.metricsLabels.length > 1) {
+            for (let i = 0; i < labels.seriesLabels[0].length; i++) {
+                series[0].labels.push({
+                    title: labels.seriesLabels[0][i], description : labels.textDescriptions[0],
+                    rowspan: 1, colspan: numCols / labels.seriesLabels[0].length, sortable: false
+                })
+            }
+        } else {
+            /**The metric is the header */
+            series[0].labels.push({ title: labels.metricsLabels[0], rowspan: 1, colspan: numCols, description:labels.metricsDescriptions[0]});
+
+            let serie = { labels: [] };
+            for (let i = 0; i < labels.seriesLabels[0].length; i++) {
+                serie.labels.push({
+                    title: labels.seriesLabels[0][i], description : labels.textDescriptions[0],
+                    rowspan: 1, colspan: numCols / labels.seriesLabels[0].length, sortable: false, metric:labels.metricsLabels[0]
+                })
+            }
+            series.push(serie);
+        }
+        //labels headers props
+        let mult = labels.seriesLabels[0].length;
+        let colspanDiv = numCols / labels.seriesLabels[0].length;
+        for (let i = 1; i < labels.seriesLabels.length; i++) {
+            let serie = { labels: [] };
+            for (let j = 0; j < labels.seriesLabels[i].length * mult; j++) {
+                serie.labels.push({
+                    title: labels.seriesLabels[i][j % labels.seriesLabels[i].length], description : labels.textDescriptions[i],
+                    rowspan: 1, colspan: colspanDiv / labels.seriesLabels[i].length, sortable: false
+                });
+            }
+            series.push(serie);
+            mult *= labels.seriesLabels[i].length;
+            colspanDiv = colspanDiv / labels.seriesLabels[i].length;
+        }
+        //metrics headers props ->  again, if there is only one metric the metric is the header
+        if (labels.metricsLabels.length > 1) {
+            let serie = { labels: [] }
+            for (let i = 0; i < numCols; i++) {
+                serie.labels.push({
+                    title: labels.metricsLabels[i % labels.metricsLabels.length], description : labels.metricsDescriptions[i % labels.metricsLabels.length],
+                    rowspan: 1, colspan: 1, sortable: false, metric :labels.metricsLabels[i % labels.metricsLabels.length]
+                })
+            }
+
+            series.push(serie)
+        }
+        this.series = series;
+
+        //set column name for column labels
+        this.series[this.series.length - 1].labels.forEach((label, i) => {
+            label.column = this.cols[i + 1].field;
+            label.sortable = true;
+            label.sortState = false;
+        });
+    }
+
     buildHeaders(labels: any, colsInfo: any) {
 
         let series = [];
