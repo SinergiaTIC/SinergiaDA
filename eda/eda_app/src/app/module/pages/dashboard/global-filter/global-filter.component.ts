@@ -58,15 +58,16 @@ export class GlobalFilterComponent implements OnInit {
 
     // métode per descobrir o amagar el botó de filtrar al dashboard
     private setFilterButtonVisibilty(): void {
+        
+        let myFilters = _.cloneDeep(this.globalFilters);
         if(!this.isDashboardCreator  || !this.isAdmin){
-            this.globalFilters = this.globalFilters.filter((f: any) => {
+            myFilters= myFilters.filter((f: any) => {
                 return (f.visible != "hidden" && f.visible == "readOnly") ||
                     (f.visible != "hidden" && f.visible == "public")
             });
         }
 
-
-        this.globalFilters.forEach(a => {
+        myFilters.forEach(a => {
             if (a.visible == "public") {
                 this.filterButtonVisibility.public = true;
             } else if (a.visible == "readOnly") {
