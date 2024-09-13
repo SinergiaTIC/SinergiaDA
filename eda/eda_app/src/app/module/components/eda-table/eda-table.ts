@@ -788,6 +788,10 @@ export class EdaTable {
 
             this._value = this.mergeRows(rowsToMerge);
             this.cols = this.mergeColumns(colsToMerge);
+
+            console.log('newLabels ===> :',newLabels)
+            console.log('colsInfo ===> :',colsInfo)
+
             this.buildHeaders(newLabels, colsInfo);
 
             console.log('-------------------------------- o --------------------------------')
@@ -816,6 +820,9 @@ export class EdaTable {
 
         this._value = this.mergeRows(rowsToMerge);
         this.cols = this.mergeColumns(colsToMerge);
+
+        console.log('newLabels ?¿?¿?¿?¿?¿:',newLabels)
+        console.log('colsInfo ?¿?¿?¿?¿?¿:',colsInfo)
         this.buildHeaders(newLabels, colsInfo);
     }
     /**
@@ -844,6 +851,9 @@ export class EdaTable {
         let newLabels = { mainLabel: '', seriesLabels: [], metricsLabels: [] };
         newLabels.mainLabel = params.mainColLabel;
         newLabels.seriesLabels = params.newCols.splice(1);
+
+        console.log(`newLabels ?¿?¿?¿ con serieIndex ${serieIndex}:`, newLabels);
+
         return { cols: tableColumns, rows: newRows, newLabels: newLabels }
     }
 
@@ -876,8 +886,12 @@ export class EdaTable {
         })
 
         console.log('tableColumns ===> ', tableColumns);
-
-        const newLabels = [];
+        
+        let newLabels = { mainsLabels: [], seriesLabels: [], metricsLabels: [] };
+        newLabels.mainsLabels = params.mainColsLabels;
+        newLabels.seriesLabels = params.newCols.splice(params.mainColsLabels.length);
+        
+        console.log('newLabels ===> ', newLabels);
 
         return { cols: tableColumns, rows: newRows, newLabels: newLabels }
 
@@ -1091,6 +1105,8 @@ export class EdaTable {
         mainColsLabels.forEach((e, i) => {
             arraysMain[i] = _.cloneDeep(newCols[i]);
         });
+
+        console.log('AQYIIIIII: ', arraysMain);
 
         const combinations = this.combineArrays(arraysMain);
 
