@@ -44,7 +44,7 @@
                 </div>
                 <div *ngSwitchDefault>
                     <!-- {{ filter | json }} -->
-                    <p-multiSelect *ngIf="filter.data"
+                    <p-multiSelect *ngIf="filter.data && (isAdmin || isDashboardCreator || filter.visible === 'public' || filter.visible === 'readOnly' ) "
                         [options]="filter.data"
                         [(ngModel)]="filter.selectedItems"
                         [maxSelectedLabels]="3"
