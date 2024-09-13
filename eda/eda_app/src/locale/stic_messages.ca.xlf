@@ -345,15 +345,15 @@
   </trans-unit>
   <trans-unit id="tagSearch" datatype="html">
     <source>Buscar etiqueta</source>
-    <target>Cercar etiqueta</target>
+    <target>Cerca una etiqueta</target>
   </trans-unit>
   <trans-unit id="groupSearch" datatype="html">
     <source>Buscar grupo</source>
-    <target>Cercar grup</target>
+    <target>Cerca un grup</target>
   </trans-unit>
   <trans-unit id="typeSearch" datatype="html">
     <source>Buscar tipo</source>
-    <target>Cercar tipus</target>
+    <target>Cerca un tipus</target>
   </trans-unit>
 </body>
 </file>
