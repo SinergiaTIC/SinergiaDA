@@ -787,12 +787,12 @@ export class EdaTable {
             newLabels.axes = axes;
 
             this._value = this.mergeRows(rowsToMerge);
-            this.cols = this.mergeColumns(colsToMerge);
+            this.cols = this.mergeCrossColumns(colsToMerge, axes);
 
-            console.log('newLabels ===> :',newLabels)
-            console.log('colsInfo ===> :',colsInfo)
+            console.log('this._value: ', this._value);
+            console.log('this.cols: ', this.cols);
 
-            this.buildCrossHeaders(newLabels, colsInfo);
+            this.buildHeaders(newLabels, colsInfo);
 
             console.log('-------------------------------- o --------------------------------')
             return 
@@ -875,12 +875,17 @@ export class EdaTable {
 
         const tableColumns = [];
 
+        console.log('VERIFICAR 1: >>>>>>>>>>>>>>>',params.mainCols)
+        console.log('VERIFICAR 2: >>>>>>>>>>>>>>>',newColNames)
+
         params.mainCols.forEach(element => {
             tableColumns.push(new EdaColumnText({ header: element['header'], field: element['field'] }))
         })
         newColNames.forEach(col => {
             tableColumns.push(new EdaColumnNumber({ header: col, field: col }));
         })
+
+        console.log('tableColumns 3 >>>>>>>>>',tableColumns)
         
         let newLabels = { mainsLabels: [], seriesLabels: [], metricsLabels: [] };
         newLabels.mainsLabels = params.mainColsLabels;
@@ -906,6 +911,24 @@ export class EdaTable {
             rows.push(newRow);
         }
         return rows;
+    }
+
+    mergeCrossColumns(colsToMerge: any, axes: any){
+        
+        const NUM_COLS = colsToMerge[0].length;
+        let cols = [];  //first column is the same for each serie
+
+        for (let i = 0; i < axes[0].itemX.length; i++) {
+            cols.push(colsToMerge[0][i]);
+        }
+        
+        for (let col = axes[0].itemX.length; col < NUM_COLS; col++) {
+            colsToMerge.forEach(serie => {
+                cols.push(serie[col])
+            });
+        }
+
+        return cols
     }
 
     /**
@@ -1296,108 +1319,6 @@ export class EdaTable {
      * @param labels labels to set headers
      * @param colsInfo contains userName for main column
      */
-    buildCrossHeaders(labels: any, colsInfo: any) {
-
-        console.log('LABELSSSS >>>> ',labels);
-
-        let series = [];
-        const numRows = labels.seriesLabels.length + 1 //1 for metrics labels
-        // console.log('numRows: >>>>>>>>>>', numRows); // 2
-        let numCols = 1;
-        labels.seriesLabels.forEach(label => {
-            numCols *= label.length;
-        });
-        numCols *= labels.metricsLabels.length;
-        // console.log('numCols: >>>>>>>>>>', numCols); // 6
-        
-        //Main header props (incuding first label headers row)
-
-        let mains = []
-
-        labels.axes[0].itemX.forEach( element => {
-            let mainColHeader = {
-                title: element.description.default,
-                column: element.column_name,
-                rowspan: numRows, colspan: 1, sortable: true, description: element.description.default
-            }  
-            
-            mains.push(mainColHeader)
-        })
-
-        // let mainColHeader1 = {
-        //     title: colsInfo.textLabels[0],
-        //     column: labels.mainsLabels[0],
-        //     rowspan: numRows, colspan: 1, sortable: true, description:colsInfo.textDescriptions[0]
-        // }
-        // let mainColHeader2 = {
-        //     title: colsInfo.textLabels[1],
-        //     column: labels.mainsLabels[1],
-        //     rowspan: numRows, colspan: 1, sortable: true, description:colsInfo.textDescriptions[1]
-        // }
-        series.push({ labels: mains });
-        colsInfo.textDescriptions.splice(0, 1);
-
-        // console.log('series >>>>> ',series);  ---> hasta aquí ==> labels: (2) [{…}, {…}]
-
-        //if there is only one metric the metric is the header
-        // console.log('Prueba:::::::: >>>>> ',labels.metricsLabels.length)
-        if (labels.axes[0].itemZ.length > 1) {
-            console.log('HAY MAS DE UN VALOR EN EL EJE Z')
-            for (let i = 0; i < labels.seriesLabels[0].length; i++) {
-                series[0].labels.push({
-                    title: labels.seriesLabels[0][i], description : labels.textDescriptions[0],
-                    rowspan: 1, colspan: numCols / labels.seriesLabels[0].length, sortable: false
-                })
-            }
-        } else {
-            /**The metric is the header */
-            series[0].labels.push({ title: labels.axes[0].itemZ[0].description.default, rowspan: 1, colspan: numCols, description:labels.axes[0].itemZ[0].column_name});
-
-            let serie = { labels: [] };
-            for (let i = 0; i < labels.seriesLabels[0].length; i++) {
-                serie.labels.push({
-                    title: labels.seriesLabels[0][i], description : labels.textDescriptions[0],
-                    rowspan: 1, colspan: numCols / labels.seriesLabels[0].length, sortable: false, metric:labels.metricsLabels[0]
-                })
-            }
-            series.push(serie);
-        }
-        //labels headers props
-        let mult = labels.seriesLabels[0].length;
-        let colspanDiv = numCols / labels.seriesLabels[0].length;
-        for (let i = 1; i < labels.seriesLabels.length; i++) {
-            let serie = { labels: [] };
-            for (let j = 0; j < labels.seriesLabels[i].length * mult; j++) {
-                serie.labels.push({
-                    title: labels.seriesLabels[i][j % labels.seriesLabels[i].length], description : labels.textDescriptions[i],
-                    rowspan: 1, colspan: colspanDiv / labels.seriesLabels[i].length, sortable: false
-                });
-            }
-            series.push(serie);
-            mult *= labels.seriesLabels[i].length;
-            colspanDiv = colspanDiv / labels.seriesLabels[i].length;
-        }
-        //metrics headers props ->  again, if there is only one metric the metric is the header
-        if (labels.metricsLabels.length > 1) {
-            let serie = { labels: [] }
-            for (let i = 0; i < numCols; i++) {
-                serie.labels.push({
-                    title: labels.metricsLabels[i % labels.metricsLabels.length], description : labels.metricsDescriptions[i % labels.metricsLabels.length],
-                    rowspan: 1, colspan: 1, sortable: false, metric :labels.metricsLabels[i % labels.metricsLabels.length]
-                })
-            }
-
-            series.push(serie)
-        }
-        this.series = series;
-
-        //set column name for column labels
-        this.series[this.series.length - 1].labels.forEach((label, i) => {
-            label.column = this.cols[i + 1].field;
-            label.sortable = true;
-            label.sortState = false;
-        });
-    }
 
     buildHeaders(labels: any, colsInfo: any) {
 
