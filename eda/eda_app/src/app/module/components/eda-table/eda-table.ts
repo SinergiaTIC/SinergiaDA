@@ -1324,7 +1324,7 @@ export class EdaTable {
         labels.seriesLabels.forEach(label => {
             numCols *= label.length;
         });
-        numCols *= labels.metricsLabels.length;
+        numCols *= labels.axes[0].itemZ.length;
         //Main header props (incuding first label headers row)
 
         let mains = [];
@@ -1353,7 +1353,7 @@ export class EdaTable {
         colsInfo.textDescriptions.splice(0, 1);
 
         //if there is only one metric the metric is the header
-        if (labels.metricsLabels.length > 1) {
+        if (labels.axes[0].itemZ.length > 1) {
             for (let i = 0; i < labels.seriesLabels[0].length; i++) {
                 series[0].labels.push({
                     title: labels.seriesLabels[0][i], description : labels.textDescriptions[0],
@@ -1362,13 +1362,13 @@ export class EdaTable {
             }
         } else {
             /**The metric is the header */
-            series[0].labels.push({ title: labels.metricsLabels[0], rowspan: 1, colspan: numCols, description:labels.metricsDescriptions[0]});
+            series[0].labels.push({ title: labels.axes[0].itemZ[0].description.default, rowspan: 1, colspan: numCols, description:labels.axes[0].itemZ[0].description.default});
 
             let serie = { labels: [] };
             for (let i = 0; i < labels.seriesLabels[0].length; i++) {
                 serie.labels.push({
-                    title: labels.seriesLabels[0][i], description : labels.textDescriptions[0],
-                    rowspan: 1, colspan: numCols / labels.seriesLabels[0].length, sortable: false, metric:labels.metricsLabels[0]
+                    title: labels.seriesLabels[0][i], description : labels.axes[0].itemY[0].description.default,
+                    rowspan: 1, colspan: numCols / labels.seriesLabels[0].length, sortable: false, metric:labels.axes[0].itemZ[0].description.default
                 })
             }
             series.push(serie);
@@ -1389,7 +1389,7 @@ export class EdaTable {
             colspanDiv = colspanDiv / labels.seriesLabels[i].length;
         }
         //metrics headers props ->  again, if there is only one metric the metric is the header
-        if (labels.metricsLabels.length > 1) {
+        if (labels.axes[0].itemZ.length > 1) {
             let serie = { labels: [] }
             for (let i = 0; i < numCols; i++) {
                 serie.labels.push({
