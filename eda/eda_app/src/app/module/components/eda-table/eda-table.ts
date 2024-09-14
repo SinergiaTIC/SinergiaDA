@@ -15,6 +15,7 @@ import { ToastModule } from 'primeng/toast';
 import { Key } from 'protractor';
 import { FindValueSubscriber } from 'rxjs/internal/operators/find';
 import { values } from 'd3';
+import { title } from 'process';
 
 interface PivotTableSerieParams {
     mainCol: any, // Columna dinámica principal
@@ -792,7 +793,7 @@ export class EdaTable {
             console.log('this._value: ', this._value);
             console.log('this.cols: ', this.cols);
 
-            this.buildHeaders(newLabels, colsInfo);
+            this.buildCrossHeaders(newLabels, colsInfo);
 
             console.log('-------------------------------- o --------------------------------')
             return 
@@ -1310,6 +1311,103 @@ export class EdaTable {
             newCols: newCols,
         }
         return params
+    }
+
+    buildCrossHeaders(labels: any, colsInfo: any) {
+
+        console.log('labels:  <><><><><>', labels)
+        console.log('colsInfo <><><><><>: ', colsInfo)
+
+        let series = [];
+        const numRows = labels.seriesLabels.length + 1 //1 for metrics labels
+        let numCols = 1;
+        labels.seriesLabels.forEach(label => {
+            numCols *= label.length;
+        });
+        numCols *= labels.metricsLabels.length;
+        //Main header props (incuding first label headers row)
+
+        let mains = [];
+
+        labels.axes[0].itemX.forEach((e, j) => {
+            mains.push({
+                title: labels.axes[0].itemX[j].description.default,
+                column: labels.axes[0].itemX[j].column_name,
+                rowspan: numRows, colspan: 1, sortable: true, description: labels.axes[0].itemX[j].description.default
+            })
+        });
+
+        // let mainColHeader1 = {
+        //     title: colsInfo.textLabels[0],
+        //     column: labels.mainsLabels[0],
+        //     rowspan: numRows, colspan: 1, sortable: true, description:colsInfo.textDescriptions[0]
+        // }
+
+        // let mainColHeader2 = {
+        //     title: colsInfo.textLabels[1],
+        //     column: labels.mainsLabels[1],
+        //     rowspan: numRows, colspan: 1, sortable: true, description:colsInfo.textDescriptions[0]
+        // }
+
+        series.push({ labels: mains });
+        colsInfo.textDescriptions.splice(0, 1);
+
+        //if there is only one metric the metric is the header
+        if (labels.metricsLabels.length > 1) {
+            for (let i = 0; i < labels.seriesLabels[0].length; i++) {
+                series[0].labels.push({
+                    title: labels.seriesLabels[0][i], description : labels.textDescriptions[0],
+                    rowspan: 1, colspan: numCols / labels.seriesLabels[0].length, sortable: false
+                })
+            }
+        } else {
+            /**The metric is the header */
+            series[0].labels.push({ title: labels.metricsLabels[0], rowspan: 1, colspan: numCols, description:labels.metricsDescriptions[0]});
+
+            let serie = { labels: [] };
+            for (let i = 0; i < labels.seriesLabels[0].length; i++) {
+                serie.labels.push({
+                    title: labels.seriesLabels[0][i], description : labels.textDescriptions[0],
+                    rowspan: 1, colspan: numCols / labels.seriesLabels[0].length, sortable: false, metric:labels.metricsLabels[0]
+                })
+            }
+            series.push(serie);
+        }
+        //labels headers props
+        let mult = labels.seriesLabels[0].length;
+        let colspanDiv = numCols / labels.seriesLabels[0].length;
+        for (let i = 1; i < labels.seriesLabels.length; i++) {
+            let serie = { labels: [] };
+            for (let j = 0; j < labels.seriesLabels[i].length * mult; j++) {
+                serie.labels.push({
+                    title: labels.seriesLabels[i][j % labels.seriesLabels[i].length], description : labels.textDescriptions[i],
+                    rowspan: 1, colspan: colspanDiv / labels.seriesLabels[i].length, sortable: false
+                });
+            }
+            series.push(serie);
+            mult *= labels.seriesLabels[i].length;
+            colspanDiv = colspanDiv / labels.seriesLabels[i].length;
+        }
+        //metrics headers props ->  again, if there is only one metric the metric is the header
+        if (labels.metricsLabels.length > 1) {
+            let serie = { labels: [] }
+            for (let i = 0; i < numCols; i++) {
+                serie.labels.push({
+                    title: labels.metricsLabels[i % labels.metricsLabels.length], description : labels.metricsDescriptions[i % labels.metricsLabels.length],
+                    rowspan: 1, colspan: 1, sortable: false, metric :labels.metricsLabels[i % labels.metricsLabels.length]
+                })
+            }
+
+            series.push(serie)
+        }
+        this.series = series;
+
+        //set column name for column labels
+        this.series[this.series.length - 1].labels.forEach((label, i) => {
+            label.column = this.cols[i + 1].field;
+            label.sortable = true;
+            label.sortState = false;
+        });
     }
     
 
