@@ -787,8 +787,8 @@ export class EdaTable {
             newLabels.textDescriptions = colsInfo.textDescriptions;
             newLabels.axes = axes;
 
-            this._value = this.mergeRows(rowsToMerge);
-            this.cols = this.mergeCrossColumns(colsToMerge, axes);
+            this._value = this.mergeCrossRows(rowsToMerge, axes); // Nueva función que genera las filas de la tabla cruzada
+            this.cols = this.mergeCrossColumns(colsToMerge, axes); // Nueva función que genera las columnas de la tabla cruzada
 
             console.log('this._value: ', this._value);
             console.log('this.cols: ', this.cols);
@@ -900,6 +900,38 @@ export class EdaTable {
      * Merges series rows in one set of rows
      * @param rowsToMerge 
      */
+    mergeCrossRows(rowsToMerge: any, axes: any) {
+        const NUM_ROWS_IN_SERIES = rowsToMerge[0].length;
+        const NUM_SERIES = rowsToMerge.length;
+        const rows = [];
+        for (let row = 0; row < NUM_ROWS_IN_SERIES; row++) {
+            let newRow = {};
+            for (let serie = 0; serie < NUM_SERIES; serie++) {
+                newRow = { ...newRow, ...rowsToMerge[serie][row] }
+            }
+            rows.push(newRow);
+        }
+
+        let newRows= [] // Arreglo que contendra la lista con almenos un valor
+
+        rows.forEach(row => {
+            let contador = 0;
+            for(const propiedad in row){
+                contador++
+                if(contador > axes[0].itemX.length){
+                    if(row[propiedad]!==""){
+                        console.log(propiedad + ": " + row[propiedad]);
+                        newRows.push(row);
+                        return;
+                    }
+                }
+            }
+        })
+
+        console.log('newRows: <><><>:', newRows);
+        return newRows;
+    }
+
     mergeRows(rowsToMerge: any) {
         const NUM_ROWS_IN_SERIES = rowsToMerge[0].length;
         const NUM_SERIES = rowsToMerge.length;
@@ -997,7 +1029,7 @@ export class EdaTable {
         keys.forEach(key => {
             let valuesMap = new Map();
             values.forEach(value => {
-                valuesMap.set(value, '');
+                valuesMap.set(value, "");
             });
             out.set(key, valuesMap);
         });
