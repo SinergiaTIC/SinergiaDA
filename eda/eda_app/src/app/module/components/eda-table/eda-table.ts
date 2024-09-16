@@ -1356,7 +1356,7 @@ export class EdaTable {
         if (labels.axes[0].itemZ.length > 1) {
             for (let i = 0; i < labels.seriesLabels[0].length; i++) {
                 series[0].labels.push({
-                    title: labels.seriesLabels[0][i], description : labels.textDescriptions[0],
+                    title: labels.seriesLabels[0][i], description : labels.axes[0].itemY[0].description.default,
                     rowspan: 1, colspan: numCols / labels.seriesLabels[0].length, sortable: false
                 })
             }
@@ -1374,13 +1374,16 @@ export class EdaTable {
             series.push(serie);
         }
         //labels headers props
+
+        // labels.textDescriptions[i]
+
         let mult = labels.seriesLabels[0].length;
         let colspanDiv = numCols / labels.seriesLabels[0].length;
         for (let i = 1; i < labels.seriesLabels.length; i++) {
             let serie = { labels: [] };
             for (let j = 0; j < labels.seriesLabels[i].length * mult; j++) {
                 serie.labels.push({
-                    title: labels.seriesLabels[i][j % labels.seriesLabels[i].length], description : labels.textDescriptions[i],
+                    title: labels.seriesLabels[i][j % labels.seriesLabels[i].length], description : labels.axes[0].itemY[i].description.default,
                     rowspan: 1, colspan: colspanDiv / labels.seriesLabels[i].length, sortable: false
                 });
             }
