@@ -1374,9 +1374,6 @@ export class EdaTable {
             series.push(serie);
         }
         //labels headers props
-
-        // labels.textDescriptions[i]
-
         let mult = labels.seriesLabels[0].length;
         let colspanDiv = numCols / labels.seriesLabels[0].length;
         for (let i = 1; i < labels.seriesLabels.length; i++) {
@@ -1392,18 +1389,25 @@ export class EdaTable {
             colspanDiv = colspanDiv / labels.seriesLabels[i].length;
         }
         //metrics headers props ->  again, if there is only one metric the metric is the header
+
+        // labels.metricsLabels.length
+        // labels.metricsLabels
+        // labels.metricsDescriptions
+
         if (labels.axes[0].itemZ.length > 1) {
             let serie = { labels: [] }
             for (let i = 0; i < numCols; i++) {
                 serie.labels.push({
-                    title: labels.metricsLabels[i % labels.metricsLabels.length], description : labels.metricsDescriptions[i % labels.metricsLabels.length],
-                    rowspan: 1, colspan: 1, sortable: false, metric :labels.metricsLabels[i % labels.metricsLabels.length]
+                    title: labels.axes[0].itemZ[i % labels.axes[0].itemZ.length].description.default, description : labels.axes[0].itemZ[i % labels.axes[0].itemZ.length].description.default,
+                    rowspan: 1, colspan: 1, sortable: false, metric :labels.axes[0].itemZ[i % labels.axes[0].itemZ.length].description.default
                 })
             }
 
             series.push(serie)
         }
         this.series = series;
+
+        console.log('this.series: ', this.series);
 
         //set column name for column labels
         this.series[this.series.length - 1].labels.forEach((label, i) => {
