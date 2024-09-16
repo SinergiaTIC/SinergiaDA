@@ -760,7 +760,6 @@ export class EdaTable {
 
         // INICIA EL REORDENAMIENTO
         if(this.ordering!=undefined ) {
-            console.log('###################--- REORDENAMIENTO ---###################')
             axes = this.ordering[0].axes
 
             const newSeriesLabels = [];
@@ -768,19 +767,14 @@ export class EdaTable {
                 newSeriesLabels.push(e.column_name)
             });
 
-            // NUEVA FUNCION A SER UTILIZADA --> buildCrossSerie(index, axes)
             newSeriesLabels.forEach((serie, index) => {
                 let colsRows = this.buildCrossSerie(index, axes)
-                // console.log(`colsRows: ---> ${index} <---` ,colsRows);
                 rowsToMerge.push(colsRows.rows);
                 colsToMerge.push(colsRows.cols);
                 if (index === 0) {
                     newLabels = colsRows.newLabels; //new labels are equal for each serie, first execution is enough to get new labels
                 }
             });
-
-            // console.log('rowsToMerge :',rowsToMerge)
-            // console.log('colsToMerge :',colsToMerge)
 
             newLabels.metricsLabels = colsInfo.numericLabels;
             newLabels.metricsDescriptions = colsInfo.numericDescriptions;
@@ -789,19 +783,13 @@ export class EdaTable {
 
             this._value = this.mergeCrossRows(rowsToMerge, axes); // Nueva función que genera las filas de la tabla cruzada
             this.cols = this.mergeCrossColumns(colsToMerge, axes); // Nueva función que genera las columnas de la tabla cruzada
+            this.buildCrossHeaders(newLabels, colsInfo); // Nueva función para la creación de los encabezados
 
-            console.log('this._value: ', this._value);
-            console.log('this.cols: ', this.cols);
-
-            this.buildCrossHeaders(newLabels, colsInfo);
-
-            console.log('-------------------------------- o --------------------------------')
             return 
         }
 
         seriesLabels.forEach((serie, index) => {
             let colsRows = this.buildPivotSerie(index);
-            console.log(`colsRows: ---> ${index} <---` ,colsRows);
             rowsToMerge.push(colsRows.rows);
             colsToMerge.push(colsRows.cols);
             if (index === 0) {
@@ -809,23 +797,15 @@ export class EdaTable {
             }
         });
         
-        console.log('******************* --- EJECUCION NORMAL ---*******************');
-        
-        console.log('rowsToMerge ?¿?¿?¿?¿?¿:',rowsToMerge)
-        console.log('colsToMerge ?¿?¿?¿?¿?¿:',colsToMerge)
-        console.log('newLabels ?¿?¿?¿?¿?¿:',newLabels)
-        
         newLabels.metricsLabels = colsInfo.numericLabels;
         newLabels.metricsDescriptions = colsInfo.numericDescriptions;
         newLabels.textDescriptions = colsInfo.textDescriptions;
-
         this._value = this.mergeRows(rowsToMerge);
         this.cols = this.mergeColumns(colsToMerge);
 
-        console.log('newLabels ?¿?¿?¿?¿?¿:',newLabels)
-        console.log('colsInfo ?¿?¿?¿?¿?¿:',colsInfo)
         this.buildHeaders(newLabels, colsInfo);
     }
+
     /**
      * Build a serie to pivot (one serie per metric)
      * @param serieIndex 
@@ -833,16 +813,14 @@ export class EdaTable {
     buildPivotSerie(serieIndex: number) {
 
         const params = this.generatePivotParams();
-        console.log(`params ?¿?¿?¿ con serieIndex ${serieIndex}:`, params);
+        // console.log(`params ---> serieIndex ${serieIndex} <---`, params);
         const mapTree = this.buildMainMap(params.mainColValues, params.newCols);
-        console.log(`mapTree ?¿?¿?¿ con serieIndex ${serieIndex}:`, mapTree);
+        // console.log(`mapTree ---> serieIndex ${serieIndex} <---`, mapTree);
         const populatedMap = this.populateMap(mapTree, params.oldRows, params.mainColLabel, params.aggregatedColLabels[serieIndex], params.pivotColsLabels);
-        console.log(`populatedMap ?¿?¿?¿ con serieIndex ${serieIndex}:`, populatedMap);
+        // console.log(`populatedMap ---> serieIndex ${serieIndex} <---`, populatedMap);
 
         let newRows = this.buildNewRows(populatedMap, params.mainColLabel, params.aggregatedColLabels[serieIndex]);
         let newColNames = this.getNewColumnsNames(newRows[0]).slice(1); //For left column we want user's name, not technical
-
-        console.log(`newColNames ?¿?¿?¿ con serieIndex ${serieIndex}:`, newColNames);
 
         const tableColumns = [];
         tableColumns.push(new EdaColumnText({ header: params.mainCol.header, field: params.mainCol.field }));
@@ -853,8 +831,6 @@ export class EdaTable {
         newLabels.mainLabel = params.mainColLabel;
         newLabels.seriesLabels = params.newCols.splice(1);
 
-        console.log(`newLabels ?¿?¿?¿ con serieIndex ${serieIndex}:`, newLabels);
-
         return { cols: tableColumns, rows: newRows, newLabels: newLabels }
     }
 
@@ -862,31 +838,24 @@ export class EdaTable {
     buildCrossSerie(serieIndex: number, axes: any[]) {
 
         const params = this.generateCrossParams(axes);
-        console.log(`params ===> con serieIndex ${serieIndex}:`, params)
+        // console.log(`params ===> serieIndex ${serieIndex} <===`, params)
 
         const mapTree = this.buildMapCrossRecursive(params.newCols);
-        // console.log(`mapTree ===> con serieIndex ${serieIndex}:`, mapTree);
+        // console.log(`mapTree ===> serieIndex ${serieIndex} <===`, mapTree);
 
         const populatedMap = this.populateCrossMap(mapTree, params.oldRows, params.mainColsLabels, params.aggregatedColLabels[serieIndex], params.pivotColsLabels);
-        // console.log(`populatedMap ===> con serieIndex ${serieIndex}:`, populatedMap);
+        // console.log(`populatedMap ===> serieIndex ${serieIndex} <===`, populatedMap);
 
         let newRows = this.buildNewCrossRows(populatedMap, params.mainColsLabels, params.aggregatedColLabels[serieIndex], params.newCols);
         let newColNames = this.getNewColumnsNames(newRows[0]).slice(params.mainColsLabels.length); //For left column we want user's name, not technical
 
-
         const tableColumns = [];
-
-        console.log('VERIFICAR 1: >>>>>>>>>>>>>>>',params.mainCols)
-        console.log('VERIFICAR 2: >>>>>>>>>>>>>>>',newColNames)
-
         params.mainCols.forEach(element => {
             tableColumns.push(new EdaColumnText({ header: element['header'], field: element['field'] }))
         })
         newColNames.forEach(col => {
             tableColumns.push(new EdaColumnNumber({ header: col, field: col }));
         })
-
-        console.log('tableColumns 3 >>>>>>>>>',tableColumns)
         
         let newLabels = { mainsLabels: [], seriesLabels: [], metricsLabels: [] };
         newLabels.mainsLabels = params.mainColsLabels;
@@ -920,7 +889,6 @@ export class EdaTable {
                 contador++
                 if(contador > axes[0].itemX.length){
                     if(row[propiedad]!==""){
-                        console.log(propiedad + ": " + row[propiedad]);
                         newRows.push(row);
                         return;
                     }
@@ -928,7 +896,19 @@ export class EdaTable {
             }
         })
 
-        console.log('newRows: <><><>:', newRows);
+        // VERIFICAR SI SE RELLENAN CON CEROS LOS VALORES QUE LLEGAN VACIOS
+        // newRows.forEach(row => {
+        //     let contador = 0;
+        //     for(const propiedad in row){
+        //         contador++
+        //         if(contador > axes[0].itemX.length){
+        //             if(row[propiedad]===""){
+        //                 row[propiedad] = 0;
+        //             }
+        //         }
+        //     }
+        // })
+
         return newRows;
     }
 
@@ -1345,11 +1325,8 @@ export class EdaTable {
         return params
     }
 
+    // Función para la tabla cruzada generica.
     buildCrossHeaders(labels: any, colsInfo: any) {
-
-        console.log('labels:  <><><><><>', labels)
-        console.log('colsInfo <><><><><>: ', colsInfo)
-
         let series = [];
         const numRows = labels.seriesLabels.length + 1 //1 for metrics labels
         let numCols = 1;
@@ -1368,18 +1345,6 @@ export class EdaTable {
                 rowspan: numRows, colspan: 1, sortable: true, description: labels.axes[0].itemX[j].description.default
             })
         });
-
-        // let mainColHeader1 = {
-        //     title: colsInfo.textLabels[0],
-        //     column: labels.mainsLabels[0],
-        //     rowspan: numRows, colspan: 1, sortable: true, description:colsInfo.textDescriptions[0]
-        // }
-
-        // let mainColHeader2 = {
-        //     title: colsInfo.textLabels[1],
-        //     column: labels.mainsLabels[1],
-        //     rowspan: numRows, colspan: 1, sortable: true, description:colsInfo.textDescriptions[0]
-        // }
 
         series.push({ labels: mains });
         colsInfo.textDescriptions.splice(0, 1);
@@ -1422,10 +1387,6 @@ export class EdaTable {
         }
         //metrics headers props ->  again, if there is only one metric the metric is the header
 
-        // labels.metricsLabels.length
-        // labels.metricsLabels
-        // labels.metricsDescriptions
-
         if (labels.axes[0].itemZ.length > 1) {
             let serie = { labels: [] }
             for (let i = 0; i < numCols; i++) {
@@ -1439,8 +1400,6 @@ export class EdaTable {
         }
         this.series = series;
 
-        console.log('this.series: ', this.series);
-
         //set column name for column labels
         this.series[this.series.length - 1].labels.forEach((label, i) => {
             label.column = this.cols[i + 1].field;
@@ -1448,8 +1407,6 @@ export class EdaTable {
             label.sortState = false;
         });
     }
-    
-
     
     /**
      * 
