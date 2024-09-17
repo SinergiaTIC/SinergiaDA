@@ -1103,7 +1103,6 @@ export class EdaBlankPanelComponent implements OnInit {
     */
     public runManualQuery = () => {
         this.attributes = _.cloneDeep(this.currentQuery); // Clonacion profunda con lodash
-        console.log('attributes: ',this.attributes)
         const config = this.panelChartConfig.config.getConfig();
         config['ordering'] = undefined;
         QueryUtils.runManualQuery(this)
@@ -1329,7 +1328,6 @@ export class EdaBlankPanelComponent implements OnInit {
 
     public newCurrentQueryExecution(newCurrentQuery) {
         const config = this.panelChartConfig.config.getConfig();
-        console.log('newCurrentQuery: ', newCurrentQuery);
         config['ordering'] = newCurrentQuery;
         this.currentQuery = newCurrentQuery;  // actualizando el currentQuery
         QueryUtils.runManualQuery(this) // Ejecutando con la nueva configuracion de currentQuery
