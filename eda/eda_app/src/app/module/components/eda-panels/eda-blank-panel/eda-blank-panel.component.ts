@@ -30,7 +30,6 @@ import { ChartsConfigUtils } from './panel-utils/charts-config-utils';
 import { PanelInteractionUtils } from './panel-utils/panel-interaction-utils'
 
 import {NULL_VALUE} from '../../../../config/personalitzacio/customizables'
-import { PivotDragDropService } from '@eda/services/utils/pivot-drag-drop.service';
 
 export interface IPanelAction {
     code: string;
@@ -204,7 +203,6 @@ export class EdaBlankPanelComponent implements OnInit {
         public spinnerService: SpinnerService,
         public groupService: GroupService,
         public userService: UserService,
-        public pivotDragDropService: PivotDragDropService,
     ) {
         this.initializeBlankPanelUtils();
         this.initializeInputs();
@@ -495,7 +493,6 @@ export class EdaBlankPanelComponent implements OnInit {
 
         this.graphicType = this.chartForm.value.chart.value;// iniciamos el tipo de gráfico crossTable
         this.attributes = _.cloneDeep(this.currentQuery); // Recuperando el currentQuery para el componente drag-drop
-        this.pivotDragDropService.updatingNewOrdering(this.attributes); // Inicializando el ordenamiento 
     }
 
 
@@ -1106,7 +1103,7 @@ export class EdaBlankPanelComponent implements OnInit {
     */
     public runManualQuery = () => {
         this.attributes = _.cloneDeep(this.currentQuery); // Clonacion profunda con lodash
-        // this.pivotDragDropService.updatingNewOrdering(this.attributes); // actualizando el nuevo orden
+        console.log('attributes: ',this.attributes)
         const config = this.panelChartConfig.config.getConfig();
         config['ordering'] = undefined;
         QueryUtils.runManualQuery(this)
@@ -1331,16 +1328,11 @@ export class EdaBlankPanelComponent implements OnInit {
     }
 
     public newCurrentQueryExecution(newCurrentQuery) {
-        this.pivotDragDropService.updatingNewOrdering(newCurrentQuery); // actualizando el nuevo orden
         const config = this.panelChartConfig.config.getConfig();
+        console.log('newCurrentQuery: ', newCurrentQuery);
         config['ordering'] = newCurrentQuery;
-
-
-        // const ordering = config['ordering'];        
         this.currentQuery = newCurrentQuery;  // actualizando el currentQuery
         QueryUtils.runManualQuery(this) // Ejecutando con la nueva configuracion de currentQuery
-        
-
     }
 
 }

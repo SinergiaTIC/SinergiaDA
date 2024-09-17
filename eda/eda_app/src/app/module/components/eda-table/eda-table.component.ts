@@ -8,7 +8,6 @@ import es from '@angular/common/locales/es';
 import * as _ from 'lodash';
 import { StyleService } from '@eda/services/service.index';
 import { EdaColumnChartOptions } from './eda-columns/eda-column-chart-options';
-import { PivotDragDropService } from '@eda/services/utils/pivot-drag-drop.service';
 
 @Component({
     selector: 'eda-table',
@@ -26,7 +25,7 @@ export class EdaTableComponent implements OnInit {
     public colors = {};
     public styles = {};
 
-    constructor(private elementRef: ElementRef, private styleService: StyleService, private pivotDragDropService: PivotDragDropService) {
+    constructor(private elementRef: ElementRef, private styleService: StyleService) {
         registerLocaleData(es);
         /** Definim les caracteristiques del gràfic dintre de la taula.......................... */
         this.chartOptions = EdaColumnChartOptions;
@@ -37,11 +36,6 @@ export class EdaTableComponent implements OnInit {
         }else if(this.inject.styles && this.inject.pivot){
             this.applyPivotSyles(this.inject.styles)
         }
-
-        // Actualizando el ordering
-        this.pivotDragDropService.newOrdering.subscribe(ordering => {
-            this.inject.ordering = ordering;
-        })
 
     }
 
