@@ -897,17 +897,17 @@ export class EdaTable {
         })
 
         // VERIFICAR SI SE RELLENAN CON CEROS LOS VALORES QUE LLEGAN VACIOS
-        // newRows.forEach(row => {
-        //     let contador = 0;
-        //     for(const propiedad in row){
-        //         contador++
-        //         if(contador > axes[0].itemX.length){
-        //             if(row[propiedad]===""){
-        //                 row[propiedad] = 0;
-        //             }
-        //         }
-        //     }
-        // })
+        newRows.forEach(row => {
+            let contador = 0;
+            for(const propiedad in row){
+                contador++
+                if(contador > axes[0].itemX.length){
+                    if(row[propiedad]===""){
+                        row[propiedad] = 0;
+                    }
+                }
+            }
+        })
 
         return newRows;
     }
