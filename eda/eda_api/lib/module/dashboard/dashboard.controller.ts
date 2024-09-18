@@ -274,6 +274,7 @@ export class DashboardController {
               return next(new HttpException(400, 'Datasouce not found with id'))
             }
             let toJson = JSON.parse(JSON.stringify(datasource))
+            let filteredData = false // allow to determine if we are filtering data to the dashboard to avoid overwrite it by a dummy user.
 
             // Filtre de seguretat per les taules. Si no es te permis sobre una taula es posa com a oculta.
             // Per si de cas es fa servir a una relació.
@@ -335,7 +336,8 @@ export class DashboardController {
                             dashboard.config.panel[i].content.query.query.fields[
                             c
                             ]
-                          )
+                          );
+                          filteredData = true;
                         } else {
                           MyFields.push(
                             dashboard.config.panel[i].content.query.query.fields[
@@ -359,11 +361,11 @@ export class DashboardController {
 
             }
 
-
             const ds = {
               _id: datasource._id,
               model: toJson.ds.model,
-              name: toJson.ds.metadata.model_name
+              name: toJson.ds.metadata.model_name,
+              filtered: filteredData 
             }
 
             insertServerLog(
