@@ -3945,6 +3945,10 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
   <source>El año pasado, completo</source>
   <target>W zeszłym roku, kompletne</target>
 </trans-unit>
+<trans-unit id="userNotAllowed">
+  <source>El usuario no tiene permisos para guardar en el informe.</source>
+  <target>Użytkownik nie ma uprawnień do zapisu w raporcie.</target>
+</trans-unit>  
 </body>
 </file>
 </xliff>

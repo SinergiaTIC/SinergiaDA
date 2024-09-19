@@ -1295,6 +1295,6 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     /*SDA CUSTOM*/}
 
     userNotAllowed() {
-        this.alertService.addError('Usuario no permitido');
+        this.alertService.addError($localize`:@@userNotAllowed:El usuario no tiene permisos para guardar en el informe`);
     }
 }

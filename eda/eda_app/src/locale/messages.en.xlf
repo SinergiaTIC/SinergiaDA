@@ -4289,6 +4289,10 @@
         <source>El año pasado, completo</source>
         <target>Last year, complete</target>
       </trans-unit>
+      <trans-unit id="userNotAllowed">
+        <source>El usuario no tiene permisos para guardar en el informe.</source>
+        <target>The user does not have permissions to save the report.</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>
