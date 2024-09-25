@@ -38,10 +38,13 @@ app.listen(PORT, () => {
 /**
  * Oracle client 
  */
-try {
-    oracledb.initOracleClient({libDir: EDA_ORACLE_CLIENT});
-  } catch (err) {
 
-    console.log('Para usar Oracle debes instalar instant_client y especificar la ruta en el archivo de configuración');
-    console.error(err);
-  }
+/*SDA CUSTOM*/
+// try {
+//     oracledb.initOracleClient({libDir: EDA_ORACLE_CLIENT});
+//   } catch (err) {
+// 
+    // console.log('Para usar Oracle debes instalar instant_client y especificar la ruta en el archivo de configuración');
+    // console.error(err);
+//   }
+/*SDA CUSTOM*/
