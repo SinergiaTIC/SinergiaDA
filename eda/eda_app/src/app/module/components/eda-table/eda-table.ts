@@ -742,7 +742,7 @@ export class EdaTable {
     PivotTable() {
 
         let axes = []
-        // console.log('this.ordering: ',this.ordering)
+        console.log('PIVOTtABLE: ',this);
         const colsInfo = this.getColsInfo();
         const oldRows = this.getValues();
 
@@ -759,7 +759,7 @@ export class EdaTable {
         let newLabels;
 
         // INICIA EL REORDENAMIENTO
-        if(this.ordering!=undefined ) {
+        if(this.ordering!=undefined && this.ordering.length!==0) {
             axes = this.ordering[0].axes
 
             const newSeriesLabels = [];

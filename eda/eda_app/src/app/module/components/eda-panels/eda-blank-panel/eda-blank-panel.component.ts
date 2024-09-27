@@ -190,6 +190,8 @@ export class EdaBlankPanelComponent implements OnInit {
 
     // for the drag-drop component
     public attributes:any[]=[]; 
+    public axes:any[]=[]; 
+    public newAxesChanged: boolean = false;
     public graphicType: string; // extraemos el tipo de gráfico al inicio y al ejecutar
     public configCrossTable: any;
 
@@ -487,12 +489,21 @@ export class EdaBlankPanelComponent implements OnInit {
         const config = ChartsConfigUtils.recoverConfig(panelContent.chart, panelContent.query.output.config);
         this.changeChartType(panelContent.chart, panelContent.edaChart, config);
 
+        console.log('CONFIG: ', config);
+
         this.showHiddenColumn = false;
         this.display_v.saved_panel = true;
         this.display_v.minispinner = false;
 
         this.graphicType = this.chartForm.value.chart.value;// iniciamos el tipo de gráfico crossTable
         this.attributes = _.cloneDeep(this.currentQuery); // Recuperando el currentQuery para el componente drag-drop
+
+        // INICIAMOS EL AXES DEL VALOR ALMACENADO
+        if(config['config']['ordering'].length===0){
+            this.axes = this.initAxes(this.currentQuery);
+        } else {
+            this.axes = config['config']['ordering'][0];
+        }
     }
 
 
@@ -529,7 +540,6 @@ export class EdaBlankPanelComponent implements OnInit {
 
         //not saved alert message
         this.dashboardService._notSaved.next(true);
-
     }
 
     public initObjectQuery() {
@@ -609,6 +619,7 @@ export class EdaBlankPanelComponent implements OnInit {
      * @param content panel content
      */
     public changeChartType(type: string, subType: string, config?: ChartConfig) {
+        this.axes = this.initAxes(this.currentQuery);
         this.configCrossTable = config
 
         this.graphicType = type; // Actualizamos el tipo de variable para el componente drag-drop
@@ -626,7 +637,6 @@ export class EdaBlankPanelComponent implements OnInit {
             const _config = config || new ChartConfig(ChartsConfigUtils.setVoidChartConfig(type));
             this.renderChart(this.currentQuery, this.chartLabels, this.chartData, type, subType, _config);
         }
-
     }
 
     /**
@@ -1098,11 +1108,45 @@ export class EdaBlankPanelComponent implements OnInit {
     /** Run query From dashboard component */
     public runQueryFromDashboard = (globalFilters: boolean) => QueryUtils.runQuery(this, globalFilters);
 
+
+    public initAxes(currenQuery) {
+
+        let itemX = [{
+            column_name: currenQuery.find(e => e.column_type==='text').column_name,
+            column_type: currenQuery.find(e => e.column_type==='text').column_type,
+            description: currenQuery.find(e => e.column_type==='text').description.default
+        }]
+
+        let itemY = [];
+        currenQuery.forEach(v => {
+            if((v.description.default !== itemX[0].description) && (v.column_type !== "numeric")) {
+                itemY.push({
+                    column_name: v.column_name,
+                    column_type: v.column_type,
+                    description: v.description.default
+                })
+            }
+        })
+
+        let itemZ = [];
+        currenQuery.forEach(v => {
+            if(v.column_type === "numeric") {
+                itemZ.push({
+                    column_name: v.column_name,
+                    column_type: v.column_type,
+                    description: v.description.default
+                })
+            }
+        })
+
+        return [{ itemX: itemX, itemY: itemY, itemZ: itemZ }]
+    }
+
     /**
     * Runs actual query when execute button is pressed to check for heavy queries
     */
     public runManualQuery = () => {
-        this.attributes = _.cloneDeep(this.currentQuery); // Clonacion profunda con lodash
+        this.attributes = _.cloneDeep(this.currentQuery); // Clonacion profunda con lodash  // BORRARRRRRRRRRRRRRRR
         // const config = this.panelChartConfig.config.getConfig();
         // config['ordering'] = undefined;
         QueryUtils.runManualQuery(this)
@@ -1326,10 +1370,17 @@ export class EdaBlankPanelComponent implements OnInit {
         return disable;
     }
 
-    public newCurrentQueryExecution(newCurrentQuery) {
+    // public newCurrentQuery() {
+    //     return this.currentQuery
+    // }
+
+    public newAxesOrdering(newAxes) {
         const config = this.panelChartConfig.config.getConfig();
-        config['ordering'] = newCurrentQuery;
-        this.currentQuery = newCurrentQuery;  // actualizando el currentQuery
+
+        console.log('Desde el DragDrop: ', newAxes);
+        config['ordering'] = [{axes: newAxes}];
+        // this.currentQuery = this.newCurrentQuery();  // actualizando el currentQuery
+
         QueryUtils.runManualQuery(this) // Ejecutando con la nueva configuracion de currentQuery
     }
 

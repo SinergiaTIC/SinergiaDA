@@ -19,7 +19,7 @@
                     (cdkDropListDropped)="drop($event)"
                     >
             
-                      <div *ngFor="let item of itemX" class="box-1" cdkDrag>{{item.display_name.default}}</div>
+                      <div *ngFor="let item of itemX" class="box-1" cdkDrag>{{item.description}}</div>
                     
                   </div>
                 </div>
@@ -42,7 +42,7 @@
                           cdkDropListOrientation="horizontal"
                           >
                   
-                            <div *ngFor="let item of itemY" class="box-2" cdkDrag>{{item.display_name.default}}</div>
+                            <div *ngFor="let item of itemY" class="box-2" cdkDrag>{{item.description}}</div>
                           
                         </div>
                       </div>
@@ -60,7 +60,7 @@
                           cdkDropListOrientation="horizontal"
                           [cdkDropListEnterPredicate]="isNumeric">
                   
-                            <div *ngFor="let item of itemZ" class="box-3" cdkDrag>{{item.display_name.default}}</div>
+                            <div *ngFor="let item of itemZ" class="box-3" cdkDrag>{{item.description}}</div>
                           
                         </div>
                       </div>

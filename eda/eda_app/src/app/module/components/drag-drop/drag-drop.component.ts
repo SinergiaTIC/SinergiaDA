@@ -9,12 +9,11 @@ import { CdkDrag, CdkDragDrop, moveItemInArray, transferArrayItem } from '@angul
 })
 export class DragDropComponent implements OnChanges {
 
-  @Input() attributes?:any[];
-  @Output() newCurrentQuery: EventEmitter<any[]> = new EventEmitter();
+  @Input() axes?:any[];
+  @Output() newAxes: EventEmitter<any[]> = new EventEmitter();
 
 
-  temporalAttributes = [];
-  newSortedAttributes = [];
+  newAxesOrdering = [];
   itemX = [];
   itemY = [];
   itemZ = [];
@@ -27,13 +26,11 @@ export class DragDropComponent implements OnChanges {
   }
   
   initialization() {
-    this.temporalAttributes = this.attributes;
+    console.log('Componente Drag-Drop axes ----> ', this.axes);
 
-    // console.log('attributes ==> ', this.attributes);
-
-    this.itemX = [this.attributes.find(e => e.column_type==='text')];
-    this.itemY = this.attributes.filter( e => (e.description.default !== this.itemX[0].description.default) && (e.column_type !== "numeric") );
-    this.itemZ = this.attributes.filter( e => e.column_type === "numeric");
+    this.itemX = this.axes[0].itemX;
+    this.itemY = this.axes[0].itemY;
+    this.itemZ = this.axes[0].itemZ;
     
     this.validated = true;
   }
@@ -42,24 +39,13 @@ export class DragDropComponent implements OnChanges {
     this.validated = (this.itemX.length>=1 && this.itemY.length>=1 && this.itemZ.length>=1) ? true : false;  
 
     if(this.validated) {
-      this.newSortedAttributes = [{itemX: this.itemX, itemY: this.itemY, itemZ: this.itemZ}]
+      this.newAxesOrdering = [{itemX: this.itemX, itemY: this.itemY, itemZ: this.itemZ}]
     }
   }
 
   temporalExecution(){
-    this.attributes = [];
-    this.itemX.forEach(e => this.attributes.push(e));
-    this.itemY.forEach(e => this.attributes.push(e));
-    this.itemZ.forEach(e => this.attributes.push(e));
-
-    this.newSortedAttributes = [{itemX: this.itemX, itemY: this.itemY, itemZ: this.itemZ}];
-
-    // Agregamos el ordenamiento
-    this.attributes.forEach(e =>  {
-      e.axes = this.newSortedAttributes
-    })
-
-    this.newCurrentQuery.emit(this.attributes);
+    this.newAxesOrdering = [{itemX: this.itemX, itemY: this.itemY, itemZ: this.itemZ}];
+    this.newAxes.emit(this.newAxesOrdering);
   }
 
   // Pasar items de un contenido a otro
@@ -80,7 +66,7 @@ export class DragDropComponent implements OnChanges {
   isNumeric(item: CdkDrag<any>) {
     const data = item.dropContainer.data;
     const value = item.element.nativeElement.innerText.toString();
-    if(data.filter((e:any) => e.description.default==value)[0].column_type!=='numeric') return false;
+    if(data.filter((e:any) => e.description==value)[0].column_type!=='numeric') return false;
     return true;
   }
 

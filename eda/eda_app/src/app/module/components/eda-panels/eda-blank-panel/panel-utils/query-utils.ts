@@ -191,6 +191,7 @@ export const QueryUtils = {
     const cumulativeSum = ebp.currentQuery.filter(field => field.column_type === 'date' && field.cumulativeSum === true).length > 0;
 
     if (dataDescription.otherColumns.length > 1 && cumulativeSum) {
+
       ebp.cumsumAlertController = new EdaDialogController({
         params: null,
         close: (event) => {
@@ -198,6 +199,14 @@ export const QueryUtils = {
         }
       })
     } else {
+
+      
+      if(ebp.chartForm.controls.chart.value!==null) {
+        if(ebp.chartForm.controls.chart.value.subValue === 'crosstable' && !ebp.newAxesChanged) {
+          ebp.axes = ebp.initAxes(ebp.currentQuery);
+        }
+      }
+
 
       /**
           * Too much rows check
@@ -213,6 +222,7 @@ export const QueryUtils = {
        */
       if ( (totalTableCount > MAX_TABLE_ROWS_FOR_ALERT)  && (ebp.selectedFilters.length + aggregations <= 0 )
             &&  ( ( ebp.queryLimit == undefined  )  ||  (  ebp.queryLimit >  MAX_TABLE_ROWS_FOR_ALERT ) )   ) {
+
 
         ebp.alertController = new EdaDialogController({
           params: { totalTableCount: totalTableCount },
