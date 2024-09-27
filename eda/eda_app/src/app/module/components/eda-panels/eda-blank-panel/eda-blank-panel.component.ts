@@ -1376,18 +1376,58 @@ export class EdaBlankPanelComponent implements OnInit {
         return disable;
     }
 
-    // public newCurrentQuery() {
-    //     return this.currentQuery
-    // }
+    public newCurrentQuery(currenQuery, axes) {
+        let newCurrentQuery = []
+
+        axes[0].itemX.forEach(e => {
+            currenQuery.forEach(cq => {
+                if(e.column_name===cq.column_name) {
+                    newCurrentQuery.push(cq);
+                    return;
+                }
+            });
+        });
+
+        
+        axes[0].itemY.forEach(e => {
+            currenQuery.forEach(cq => {
+                if(e.column_name===cq.column_name) {
+                    newCurrentQuery.push(cq);
+                    return;
+                }
+            });
+        });
+
+        
+        axes[0].itemZ.forEach(e => {
+            currenQuery.forEach(cq => {
+                if(e.column_name===cq.column_name) {
+                    newCurrentQuery.push(cq);
+                    return;
+                }
+            });
+        });
+
+        return newCurrentQuery;
+
+    }
 
     public newAxesOrdering(newAxes) {
+        this.newAxesChanged = true;
         const config = this.panelChartConfig.config.getConfig();
 
-        console.log('Desde el DragDrop: ', newAxes);
+        console.log('NEW-AXES: ', newAxes);
+        console.log('CURRENT-QUERY: ', this.currentQuery);
+        
+        this.currentQuery = this.newCurrentQuery(this.currentQuery, newAxes);
+        
+        console.log('NEW-CURRENT-QUERY: ', this.currentQuery);
+        
         config['ordering'] = [{axes: newAxes}];
         // this.currentQuery = this.newCurrentQuery();  // actualizando el currentQuery
-
+        
         QueryUtils.runManualQuery(this) // Ejecutando con la nueva configuracion de currentQuery
+        this.axes = newAxes;
     }
 
 }
