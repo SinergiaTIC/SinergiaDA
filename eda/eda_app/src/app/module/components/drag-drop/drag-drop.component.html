@@ -18,8 +18,18 @@
                     [cdkDropListData]="itemX"
                     (cdkDropListDropped)="drop($event)"
                     >
-            
-                      <div *ngFor="let item of itemX" class="box-1" cdkDrag>{{item.description}}</div>
+                      <div *ngFor="let item of itemX" class="box-1" cdkDrag>
+
+                        <div class="col">
+
+                          <span *ngIf='item.column_type == "text" ' class="mdi mdi-alphabetical" style="margin-right:4px;"></span>
+                          <span *ngIf='item.column_type == "date" ' class="mdi mdi-calendar-text" style="margin-right:4px;"></span>
+                          <span *ngIf='item.column_type == "numeric" ' class="mdi mdi-numeric" style="margin-right:4px;"></span>
+                          
+                          <span>{{item.description}}</span>
+                        </div>
+                        
+                      </div>
                     
                   </div>
                 </div>
@@ -42,8 +52,19 @@
                           cdkDropListOrientation="horizontal"
                           >
                   
-                            <div *ngFor="let item of itemY" class="box-2" cdkDrag>{{item.description}}</div>
-                          
+                          <div *ngFor="let item of itemY" class="box-1" cdkDrag>
+                            
+                            <div class="col">
+
+                              <span *ngIf='item.column_type == "text" ' class="mdi mdi-alphabetical" style="margin-right:4px;"></span>
+                              <span *ngIf='item.column_type == "date" ' class="mdi mdi-calendar-text" style="margin-right:4px;"></span>
+                              <span *ngIf='item.column_type == "numeric" ' class="mdi mdi-numeric" style="margin-right:4px;"></span>
+                              
+                              <span>{{item.description}}</span>
+                            </div>
+                            
+                          </div>         
+
                         </div>
                       </div>
 
@@ -60,8 +81,19 @@
                           cdkDropListOrientation="horizontal"
                           [cdkDropListEnterPredicate]="isNumeric">
                   
-                            <div *ngFor="let item of itemZ" class="box-3" cdkDrag>{{item.description}}</div>
-                          
+                          <div *ngFor="let item of itemZ" class="box-1" cdkDrag>
+                        
+                            <div class="col">
+    
+                              <span *ngIf='item.column_type == "text" ' class="mdi mdi-alphabetical" style="margin-right:4px;"></span>
+                              <span *ngIf='item.column_type == "date" ' class="mdi mdi-calendar-text" style="margin-right:4px;"></span>
+                              <span *ngIf='item.column_type == "numeric" ' class="mdi mdi-numeric" style="margin-right:4px;"></span>
+                              
+                              <span>{{item.description}}</span>
+                            </div>
+                            
+                          </div>    
+                                                
                         </div>
                       </div>
 
