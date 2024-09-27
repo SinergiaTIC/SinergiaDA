@@ -619,9 +619,8 @@ export class EdaBlankPanelComponent implements OnInit {
      * @param content panel content
      */
     public changeChartType(type: string, subType: string, config?: ChartConfig) {
-        this.axes = this.initAxes(this.currentQuery);
         this.configCrossTable = config
-
+        
         this.graphicType = type; // Actualizamos el tipo de variable para el componente drag-drop
         // console.log('type:', type)
         this.graficos = {};
@@ -631,12 +630,14 @@ export class EdaBlankPanelComponent implements OnInit {
         this.graficos.edaChart = subType;
         this.graficos.addTrend = config && config.getConfig() ? config.getConfig()['addTrend'] : false;
         this.graficos.numberOfColumns = config && config.getConfig() ? config.getConfig()['numberOfColumns'] : null;
-
+        
         if (!_.isEqual(this.display_v.chart, 'no_data') && !allow.ngIf && !allow.tooManyData) {
             // this.panelChart.destroyComponent();
             const _config = config || new ChartConfig(ChartsConfigUtils.setVoidChartConfig(type));
             this.renderChart(this.currentQuery, this.chartLabels, this.chartData, type, subType, _config);
         }
+        
+        this.axes = this.initAxes(this.currentQuery);
     }
 
     /**
@@ -1111,35 +1112,40 @@ export class EdaBlankPanelComponent implements OnInit {
 
     public initAxes(currenQuery) {
 
-        let itemX = [{
-            column_name: currenQuery.find(e => e.column_type==='text').column_name,
-            column_type: currenQuery.find(e => e.column_type==='text').column_type,
-            description: currenQuery.find(e => e.column_type==='text').description.default
-        }]
-
-        let itemY = [];
-        currenQuery.forEach(v => {
-            if((v.description.default !== itemX[0].description) && (v.column_type !== "numeric")) {
-                itemY.push({
-                    column_name: v.column_name,
-                    column_type: v.column_type,
-                    description: v.description.default
-                })
-            }
-        })
-
-        let itemZ = [];
-        currenQuery.forEach(v => {
-            if(v.column_type === "numeric") {
-                itemZ.push({
-                    column_name: v.column_name,
-                    column_type: v.column_type,
-                    description: v.description.default
-                })
-            }
-        })
-
-        return [{ itemX: itemX, itemY: itemY, itemZ: itemZ }]
+        try {
+            let itemX = [{
+                column_name: currenQuery.find(e => e.column_type==='text').column_name,
+                column_type: currenQuery.find(e => e.column_type==='text').column_type,
+                description: currenQuery.find(e => e.column_type==='text').description.default
+            }]
+    
+            let itemY = [];
+            currenQuery.forEach(v => {
+                if((v.description.default !== itemX[0].description) && (v.column_type !== "numeric")) {
+                    itemY.push({
+                        column_name: v.column_name,
+                        column_type: v.column_type,
+                        description: v.description.default
+                    })
+                }
+            })
+    
+            let itemZ = [];
+            currenQuery.forEach(v => {
+                if(v.column_type === "numeric") {
+                    itemZ.push({
+                        column_name: v.column_name,
+                        column_type: v.column_type,
+                        description: v.description.default
+                    })
+                }
+            })
+            return [{ itemX: itemX, itemY: itemY, itemZ: itemZ }]
+            
+        } catch (error) {
+            return []
+        }
+        
     }
 
     /**
