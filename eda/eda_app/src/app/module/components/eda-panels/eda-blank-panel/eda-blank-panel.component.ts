@@ -1103,8 +1103,8 @@ export class EdaBlankPanelComponent implements OnInit {
     */
     public runManualQuery = () => {
         this.attributes = _.cloneDeep(this.currentQuery); // Clonacion profunda con lodash
-        const config = this.panelChartConfig.config.getConfig();
-        config['ordering'] = undefined;
+        // const config = this.panelChartConfig.config.getConfig();
+        // config['ordering'] = undefined;
         QueryUtils.runManualQuery(this)
     };
 
