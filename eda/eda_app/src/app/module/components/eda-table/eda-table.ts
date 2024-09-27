@@ -1340,9 +1340,9 @@ export class EdaTable {
 
         labels.axes[0].itemX.forEach((e, j) => {
             mains.push({
-                title: labels.axes[0].itemX[j].description.default,
+                title: labels.axes[0].itemX[j].description,
                 column: labels.axes[0].itemX[j].column_name,
-                rowspan: numRows, colspan: 1, sortable: true, description: labels.axes[0].itemX[j].description.default
+                rowspan: numRows, colspan: 1, sortable: true, description: labels.axes[0].itemX[j].description
             })
         });
 
@@ -1353,19 +1353,19 @@ export class EdaTable {
         if (labels.axes[0].itemZ.length > 1) {
             for (let i = 0; i < labels.seriesLabels[0].length; i++) {
                 series[0].labels.push({
-                    title: labels.seriesLabels[0][i], description : labels.axes[0].itemY[0].description.default,
+                    title: labels.seriesLabels[0][i], description : labels.axes[0].itemY[0].description,
                     rowspan: 1, colspan: numCols / labels.seriesLabels[0].length, sortable: false
                 })
             }
         } else {
             /**The metric is the header */
-            series[0].labels.push({ title: labels.axes[0].itemZ[0].description.default, rowspan: 1, colspan: numCols, description:labels.axes[0].itemZ[0].description.default});
+            series[0].labels.push({ title: labels.axes[0].itemZ[0].description, rowspan: 1, colspan: numCols, description:labels.axes[0].itemZ[0].description});
 
             let serie = { labels: [] };
             for (let i = 0; i < labels.seriesLabels[0].length; i++) {
                 serie.labels.push({
-                    title: labels.seriesLabels[0][i], description : labels.axes[0].itemY[0].description.default,
-                    rowspan: 1, colspan: numCols / labels.seriesLabels[0].length, sortable: false, metric:labels.axes[0].itemZ[0].description.default
+                    title: labels.seriesLabels[0][i], description : labels.axes[0].itemY[0].description,
+                    rowspan: 1, colspan: numCols / labels.seriesLabels[0].length, sortable: false, metric:labels.axes[0].itemZ[0].description
                 })
             }
             series.push(serie);
@@ -1377,7 +1377,7 @@ export class EdaTable {
             let serie = { labels: [] };
             for (let j = 0; j < labels.seriesLabels[i].length * mult; j++) {
                 serie.labels.push({
-                    title: labels.seriesLabels[i][j % labels.seriesLabels[i].length], description : labels.axes[0].itemY[i].description.default,
+                    title: labels.seriesLabels[i][j % labels.seriesLabels[i].length], description : labels.axes[0].itemY[i].description,
                     rowspan: 1, colspan: colspanDiv / labels.seriesLabels[i].length, sortable: false
                 });
             }
@@ -1391,8 +1391,8 @@ export class EdaTable {
             let serie = { labels: [] }
             for (let i = 0; i < numCols; i++) {
                 serie.labels.push({
-                    title: labels.axes[0].itemZ[i % labels.axes[0].itemZ.length].description.default, description : labels.axes[0].itemZ[i % labels.axes[0].itemZ.length].description.default,
-                    rowspan: 1, colspan: 1, sortable: false, metric :labels.axes[0].itemZ[i % labels.axes[0].itemZ.length].description.default
+                    title: labels.axes[0].itemZ[i % labels.axes[0].itemZ.length].description, description : labels.axes[0].itemZ[i % labels.axes[0].itemZ.length].description,
+                    rowspan: 1, colspan: 1, sortable: false, metric :labels.axes[0].itemZ[i % labels.axes[0].itemZ.length].description
                 })
             }
 
