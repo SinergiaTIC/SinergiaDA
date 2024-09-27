@@ -640,14 +640,16 @@ export class EdaBlankPanelComponent implements OnInit {
         console.log('subtype: ', subType);
         console.log('config: ', this.configCrossTable);
 
-
-        if(subType === 'crosstable' && config===null){
-            this.axes = this.initAxes(this.currentQuery);
+        if(subType === 'crosstable'){
+            if((config===null) || config['config']['ordering'].length === 0){
+                this.axes = this.initAxes(this.currentQuery);
+            }
+    
+            if(config!==null && config['config']['ordering'].length !==0) {
+                this.axes = config['config']['ordering'][0]['axes']
+            }
         }
 
-        if(subType === 'crosstable' && config!==null && config['config']['ordering'].length !==0) {
-            this.axes = config['config']['ordering'][0]['axes']
-        }
 
     }
 
