@@ -86,10 +86,12 @@
                             </a>
                         </li>
                         <li>
-                            <a  class="waves-effect waves-dark" (click)="createDashboard = true;">
-                                <i class="mdi mdi-view-dashboard"></i>
-                                <span i18n="@@tituloNuevoInforme"> Nuevo informe</span>
-                            </a>
+                            <div *ngIf="!isObserver">
+                                <a  class="waves-effect waves-dark" (click)="createDashboard = true;">
+                                    <i class="mdi mdi-view-dashboard"></i>
+                                    <span i18n="@@tituloNuevoInforme"> Nuevo informe</span>
+                                </a>
+                            </div>
                         </li>
                     </ul>
                 </li>
