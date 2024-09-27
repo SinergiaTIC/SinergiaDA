@@ -90,13 +90,13 @@ export class userAndGroupsToMongo {
   static async syncronizeUsersGroups(
     mongoUsers: any,
     mongoGroups: any,
-    crmUser: any,
+    crmUsers: any,
     crmRoles: any
   ) {
 
     //eliminamos los usuarios inactivos del crm
     mongoUsers.forEach(a => {
-      let existe = crmUser.find(u => u.email === a.email);
+      let existe = crmUsers.find(u => u.email === a.email);
       if (existe) {
         if (
           a.email !== 'eda@sinergiada.org' &&
@@ -118,17 +118,20 @@ export class userAndGroupsToMongo {
     // --------------------------
     // Función auxiliar para verificar si un usuario existe en el CRM
     const userExistsInCRM = (user, crmUsers) => {
-      return crmUsers.some(crmUser => crmUser.email === user.email);
+      // Se añade que esté activo para comprobar si debe seguir estando ahi.
+      return crmUsers.some(crmUser => crmUser.email === user.email && crmUser.active == 1); 
     };
 
-    // Función auxiliar para verificar si un usuario debe estar en un grupo según el CRM
-    const userShouldBeInGroup = (user, group, crmRoles) => {
-      return crmRoles.some(role => role.name === group.name && role.user_name === user.email);
+    // Función auxiliar que permite saber si un usuario viene del CRM aunque esé de baja
+    const userExistedInCRM = (user, crmUsers) => {
+      // Se añade que esté activo para comprobar si debe seguir estando ahi.
+      return crmUsers.some(crmUser => crmUser.email === user.email  ); 
     };
 
     // Sincronizamos los grupos y usuarios respetando las reglas específicas
     await mongoGroups.forEach(async (group) => {
       if (group.name.startsWith('SDA_')) {
+
         // Para grupos SDA_, mantenemos usuarios de SDA y sincronizamos con CRM
         const crmUsersInGroup = crmRoles
           .filter(role => role.name === group.name)
@@ -140,29 +143,35 @@ export class userAndGroupsToMongo {
         group.users = [
           ...group.users.filter(userId => {
             const user = mongoUsers.find(u => u._id.toString() === userId.toString());
-            return user && !user.createdFromCRM; // Mantenemos usuarios creados en SDA
+            return user &&  !userExistsInCRM( user, crmUsers); // Mantenemos usuarios creados en SDA
           }),
           ...crmUsersInGroup
         ];
+
       } else {
         // Para grupos sin prefijo SDA_, mantenemos usuarios de SDA y actualizamos usuarios del CRM
         group.users = group.users.filter(userId => {
           const user = mongoUsers.find(u => u._id.toString() === userId.toString());
           if (!user) return false; // El usuario ya no existe en MongoDB
-          
-          if (user.createdFromCRM) {
-            // Para usuarios del CRM, verificamos si aún existen en CRM y deben estar en este grupo
-            return userExistsInCRM(user, crmUser) && userShouldBeInGroup(user, group, crmRoles);
+          if (userExistedInCRM(user, crmUsers)) {
+            // Para usuarios del CRM, verificamos si aún existen en CRM 
+            // Es un grupo de SDA... no sabemos si debe estar o no
+            return userExistsInCRM(user, crmUsers) ;
           } else {
             // Mantenemos usuarios creados directamente en SDA
             return true;
           }
         });
 
+        console.log('..+++++++++++++++++++......');
+        console.log(group);
+        console.log('..+++++++++++++++++++......');
+        console.log('añadimos nuevos usuarios del CRM que deberían estar en este grupo ... Si tu lo dices.......');
         // Añadimos nuevos usuarios del CRM que deberían estar en este grupo
+        // Si tu lo dices.......
         const newCrmUsersInGroup = crmRoles
           .filter(role => role.name === group.name)
-          .map(role => mongoUsers.find(u => u.email === role.user_name && u.createdFromCRM))
+          .map(role => mongoUsers.find(u => u.email === role.user_name &&  userExistsInCRM(u, crmUsers)  ))
           .filter(user => user && !group.users.includes(user._id))
           .map(user => user._id);
 
@@ -172,14 +181,12 @@ export class userAndGroupsToMongo {
 
     // Actualizamos los roles de los usuarios
     await mongoUsers.forEach(async (user) => {
-      if (user.createdFromCRM && !userExistsInCRM(user, crmUser)) {
-        // Si el usuario fue creado desde CRM pero ya no existe allí, eliminamos todos sus roles
-        user.role = [];
-      } else {
+      // Si el usuario fue creado desde CRM  lo gestionamos. Si no no....
+      if ( userExistsInCRM(user, crmUsers)) {
         // Mantenemos roles de grupos SDA_ y roles de grupos creados en SDA
         const existingRoles = user.role.filter(roleId => {
           const group = mongoGroups.find(g => g._id.toString() === roleId.toString());
-          return group && (group.name.startsWith('SDA_') || !group.createdFromCRM);
+          return group;
         });
 
         // Añadimos roles del CRM
@@ -196,6 +203,9 @@ export class userAndGroupsToMongo {
     // --------------------------
 
     // y luego vuelvo a añadir el contenido tanto en usuarios como en grupos
+    //
+    // No entiendo esto.....
+    //
     crmRoles.forEach(line => {
       mongoUsers.forEach(i => {
         mongoGroups.forEach(g => {
