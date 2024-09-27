@@ -499,11 +499,11 @@ export class EdaBlankPanelComponent implements OnInit {
         this.attributes = _.cloneDeep(this.currentQuery); // Recuperando el currentQuery para el componente drag-drop
 
         // INICIAMOS EL AXES DEL VALOR ALMACENADO
-        if(config['config']['ordering'].length===0){
-            this.axes = this.initAxes(this.currentQuery);
-        } else {
-            this.axes = config['config']['ordering'][0];
-        }
+        // if(config['config']['ordering'].length===0){
+        //     this.axes = this.initAxes(this.currentQuery);
+        // } else {
+        //     this.axes = config['config']['ordering'][0];
+        // }
     }
 
 
@@ -637,7 +637,18 @@ export class EdaBlankPanelComponent implements OnInit {
             this.renderChart(this.currentQuery, this.chartLabels, this.chartData, type, subType, _config);
         }
         
-        this.axes = this.initAxes(this.currentQuery);
+        console.log('subtype: ', subType);
+        console.log('config: ', this.configCrossTable);
+
+
+        if(subType === 'crosstable' && config===null){
+            this.axes = this.initAxes(this.currentQuery);
+        }
+
+        if(subType === 'crosstable' && config!==null && config['config']['ordering'].length !==0) {
+            this.axes = config['config']['ordering'][0]['axes']
+        }
+
     }
 
     /**
@@ -1413,21 +1424,19 @@ export class EdaBlankPanelComponent implements OnInit {
     }
 
     public newAxesOrdering(newAxes) {
+        this.axes = newAxes;
+        console.log('newAxes: ',newAxes);
+        console.log('this.axes: ',this.axes);
+
         this.newAxesChanged = true;
         const config = this.panelChartConfig.config.getConfig();
-
-        console.log('NEW-AXES: ', newAxes);
-        console.log('CURRENT-QUERY: ', this.currentQuery);
         
         this.currentQuery = this.newCurrentQuery(this.currentQuery, newAxes);
-        
-        console.log('NEW-CURRENT-QUERY: ', this.currentQuery);
-        
+                
         config['ordering'] = [{axes: newAxes}];
         // this.currentQuery = this.newCurrentQuery();  // actualizando el currentQuery
         
         QueryUtils.runManualQuery(this) // Ejecutando con la nueva configuracion de currentQuery
-        this.axes = newAxes;
     }
 
 }

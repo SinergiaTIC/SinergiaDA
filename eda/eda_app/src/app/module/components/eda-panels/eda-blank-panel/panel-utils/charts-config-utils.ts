@@ -35,7 +35,7 @@ export const ChartsConfigUtils = {
         sortedColumn: ebp.panelChart.componentRef.instance.inject.sortedColumn,
         styles : ebp.panelChart.componentRef.instance.inject.styles,
         noRepetitions: ebp.panelChart.componentRef.instance.inject.noRepetitions,
-        ordering: ebp.panelChart.componentRef.instance.inject.ordering
+        ordering: ebp.panelChart.componentRef.instance.inject.ordering,
       }
 
     } else if (ebp.panelChart.componentRef && ebp.panelChart.props.chartType === 'kpi') {
