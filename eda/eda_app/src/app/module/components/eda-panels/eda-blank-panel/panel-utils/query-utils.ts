@@ -200,7 +200,7 @@ export const QueryUtils = {
       })
     } else {
 
-      
+      // Aparatado que inicia el initAxes en caso el ordering este vacio en la config
       if(ebp.chartForm.controls.chart.value!==null) {
         if(ebp.chartForm.controls.chart.value.subValue === 'crosstable' && !ebp.newAxesChanged) {
           const config = ebp.panelChartConfig.config.getConfig();
@@ -210,7 +210,6 @@ export const QueryUtils = {
           
         }
       }
-
 
       /**
           * Too much rows check

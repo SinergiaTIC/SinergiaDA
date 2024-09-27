@@ -742,12 +742,9 @@ export class EdaTable {
     PivotTable() {
 
         let axes = []
-        console.log('PIVOTtABLE: ',this);
+        // console.log('PIVOTtABLE: ',this);
         const colsInfo = this.getColsInfo();
         const oldRows = this.getValues();
-
-        // console.log('colsInfo :',colsInfo)
-        // console.log('oldRows :',oldRows)
 
         const seriesLabels = [];
         for (let i = 0; i < colsInfo.numeric.length; i++) {

@@ -189,7 +189,6 @@ export class EdaBlankPanelComponent implements OnInit {
 
 
     // for the drag-drop component
-    public attributes:any[]=[]; 
     public axes:any[]=[]; 
     public newAxesChanged: boolean = false;
     public graphicType: string; // extraemos el tipo de gráfico al inicio y al ejecutar
@@ -489,21 +488,11 @@ export class EdaBlankPanelComponent implements OnInit {
         const config = ChartsConfigUtils.recoverConfig(panelContent.chart, panelContent.query.output.config);
         this.changeChartType(panelContent.chart, panelContent.edaChart, config);
 
-        console.log('CONFIG: ', config);
-
         this.showHiddenColumn = false;
         this.display_v.saved_panel = true;
         this.display_v.minispinner = false;
 
         this.graphicType = this.chartForm.value.chart.value;// iniciamos el tipo de gráfico crossTable
-        this.attributes = _.cloneDeep(this.currentQuery); // Recuperando el currentQuery para el componente drag-drop
-
-        // INICIAMOS EL AXES DEL VALOR ALMACENADO
-        // if(config['config']['ordering'].length===0){
-        //     this.axes = this.initAxes(this.currentQuery);
-        // } else {
-        //     this.axes = config['config']['ordering'][0];
-        // }
     }
 
 
@@ -637,9 +626,12 @@ export class EdaBlankPanelComponent implements OnInit {
             this.renderChart(this.currentQuery, this.chartLabels, this.chartData, type, subType, _config);
         }
         
-        console.log('subtype: ', subType);
-        console.log('config: ', this.configCrossTable);
+        // console.log('subtype: ', subType);
+        // console.log('config: ', this.configCrossTable);
 
+
+        // Controlar si se ejecuta una tabla cruzada
+        // Se verifica si la longitud de la variable axes
         if(subType === 'crosstable'){
             if((config===null) || config['config']['ordering'].length === 0){
                 this.axes = this.initAxes(this.currentQuery);
@@ -1122,7 +1114,9 @@ export class EdaBlankPanelComponent implements OnInit {
     /** Run query From dashboard component */
     public runQueryFromDashboard = (globalFilters: boolean) => QueryUtils.runQuery(this, globalFilters);
 
-
+    /**
+    * Función que inicializa el axes en su forma básica --> Tabla cruzada básica.
+    */
     public initAxes(currenQuery) {
 
         try {
@@ -1165,9 +1159,6 @@ export class EdaBlankPanelComponent implements OnInit {
     * Runs actual query when execute button is pressed to check for heavy queries
     */
     public runManualQuery = () => {
-        this.attributes = _.cloneDeep(this.currentQuery); // Clonacion profunda con lodash  // BORRARRRRRRRRRRRRRRR
-        // const config = this.panelChartConfig.config.getConfig();
-        // config['ordering'] = undefined;
         QueryUtils.runManualQuery(this)
     };
 
@@ -1389,6 +1380,9 @@ export class EdaBlankPanelComponent implements OnInit {
         return disable;
     }
 
+    /**
+    * Funcion que reordena el arreglo currentQuery segun el nuevo valor de ordenamiento de la variable axes devuelta por el componete drag-drop
+    */
     public newCurrentQuery(currenQuery, axes) {
         let newCurrentQuery = []
 
@@ -1425,19 +1419,13 @@ export class EdaBlankPanelComponent implements OnInit {
 
     }
 
+    // Funcion que recibe la variable axes moficicada por el componente drag-drop
     public newAxesOrdering(newAxes) {
         this.axes = newAxes;
-        console.log('newAxes: ',newAxes);
-        console.log('this.axes: ',this.axes);
-
-        this.newAxesChanged = true;
-        const config = this.panelChartConfig.config.getConfig();
-        
-        this.currentQuery = this.newCurrentQuery(this.currentQuery, newAxes);
-                
-        config['ordering'] = [{axes: newAxes}];
-        // this.currentQuery = this.newCurrentQuery();  // actualizando el currentQuery
-        
+        this.newAxesChanged = true; // Indica que se utilizara la tabla cruzada generica
+        const config = this.panelChartConfig.config.getConfig(); // Adquiera la configuración config
+        this.currentQuery = this.newCurrentQuery(this.currentQuery, newAxes); // Reordeno el currentQuery                
+        config['ordering'] = [{axes: newAxes}]; // Agrego el nuevo axes a la config
         QueryUtils.runManualQuery(this) // Ejecutando con la nueva configuracion de currentQuery
     }
 
