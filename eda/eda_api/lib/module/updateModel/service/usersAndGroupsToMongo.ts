@@ -114,6 +114,18 @@ export class userAndGroupsToMongo {
         }
       }
     })
+    //eliminamos los grupos del CRM que se han borrado.
+    mongoGroups.forEach(a => {  
+      if( a.name.startsWith('SDA_') ){
+        let existe = crmRoles.find(u => u.name === a.name);
+        if(!existe){
+          Group.deleteOne( {name: a.name}  ).then( function(){ console.log( a.name +  ' deleted')})
+        }
+      }
+    });
+
+
+
 
     // --------------------------
     // Función auxiliar para verificar si un usuario existe en el CRM
@@ -128,17 +140,22 @@ export class userAndGroupsToMongo {
       return crmUsers.some(crmUser => crmUser.email === user.email  ); 
     };
 
+
+
+
+    //
+    // Grupos
+    //
+
     // Sincronizamos los grupos y usuarios respetando las reglas específicas
     await mongoGroups.forEach(async (group) => {
       if (group.name.startsWith('SDA_')) {
-
         // Para grupos SDA_, mantenemos usuarios de SDA y sincronizamos con CRM
         const crmUsersInGroup = crmRoles
           .filter(role => role.name === group.name)
           .map(role => mongoUsers.find(u => u.email === role.user_name))
           .filter(user => user)
           .map(user => user._id);
-
         // Mantenemos usuarios existentes de SDA y añadimos/actualizamos usuarios del CRM
         group.users = [
           ...group.users.filter(userId => {
@@ -163,10 +180,6 @@ export class userAndGroupsToMongo {
           }
         });
 
-        console.log('..+++++++++++++++++++......');
-        console.log(group);
-        console.log('..+++++++++++++++++++......');
-        console.log('añadimos nuevos usuarios del CRM que deberían estar en este grupo ... Si tu lo dices.......');
         // Añadimos nuevos usuarios del CRM que deberían estar en este grupo
         // Si tu lo dices.......
         const newCrmUsersInGroup = crmRoles
@@ -179,47 +192,33 @@ export class userAndGroupsToMongo {
       }
     });
 
+
     // Actualizamos los roles de los usuarios
     await mongoUsers.forEach(async (user) => {
-      // Si el usuario fue creado desde CRM  lo gestionamos. Si no no....
-      if ( userExistsInCRM(user, crmUsers)) {
-        // Mantenemos roles de grupos SDA_ y roles de grupos creados en SDA
-        const existingRoles = user.role.filter(roleId => {
-          const group = mongoGroups.find(g => g._id.toString() === roleId.toString());
+      if( userExistsInCRM( user, crmUsers)) { 
+        // Actualizamos los usuarios del crm.... los demas no los gestionamos nosotros.
+        // Mantenemos roles  que no son SDA_
+        const nonCRMRoles = user.role.filter(roleId => {
+          const group = mongoGroups.find(g => g._id.toString() === roleId.toString() && !g.name.startsWith('SDA_')  );
           return group;
         });
-
         // Añadimos roles del CRM
         const crmRolesForUser = crmRoles
           .filter(role => role.user_name === user.email)
           .map(role => mongoGroups.find(g => g.name === role.name))
           .filter(group => group)
           .map(group => group._id);
-
         // Combinamos roles existentes con roles del CRM
-        user.role = [...new Set([...existingRoles, ...crmRolesForUser])];
+        user.role = [...new Set([...nonCRMRoles, ...crmRolesForUser])];
       }
+      // Para los usuarios que no son del crm yo no los gestiono
+      // Solo podría qutar los roles que no tocan. Pero no se cual es cual.
+      // Por eso no hay else
     });
+
     // --------------------------
 
-    // y luego vuelvo a añadir el contenido tanto en usuarios como en grupos
-    //
-    // No entiendo esto.....
-    //
-    crmRoles.forEach(line => {
-      mongoUsers.forEach(i => {
-        mongoGroups.forEach(g => {
-          if (g.name === line.name && i.email === line.user_name) {
-            try {
-              g.users.push(i._id);
-              i.role.push(g._id);
-            } catch (e) {
-              console.log("Esto no va")
-            }
-          }
-        })
-      })
-    })
+
 
     //empujo el grupo admin para que se inicialize con el admin de eda y el empujo usuario EDA con función de admin
     await mongoGroups.find(i => i.name ===  'EDA_ADMIN').users.push('135792467811111111111111')
@@ -263,46 +262,48 @@ export class userAndGroupsToMongo {
         console.log(err);
       }
     })    
-    
-    //filtramos grupos por usuario, buscando los grupos que empiezan por "SDA_"
-    await mongoUsers.forEach(async y => {
-      const groups = await Group.find(); 
-      let totalRolesIds = []; 
-      let userMongoRoles = [] ;
-      try {
-        userMongoRoles = (await User.findById(y._id)).role;
-      } catch (e) {
-        console.log("el usuario " + y.name + " no tiene roles")
-      }
-      const groupsWithNoSDA = groups.filter(g => !g.name.startsWith("SDA_"));
-      const filteredRoles = groupsWithNoSDA.filter(f => userMongoRoles.includes(f._id)); 
-      filteredRoles.forEach(r => totalRolesIds.push(r._id)); 
-      
-      const crmFilterUser = crmRoles.filter(rol => rol.user_name === y.email) 
-      const groupsMatchCrm = crmFilterUser.map(a => a.name) 
-      const mongocrmFilterUser = groups.filter(a => groupsMatchCrm.includes(a.name))
-      mongocrmFilterUser.forEach(a => totalRolesIds.push(a._id)); 
+
+      //filtramos grupos por usuario, buscando los grupos que empiezan por "SDA_"
+      await mongoUsers.forEach(async y => {
+        const groups = await Group.find(); 
+        let totalRolesIds = []; 
+        let userMongoRoles = [] ;
+      if( userExistsInCRM( user, crmUsers)) { 
+        // Solo actualizo los usuarios que  vienen del CRM.... Los otros no tengo manera de saber.
+            try {
+              userMongoRoles = (await User.findById(y._id)).role;
+            } catch (e) {
+              console.log("el usuario " + y.name + " no tiene roles")
+            }
+            const groupsWithNoSDA = groups.filter(g => !g.name.startsWith("SDA_"));
+            const filteredRoles = groupsWithNoSDA.filter(f => userMongoRoles.includes(f._id)); 
+            filteredRoles.forEach(r => totalRolesIds.push(r._id)); 
+        
+            const crmFilterUser = crmRoles.filter(rol => rol.user_name === y.email) 
+            const groupsMatchCrm = crmFilterUser.map(a => a.name) 
+            const mongocrmFilterUser = groups.filter(a => groupsMatchCrm.includes(a.name))
+            mongocrmFilterUser.forEach(a => totalRolesIds.push(a._id));   
+                
+          if (y._id != "135792467811111111111111" || y._id !="135792467811111111111112" ) {
+            try {
+              await User.updateOne({ email: y.email }, { $unset : {role: {}} })
+              .then(function () {
+              // console.log(y.name + ' Unset ') 
+              })
+              .catch(function (error) {
+                console.log(error) 
+              })
             
-      if (y._id != "135792467811111111111111" || y._id !="135792467811111111111112" ) {
-         try {
-          await User.updateOne({ email: y.email }, { $unset : {role: {}} })
-          .then(function () {
-           // console.log(y.name + ' Unset ') 
-          })
-          .catch(function (error) {
-            console.log(error) 
-          })
-        
-        await User.updateOne({ email: y.email }, { $addToSet : {role: totalRolesIds} })
-          .then(function () {
-            //console.log(y.name + ' Updated')
-          })
-          .catch(function (error) {
-            console.log(error) 
-          })
-        }
-        
-      catch (err) {}
-    }})
-  }
+            await User.updateOne({ email: y.email }, { $addToSet : {role: totalRolesIds} })
+              .then(function () {
+                //console.log(y.name + ' Updated')
+              })
+              .catch(function (error) {
+                console.log(error) 
+              })
+            }catch (err) {}
+          }
+      }
+    })
+}
 }
