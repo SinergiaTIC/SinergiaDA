@@ -275,7 +275,9 @@ export class TableDialogComponent extends EdaDialogAbstract implements AfterView
     const styles = this.styles;
 
     const properties = new TableConfig(this.onlyPercentages, this.resultAsPecentage, rows,
-      this.col_subtotals, this.col_totals, this.row_totals, this.trend, sortedSerie, sortedColumn, styles, this.noRepetitions, []);
+      this.col_subtotals, this.col_totals, this.row_totals, this.trend, sortedSerie, sortedColumn, styles, this.noRepetitions, this.ordering);
+
+    console.log('properties: ', properties);
 
     this.onClose(EdaDialogCloseEvent.UPDATE, properties);
   }
