@@ -423,6 +423,7 @@ export class EdaTable {
 
     colSubTotals(page) {
         this.partialTotalsRow = [];
+
         const offset = page * this.initRows - this.initRows;
         let partialRow = this.sumPartialRows(offset);
         let firstNonNumericRow = true;
@@ -522,24 +523,33 @@ export class EdaTable {
         for (let i = 0; i < keys.length; i++) {
             row[keys[i]] = 0;
         }
+
         return row;
 
     }
     sumPartialRows(offset: number) {
+
         let row = this.buildTotalRow();
         const values = this._value;
         const keys = this.cols.map(col => col.field);
         const lastValue = this.initRows + offset;
+
         for (let i = offset; i < lastValue; i++) {
             for (let j = 0; j < keys.length; j++) {
-                const currentCol = this.cols.filter(col => col.field === keys[j])[0];
+                const currentCol = this.cols.filter(col => col.field === keys[j])[0];                
                 if (i < values.length) {
                     if (currentCol.type === "EdaColumnNumber") {
-                        row[keys[j]] = row[keys[j]] + values[i][keys[j]];
+                        if(values[i][keys[j]] === '') {
+                            row[keys[j]] = row[keys[j]] + 0;
+                        }
+                        else {
+                            row[keys[j]] = row[keys[j]] + parseFloat(values[i][keys[j]]);
+                        }
                     }
                 }
             }
         }
+
         return row;
     }
 
