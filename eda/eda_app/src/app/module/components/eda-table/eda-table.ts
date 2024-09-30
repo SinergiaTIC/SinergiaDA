@@ -212,6 +212,7 @@ export class EdaTable {
     }
 
     checkTotals(event) {
+
         if (this.withRowTotals) {
             this.rowTotals();
         } else {
@@ -426,6 +427,12 @@ export class EdaTable {
         let partialRow = this.sumPartialRows(offset);
         let firstNonNumericRow = true;
 
+        console.log('offset: ', offset)
+        console.log('this.initRows: ', this.initRows)
+        console.log('partialRow: ', partialRow)
+        console.log('this.cols: ', this.cols);
+
+
         this.cols.forEach((col, i) => {
             if (col.type === "EdaColumnNumber") {
                 this.partialTotalsRow.push(
@@ -453,15 +460,26 @@ export class EdaTable {
         this.withColTotals = true;
         this.totalsRow = [];
 
+
         let row = this.buildTotalRow();
         const values = this._value;
         const keys = this.cols.map(col => col.field);
+
+        console.log('row :',row);
+        console.log('values :',values);
+        console.log('keys :',keys);
+        console.log('this.cols :',this.cols);
+
+
 
         for (let i = 0; i < values.length; i++) {
             for (let j = 0; j < keys.length; j++) {
                 if (i < values.length) {
                     const currentCol = this.cols.filter(col => col.field === keys[j])[0];
+                    console.log('currentCol:', currentCol);
                     if (currentCol.type === "EdaColumnNumber") {
+                        console.log('values[i][keys[j]]', values[i][keys[j]])
+
                         let decimalplaces = 0;
                         try{
                             let c =  <EdaColumnNumber>currentCol;
@@ -470,8 +488,17 @@ export class EdaTable {
                             console.log('error getting decimal places');
                             console.log(e);
                          }
-                        row[keys[j]] = parseFloat(row[keys[j]] ) + parseFloat(values[i][keys[j]]);
-                        row[keys[j]] = row[keys[j]].toFixed(decimalplaces );
+
+                        if(values[i][keys[j]]===''){
+                            row[keys[j]] = parseFloat(row[keys[j]] ) + 0;
+                            row[keys[j]] = row[keys[j]].toFixed(decimalplaces );
+                        }
+                        else {
+                            row[keys[j]] = parseFloat(row[keys[j]] ) + parseFloat(values[i][keys[j]]);
+                            row[keys[j]] = row[keys[j]].toFixed(decimalplaces );
+                        }
+
+
                     } else {
                         row[keys[j]] = NaN;
                     }
@@ -503,6 +530,7 @@ export class EdaTable {
         });
     }
 
+    // Funcion que rellena de ceros en los totales
     buildTotalRow() {
         let row = {};
         const keys = Object.keys(this._value[0]);
@@ -510,6 +538,7 @@ export class EdaTable {
             row[keys[i]] = 0;
         }
         return row;
+
     }
     sumPartialRows(offset: number) {
         let row = this.buildTotalRow();
