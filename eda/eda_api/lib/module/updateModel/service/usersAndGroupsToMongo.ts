@@ -165,6 +165,16 @@ export class userAndGroupsToMongo {
           ...crmUsersInGroup
         ];
 
+
+        // Añadimos nuevos usuarios del CRM que deberían estar en este grupo
+        const newCrmUsersInGroup = crmRoles
+          .filter(role => role.name === group.name)
+          .map(role => mongoUsers.find(u => u.email === role.user_name &&  userExistsInCRM(u, crmUsers)  ))
+          .filter(user => user && !group.users.includes(user._id))
+          .map(user => user._id);
+          
+        group.users = [...group.users, ...newCrmUsersInGroup];
+
       } else {
         // Para grupos sin prefijo SDA_, mantenemos usuarios de SDA y actualizamos usuarios del CRM
         group.users = group.users.filter(userId => {
@@ -180,15 +190,10 @@ export class userAndGroupsToMongo {
           }
         });
 
-        // Añadimos nuevos usuarios del CRM que deberían estar en este grupo
-        // Si tu lo dices.......
-        const newCrmUsersInGroup = crmRoles
-          .filter(role => role.name === group.name)
-          .map(role => mongoUsers.find(u => u.email === role.user_name &&  userExistsInCRM(u, crmUsers)  ))
-          .filter(user => user && !group.users.includes(user._id))
-          .map(user => user._id);
+ 
+        
 
-        group.users = [...group.users, ...newCrmUsersInGroup];
+
       }
     });
 
@@ -202,6 +207,8 @@ export class userAndGroupsToMongo {
           const group = mongoGroups.find(g => g._id.toString() === roleId.toString() && !g.name.startsWith('SDA_')  );
           return group;
         });
+
+
         // Añadimos roles del CRM
         const crmRolesForUser = crmRoles
           .filter(role => role.user_name === user.email)
@@ -215,6 +222,7 @@ export class userAndGroupsToMongo {
       // Solo podría qutar los roles que no tocan. Pero no se cual es cual.
       // Por eso no hay else
     });
+
 
     // --------------------------
 
@@ -234,6 +242,8 @@ export class userAndGroupsToMongo {
       }
 
     }
+
+
 
 
 
@@ -263,30 +273,15 @@ export class userAndGroupsToMongo {
       }
     })    
 
+    const newGroupsInMongo =  await Group.find(); 
+    const newGroupsIDInMongo = newGroupsInMongo.map(g=>g._id.toString());
+ 
       //filtramos grupos por usuario, buscando los grupos que empiezan por "SDA_"
-      await mongoUsers.forEach(async y => {
-        const groups = await Group.find(); 
-        let totalRolesIds = []; 
-        let userMongoRoles = [] ;
-      if( userExistsInCRM( user, crmUsers)) { 
+      await mongoUsers.forEach(async user => {
+        user.role = user.role.filter( r => newGroupsIDInMongo.includes(r.toString() ) )
         // Solo actualizo los usuarios que  vienen del CRM.... Los otros no tengo manera de saber.
             try {
-              userMongoRoles = (await User.findById(y._id)).role;
-            } catch (e) {
-              console.log("el usuario " + y.name + " no tiene roles")
-            }
-            const groupsWithNoSDA = groups.filter(g => !g.name.startsWith("SDA_"));
-            const filteredRoles = groupsWithNoSDA.filter(f => userMongoRoles.includes(f._id)); 
-            filteredRoles.forEach(r => totalRolesIds.push(r._id)); 
-        
-            const crmFilterUser = crmRoles.filter(rol => rol.user_name === y.email) 
-            const groupsMatchCrm = crmFilterUser.map(a => a.name) 
-            const mongocrmFilterUser = groups.filter(a => groupsMatchCrm.includes(a.name))
-            mongocrmFilterUser.forEach(a => totalRolesIds.push(a._id));   
-                
-          if (y._id != "135792467811111111111111" || y._id !="135792467811111111111112" ) {
-            try {
-              await User.updateOne({ email: y.email }, { $unset : {role: {}} })
+              await User.updateOne({ email: user.email }, { $unset : {role: {}} })
               .then(function () {
               // console.log(y.name + ' Unset ') 
               })
@@ -294,16 +289,15 @@ export class userAndGroupsToMongo {
                 console.log(error) 
               })
             
-            await User.updateOne({ email: y.email }, { $addToSet : {role: totalRolesIds} })
+            await User.updateOne({ email: user.email }, { $addToSet : {role: user.role} })
               .then(function () {
-                //console.log(y.name + ' Updated')
+                //console.log( ' Updated: ');
+                // console.log(user);
               })
               .catch(function (error) {
                 console.log(error) 
               })
             }catch (err) {}
-          }
-      }
     })
 }
 }
