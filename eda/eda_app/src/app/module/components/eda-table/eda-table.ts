@@ -258,17 +258,25 @@ export class EdaTable {
         const withTotalcols = this.cols.filter(col => col.rowTotal === true).length > 0;
         const series = [];
 
-        // console.log('this.series: ', this.series);
-        // console.log('numSeries: ', numSeries);
-        // console.log('withTotalcols: ', withTotalcols);
-
         if (withTotalcols) {
             this.cols = this.cols.filter(col => col.rowTotal !== true);
             this.series[numSeries - 2].labels = this.series[numSeries - 2].labels.filter(label => label.isTotal !== true);
-
             //percentage columns has no label 
-            const lastLayerLabels = this.cols.filter(col => col.type !== "EdaColumnPercentage").length - 1;
-            this.series[numSeries - 1].labels = this.series[numSeries - 1].labels.slice(0, lastLayerLabels);
+
+            if(this.ordering[0]!==undefined){
+                if(this.ordering[0].axes[0].itemX.length>1){
+                    const lastLayerLabels = this.cols.filter(col => col.type !== "EdaColumnPercentage").length - this.ordering[0].axes[0].itemX.length;
+                    this.series[numSeries - 1].labels = this.series[numSeries - 1].labels.slice(0, lastLayerLabels);
+                } else {
+                    this.series[0].labels = this.series[0].labels.filter(label => label.isTotal !== true);
+
+                    const lastLayerLabels = this.cols.filter(col => col.type !== "EdaColumnPercentage").length - 1;
+                    this.series[numSeries - 1].labels = this.series[numSeries - 1].labels.slice(0, lastLayerLabels);
+                }
+            } else {
+                const lastLayerLabels = this.cols.filter(col => col.type !== "EdaColumnPercentage").length - 1;
+                this.series[numSeries - 1].labels = this.series[numSeries - 1].labels.slice(0, lastLayerLabels);
+            }
 
         }
     }
@@ -304,7 +312,6 @@ export class EdaTable {
             let pretyNames; // Valores Numéricos de Columna. 
             if (this.series[0].labels.length > 2) {
 
-                // console.log('ESTE VALORRRR: ',this.ordering[0].axes[0].itemZ.length)
                 if(this.ordering[0]!==undefined){
                     if(this.ordering[0].axes[0].itemZ.length===1){
                         pretyNames = [this.ordering[0].axes[0].itemZ[0].description];
@@ -342,9 +349,7 @@ export class EdaTable {
                 valuesKeys.forEach(key => {
                     totals[key] = 0;
                     row[key] = 0;
-                });
-
-                // console.log('row : ', row); // Rellena de cero como valores iniciales de la suma
+                });                
 
                 numericCols.forEach(key => {
                     valuesKeys.forEach(valueKey => {
