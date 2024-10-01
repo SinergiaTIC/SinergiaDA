@@ -290,19 +290,11 @@ export class EdaTable {
 
             //get unique names for same metric in each sub-set -> columns : A-income, B-income, A-amount, B-amount -> returns:  [income, amount]
             const numericCols = this.cols.filter(col => col.type === "EdaColumnNumber").map(c => c.field);
-            
-            console.log('numericCols: ',numericCols)
-            console.log('this._value: ',this._value)
-
 
             const keys = Object.keys(this._value[0])
                 .filter(key => numericCols.includes(key))
                 .map(key => key.slice(key.lastIndexOf('~') + 1));
-            const valuesKeys = Array.from(new Set(keys));
-
-            console.log('keys: ',keys)            
-            console.log('valuesKeys: ',valuesKeys)            
-            console.log('this.series: ',this.series)            
+            const valuesKeys = Array.from(new Set(keys));    
             
             //get names for new columns from series array
             let pretyNames; // Valores Numéricos de Columna. 
@@ -311,8 +303,6 @@ export class EdaTable {
             } else {
                 pretyNames = [this.series[0].labels[this.series[0].labels.length - 1].title];
             }
-
-            console.log('pretyNames :', pretyNames);
 
             //add total header  --> se agrego la descripción de la columna
             if (!colNames.includes(valuesKeys[0])) {
@@ -338,6 +328,8 @@ export class EdaTable {
                     row[key] = 0;
                 });
 
+                // console.log('row : ', row); // Rellena de cero como valores iniciales de la suma
+
                 numericCols.forEach(key => {
                     valuesKeys.forEach(valueKey => {
                       let keyArray = key.split('~');
@@ -348,15 +340,22 @@ export class EdaTable {
                                     decimalplaces =  row[key].toString().split(".")[1].length;
                                 }
                             }catch(e){ }
-                            totals[valueKey] = parseFloat(totals[valueKey]) + parseFloat(row[key]);
-                            totals[valueKey] = parseFloat(totals[valueKey].toFixed(decimalplaces ));
 
+                            if(row[key] === '') {
+                                totals[valueKey] = parseFloat(totals[valueKey]) + 0;
+                                totals[valueKey] = parseFloat(totals[valueKey].toFixed(decimalplaces ));
+                            } else {
+                                totals[valueKey] = parseFloat(totals[valueKey]) + parseFloat(row[key]);
+                                totals[valueKey] = parseFloat(totals[valueKey].toFixed(decimalplaces ));
+                            }
                         }
                     });
                 });
+
                 Object.entries(totals).forEach(pair => {
                     row[pair[0]] = pair[1];
                 });
+
             });
 
         }
