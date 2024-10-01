@@ -137,7 +137,23 @@ export class CleanModel {
             
             model_granted_roles = objetosUnicosGrupos.concat(objetosUnicosUsuarios);
 
-            main_model.ds.metadata.model_granted_roles = model_granted_roles;
+            model_granted_roles.forEach( r=> {
+
+                r.source = 'update_model';
+                //console.log(r);
+            }
+            );
+
+            const userRoles = mgsmap.filter( r=> { console.log(r.hasOwnProperty('source'));
+               return r.hasOwnProperty('source') == false }   );
+
+
+            //console.log(userRoles);
+            //Ronald. Aqui añadimos una etiqueta que nos diga que viene del update model.
+            //"source": "update_model"
+
+            //const all_roles =   [ ...model_granted_roles, ...userRoles];   
+            //main_model.ds.metadata.model_granted_roles = all_roles;
             return main_model;
 
         }
