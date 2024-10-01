@@ -285,37 +285,48 @@ export class EdaTable {
 
     rowTotals() {
         if (this.pivot === true) {
-            // 
+
             const colNames = this.cols.map(col => col.field);
 
             //get unique names for same metric in each sub-set -> columns : A-income, B-income, A-amount, B-amount -> returns:  [income, amount]
             const numericCols = this.cols.filter(col => col.type === "EdaColumnNumber").map(c => c.field);
+            
+            console.log('numericCols: ',numericCols)
+            console.log('this._value: ',this._value)
+
+
             const keys = Object.keys(this._value[0])
                 .filter(key => numericCols.includes(key))
                 .map(key => key.slice(key.lastIndexOf('~') + 1));
             const valuesKeys = Array.from(new Set(keys));
+
+            console.log('keys: ',keys)            
+            console.log('valuesKeys: ',valuesKeys)            
+            console.log('this.series: ',this.series)            
             
             //get names for new columns from series array
-            let pretyNames;
+            let pretyNames; // Valores Numéricos de Columna. 
             if (this.series[0].labels.length > 2) {
                 pretyNames = Array.from(new Set(this.series[this.series.length - 1].labels.map(serie => serie.title)))
             } else {
                 pretyNames = [this.series[0].labels[this.series[0].labels.length - 1].title];
             }
 
-            //add total header
+            console.log('pretyNames :', pretyNames);
+
+            //add total header  --> se agrego la descripción de la columna
             if (!colNames.includes(valuesKeys[0])) {
-                this.series[this.series.length - 2].labels.push({ title: this.Totals, rowspan: 1, colspan: valuesKeys.length, isTotal: true });
+                this.series[0].labels.push({ title: this.Totals, rowspan: (this.series.length-1), colspan: valuesKeys.length, isTotal: true, description: this.Totals });
             }
 
-            //add cols and headers
+            //add cols and headers --> se agrego las descripciones de las columnas
             valuesKeys.forEach((valueKey, i) => {
                 if (!colNames.includes(valueKey)) {
                     const col = new EdaColumnNumber({ header: valueKey, field: valueKey });
                     col.styleClass = 'total-col';
                     col.rowTotal = true;
                     this.cols.push(col);
-                    this.series[this.series.length - 1].labels.push({ title: pretyNames[i], rowspan: 2, colspan: 1, sortable: true, column: valueKey });
+                    this.series[this.series.length - 1].labels.push({ title: pretyNames[i], rowspan: 2, colspan: 1, sortable: true, column: valueKey, description: pretyNames[i] });
                 }
             });
 
