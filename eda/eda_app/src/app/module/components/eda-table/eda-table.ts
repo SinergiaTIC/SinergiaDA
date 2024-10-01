@@ -258,6 +258,10 @@ export class EdaTable {
         const withTotalcols = this.cols.filter(col => col.rowTotal === true).length > 0;
         const series = [];
 
+        // console.log('this.series: ', this.series);
+        // console.log('numSeries: ', numSeries);
+        // console.log('withTotalcols: ', withTotalcols);
+
         if (withTotalcols) {
             this.cols = this.cols.filter(col => col.rowTotal !== true);
             this.series[numSeries - 2].labels = this.series[numSeries - 2].labels.filter(label => label.isTotal !== true);
@@ -299,7 +303,18 @@ export class EdaTable {
             //get names for new columns from series array
             let pretyNames; // Valores Numéricos de Columna. 
             if (this.series[0].labels.length > 2) {
-                pretyNames = Array.from(new Set(this.series[this.series.length - 1].labels.map(serie => serie.title)))
+
+                // console.log('ESTE VALORRRR: ',this.ordering[0].axes[0].itemZ.length)
+                if(this.ordering[0]!==undefined){
+                    if(this.ordering[0].axes[0].itemZ.length===1){
+                        pretyNames = [this.ordering[0].axes[0].itemZ[0].description];
+                    } else {
+                        pretyNames = Array.from(new Set(this.series[this.series.length - 1].labels.map(serie => serie.title)))
+                    }
+                } else {
+                    pretyNames = Array.from(new Set(this.series[this.series.length - 1].labels.map(serie => serie.title)))
+                }
+
             } else {
                 pretyNames = [this.series[0].labels[this.series[0].labels.length - 1].title];
             }
@@ -308,6 +323,7 @@ export class EdaTable {
             if (!colNames.includes(valuesKeys[0])) {
                 this.series[0].labels.push({ title: this.Totals, rowspan: (this.series.length-1), colspan: valuesKeys.length, isTotal: true, description: this.Totals });
             }
+
 
             //add cols and headers --> se agrego las descripciones de las columnas
             valuesKeys.forEach((valueKey, i) => {
