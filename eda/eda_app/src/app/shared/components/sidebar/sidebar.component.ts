@@ -23,7 +23,7 @@ export class SidebarComponent implements OnInit {
     public logoSidebar: string;
     public homeLink = '/home'
     public createDashboard: boolean = false;
-    public isObserver: boolean = false;
+    /* SDA CUSTOM*/ public isObserver: boolean = false;
 
     constructor(
         public router: Router,
@@ -54,9 +54,9 @@ export class SidebarComponent implements OnInit {
             data => this.dataSourceMenu = data,
             err => this.alertService.addError(err)
         );
-        this.sidebarService.isObserver$.subscribe(value => {
-            this.isObserver = value;
-          });
+        /* SDA CUSTOM*/ this.sidebarService.isObserver$.subscribe(value => {
+        /* SDA CUSTOM*/     this.isObserver = value;
+        /* SDA CUSTOM*/  });
 
         
     }

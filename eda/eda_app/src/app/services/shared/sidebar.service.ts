@@ -53,10 +53,10 @@ export class SidebarService extends ApiService {
     getToggleSideNav(): Observable<boolean> {
         return this.hideSideNavSubj.asObservable();
     }
-    private isObserverSubject = new BehaviorSubject<boolean>(false);
-    isObserver$ = this.isObserverSubject.asObservable();
+    /* SDA CUSTOM*/ private isObserverSubject = new BehaviorSubject<boolean>(false);
+    /* SDA CUSTOM*/ isObserver$ = this.isObserverSubject.asObservable();
   
-    setIsObserver(value: boolean) {
-      this.isObserverSubject.next(value);
-    }
+    /* SDA CUSTOM*/ setIsObserver(value: boolean) {
+    /* SDA CUSTOM*/    this.isObserverSubject.next(value);
+    /* SDA CUSTOM*/ }
 }
