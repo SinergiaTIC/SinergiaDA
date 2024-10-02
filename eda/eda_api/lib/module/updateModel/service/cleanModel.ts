@@ -138,26 +138,21 @@ export class CleanModel {
             model_granted_roles = objetosUnicosGrupos.concat(objetosUnicosUsuarios);
 
             model_granted_roles.forEach( r=> {
-
                 r.source = 'update_model';
-                //console.log(r);
             }
             );
 
-            const userRoles = mgsmap.filter( r=> { console.log(r.hasOwnProperty('source'));
-               return r.hasOwnProperty('source') == false }   );
+            // Recuperando los permisos provenientes de SinergiaDA 
+            // la propiedad source --> "EDA" indica que el permiso proviene de la applicacion y no de la base de datos
+            const userRoles = mgsmap[0].filter( (r:any) => {
+                return r?.source === 'EDA' 
+            });
 
+            // Agregando los permisos agregados previamente en la aplicacion. 
+            const all_roles =   [ ...model_granted_roles, ...userRoles];   
+            main_model.ds.metadata.model_granted_roles = all_roles;
 
-            //console.log(userRoles);
-            //Ronald. Aqui añadimos una etiqueta que nos diga que viene del update model.
-            //"source": "update_model"
-
-            //const all_roles =   [ ...model_granted_roles, ...userRoles];   
-            //main_model.ds.metadata.model_granted_roles = all_roles;
             return main_model;
-
         }
-        
-        
     }
 
