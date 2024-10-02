@@ -1,3 +1,31 @@
+/**
+ * User and Group Synchronization Service
+ * Part of the updateModel module
+ * 
+ * This service handles the synchronization of users and groups between SinergiaCRM 
+ * and SinergiaDA (Sinergia Data Analytics) systems. It is a crucial component of 
+ * the updateModel process, ensuring that user and group data is consistently 
+ * maintained across both platforms. Key functions include:
+ * 
+ * 1. Importing users from SinergiaCRM to SinergiaDA, creating or updating as needed.
+ * 2. Importing and creating groups from SinergiaCRM roles in SinergiaDA.
+ * 3. Synchronizing user-group relationships based on CRM roles and SDA-specific rules.
+ * 4. Handling special cases for admin users and SDA-specific groups (prefixed with 'SDA_').
+ * 5. Removing inactive users and deleted groups to maintain system consistency.
+ * 6. Updating the MongoDB database in SinergiaDA with the synchronized data.
+ * 
+ * The userAndGroupsToMongo class contains two primary methods:
+ * - crm_to_eda_UsersAndGroups: Initiates the synchronization process.
+ * - syncronizeUsersGroups: Performs detailed synchronization logic.
+ * 
+ * This service is a critical part of maintaining data integrity between SinergiaCRM 
+ * and SinergiaDA, ensuring that analytics and reporting in SinergiaDA accurately 
+ * reflect the current state of users and groups in the CRM system.
+ * 
+ * Note: This service assumes the existence of User and Group models in the SinergiaDA 
+ * MongoDB database and relies on user and role data structures from SinergiaCRM.
+ */
+
 import mongoose, {
   connections,
   Model,
@@ -10,28 +38,21 @@ import Group, { IGroup } from '../../admin/groups/model/group.model'
 
 export class userAndGroupsToMongo {
   static async crm_to_eda_UsersAndGroups(users: any, roles: any) {
-    /** METEMOS USUARIOS Y GRUPOS */
-
+    // Sync users and groups from CRM to EDA
     let mongoUsers = await User.find()
 
-    /** inicializamos usuarios */
+    // Initialize users
     for (let i = 0; i < users.length; i++) {
       let existe = mongoUsers.find(e => e.email == users[i].email)
       if (!existe) {
-        //console.log('procesando');
-        //console.log(users[i]);
-
         let user = new User({
           name: users[i].name,
           email: users[i].email,
           password: users[i].password,
           role: []
-          //active: users[i].active  ----> eliminamos el campo active y discriminamos más tarde su eliminación
         })
         try {
           await user.save()
-          //console.log( ' usuario ' + user.name + ' introducido correctamente en la bbdd' ) ;
-          
         } catch (err) {
           console.log(
             'usuario ' +
@@ -41,18 +62,16 @@ export class userAndGroupsToMongo {
         }
       } else {
         await User.findOneAndUpdate({ name: users[i].name }, { password: users[i].password });
-        // console.log(' usuario ' + users[i].name + '  ya existe en mongo')
       }
     }
 
+    // Initialize groups
     let mongoGroups = await Group.find()
     mongoUsers = await User.find()
     const unique_groups = [...new Set(roles.map(item => item.name))]
 
     for (let i = 0; i < unique_groups.length; i++) {
       let existe = mongoGroups.find(e => e.name == unique_groups[i])
-      //console.log('Existe: ' +  existe);
-      // No meto estos 3 porque son internos de EDA
       if (
         !existe &&
         unique_groups[i] != 'EDA_ADMIN' &&
@@ -65,7 +84,6 @@ export class userAndGroupsToMongo {
           users: []
         })
         try {
-          //console.log('Grabo e grupo' +  group);
           await group.save()
           console.log(
             ' grupo ' + group.name + ' introducido correctamente en la bbdd'
@@ -75,15 +93,10 @@ export class userAndGroupsToMongo {
             'grupo ' + group.name + ' repetido, no se ha introducido en la bbdd'
           )
         }
-      } else {
-        //console.log(' grupo ' + unique_groups[i] + ' Ya existe')
       }
     }
 
-    /* mete usuarios en los grupos y viceversa . 
-    cruza los datos de los usuarios de CRM con los de EDA para actualizar.
-    */
-
+    // Synchronize users and groups
     await this.syncronizeUsersGroups(mongoUsers, mongoGroups, users, roles);
   }
   
@@ -93,8 +106,7 @@ export class userAndGroupsToMongo {
     crmUsers: any,
     crmRoles: any
   ) {
-
-    //eliminamos los usuarios inactivos del crm
+    // Remove inactive users from CRM
     mongoUsers.forEach(a => {
       let existe = crmUsers.find(u => u.email === a.email);
       if (existe) {
@@ -103,18 +115,17 @@ export class userAndGroupsToMongo {
           a.email !== 'eda@jortilles.com' &&
           a.email !== 'edaanonim@jortilles.com' &&
           existe.active == 0) {
-            //console.log("El usuario " + a.name + " ya no está activo y es eliminado")
             User.deleteOne({ email: a.email })
               .then(function () {
-                //console.log(a.email + ' deleted') // Success
               })
               .catch(function (error) {
-                console.log(error, "no se ha borrado el usuario " + a.email) // Failure
+                console.log(error, "no se ha borrado el usuario " + a.email)
               })
         }
       }
     })
-    //eliminamos los grupos del CRM que se han borrado.
+
+    // Remove deleted CRM groups
     mongoGroups.forEach(a => {  
       if( a.name.startsWith('SDA_') ){
         let existe = crmRoles.find(u => u.name === a.name);
@@ -124,49 +135,34 @@ export class userAndGroupsToMongo {
       }
     });
 
-
-
-
-    // --------------------------
-    // Función auxiliar para verificar si un usuario existe en el CRM
+    // Helper functions to check user existence in CRM
     const userExistsInCRM = (user, crmUsers) => {
-      // Se añade que esté activo para comprobar si debe seguir estando ahi.
       return crmUsers.some(crmUser => crmUser.email === user.email && crmUser.active == 1); 
     };
 
-    // Función auxiliar que permite saber si un usuario viene del CRM aunque esé de baja
     const userExistedInCRM = (user, crmUsers) => {
-      // Se añade que esté activo para comprobar si debe seguir estando ahi.
-      return crmUsers.some(crmUser => crmUser.email === user.email  ); 
+      return crmUsers.some(crmUser => crmUser.email === user.email); 
     };
 
-
-
-
-    //
-    // Grupos
-    //
-
-    // Sincronizamos los grupos y usuarios respetando las reglas específicas
+    // Synchronize groups and users
     await mongoGroups.forEach(async (group) => {
       if (group.name.startsWith('SDA_')) {
-        // Para grupos SDA_, mantenemos usuarios de SDA y sincronizamos con CRM
+        // For SDA_ groups, maintain SDA users and sync with CRM
         const crmUsersInGroup = crmRoles
           .filter(role => role.name === group.name)
           .map(role => mongoUsers.find(u => u.email === role.user_name))
           .filter(user => user)
           .map(user => user._id);
-        // Mantenemos usuarios existentes de SDA y añadimos/actualizamos usuarios del CRM
+        
         group.users = [
           ...group.users.filter(userId => {
             const user = mongoUsers.find(u => u._id.toString() === userId.toString());
-            return user &&  !userExistsInCRM( user, crmUsers); // Mantenemos usuarios creados en SDA
+            return user &&  !userExistsInCRM( user, crmUsers);
           }),
           ...crmUsersInGroup
         ];
 
-
-        // Añadimos nuevos usuarios del CRM que deberían estar en este grupo
+        // Add new CRM users to the group
         const newCrmUsersInGroup = crmRoles
           .filter(role => role.name === group.name)
           .map(role => mongoUsers.find(u => u.email === role.user_name &&  userExistsInCRM(u, crmUsers)  ))
@@ -176,59 +172,40 @@ export class userAndGroupsToMongo {
         group.users = [...group.users, ...newCrmUsersInGroup];
 
       } else {
-        // Para grupos sin prefijo SDA_, mantenemos usuarios de SDA y actualizamos usuarios del CRM
+        // For non-SDA_ groups, maintain SDA users and update CRM users
         group.users = group.users.filter(userId => {
           const user = mongoUsers.find(u => u._id.toString() === userId.toString());
-          if (!user) return false; // El usuario ya no existe en MongoDB
+          if (!user) return false;
           if (userExistedInCRM(user, crmUsers)) {
-            // Para usuarios del CRM, verificamos si aún existen en CRM 
-            // Es un grupo de SDA... no sabemos si debe estar o no
             return userExistsInCRM(user, crmUsers) ;
           } else {
-            // Mantenemos usuarios creados directamente en SDA
             return true;
           }
         });
-
- 
-        
-
-
       }
     });
 
-
-    // Actualizamos los roles de los usuarios
+    // Update user roles
     await mongoUsers.forEach(async (user) => {
       if( userExistsInCRM( user, crmUsers)) { 
-        // Actualizamos los usuarios del crm.... los demas no los gestionamos nosotros.
-        // Mantenemos roles  que no son SDA_
+        // Update CRM users, maintain non-SDA_ roles
         const nonCRMRoles = user.role.filter(roleId => {
           const group = mongoGroups.find(g => g._id.toString() === roleId.toString() && !g.name.startsWith('SDA_')  );
           return group;
         });
 
-
-        // Añadimos roles del CRM
+        // Add CRM roles
         const crmRolesForUser = crmRoles
           .filter(role => role.user_name === user.email)
           .map(role => mongoGroups.find(g => g.name === role.name))
           .filter(group => group)
           .map(group => group._id);
-        // Combinamos roles existentes con roles del CRM
+        
         user.role = [...new Set([...nonCRMRoles, ...crmRolesForUser])];
       }
-      // Para los usuarios que no son del crm yo no los gestiono
-      // Solo podría qutar los roles que no tocan. Pero no se cual es cual.
-      // Por eso no hay else
     });
 
-
-    // --------------------------
-
-
-
-    //empujo el grupo admin para que se inicialize con el admin de eda y el empujo usuario EDA con función de admin
+    // Add admin user to EDA_ADMIN group
     await mongoGroups.find(i => i.name ===  'EDA_ADMIN').users.push('135792467811111111111111')
     let user = await mongoUsers.find(i => i.email ===  ('eda@jortilles.com') ) ;
     if(user){
@@ -240,22 +217,16 @@ export class userAndGroupsToMongo {
       }else{
         console.log('NO SE HA PODIDO AÑADIR EL ROL AL USUARIO ADMIN <=============================================================================');
       }
-
     }
 
-
-
-
-
-    //guardamos en la bbdd
+    // Save changes to database
     await mongoGroups.forEach(async r => {
       try {
         await Group.updateOne({ name: r.name }, { $unset: { users: {} } })
           .then(function () {
-            //console.log(r.name + ' Updated') // Success
           })
           .catch(function (error) {
-            console.log(error) // Failure
+            console.log(error)
           })
       } catch (err) {
         console.log(err);
@@ -263,10 +234,9 @@ export class userAndGroupsToMongo {
       try {
         await Group.updateOne({ name: r.name }, { $addToSet: { users: r.users } })
           .then(function () {
-            //console.log(r.name + ' Updated') // Success
           })
           .catch(function (error) {
-            console.log(error) // Failure
+            console.log(error)
           })
       } catch (err) {
         console.log(err);
@@ -276,28 +246,24 @@ export class userAndGroupsToMongo {
     const newGroupsInMongo =  await Group.find(); 
     const newGroupsIDInMongo = newGroupsInMongo.map(g=>g._id.toString());
  
-      //filtramos grupos por usuario, buscando los grupos que empiezan por "SDA_"
-      await mongoUsers.forEach(async user => {
-        user.role = user.role.filter( r => newGroupsIDInMongo.includes(r.toString() ) )
-        // Solo actualizo los usuarios que  vienen del CRM.... Los otros no tengo manera de saber.
-            try {
-              await User.updateOne({ email: user.email }, { $unset : {role: {}} })
-              .then(function () {
-              // console.log(y.name + ' Unset ') 
-              })
-              .catch(function (error) {
-                console.log(error) 
-              })
-            
-            await User.updateOne({ email: user.email }, { $addToSet : {role: user.role} })
-              .then(function () {
-                //console.log( ' Updated: ');
-                // console.log(user);
-              })
-              .catch(function (error) {
-                console.log(error) 
-              })
-            }catch (err) {}
+    // Update user roles
+    await mongoUsers.forEach(async user => {
+      user.role = user.role.filter( r => newGroupsIDInMongo.includes(r.toString() ) )
+      try {
+        await User.updateOne({ email: user.email }, { $unset : {role: {}} })
+          .then(function () {
+          })
+          .catch(function (error) {
+            console.log(error) 
+          })
+      
+        await User.updateOne({ email: user.email }, { $addToSet : {role: user.role} })
+          .then(function () {
+          })
+          .catch(function (error) {
+            console.log(error) 
+          })
+      } catch (err) {}
     })
-}
+  }
 }
