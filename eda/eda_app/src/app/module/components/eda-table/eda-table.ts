@@ -258,13 +258,20 @@ export class EdaTable {
         const withTotalcols = this.cols.filter(col => col.rowTotal === true).length > 0;
         const series = [];
 
+        console.log('withTotalcols: ', withTotalcols);
+        console.log('numSeries: ', numSeries);
+
         if (withTotalcols) {
             this.cols = this.cols.filter(col => col.rowTotal !== true);
             this.series[numSeries - 2].labels = this.series[numSeries - 2].labels.filter(label => label.isTotal !== true);
             //percentage columns has no label 
 
+            console.log('this.series:',this.series)
+
             if(this.ordering[0]!==undefined){
                 if(this.ordering[0].axes[0].itemX.length>1){
+                    this.series[0].labels = this.series[0].labels.filter(label => label.isTotal !== true);
+
                     const lastLayerLabels = this.cols.filter(col => col.type !== "EdaColumnPercentage").length - this.ordering[0].axes[0].itemX.length;
                     this.series[numSeries - 1].labels = this.series[numSeries - 1].labels.slice(0, lastLayerLabels);
                 } else {
@@ -397,14 +404,24 @@ export class EdaTable {
             //get names for new columns from series array
             let pretyNames;
             if (this.series[0].labels.length > 2) {
-                pretyNames = Array.from(new Set(this.series[this.series.length - 1].labels.map(serie => serie.title)))
+
+                if(this.ordering[0]!==undefined){
+                    if(this.ordering[0].axes[0].itemZ.length===1){
+                        pretyNames = [this.ordering[0].axes[0].itemZ[0].description];
+                    } else {
+                        pretyNames = Array.from(new Set(this.series[this.series.length - 1].labels.map(serie => serie.title)))
+                    }
+                } else {
+                    pretyNames = Array.from(new Set(this.series[this.series.length - 1].labels.map(serie => serie.title)))
+                }
+
             } else {
                 pretyNames = [this.series[0].labels[this.series[0].labels.length - 1].title];
             }
 
             //add total header
             if (!colNames.includes(valuesKeys[0])) {
-                this.series[this.series.length - 2].labels.push({ title: this.Trend, rowspan: 1, colspan: valuesKeys.length, isTotal: true });
+                this.series[0].labels.push({ title: this.Trend, rowspan: this.series.length - 1, colspan: valuesKeys.length, isTotal: true, description: this.Trend });
             }
 
             //add cols and headers
@@ -416,7 +433,7 @@ export class EdaTable {
                     col.width = 100;
                     this.cols.push(col);
 
-                    this.series[this.series.length - 1].labels.push({ title: pretyNames[i], rowspan: 2, colspan: 1, sortable: true, column: valueKey });
+                    this.series[this.series.length - 1].labels.push({ title: pretyNames[i], rowspan: 2, colspan: 1, sortable: true, column: valueKey, description: pretyNames[i] });
                 }
             });
 
