@@ -26,8 +26,6 @@ export class DragDropComponent implements OnChanges {
   }
   
   initialization() {
-    console.log('Componente Drag-Drop axes ----> ', this.axes);
-
     this.itemX = this.axes[0].itemX;
     this.itemY = this.axes[0].itemY;
     this.itemZ = this.axes[0].itemZ;

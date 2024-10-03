@@ -159,6 +159,7 @@ export class TableDialogComponent extends EdaDialogAbstract implements AfterView
   private percentages() {
 
     const currentConfig = this.myPanelChartComponent.currentConfig;
+
     if (this.onlyPercentages === true) {
 
       currentConfig.resultAsPecentage = true;
@@ -191,8 +192,7 @@ export class TableDialogComponent extends EdaDialogAbstract implements AfterView
 
     currentConfig.withColTotals = false;
     this.col_totals = currentConfig.withColTotals;
-
-
+    
     this.myPanelChartComponent.componentRef.instance.inject.checkTotals(null);
     this.resultAsPecentage = currentConfig.resultAsPecentage;
     this.onlyPercentages = currentConfig.onlyPercentages;
@@ -276,8 +276,6 @@ export class TableDialogComponent extends EdaDialogAbstract implements AfterView
 
     const properties = new TableConfig(this.onlyPercentages, this.resultAsPecentage, rows,
       this.col_subtotals, this.col_totals, this.row_totals, this.trend, sortedSerie, sortedColumn, styles, this.noRepetitions, this.ordering);
-
-    console.log('properties: ', properties);
 
     this.onClose(EdaDialogCloseEvent.UPDATE, properties);
   }

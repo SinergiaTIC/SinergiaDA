@@ -258,15 +258,10 @@ export class EdaTable {
         const withTotalcols = this.cols.filter(col => col.rowTotal === true).length > 0;
         const series = [];
 
-        console.log('withTotalcols: ', withTotalcols);
-        console.log('numSeries: ', numSeries);
-
         if (withTotalcols) {
             this.cols = this.cols.filter(col => col.rowTotal !== true);
             this.series[numSeries - 2].labels = this.series[numSeries - 2].labels.filter(label => label.isTotal !== true);
             //percentage columns has no label 
-
-            console.log('this.series:',this.series)
 
             if(this.ordering[0]!==undefined){
                 if(this.ordering[0].axes[0].itemX.length>1){
@@ -662,6 +657,7 @@ export class EdaTable {
 
 
     colsPercentages() {
+
         if (this.percentageColumns.length !== 0) {
             this.removePercentages();
         }
@@ -669,6 +665,7 @@ export class EdaTable {
         const newColumns = [];
 
         this.percentageColumns = [];
+
         this.cols.forEach(col => {
             newColumns.push(col);
             if (col.type === "EdaColumnNumber") {
@@ -688,9 +685,14 @@ export class EdaTable {
 
         this._value.forEach(row => {
             numericColsMap.forEach((value, key, map) => {
-                map.set(key, value + row[key]);
+                if(row[key] === ''){
+                    map.set(key, parseFloat(value) + 0);
+                } else {
+                    map.set(key, parseFloat(value) + parseFloat(row[key]));
+                }
             })
         });
+
         //calculate percentage for every value
         //get totals
         this._value.forEach(row => {
@@ -1109,12 +1111,10 @@ export class EdaTable {
      * Puts values in the tree map
      */
     populateMap(map: Map<string, any>, rows: any, mainColLabel: string, aggregatedColLabel: string, pivotColsLabels: any) {
-        // console.log('AQUI EL MAP: ', map);
         rows.forEach(row => {
             const value = row[aggregatedColLabel]; // Capturas los valores numéricos de oldRows
             const pivotSteps = pivotColsLabels.length - 1; // Número de pasos en seccion pivot
             const leftColTarget = map.get(row[mainColLabel]); // Captura cada mapa de la columna principal
-            // console.log('leftColTarget: ', leftColTarget);
             let lastMapKey = leftColTarget;
             let i;
             for (i = 0; i < pivotSteps; i++) {
@@ -1143,9 +1143,9 @@ export class EdaTable {
             const value = row[aggregatedColLabel]; // Capturas los valores numéricos de oldRows
             const pivotSteps = clonePivotColsLabels.length - 1; // Número de pasos en seccion pivot
             const leftColTarget = map.get(row[firstMainColsLabels]); // Captura cada mapa de la columna principal
-            // console.log('leftColTarget: ', leftColTarget);
             let lastMapKey = leftColTarget;
             let i;
+
             for (i = 0; i < pivotSteps; i++) {
                 lastMapKey = lastMapKey.get(row[clonePivotColsLabels[i]]);
             }
@@ -1164,13 +1164,11 @@ export class EdaTable {
             let row = {};
             row[mainColLabel] = key;
             let pivotedCols = this.buildNewRowsRecursive(value, '', [], serieLabel);
-            // console.log('pivotedCols: ',pivotedCols);
             pivotedCols.forEach(col => {
                 row[col.label] = col.value;
             });
             rows.push(row);
         });
-        // console.log('rows ?¿?¿?¿?¿?¿: ', rows);
         return rows;
     }
     /**
@@ -1214,22 +1212,12 @@ export class EdaTable {
             rows.push(row);
         })
 
-        // console.log('Serie Numérica :',serieLabel)
-        // console.log('Mapeado :',map)
-        // console.log('newCols :',newCols)
-        // console.log('arraysMain :',arraysMain)
-        // console.log('combinations :',combinations)
-        // console.log('rows :',rows)
-
-
         // Uso de una función recursiva para acceder a una posición usando una lista de claves
         combinations.forEach(keys => {
-            // console.log('valor !!!!!: ', this.recursiveAccessCrossTable(map, keys))
             let row = {};
             let mapItem = this.recursiveAccessCrossTable(map, keys)
-
             let pivotedCols = this.buildNewRowsRecursive(mapItem, '', [], serieLabel);
-            // console.log('pivotedCols: ',pivotedCols);
+
             pivotedCols.forEach(col => {
                 row[col.label] = col.value;
             });
@@ -1241,8 +1229,6 @@ export class EdaTable {
         const totalRows = rows.map((item, index) => {
             return { ...item, ...rowsTest[index] };
         });
-
-        //console.log('combinedArray :',totalRows)
         
         return totalRows;
     }
@@ -1376,11 +1362,8 @@ export class EdaTable {
 
         //get distinct values of pivot columns (new-columns names)
         const newCols = [];
-        // console.log('this.value :',this.value);
-        // console.log('axes :',axes);
         axes[0].itemX.forEach(e => newCols.push(_.orderBy(_.uniq(_.map(this.value, e.column_name)))));
         axes[0].itemY.forEach(e => newCols.push(_.orderBy(_.uniq(_.map(this.value, e.column_name)))));
-        // console.log('newCols: ', newCols);
 
         const params = {
             mainCols: mainCols,
