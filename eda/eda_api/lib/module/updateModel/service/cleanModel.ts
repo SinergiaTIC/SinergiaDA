@@ -145,7 +145,8 @@ export class CleanModel {
             // Recuperando los permisos provenientes de SinergiaDA 
             // la propiedad source --> "EDA" indica que el permiso proviene de la applicacion y no de la base de datos
             const userRoles = mgsmap[0].filter( (r:any) => {
-                return r?.source === 'SDA' 
+                console.log(r);
+                return r?.source === 'SDA'   && ! r.groupsName[0].toString().startsWith("SDA_")
             });
 
             // Agregando los permisos agregados previamente en la aplicacion. 
