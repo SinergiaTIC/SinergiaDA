@@ -87,7 +87,7 @@ export class ModelPermissionDialogComponent extends EdaDialogAbstract {
                 global : true,
                 permission : this.anyoneCanSee ? true : false,
                 type : 'anyoneCanSee',
-                /*SDA Custom */  source: 'EDA'
+                /*SDA Custom */  source: 'SDA'
             };
         }else{
 
@@ -101,7 +101,7 @@ export class ModelPermissionDialogComponent extends EdaDialogAbstract {
                     global : true,
                     permission : this.permission ? true : false,
                     type : 'users',
-                   /*SDA Custom */ source: 'EDA'
+                   /*SDA Custom */ source: 'SDA'
                 };
             }
             else if(this.type === 'groups'){
@@ -114,7 +114,7 @@ export class ModelPermissionDialogComponent extends EdaDialogAbstract {
                     global : true,
                     permission : this.permission,
                     type : 'groups',
-                    /*SDA Custom */ source: 'EDA'
+                    /*SDA Custom */ source: 'SDA'
                 };
             }
         }
