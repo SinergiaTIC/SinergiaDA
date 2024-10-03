@@ -114,7 +114,7 @@ export class ModelPermissionDialogComponent extends EdaDialogAbstract {
                     global : true,
                     permission : this.permission,
                     type : 'groups',
-                    source: 'EDA'
+                    /*SDA Custom */ source: 'EDA'
                 };
             }
         }
