@@ -608,10 +608,10 @@ export class EdaBlankPanelComponent implements OnInit {
      * @param content panel content
      */
     public changeChartType(type: string, subType: string, config?: ChartConfig) {
+
         this.configCrossTable = config
         
         this.graphicType = type; // Actualizamos el tipo de variable para el componente drag-drop
-        // console.log('type:', type)
         this.graficos = {};
         let allow = _.find(this.chartTypes, c => c.value === type && c.subValue == subType);
         this.display_v.chart = type;
@@ -625,24 +625,24 @@ export class EdaBlankPanelComponent implements OnInit {
             const _config = config || new ChartConfig(ChartsConfigUtils.setVoidChartConfig(type));
             this.renderChart(this.currentQuery, this.chartLabels, this.chartData, type, subType, _config);
         }
-        
-        // console.log('subtype: ', subType);
-        // console.log('config: ', this.configCrossTable);
-
 
         // Controlar si se ejecuta una tabla cruzada
         // Se verifica si la longitud de la variable axes
+
+        const configCrossTable = this.panelChartConfig.config.getConfig()
+
         if(subType === 'crosstable'){
             if((config===null) || config['config']['ordering'].length === 0){
                 this.axes = this.initAxes(this.currentQuery);
+                configCrossTable['ordering'] = [{axes: this.axes}]; // Agrego el nuevo axes a la config
             }
     
             if(config!==null && config['config']['ordering'].length !==0) {
                 this.axes = config['config']['ordering'][0]['axes']
             }
+        } else {
+            this.axes = this.initAxes(this.currentQuery);
         }
-
-
     }
 
     /**

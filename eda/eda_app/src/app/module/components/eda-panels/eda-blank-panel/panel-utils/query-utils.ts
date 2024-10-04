@@ -204,10 +204,8 @@ export const QueryUtils = {
       if(ebp.chartForm.controls.chart.value!==null) {
         if(ebp.chartForm.controls.chart.value.subValue === 'crosstable' && !ebp.newAxesChanged) {
           const config = ebp.panelChartConfig.config.getConfig();
-          config['ordering'] = [];
-
           ebp.axes = ebp.initAxes(ebp.currentQuery);
-          
+          config['ordering'] = [{axes: ebp.axes}];;
         }
       }
 
