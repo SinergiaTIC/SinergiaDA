@@ -380,7 +380,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
             err => me.alertService.addError(err)
         );
 
-        // Check url for filters in params
+        // Check url for filters in params 
         this.getUrlParams();
 
         if (me.id) {
