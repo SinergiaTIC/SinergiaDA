@@ -91,7 +91,7 @@ export class CleanModel {
             }
 
 
-            //recuperamos los model_granted_roles de mongo, donde se han añadido permisos para SDA_*
+            //recuperamos los model_granted_roles de mongo, donde se han añadido permisos para SCRM_*
             const finder = await DataSourceSchema.find({_id: "111111111111111111111111" }) ; 
             let mgs = [];
             const mgsmap = _.cloneDeep(finder.map(e => mgs = e.ds.metadata.model_granted_roles));
