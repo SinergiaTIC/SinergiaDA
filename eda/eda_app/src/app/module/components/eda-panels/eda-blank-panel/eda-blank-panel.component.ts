@@ -1123,16 +1123,16 @@ export class EdaBlankPanelComponent implements OnInit {
             let itemX = [{
                 column_name: currenQuery.find(e => e.column_type==='text').column_name,
                 column_type: currenQuery.find(e => e.column_type==='text').column_type,
-                description: currenQuery.find(e => e.column_type==='text').description.default
+                description: currenQuery.find(e => e.column_type==='text').display_name.default
             }]
     
             let itemY = [];
             currenQuery.forEach(v => {
-                if((v.description.default !== itemX[0].description) && (v.column_type !== "numeric")) {
+                if((v.display_name.default !== itemX[0].description) && (v.column_type !== "numeric")) {
                     itemY.push({
                         column_name: v.column_name,
                         column_type: v.column_type,
-                        description: v.description.default
+                        description: v.display_name.default
                     })
                 }
             })
@@ -1143,7 +1143,7 @@ export class EdaBlankPanelComponent implements OnInit {
                     itemZ.push({
                         column_name: v.column_name,
                         column_type: v.column_type,
-                        description: v.description.default
+                        description: v.display_name.default
                     })
                 }
             })
@@ -1384,31 +1384,30 @@ export class EdaBlankPanelComponent implements OnInit {
     * Funcion que reordena el arreglo currentQuery segun el nuevo valor de ordenamiento de la variable axes devuelta por el componete drag-drop
     */
     public newCurrentQuery(currenQuery, axes) {
+
         let newCurrentQuery = []
 
         axes[0].itemX.forEach(e => {
             currenQuery.forEach(cq => {
-                if(e.column_name===cq.column_name) {
+                if(e.description===cq.display_name.default) {
                     newCurrentQuery.push(cq);
                     return;
                 }
             });
         });
-
         
         axes[0].itemY.forEach(e => {
             currenQuery.forEach(cq => {
-                if(e.column_name===cq.column_name) {
+                if(e.description===cq.display_name.default) {
                     newCurrentQuery.push(cq);
                     return;
                 }
             });
         });
-
         
         axes[0].itemZ.forEach(e => {
             currenQuery.forEach(cq => {
-                if(e.column_name===cq.column_name) {
+                if(e.description===cq.display_name.default) {
                     newCurrentQuery.push(cq);
                     return;
                 }

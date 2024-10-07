@@ -1327,11 +1327,15 @@ export class EdaTable {
     generateCrossParams(axes: any[]): CrossTableSerieParams {
         const oldRows = this.getValues(); //get old rows to build new ones 
         // const typesIndex = this.getColsInfo(); //get index for numeric and text/date columns
-
         //get aggregation columns
-        const aggregatedColLabels = [];
+
+        let aggregatedColLabels = [];
         axes[0].itemZ.forEach(e => {
-            aggregatedColLabels.push(e.column_name);
+            this.cols.forEach(c => {
+                if(c.header === e.description){
+                    aggregatedColLabels.push(c.field);
+                }
+            })
         });
 
         //get pivot columns
