@@ -187,9 +187,8 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
             if (panel.active) {
                 this.initTablesForFilter();
                 this.findPanelPathTables();
-            } else {
-                this.clearFilterPaths(panel);
-            }
+            } 
+            // else this.clearFilterPaths(panel);
         }
 
         if (!panel.avaliable) {
