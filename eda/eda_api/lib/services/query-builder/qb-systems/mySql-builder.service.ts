@@ -21,13 +21,19 @@ export class MySqlBuilderService extends QueryBuilderService {
     }
  
 
+    console.log('agregar permissions si hay maás de una tabla');
+    console.log(dest);
+    console.log(filters);
+
+
     // JOINS
     let joinString: any[];
     let alias: any;
     // joined == EDA2
     if (this.queryTODO.joined) {
       /**tree */
-      const responseJoins = this.setJoins(joinTree, joinType, schema, valueListJoins);
+      const responseJoins = this.setJoins(joinTree, joinType, schema, valueListJoins, dest.length);
+      console.log('responseJoins ==---===> ',responseJoins)
       joinString = responseJoins.joinString;
       alias = responseJoins.aliasTables;
     } else {
@@ -40,8 +46,7 @@ export class MySqlBuilderService extends QueryBuilderService {
     });
 
     // WHERE
-    myQuery += this.getFilters(filters);
-
+    myQuery += this.getFilters(filters, dest.length );
 
     // GroupBy
     if (grouping.length > 0) {
@@ -83,11 +88,23 @@ export class MySqlBuilderService extends QueryBuilderService {
     return myQuery;
   };
 
-  public getFilters(filters): any { 
+  public getFilters(filters, destLongitud): any { 
 
-    if (this.permissions.length > 0) {
+
+    console.log('aqui es donde junto permisos y filtros.');
+    console.log(filters);
+    console.log()
+    /** si tenemos permisos y no hay destino lo añado a los filtros */
+    if (this.permissions.length > 0 && destLongitud == 0) {
+      console.log('SI QUE LOS JUNTO filtros y permisos porque SOLO TENGO UNA TABLA ');
       this.permissions.forEach(permission => { filters.push(permission); });
+    }else{
+      //console.log('PRUEBAAAAAAAAAAAAAAA -----> No junto filtros y permisos porque tengo más de una tabla. Tengo destino. Lo voy a meter en el inner join');
+      //this.permissions.forEach(permission => { filters.push(permission); });
+      // console.log('FILTERSSSSSSSSSSSSSSS: ',filters)
     }
+
+
     if (filters.length) {
 
       let equalfilters = this.getEqualFilters(filters);
@@ -96,10 +113,14 @@ export class MySqlBuilderService extends QueryBuilderService {
 
       filters.forEach(f => {
         const column = this.findColumn(f.filter_table, f.filter_column);
+        console.log('column: ', column);
         column.autorelation = f.autorelation;
         column.joins = f.joins;
         column.valueListSource = f.valueListSource;
         const colname = this.getFilterColname(column);
+
+        console.log('colname: ', colname);
+
         if (f.filter_type === 'not_null' || f.filter_type === 'not_null_nor_empty' || f.filter_type === 'null_or_empty') {
           filtersString += '\nand ' + this.filterToString(f);
         } else {
@@ -114,8 +135,8 @@ export class MySqlBuilderService extends QueryBuilderService {
         }
       });
 
-
       /**Allow filter ranges */
+      // console.log('<<<<<<<<<<<<<-------------- >>>>>>>>>>>>>: ', this.mergeFilterStrings('', equalfilters))
       filtersString = this.mergeFilterStrings(filtersString, equalfilters);
       return filtersString;
     } else {
@@ -186,21 +207,31 @@ export class MySqlBuilderService extends QueryBuilderService {
 
 
   
-  public setJoins(joinTree: any[], joinType: string, schema: string, valueListJoins: string[]) {
+  public setJoins(joinTree: any[], joinType: string, schema: string, valueListJoins: string[], destLongitud: any) {
     // Inicialización de variables
     const joinExists = new Set();
     const aliasTables = {};
-    const joinString = [];
+    let joinString = [];
     const targetTableJoin = [];
+
+    // Aqui hay que meter this.permissions
+
+    console.log('this.permissions =====>>>>>>', this.permissions);
+    console.log('destLongitud: ', destLongitud);
 
 
     for (const join of joinTree) {
+
+      // console.log('join ======> ',join)
 
         // División de las partes de la join
         const sourceLastDotInx = join[0].lastIndexOf('.');
         // sourceTableAlias === join relation table_id
         const [sourceTable, sourceColumn] = [join[0].substring(0, sourceLastDotInx), join[0].substring(sourceLastDotInx + 1)];
         const [targetTable, targetColumn] = join[1].split('.');
+
+        console.log('sourceTable: ', sourceTable)
+        console.log('targetTable: ', targetTable)
 
         // Construcción de las partes de la join
         let sourceJoin = `\`${sourceTable}\`.\`${sourceColumn}\``;
@@ -249,10 +280,43 @@ export class MySqlBuilderService extends QueryBuilderService {
             // Si la join no se ha incluido ya, se añade al array
             if (!joinString.includes(joinStr)) {
                 targetTableJoin.push(aliasTargetTable || targetTable);
+
+                if(destLongitud>0) {
+                  let equalfilters : any;
+                  let valorEsperado: any;
+                  let temporalPermissions: any = [];
+        
+                  this.permissions.forEach( (p: any) => {
+                    if(p.filter_table == targetTable) {
+                      temporalPermissions.push(p)
+                    }
+                  })
+
+                  equalfilters = this.getEqualFilters(temporalPermissions);
+                  valorEsperado = this.mergeFilterStrings('', equalfilters)
+                  joinStr += valorEsperado;
+                  temporalPermissions = [];
+                }
+
                 joinString.push(joinStr);
             }
         }
+
+
+        // if(destLongitud>0) {
+        //   equalfilters = this.getEqualFilters(this.permissions);
+        //   valorEsperado = this.mergeFilterStrings('', equalfilters)
+        //   joinString[0] += valorEsperado;
+        // }
     }
+
+    // let equalfilters : any;
+    // let valorEsperado: any;
+    // if(destLongitud>0) {
+    //   equalfilters = this.getEqualFilters(this.permissions);
+    //   valorEsperado = this.mergeFilterStrings('', equalfilters)
+    //   joinString[0] += valorEsperado;
+    // }
     
     return {
         joinString,
