@@ -4307,6 +4307,10 @@
         <source>El año pasado, completo</source>
         <target>L'any passat, complet</target>
       </trans-unit>
+      <trans-unit id="aplicarBtn">
+        <source>Aplicar</source>
+        <target>Aplicar</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>

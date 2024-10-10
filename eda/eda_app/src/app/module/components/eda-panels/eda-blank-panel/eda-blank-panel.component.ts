@@ -194,6 +194,9 @@ export class EdaBlankPanelComponent implements OnInit {
     public graphicType: string; // extraemos el tipo de gráfico al inicio y al ejecutar
     public configCrossTable: any;
 
+    // Ocultar el boton de ejecutar
+    public hiddenButtonExecuter: boolean = false;
+
     constructor(
         public queryBuilder: QueryBuilderService,
         public fileUtiles: FileUtiles,
@@ -529,6 +532,9 @@ export class EdaBlankPanelComponent implements OnInit {
 
         //not saved alert message
         this.dashboardService._notSaved.next(true);
+
+        // Se mantiene en falso luego de guardar
+        this.hiddenButtonExecuter = false;
     }
 
     public initObjectQuery() {
@@ -900,6 +906,9 @@ export class EdaBlankPanelComponent implements OnInit {
         this.tablesToShow = this.tables;
         this.display_v.chart = '';
         this.display_v.page_dialog = false;
+
+        // Despues de cancelar, el valor regresa a falso
+        this.hiddenButtonExecuter = false
     }
 
     /**
@@ -1081,6 +1090,8 @@ export class EdaBlankPanelComponent implements OnInit {
     }
 
     public handleTabChange(event: any): void {
+        this.hiddenButtonExecuter = !this.hiddenButtonExecuter;
+
         this.index = event.index;
         if (this.index === 1) {
             const content = this.panel.content;
@@ -1105,6 +1116,7 @@ export class EdaBlankPanelComponent implements OnInit {
                 })
             }
         }
+
     }
 
     public onResize(event) {
@@ -1120,33 +1132,31 @@ export class EdaBlankPanelComponent implements OnInit {
     public initAxes(currenQuery) {
 
         try {
-            let itemX = [{
-                column_name: currenQuery.find(e => e.column_type==='text').column_name,
-                column_type: currenQuery.find(e => e.column_type==='text').column_type,
-                description: currenQuery.find(e => e.column_type==='text').display_name.default
-            }]
+            
+            let itemX = currenQuery.map( (v: any) => {
+                return {
+                    column_name: v.column_name,
+                    column_type: v.column_type,
+                    description: v.display_name.default,
+                }
+            })
     
             let itemY = [];
-            currenQuery.forEach(v => {
-                if((v.display_name.default !== itemX[0].description) && (v.column_type !== "numeric")) {
-                    itemY.push({
-                        column_name: v.column_name,
-                        column_type: v.column_type,
-                        description: v.display_name.default
-                    })
+            for(let i = (itemX.length - 1); i >= 0; i--) {
+                if(itemX[i].column_type !== 'numeric' && itemY.length===0){
+                    itemY.push(itemX[i]);
+                    itemX.splice(i, 1)
                 }
-            })
+            }
     
             let itemZ = [];
-            currenQuery.forEach(v => {
-                if(v.column_type === "numeric") {
-                    itemZ.push({
-                        column_name: v.column_name,
-                        column_type: v.column_type,
-                        description: v.display_name.default
-                    })
+            for(let i = (itemX.length - 1); i >= 0; i--) {
+                if(itemX[i].column_type == 'numeric' && itemZ.length===0){
+                    itemZ.push(itemX[i]);
+                    itemX.splice(i, 1)
                 }
-            })
+            }
+
             return [{ itemX: itemX, itemY: itemY, itemZ: itemZ }]
             
         } catch (error) {
@@ -1159,6 +1169,7 @@ export class EdaBlankPanelComponent implements OnInit {
     * Runs actual query when execute button is pressed to check for heavy queries
     */
     public runManualQuery = () => {
+        this.hiddenButtonExecuter = true;
         QueryUtils.runManualQuery(this)
     };
 
