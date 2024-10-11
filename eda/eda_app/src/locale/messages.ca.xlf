@@ -4311,6 +4311,12 @@
         <source>Aplicar</source>
         <target>Aplicar</target>
       </trans-unit>
+      <trans-unit id="disenoTablaCruzada">
+        <source>Diseño de la tabla cruzada: </source>
+        <target>Disseny de la taula creuada: </target>
+      </trans-unit>
+
+      
     </body>
   </file>
 </xliff>

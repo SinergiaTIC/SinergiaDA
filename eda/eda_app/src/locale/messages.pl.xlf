@@ -3939,6 +3939,10 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
   <source>Aplicar</source>
   <target>Stosować</target>
 </trans-unit>
+  <trans-unit id="disenoTablaCruzada">
+    <source>Diseño de la tabla cruzada: </source>
+    <target>Projektowanie stołów krzyżowych: </target>
+  </trans-unit>
 </body>
 </file>
 </xliff>

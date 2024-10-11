@@ -4316,6 +4316,10 @@
         <source>Aplicar</source>
         <target>Solicitar</target>
       </trans-unit>
+      <trans-unit id="disenoTablaCruzada">
+        <source>Diseño de la tabla cruzada: </source>
+        <target>Deseño de mesas cruzadas: </target>
+      </trans-unit>
     </body>
   </file>
 </xliff>
