@@ -44,8 +44,8 @@ export const QueryUtils = {
     try {
       if (ebp.selectedQueryMode != 'SQL') {
         const queryData = JSON.parse(JSON.stringify(query));
-        queryData.query.filters = query.query.filters.filter((f) => 
-          (f.filter_elements[0]?.value1 && f.filter_elements[0].value1.length !== 0) 
+        queryData.query.filters = query.query.filters.filter((f) =>
+          (f.filter_elements[0]?.value1 && f.filter_elements[0].value1.length !== 0)
           || ['not_null', 'not_null_nor_empty', 'null_or_empty'].includes(f.filter_type)
         );
         const response = await ebp.dashboardService.executeQuery(queryData).toPromise();
@@ -146,6 +146,7 @@ export const QueryUtils = {
           ebp.changeChartType('table', 'table', null);
           ebp.chartForm.patchValue({chart: ebp.chartUtils.chartTypes.find(o => o.value === 'table')});
         } 
+
         else {
           if(!ebp.chartForm.value.chart.ngIf && !ebp.chartForm.value.chart.tooManyData){
             ebp.changeChartType(ebp.chartForm.value.chart.value, ebp.chartForm.value.chart.subValue, ebp.panelChartConfig.config);
@@ -168,7 +169,7 @@ export const QueryUtils = {
       ebp.index = 1;
       ebp.display_v.saved_panel = true;
     } catch (err) {
-      ebp.alertService.addError(err);
+      ebp.alertService.addError(err); 
       ebp.spinnerService.off();
     }
 
