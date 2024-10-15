@@ -4315,6 +4315,10 @@
         <source>El año pasado, completo</source>
         <target>L'any passat, complet</target>
       </trans-unit>
+      <trans-unit id="userNotAllowed">
+        <source>El usuario no tiene permisos para guardar en el informe.</source>
+        <target>L'usuari no té permisos per desar a l'informe.</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>

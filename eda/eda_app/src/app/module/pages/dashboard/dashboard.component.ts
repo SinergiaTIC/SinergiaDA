@@ -110,6 +110,8 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     public canIeditTooltip = $localize`:@@canIeditTooltip:Si esta opción está seleccionada sólo el propietario del informe y los administradores podrán guardar los cambios`;
     //public globalFilter: any;
 
+    public filtered = Boolean;
+
     constructor(
         private router: Router,
         private route: ActivatedRoute,
@@ -378,12 +380,15 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
             err => me.alertService.addError(err)
         );
 
-        // Check url for filters in params
+        // Check url for filters in params 
         this.getUrlParams();
 
         if (me.id) {
             me.dashboardService.getDashboard(me.id).subscribe(
                 res => {
+                    // Filtering if the user is an Admin or a dummy user
+                    this.filtered = res.datasource.filtered;
+
                     /** res - retorna 2 objectes, el dashboard i el datasource per separat  */
                     const config = res.dashboard.config;
                     // Estableix els permisos d'edició i propietat...
@@ -1288,4 +1293,8 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     /*SDA CUSTOM*/    ? this.visibleTypes
     /*SDA CUSTOM*/    : this.visibleTypes.filter(type => type.value !== 'shared');
     /*SDA CUSTOM*/}
+
+    userNotAllowed() {
+        this.alertService.addError($localize`:@@userNotAllowed:El usuario no tiene permisos para guardar en el informe`);
+    }
 }
