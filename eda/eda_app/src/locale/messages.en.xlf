@@ -4289,6 +4289,15 @@
         <source>El año pasado, completo</source>
         <target>Last year, complete</target>
       </trans-unit>
+      <trans-unit id="aplicarBtn">
+        <source>Aplicar</source>
+        <target>Apply</target>
+      </trans-unit>
+      <trans-unit id="disenoTablaCruzada">
+        <source>Diseño de la tabla cruzada: </source>
+        <target>Crosstab design: </target>
+      </trans-unit>
+
     </body>
   </file>
 </xliff>
