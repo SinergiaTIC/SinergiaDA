@@ -299,14 +299,6 @@ export abstract class QueryBuilderService {
             }
         });
 
-
-
-    console.log('this.permissions');
-    console.log(this.permissions);
-        console.log('filters');
-        console.log(filters);
-
-
         //TO HAVING CLAUSE 
         const havingFilters = this.queryTODO.filters.filter(f => {
             const column = this.queryTODO.fields.find(e => e.table_id === f.filter_table &&   f.filter_column === e.column_name);
@@ -500,8 +492,6 @@ export abstract class QueryBuilderService {
             })
 
         }
-        //console.log('disgtra devuelve: ');
-        //console.log(v)
         return (v);
     }
 
@@ -538,9 +528,7 @@ export abstract class QueryBuilderService {
         originTable = this.cleanOriginTable(originTable);
         let filters = [];
         const permissions = this.getUserPermissions(modelPermissions);
-
        const relatedTables = this.checkRelatedTables(modelTables, originTable); 
-        //console.log('relatedTables', relatedTables);
 
         let found = -1;
         if (relatedTables !== null && permissions !== null) {
@@ -567,8 +555,6 @@ export abstract class QueryBuilderService {
             });
         }
 
-
-       // console.log(filters);
         return filters;
     }
 
@@ -580,12 +566,10 @@ export abstract class QueryBuilderService {
          * Tengo que añadir los wheres que tocan a la consulta para implmentar los permisos.
          **/      
 
-        //console.log('Tree Model permissions');
         let filters = [];
         let columns = [];
        
         const permissions = this.getUserPermissions(modelPermissions);
-        //console.log('No recursively....');
 
         query.fields.forEach(f => {
             columns.push( { table_name:  f.table_id,  column_name: f.column_name } )
