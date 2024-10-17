@@ -577,6 +577,7 @@ export class updateModel {
 
     // Verificando si desde Sinergia CRM viene enabled la información del cache 
     let sda_config_cache_enabled_value = cache_configSDA.find( v => v.key === 'sda_config_cache_enabled').value
+    // Se pueden configurar mas variables
     if(sda_config_cache_enabled_value === "1") {
       main_model.ds.metadata.cache_config = {
         units: cache_configSDA.find( (v: any) => v.key === 'sda_config_cache_units').value,
@@ -584,6 +585,10 @@ export class updateModel {
         hours: cache_configSDA.find( (v: any) => v.key === 'sda_config_cache_hours').value,
         minutes: cache_configSDA.find( (v: any) => v.key === 'sda_config_cache_minutes').value,
         enabled: cache_configSDA.find( (v: any) => v.key === 'sda_config_cache_enabled').value,
+      }
+    } else {
+      main_model.ds.metadata.cache_config = {
+        enabled: "0"
       }
     }
     // Fin de la verificación.
