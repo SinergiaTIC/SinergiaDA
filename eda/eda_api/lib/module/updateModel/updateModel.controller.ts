@@ -336,27 +336,19 @@ export class updateModel {
                         value: [valueAt]
                     }
                 }else{
-                  // Si es un grupo nativo
-                  gr4 = {
-                    groups: [mongoId],
-                    groupsName: [line.group],
-                    none: false,
-                    table: line.table,
-                    column: line.column,
-                    dynamic: true,
-                    global: false,
-                    type: "groups",
-                    value: [valueAt]
-
+                    // Si es un grupo nativo
+                    gr4 = {
+                      groups: [mongoId],
+                      groupsName: [line.group],
+                      none: false,
+                      table: line.table,
+                      column: line.column,
+                      dynamic: true,
+                      global: false,
+                      type: "groups",
+                      value: [valueAt]
+                    }
                 }
-
-                }
-
-
-                
-
-
-
 
                 destGrantedRoles.push(gr4)
 
