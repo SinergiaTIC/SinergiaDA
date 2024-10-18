@@ -20,6 +20,7 @@ export class pushModelToMongo {
                         console.log('El modelo no es el esperado.');
                         res.status(500).json({'status4':'ko'})
                     } else {
+                        console.log('actualizado..... XD');
                         const data = await new DataSource(model) ;
                         data.save();
                     }
