@@ -119,7 +119,7 @@ export class updateModel {
                                                                 .then(async permi => {
                                                                     let permissions = permi
                                                                     //select distinct `table`, 'id' as 'column',  `group` from sda_def_security_group_records
-                                                                    await connection.query(" select distinct `table`, 'id' as `column`,  `group` from sda_def_permissions  where `group` != ''  ")
+                                                                    await connection.query(" select distinct  user_name as name, `table`, 'id' as `column`,  `group` from sda_def_permissions  where `group` != ''  ")
                                                                         .then(async permiCol => {
                                                                             let permissionsColumns = permiCol;
                                                                             /**Ahora que ya tengo todos los datos, monto el modelo */
@@ -321,8 +321,23 @@ export class updateModel {
                 let valueAt: String = "select record_id from sda_def_security_group_records" +
                     " where `group` = " + group_name + ' and `table` = ' + table_name
 
-                gr4 = {
-
+                if( line.name != null ){
+                      // Si es un grupo convertido en usuario
+                      const found = usersFound.find(i => i.email == line.name)
+                      gr4 = {
+                        users: [found._id],
+                        usersName: [line.name],
+                        none: false,
+                        table: line.table,
+                        column: line.column,
+                        dynamic: true,
+                        global: false,
+                        type: "users",
+                        value: [valueAt]
+                    }
+                }else{
+                  // Si es un grupo nativo
+                  gr4 = {
                     groups: [mongoId],
                     groupsName: [line.group],
                     none: false,
@@ -334,6 +349,14 @@ export class updateModel {
                     value: [valueAt]
 
                 }
+
+                }
+
+
+                
+
+
+
 
                 destGrantedRoles.push(gr4)
 
