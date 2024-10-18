@@ -19,7 +19,6 @@ export class MySqlBuilderService extends QueryBuilderService {
     if (forSelector === true) {
       myQuery = `SELECT DISTINCT ${columns.join(', ')} \nFROM ${o}`;
     }
- 
 
     // JOINS
     let joinString: any[];
@@ -27,12 +26,12 @@ export class MySqlBuilderService extends QueryBuilderService {
     // joined == EDA2
     if (this.queryTODO.joined) {
       /**tree */
-      const responseJoins = this.setJoins(joinTree, joinType, schema, valueListJoins);
+      const responseJoins = this.setJoins(joinTree, joinType, schema, valueListJoins, dest.length);
       joinString = responseJoins.joinString;
       alias = responseJoins.aliasTables;
     } else {
       /*EDA Normal*/
-      joinString = this.getJoins(joinTree, dest, tables, joinType,  valueListJoins, schema);
+      joinString = this.getJoins(joinTree, dest, tables, joinType,  valueListJoins, schema, dest.length);
     }
 
     joinString.forEach(x => {
@@ -40,8 +39,7 @@ export class MySqlBuilderService extends QueryBuilderService {
     });
 
     // WHERE
-    myQuery += this.getFilters(filters);
-
+    myQuery += this.getFilters(filters, dest.length );
 
     // GroupBy
     if (grouping.length > 0) {
@@ -83,11 +81,14 @@ export class MySqlBuilderService extends QueryBuilderService {
     return myQuery;
   };
 
-  public getFilters(filters): any { 
+  public getFilters(filters, destLongitud): any { 
 
-    if (this.permissions.length > 0) {
+    /** si tenemos permisos y no hay destino lo añado a los filtros */
+    if (this.permissions.length > 0 && destLongitud == 0) {
       this.permissions.forEach(permission => { filters.push(permission); });
     }
+
+
     if (filters.length) {
 
       let equalfilters = this.getEqualFilters(filters);
@@ -100,6 +101,7 @@ export class MySqlBuilderService extends QueryBuilderService {
         column.joins = f.joins;
         column.valueListSource = f.valueListSource;
         const colname = this.getFilterColname(column);
+
         if (f.filter_type === 'not_null' || f.filter_type === 'not_null_nor_empty' || f.filter_type === 'null_or_empty') {
           filtersString += '\nand ' + this.filterToString(f);
         } else {
@@ -114,7 +116,6 @@ export class MySqlBuilderService extends QueryBuilderService {
         }
       });
 
-
       /**Allow filter ranges */
       filtersString = this.mergeFilterStrings(filtersString, equalfilters);
       return filtersString;
@@ -123,7 +124,7 @@ export class MySqlBuilderService extends QueryBuilderService {
     }
   }
 
-  public getJoins(joinTree: any[], dest: any[], tables: Array<any>, joinType:string, valueListJoins:Array<any>, schema:string): any {
+  public getJoins(joinTree: any[], dest: any[], tables: Array<any>, joinType:string, valueListJoins:Array<any>, schema:string, destLongitud: any): any {
 
     let joins = [];
     let joined = [];
@@ -155,30 +156,53 @@ export class MySqlBuilderService extends QueryBuilderService {
             myJoin = joinType; 
           }
           //Version compatibility string//array
+
+          // Agregado de los permisos en los join 
+          let agregadoPermisos: any = '';
+          if(destLongitud>0) {
+            let equalfilters : any;
+            let temporalPermissions: any = [];
+  
+            this.permissions.forEach( (p: any) => {
+              if(p.filter_table == e[j]) {
+                temporalPermissions.push(p)
+              }
+            })
+
+            equalfilters = this.getEqualFilters(temporalPermissions);
+            agregadoPermisos = this.mergeFilterStrings('', equalfilters)
+            temporalPermissions = [];
+          }
+          else {agregadoPermisos = ''}
+
+
           if (typeof joinColumns[0] === 'string') {
 
-            joinString.push(` ${myJoin} join ${t} on \`${e[j]}\`.\`${joinColumns[1]}\` = \`${e[i]}\`.\`${joinColumns[0]}\``);
+            joinString.push(` ${myJoin} join ${t} on \`${e[j]}\`.\`${joinColumns[1]}\` = \`${e[i]}\`.\`${joinColumns[0]}\` ${agregadoPermisos}`);
+
 
           } else {
 
             let join = ` ${myJoin} join ${t} on`;
 
             joinColumns[0].forEach((_, x) => {
-
               join += ` \`${e[j]}\`.\`${joinColumns[1][x]}\` = \`${e[i]}\`.\`${joinColumns[0][x]}\` and`;
-
             });
 
             join = join.slice(0, join.length - 'and'.length);
-            joinString.push(join);
+            joinString.push(join + agregadoPermisos);
 
           }
 
           joined.push(e[j]);
-
+           
         }
       }
     });
+
+    // if(destLongitud>0) {
+    //   // TERMINARRRRRRRRRRRRRRRRRRRRRRRRRRRR
+    // }
 
     return joinString;
 
@@ -186,15 +210,15 @@ export class MySqlBuilderService extends QueryBuilderService {
 
 
   
-  public setJoins(joinTree: any[], joinType: string, schema: string, valueListJoins: string[]) {
+  public setJoins(joinTree: any[], joinType: string, schema: string, valueListJoins: string[], destLongitud: any) {
     // Inicialización de variables
     const joinExists = new Set();
     const aliasTables = {};
-    const joinString = [];
+    let joinString = [];
     const targetTableJoin = [];
 
-
     for (const join of joinTree) {
+
 
         // División de las partes de la join
         const sourceLastDotInx = join[0].lastIndexOf('.');
@@ -249,6 +273,24 @@ export class MySqlBuilderService extends QueryBuilderService {
             // Si la join no se ha incluido ya, se añade al array
             if (!joinString.includes(joinStr)) {
                 targetTableJoin.push(aliasTargetTable || targetTable);
+
+                if(destLongitud>0) {
+                  let equalfilters : any;
+                  let agregadoPermisos: any;
+                  let temporalPermissions: any = [];
+        
+                  this.permissions.forEach( (p: any) => {
+                    if(p.filter_table == targetTable) {
+                      temporalPermissions.push(p)
+                    }
+                  })
+
+                  equalfilters = this.getEqualFilters(temporalPermissions);
+                  agregadoPermisos = this.mergeFilterStrings('', equalfilters)
+                  joinStr += agregadoPermisos;
+                  temporalPermissions = [];
+                }
+
                 joinString.push(joinStr);
             }
         }
