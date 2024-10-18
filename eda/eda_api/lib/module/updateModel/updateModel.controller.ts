@@ -584,11 +584,15 @@ export class updateModel {
         quantity: cache_configSDA.find( (v: any) => v.key === 'sda_config_cache_quantity').value,
         hours: cache_configSDA.find( (v: any) => v.key === 'sda_config_cache_hours').value,
         minutes: cache_configSDA.find( (v: any) => v.key === 'sda_config_cache_minutes').value,
-        enabled: cache_configSDA.find( (v: any) => v.key === 'sda_config_cache_enabled').value,
+        enabled: true,
       }
     } else {
       main_model.ds.metadata.cache_config = {
-        enabled: "0"
+        units: cache_configSDA.find( (v: any) => v.key === 'sda_config_cache_units').value,
+        quantity: cache_configSDA.find( (v: any) => v.key === 'sda_config_cache_quantity').value,
+        hours: cache_configSDA.find( (v: any) => v.key === 'sda_config_cache_hours').value,
+        minutes: cache_configSDA.find( (v: any) => v.key === 'sda_config_cache_minutes').value,
+        enabled: false,
       }
     }
     // Fin de la verificación.
