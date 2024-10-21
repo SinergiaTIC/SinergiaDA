@@ -53,8 +53,12 @@ export class CleanModel {
                 model_granted_roles.push(model)
             
             } else {
-                
-                let match = model_granted_roles.find(r => r.table == roles[i].table && r.column == roles[i].column && r.type == roles[i].type   );
+                let match = model_granted_roles.find(r => r.table == roles[i].table 
+                                                    && r.column == roles[i].column 
+                                                    && r.type == roles[i].type  
+                                                    && r.global == roles[i].global  
+                                                    && r?.dynamic == roles[i]?.dynamic
+                                                    );
                 if( _.isEmpty(match) == false ){
                     if(roles[i].value && match.value ){
                         roles[i].value.forEach((e,i)=> {
@@ -121,7 +125,12 @@ export class CleanModel {
                     objetoA.column === objetoB.column &&
                     objetoA.global === objetoB.global &&
                     objetoA.permission === objetoB.permission &&
-                    objetoA.type === objetoB.type
+                    objetoA.type === objetoB.type &&
+                    objetoA.dynamic === objetoB.dynamic  &&
+                    (  objetoA?.value && objetoB?.value && objetoA?.value[0] === objetoB?.value[0] )
+
+
+                    
                 );
             }
             
