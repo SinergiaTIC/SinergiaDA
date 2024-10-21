@@ -160,10 +160,9 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
         const queryTables = []; // si aparece
         const excludedTables = this.modelTables.filter((t: any) => t.visible === false).map((t: any) => t.table_name); // Si aparece
 
-        // La lista filteredPanels está vacia debido a que todos los paneles estan desactivados. 
+       // filteredPanels list is empty because all panels are disabled. 
         if(this.filteredPanels.length===0){
             for (const panel of this.allPanels) {
-                //tables const tmpPanel = this.params.panels.find(p => p.id === panel.id);
                 const panelQuery = panel.content.query.query;
     
                 for (const field of panelQuery.fields) {
@@ -173,7 +172,6 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
             }
         } else {
             for (const panel of this.filteredPanels) {
-                //tables const tmpPanel = this.params.panels.find(p => p.id === panel.id);
                 const panelQuery = panel.content.query.query;
     
                 for (const field of panelQuery.fields) {
