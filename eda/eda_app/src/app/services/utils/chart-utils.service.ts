@@ -1429,11 +1429,11 @@ export class ChartUtilsService {
                 } else if(chartSubType=='stackedbar100') {
                     if(showLabels || showLabelsPercent ){
                         dataLabelsObjt =  {
-                            anchor: size.height>150?'end':'center',
-                            align:  size.height>150?'top':'center',
+                            anchor: size.height>180?'end':'center',
+                            align:  size.height>180?'top':'center',
                             display: 'auto',
                             color: function(context) {
-                                return size.height>150?context.dataset.backgroundColor:'#ffffff';
+                                return size.height>180?context.dataset.backgroundColor:'#ffffff';
                                 },
                             font: {
                             weight: 'bold',
