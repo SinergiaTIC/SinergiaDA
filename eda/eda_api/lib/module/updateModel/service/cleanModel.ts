@@ -91,7 +91,7 @@ export class CleanModel {
             }
 
 
-            //recuperamos los model_granted_roles de mongo, donde se han añadido permisos para SDA_*
+            //recuperamos los model_granted_roles de mongo, donde se han añadido permisos para SCRM_*
             const finder = await DataSourceSchema.find({_id: "111111111111111111111111" }) ; 
             let mgs = [];
             const mgsmap = _.cloneDeep(finder.map(e => mgs = e.ds.metadata.model_granted_roles));
@@ -142,15 +142,17 @@ export class CleanModel {
             }
             );
 
-            // Recuperando los permisos provenientes de SinergiaDA 
+            // Recuperando los permisos provenientes de SinergiaCRM 
             // la propiedad source --> "EDA" indica que el permiso proviene de la applicacion y no de la base de datos
-            const userRoles = mgsmap[0].filter( (r:any) => {
-                return r?.source === 'SDA' && !r.groupsName.find( e => e.startsWith('SDA_'))
-            });
+            if(mgsmap.length!==0) {
+                const userRoles = mgsmap[0].filter( (r:any) => {
+                    return r?.source === 'SDA' && !r.groupsName.find( e => e.startsWith('SCRM_'))
+                });
 
-            // Agregando los permisos agregados previamente en la aplicacion. 
-            const all_roles =   [ ...model_granted_roles, ...userRoles];   
-            main_model.ds.metadata.model_granted_roles = all_roles;
+                // Agregando los permisos agregados previamente en la aplicacion. 
+                const all_roles =   [ ...model_granted_roles, ...userRoles];   
+                main_model.ds.metadata.model_granted_roles = all_roles;
+            } 
 
             return main_model;
         }
