@@ -636,13 +636,13 @@ export class EdaBlankPanelComponent implements OnInit {
         // Se verifica si la longitud de la variable axes
 
         const configCrossTable = this.panelChartConfig.config.getConfig()
-
+        
         if(subType === 'crosstable'){
-            if((config===null) || config['config']['ordering'].length === 0){
+            if( ((config===null) || config['config']['ordering'] === undefined) ) {
                 this.axes = this.initAxes(this.currentQuery);
                 configCrossTable['ordering'] = [{axes: this.axes}]; // Agrego el nuevo axes a la config
             }
-    
+            
             if(config!==null && config['config']['ordering'].length !==0) {
                 this.axes = config['config']['ordering'][0]['axes']
             }
