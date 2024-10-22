@@ -504,6 +504,7 @@
                 <div class="grid p-0 h-100">
                     <div class="col-8 p-1 preview-chart-box component" style="background-color: var(--panel-color);">
 
+
                         <div class="container">
                             <div class="row">
                                 <panel-chart #panelChartComponentPreview [props]="panelChartConfig"
@@ -514,6 +515,7 @@
                                 <drag-drop *ngIf="graphicType==='crosstable'" [axes]="axes" (newAxes)="newAxesOrdering($event)"></drag-drop>
                             </div>
                         </div>
+
 
                     </div>
 

@@ -546,6 +546,8 @@ export abstract class QueryBuilderService {
                         filter_column: permission.column,
                         filter_dynamic: permission.dynamic?permission.dynamic:false,
                         filter_type: 'in',
+                        isGlobal: 'security',
+                        filter_id: permission.table + '-' + permission.column + '-' +   'security',
                         filter_elements: [{ value1: permission.value }]
                     };
 
@@ -597,6 +599,8 @@ export abstract class QueryBuilderService {
                         filter_table: permission.table,
                         filter_column: permission.column,
                         filter_type: 'in',
+                        isGlobal: 'security',
+                        filter_id: permission.table + '-' + permission.column + '-' +   'security',
                         filter_dynamic: permission.dynamic?permission.dynamic:false,
                         filter_elements: [{ value1: permission.value }]
                     };
@@ -704,7 +708,10 @@ export abstract class QueryBuilderService {
         const schema = this.dataModel.ds.connection.schema;
         const modelPermissions = this.dataModel.ds.metadata.model_granted_roles;
         let query = userQuery.SQLexpression;
-
+        
+        // añado un espacio en blanco al final de cada linea para asegurar que no se juntan palabras
+        let reg = new RegExp(`\n`, "g");
+        query = query.replace(reg, ` `);
 
         if (modelPermissions.length > 0) {
 
@@ -991,11 +998,19 @@ export abstract class QueryBuilderService {
     }
 
     public getEqualFilters = (filters) => {
+        /**
+         * LOS FILTROS TIENEN DIFERENTES NIVELES GLOBAL = A NIVEL DE DASHBOARD - LOCAL = A NIVEL DE PANEL - SEGURIDAD = QUE VIENEN DE LA SEGURIDAD
+         * LOS FILTORS SE CONCATENAN CON UN AND NORMALMENTE. PERO SI PONGO FILTROS SOBRE LA MISMA COLUMNA AL MISMO NIVEL (ISGLOBAL) SE CONCATENAN
+         * CON UN OR. QUE ES EL FUNCIONAMIENTO ESPERADO.
+         * 
+          */
         let filterMap = new Map();
         let toRemove = [];
         filters.forEach(filter => {
-
             let myKey = filter.filter_table + filter.filter_column + filter.isGlobal;
+            if(filter.isGlobal == 'security'){
+                myKey = filter.filter_table +'security'  /**   si es de seguridad se deben combinar todos los filtros. */
+            }
             let node = filterMap.get(myKey);
             if (node) {
                 node.push(filter);
