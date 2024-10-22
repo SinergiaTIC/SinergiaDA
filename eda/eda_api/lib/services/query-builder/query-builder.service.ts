@@ -29,7 +29,7 @@ export abstract class QueryBuilderService {
         this.tables = dataModel.ds.model.tables;
     }
 
-    abstract getFilters(filters, type: string);
+    abstract getFilters(filters, type: string, pTable: string);
     abstract getJoins(joinTree: any[], dest: any[], tables: Array<any>, 
         joinType:string, valueListJoins:Array<any>, schema?: string, database?: string);
     abstract getSeparedColumns(origin: string, dest: string[]);

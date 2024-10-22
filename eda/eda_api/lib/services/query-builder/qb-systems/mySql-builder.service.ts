@@ -38,8 +38,10 @@ export class MySqlBuilderService extends QueryBuilderService {
       myQuery = myQuery + '\n' + x;
     });
 
+    const valor = 'hola'
+
     // WHERE
-    myQuery += this.getFilters(filters, dest.length );
+    myQuery += this.getFilters(filters, dest.length, o);
 
     // GroupBy
     if (grouping.length > 0) {
@@ -81,13 +83,12 @@ export class MySqlBuilderService extends QueryBuilderService {
     return myQuery;
   };
 
-  public getFilters(filters, destLongitud): any { 
+  public getFilters(filters, destLongitud, pTable): any { 
 
     /** si tenemos permisos y no hay destino lo añado a los filtros */
-    if (this.permissions.length > 0 && destLongitud == 0) {
-      this.permissions.forEach(permission => { filters.push(permission); });
-    }
 
+    if ( this.permissions.length > 0 && destLongitud == 0) this.permissions.forEach( permission => { filters.push(permission); });
+    else { this.permissions.forEach( permission => { if( permission.filter_table === pTable ) filters.push(permission);})}
 
     if (filters.length) {
 
