@@ -666,6 +666,10 @@ export class ChartUtilsService {
      */
     public getNotAllowedCharts(dataDescription: any, query: any): any[] {
 
+        console.log('DATA DESCRIPTION ::::: ', dataDescription)
+        console.log('CURRENT-QUERY ::::: ', query)
+
+
         let notAllowed =
             [
                 'table', 'crosstable', 'kpi','dynamicText', 'geoJsonMap', 'coordinatesMap',
@@ -720,8 +724,7 @@ export class ChartUtilsService {
 
         }
         // Crosstable (At least three columns, one numeric)
-        if (dataDescription.totalColumns > 2 && dataDescription.numericColumns.length > 0 &&
-            dataDescription.totalColumns - dataDescription.numericColumns.length > 1) {
+        if (dataDescription.totalColumns > 2 && dataDescription.numericColumns.length > 0) {
             notAllowed.splice(notAllowed.indexOf('crosstable'), 1);
         }
 
