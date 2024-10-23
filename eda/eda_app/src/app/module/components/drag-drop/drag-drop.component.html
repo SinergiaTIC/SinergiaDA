@@ -18,6 +18,8 @@
                     [cdkDropListData]="itemX"
                     (cdkDropListDropped)="drop($event)"
                     >
+                      <p *ngIf="itemX.length < 1" class="item-message">{{messageItemX}}</p>
+
                       <div *ngFor="let item of itemX" class="box-1" cdkDrag>
 
                         <div class="col">
@@ -30,7 +32,7 @@
                         </div>
                         
                       </div>
-                    
+                      
                   </div>
                 </div>
 
@@ -51,7 +53,8 @@
                           (cdkDropListDropped)="drop($event)"
                           cdkDropListOrientation="horizontal"
                           >
-                  
+
+                          <p *ngIf="itemY.length < 1" class="item-message">{{messageItemY}}</p>
                           <div *ngFor="let item of itemY" class="box-1" cdkDrag>
                             
                             <div class="col">
@@ -80,7 +83,8 @@
                           (cdkDropListDropped)="drop($event)"
                           cdkDropListOrientation="horizontal"
                           [cdkDropListEnterPredicate]="isNumeric">
-                  
+
+                          <p *ngIf="itemZ.length < 1" class="item-message">{{messageItemZ}}</p>
                           <div *ngFor="let item of itemZ" class="box-1" cdkDrag>
                         
                             <div class="col">
