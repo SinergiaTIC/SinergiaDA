@@ -666,10 +666,6 @@ export class ChartUtilsService {
      */
     public getNotAllowedCharts(dataDescription: any, query: any): any[] {
 
-        console.log('DATA DESCRIPTION ::::: ', dataDescription)
-        console.log('CURRENT-QUERY ::::: ', query)
-
-
         let notAllowed =
             [
                 'table', 'crosstable', 'kpi','dynamicText', 'geoJsonMap', 'coordinatesMap',
