@@ -140,13 +140,13 @@ export const QueryUtils = {
 
         PanelInteractionUtils.verifyData(ebp);
 
-        // This if-else block ensures that the existing configured chart is maintained,
-        // even when using different data. If the query does not match the expected chart format,
-        // a table displaying the data will be rendered instead.
+        // Este if y else permiten mantener el gráfico que ya estaba configurado a pesar de que sean otros datos
+        // en caso de que query no cumpla con el grádico correspondiente, se proyectara una tabla con los datos.
         if(ebp.chartForm.value.chart===null){
           ebp.changeChartType('table', 'table', null);
           ebp.chartForm.patchValue({chart: ebp.chartUtils.chartTypes.find(o => o.value === 'table')});
-        }
+        } 
+
         else {
           if(!ebp.chartForm.value.chart.ngIf && !ebp.chartForm.value.chart.tooManyData){
             ebp.changeChartType(ebp.chartForm.value.chart.value, ebp.chartForm.value.chart.subValue, ebp.panelChartConfig.config);
@@ -192,6 +192,7 @@ export const QueryUtils = {
     const cumulativeSum = ebp.currentQuery.filter(field => field.column_type === 'date' && field.cumulativeSum === true).length > 0;
 
     if (dataDescription.otherColumns.length > 1 && cumulativeSum) {
+
       ebp.cumsumAlertController = new EdaDialogController({
         params: null,
         close: (event) => {
@@ -199,6 +200,15 @@ export const QueryUtils = {
         }
       })
     } else {
+
+      // Aparatado que inicia el initAxes en caso el ordering este vacio en la config
+      if(ebp.chartForm.controls.chart.value!==null) {
+        if(ebp.chartForm.controls.chart.value.subValue === 'crosstable' && !ebp.newAxesChanged) {
+          const config = ebp.panelChartConfig.config.getConfig();
+          ebp.axes = ebp.initAxes(ebp.currentQuery);
+          config['ordering'] = [{axes: ebp.axes}];;
+        }
+      }
 
       /**
           * Too much rows check
@@ -215,6 +225,7 @@ export const QueryUtils = {
       if ( (totalTableCount > MAX_TABLE_ROWS_FOR_ALERT)  && (ebp.selectedFilters.length + aggregations <= 0 )
             &&  ( ( ebp.queryLimit == undefined  )  ||  (  ebp.queryLimit >  MAX_TABLE_ROWS_FOR_ALERT ) )   ) {
 
+
         ebp.alertController = new EdaDialogController({
           params: { totalTableCount: totalTableCount },
           close: (event, response) => {
@@ -229,6 +240,8 @@ export const QueryUtils = {
         QueryUtils.runQuery(ebp, false);
       }
     }
+
+    ebp.newAxesChanged = false;
   },
 
 

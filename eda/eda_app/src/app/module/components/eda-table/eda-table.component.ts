@@ -36,6 +36,7 @@ export class EdaTableComponent implements OnInit {
         }else if(this.inject.styles && this.inject.pivot){
             this.applyPivotSyles(this.inject.styles)
         }
+
     }
 
 

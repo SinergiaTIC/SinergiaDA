@@ -38,6 +38,7 @@ export class TableDialogComponent extends EdaDialogAbstract implements AfterView
   public cols: Array<any> = [];
   public styles = [];
   public noRepetitions : boolean = false;
+  public ordering: Array<any> = [];
 
   /**Strings */
   public addTotals: string = $localize`:@@addTotals:Totales`;
@@ -91,9 +92,10 @@ export class TableDialogComponent extends EdaDialogAbstract implements AfterView
       this.sortedSerie = config.sortedSerie;
       this.sortedColumn = config.sortedColumn;
       this.noRepetitions = config.noRepetitions;
+      this.ordering = config.ordering;
     } else {
       this.panelChartConfig.config = new ChartConfig(
-        new TableConfig(false, false, 5, false, false, false, false, null, null, null, false)
+        new TableConfig(false, false, 5, false, false, false, false, null, null, null, false, [])
       )
     }
 
@@ -157,6 +159,7 @@ export class TableDialogComponent extends EdaDialogAbstract implements AfterView
   private percentages() {
 
     const currentConfig = this.myPanelChartComponent.currentConfig;
+
     if (this.onlyPercentages === true) {
 
       currentConfig.resultAsPecentage = true;
@@ -189,8 +192,7 @@ export class TableDialogComponent extends EdaDialogAbstract implements AfterView
 
     currentConfig.withColTotals = false;
     this.col_totals = currentConfig.withColTotals;
-
-
+    
     this.myPanelChartComponent.componentRef.instance.inject.checkTotals(null);
     this.resultAsPecentage = currentConfig.resultAsPecentage;
     this.onlyPercentages = currentConfig.onlyPercentages;
@@ -273,7 +275,7 @@ export class TableDialogComponent extends EdaDialogAbstract implements AfterView
     const styles = this.styles;
 
     const properties = new TableConfig(this.onlyPercentages, this.resultAsPecentage, rows,
-      this.col_subtotals, this.col_totals, this.row_totals, this.trend, sortedSerie, sortedColumn, styles, this.noRepetitions);
+      this.col_subtotals, this.col_totals, this.row_totals, this.trend, sortedSerie, sortedColumn, styles, this.noRepetitions, this.ordering);
 
     this.onClose(EdaDialogCloseEvent.UPDATE, properties);
   }
