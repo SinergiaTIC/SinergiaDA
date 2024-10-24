@@ -160,7 +160,6 @@ export class HomeSdaComponent implements OnInit {
   }
   
   private initDashboardTypes(): void {
-    // Filtrar los tipos basados en si el usuario es admin
     this.dashboardTypes = this.defaultDashboardTypes.filter(type => {
       if (type.type === 'shared') {
         return this.isAdmin;
@@ -168,7 +167,6 @@ export class HomeSdaComponent implements OnInit {
       return true;
     });
 
-    // Actualizar los tipos filtrados
     this.filteredTypes = [...this.dashboardTypes];
   }
 
