@@ -193,6 +193,7 @@ export class EdaBlankPanelComponent implements OnInit {
     public newAxesChanged: boolean = false;
     public graphicType: string; // extraemos el tipo de gráfico al inicio y al ejecutar
     public configCrossTable: any;
+    public isNewAxes: boolean = false;
 
     // Ocultar el boton de ejecutar
     public hiddenButtonExecuter: boolean = false;
@@ -637,6 +638,13 @@ export class EdaBlankPanelComponent implements OnInit {
         const configCrossTable = this.panelChartConfig.config.getConfig()
         
         if(subType === 'crosstable'){
+
+            if(this.isNewAxes){
+                this.axes = this.initAxes(this.currentQuery);
+                configCrossTable['ordering'] = [{axes: this.axes}]; // Agrego el nuevo axes a la config
+                this.isNewAxes = false;
+            }
+
             if( ((config===null) || config['config']['ordering'] === undefined) ) {
                 this.axes = this.initAxes(this.currentQuery);
                 configCrossTable['ordering'] = [{axes: this.axes}]; // Agrego el nuevo axes a la config
@@ -648,6 +656,7 @@ export class EdaBlankPanelComponent implements OnInit {
         } else {
             this.axes = this.initAxes(this.currentQuery);
         }
+
     }
 
     /**
@@ -1169,6 +1178,8 @@ export class EdaBlankPanelComponent implements OnInit {
     */
     public runManualQuery = () => {
         this.hiddenButtonExecuter = true;
+        // isNewAxes --> Verifica si la construcción del axes es nueva.
+        this.isNewAxes = true;
         QueryUtils.runManualQuery(this)
     };
 
