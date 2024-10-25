@@ -1141,6 +1141,7 @@ export class EdaTable {
 
         rows.forEach(row => {
             const value = row[aggregatedColLabel]; // Capturas los valores numéricos de oldRows
+
             const pivotSteps = clonePivotColsLabels.length - 1; // Número de pasos en seccion pivot
             const leftColTarget = map.get(row[firstMainColsLabels]); // Captura cada mapa de la columna principal
             let lastMapKey = leftColTarget;
@@ -1149,8 +1150,10 @@ export class EdaTable {
             for (i = 0; i < pivotSteps; i++) {
                 lastMapKey = lastMapKey.get(row[clonePivotColsLabels[i]]);
             }
-            const actualValue = lastMapKey.get(row[clonePivotColsLabels[i]]);
-            lastMapKey.set(row[clonePivotColsLabels[i]], actualValue + value);
+            let actualValue = lastMapKey.get(row[clonePivotColsLabels[i]]);
+            // console.log('actualValue: ', actualValue);
+            // console.log('typeOf actualValue: ', typeof(actualValue));
+            lastMapKey.set(row[clonePivotColsLabels[i]], Number(actualValue) + value);
         });
         return map;
     }

@@ -639,22 +639,22 @@ export class EdaBlankPanelComponent implements OnInit {
         
         if(subType === 'crosstable'){
 
+
             if(this.isNewAxes){
                 this.axes = this.initAxes(this.currentQuery);
                 configCrossTable['ordering'] = [{axes: this.axes}]; // Agrego el nuevo axes a la config
                 this.isNewAxes = false;
             }
 
-            if( ((config===null) || config['config']['ordering'] === undefined) ) {
+            if( (((config===null) || config['config']['ordering'] === undefined)) ) {
                 this.axes = this.initAxes(this.currentQuery);
                 configCrossTable['ordering'] = [{axes: this.axes}]; // Agrego el nuevo axes a la config
             }
             
             if(config!==null && config['config']['ordering'].length !==0) {
                 this.axes = config['config']['ordering'][0]['axes']
+                configCrossTable['ordering'] = [{axes: this.axes}]; // Agrego el nuevo axes a la config
             }
-        } else {
-            this.axes = this.initAxes(this.currentQuery);
         }
 
     }
@@ -1443,6 +1443,7 @@ export class EdaBlankPanelComponent implements OnInit {
     public newAxesOrdering(newAxes) {
         this.axes = newAxes;
         this.newAxesChanged = true; // Indica que se utilizara la tabla cruzada generica
+        this.isNewAxes = false;
         const config = this.panelChartConfig.config.getConfig(); // Adquiera la configuración config
         this.currentQuery = this.newCurrentQuery(this.currentQuery, newAxes); // Reordeno el currentQuery                
         config['ordering'] = [{axes: newAxes}]; // Agrego el nuevo axes a la config
