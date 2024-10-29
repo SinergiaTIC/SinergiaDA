@@ -306,9 +306,8 @@ export class updateModel {
                     permission: true,
                     type: "users"
                 }
+                destGrantedRoles.push(gr3);
             }
-            destGrantedRoles.push(gr3)
-
         })
 
 
