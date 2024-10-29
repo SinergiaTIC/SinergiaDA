@@ -59,7 +59,7 @@ export class userAndGroupsToMongo {
           console.log(
             'usuario ' +
             user.name +
-            ' repetido, no se ha introducido en la bbdd'
+            ' NO SE HA PODIDO METER EN LA BBDD DE MONGO'
           )
         }
       } else {
