@@ -101,7 +101,7 @@ export class updateModel {
                             where bridge_table   != ''  `).then(async rows => {
                             let relations = rows;
                             //seleccionamos usuarios
-                            await connection.query('SELECT name as name, user_name as email, password as password, active as active FROM  sda_def_users;')
+                            await connection.query('SELECT name as name, user_name as email, password as password, active as active FROM sda_def_users where password  is not null ;')
                                 .then(async users => {
                                     let users_crm = users
                                     //seleccionamos roles de EDA
