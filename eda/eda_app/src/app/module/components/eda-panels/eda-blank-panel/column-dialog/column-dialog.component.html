@@ -328,6 +328,59 @@
 
                         </ng-container>
 
+                        <ng-container *ngIf="selectedColumn.column_type === 'numeric'">
+
+                            <h4 i18n="@@dateFormatH4"> Formato </h4>
+
+                            <hr>
+
+                            <div class="aggregation-list" style="margin-bottom: 10px;">
+
+                                <h5 style="margin-top: 5px; margin-right: 5px; font-size: 1.2rem;">Rangos: </h5>
+                                <hr>
+                                <input 
+                                    type="text" 
+                                    pInputText 
+                                    [(ngModel)]="rangeString"
+                                    [disabled]="showRange"> 
+
+                                <!-- (onClick)="addRango()" 
+                                [disabled]="'true'"
+                                i18n-label="@@addFilterBtn"  -->
+
+                            </div>
+
+                            <p-button 
+                                (onClick)="addRange(rangeString)" 
+                                label="Añadir Rango"
+                                [disabled]="!rangeString || rangeString.length === 0"
+                                i18n-label="@@addRange" 
+                                >
+                            </p-button>
+
+                            <div *ngIf="showRange" class="col-12 foot-card" style="margin-top: 5px;">
+
+                                <p-scrollPanel [style]="{width: '100%', height: '47px'}" styleClass="custombar1">
+        
+                                    <ng-container *ngIf="showRange">
+                                        
+                                        <p *ngIf="showRange" class="d-flex align-items-center">
+                                            <b class="mr-2" style="margin: 2px;">
+                                                * Los rangos son: {{ selectedRange }}
+                                            </b>
+        
+                                            <i class="ui-dropdown-clear-icon pi pi-times pointer"
+                                                (click)="removeRange()"></i>
+                                        </p>
+        
+                                    </ng-container>
+        
+                                </p-scrollPanel>
+        
+                            </div>
+
+                        </ng-container>
+
                     </ng-container>
 
                 </div>

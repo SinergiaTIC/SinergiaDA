@@ -57,6 +57,12 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
     public cumulativeSumTooltip: string = $localize`:@@cumulativeSumTooltip:Si activas ésta función se calculará la suma acumulativa 
                                             para los campos numéricos que eligas. Sólo se puede activar si la fecha está agregada por mes, semana o dia.`
 
+
+    public range: any[] = [];
+    public rangeString: string;
+    public selectedRange: string;
+    public showRange: boolean = false;
+
     constructor(
         private dashboardService: DashboardService,
         private chartUtils: ChartUtilsService,
@@ -78,6 +84,10 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
     }
 
     onShow(): void {
+        console.log('HEYYYY');
+        console.log('this.controller.params: ', this.controller.params);
+        // console.log('this.selectedColumn: ', this.selectedColumn);
+
         this.selectedColumn = this.controller.params.selectedColumn;
         const allowed = [];
         const title = this.selectedColumn.display_name.default;
@@ -619,5 +629,36 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
 
     onClose(event: EdaDialogCloseEvent, response?: any): void {
         return this.controller.close(event, response);
+    }
+
+    addRange(rangeString: string) {
+
+        // Trabajar con range
+
+        const range = rangeString.split(":")
+                        .map(item => parseFloat(item.replace(",", ".")));
+
+        for (let i = 0; i < range.length-1; i++) {
+            // Verificar si el número actual es menor o igual al anterior
+            if (range[i] >= range[i + 1]) {
+                this.range=[];
+                console.log('HAY UN ERRORRRRRRR')
+                return;
+            }
+        }
+
+        console.log('RANGE =>',range)
+
+        this.showRange = true;
+        this.selectedRange = rangeString; // extraemos el rango seleccionado
+        this.rangeString = '';
+        console.log('selectedRange add',this.selectedRange)
+
+    }
+
+    removeRange() {
+        this.selectedRange='';
+        this.showRange=false;
+        console.log('selectedRange remove',this.selectedRange)
     }
 }
