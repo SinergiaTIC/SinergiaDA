@@ -634,26 +634,34 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
 
     addRange(rangeString: string) {
 
-        // Trabajar con range
+        const regexNumber = /^[0-9]/;
 
-        const range = rangeString.split(":")
-                        .map(item => parseFloat(item.replace(",", ".")));
+        if(regexNumber.test(rangeString[rangeString.length-1])){
 
-        for (let i = 0; i < range.length-1; i++) {
-            // Verificar si el número actual es menor o igual al anterior
-            if (range[i] >= range[i + 1]) {
-                this.range=[];
-                console.log('HAY UN ERRORRRRRRR')
-                return;
+            const range = rangeString.split(":")
+            .map(item => parseFloat(item.replace(",", ".")));
+
+            for (let i = 0; i < range.length-1; i++) {
+                // Verificar si el número actual es menor o igual al anterior
+                if (range[i] >= range[i + 1]) {
+                    this.range=[];
+                    console.log('HAY UN ERRORRRRRRR')
+                    return;
+                }
             }
+
+            console.log('RANGE =>',range)
+
+            this.showRange = true;
+            this.selectedRange = rangeString; // extraemos el rango seleccionado
+            this.rangeString = '';
+            console.log('selectedRange: ',this.selectedRange)
+
         }
-
-        console.log('RANGE =>',range)
-
-        this.showRange = true;
-        this.selectedRange = rangeString; // extraemos el rango seleccionado
-        this.rangeString = '';
-        console.log('selectedRange: ',this.selectedRange)
+        else {
+            console.log('HAY UN ERRORRRRRRR, el ultimo caracter debe ser un número')
+            return;
+        }
 
     }
 
@@ -666,10 +674,10 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
     contieneLetra(rangeString: string){
 
         const regexNumber = /^[0-9]/;
-        const regexLetrasEspacio = /[a-zA-Z\s]/;
+        // const regexLetrasEspacio = /[a-zA-Z\s]/;
 
         if(regexNumber.test(rangeString[0])){
-            return regexLetrasEspacio.test(rangeString);
+            // return regexLetrasEspacio.test(rangeString);
         }
         else {
             return !regexNumber.test(rangeString[0])
