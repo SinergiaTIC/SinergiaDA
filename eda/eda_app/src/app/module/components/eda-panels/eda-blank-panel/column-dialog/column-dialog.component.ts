@@ -662,4 +662,18 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
         this.showRange=false;
         console.log('selectedRange remove: ',this.selectedRange)
     }
+
+    contieneLetra(rangeString: string){
+
+        const regexNumber = /^[0-9]/;
+        const regexLetrasEspacio = /[a-zA-Z\s]/;
+
+        if(regexNumber.test(rangeString[0])){
+            return regexLetrasEspacio.test(rangeString);
+        }
+        else {
+            return !regexNumber.test(rangeString[0])
+        }
+
+    }
 }

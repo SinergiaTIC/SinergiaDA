@@ -341,7 +341,6 @@
                                 <input 
                                     type="text" 
                                     appOnlySignsAndNumbers
-                                    pInputText 
                                     [(ngModel)]="rangeString"
                                     [disabled]="showRange"> 
 
@@ -354,7 +353,7 @@
                             <p-button 
                                 (onClick)="addRange(rangeString)" 
                                 label="Añadir Rango"
-                                [disabled]="!rangeString || rangeString.length === 0"
+                                [disabled]="(!rangeString || rangeString.length === 0) || contieneLetra(rangeString)"
                                 i18n-label="@@addRange" 
                                 >
                             </p-button>
