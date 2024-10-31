@@ -14,6 +14,7 @@ import * as _ from 'lodash';
 
 import { aggTypes } from 'app/config/aggretation-types';
 
+
 @Component({
     selector: 'app-column-dialog',
     templateUrl: './column-dialog.component.html',
@@ -652,13 +653,13 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
         this.showRange = true;
         this.selectedRange = rangeString; // extraemos el rango seleccionado
         this.rangeString = '';
-        console.log('selectedRange add',this.selectedRange)
+        console.log('selectedRange: ',this.selectedRange)
 
     }
 
     removeRange() {
         this.selectedRange='';
         this.showRange=false;
-        console.log('selectedRange remove',this.selectedRange)
+        console.log('selectedRange remove: ',this.selectedRange)
     }
 }
