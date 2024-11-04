@@ -101,14 +101,14 @@ export class updateModel {
                             where bridge_table   != ''  `).then(async rows => {
                             let relations = rows;
                             //seleccionamos usuarios
-                            await connection.query('SELECT name as name, user_name as email, password as password, active as active FROM sda_def_users where password  is not null ;')
+                            await connection.query('SELECT name as name, user_name as email, password as password, active as active FROM  sda_def_users WHERE password IS NOT NULL ;')
                                 .then(async users => {
                                     let users_crm = users
                                     //seleccionamos roles de EDA
                                     await connection.query('select "EDA_USER_ROLE" as role, b.name, "" as user_name  from sda_def_groups b union select "EDA_USER_ROLE" as role, g.name as name , g.user_name from sda_def_user_groups g; ')
                                         .then(async role => {
                                             let roles = role;
-                                            await connection.query('  select distinct  a.user_name as name, a.`table`,  "id" as  `column`,  a.`group` from  sda_def_permissions a left join sda_def_security_group_records b on a.`table`  = b.`table` and a.`group`  = b.`group` where a.`group` != ""  ; ' )
+                                            await connection.query('  select distinct  a.user_name as name, a.`table`,  "id" as  `column`,  a.`group` from  sda_def_permissions a where a.`group` != ""  ; ' )
                                                 .then(async granted => {
                                                     let fullTablePermissionsForRoles = granted;
                                                     //seleccionamos enumeraciones
@@ -143,7 +143,7 @@ export class updateModel {
                                                                                   res.status(500).json({'status' : 'ko'})
                                                                                 }
     
-                                                                                console.log('Generando el modelo');
+                                                                                console.log('Generating model');
                                                                                 
                                                                                 try {
                                                                                 modelToExport = updateModel.createModel(tables, columns, relations, grantedRolesAt, ennumeration, res);
@@ -167,7 +167,6 @@ export class updateModel {
                 })
 
         } catch (e) {
-            //res.send(500)
             console.log('Error : ', e);
         }
         
@@ -188,10 +187,10 @@ export class updateModel {
                     columns = [...new Set(dataset.map(item => tabla === item.tabla ? item.column : null))].filter(item => item != null);
                     const sql = ' select ' + columns.toString() + ' from ' + tabla + ' limit 1   \n'
                     let nexSql = sql.replace("select ,", "select ").replace(", from", " from ");
-                   // console.log(nexSql);
+                   
                     await con.query(nexSql).then((ress, errrr) => {
                         if (errrr) throw errrr;
-                        //console.log(ress);
+                   
                         console.count("Query resuelta satisfactoriamente" );
                     })
                 });
@@ -259,6 +258,9 @@ export class updateModel {
                     type: "groups"
                     }
               }
+
+
+
                 destGrantedRoles.push(gr);
             }
         });
@@ -324,11 +326,11 @@ export class updateModel {
                 }else{
                   console.log('NO DEBERÍ PASAR POR AQUI..... NO DEBERÍA HABER PERMISOS DE GRUPO DIRECTAMENTE');
                 }
-
-
-
+                
+                destGrantedRoles.push(gr4)
             }
         });
+
 
         dynamicPermisssionsForUser.forEach(line => {
           const found = usersFound.find(i => i.email == line.name)
@@ -351,7 +353,6 @@ export class updateModel {
             }
         });
 
-
         return destGrantedRoles;
     }
 
@@ -372,7 +373,6 @@ export class updateModel {
             visible = false
           }
     
-          //console.log(  res[i].table ); 
           var tabla = {
             table_name: tables[i].table,
             columns: [],
