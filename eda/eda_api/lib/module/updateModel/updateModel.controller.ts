@@ -143,7 +143,7 @@ export class updateModel {
                                                                                   res.status(500).json({'status' : 'ko'})
                                                                                 }
     
-                                                                                console.log('Generando el modelo');
+                                                                                console.log('Generating model');
                                                                                 
                                                                                 try {
                                                                                 modelToExport = updateModel.createModel(tables, columns, relations, grantedRolesAt, ennumeration, res);
@@ -167,7 +167,6 @@ export class updateModel {
                 })
 
         } catch (e) {
-            //res.send(500)
             console.log('Error : ', e);
         }
         
@@ -188,10 +187,10 @@ export class updateModel {
                     columns = [...new Set(dataset.map(item => tabla === item.tabla ? item.column : null))].filter(item => item != null);
                     const sql = ' select ' + columns.toString() + ' from ' + tabla + ' limit 1   \n'
                     let nexSql = sql.replace("select ,", "select ").replace(", from", " from ");
-                   // console.log(nexSql);
+                   
                     await con.query(nexSql).then((ress, errrr) => {
                         if (errrr) throw errrr;
-                        //console.log(ress);
+                   
                         console.count("Query resuelta satisfactoriamente" );
                     })
                 });
@@ -228,12 +227,16 @@ export class updateModel {
         const mongoGroups = await  Group.find(); 
 
         fullTablePermissionsForRoles.forEach((line) => {
+
             let match = mongoGroups.filter(i => { return i.name === line.group })
+
             let mongoId: String;
             let mongoGroup: String;
+
             if (match.length == 1 && line.group !== undefined) {
                 mongoId = match[0]._id.toString()
                 mongoGroup = match[0].name.toString()
+
               if( line.name != null ){
                   // Si es un grupo convertido en usuario
                   const found = usersFound.find(i => i.email == line.name)
@@ -259,6 +262,9 @@ export class updateModel {
                     type: "groups"
                     }
               }
+
+
+
                 destGrantedRoles.push(gr);
             }
         });
@@ -266,6 +272,7 @@ export class updateModel {
 
 
         fullTablePermissionsForUsers.forEach(line => {
+
             const found = usersFound.find(i => i.email == line.name)
             if (found) {
                 gr3 = {
@@ -320,7 +327,7 @@ export class updateModel {
                       value: [valueAt]
                     }
                 }
-                console.log(gr4);
+                
                 destGrantedRoles.push(gr4)
             }
         });
@@ -367,7 +374,6 @@ export class updateModel {
             visible = false
           }
     
-          //console.log(  res[i].table ); 
           var tabla = {
             table_name: tables[i].table,
             columns: [],
