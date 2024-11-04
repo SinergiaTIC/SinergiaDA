@@ -60,7 +60,6 @@ export class userAndGroupsToMongo {
             'usuario ' +
             user.name +
             ' (Could not insert into the MongoDB database.)'          )
-
         }
       } else {
         await User.findOneAndUpdate({ name: users[i].name }, { password: users[i].password });
