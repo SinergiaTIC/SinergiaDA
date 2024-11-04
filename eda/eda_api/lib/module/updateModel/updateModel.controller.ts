@@ -306,13 +306,13 @@ export class updateModel {
                         type: "users",
                         value: [valueAt]
                       }
-                      let valueAt2: String = " select `assigned_user_name` from " + table_name +      " where `assigned_user_name`  = 'EDA_USER' " ;
+                      let valueAt2: String = " select `id` from " + line.table +      " where `assigned_user_name`  = 'EDA_USER' " ;
                       gr5 = {
                         users: [found._id],
                         usersName: [line.name],
                         none: false,
                         table: line.table,
-                        column: "assigned_user_name",
+                        column: "id",
                         global: false,
                         permission: true,
                         dynamic: true,
