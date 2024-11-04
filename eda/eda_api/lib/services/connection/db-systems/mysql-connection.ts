@@ -158,6 +158,7 @@ export class MysqlConnection extends AbstractConnection {
     async execQuery(query: string): Promise<any> {
         try {
             this.client.query = util.promisify(this.client.query);
+            await this.client.query('SET SESSION max_statement_time = 180');
             const rows = await this.client.query(query);
             // console.log(this.client.itsConnected());
             // if (!this.pool && this.client.itsConnected() ) this.client.end();
