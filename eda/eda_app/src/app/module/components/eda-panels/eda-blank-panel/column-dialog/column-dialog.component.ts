@@ -85,7 +85,7 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
     }
 
     onShow(): void {
-        console.log('HEYYYY');
+        console.log('column-dialog.component.ts');
         console.log('this.controller.params: ', this.controller.params);
         // console.log('this.selectedColumn: ', this.selectedColumn);
 
