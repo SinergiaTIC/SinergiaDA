@@ -59,7 +59,7 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
                                             para los campos numéricos que eligas. Sólo se puede activar si la fecha está agregada por mes, semana o dia.`
 
 
-    public range: any[] = [];
+    public ranges: any[] = [];
     public rangeString: string;
     public selectedRange: string;
     public showRange: boolean = false;
@@ -644,7 +644,7 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
             for (let i = 0; i < range.length-1; i++) {
                 // Verificar si el número actual es menor o igual al anterior
                 if (range[i] >= range[i + 1]) {
-                    this.range=[];
+                    this.ranges=[];
                     console.log('HAY UN ERRORRRRRRR')
                     return;
                 }

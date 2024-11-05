@@ -334,12 +334,14 @@
 
                             <hr>
 
-                            <div class="aggregation-list" style="margin-bottom: 10px;">
+                            <div style="margin: 10px 0;">
 
-                                <h5 style="margin-top: 5px; margin-right: 5px; font-size: 1.2rem;">Rangos: </h5>
-                                <hr>
+                                <h5 style="margin-top: 5px; font-size: 1.2rem;">Rangos: </h5>
+                                
+
                                 <input 
                                     type="text" 
+                                    style="font-size: 1rem;"
                                     appOnlySignsAndNumbers
                                     [(ngModel)]="rangeString"
                                     [disabled]="showRange"> 
@@ -360,13 +362,13 @@
 
                             <div *ngIf="showRange" class="col-12 foot-card" style="margin-top: 5px;">
 
-                                <p-scrollPanel [style]="{width: '100%', height: '47px'}" styleClass="custombar1">
+                                <p-scrollPanel [style]="{width: '100%', height: '60px'}" styleClass="custombar1">
         
                                     <ng-container *ngIf="showRange">
                                         
                                         <p *ngIf="showRange" class="d-flex align-items-center">
-                                            <b class="mr-2" style="margin: 2px;">
-                                                * Los rangos son: {{ selectedRange }}
+                                            <b class="mr-2" style="margin: 2px; font-size: 1.2rem;">
+                                                • Rango: <br>{{ selectedRange }}
                                             </b>
         
                                             <i class="ui-dropdown-clear-icon pi pi-times pointer"
