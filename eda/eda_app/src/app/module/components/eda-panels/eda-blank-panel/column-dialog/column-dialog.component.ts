@@ -176,7 +176,6 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
     }
 
     addAggregation(type: any) {
-        console.log('type: ', type);
         this.aggregationsTypes.find((ag: any) => ag.value === type.value).selected = true;
 
         for (let ag of this.aggregationsTypes) {
@@ -672,8 +671,6 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
             // Encuentra la columna de turno y agrega el rango 
             const addAggr = this.findColumn(this.selectedColumn, this.controller.params.currentQuery);
             addAggr.ranges = this.ranges;
-            console.log('addAggr===> ', addAggr);
-
         }
         else {
             console.log('HAY UN ERRORRRRRRR, el ultimo caracter debe ser un número')
