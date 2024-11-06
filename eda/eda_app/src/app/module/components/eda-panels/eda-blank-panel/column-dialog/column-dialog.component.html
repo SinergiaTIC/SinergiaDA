@@ -365,10 +365,9 @@
         
                                     <ng-container *ngIf="showRange">
                                         
-
-                                        <i style="position: absolute; left: 127px;" class="ui-dropdown-clear-icon pi pi-times pointer"(click)="removeRange()"></i>
                                         <b class="mr-2" style="margin: 2px; font-size: 1.1rem;">
-                                            * Rango: 
+                                            • Rango: 
+                                            <i class="ui-dropdown-clear-icon pi pi-times pointer"(click)="removeRange()"></i>
                                         </b>
                                         <div *ngIf="showRange" class="d-flex align-items-center" [innerHTML]="selectedRange" style="font-size: 1rem; padding: 10px 50px 5px 40px;"></div>
         
