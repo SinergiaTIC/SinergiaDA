@@ -10,13 +10,12 @@
             </h4>
             <hr>
 
-            <div class="aggregation-list">
+            <div class="aggregation-list" >
                 <div class="aggregation-box" *ngFor="let aggregation of aggregationsTypes"
-                    (click)="addAggregation(aggregation)"
+                    (click)="allowedAggregations && addAggregation(aggregation)"
+                    [ngStyle]="{'cursor': !allowedAggregations ? 'not-allowed' : 'pointer'}"
                     [ngClass]="aggregation.selected === true ? 'aggregation-active' : ''">
-
-                    <span>{{getAggName(aggregation.value)}}</span>
-
+                    <span>{{getAggName(aggregation.value)}}</span>            
                 </div>
             </div>
 

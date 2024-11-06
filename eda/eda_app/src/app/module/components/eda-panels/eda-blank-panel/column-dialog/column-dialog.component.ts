@@ -63,6 +63,7 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
     public rangeString: string;
     public selectedRange: string;
     public showRange: boolean = false;
+    public allowedAggregations: boolean = true;
 
     constructor(
         private dashboardService: DashboardService,
@@ -170,6 +171,7 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
     }
 
     addAggregation(type: any) {
+        console.log('type: ', type);
         this.aggregationsTypes.find((ag: any) => ag.value === type.value).selected = true;
 
         for (let ag of this.aggregationsTypes) {
@@ -178,11 +180,14 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
             }
         }
 
+        console.log('this.aggregationsTypes: ', this.aggregationsTypes);
         // Recarguem les agregacions d'aquella columna + la seleccionada
         this.selectedColumn.aggregation_type = JSON.parse(JSON.stringify(this.aggregationsTypes));
+        console.log('this.selectedColumn.aggregation_type: ', this.selectedColumn.aggregation_type);
 
         // Introduim l'agregació a la Select
         const addAggr = this.findColumn(this.selectedColumn, this.controller.params.currentQuery);
+        console.log('addAggr: ', addAggr);
 
         if (addAggr) {
             addAggr.aggregation_type = JSON.parse(JSON.stringify(this.selectedColumn.aggregation_type));
@@ -655,7 +660,11 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
             this.showRange = true;
             this.selectedRange = rangeString; // extraemos el rango seleccionado
             this.rangeString = '';
-            console.log('selectedRange: ',this.selectedRange)
+            this.allowedAggregations = false;
+
+            // Selección de Rango, genera que la agregación sea 'none'
+            const selectionAggregationRange = { value: 'none', display_name: 'No', selected: 'true' };
+            this.addAggregation(selectionAggregationRange);
 
         }
         else {
@@ -668,6 +677,7 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
     removeRange() {
         this.selectedRange='';
         this.showRange=false;
+        this.allowedAggregations = true;
         console.log('selectedRange remove: ',this.selectedRange)
     }
 
