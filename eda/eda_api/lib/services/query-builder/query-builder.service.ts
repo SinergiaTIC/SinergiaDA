@@ -114,6 +114,10 @@ export abstract class QueryBuilderService {
 
         /** ..........................PER ELS VALUE LISTS................................ */
 
+        console.log('.......................................MITAD..queryTODO..............................................')
+        console.log(this.queryTODO)
+        console.log('.....................................................................................................')
+
 
         const filterTables = this.queryTODO.filters.map(filter => filter.filter_table);
 
@@ -319,6 +323,11 @@ export abstract class QueryBuilderService {
             this.query = this.normalQuery(columns, origin, dest, joinTree, grouping,  filters, havingFilters,  tables,
                 this.queryTODO.queryLimit,   this.queryTODO.joinType, valueListJoins, this.dataModel.ds.connection.schema, 
                 this.dataModel.ds.connection.database, this.queryTODO.forSelector);
+
+            console.log('........................................FIN..this.query..............................................')
+            console.log(this.query)
+            console.log('.....................................................................................................')
+
             return this.query;
         }
     }
