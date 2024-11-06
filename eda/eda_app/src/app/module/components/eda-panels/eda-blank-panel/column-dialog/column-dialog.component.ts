@@ -661,7 +661,7 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
             this.ranges = ranges
 
             this.showRange = true;
-            this.selectedRange = rangeString; // extraemos el rango seleccionado
+            this.selectedRange = this.generarStringRango(this.ranges); // extraemos el rango seleccionado
             this.rangeString = '';
             this.allowedAggregations = false;
 
@@ -692,6 +692,23 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
         console.log('selectedRange remove: ',this.selectedRange)
     }
 
+    generarStringRango(rango: number[]): string {
+        let resultado = "";
+    
+        // Agregamos la primera condición
+        resultado += `< ${rango[0]}<br>`;
+        
+        // Creamos las condiciones intermedias
+        for (let i = 0; i < rango.length - 1; i++) {
+            resultado += `${rango[i]} - ${rango[i + 1] - 1}<br>`;
+        }
+        
+        // Agregamos la última condición
+        resultado += `>= ${rango[rango.length - 1]}`;
+        
+        return resultado;
+    }
+
     verifyRange() {
 
         if(this.selectedColumn.ranges !== undefined){
@@ -702,9 +719,7 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
                 this.allowedAggregations = false;
                 this.showRange = true;
                 this.ranges = this.selectedColumn.ranges;
-                this.ranges.forEach( ran => {
-                    this.selectedRange += `${ran}:`
-                })
+                this.selectedRange = this.generarStringRango(this.ranges);
             }
         } else {
             console.log('Es indefinido')
