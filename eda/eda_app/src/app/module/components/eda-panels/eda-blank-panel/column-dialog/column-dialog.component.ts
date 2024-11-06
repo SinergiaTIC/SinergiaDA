@@ -59,9 +59,9 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
                                             para los campos numéricos que eligas. Sólo se puede activar si la fecha está agregada por mes, semana o dia.`
 
 
-    public ranges: any[] = [];
+    public ranges: number[] = [];
     public rangeString: string;
-    public selectedRange: string;
+    public selectedRange: string = '';
     public showRange: boolean = false;
     public allowedAggregations: boolean = true;
 
@@ -95,8 +95,13 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
         const title = this.selectedColumn.display_name.default;
         const col = $localize`:@@col:Atributo`, from = $localize`:@@table:de la entidad`;
         this.dialog.title = `${col} ${title} ${from} ${this.controller.params.table}`;
-
+        
         this.carregarValidacions();
+        this.verifyRange();
+        // debugger;
+        // console.log('this.selectedColumn', this.selectedColumn);
+        // console.log('this.aggregationsTypes', this.aggregationsTypes);
+        // debugger;
 
         const columnType = this.selectedColumn.column_type;
 
@@ -180,14 +185,11 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
             }
         }
 
-        console.log('this.aggregationsTypes: ', this.aggregationsTypes);
         // Recarguem les agregacions d'aquella columna + la seleccionada
         this.selectedColumn.aggregation_type = JSON.parse(JSON.stringify(this.aggregationsTypes));
-        console.log('this.selectedColumn.aggregation_type: ', this.selectedColumn.aggregation_type);
 
         // Introduim l'agregació a la Select
         const addAggr = this.findColumn(this.selectedColumn, this.controller.params.currentQuery);
-        console.log('addAggr: ', addAggr);
 
         if (addAggr) {
             addAggr.aggregation_type = JSON.parse(JSON.stringify(this.selectedColumn.aggregation_type));
@@ -643,19 +645,20 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
 
         if(regexNumber.test(rangeString[rangeString.length-1])){
 
-            const range = rangeString.split(":")
+            const ranges = rangeString.split(":")
             .map(item => parseFloat(item.replace(",", ".")));
 
-            for (let i = 0; i < range.length-1; i++) {
+            for (let i = 0; i < ranges.length-1; i++) {
                 // Verificar si el número actual es menor o igual al anterior
-                if (range[i] >= range[i + 1]) {
+                if (ranges[i] >= ranges[i + 1]) {
                     this.ranges=[];
                     console.log('HAY UN ERRORRRRRRR')
                     return;
                 }
             }
 
-            console.log('RANGE =>',range)
+            console.log('RANGE =>',ranges)
+            this.ranges = ranges
 
             this.showRange = true;
             this.selectedRange = rangeString; // extraemos el rango seleccionado
@@ -665,6 +668,11 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
             // Selección de Rango, genera que la agregación sea 'none'
             const selectionAggregationRange = { value: 'none', display_name: 'No', selected: 'true' };
             this.addAggregation(selectionAggregationRange);
+
+            // Encuentra la columna de turno y agrega el rango 
+            const addAggr = this.findColumn(this.selectedColumn, this.controller.params.currentQuery);
+            addAggr.ranges = this.ranges;
+            console.log('addAggr===> ', addAggr);
 
         }
         else {
@@ -678,7 +686,32 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
         this.selectedRange='';
         this.showRange=false;
         this.allowedAggregations = true;
+        const addAggr = this.findColumn(this.selectedColumn, this.controller.params.currentQuery);
+        addAggr.ranges = [];
+
         console.log('selectedRange remove: ',this.selectedRange)
+    }
+
+    verifyRange() {
+
+        if(this.selectedColumn.ranges !== undefined){
+
+            if(this.selectedColumn.ranges.length !==0){
+                console.log('Es diferente de indefinido')
+    
+                this.allowedAggregations = false;
+                this.showRange = true;
+                this.ranges = this.selectedColumn.ranges;
+                this.ranges.forEach( ran => {
+                    this.selectedRange += `${ran}:`
+                })
+            }
+        } else {
+            console.log('Es indefinido')
+        }
+
+        console.log('this.selectedColumn - verifyRange', this.selectedColumn);
+        console.log('this.aggregationsTypes - verifyRange', this.aggregationsTypes);
     }
 
     contieneLetra(rangeString: string){
