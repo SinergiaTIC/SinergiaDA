@@ -116,7 +116,40 @@ export abstract class QueryBuilderService {
 
         console.log('.......................................MITAD..queryTODO..............................................')
         console.log(this.queryTODO)
-        console.log('.....................................................................................................')
+
+        // Verificando el Rango, si existe agrega los cambios sino el this.queryTODO queda igual.
+        this.queryTODO = this.verifyRange(this.queryTODO);
+
+    /**
+     * 
+     * si tienen rangos 
+     *  this.queryTODO[i].computed_column === 'computed'
+     *  this.queryTODO[i].column_type='text'
+     *   this.queryTODO[i].SQLexpression=  "case  when `Importe` < 100 then '< 100'
+		when `Importe` >= 100 and `Importe` <= (1500-1) then '>=100 y <1499'
+		when `Importe` >= 1500 and `Importe` <= (3858-1) then '>=1500 y <3857'
+		when `Importe` >= 3858 and `Importe` <= (5000-1) then '>=3858 y <4999'
+		when  `Importe` >= 5000 then '>= 5000'
+ 	end
+     * / */
+
+
+/**
+ *  // Aqui se manejan las columnas calculadas
+      if (el.computed_column === 'computed') {
+        if(el.column_type=='text'){
+          columns.push(`  ${el.SQLexpression}  as \`${el.display_name}\``);
+        }else if(el.column_type=='numeric'){
+          columns.push(`cast( ${el.SQLexpression} as decimal(32,${el.minimumFractionDigits})) as \`${el.display_name}\``);
+        }else if(el.column_type=='date'){
+          columns.push(`  ${el.SQLexpression}  as \`${el.display_name}\``);
+        }else if(el.column_type=='coordinate'){
+          columns.push(`  ${el.SQLexpression}  as \`${el.display_name}\``);
+        }
+ * 
+ * 
+ */
+
 
 
         const filterTables = this.queryTODO.filters.map(filter => filter.filter_table);
@@ -326,11 +359,66 @@ export abstract class QueryBuilderService {
 
             console.log('........................................FIN..this.query..............................................')
             console.log(this.query)
+            console.log('this.queryTODO: ',this.queryTODO);
             console.log('.....................................................................................................')
 
+            // this.query = this.applyRange(this.query, this.queryTODO);
+            
             return this.query;
         }
     }
+
+    public verifyRange(queryTODO: any){
+        let columnRange = queryTODO.fields.find( c => c.ranges.length!==0);
+
+        if(columnRange===undefined) {
+            console.log('RANGEEEEEEEEEEEEEEEEE: ', columnRange);
+            return queryTODO;
+        } else {
+            console.log('RANGEEEEEEEEEEEEEEEEE: ', columnRange.ranges);
+            columnRange.computed_column = 'computed';
+            columnRange.column_type = 'text';
+
+            let columna = `${columnRange.table_id}.${columnRange.column_name}`
+
+            let SQLexpression = "CASE\n";
+        
+            // Primer caso: menor que el primer valor del rango
+            SQLexpression += `\tWHEN ${columna} < ${columnRange.ranges[0]} THEN '< ${columnRange.ranges[0]}'\n`; 
+
+            // Casos intermedios: entre cada par de valores en el rango
+            for (let i = 0; i < columnRange.ranges.length - 1; i++) {
+                const lower = columnRange.ranges[i];
+                const upper = columnRange.ranges[i + 1] - 1;
+                SQLexpression += `\tWHEN ${columna} >= ${lower} AND ${columna} <= ${upper} THEN '>=  ${lower} y <${upper}'\n`;
+            }            
+
+            // Último caso: mayor o igual al último valor del rango
+            SQLexpression += `\tWHEN ${columna} >= ${columnRange.ranges[columnRange.ranges.length - 1]} THEN '>= ${columnRange.ranges[columnRange.ranges.length - 1]}'\n`;
+            SQLexpression += "END";            
+
+            columnRange.SQLexpression = SQLexpression;
+
+            return queryTODO
+        }
+
+    }
+
+/**
+ *  // Aqui se manejan las columnas calculadas
+      if (el.computed_column === 'computed') {
+        if(el.column_type=='text'){
+          columns.push(`  ${el.SQLexpression}  as \`${el.display_name}\``);
+        }else if(el.column_type=='numeric'){
+          columns.push(`cast( ${el.SQLexpression} as decimal(32,${el.minimumFractionDigits})) as \`${el.display_name}\``);
+        }else if(el.column_type=='date'){
+          columns.push(`  ${el.SQLexpression}  as \`${el.display_name}\``);
+        }else if(el.column_type=='coordinate'){
+          columns.push(`  ${el.SQLexpression}  as \`${el.display_name}\``);
+        }
+ * 
+ * 
+ */
 
     public buildGraph() {
         const graph = [];

@@ -64,6 +64,8 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
     public selectedRange: string = '';
     public showRange: boolean = false;
     public allowedAggregations: boolean = true;
+    public ptooltipViewTextRanges: string = $localize`:@@ptooltipViewTextRanges:Al configurar un Rango las agregaciones quedarán bloqueadas, Ejemplo de un rango valido - 12:18:50:100 `;
+
 
     constructor(
         private dashboardService: DashboardService,
@@ -670,6 +672,7 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
 
             // Encuentra la columna de turno y agrega el rango 
             const addAggr = this.findColumn(this.selectedColumn, this.controller.params.currentQuery);
+            addAggr.column_type = 'text';
             addAggr.ranges = this.ranges;
         }
         else {
@@ -684,6 +687,7 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
         this.showRange=false;
         this.allowedAggregations = true;
         const addAggr = this.findColumn(this.selectedColumn, this.controller.params.currentQuery);
+        addAggr.column_type = 'numeric';
         addAggr.ranges = [];
 
         console.log('selectedRange remove: ',this.selectedRange)
@@ -724,6 +728,11 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
 
         console.log('this.selectedColumn - verifyRange', this.selectedColumn);
         console.log('this.aggregationsTypes - verifyRange', this.aggregationsTypes);
+    }
+
+    getTextRanges($event) {
+        console.log('holaaaaaaaaaaaaaaaaaaaaaaaaaaaaa')
+        
     }
 
     contieneLetra(rangeString: string){

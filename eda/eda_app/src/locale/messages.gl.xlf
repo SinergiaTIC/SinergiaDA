@@ -4319,6 +4319,10 @@
         <source>El año pasado, completo</source>
         <target>El año pasado, completo</target>
       </trans-unit>
+      <trans-unit id="ptooltipViewTextRanges">
+        <source>Al configurar un Rango las agregaciones quedarán bloqueadas, Ejemplo de un rango valido - 12:18:50:100 </source>
+        <target>Ao configurar un intervalo, as agregacións bloquearanse. Exemplo dun intervalo válido: 12:18:50:100 </target>
+      </trans-unit>
     </body>
   </file>
 </xliff>

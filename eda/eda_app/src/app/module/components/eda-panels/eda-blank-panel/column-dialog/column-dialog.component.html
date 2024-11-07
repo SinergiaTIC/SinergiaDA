@@ -327,7 +327,7 @@
 
                         </ng-container>
 
-                        <ng-container *ngIf="selectedColumn.column_type === 'numeric'">
+                        <ng-container *ngIf="(selectedColumn.column_type === 'numeric') || (selectedColumn.column_type === 'text' && this.ranges.length!==0)">
 
                             <h4 i18n="@@dateFormatH4"> Formato </h4>
 
@@ -335,9 +335,16 @@
 
                             <div style="margin: 10px 0;">
 
-                                <h5 style="margin-top: 5px; font-size: 1.2rem;">Rangos: </h5>
+                                 <div>
+                                    <h5 style="margin-top: 5px; font-size: 1.2rem; display: inline;">Rangos: </h5>
+                                     <span>
+                                        <i class="pi pi-info-circle" 
+                                           style="cursor: pointer; margin-top: -5px;"
+                                           [pTooltip]="ptooltipViewTextRanges">
+                                        </i>
+                                     </span>
+                                 </div>
                                 
-
                                 <input 
                                     type="text" 
                                     style="font-size: 1rem;"
@@ -369,7 +376,7 @@
                                             • Rango: 
                                             <i class="ui-dropdown-clear-icon pi pi-times pointer"(click)="removeRange()"></i>
                                         </b>
-                                        <div *ngIf="showRange" class="d-flex align-items-center" [innerHTML]="selectedRange" style="font-size: 1rem; padding: 10px 50px 5px 40px;"></div>
+                                        <div *ngIf="showRange" class="d-flex align-items-center" [innerHTML]="selectedRange" style="font-size: 1rem; padding: 10px 40px 5px 30px;"></div>
         
                                     </ng-container>
         

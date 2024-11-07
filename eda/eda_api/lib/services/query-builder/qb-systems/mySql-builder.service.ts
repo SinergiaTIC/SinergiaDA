@@ -15,6 +15,13 @@ export class MySqlBuilderService extends QueryBuilderService {
     let myQuery = `SELECT ${columns.join(', ')} \nFROM ${o}`;
 
 
+
+
+
+
+console.log(columns);
+
+
     /** SI ES UN SELECT PARA UN SELECTOR  VOLDRÉ VALORS ÚNICS */
     if (forSelector === true) {
       myQuery = `SELECT DISTINCT ${columns.join(', ')} \nFROM ${o}`;
