@@ -369,39 +369,50 @@ export abstract class QueryBuilderService {
     }
 
     public verifyRange(queryTODO: any){
-        let columnRange = queryTODO.fields.find( c => c.ranges.length!==0);
+        // let columnRange = queryTODO.fields.find( c => c.ranges.length!==0);
 
-        if(columnRange===undefined) {
-            console.log('RANGEEEEEEEEEEEEEEEEE: ', columnRange);
-            return queryTODO;
-        } else {
-            console.log('RANGEEEEEEEEEEEEEEEEE: ', columnRange.ranges);
-            columnRange.computed_column = 'computed';
-            columnRange.column_type = 'text';
+        queryTODO.fields.forEach( (fieldsColumn:any, j: number) => {
+            
+            if(fieldsColumn.ranges===undefined) {
+                
+                queryTODO.fields[j]=fieldsColumn;
+            } else {
 
-            let columna = `${columnRange.table_id}.${columnRange.column_name}`
+                if(fieldsColumn.ranges.length===0){
+                    queryTODO.fields[j]=fieldsColumn;
+                } else {
 
-            let SQLexpression = "CASE\n";
+                    fieldsColumn.computed_column = 'computed';
+                    fieldsColumn.column_type = 'text';
         
-            // Primer caso: menor que el primer valor del rango
-            SQLexpression += `\tWHEN ${columna} < ${columnRange.ranges[0]} THEN '< ${columnRange.ranges[0]}'\n`; 
+                    let columna = `${fieldsColumn.table_id}.${fieldsColumn.column_name}`
+        
+                    let SQLexpression = "CASE\n";
+                
+                    // Primer caso: menor que el primer valor del rango
+                    SQLexpression += `\tWHEN ${columna} < ${fieldsColumn.ranges[0]} THEN '< ${fieldsColumn.ranges[0]}'\n`; 
+        
+                    // Casos intermedios: entre cada par de valores en el rango
+                    for (let i = 0; i < fieldsColumn.ranges.length - 1; i++) {
+                        const lower = fieldsColumn.ranges[i];
+                        const upper = fieldsColumn.ranges[i + 1] - 1;
+                        SQLexpression += `\tWHEN ${columna} >= ${lower} AND ${columna} <= ${upper} THEN '>=  ${lower} y <${upper}'\n`;
+                    }            
+        
+                    // Último caso: mayor o igual al último valor del rango
+                    SQLexpression += `\tWHEN ${columna} >= ${fieldsColumn.ranges[fieldsColumn.ranges.length - 1]} THEN '>= ${fieldsColumn.ranges[fieldsColumn.ranges.length - 1]}'\n`;
+                    SQLexpression += "END";            
+        
+                    fieldsColumn.SQLexpression = SQLexpression;
+        
+                    queryTODO[j] = fieldsColumn;
+                }
 
-            // Casos intermedios: entre cada par de valores en el rango
-            for (let i = 0; i < columnRange.ranges.length - 1; i++) {
-                const lower = columnRange.ranges[i];
-                const upper = columnRange.ranges[i + 1] - 1;
-                SQLexpression += `\tWHEN ${columna} >= ${lower} AND ${columna} <= ${upper} THEN '>=  ${lower} y <${upper}'\n`;
-            }            
+            }
 
-            // Último caso: mayor o igual al último valor del rango
-            SQLexpression += `\tWHEN ${columna} >= ${columnRange.ranges[columnRange.ranges.length - 1]} THEN '>= ${columnRange.ranges[columnRange.ranges.length - 1]}'\n`;
-            SQLexpression += "END";            
+        })
 
-            columnRange.SQLexpression = SQLexpression;
-
-            return queryTODO
-        }
-
+        return queryTODO
     }
 
 /**
