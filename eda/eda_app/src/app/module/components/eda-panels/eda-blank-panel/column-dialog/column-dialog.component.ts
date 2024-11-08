@@ -645,7 +645,8 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
                 // Verificar si el número actual es menor o igual al anterior
                 if (ranges[i] >= ranges[i + 1]) {
                     this.ranges=[];
-                    console.log('HAY UN ERRORRRRRRR')
+                    // console.log('El correcto orden de los límites del rango van de menor a mayor')
+                    this.alertService.addError('El correcto orden de los límites del rango van de menor a mayor');
                     return;
                 }
             }
@@ -666,7 +667,8 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
             addAggr.ranges = this.ranges;
         }
         else {
-            console.log('HAY UN ERRORRRRRRR, el ultimo caracter debe ser un número')
+            // console.log('El último caracter del rango debe ser un número')
+            this.alertService.addError('El último caracter del rango debe ser un número');
             return;
         }
 
@@ -678,6 +680,7 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
         this.allowedAggregations = true;
         const addAggr = this.findColumn(this.selectedColumn, this.controller.params.currentQuery);
         addAggr.column_type = 'numeric';
+        this.selectedColumn.column_type = 'numeric';
         addAggr.ranges = [];
     }
 
@@ -708,8 +711,6 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
                 this.ranges = this.selectedColumn.ranges;
                 this.selectedRange = this.generarStringRango(this.ranges);
             }
-        } else {
-            console.log('Es indefinido')
         }
     }
 
