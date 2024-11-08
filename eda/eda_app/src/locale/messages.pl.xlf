@@ -3949,6 +3949,26 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
   <source>Al configurar un Rango las agregaciones quedarán bloqueadas, Ejemplo de un rango valido - 12:18:50:100 </source>
   <target>Podczas konfigurowania zakresu agregacje zostaną zablokowane. Przykład prawidłowego zakresu - 12:18:50:100 </target>
 </trans-unit>
+<trans-unit id="rangesExpresionH5">
+  <source>Rangos: </source>
+  <target>Szeregi: </target>
+</trans-unit>
+<trans-unit id="addRange">
+  <source>Añadir Rango</source>
+  <target>Dodaj rangę</target>
+</trans-unit>
+<trans-unit id="rangeDescriptionB">
+  <source>Rango</source>
+  <target>zakres</target>
+</trans-unit>
+<trans-unit id="rangeDescriptionNumberError">
+  <source>El correcto orden de los límites del rango van de menor a mayor</source>
+  <target>Prawidłowa kolejność granic zakresu jest następująca od najmniejszej do największej</target>
+</trans-unit>
+<trans-unit id="rangeDescriptionCharacterError">
+  <source>El último caracter del rango debe ser un número</source>
+  <target>Ostatni znak zakresu musi być liczbą</target>
+</trans-unit>
 </body>
 </file>
 </xliff>

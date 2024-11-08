@@ -4293,6 +4293,26 @@
         <source>Al configurar un Rango las agregaciones quedarán bloqueadas, Ejemplo de un rango valido - 12:18:50:100 </source>
         <target>When setting a Range, the aggregations will be blocked. Example of a valid range - 12:18:50:100 </target>
       </trans-unit>
+      <trans-unit id="rangesExpresionH5">
+        <source>Rangos: </source>
+        <target>Ranks: </target>
+      </trans-unit>
+      <trans-unit id="addRange">
+        <source>Añadir Rango</source>
+        <target>Add Rank</target>
+      </trans-unit>
+      <trans-unit id="rangeDescriptionB">
+        <source>Rango</source>
+        <target>Range</target>
+      </trans-unit>
+      <trans-unit id="rangeDescriptionNumberError">
+        <source>El correcto orden de los límites del rango van de menor a mayor</source>
+        <target>The correct order of the range limits is from smallest to largest</target>
+      </trans-unit>
+      <trans-unit id="rangeDescriptionCharacterError">
+        <source>El último caracter del rango debe ser un número</source>
+        <target>The last character of the range must be a number</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>

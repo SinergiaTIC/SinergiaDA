@@ -65,6 +65,8 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
     public showRange: boolean = false;
     public allowedAggregations: boolean = true;
     public ptooltipViewTextRanges: string = $localize`:@@ptooltipViewTextRanges:Al configurar un Rango las agregaciones quedarán bloqueadas, Ejemplo de un rango valido - 12:18:50:100 `;
+    public rangeDescriptionNumberError: string = $localize`:@@rangeDescriptionNumberError:El correcto orden de los límites del rango van de menor a mayor`;
+    public rangeDescriptionCharacterError: string = $localize`:@@rangeDescriptionCharacterError:El último caracter del rango debe ser un número`;
 
 
     constructor(
