@@ -14,14 +14,6 @@ export class MySqlBuilderService extends QueryBuilderService {
     let o = tables.filter(table => table.name === origin).map(table => { return table.query ? table.query : table.name })[0];
     let myQuery = `SELECT ${columns.join(', ')} \nFROM ${o}`;
 
-
-
-
-
-
-console.log(columns);
-
-
     /** SI ES UN SELECT PARA UN SELECTOR  VOLDRÉ VALORS ÚNICS */
     if (forSelector === true) {
       myQuery = `SELECT DISTINCT ${columns.join(', ')} \nFROM ${o}`;

@@ -62,8 +62,6 @@ export abstract class QueryBuilderService {
         /** joins per els value list */
         let valueListJoins = [];
 
-        //console.log(this.queryTODO);
-
         if (!this.queryTODO.queryMode || this.queryTODO.queryMode == 'EDA') {
             /** Reviso si cap columna de la  consulta es un multivalueliest..... */
             this.queryTODO.fields.forEach( e=>{
@@ -114,44 +112,8 @@ export abstract class QueryBuilderService {
 
         /** ..........................PER ELS VALUE LISTS................................ */
 
-        console.log('.......................................MITAD..queryTODO..............................................')
-        console.log(this.queryTODO)
-
         // Verificando el Rango, si existe agrega los cambios sino el this.queryTODO queda igual.
         this.queryTODO = this.verifyRange(this.queryTODO);
-
-    /**
-     * 
-     * si tienen rangos 
-     *  this.queryTODO[i].computed_column === 'computed'
-     *  this.queryTODO[i].column_type='text'
-     *   this.queryTODO[i].SQLexpression=  "case  when `Importe` < 100 then '< 100'
-		when `Importe` >= 100 and `Importe` <= (1500-1) then '>=100 y <1499'
-		when `Importe` >= 1500 and `Importe` <= (3858-1) then '>=1500 y <3857'
-		when `Importe` >= 3858 and `Importe` <= (5000-1) then '>=3858 y <4999'
-		when  `Importe` >= 5000 then '>= 5000'
- 	end
-     * / */
-
-
-/**
- *  // Aqui se manejan las columnas calculadas
-      if (el.computed_column === 'computed') {
-        if(el.column_type=='text'){
-          columns.push(`  ${el.SQLexpression}  as \`${el.display_name}\``);
-        }else if(el.column_type=='numeric'){
-          columns.push(`cast( ${el.SQLexpression} as decimal(32,${el.minimumFractionDigits})) as \`${el.display_name}\``);
-        }else if(el.column_type=='date'){
-          columns.push(`  ${el.SQLexpression}  as \`${el.display_name}\``);
-        }else if(el.column_type=='coordinate'){
-          columns.push(`  ${el.SQLexpression}  as \`${el.display_name}\``);
-        }
- * 
- * 
- */
-
-
-
         const filterTables = this.queryTODO.filters.map(filter => filter.filter_table);
 
         // Afegim a dest les taules dels filtres
@@ -356,13 +318,6 @@ export abstract class QueryBuilderService {
             this.query = this.normalQuery(columns, origin, dest, joinTree, grouping,  filters, havingFilters,  tables,
                 this.queryTODO.queryLimit,   this.queryTODO.joinType, valueListJoins, this.dataModel.ds.connection.schema, 
                 this.dataModel.ds.connection.database, this.queryTODO.forSelector);
-
-            console.log('........................................FIN..this.query..............................................')
-            console.log(this.query)
-            console.log('this.queryTODO: ',this.queryTODO);
-            console.log('.....................................................................................................')
-
-            // this.query = this.applyRange(this.query, this.queryTODO);
             
             return this.query;
         }
@@ -414,22 +369,6 @@ export abstract class QueryBuilderService {
 
         return queryTODO
     }
-
-/**
- *  // Aqui se manejan las columnas calculadas
-      if (el.computed_column === 'computed') {
-        if(el.column_type=='text'){
-          columns.push(`  ${el.SQLexpression}  as \`${el.display_name}\``);
-        }else if(el.column_type=='numeric'){
-          columns.push(`cast( ${el.SQLexpression} as decimal(32,${el.minimumFractionDigits})) as \`${el.display_name}\``);
-        }else if(el.column_type=='date'){
-          columns.push(`  ${el.SQLexpression}  as \`${el.display_name}\``);
-        }else if(el.column_type=='coordinate'){
-          columns.push(`  ${el.SQLexpression}  as \`${el.display_name}\``);
-        }
- * 
- * 
- */
 
     public buildGraph() {
         const graph = [];

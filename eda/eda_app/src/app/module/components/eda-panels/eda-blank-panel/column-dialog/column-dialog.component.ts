@@ -88,10 +88,6 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
     }
 
     onShow(): void {
-        console.log('column-dialog.component.ts');
-        console.log('this.controller.params: ', this.controller.params);
-        // console.log('this.selectedColumn: ', this.selectedColumn);
-
         this.selectedColumn = this.controller.params.selectedColumn;
         const allowed = [];
         const title = this.selectedColumn.display_name.default;
@@ -100,10 +96,6 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
         
         this.carregarValidacions();
         this.verifyRange();
-        // debugger;
-        // console.log('this.selectedColumn', this.selectedColumn);
-        // console.log('this.aggregationsTypes', this.aggregationsTypes);
-        // debugger;
 
         const columnType = this.selectedColumn.column_type;
 
@@ -658,9 +650,7 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
                 }
             }
 
-            console.log('RANGE =>',ranges)
             this.ranges = ranges
-
             this.showRange = true;
             this.selectedRange = this.generarStringRango(this.ranges); // extraemos el rango seleccionado
             this.rangeString = '';
@@ -689,8 +679,6 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
         const addAggr = this.findColumn(this.selectedColumn, this.controller.params.currentQuery);
         addAggr.column_type = 'numeric';
         addAggr.ranges = [];
-
-        console.log('selectedRange remove: ',this.selectedRange)
     }
 
     generarStringRango(rango: number[]): string {
@@ -715,8 +703,6 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
         if(this.selectedColumn.ranges !== undefined){
 
             if(this.selectedColumn.ranges.length !==0){
-                console.log('Es diferente de indefinido')
-    
                 this.allowedAggregations = false;
                 this.showRange = true;
                 this.ranges = this.selectedColumn.ranges;
@@ -725,14 +711,6 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
         } else {
             console.log('Es indefinido')
         }
-
-        console.log('this.selectedColumn - verifyRange', this.selectedColumn);
-        console.log('this.aggregationsTypes - verifyRange', this.aggregationsTypes);
-    }
-
-    getTextRanges($event) {
-        console.log('holaaaaaaaaaaaaaaaaaaaaaaaaaaaaa')
-        
     }
 
     contieneLetra(rangeString: string){
