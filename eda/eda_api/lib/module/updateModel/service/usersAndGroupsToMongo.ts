@@ -86,13 +86,9 @@ export class userAndGroupsToMongo {
         })
         try {
           await group.save()
-          console.log(
-            ' grupo ' + group.name + ' introducido correctamente en la bbdd'
-          )
+          console.log(`Group ${group.name} inserted successfully`)
         } catch (err) {
-          console.log(
-            'grupo ' + group.name + ' repetido, no se ha introducido en la bbdd'
-          )
+          console.log(`Group ${group.name} already exists, skipped`)
         }
       }
     }
