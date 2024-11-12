@@ -17,7 +17,7 @@ export class pushModelToMongo {
             if (found == null) {
                 try {
                     if (model_id !== '111111111111111111111111') {
-                        console.log('El modelo no es el esperado.');
+                        console.log('Error: Invalid model structure detected');
                         res.status(500).json({'status4':'ko'})
                     } else {
                         const data = await new DataSource(model) ;
@@ -33,13 +33,12 @@ export class pushModelToMongo {
                 
             }else {
                 try {
-                    //console.log('El modelo ya existe.....')
                     if (model_ds != null || model_ds != undefined) {
                         await DataSource.updateOne({_id: model_id}, {ds: model_ds})  
                         console.timeLog('UpdateModel', '\x1b[1;34m(TOTAL)\x1b[0m');
                         console.log('\x1b[33m=====\x1b[0m \x1b[1;34mEnd Update Model (Updated)\x1b[0m \x1b[33m=====\x1b[0m');
                     } else {
-                        console.log("Error actualizando 7", model_ds )
+                        console.log("Error 7", model_ds )
                         res.status(500).json({'status':'ko'})
                     }
 

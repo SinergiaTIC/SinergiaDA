@@ -120,7 +120,7 @@ export class userAndGroupsToMongo {
               .then(function () {
               })
               .catch(function (error) {
-                console.log(error, "no se ha borrado el usuario " + a.email)
+                console.log('Error deleting user:', a.email, 'Details:', error);
               })
         }
       }
@@ -216,7 +216,7 @@ export class userAndGroupsToMongo {
       if(user){
         user.role.push('135792467811111111111110');
       }else{
-        console.log('NO SE HA PODIDO AÑADIR EL ROL AL USUARIO ADMIN <=============================================================================');
+        console.log('Error: Failed to assign admin role to user');
       }
     }
 

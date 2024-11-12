@@ -14,21 +14,21 @@ const mariadb = require("mariadb");
 const sinergiaDatabase = require("../../../config/sinergiacrm.config");
 
 export class updateModel {
-  /**Método que actualiza el modelo de datos de sinergiaDA de una instancia */
+  /** Updates the SinergiaDA data model of an instance */
   static async update(req: Request, res: Response) {
     let crm_to_eda: any = {};
     let modelToExport: any = {};
     let grantedRolesAt: any = [];
     let enumerator: any;
     let connection: any;
-    console.time('UpdateModel')
+    console.time("UpdateModel");
     connection = await mariadb.createConnection(sinergiaDatabase.sinergiaConn);
-    console.timeLog('UpdateModel', '(Create connection)')
-    
+    console.timeLog("UpdateModel", "(Create connection)");
+
     try {
-      // Comprobamos que las tablas y columnas existan
+      /** Checks if columns and tables defined in the model exist */
       await updateModel.checkSinergiaModel(connection);
-      console.timeLog('UpdateModel', '(Checking model)')
+      console.timeLog("UpdateModel", "(Checking model)");
 
       //nos conectamos a la bbdd del cliente para extraer los datos y crear nuestro modelo EDA
       //seleccionamos tablas
@@ -154,8 +154,7 @@ export class updateModel {
                                         const query =
                                           'select user_name as name, `table` as tabla , `column` as columna  from sda_def_permissions where stic_permission_source in (  "ACL_ALLOW_OWNER")';
                                         await connection.query(query).then(async customUserPermissionsValue => {
-
-                                          console.timeLog('UpdateModel', '(Run MariaDB queries)')
+                                          console.timeLog("UpdateModel", "(Run MariaDB queries)");
                                           let dynamicPermisssionsForUser = customUserPermissionsValue;
 
                                           try {
@@ -163,7 +162,7 @@ export class updateModel {
                                               users_crm,
                                               roles
                                             );
-                                            console.timeLog('UpdateModel', '(Syncs users and groups)')
+                                            console.timeLog("UpdateModel", "(Syncs users and groups)");
                                           } catch (e) {
                                             console.log("Error 1", e);
                                             res.status(500).json({ status: "ko" });
@@ -176,13 +175,12 @@ export class updateModel {
                                               dynamicPermisssionsForGroup,
                                               dynamicPermisssionsForUser
                                             );
-                                            console.timeLog('UpdateModel', '(Converts CRM roles to EDA)')
+                                            console.timeLog("UpdateModel", "(Converts CRM roles to EDA)");
                                           } catch (e) {
                                             console.log("Error 2", e);
                                             res.status(500).json({ status: "ko" });
                                           }
 
-                                          
                                           try {
                                             modelToExport = updateModel.createModel(
                                               tables,
@@ -192,7 +190,7 @@ export class updateModel {
                                               ennumeration,
                                               res
                                             );
-                                            console.timeLog('UpdateModel', '(Creating Model)')
+                                            console.timeLog("UpdateModel", "(Creating Model)");
                                           } catch (e) {
                                             console.log("Error 3", e);
                                             res.status(500).json({ status: "ko" });
@@ -254,7 +252,7 @@ export class updateModel {
     }
   }
 
-  /** Genera los roles  */
+  /** Generates roles */
   static async grantedRolesToModel(
     fullTablePermissionsForRoles: any,
     crmTables: any,
@@ -269,7 +267,7 @@ export class updateModel {
       gr4,
       gr5 = {};
 
-    //con este permiso todos los usuarios pueden ver el modelo
+    // This permission allows all users to see the model
     // const all = {
     //     users: ["(~ => All)"],
     //     usersName: ["(~ => All)"],
@@ -280,7 +278,7 @@ export class updateModel {
     //     permission: true,
     //     type: "anyoneCanSee"
     // }
-    // Los permisos determinan que tablas puedo ver.
+    // Permissions determine which tables I can see
     // destGrantedRoles.push(all);
     const usersFound = await User.find();
     const mongoGroups = await Group.find();
@@ -295,7 +293,7 @@ export class updateModel {
         mongoId = match[0]._id.toString();
         mongoGroup = match[0].name.toString();
         if (line.name != null) {
-          // Si es un grupo convertido en usuario
+          // If it's a group converted to user
           const found = usersFound.find(i => i.email == line.name);
           gr = {
             users: [found._id],
@@ -386,7 +384,7 @@ export class updateModel {
           destGrantedRoles.push(gr4);
           destGrantedRoles.push(gr5);
         } else {
-          console.log("NO DEBERÍ PASAR POR AQUI..... NO DEBERÍA HABER PERMISOS DE GRUPO DIRECTAMENTE");
+          console.log("Error: Direct group permissions found - not allowed in this context");
         }
 
         destGrantedRoles.push(gr4);
@@ -427,7 +425,6 @@ export class updateModel {
   ): string[] {
     let visible = false;
 
-    
     /** Bucle sobre las tablas */
     const destTables = [];
     for (let i = 0; i < tables.length; i++) {
@@ -495,7 +492,7 @@ export class updateModel {
     return agg;
   }
 
-  /** recupera las columnas de una tabla */
+  /** Retrieves columns for a table */
   static getColumnsForTable(table: string, columns: any, ennumeration: any) {
     const destColumns = [];
 
@@ -514,7 +511,7 @@ export class updateModel {
     for (let i = 0; i < columns.length; i++) {
       let c = columns[i];
 
-      //diferenciamos los agregadores por los tipos de las columnas
+      // Differentiate aggregators by column types
       if (columns[i].type) {
         agg_used = this.getAggretations(columns[i].aggregations);
       } else {
@@ -550,10 +547,10 @@ export class updateModel {
           hidden: columns[i].sda_hidden
         };
 
-        //aqui hay que añadir a cada columna su valor valueListSource según la source_table
-        //1. discriminamos por tabla
+        // Add valueListSource to each column according to source_table
+        // 1. Filter by table
         const foundTable = ennumeration.filter(j => j.source_table == table);
-        //2. discriminamos por columna y usamos el método que hemos creado para poner a cada valor en su lugar del objeto
+        // 2. Filter by column and use created method to place each value in its object location
         foundTable.forEach(u => {
           if (u.source_column == c.column_name) {
             c.valueListSource = Enumerations.enumeration_to_column(u);
@@ -566,7 +563,7 @@ export class updateModel {
     return destColumns;
   }
 
-  /** genera las relaciones de una tabla */
+  /** Generates relations for a table */
   static getRelations(table: string, relations: any) {
     const destRelations = [];
 
@@ -594,7 +591,7 @@ export class updateModel {
   }
 
   static async extractJsonModelAndPushToMongo(tables: any, grantedRoles: any, res: any) {
-    //le damos formato json a nuestras tablas
+    // Format tables as JSON
     let main_model = await JSON.parse(fs.readFileSync("config/base_datamodel.json", "utf-8"));
     main_model.ds.connection.host = sinergiaDatabase.sinergiaConn.host;
     main_model.ds.connection.database = sinergiaDatabase.sinergiaConn.database;
