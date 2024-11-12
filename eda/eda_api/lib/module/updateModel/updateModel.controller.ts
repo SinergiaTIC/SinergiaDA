@@ -30,8 +30,8 @@ export class updateModel {
       await updateModel.checkSinergiaModel(connection);
       console.timeLog("UpdateModel", "(Checking model)");
 
-      //nos conectamos a la bbdd del cliente para extraer los datos y crear nuestro modelo EDA
-      //seleccionamos tablas
+      // Connect to client database to extract data and create our EDA model
+      // Select tables
       await connection
         .query(
           " select `table`, label , description, visible from sda_def_tables sdt  union all " +
@@ -47,7 +47,7 @@ export class updateModel {
             throw err1;
           }
           let tables = rows;
-          //seleccionamos columnas
+          // Select columns
           const my_query =
             " select sdc.`table`, sdc.`column`,`type`,sdc.label, sdc.description, sdc.decimals, sdc.aggregations, sdc.visible, sdc.stic_type, sdc.sda_hidden " +
             " FROM sda_def_columns sdc " +
@@ -67,7 +67,7 @@ export class updateModel {
             " where bridge_table != '' ";
           await connection.query(my_query).then(async rows => {
             let columns = rows;
-            // seleccionamos Relaciones
+            // Select relationships
             await connection
               .query(
                 ` 
@@ -111,14 +111,14 @@ export class updateModel {
               )
               .then(async rows => {
                 let relations = rows;
-                //seleccionamos usuarios
+                // Select users
                 await connection
                   .query(
                     "SELECT name as name, user_name as email, password as password, active as active FROM  sda_def_users WHERE password IS NOT NULL ;"
                   )
                   .then(async users => {
                     let users_crm = users;
-                    //seleccionamos roles de EDA
+                    // Select EDA roles
                     await connection
                       .query(
                         'select "EDA_USER_ROLE" as role, b.name, "" as user_name  from sda_def_groups b union select "EDA_USER_ROLE" as role, g.name as name , g.user_name from sda_def_user_groups g; '
@@ -131,7 +131,7 @@ export class updateModel {
                           )
                           .then(async granted => {
                             let fullTablePermissionsForRoles = granted;
-                            //seleccionamos enumeraciones
+                            // Select enumerations
                             await connection
                               .query(
                                 " select source_table , source_column , master_table, master_id, master_column, bridge_table, source_bridge, target_bridge, stic_type, info from sda_def_enumerations sde ;"
@@ -142,15 +142,14 @@ export class updateModel {
                                   .query(" select user_name as name, `table` from sda_def_permissions ")
                                   .then(async permi => {
                                     let fullTablePermissionsForUsers = permi;
-                                    //select distinct `table`, 'id' as 'column',  `group` from sda_def_security_group_records
+
                                     await connection
                                       .query(
                                         " select distinct  user_name as name, `table`, 'id' as `column`,   group_concat( distinct `group`) as `group` from sda_def_permissions  where `group` != ''  group by 1,2,3  "
                                       )
                                       .then(async permiCol => {
                                         let dynamicPermisssionsForGroup = permiCol;
-                                        /**Ahora que ya tengo todos los datos, monto el modelo */
-                                        // montamos el modelo
+                                        /** Now that we have all data, proceed to build the model */
                                         const query =
                                           'select user_name as name, `table` as tabla , `column` as columna  from sda_def_permissions where stic_permission_source in (  "ACL_ALLOW_OWNER")';
                                         await connection.query(query).then(async customUserPermissionsValue => {
@@ -206,15 +205,12 @@ export class updateModel {
                   });
               });
           });
-
-          // return res.status(200).json({ 'status': 'imported data ok' });
         });
     } catch (e) {
       console.log("Error : ", e);
     }
   }
-
-  /**Checks if columns and tables defined in the model exist */
+  /** Checks if columns and tables defined in the model exist */
   static async checkSinergiaModel(con: any) {
     let tablas = [];
     let columns = [];
@@ -245,14 +241,12 @@ export class updateModel {
           console.log(`Error executing query for table ${tabla}:`, err);
         }
       }
-
-      // console.log(`Process completed: ${successfulQueries} successful queries executed`);
     } catch (err) {
       console.log("Error in model check process:", err);
     }
   }
 
-  /** Generates roles */
+  /** Generates and processes model roles */
   static async grantedRolesToModel(
     fullTablePermissionsForRoles: any,
     crmTables: any,
@@ -267,19 +261,6 @@ export class updateModel {
       gr4,
       gr5 = {};
 
-    // This permission allows all users to see the model
-    // const all = {
-    //     users: ["(~ => All)"],
-    //     usersName: ["(~ => All)"],
-    //     none: false,
-    //     table: "fullModel",
-    //     column: "fullModel",
-    //     global: true,
-    //     permission: true,
-    //     type: "anyoneCanSee"
-    // }
-    // Permissions determine which tables I can see
-    // destGrantedRoles.push(all);
     const usersFound = await User.find();
     const mongoGroups = await Group.find();
 
@@ -293,7 +274,7 @@ export class updateModel {
         mongoId = match[0]._id.toString();
         mongoGroup = match[0].name.toString();
         if (line.name != null) {
-          // If it's a group converted to user
+          // Process group converted to user
           const found = usersFound.find(i => i.email == line.name);
           gr = {
             users: [found._id],
@@ -355,7 +336,7 @@ export class updateModel {
           ") and `table` = " +
           table_name;
         if (line.name != null) {
-          // Si es un grupo convertido en usuario
+          // Process group converted to user
           const found = usersFound.find(i => i.email == line.name);
           gr4 = {
             users: [found._id],
@@ -425,7 +406,7 @@ export class updateModel {
   ): string[] {
     let visible = false;
 
-    /** Bucle sobre las tablas */
+    /** Process and generate tables structure */
     const destTables = [];
     for (let i = 0; i < tables.length; i++) {
       if (tables[i].visible == 1) {
@@ -466,52 +447,49 @@ export class updateModel {
 
     return destTables;
   }
-
   static getAggretations(aggregations: string) {
     const aggArray = aggregations.split(",");
     const agg = [];
     if (aggArray.indexOf("sum") >= 0) {
-      agg.push({ value: "sum", display_name: "Suma" });
+      agg.push({ value: "sum", display_name: "Sum" });
     }
     if (aggArray.indexOf("avg") >= 0) {
-      agg.push({ value: "avg", display_name: "Media" });
+      agg.push({ value: "avg", display_name: "Average" });
     }
     if (aggArray.indexOf("max") >= 0) {
-      agg.push({ value: "max", display_name: "Máximo" });
+      agg.push({ value: "max", display_name: "Maximum" });
     }
     if (aggArray.indexOf("min") >= 0) {
-      agg.push({ value: "min", display_name: "Mínimo" });
+      agg.push({ value: "min", display_name: "Minimum" });
     }
     if (aggArray.indexOf("count") >= 0) {
-      agg.push({ value: "count", display_name: "Cuenta Valores" });
+      agg.push({ value: "count", display_name: "Count Values" });
     }
     if (aggArray.indexOf("count_distinct") > 0) {
-      agg.push({ value: "count_distinct", display_name: "Valores Distintos" });
+      agg.push({ value: "count_distinct", display_name: "Distinct Values" });
     }
-    agg.push({ value: "none", display_name: "No" });
+    agg.push({ value: "none", display_name: "None" });
     return agg;
   }
 
-  /** Retrieves columns for a table */
+  /** Retrieves and processes columns for a specific table */
   static getColumnsForTable(table: string, columns: any, ennumeration: any) {
     const destColumns = [];
 
     const agg_none = [
       {
         value: "none",
-        display_name: "no"
+        display_name: "none"
       }
     ];
 
     let agg_used = {};
-    //iteramos sobre columns e insertamos cada valor en su key
-
     let colVisible = false;
 
     for (let i = 0; i < columns.length; i++) {
       let c = columns[i];
 
-      // Differentiate aggregators by column types
+      // Determine aggregators based on column types
       if (columns[i].type) {
         agg_used = this.getAggretations(columns[i].aggregations);
       } else {
@@ -525,7 +503,6 @@ export class updateModel {
       }
 
       if (c.table == table) {
-        //damos los valores a cada columna
         c = {
           column_name: columns[i].column,
           column_type: columns[i].type == "enumeration" ? "text" : columns[i].type,
@@ -547,23 +524,20 @@ export class updateModel {
           hidden: columns[i].sda_hidden
         };
 
-        // Add valueListSource to each column according to source_table
-        // 1. Filter by table
+        // Process valueListSource for each column based on source_table
         const foundTable = ennumeration.filter(j => j.source_table == table);
-        // 2. Filter by column and use created method to place each value in its object location
         foundTable.forEach(u => {
           if (u.source_column == c.column_name) {
             c.valueListSource = Enumerations.enumeration_to_column(u);
           }
         });
-        //subimos cada objeto columna a nuestro array de columnas
         destColumns.push(c);
       }
     }
     return destColumns;
   }
 
-  /** Generates relations for a table */
+  /** Generates and processes relations for a specific table */
   static getRelations(table: string, relations: any) {
     const destRelations = [];
 
@@ -590,6 +564,7 @@ export class updateModel {
     return destRelations;
   }
 
+  /** Formats and pushes the final model to MongoDB */
   static async extractJsonModelAndPushToMongo(tables: any, grantedRoles: any, res: any) {
     // Format tables as JSON
     let main_model = await JSON.parse(fs.readFileSync("config/base_datamodel.json", "utf-8"));
@@ -599,7 +574,7 @@ export class updateModel {
     main_model.ds.connection.user = sinergiaDatabase.sinergiaConn.user;
     main_model.ds.connection.poolLimit = sinergiaDatabase.sinergiaConn.connectionLimit;
     main_model.ds.connection.password = EnCrypterService.encrypt(sinergiaDatabase.sinergiaConn.password);
-    main_model.ds.model.tables = tables; //añadimos el parámetro en la columna adecuada
+    main_model.ds.model.tables = tables;
     main_model.ds.metadata.model_granted_roles = await grantedRoles;
 
     try {
@@ -608,7 +583,6 @@ export class updateModel {
       fs.writeFile(`metadata.json`, JSON.stringify(main_model), { encoding: `utf-8` }, err => {
         if (err) {
           throw err;
-        } else {
         }
       });
       await new pushModelToMongo().pushModel(main_model, res);
