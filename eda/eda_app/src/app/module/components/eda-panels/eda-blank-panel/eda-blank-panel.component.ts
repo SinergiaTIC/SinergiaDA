@@ -1162,6 +1162,11 @@ export class EdaBlankPanelComponent implements OnInit {
                 }
             })
 
+            if(itemY.length===0){
+                itemY.push(itemZ[0]);
+                itemZ.shift();
+            }
+
             console.log('itemx: ', itemX)
             console.log('itemY: ', itemY)
             console.log('itemZ: ', itemZ)
