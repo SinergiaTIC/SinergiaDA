@@ -1139,16 +1139,18 @@ export class EdaBlankPanelComponent implements OnInit {
     */
     public initAxes(currenQuery) {
 
+        console.log('currenQuery: ', currenQuery);
+
         try {
             
             let vx = currenQuery.find( (v:any) => v.column_type==='text')
-            let objx = {column_name: vx.column_name, column_type: vx.column_type, description: vx.description.default}
+            let objx = {column_name: vx.column_name, column_type: vx.column_type, description: vx.display_name.default}
             let itemX = [objx]
 
             let itemY = [];
             currenQuery.forEach( (v:any) => {
                 if(v.column_type!=='numeric'){
-                    itemY.push({column_name: v.column_name, column_type: v.column_type, description: v.description.default})
+                    itemY.push({column_name: v.column_name, column_type: v.column_type, description: v.display_name.default})
                 }
             })
             itemY.shift()
@@ -1156,9 +1158,13 @@ export class EdaBlankPanelComponent implements OnInit {
             let itemZ = [];
             currenQuery.forEach( (v:any) => {
                 if(v.column_type==='numeric'){
-                    itemZ.push({column_name: v.column_name, column_type: v.column_type, description: v.description.default})
+                    itemZ.push({column_name: v.column_name, column_type: v.column_type, description: v.display_name.default})
                 }
             })
+
+            console.log('itemx: ', itemX)
+            console.log('itemY: ', itemY)
+            console.log('itemZ: ', itemZ)
 
             return [{ itemX: itemX, itemY: itemY, itemZ: itemZ }]
             
