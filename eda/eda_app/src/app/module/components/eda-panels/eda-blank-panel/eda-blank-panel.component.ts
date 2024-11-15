@@ -638,7 +638,7 @@ export class EdaBlankPanelComponent implements OnInit {
         
         if(subType === 'crosstable'){
 
-            if( (((config===null) || config['config']['ordering'] === undefined)) ) {
+            if( config===null ) {
 
                 if(Object.keys(this.copyConfigCrossTable).length === 0){
                     this.axes = this.initAxes(this.currentQuery);
