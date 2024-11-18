@@ -637,21 +637,26 @@ export class EdaBlankPanelComponent implements OnInit {
         const configCrossTable = this.panelChartConfig.config.getConfig()
         
         if(subType === 'crosstable'){
-
-            if( (((config===null) || config['config']['ordering'] === undefined)) ) {
-
-                if(Object.keys(this.copyConfigCrossTable).length === 0){
-                    this.axes = this.initAxes(this.currentQuery);
-                    configCrossTable['ordering'] = [{axes: this.axes}]; // Agrego el nuevo axes a la config
-                } else {
-                    this.axes = this.copyConfigCrossTable['ordering'][0].axes;
-                    configCrossTable['ordering'] = [{axes: this.axes}]; // Agrego el nuevo axes a la config
-                }
-            }
             
-            if(config!==null && config['config']['ordering'].length !==0 ) {
-                this.axes = config['config']['ordering'][0]['axes']
-                configCrossTable['ordering'] = [{axes: this.axes}]; // Agrego el nuevo axes a la config
+            if(config===null){
+
+                if(Object.keys(this.copyConfigCrossTable).length !== 0) {
+                    this.axes = this.copyConfigCrossTable['ordering'][0].axes;
+                    configCrossTable['ordering'] = [{axes: this.axes}];
+
+                } else {
+                    this.axes = this.initAxes(this.currentQuery);
+                    configCrossTable['ordering'] = [{axes: this.axes}];
+                }
+
+
+            } else {
+
+                if(config['config']['ordering'] === undefined) {
+                    this.axes = this.initAxes(this.currentQuery);
+                } else {
+                    this.axes = config['config']['ordering'][0]['axes']
+                }
             }
 
         }
@@ -664,7 +669,13 @@ export class EdaBlankPanelComponent implements OnInit {
     public getChartStyles( chart: string) {
         
         if (this.panel.content && this.panel.content.chart === chart) {
-            return new ChartConfig(this.panel.content.query.output.config);
+
+            if(chart === 'crosstable' && Object.keys(this.copyConfigCrossTable).length !== 0) {
+                return new ChartConfig(this.copyConfigCrossTable);
+            } else {
+                return new ChartConfig(this.panel.content.query.output.config);
+            }
+            
         } else {
             return null;
         }
