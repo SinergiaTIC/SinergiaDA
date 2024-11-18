@@ -361,7 +361,7 @@
                             <p-button 
                                 (onClick)="addRange(rangeString)" 
                                 label="Añadir Rango"
-                                [disabled]="(!rangeString || rangeString.length === 0) || contieneLetra(rangeString)"
+                                [disabled]="((!rangeString || rangeString.length === 0) || contieneLetra(rangeString)) || showRange"
                                 i18n-label="@@addRange" 
                                 >
                             </p-button>

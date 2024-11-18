@@ -683,6 +683,7 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
         const addAggr = this.findColumn(this.selectedColumn, this.controller.params.currentQuery);
         addAggr.column_type = 'numeric';
         this.selectedColumn.column_type = 'numeric';
+        this.rangeString = this.ranges.join(':');
         addAggr.ranges = [];
     }
 

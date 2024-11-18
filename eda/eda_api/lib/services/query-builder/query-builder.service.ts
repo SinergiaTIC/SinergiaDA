@@ -351,7 +351,7 @@ export abstract class QueryBuilderService {
                     for (let i = 0; i < fieldsColumn.ranges.length - 1; i++) {
                         const lower = fieldsColumn.ranges[i];
                         const upper = fieldsColumn.ranges[i + 1] - 1;
-                        SQLexpression += `\tWHEN ${columna} >= ${lower} AND ${columna} <= ${upper} THEN '>=  ${lower} y <${upper}'\n`;
+                        SQLexpression += `\tWHEN ${columna} >= ${lower} AND ${columna} <= ${upper} THEN '>=  ${lower} - <${upper}'\n`;
                     }            
         
                     // Último caso: mayor o igual al último valor del rango
