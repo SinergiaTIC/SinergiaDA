@@ -655,7 +655,11 @@ export class EdaBlankPanelComponent implements OnInit {
                 if(config['config']['ordering'] === undefined) {
                     this.axes = this.initAxes(this.currentQuery);
                 } else {
-                    this.axes = config['config']['ordering'][0]['axes']
+                    if(config['config']['ordering'].length===0) {
+                        this.axes = this.initAxes(this.currentQuery);
+                    } else {
+                        this.axes = config['config']['ordering'][0]['axes']
+                    }
                 }
             }
 
