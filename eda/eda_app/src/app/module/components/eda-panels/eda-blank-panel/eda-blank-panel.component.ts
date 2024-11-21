@@ -1156,7 +1156,7 @@ export class EdaBlankPanelComponent implements OnInit {
 
         try {
             
-            let vx = currenQuery.find( (v:any) => v.column_type==='text')
+            let vx = currenQuery.find( (v:any) => v.column_type==='text' || v.column_type==='date')
             let objx = {column_name: vx.column_name, column_type: vx.column_type, description: vx.display_name.default}
             let itemX = [objx]
 
