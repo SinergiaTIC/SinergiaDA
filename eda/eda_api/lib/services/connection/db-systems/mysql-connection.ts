@@ -154,20 +154,62 @@ export class MysqlConnection extends AbstractConnection {
             throw err;
         }
     }
-
+    
+    
+    // SDA CUSTOM JCH (add timeout to individual queries)
+    // 
+    /* async execQuery(query: string): Promise<any> {
+         try {
+             this.client.query = util.promisify(this.client.query);
+             const rows = await this.client.query(query);
+             // console.log(this.client.itsConnected());
+             // if (!this.pool && this.client.itsConnected() ) this.client.end();
+             return rows;
+         } catch (err) {
+             console.log(err);
+             throw err;
+         }
+     }
+     */
+    /**
+    * Executes a MySQL query with a timeout constraint
+    * 
+    * @param query - The SQL query string to execute
+    * @returns Promise that resolves to the query results
+    * @throws Error if query execution fails or times out after 60 seconds
+    */
     async execQuery(query: string): Promise<any> {
         try {
+            // Convert callback-based query to promise-based
             this.client.query = util.promisify(this.client.query);
-            const rows = await this.client.query(query);
-            // console.log(this.client.itsConnected());
-            // if (!this.pool && this.client.itsConnected() ) this.client.end();
+
+            // Add timeout constraint to the query
+            const queryWithTimeout = `SET STATEMENT max_statement_time=60000 FOR ${query}`;
+
+            // Create timeout promise that rejects after 60 seconds
+            const timeoutPromise = new Promise((_, reject) => {
+                setTimeout(() => {
+                    reject(new Error('Query execution timed out after 60 seconds'));
+                }, 60000);
+            });
+        
+            // Execute query with a race between actual query and timeout
+            const rows = await Promise.race([
+                this.client.query(queryWithTimeout),
+                timeoutPromise
+            ]);
+        
             return rows;
         } catch (err) {
+            if (err.message === 'Query execution timed out after 60 seconds') {
+                // Log specific timeout errors
+                console.error('Query timeout:', query);
+            }
             console.log(err);
             throw err;
         }
-
     }
+    //  END SDA CUSTOM
 
     async execSqlQuery(query: string): Promise<any> {
         return this.execQuery(query);
