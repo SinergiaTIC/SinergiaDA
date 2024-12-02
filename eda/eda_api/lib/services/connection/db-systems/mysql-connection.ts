@@ -5,7 +5,7 @@ import { AggregationTypes } from "../../../module/global/model/aggregation-types
 import { ConnectionOptions, PoolOptions, Pool } from 'mysql2/typings/mysql';
 import { PoolManagerConnectionSingleton } from '../pool-manager-connection';
 const util = require('util');
-
+/*SDA CUSTOM*/const SCRMConfig=require('../../../../config/sinergiacrm.config.js');
 
 export class MysqlConnection extends AbstractConnection {
     private static instance: MysqlConnection;
@@ -35,12 +35,13 @@ export class MysqlConnection extends AbstractConnection {
                     queueLimit: 0,
                     enableKeepAlive: true,
                     keepAliveInitialDelay: 0
+                    
                 };
 
                 poolManager.createPool(this.config.database, mySqlConn);
                 this.pool = poolManager.getPool(this.config.database);
 
-                console.log('neew pool');
+                console.log('new pool');
             }
 
             return this.pool;
@@ -183,14 +184,17 @@ export class MysqlConnection extends AbstractConnection {
             // Convert callback-based query to promise-based
             this.client.query = util.promisify(this.client.query);
 
+            let maxStatementTime = SCRMConfig.sinergiaConn.maxStatementTime ?? 60;
+            console.log(`SET maxStatementTime=${maxStatementTime}`);
+            
             // Add timeout constraint to the query
-            const queryWithTimeout = `SET STATEMENT max_statement_time=3 FOR ${query}`;
+            const queryWithTimeout = `SET STATEMENT max_statement_time=${maxStatementTime} FOR ${query}`;
 
             // Create timeout promise that rejects after 60 seconds
             const timeoutPromise = new Promise((_, reject) => {
                 setTimeout(() => {
-                    reject(new Error('Query execution timed out after 60 seconds'));
-                }, 60000);
+                    reject(new Error(`Query execution timed out after ${maxStatementTime} seconds`));
+                }, (maxStatementTime * 1000));
             });
         
             // Execute query with a race between actual query and timeout
