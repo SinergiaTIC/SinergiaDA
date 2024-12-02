@@ -157,20 +157,20 @@ export class MysqlConnection extends AbstractConnection {
     
     
     // SDA CUSTOM JCH (add timeout to individual queries)
-    // 
-    /* async execQuery(query: string): Promise<any> {
-         try {
-             this.client.query = util.promisify(this.client.query);
-             const rows = await this.client.query(query);
-             // console.log(this.client.itsConnected());
-             // if (!this.pool && this.client.itsConnected() ) this.client.end();
-             return rows;
-         } catch (err) {
-             console.log(err);
-             throw err;
-         }
-     }
-     */
+    // https://github.com/SinergiaTIC/SinergiaDA/pull/256/files
+    //  async execQuery(query: string): Promise<any> {
+    //      try {
+    //          this.client.query = util.promisify(this.client.query);
+    //          const rows = await this.client.query(query);
+    //          // console.log(this.client.itsConnected());
+    //          // if (!this.pool && this.client.itsConnected() ) this.client.end();
+    //          return rows;
+    //      } catch (err) {
+    //          console.log(err);
+    //          throw err;
+    //      }
+    //  }
+     
     /**
     * Executes a MySQL query with a timeout constraint
     * 
@@ -184,7 +184,7 @@ export class MysqlConnection extends AbstractConnection {
             this.client.query = util.promisify(this.client.query);
 
             // Add timeout constraint to the query
-            const queryWithTimeout = `SET STATEMENT max_statement_time=60000 FOR ${query}`;
+            const queryWithTimeout = `SET STATEMENT max_statement_time=3 FOR ${query}`;
 
             // Create timeout promise that rejects after 60 seconds
             const timeoutPromise = new Promise((_, reject) => {
@@ -208,6 +208,7 @@ export class MysqlConnection extends AbstractConnection {
             console.log(err);
             throw err;
         }
+
     }
     //  END SDA CUSTOM
 
