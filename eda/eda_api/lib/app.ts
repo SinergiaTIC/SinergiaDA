@@ -9,7 +9,8 @@ import errorMiddleware from './middleware/error.middleware';
 import Router from './router';
 
 const path = require('path');
-console.log("NODE_MODULES PATH", path.resolve(process.cwd(), 'node_modules'));
+/* SDA CUSTOM*/ // Show current node_modules folder 
+/* SDA CUSTOM*/ console.log("NODE MODULES PATH",require.resolve('lodash'));
 const database = require('../config/database.config');
 const mongoose = require('mongoose');
 const compression = require('compression');
