@@ -1,4 +1,4 @@
-import { createConnection, createPool, Connection as SqlConnection } from 'mysql2';
+import { createConnection, createPool, Connection as SqlConnection } from 'mysql2/promise';
 import { MySqlBuilderService } from "../../query-builder/qb-systems/mySql-builder.service";
 import { AbstractConnection } from "../abstract-connection";
 import { AggregationTypes } from "../../../module/global/model/aggregation-types";
@@ -35,8 +35,7 @@ export class MysqlConnection extends AbstractConnection {
                     queueLimit: 0,
                     enableKeepAlive: true,
                     keepAliveInitialDelay: 0
-                    
-                };
+                                    };
 
                 poolManager.createPool(this.config.database, mySqlConn);
                 this.pool = poolManager.getPool(this.config.database);
