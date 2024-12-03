@@ -253,148 +253,157 @@ export class updateModel {
     fullTablePermissionsForUsers: any,
     dynamicPermisssionsForGroup: any,
     dynamicPermisssionsForUser: any
-  ) {
+) {
     const destGrantedRoles = [];
-    let gr,
-      gr2,
-      gr3,
-      gr4,
-      gr5 = {};
+    let gr, gr2, gr3, gr4, gr5 = {};
 
     const usersFound = await User.find();
     const mongoGroups = await Group.find();
 
-    fullTablePermissionsForRoles.forEach(line => {
-      let match = mongoGroups.filter(i => {
-        return i.name === line.group;
-      });
-      let mongoId: String;
-      let mongoGroup: String;
-      if (match.length == 1 && line.group !== undefined) {
-        mongoId = match[0]._id.toString();
-        mongoGroup = match[0].name.toString();
-        if (line.name != null) {
-          // Process group converted to user
-          const found = usersFound.find(i => i.email == line.name);
-          gr = {
-            users: [found._id],
-            usersName: [line.name],
-            none: false,
-            table: line.table,
-            column: "fullTable",
-            global: true,
-            permission: true,
-            type: "users"
-          };
-        } else {
-          gr = {
-            groups: [mongoId],
-            groupsName: [mongoGroup],
-            none: false,
-            table: line.table,
-            column: "fullTable",
-            global: true,
-            permission: true,
-            type: "groups"
-          };
-        }
+    // Función auxiliar para verificar duplicados
+    const hasExistingFullTablePermission = (newRole: any) => {
+        return destGrantedRoles.some(existing => 
+            existing.column === "fullTable" && 
+            existing.table === newRole.table && 
+            existing.type === newRole.type &&
+            existing.users?.toString() === newRole.users?.toString()
+        );
+    };
 
-        destGrantedRoles.push(gr);
-      }
+    fullTablePermissionsForRoles.forEach(line => {
+        let match = mongoGroups.filter(i => {
+            return i.name === line.group;
+        });
+        let mongoId: String;
+        let mongoGroup: String;
+        if (match.length == 1 && line.group !== undefined) {
+            mongoId = match[0]._id.toString();
+            mongoGroup = match[0].name.toString();
+            if (line.name != null) {
+                // Process group converted to user
+                const found = usersFound.find(i => i.email == line.name);
+                gr = {
+                    users: [found._id],
+                    usersName: [line.name],
+                    none: false,
+                    table: line.table,
+                    column: "fullTable",
+                    global: true,
+                    permission: true,
+                    type: "users"
+                };
+                
+                // Verificar duplicados antes de agregar
+                if (!hasExistingFullTablePermission(gr)) {
+                    destGrantedRoles.push(gr);
+                }
+            } else {
+                gr = {
+                    groups: [mongoId],
+                    groupsName: [mongoGroup],
+                    none: false,
+                    table: line.table,
+                    column: "fullTable",
+                    global: true,
+                    permission: true,
+                    type: "groups"
+                };
+                destGrantedRoles.push(gr);
+            }
+        }
     });
 
     fullTablePermissionsForUsers.forEach(line => {
-      const found = usersFound.find(i => i.email == line.name);
-      if (found) {
-        gr3 = {
-          users: [found._id],
-          usersName: [line.name],
-          none: false,
-          table: line.table,
-          column: "fullTable",
-          global: true,
-          permission: true,
-          type: "users"
-        };
-        destGrantedRoles.push(gr3);
-      }
+        const found = usersFound.find(i => i.email == line.name);
+        if (found) {
+            gr3 = {
+                users: [found._id],
+                usersName: [line.name],
+                none: false,
+                table: line.table,
+                column: "fullTable",
+                global: true,
+                permission: true,
+                type: "users"
+            };
+            if (!hasExistingFullTablePermission(gr3)) {
+                destGrantedRoles.push(gr3);
+            }
+        }
     });
 
     dynamicPermisssionsForGroup.forEach(line => {
-      const match = mongoGroups.filter(i => {
-        return i.name === line.group.split(",")[0];
-      });
-      let mongoId: String;
-      if (match.length == 1 && line.group !== undefined) {
-        mongoId = match[0]._id.toString();
-        let group_name: String = " '" + line.group + "' ";
-        let table_name: String = " '" + line.table + "' ";
-        let valueAt: String =
-          " select record_id from sda_def_security_group_records" +
-          " where `group` in  ( " +
-          group_name.split(",").join("','") +
-          ") and `table` = " +
-          table_name;
-        if (line.name != null) {
-          // Process group converted to user
-          const found = usersFound.find(i => i.email == line.name);
-          gr4 = {
-            users: [found._id],
-            usersName: [line.name],
-            none: false,
-            table: line.table,
-            column: line.column,
-            dynamic: true,
-            global: false,
-            type: "users",
-            value: [valueAt]
-          };
-          let valueAt2: String = " select `id` from " + line.table + " where `assigned_user_name`  = 'EDA_USER' ";
-          gr5 = {
-            users: [found._id],
-            usersName: [line.name],
-            none: false,
-            table: line.table,
-            column: "id",
-            global: false,
-            permission: true,
-            dynamic: true,
-            type: "users",
-            value: [valueAt2]
-          };
-          destGrantedRoles.push(gr4);
-          destGrantedRoles.push(gr5);
-        } else {
-          console.log("Error: Direct group permissions found - not allowed in this context");
-        }
+        const match = mongoGroups.filter(i => {
+            return i.name === line.group.split(",")[0];
+        });
+        let mongoId: String;
+        if (match.length == 1 && line.group !== undefined) {
+            mongoId = match[0]._id.toString();
+            let group_name: String = " '" + line.group + "' ";
+            let table_name: String = " '" + line.table + "' ";
+            let valueAt: String =
+                " select record_id from sda_def_security_group_records" +
+                " where `group` in  ( " +
+                group_name.split(",").join("','") +
+                ") and `table` = " +
+                table_name;
+            if (line.name != null) {
+                // Process group converted to user
+                const found = usersFound.find(i => i.email == line.name);
+                gr4 = {
+                    users: [found._id],
+                    usersName: [line.name],
+                    none: false,
+                    table: line.table,
+                    column: line.column,
+                    dynamic: true,
+                    global: false,
+                    type: "users",
+                    value: [valueAt]
+                };
+                destGrantedRoles.push(gr4);
 
-        destGrantedRoles.push(gr4);
-      }
+                let valueAt2: String = " select `id` from " + line.table + " where `assigned_user_name`  = 'EDA_USER' ";
+                gr5 = {
+                    users: [found._id],
+                    usersName: [line.name],
+                    none: false,
+                    table: line.table,
+                    column: "id",
+                    global: false,
+                    permission: true,
+                    dynamic: true,
+                    type: "users",
+                    value: [valueAt2]
+                };
+                destGrantedRoles.push(gr5);
+            }
+        }
     });
 
     dynamicPermisssionsForUser.forEach(line => {
-      const found = usersFound.find(i => i.email == line.name);
-      if (found) {
-        let valueAt: String =
-          "select `" + line.columna + "` from " + line.tabla + " where `" + line.columna + "` = 'EDA_USER' ";
-        gr5 = {
-          users: [found._id],
-          usersName: [line.name],
-          none: false,
-          table: line.tabla,
-          column: line.columna,
-          global: false,
-          permission: true,
-          dynamic: true,
-          type: "users",
-          value: [valueAt]
-        };
-        destGrantedRoles.push(gr5);
-      }
+        const found = usersFound.find(i => i.email == line.name);
+        if (found) {
+            let valueAt: String =
+                "select `" + line.columna + "` from " + line.tabla + " where `" + line.columna + "` = 'EDA_USER' ";
+            gr5 = {
+                users: [found._id],
+                usersName: [line.name],
+                none: false,
+                table: line.tabla,
+                column: line.columna,
+                global: false,
+                permission: true,
+                dynamic: true,
+                type: "users",
+                value: [valueAt]
+            };
+            destGrantedRoles.push(gr5);
+        }
     });
 
     return destGrantedRoles;
-  }
+}
 
   static createModel(
     tables: any,
