@@ -130,7 +130,7 @@ export class updateModel {
                                                                               .then(async customUserPermissionsValue => {
                                                                                 let customUserPermissions = customUserPermissionsValue;
                                                                                 
-                                                                                await connection.query("select * from sda_def_config")
+                                                                                await connection.query("select `key`, `value` from sda_def_config")
                                                                                   .then(async cacheConfigSDA => {
                                                                                     let cache_config_SDA = cacheConfigSDA;
 
@@ -575,27 +575,35 @@ export class updateModel {
     main_model.ds.model.tables = tables; //añadimos el parámetro en la columna adecuada
     main_model.ds.metadata.model_granted_roles = await grantedRoles;
 
-    // Verificando si desde Sinergia CRM viene enabled la información del cache 
-    let sda_config_cache_enabled_value = cache_configSDA.find( v => v.key === 'sda_config_cache_enabled').value
-    // Se pueden configurar mas variables
-    if(sda_config_cache_enabled_value === "1") {
-      main_model.ds.metadata.cache_config = {
-        units: cache_configSDA.find( (v: any) => v.key === 'sda_config_cache_units').value,
-        quantity: cache_configSDA.find( (v: any) => v.key === 'sda_config_cache_quantity').value,
-        hours: cache_configSDA.find( (v: any) => v.key === 'sda_config_cache_hours').value,
-        minutes: cache_configSDA.find( (v: any) => v.key === 'sda_config_cache_minutes').value,
-        enabled: true,
-      }
-    } else {
-      main_model.ds.metadata.cache_config = {
-        units: cache_configSDA.find( (v: any) => v.key === 'sda_config_cache_units').value,
-        quantity: cache_configSDA.find( (v: any) => v.key === 'sda_config_cache_quantity').value,
-        hours: cache_configSDA.find( (v: any) => v.key === 'sda_config_cache_hours').value,
-        minutes: cache_configSDA.find( (v: any) => v.key === 'sda_config_cache_minutes').value,
-        enabled: false,
-      }
+
+
+    try{
+        // Verificando si desde Sinergia CRM viene enabled la información del cache 
+        let sda_config_cache_enabled_value = cache_configSDA.find( v => v.key === 'sda_config_cache_enabled').value
+        // Se pueden configurar mas variables
+        if(sda_config_cache_enabled_value === "1") {
+          main_model.ds.metadata.cache_config = {
+            units: cache_configSDA.find( (v: any) => v.key === 'sda_config_cache_units').value,
+            quantity: cache_configSDA.find( (v: any) => v.key === 'sda_config_cache_quantity').value,
+            hours: cache_configSDA.find( (v: any) => v.key === 'sda_config_cache_hours').value,
+            minutes: cache_configSDA.find( (v: any) => v.key === 'sda_config_cache_minutes').value,
+            enabled: true,
+          }
+        } else {
+          main_model.ds.metadata.cache_config = {
+            units: cache_configSDA.find( (v: any) => v.key === 'sda_config_cache_units').value,
+            quantity: cache_configSDA.find( (v: any) => v.key === 'sda_config_cache_quantity').value,
+            hours: cache_configSDA.find( (v: any) => v.key === 'sda_config_cache_hours').value,
+            minutes: cache_configSDA.find( (v: any) => v.key === 'sda_config_cache_minutes').value,
+            enabled: false,
+          }
+        }
+
+    }catch( e){
+      console.log('\n \n \n IT IS MISSING SOME OF THE CACHE CONFIGURATION. WE DISABLE IT! \n \n \n ')
+      main_model.ds.metadata.cache_config.enabled = false;
     }
-    // Fin de la verificación.
+
 
     try {
         const cleanM = new CleanModel; 
