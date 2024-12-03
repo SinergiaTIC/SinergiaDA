@@ -237,29 +237,32 @@ export class userAndGroupsToMongo {
    }
 
    private static async updateGroupUsers(roles: CRMRole[], mongoGroups: MongoGroup[]) {
-       const groupUpdates = new Map<string, Set<string>>();
+    const groupUpdates = new Map<string, Set<mongoose.Types.ObjectId>>();
+    const usersCache = await DataCache.getInstance().getUsers();
+    const emailToId = new Map(usersCache.map(u => [u.email, u._id]));
 
-       roles.forEach(role => {
-           if (!groupUpdates.has(role.name)) {
-               groupUpdates.set(role.name, new Set());
-           }
-           if (role.user_name) {
-               groupUpdates.get(role.name)?.add(role.user_name);
-           }
-       });
+    // Agrupar usuarios por grupo usando Set para garantizar unicidad
+    roles.forEach(role => {
+        if (!groupUpdates.has(role.name)) {
+            groupUpdates.set(role.name, new Set());
+        }
+        if (role.user_name && emailToId.has(role.user_name)) {
+            groupUpdates.get(role.name)?.add(emailToId.get(role.user_name));
+        }
+    });
 
-       const operations = mongoGroups
-           .filter(group => groupUpdates.has(group.name))
-           .map(group => ({
-               updateOne: {
-                   filter: { name: group.name },
-                   update: { $set: { users: Array.from(groupUpdates.get(group.name) || []) } }
-               }
-           }));
+    const operations = mongoGroups
+        .filter(group => groupUpdates.has(group.name))
+        .map(group => ({
+            updateOne: {
+                filter: { name: group.name },
+                update: { $set: { users: [...new Set(Array.from(groupUpdates.get(group.name) || []))] } }
+            }
+        }));
 
-       if (operations.length > 0) {
-           return await Group.collection.bulkWrite(operations, { ordered: false });
-       }
-       return null;
-   }
+    if (operations.length > 0) {
+        return await Group.collection.bulkWrite(operations, { ordered: false });
+    }
+    return null;
+}
 }
