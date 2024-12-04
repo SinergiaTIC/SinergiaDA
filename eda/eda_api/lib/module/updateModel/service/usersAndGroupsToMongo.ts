@@ -45,48 +45,58 @@ interface SyncResults {
 
 /**
  * Clase que implementa un sistema de caché para usuarios y grupos
- * Utiliza el patrón Singleton para asegurar una única instancia
+ * Se reconstruye en cada ejecución para asegurar datos actualizados
  */
 class DataCache {
-   private static instance: DataCache;
-   private cache: Map<string, MongoUser[] | MongoGroup[]>;
-   private ttl: number;
+    private static instance: DataCache;
+    private cache: Map<string, MongoUser[] | MongoGroup[]>;
 
-   // Constructor privado para implementar Singleton
-   private constructor() {
-       this.cache = new Map();
-       this.ttl = 300000; // TTL de 5 minutos
-   }
+    private constructor() {
+        this.cache = new Map();
+    }
 
-   // Método para obtener la instancia única del caché
-   static getInstance(): DataCache {
-       if (!DataCache.instance) {
-           DataCache.instance = new DataCache();
-       }
-       return DataCache.instance;
-   }
+    /**
+     * Obtiene la instancia única del caché y la limpia
+     */
+    static getInstance(): DataCache {
+        if (!DataCache.instance) {
+            DataCache.instance = new DataCache();
+        }
+        // Limpiar la caché al obtener la instancia
+        DataCache.instance.clearCache();
+        return DataCache.instance;
+    }
 
-   // Obtiene usuarios del caché o de la base de datos si no están en caché
-   async getUsers(): Promise<MongoUser[]> {
-       const cacheKey = 'all_users';
-       if (!this.cache.has(cacheKey)) {
-           const users = await User.find().lean() as unknown as MongoUser[];
-           this.cache.set(cacheKey, users);
-           setTimeout(() => this.cache.delete(cacheKey), this.ttl);
-       }
-       return this.cache.get(cacheKey) as MongoUser[];
-   }
+    /**
+     * Limpia todos los datos de la caché
+     */
+    private clearCache(): void {
+        this.cache.clear();
+    }
 
-   // Obtiene grupos del caché o de la base de datos si no están en caché
-   async getGroups(): Promise<MongoGroup[]> {
-       const cacheKey = 'all_groups';
-       if (!this.cache.has(cacheKey)) {
-           const groups = await Group.find().lean() as unknown as MongoGroup[];
-           this.cache.set(cacheKey, groups);
-           setTimeout(() => this.cache.delete(cacheKey), this.ttl);
-       }
-       return this.cache.get(cacheKey) as MongoGroup[];
-   }
+    /**
+     * Obtiene usuarios de MongoDB y los almacena en caché
+     */
+    async getUsers(): Promise<MongoUser[]> {
+        const cacheKey = 'all_users';
+        if (!this.cache.has(cacheKey)) {
+            const users = await User.find().lean() as unknown as MongoUser[];
+            this.cache.set(cacheKey, users);
+        }
+        return this.cache.get(cacheKey) as MongoUser[];
+    }
+
+    /**
+     * Obtiene grupos de MongoDB y los almacena en caché
+     */
+    async getGroups(): Promise<MongoGroup[]> {
+        const cacheKey = 'all_groups';
+        if (!this.cache.has(cacheKey)) {
+            const groups = await Group.find().lean() as unknown as MongoGroup[];
+            this.cache.set(cacheKey, groups);
+        }
+        return this.cache.get(cacheKey) as MongoGroup[];
+    }
 }
 
 /**
@@ -363,26 +373,25 @@ private static async synchronizeGroups(roles: CRMRole[], nameToMongoGroup: Map<s
 }
 
 /**
-* Actualiza las relaciones bidireccionales entre usuarios y grupos
-* - En los documentos de grupos: actualiza el array 'users' con los IDs de sus usuarios
-* - En los documentos de usuarios: actualiza el array 'role' con los IDs de sus grupos
-* 
-* @param roles Lista de roles provenientes del CRM con la estructura {name: string, user_name?: string}
-* @param mongoGroups Lista de grupos de MongoDB con sus usuarios actuales
-* @returns Resultado de las operaciones de escritura en bulk
-*/
+ * Actualiza las relaciones bidireccionales entre usuarios y grupos
+ * - En los documentos de grupos: actualiza el array 'users' con los IDs de sus usuarios
+ * - En los documentos de usuarios: actualiza el array 'role' con los IDs de sus grupos
+ * Garantiza que si un usuario del CRM deja de pertenecer a un grupo, se elimina la referencia en ambos sentidos
+ * 
+ * @param roles Lista de roles provenientes del CRM con la estructura {name: string, user_name?: string}
+ * @param mongoGroups Lista de grupos de MongoDB con sus usuarios actuales
+ * @returns Resultado de las operaciones de escritura en bulk
+ */
 private static async updateGroupUsers(roles: CRMRole[], mongoGroups: MongoGroup[]) {
     // Mapas para almacenar las actualizaciones pendientes
     const groupUpdates = new Map<string, Set<mongoose.Types.ObjectId>>();  // grupos -> usuarios
     const userUpdates = new Map<string, Set<mongoose.Types.ObjectId>>();   // usuarios -> grupos
     
-    // Obtener usuarios del caché y crear mapa de email -> ID para búsqueda rápida
+    // Obtener usuarios del caché y crear mapas para búsqueda rápida
     const usersCache = await DataCache.getInstance().getUsers();
     const emailToId = new Map(usersCache.map(u => [u.email, u._id]));
- 
-    // Crear mapa de nombres de grupo -> ID para referencia rápida
-    const groupIdByName = new Map(mongoGroups.map(g => [g.name, g._id]));
- 
+    const idToEmail = new Map(usersCache.map(u => [u._id.toString(), u.email]));
+
     // PASO 1: Crear mapa de asignaciones usuario-grupo del CRM
     const crmUsersInGroups = new Map<string, Set<string>>();
     roles.forEach(role => {
@@ -393,13 +402,18 @@ private static async updateGroupUsers(roles: CRMRole[], mongoGroups: MongoGroup[
             crmUsersInGroups.get(role.name)?.add(role.user_name);
         }
     });
- 
+
+    // Obtener todos los usuarios que vienen del CRM
+    const allCRMUsers = new Set<string>();
+    roles.forEach(role => {
+        if (role.user_name) allCRMUsers.add(role.user_name);
+    });
+
     // PASO 2: Procesar cada grupo de MongoDB
     mongoGroups.forEach(group => {
         if (group.name.startsWith('SCRM_')) {
-            // Para grupos del CRM (prefijo SCRM_)
             const updatedUsers = new Set<mongoose.Types.ObjectId>();
- 
+
             // 2.1: Añadir usuarios que vienen del CRM para este grupo
             const crmUsersForGroup = crmUsersInGroups.get(group.name) || new Set();
             crmUsersForGroup.forEach(email => {
@@ -407,31 +421,41 @@ private static async updateGroupUsers(roles: CRMRole[], mongoGroups: MongoGroup[
                     const userId = emailToId.get(email);
                     updatedUsers.add(userId);
                     
-                    // Actualizar también los roles del usuario
+                    // Actualizar roles del usuario
                     if (!userUpdates.has(userId.toString())) {
                         userUpdates.set(userId.toString(), new Set());
                     }
                     userUpdates.get(userId.toString())?.add(group._id);
                 }
             });
- 
-            // 2.2: Mantener usuarios existentes que NO son del CRM
+
+            // 2.2: Revisar usuarios actuales del grupo
             group.users.forEach(userId => {
-                const user = usersCache.find(u => u._id.toString() === userId.toString());
-                if (user && !crmUsersInGroups.get(group.name)?.has(user.email)) {
+                const userEmail = idToEmail.get(userId.toString());
+                
+                // Si es un usuario del CRM, solo mantenerlo si está en crmUsersForGroup
+                if (userEmail && allCRMUsers.has(userEmail)) {
+                    if (crmUsersForGroup.has(userEmail)) {
+                        updatedUsers.add(userId);
+                        if (!userUpdates.has(userId.toString())) {
+                            userUpdates.set(userId.toString(), new Set());
+                        }
+                        userUpdates.get(userId.toString())?.add(group._id);
+                    }
+                    // Si no está en crmUsersForGroup, no se añade (efectivamente eliminándolo)
+                } else {
+                    // Si no es usuario del CRM, mantenerlo
                     updatedUsers.add(userId);
-                    
-                    // Mantener el rol en el usuario
                     if (!userUpdates.has(userId.toString())) {
                         userUpdates.set(userId.toString(), new Set());
                     }
                     userUpdates.get(userId.toString())?.add(group._id);
                 }
             });
- 
+
             groupUpdates.set(group.name, updatedUsers);
         } else {
-            // Para grupos que NO son del CRM, mantener configuración actual
+            // Para grupos no-CRM, mantener configuración actual
             groupUpdates.set(group.name, new Set(group.users));
             
             // Mantener roles en usuarios para grupos no-CRM
@@ -443,7 +467,7 @@ private static async updateGroupUsers(roles: CRMRole[], mongoGroups: MongoGroup[
             });
         }
     });
- 
+
     // PASO 3: Preparar operaciones de actualización para grupos
     const groupOperations = mongoGroups
         .filter(group => groupUpdates.has(group.name))
@@ -457,7 +481,7 @@ private static async updateGroupUsers(roles: CRMRole[], mongoGroups: MongoGroup[
                 }
             }
         }));
- 
+
     // PASO 4: Preparar operaciones de actualización para usuarios
     const userOperations = Array.from(userUpdates.entries()).map(([userId, groupIds]) => ({
         updateOne: {
@@ -469,14 +493,13 @@ private static async updateGroupUsers(roles: CRMRole[], mongoGroups: MongoGroup[
             }
         }
     }));
- 
+
     // PASO 5: Ejecutar todas las operaciones en paralelo
     const results = await Promise.all([
         groupOperations.length > 0 ? Group.collection.bulkWrite(groupOperations, { ordered: false }) : null,
         userOperations.length > 0 ? User.collection.bulkWrite(userOperations, { ordered: false }) : null
     ]);
- 
-    // Devolver resultado de las operaciones de grupos para mantener compatibilidad
+
     return results[0];
- }
+}
 }
