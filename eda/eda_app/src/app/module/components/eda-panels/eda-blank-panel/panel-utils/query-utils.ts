@@ -205,7 +205,7 @@ export const QueryUtils = {
       if(ebp.chartForm.controls.chart.value!==null) {
 
         // Verifica un nuevo cambio en los Axes desde que se inicia la edición de la tabla cruzada
-        if(!ebp.newAxesChanged) {
+        if(!ebp.newAxesChanged && !ebp.chartTypes.filter( grafico => grafico.subValue==='crosstable' )[0].ngIf) {
           const config = ebp.panelChartConfig.config.getConfig(); // Adquiera la configuración config
           ebp.currentQuery = ebp.newCurrentQuery(ebp.currentQuery, ebp.initAxes(ebp.currentQuery)); // Reordeno el currentQuery                
           config['ordering'] = [{axes: ebp.initAxes(ebp.currentQuery)}]; // Agrego el nuevo axes a la config

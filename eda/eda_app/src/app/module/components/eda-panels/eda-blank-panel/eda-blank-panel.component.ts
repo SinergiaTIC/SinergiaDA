@@ -1154,38 +1154,50 @@ export class EdaBlankPanelComponent implements OnInit {
     */
     public initAxes(currenQuery) {
 
-        try {
+        let currenQueryCopy = [...currenQuery];
             
-            let vx = currenQuery.find( (v:any) => v.column_type==='text' || v.column_type==='date')
-            let objx = {column_name: vx.column_name, column_type: vx.column_type, description: vx.display_name.default}
-            let itemX = [objx]
+        let vx = currenQuery.find( (v:any) => v.column_type==='text' || v.column_type==='date')
+        let objx = {}
+        let itemX = []
+        let indexX
 
-            let itemY = [];
-            currenQuery.forEach( (v:any) => {
-                if(v.column_type!=='numeric'){
-                    itemY.push({column_name: v.column_name, column_type: v.column_type, description: v.display_name.default})
-                }
-            })
-            itemY.shift()
-
-            let itemZ = [];
-            currenQuery.forEach( (v:any) => {
-                if(v.column_type==='numeric'){
-                    itemZ.push({column_name: v.column_name, column_type: v.column_type, description: v.display_name.default})
-                }
-            })
-
-            if(itemY.length===0){
-                itemY.push(itemZ[0]);
-                itemZ.shift();
+        if(vx === undefined) {
+            indexX = currenQueryCopy.findIndex((v:any) => v.column_type==='numeric');
+            vx = currenQueryCopy.find( (v:any) => v.column_type==='numeric')
+            objx = {column_name: vx.column_name, column_type: vx.column_type, description: vx.display_name.default}
+            itemX = [objx]
+            if (indexX !== -1) {
+                currenQueryCopy.splice(indexX, 1); // Elimina el elemento encontrado
             }
-
-            return [{ itemX: itemX, itemY: itemY, itemZ: itemZ }]
-            
-        } catch (error) {
-            return []
+        } else {
+            objx = {column_name: vx.column_name, column_type: vx.column_type, description: vx.display_name.default}
+            itemX = [objx]
         }
-        
+
+
+        let itemY = [];
+        currenQueryCopy.forEach( (v:any) => {
+            if(v.column_type!=='numeric'){
+                itemY.push({column_name: v.column_name, column_type: v.column_type, description: v.display_name.default})
+            }
+        })
+        itemY.shift()
+
+        let itemZ = [];
+        currenQueryCopy.forEach( (v:any) => {
+            if(v.column_type==='numeric'){
+                itemZ.push({column_name: v.column_name, column_type: v.column_type, description: v.display_name.default})
+            }
+        })
+
+        if(itemY.length===0){
+            itemY.push(itemZ[0]);
+            itemZ.shift();
+        }
+
+        return [{ itemX: itemX, itemY: itemY, itemZ: itemZ }]
+            
+
     }
 
     /**
