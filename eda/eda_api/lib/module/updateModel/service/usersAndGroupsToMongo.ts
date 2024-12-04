@@ -1,6 +1,7 @@
 import mongoose, { connections, Model, mongo, Mongoose, QueryOptions } from "mongoose";
 import User, { IUser } from "../../admin/users/model/user.model";
 import Group, { IGroup } from "../../admin/groups/model/group.model";
+import { Console } from "console";
 
 // Desactiva la advertencia de findAndModify deprecated
 mongoose.set("useFindAndModify", false);
@@ -398,22 +399,24 @@ private static async updateGroupUsers(roles: CRMRole[], mongoGroups: MongoGroup[
     const crmUsersGroups = new Map<string, Set<string>>();
     roles.forEach(role => {
         if (role.user_name) {
+            console.log('ROLE', role)
             if (!crmUsersGroups.has(role.user_name)) {
                 crmUsersGroups.set(role.user_name, new Set());
             }
-            if (role.name.startsWith('SCRM_')) {
+            // Incluir tanto grupos SCRM_ como grupos administrativos
+            if (role.name.startsWith('SCRM_') || ['EDA_ADMIN', 'EDA_RO', 'EDA_DATASOURCE_CREATOR'].includes(role.name)) {
                 crmUsersGroups.get(role.user_name)?.add(role.name);
+               
             }
         }
     });
- 
     // Procesar cada grupo de MongoDB
     mongoGroups.forEach(group => {
         const updatedUsers = new Set<mongoose.Types.ObjectId>();
- 
-        if (group.name.startsWith('SCRM_')) {
+        
+        if (group.name.startsWith('SCRM_') || ['EDA_ADMIN', 'EDA_RO', 'EDA_DATASOURCE_CREATOR'].includes(group.name) ) {
             // Manejo de grupos SCRM_
-            group.users.forEach(userId => {
+                        group.users.forEach(userId => {
                 const userEmail = idToEmail.get(userId.toString());
                 if (userEmail) {
                     const userCrmGroups = crmUsersGroups.get(userEmail);
@@ -439,11 +442,13 @@ private static async updateGroupUsers(roles: CRMRole[], mongoGroups: MongoGroup[
         }
  
         // Añadir nuevos usuarios del CRM al grupo
-        if (group.name.startsWith('SCRM_')) {
+        if (group.name.startsWith('SCRM_') || ['EDA_ADMIN', 'EDA_RO', 'EDA_DATASOURCE_CREATOR'].includes(group.name) ) {
             usersCache.forEach(user => {
                 const userCrmGroups = crmUsersGroups.get(user.email);
                 if (userCrmGroups?.has(group.name)) {
                     updatedUsers.add(user._id);
+                    if(group.name=='EDA_ADMIN')console.log('ESTAMOS', updatedUsers)
+                    if(group.name=='EDA_ADMIN')console.log('ESTAMOS', userUpdates)
                     if (!userUpdates.has(user._id.toString())) {
                         userUpdates.set(user._id.toString(), new Set());
                     }
@@ -455,6 +460,9 @@ private static async updateGroupUsers(roles: CRMRole[], mongoGroups: MongoGroup[
         groupUpdates.set(group.name, updatedUsers);
     });
  
+    console.log('QUE',Array.from(groupUpdates.get('EDA_ADMIN')))
+
+
     // Preparar operaciones de actualización
     const groupOperations = mongoGroups
         .map(group => ({
@@ -480,6 +488,10 @@ private static async updateGroupUsers(roles: CRMRole[], mongoGroups: MongoGroup[
                 }
             }
         }));
+//  console.log('groupOperations', groupOperations)
+//  console.log('userOperations', userOperations)
+//  console.log(Object.getOwnPropertyDescriptors(groupOperations));
+
  
     // Ejecutar actualizaciones en paralelo
     const results = await Promise.all([
