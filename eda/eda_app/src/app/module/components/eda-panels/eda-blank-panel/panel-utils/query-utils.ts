@@ -97,7 +97,6 @@ export const QueryUtils = {
  * @param globalFilters flag to apply when runQuery() is called from dashboard component.
  */
   runQuery: async (ebp: EdaBlankPanelComponent, globalFilters: boolean) => {
-
     /** gestiona las columnas duplicadas. Si tengo dos columnas con el mismo nombre le añado el sufijo _1, _2, _3.... etc */
     let dup = [];
     let cont = 0;
@@ -173,12 +172,16 @@ export const QueryUtils = {
       ebp.spinnerService.off();
     }
 
+    // Controla que se pueda visualizar el componente dragAndDrop
+    ebp.dragAndDropAvailable = !ebp.chartTypes.filter( grafico => grafico.subValue === 'crosstable')[0].ngIf;
+
   },
 
   /**
   * Runs actual query when execute button is pressed to check for heavy queries
   */
   runManualQuery: (ebp: EdaBlankPanelComponent) => {
+
     /**No check in sql mode */
     if (ebp.selectedQueryMode == 'SQL') {
       QueryUtils.runQuery(ebp, false);
@@ -199,11 +202,11 @@ export const QueryUtils = {
           ebp.cumsumAlertController = null;
         }
       })
+
     } else {
 
       // Aparatado que inicia el initAxes en caso el ordering este vacio en la config
       if(ebp.chartForm.controls.chart.value!==null) {
-
         // Verifica un nuevo cambio en los Axes desde que se inicia la edición de la tabla cruzada
         if(!ebp.newAxesChanged && (!ebp.chartTypes.filter( grafico => grafico.subValue==='crosstable' )[0].ngIf || !ebp.chartTypes.filter( grafico => grafico.subValue==='table' )[0].ngIf)) {
 
@@ -212,7 +215,7 @@ export const QueryUtils = {
             ebp.currentQuery = ebp.newCurrentQuery(ebp.currentQuery, ebp.initAxes(ebp.currentQuery)); // Reordeno el currentQuery                
             config['ordering'] = [{axes: ebp.initAxes(ebp.currentQuery)}]; // Agrego el nuevo axes a la config
             ebp.copyConfigCrossTable = JSON.parse(JSON.stringify(config));
-          }
+          } 
         }
       }
 
@@ -248,6 +251,7 @@ export const QueryUtils = {
     }
 
     ebp.newAxesChanged = false;
+
   },
 
 

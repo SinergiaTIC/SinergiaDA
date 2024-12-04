@@ -194,6 +194,7 @@ export class EdaBlankPanelComponent implements OnInit {
     public graphicType: string; // extraemos el tipo de gráfico al inicio y al ejecutar
     public configCrossTable: any;
     public copyConfigCrossTable: any = {};
+    public dragAndDropAvailable: boolean = false;
 
     // Ocultar el boton de ejecutar
     public hiddenButtonExecuter: boolean = false;
@@ -261,7 +262,6 @@ export class EdaBlankPanelComponent implements OnInit {
             header: $localize`:@@panelOptions0:OPCIONES DEL PANEL`,
             contextMenuItems: PanelOptions.generateMenu(this)
         });
-
     }
 
     /**
@@ -496,6 +496,9 @@ export class EdaBlankPanelComponent implements OnInit {
         this.display_v.minispinner = false;
 
         this.graphicType = this.chartForm.value.chart.value;// iniciamos el tipo de gráfico crossTable
+
+        // Verifica si es una tabla cruzada para mostrarlo en pantalla de inicio
+        this.dragAndDropAvailable = !this.chartTypes.filter( grafico => grafico.subValue === 'crosstable')[0].ngIf;
     }
 
 
@@ -749,8 +752,6 @@ export class EdaBlankPanelComponent implements OnInit {
             }
         }
     }
-
-
 
     /* Condicions Drag&Drop */
     public isAllowed = (drag?: CdkDrag, drop?) => false;
