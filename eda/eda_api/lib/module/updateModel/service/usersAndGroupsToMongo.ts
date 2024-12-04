@@ -126,6 +126,10 @@ export class userAndGroupsToMongo {
                groups: groupSyncResults
            });
 
+                // Añadir verificación de admin
+                await this.verifyAdminRelations();
+
+
            console.timeEnd("Total usersAndGroupsToMongo");
            return { userSyncResults, groupSyncResults };
        } catch (error) {
@@ -373,133 +377,185 @@ private static async synchronizeGroups(roles: CRMRole[], nameToMongoGroup: Map<s
 }
 
 /**
- * Actualiza las relaciones bidireccionales entre usuarios y grupos
- * - En los documentos de grupos: actualiza el array 'users' con los IDs de sus usuarios
- * - En los documentos de usuarios: actualiza el array 'role' con los IDs de sus grupos
- * Garantiza que si un usuario del CRM deja de pertenecer a un grupo, se elimina la referencia en ambos sentidos
- * 
- * @param roles Lista de roles provenientes del CRM con la estructura {name: string, user_name?: string}
- * @param mongoGroups Lista de grupos de MongoDB con sus usuarios actuales
- * @returns Resultado de las operaciones de escritura en bulk
- */
+* Actualiza las relaciones bidireccionales entre usuarios y grupos, manejando tanto grupos SCRM_ como no-SCRM.
+* Garantiza que los usuarios que ya no pertenecen a grupos SCRM_ en CRM sean removidos de estos grupos en MongoDB.
+* 
+* @param roles - Lista de roles del CRM con estructura {name: string, user_name?: string}
+* @param mongoGroups - Lista de grupos existentes en MongoDB
+* @returns Resultado de las operaciones de escritura en bulk
+*/
 private static async updateGroupUsers(roles: CRMRole[], mongoGroups: MongoGroup[]) {
-    // Mapas para almacenar las actualizaciones pendientes
-    const groupUpdates = new Map<string, Set<mongoose.Types.ObjectId>>();  // grupos -> usuarios
-    const userUpdates = new Map<string, Set<mongoose.Types.ObjectId>>();   // usuarios -> grupos
+    // Mapas para almacenar actualizaciones pendientes
+    const groupUpdates = new Map<string, Set<mongoose.Types.ObjectId>>();
+    const userUpdates = new Map<string, Set<mongoose.Types.ObjectId>>();
     
     // Obtener usuarios del caché y crear mapas para búsqueda rápida
     const usersCache = await DataCache.getInstance().getUsers();
     const emailToId = new Map(usersCache.map(u => [u.email, u._id]));
     const idToEmail = new Map(usersCache.map(u => [u._id.toString(), u.email]));
-
-    // PASO 1: Crear mapa de asignaciones usuario-grupo del CRM
-    const crmUsersInGroups = new Map<string, Set<string>>();
+ 
+    // Crear mapa de asignaciones usuario-grupo del CRM
+    const crmUsersGroups = new Map<string, Set<string>>();
     roles.forEach(role => {
-        if (role.name.startsWith('SCRM_') && role.user_name) {
-            if (!crmUsersInGroups.has(role.name)) {
-                crmUsersInGroups.set(role.name, new Set());
+        if (role.user_name) {
+            if (!crmUsersGroups.has(role.user_name)) {
+                crmUsersGroups.set(role.user_name, new Set());
             }
-            crmUsersInGroups.get(role.name)?.add(role.user_name);
+            if (role.name.startsWith('SCRM_')) {
+                crmUsersGroups.get(role.user_name)?.add(role.name);
+            }
         }
     });
-
-    // Obtener todos los usuarios que vienen del CRM
-    const allCRMUsers = new Set<string>();
-    roles.forEach(role => {
-        if (role.user_name) allCRMUsers.add(role.user_name);
-    });
-
-    // PASO 2: Procesar cada grupo de MongoDB
+ 
+    // Procesar cada grupo de MongoDB
     mongoGroups.forEach(group => {
+        const updatedUsers = new Set<mongoose.Types.ObjectId>();
+ 
         if (group.name.startsWith('SCRM_')) {
-            const updatedUsers = new Set<mongoose.Types.ObjectId>();
-
-            // 2.1: Añadir usuarios que vienen del CRM para este grupo
-            const crmUsersForGroup = crmUsersInGroups.get(group.name) || new Set();
-            crmUsersForGroup.forEach(email => {
-                if (emailToId.has(email)) {
-                    const userId = emailToId.get(email);
-                    updatedUsers.add(userId);
-                    
-                    // Actualizar roles del usuario
-                    if (!userUpdates.has(userId.toString())) {
-                        userUpdates.set(userId.toString(), new Set());
-                    }
-                    userUpdates.get(userId.toString())?.add(group._id);
-                }
-            });
-
-            // 2.2: Revisar usuarios actuales del grupo
+            // Manejo de grupos SCRM_
             group.users.forEach(userId => {
                 const userEmail = idToEmail.get(userId.toString());
-                
-                // Si es un usuario del CRM, solo mantenerlo si está en crmUsersForGroup
-                if (userEmail && allCRMUsers.has(userEmail)) {
-                    if (crmUsersForGroup.has(userEmail)) {
+                if (userEmail) {
+                    const userCrmGroups = crmUsersGroups.get(userEmail);
+                    if (userCrmGroups?.has(group.name)) {
+                        // Mantener usuario solo si aún pertenece al grupo en CRM
                         updatedUsers.add(userId);
                         if (!userUpdates.has(userId.toString())) {
                             userUpdates.set(userId.toString(), new Set());
                         }
                         userUpdates.get(userId.toString())?.add(group._id);
                     }
-                    // Si no está en crmUsersForGroup, no se añade (efectivamente eliminándolo)
-                } else {
-                    // Si no es usuario del CRM, mantenerlo
-                    updatedUsers.add(userId);
-                    if (!userUpdates.has(userId.toString())) {
-                        userUpdates.set(userId.toString(), new Set());
-                    }
-                    userUpdates.get(userId.toString())?.add(group._id);
                 }
             });
-
-            groupUpdates.set(group.name, updatedUsers);
         } else {
-            // Para grupos no-CRM, mantener configuración actual
-            groupUpdates.set(group.name, new Set(group.users));
-            
-            // Mantener roles en usuarios para grupos no-CRM
+            // Mantener configuración para grupos no-SCRM
             group.users.forEach(userId => {
+                updatedUsers.add(userId);
                 if (!userUpdates.has(userId.toString())) {
                     userUpdates.set(userId.toString(), new Set());
                 }
                 userUpdates.get(userId.toString())?.add(group._id);
             });
         }
+ 
+        // Añadir nuevos usuarios del CRM al grupo
+        if (group.name.startsWith('SCRM_')) {
+            usersCache.forEach(user => {
+                const userCrmGroups = crmUsersGroups.get(user.email);
+                if (userCrmGroups?.has(group.name)) {
+                    updatedUsers.add(user._id);
+                    if (!userUpdates.has(user._id.toString())) {
+                        userUpdates.set(user._id.toString(), new Set());
+                    }
+                    userUpdates.get(user._id.toString())?.add(group._id);
+                }
+            });
+        }
+ 
+        groupUpdates.set(group.name, updatedUsers);
     });
-
-    // PASO 3: Preparar operaciones de actualización para grupos
+ 
+    // Preparar operaciones de actualización
     const groupOperations = mongoGroups
-        .filter(group => groupUpdates.has(group.name))
         .map(group => ({
             updateOne: {
                 filter: { name: group.name },
                 update: { 
                     $set: { 
-                        users: [...Array.from(groupUpdates.get(group.name) || [])]
+                        users: Array.from(groupUpdates.get(group.name) || [])
                     } 
                 }
             }
-        }));
-
-    // PASO 4: Preparar operaciones de actualización para usuarios
-    const userOperations = Array.from(userUpdates.entries()).map(([userId, groupIds]) => ({
-        updateOne: {
-            filter: { _id: new mongoose.Types.ObjectId(userId) },
-            update: {
-                $set: {
-                    role: [...Array.from(groupIds)]
+        }))
+        .filter(op => op.updateOne.update.$set.users.length > 0);
+ 
+    const userOperations = Array.from(userUpdates.entries())
+        .map(([userId, groupIds]) => ({
+            updateOne: {
+                filter: { _id: new mongoose.Types.ObjectId(userId) },
+                update: {
+                    $set: {
+                        role: Array.from(groupIds)
+                    }
                 }
             }
-        }
-    }));
-
-    // PASO 5: Ejecutar todas las operaciones en paralelo
+        }));
+ 
+    // Ejecutar actualizaciones en paralelo
     const results = await Promise.all([
         groupOperations.length > 0 ? Group.collection.bulkWrite(groupOperations, { ordered: false }) : null,
         userOperations.length > 0 ? User.collection.bulkWrite(userOperations, { ordered: false }) : null
     ]);
-
+ 
     return results[0];
+ }
+ 
+ 
+ /**
+ * Verifica y corrige las relaciones bidireccionales entre usuarios administrativos y sus roles
+ * @param adminGroups - Array de nombres de grupos administrativos a verificar
+ * @returns Resultado de las operaciones de corrección
+ */
+ private static async verifyAdminRelations(adminGroups: string[] = ['EDA_ADMIN', 'EDA_DATASOURCE_CREATOR']) {
+    const operations = {
+        users: [] as any[],
+        groups: [] as any[]
+    };
+
+    const adminMongoGroups = await Group.find({ name: { $in: adminGroups } });
+    const adminUsers = await User.find({
+        role: { 
+            $in: adminMongoGroups.map(g => g._id)
+        }
+    });
+
+    for (const group of adminMongoGroups) {
+        const usersInGroup = new Set<string>(group.users.map(id => id.toString()));
+        const shouldBeInGroup = new Set<string>(adminUsers
+            .filter(u => u.role.includes(group._id))
+            .map(u => u._id.toString()));
+
+        if (!userAndGroupsToMongo.setsAreEqual(usersInGroup, shouldBeInGroup)) {
+            operations.groups.push({
+                updateOne: {
+                    filter: { _id: group._id },
+                    update: { $set: { users: Array.from(shouldBeInGroup).map(id => new mongoose.Types.ObjectId(id)) } }
+                }
+            });
+        }
+    }
+
+    for (const user of adminUsers) {
+        const userGroups = new Set<string>(user.role.map(id => id.toString()));
+        const shouldBeInRoles = new Set<string>(adminMongoGroups
+            .filter(g => g.users.includes(user._id))
+            .map(g => g._id.toString()));
+
+        if (!userAndGroupsToMongo.setsAreEqual(userGroups, shouldBeInRoles)) {
+            operations.users.push({
+                updateOne: {
+                    filter: { _id: user._id },
+                    update: { $set: { role: Array.from(shouldBeInRoles).map(id => new mongoose.Types.ObjectId(id)) } }
+                }
+            });
+        }
+    }
+
+    if (operations.groups.length || operations.users.length) {
+        return Promise.all([
+            operations.groups.length ? Group.bulkWrite(operations.groups) : null,
+            operations.users.length ? User.bulkWrite(operations.users) : null
+        ]);
+    }
+
+    return null;
 }
+
+/**
+ * Compara dos Sets para verificar si contienen los mismos elementos
+ */
+private static setsAreEqual(a: Set<string>, b: Set<string>): boolean {
+    return a.size === b.size && [...a].every(value => b.has(value));
+}
+
 }
