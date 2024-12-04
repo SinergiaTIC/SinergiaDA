@@ -205,11 +205,14 @@ export const QueryUtils = {
       if(ebp.chartForm.controls.chart.value!==null) {
 
         // Verifica un nuevo cambio en los Axes desde que se inicia la edición de la tabla cruzada
-        if(!ebp.newAxesChanged && !ebp.chartTypes.filter( grafico => grafico.subValue==='crosstable' )[0].ngIf) {
-          const config = ebp.panelChartConfig.config.getConfig(); // Adquiera la configuración config
-          ebp.currentQuery = ebp.newCurrentQuery(ebp.currentQuery, ebp.initAxes(ebp.currentQuery)); // Reordeno el currentQuery                
-          config['ordering'] = [{axes: ebp.initAxes(ebp.currentQuery)}]; // Agrego el nuevo axes a la config
-          ebp.copyConfigCrossTable = JSON.parse(JSON.stringify(config));
+        if(!ebp.newAxesChanged && (!ebp.chartTypes.filter( grafico => grafico.subValue==='crosstable' )[0].ngIf || !ebp.chartTypes.filter( grafico => grafico.subValue==='table' )[0].ngIf)) {
+
+          if(ebp.currentQuery.length>2 && (ebp.currentQuery.find( valor => valor.column_type === 'numeric') !== undefined)) {
+            const config = ebp.panelChartConfig.config.getConfig(); // Adquiera la configuración config
+            ebp.currentQuery = ebp.newCurrentQuery(ebp.currentQuery, ebp.initAxes(ebp.currentQuery)); // Reordeno el currentQuery                
+            config['ordering'] = [{axes: ebp.initAxes(ebp.currentQuery)}]; // Agrego el nuevo axes a la config
+            ebp.copyConfigCrossTable = JSON.parse(JSON.stringify(config));
+          }
         }
       }
 
