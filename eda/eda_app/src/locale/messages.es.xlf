@@ -4338,6 +4338,18 @@
         <source>Arrastre aquí solo los campos numéricos (num) de la tabla cruzada (La suma es la agregación por defecto)</source>
         <target>Arrastre aquí solo los campos numéricos (num) de la tabla cruzada (La suma es la agregación por defecto)</target>
       </trans-unit>
+      <trans-unit id="textoTablaCruzadaEjeX">
+        <source> • Eje vertical de la tabla cruzada.</source>
+        <target> • Eje vertical de la tabla cruzada.</target>
+      </trans-unit>
+      <trans-unit id="textoTablaCruzadaEjeY">
+        <source> • Eje horizontal de la tabla cruzada.</source>
+        <target> • Eje horizontal de la tabla cruzada.</target>
+      </trans-unit>
+      <trans-unit id="textoTablaCruzadaEjeZ">
+        <source> • Eje de los campos numéricos de la tabla cruzada.</source>
+        <target> • Eje de los campos numéricos de la tabla cruzada.</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>
