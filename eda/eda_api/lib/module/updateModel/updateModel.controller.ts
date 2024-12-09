@@ -112,10 +112,10 @@ export class updateModel {
               )
               .then(async rows => {
                 let relations = rows;
-                // Select users
+                // Select users (all users, not only active, neccesary to determine users to delete in SDA) 
                 await connection
                   .query(
-                    "SELECT name as name, user_name as email, password as password, active as active FROM  sda_def_users WHERE active = 1 AND password IS NOT NULL ;"
+                    "SELECT name as name, user_name as email, password as password, active as active FROM  sda_def_users WHERE password IS NOT NULL ;"
                   )
                   .then(async users => {
                     let users_crm = users;
