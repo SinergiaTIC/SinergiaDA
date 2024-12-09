@@ -6,6 +6,7 @@ import { EnCrypterService } from "../../services/encrypter/encrypter.service";
 import { userAndGroupsToMongo } from "./service/usersAndGroupsToMongo";
 import { Enumerations } from "./service/enumerations";
 import { pushModelToMongo } from "./service/push.Model.to.Mongo";
+import path from 'path';
 
 import fs from "fs";
 import { CleanModel } from "./service/cleanModel";
@@ -578,7 +579,12 @@ export class updateModel {
     // Format tables as JSON
     console.timeLog("UpdateModel", "(Start JSON formatting)");  // AÑADIR AQUÍ - Línea antes de let main_model
     
-    let main_model = await JSON.parse(fs.readFileSync("config/base_datamodel.json", "utf-8"));
+    let main_model = await JSON.parse(
+      fs.readFileSync(
+        path.join(__dirname, '../../../config/base_datamodel.json'), 
+        "utf-8"
+      )
+    );
     main_model.ds.connection.host = sinergiaDatabase.sinergiaConn.host;
     main_model.ds.connection.database = sinergiaDatabase.sinergiaConn.database;
     main_model.ds.connection.port = sinergiaDatabase.sinergiaConn.port;
