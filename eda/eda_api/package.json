@@ -5,7 +5,8 @@
     "main": "index.js",
     "scripts": {
         "start": "nodemon",
-        "start:forever": "npm run build && forever start -c node ./dist/server.js",
+        "start:forever": "npm run build && forever start -c node  ./dist/server.js",
+        "start:debug": "npm run build && forever start -c node --inspect=0.0.0.0:9229 ./dist/server.js", 
         "start:pm2": "npm run build && pm2 start ./dist/server.js   ",
         "edapi": "forever start -c node ./dist/server.js",
         "build": "tsc && npm run movejpgs",
