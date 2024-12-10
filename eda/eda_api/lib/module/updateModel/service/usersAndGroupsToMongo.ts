@@ -3,10 +3,10 @@ import User, { IUser } from "../../admin/users/model/user.model";
 import Group, { IGroup } from "../../admin/groups/model/group.model";
 import { Console } from "console";
 
-// Desactiva la advertencia de findAndModify deprecated
+// Desactiva warnings obsoletos de mongoose
 mongoose.set("useFindAndModify", false);
 
-// Interfaz que define la estructura de un usuario en MongoDB
+// Define estructura de usuario en MongoDB
 interface MongoUser extends mongoose.Document {
    email: string;
    password: string;
@@ -15,7 +15,7 @@ interface MongoUser extends mongoose.Document {
    active?: number;
 }
 
-// Interfaz que define la estructura de un grupo en MongoDB
+// Define estructura de grupo en MongoDB
 interface MongoGroup extends mongoose.Document {
    _id: mongoose.Types.ObjectId;
    name: string;
@@ -23,7 +23,7 @@ interface MongoGroup extends mongoose.Document {
    users: mongoose.Types.ObjectId[];
 }
 
-// Interfaz que define la estructura de un usuario en el CRM
+// Define estructura de usuario en CRM
 interface CRMUser {
    name: string;
    email: string;
@@ -31,13 +31,13 @@ interface CRMUser {
    active: number;
 }
 
-// Interfaz que define la estructura de un rol en el CRM
+// Define estructura de rol en CRM
 interface CRMRole {
    name: string;
    user_name?: string;
 }
 
-// Interfaz que define la estructura de los resultados de sincronización
+// Define estructura de resultados de sincronización
 interface SyncResults {
    inserted: number;
    updated: number;
@@ -45,8 +45,8 @@ interface SyncResults {
 }
 
 /**
- * Clase que implementa un sistema de caché para usuarios y grupos
- * Se reconstruye en cada ejecución para asegurar datos actualizados
+ * Implementa un sistema de caché para usuarios y grupos en MongoDB
+ * Se reconstruye en cada ejecución para mantener datos actualizados
  */
 class DataCache {
     private static instance: DataCache;
@@ -57,26 +57,27 @@ class DataCache {
     }
 
     /**
-     * Obtiene la instancia única del caché y la limpia
+     * Obtiene o crea la instancia única del caché
+     * @returns Instancia del caché limpia
      */
     static getInstance(): DataCache {
         if (!DataCache.instance) {
             DataCache.instance = new DataCache();
         }
-        // Limpiar la caché al obtener la instancia
         DataCache.instance.clearCache();
         return DataCache.instance;
     }
 
     /**
-     * Limpia todos los datos de la caché
+     * Elimina todos los datos almacenados en caché
      */
     private clearCache(): void {
         this.cache.clear();
     }
 
     /**
-     * Obtiene usuarios de MongoDB y los almacena en caché
+     * Recupera usuarios de MongoDB usando caché
+     * @returns Lista de usuarios
      */
     async getUsers(): Promise<MongoUser[]> {
         const cacheKey = 'all_users';
@@ -88,7 +89,8 @@ class DataCache {
     }
 
     /**
-     * Obtiene grupos de MongoDB y los almacena en caché
+     * Recupera grupos de MongoDB usando caché
+     * @returns Lista de grupos
      */
     async getGroups(): Promise<MongoGroup[]> {
         const cacheKey = 'all_groups';
@@ -100,394 +102,344 @@ class DataCache {
     }
 }
 
-/**
- * Clase principal para la sincronización de usuarios y grupos entre CRM y MongoDB
- */
 export class userAndGroupsToMongo {
-   /**
-    * Método principal que sincroniza usuarios y grupos entre CRM y MongoDB
-    * @param users Lista de usuarios del CRM
-    * @param roles Lista de roles del CRM
-    */
-   static async crm_to_eda_UsersAndGroups(users: CRMUser[], roles: CRMRole[]) {
-       console.time("Total usersAndGroupsToMongo");
-       console.log(`Starting sync: ${users.length} users and ${roles.length} role assignments`);
+    /**
+     * Coordina la sincronización completa de usuarios y grupos entre CRM y MongoDB
+     * Gestiona la creación de índices y ejecuta las sincronizaciones en paralelo
+     * 
+     * @param users Lista de usuarios del CRM a sincronizar
+     * @param roles Lista de roles/grupos del CRM a sincronizar
+     * @returns Resultados de la sincronización
+     */
+    static async crm_to_eda_UsersAndGroups(users: CRMUser[], roles: CRMRole[]) {
+        console.time("Total usersAndGroupsToMongo");
+        console.log(`Starting sync: ${users.length} users and ${roles.length} role assignments`);
 
-       try {
-           // Crea índices únicos para email y nombre
-           await User.collection.createIndex({ email: 1 }, { unique: true });
-           await Group.collection.createIndex({ name: 1 }, { unique: true });
+        try {
+            // Asegura índices únicos
+            await User.collection.createIndex({ email: 1 }, { unique: true });
+            await Group.collection.createIndex({ name: 1 }, { unique: true });
 
-           // Sincroniza usuarios y grupos en paralelo
-           const userSyncResults = await this.optimizedUserSync(users);
-           const groupSyncResults = await this.optimizedGroupSync(roles);
+            const userSyncResults = await this.optimizedUserSync(users);
+            const groupSyncResults = await this.optimizedGroupSync(roles);
 
-           console.log('Sync completed:', {
-               users: userSyncResults,
-               groups: groupSyncResults
-           });
+            console.log('Sync completed:', {
+                users: userSyncResults,
+                groups: groupSyncResults
+            });
 
-                // Añadir verificación de admin
-                await this.verifyAdminRelations();
+            await this.verifyAdminRelations();
 
-
-           console.timeEnd("Total usersAndGroupsToMongo");
-           return { userSyncResults, groupSyncResults };
-       } catch (error) {
-           console.error("Sync error:", error);
-           throw error;
-       }
-   }
-
-  /**
- * Sincroniza los usuarios del CRM con MongoDB de manera optimizada
- * @param crmUsers Array de usuarios provenientes del CRM
- * @returns Objeto con el conteo de usuarios insertados, actualizados y eliminados
- */
-private static async optimizedUserSync(crmUsers: CRMUser[]): Promise<SyncResults> {
-    // Inicia el contador de tiempo para medir la duración de la sincronización
-    console.time('userSync');
-    
-    try {
-        // Obtiene todos los usuarios de MongoDB usando el caché
-        // Si no están en caché, DataCache hará la consulta a MongoDB
-        const mongoUsers = await DataCache.getInstance().getUsers();
-
-        // Crea un Map para acceso rápido a usuarios por email
-        // La clave es el email y el valor es el objeto usuario completo
-        const emailToMongoUser = new Map<string, MongoUser>(
-            mongoUsers.map(user => [user.email, user])
-        );
-        
-        // Ejecuta dos operaciones en paralelo usando Promise.all:
-        // 1. synchronizeUsers: Sincroniza los usuarios nuevos y actualiza los existentes
-        // 2. removeInactiveUsers: Elimina los usuarios inactivos
-        const [syncResult, deleteResult] = await Promise.all([
-            this.synchronizeUsers(crmUsers, emailToMongoUser),
-            this.removeInactiveUsers(crmUsers)
-        ]);
-
-        // Detiene el contador de tiempo de sincronización
-        console.timeEnd('userSync');
-
-        // Retorna un objeto con las estadísticas de la sincronización
-        // Si alguna operación no retornó resultados, usa 0 como valor por defecto
-        return {
-            inserted: syncResult?.insertedCount || 0,  // Número de usuarios nuevos insertados
-            updated: syncResult?.modifiedCount || 0,   // Número de usuarios actualizados
-            deleted: deleteResult?.deletedCount || 0   // Número de usuarios eliminados
-        };
-    } catch (error) {
-        // Si ocurre algún error durante el proceso
-        console.error('User sync error:', error);
-        // Propaga el error hacia arriba para que sea manejado por el llamador
-        throw error;
+            console.timeEnd("Total usersAndGroupsToMongo");
+            return { userSyncResults, groupSyncResults };
+        } catch (error) {
+            console.error("Sync error:", error);
+            throw error;
+        }
     }
-}
- /**
- * Sincroniza los usuarios del CRM con MongoDB procesándolos en lotes
- * @param crmUsers Lista de usuarios del CRM a sincronizar
- * @param emailToMongoUser Map de emails a usuarios existentes en MongoDB
- * @returns Resultado de las operaciones de escritura en bulk
- */
-private static async synchronizeUsers(crmUsers: CRMUser[], emailToMongoUser: Map<string, MongoUser>) {
-    // Define el tamaño del lote para procesar usuarios
-    // 100 usuarios por lote para optimizar las operaciones en MongoDB
-    const batchSize = 100;
-    
-    // Array para almacenar todas las operaciones de MongoDB a ejecutar
-    const operations: any[] = [];
 
-    // Procesa los usuarios en lotes usando un bucle for
-    // i se incrementa en batchSize en cada iteración
-    for (let i = 0; i < crmUsers.length; i += batchSize) {
-        // Extrae un subconjunto (lote) de usuarios usando slice
-        // Desde el índice i hasta i + batchSize
-        const batch = crmUsers.slice(i, i + batchSize);
+    /**
+     * Gestiona la sincronización optimizada de usuarios
+     * Procesa actualizaciones e inserciones en lotes
+     * 
+     * @param crmUsers Lista de usuarios del CRM
+     * @returns Estadísticas de la sincronización
+     */
+    private static async optimizedUserSync(crmUsers: CRMUser[]): Promise<SyncResults> {
+        console.time('userSync');
         
-        // Procesa cada usuario del lote actual
-        batch.forEach(crmUser => {
-            // Busca si el usuario ya existe en MongoDB usando su email
-            const existingUser = emailToMongoUser.get(crmUser.email);
+        try {
+            const mongoUsers = await DataCache.getInstance().getUsers();
+            const emailToMongoUser = new Map<string, MongoUser>(
+                mongoUsers.map(user => [user.email, user])
+            );
             
-            if (!existingUser) {
-                // Si el usuario no existe, prepara una operación de inserción
+            const [syncResult, deleteResult] = await Promise.all([
+                this.synchronizeUsers(crmUsers, emailToMongoUser),
+                this.removeInactiveUsers(crmUsers)
+            ]);
+
+            console.timeEnd('userSync');
+
+            return {
+                inserted: syncResult?.insertedCount || 0,
+                updated: syncResult?.modifiedCount || 0,
+                deleted: deleteResult?.deletedCount || 0
+            };
+        } catch (error) {
+            console.error('User sync error:', error);
+            throw error;
+        }
+    }
+
+    /**
+     * Procesa usuarios en lotes para sincronización
+     * Maneja creación de nuevos usuarios y actualización de contraseñas
+     * 
+     * @param crmUsers Lista de usuarios a sincronizar
+     * @param emailToMongoUser Mapa de usuarios existentes
+     * @returns Resultado de operaciones bulk
+     */
+    private static async synchronizeUsers(crmUsers: CRMUser[], emailToMongoUser: Map<string, MongoUser>) {
+        const batchSize = 100;
+        const operations: any[] = [];
+
+        for (let i = 0; i < crmUsers.length; i += batchSize) {
+            const batch = crmUsers.slice(i, i + batchSize);
+            
+            batch.forEach(crmUser => {
+                const existingUser = emailToMongoUser.get(crmUser.email);
+                
+                if (!existingUser) {
+                    operations.push({
+                        insertOne: {
+                            document: {
+                                name: crmUser.name,
+                                email: crmUser.email,
+                                password: crmUser.password,
+                                role: []
+                            }
+                        }
+                    });
+                } else if (existingUser.password !== crmUser.password) {
+                    operations.push({
+                        updateOne: {
+                            filter: { email: crmUser.email },
+                            update: { $set: { password: crmUser.password } }
+                        }
+                    });
+                }
+            });
+        }
+
+        if (operations.length > 0) {
+            return await User.collection.bulkWrite(operations, { ordered: false });
+        }
+        
+        return null;
+    }
+
+
+
+    /**
+     * Elimina usuarios inactivos del CRM preservando usuarios del sistema
+     * 
+     * @param crmUsers Lista de usuarios del CRM
+     * @returns Resultado de la operación de eliminación
+     */
+    private static async removeInactiveUsers(crmUsers: CRMUser[]) {
+        const excludedEmails = [
+            'eda@sinergiada.org', 
+            'eda@jortilles.com', 
+            'edaanonim@jortilles.com'
+        ];
+
+        const crmEmails = new Set(crmUsers.map(user => user.email));
+        const activeEmails = new Set(
+            crmUsers
+                .filter(user => user.active === 1)
+                .map(user => user.email)
+        );
+
+        const bulkDelete = {
+            deleteMany: {
+                filter: {
+                    $and: [
+                        { email: { $in: Array.from(crmEmails) } },
+                        { email: { $nin: [...excludedEmails, ...Array.from(activeEmails)] } }
+                    ]
+                }
+            }
+        };
+
+        return await User.collection.bulkWrite([bulkDelete]);
+    }
+
+    /**
+     * Gestiona la sincronización optimizada de grupos
+     * Coordina creación de grupos y actualización de membresías
+     * 
+     * @param roles Lista de roles del CRM
+     * @returns Estadísticas de sincronización
+     */
+    private static async optimizedGroupSync(roles: CRMRole[]) {
+        console.time('groupSync');
+        
+        try {
+            const mongoGroups = await DataCache.getInstance().getGroups();
+            const nameToMongoGroup = new Map<string, MongoGroup>(
+                mongoGroups.map(group => [group.name, group])
+            );
+            
+            const [syncResult, userAssignments] = await Promise.all([
+                this.synchronizeGroups(roles, nameToMongoGroup),
+                this.updateGroupUsers(roles, mongoGroups)
+            ]);
+
+            console.timeEnd('groupSync');
+
+            return {
+                inserted: syncResult?.insertedCount || 0,
+                updated: syncResult?.modifiedCount || 0,
+                userAssignments
+            };
+        } catch (error) {
+            console.error('Group sync error:', error);
+            throw error;
+        }
+    }
+
+    /**
+     * Crea nuevos grupos del CRM en MongoDB
+     * Excluye grupos especiales del sistema
+     * 
+     * @param roles Lista de roles del CRM
+     * @param nameToMongoGroup Mapa de grupos existentes
+     * @returns Resultado de operaciones bulk
+     */
+    private static async synchronizeGroups(roles: CRMRole[], nameToMongoGroup: Map<string, MongoGroup>) {
+        const uniqueGroups = [...new Set(roles.map(item => item.name))];
+        const operations: any[] = [];
+
+        uniqueGroups.forEach(groupName => {
+            if (!nameToMongoGroup.has(groupName) &&
+                !['EDA_ADMIN', 'EDA_RO', 'EDA_DATASOURCE_CREATOR'].includes(groupName)) {
+                
                 operations.push({
                     insertOne: {
                         document: {
-                            name: crmUser.name,
-                            email: crmUser.email,
-                            password: crmUser.password,
-                            role: [] // Roles iniciales vacíos
+                            role: 'EDA_USER_ROLE',
+                            name: groupName,
+                            users: []
                         }
                     }
                 });
-            } else if (existingUser.password !== crmUser.password) {
-                // Si el usuario existe y su contraseña ha cambiado
-                // Prepara una operación de actualización
-                operations.push({
-                    updateOne: {
-                        filter: { email: crmUser.email },
-                        update: { $set: { password: crmUser.password } }
+            }
+        });
+
+        if (operations.length > 0) {
+            return await Group.collection.bulkWrite(operations, { ordered: false });
+        }
+
+        return null;
+    }
+
+    /**
+     * Actualiza las membresías de usuarios en grupos
+     * Mantiene grupos SCRM_ sincronizados con CRM y preserva otros grupos
+     * 
+     * @param roles Lista de roles del CRM
+     * @param mongoGroups Lista de grupos en MongoDB
+     * @returns Resultado de operaciones bulk
+     */
+    private static async updateGroupUsers(roles: CRMRole[], mongoGroups: MongoGroup[]) {
+        const groupUpdates = new Map<string, Set<mongoose.Types.ObjectId>>();
+        const userUpdates = new Map<string, Set<mongoose.Types.ObjectId>>();
+        
+        const usersCache = await DataCache.getInstance().getUsers();
+        const emailToId = new Map(usersCache.map(u => [u.email, u._id]));
+        const idToEmail = new Map(usersCache.map(u => [u._id.toString(), u.email]));
+
+        // Mapeo de asignaciones CRM
+        const crmUsersGroups = new Map<string, Set<string>>();
+        roles.forEach(role => {
+            if (role.user_name && role.name.startsWith('SCRM_')) {
+                if (!crmUsersGroups.has(role.user_name)) {
+                    crmUsersGroups.set(role.user_name, new Set());
+                }
+                crmUsersGroups.get(role.user_name)?.add(role.name);
+            }
+        });
+
+        // Procesamiento de grupos
+        mongoGroups.forEach(group => {
+            const uniqueUsers = new Set<mongoose.Types.ObjectId>();
+            
+            if (group.name === 'EDA_ADMIN') {
+                group.users.forEach(userId => {
+                    uniqueUsers.add(userId);
+                    this.updateUserRoles(userUpdates, userId.toString(), group._id);
+                });
+            } else if (group.name.startsWith('SCRM_')) {
+                group.users.forEach(userId => {
+                    const userEmail = idToEmail.get(userId.toString());
+                    if (userEmail && crmUsersGroups.get(userEmail)?.has(group.name)) {
+                        uniqueUsers.add(userId);
                     }
                 });
-            }
-            // Si el usuario existe y la contraseña no ha cambiado
-            // no se realiza ninguna operación
-        });
-    }
 
-    // Si hay operaciones pendientes, las ejecuta todas en una sola llamada
-    if (operations.length > 0) {
-        // ordered: false permite que las operaciones continúen aunque alguna falle
-        return await User.collection.bulkWrite(operations, { ordered: false });
-    }
-    
-    // Si no hay operaciones para ejecutar, retorna null
-    return null;
-}
-
-/**
- * Elimina solo los usuarios inactivos que provienen del CRM
- * @param crmUsers Lista de usuarios del CRM para verificar el estado activo
- */
-private static async removeInactiveUsers(crmUsers: CRMUser[]) {
-    // Define usuarios del sistema que nunca deben eliminarse
-    const excludedEmails = [
-        'eda@sinergiada.org', 
-        'eda@jortilles.com', 
-        'edaanonim@jortilles.com'
-    ];
-
-    // Crea un Set con TODOS los emails que vienen del CRM
-    const crmEmails = new Set(crmUsers.map(user => user.email));
-
-    // Crea un Set con los emails de usuarios activos del CRM
-    const activeEmails = new Set(
-        crmUsers
-            .filter(user => user.active === 1)
-            .map(user => user.email)
-    );
-
-    // Define la operación de eliminación masiva
-    const bulkDelete = {
-        deleteMany: {
-            filter: {
-                // Solo elimina si:
-                $and: [
-                    // El email está en la lista de emails del CRM
-                    { email: { $in: Array.from(crmEmails) } },
-                    // Y no está en la lista de excluidos ni activos
-                    { email: { $nin: [...excludedEmails, ...Array.from(activeEmails)] } }
-                ]
-            }
-        }
-    };
-
-    return await User.collection.bulkWrite([bulkDelete]);
-}
-
-/**
- * Sincroniza los grupos del CRM con MongoDB de manera optimizada
- * @param roles Lista de roles/grupos del CRM a sincronizar
- * @returns Objeto con estadísticas de la sincronización
- */
-private static async optimizedGroupSync(roles: CRMRole[]) {
-    // Inicia el temporizador para medir el tiempo de sincronización
-    console.time('groupSync');
-    
-    try {
-        // Obtiene todos los grupos existentes en MongoDB usando el caché
-        // Si no están en caché, DataCache hará la consulta a MongoDB
-        const mongoGroups = await DataCache.getInstance().getGroups();
-
-        // Crea un Map para acceso rápido a grupos por nombre
-        // La clave es el nombre del grupo y el valor es el objeto grupo completo
-        const nameToMongoGroup = new Map<string, MongoGroup>(
-            mongoGroups.map(group => [group.name, group])
-        );
-        
-        // Ejecuta dos operaciones en paralelo usando Promise.all:
-        // 1. synchronizeGroups: Sincroniza los grupos nuevos
-        // 2. updateGroupUsers: Actualiza los usuarios asignados a cada grupo
-        const [syncResult, userAssignments] = await Promise.all([
-            this.synchronizeGroups(roles, nameToMongoGroup),
-            this.updateGroupUsers(roles, mongoGroups)
-        ]);
-
-        // Detiene el temporizador de sincronización
-        console.timeEnd('groupSync');
-
-        // Retorna las estadísticas de la sincronización
-        return {
-            inserted: syncResult?.insertedCount || 0,    // Número de grupos nuevos insertados
-            updated: syncResult?.modifiedCount || 0,     // Número de grupos actualizados
-            userAssignments                             // Resultado de las asignaciones de usuarios
-        };
-    } catch (error) {
-        // Si ocurre algún error durante el proceso
-        console.error('Group sync error:', error);
-        // Propaga el error hacia arriba para que sea manejado por el llamador
-        throw error;
-    }
-}
-
-/**
- * Sincroniza los grupos del CRM con MongoDB, creando los grupos que no existen
- * @param roles Lista de roles/grupos del CRM
- * @param nameToMongoGroup Map de nombres a grupos existentes en MongoDB
- * @returns Resultado de las operaciones de escritura en bulk
- */
-private static async synchronizeGroups(roles: CRMRole[], nameToMongoGroup: Map<string, MongoGroup>) {
-    // Obtiene una lista de nombres de grupos únicos del CRM
-    // Set elimina duplicados y Array.from lo convierte de nuevo a array
-    const uniqueGroups = [...new Set(roles.map(item => item.name))];
-
-    // Array para almacenar las operaciones de MongoDB a ejecutar
-    const operations: any[] = [];
-    // TODO: Mantener grupos propios de SDA, solo procesar grupos SCRM
-    // Procesa cada nombre de grupo único
-    uniqueGroups.forEach(groupName => {
-        // Verifica si:
-        // 1. El grupo no existe en MongoDB (no está en el Map)
-        // 2. No es uno de los grupos especiales del sistema
-        if (!nameToMongoGroup.has(groupName) &&
-            !['EDA_ADMIN', 'EDA_RO', 'EDA_DATASOURCE_CREATOR'].includes(groupName)) {
-            
-            // Prepara la operación de inserción para el nuevo grupo
-            operations.push({
-                insertOne: {
-                    document: {
-                        role: 'EDA_USER_ROLE',     // Rol por defecto
-                        name: groupName,           // Nombre del grupo
-                        users: []                  // Lista inicial vacía de usuarios
+                usersCache.forEach(user => {
+                    if (crmUsersGroups.get(user.email)?.has(group.name)) {
+                        uniqueUsers.add(user._id);
                     }
-                }
-            });
-        }
-    });
+                });
 
-    // Si hay operaciones pendientes, las ejecuta todas en una sola llamada
-    if (operations.length > 0) {
-        // ordered: false permite que las operaciones continúen aunque alguna falle
-        return await Group.collection.bulkWrite(operations, { ordered: false });
+                uniqueUsers.forEach(userId => {
+                    this.updateUserRoles(userUpdates, userId.toString(), group._id);
+                });
+            } else {
+                group.users.forEach(userId => {
+                    uniqueUsers.add(userId);
+                    this.updateUserRoles(userUpdates, userId.toString(), group._id);
+                });
+            }
+
+            if (uniqueUsers.size > 0) {
+                groupUpdates.set(group.name, uniqueUsers);
+            }
+        });
+
+        // Preparación de operaciones bulk
+        const groupOperations = Array.from(groupUpdates.entries()).map(([groupName, userIds]) => ({
+            updateOne: {
+                filter: { name: groupName },
+                update: { $set: { users: Array.from(userIds) } }
+            }
+        }));
+
+        const userOperations = Array.from(userUpdates.entries()).map(([userId, groupIds]) => ({
+            updateOne: {
+                filter: { _id: new mongoose.Types.ObjectId(userId) },
+                update: { $set: { role: Array.from(groupIds) } }
+            }
+        }));
+
+        return Promise.all([
+            groupOperations.length > 0 ? Group.collection.bulkWrite(groupOperations, { ordered: false }) : null,
+            userOperations.length > 0 ? User.collection.bulkWrite(userOperations, { ordered: false }) : null
+        ]);
     }
 
-    // Si no hay operaciones para ejecutar, retorna null
-    return null;
-}
-
-/**
-* Actualiza las relaciones bidireccionales entre usuarios y grupos, manejando tanto grupos SCRM_ como no-SCRM.
-* Garantiza que los usuarios que ya no pertenecen a grupos SCRM_ en CRM sean removidos de estos grupos en MongoDB,
-* mientras preserva los usuarios en EDA_RO independientemente de su origen.
-* 
-* @param roles - Lista de roles del CRM con estructura {name: string, user_name?: string}
-* @param mongoGroups - Lista de grupos existentes en MongoDB
-* @returns Resultado de las operaciones de escritura en bulk
-*/
-private static async updateGroupUsers(roles: CRMRole[], mongoGroups: MongoGroup[]) {
-    const groupUpdates = new Map<string, Set<mongoose.Types.ObjectId>>();
-    const userUpdates = new Map<string, Set<mongoose.Types.ObjectId>>();
-    
-    const usersCache = await DataCache.getInstance().getUsers();
-    const emailToId = new Map(usersCache.map(u => [u.email, u._id]));
-    const idToEmail = new Map(usersCache.map(u => [u._id.toString(), u.email]));
-
-    // Mapa de asignaciones CRM
-    const crmUsersGroups = new Map<string, Set<string>>();
-    roles.forEach(role => {
-        if (role.user_name && role.name.startsWith('SCRM_')) {
-            if (!crmUsersGroups.has(role.user_name)) {
-                crmUsersGroups.set(role.user_name, new Set());
-            }
-            crmUsersGroups.get(role.user_name)?.add(role.name);
-        }
-    });
-
-    mongoGroups.forEach(group => {
-        const uniqueUsers = new Set<mongoose.Types.ObjectId>();
-        
-        if (group.name === 'EDA_ADMIN') {
-            group.users.forEach(userId => {
-                uniqueUsers.add(userId);
-                this.updateUserRoles(userUpdates, userId.toString(), group._id);
-            });
-        } else if (group.name.startsWith('SCRM_')) {
-            // Mantener los usuarios existentes que siguen en CRM
-            group.users.forEach(userId => {
-                const userEmail = idToEmail.get(userId.toString());
-                if (userEmail && crmUsersGroups.get(userEmail)?.has(group.name)) {
-                    uniqueUsers.add(userId);
-                }
-            });
-
-            // Añadir nuevos usuarios del CRM
-            usersCache.forEach(user => {
-                if (crmUsersGroups.get(user.email)?.has(group.name)) {
-                    uniqueUsers.add(user._id);
-                }
-            });
-
-            // Actualizar roles si hay usuarios
-            uniqueUsers.forEach(userId => {
-                this.updateUserRoles(userUpdates, userId.toString(), group._id);
-            });
-        } else {
-            // Para grupos no-SCRM, mantener todos los usuarios existentes
-            group.users.forEach(userId => {
-                uniqueUsers.add(userId);
-                this.updateUserRoles(userUpdates, userId.toString(), group._id);
-            });
-        }
-
-        if (uniqueUsers.size > 0) {
-            groupUpdates.set(group.name, uniqueUsers);
-        }
-    });
-
-    // Preparar operaciones bulk
-    const groupOperations = Array.from(groupUpdates.entries()).map(([groupName, userIds]) => ({
-        updateOne: {
-            filter: { name: groupName },
-            update: { $set: { users: Array.from(userIds) } }
-        }
-    }));
-
-    const userOperations = Array.from(userUpdates.entries()).map(([userId, groupIds]) => ({
-        updateOne: {
-            filter: { _id: new mongoose.Types.ObjectId(userId) },
-            update: { $set: { role: Array.from(groupIds) } }
-        }
-    }));
-
-    return Promise.all([
-        groupOperations.length > 0 ? Group.collection.bulkWrite(groupOperations, { ordered: false }) : null,
-        userOperations.length > 0 ? User.collection.bulkWrite(userOperations, { ordered: false }) : null
-    ]);
-}
-
+   /**
+ * Actualiza las relaciones de roles de usuario en el mapa de actualizaciones
+ * @param userUpdates - Mapa de actualizaciones usuario-roles
+ * @param userId - ID del usuario
+ * @param groupId - ID del grupo a añadir
+ */
 private static updateUserRoles(
     userUpdates: Map<string, Set<mongoose.Types.ObjectId>>, 
     userId: string, 
     groupId: mongoose.Types.ObjectId
 ): void {
+    // Inicializar set si no existe
     if (!userUpdates.has(userId)) {
         userUpdates.set(userId, new Set());
     }
+    // Añadir nuevo groupId al set de roles
     userUpdates.get(userId)?.add(groupId);
 }
- 
- /**
- * Verifica y corrige las relaciones bidireccionales entre usuarios administrativos y sus roles
- * @param adminGroups - Array de nombres de grupos administrativos a verificar
- * @returns Resultado de las operaciones de corrección
+
+/**
+ * Verifica y mantiene la integridad de las relaciones de usuarios administrativos
+ * Asegura que el usuario admin principal tenga los permisos correctos
+ * @param adminGroups - Grupos administrativos a verificar (por defecto solo EDA_ADMIN)
+ * @returns Resultado de las operaciones de corrección o null si no hay cambios
  */
- private static async verifyAdminRelations(adminGroups: string[] = ['EDA_ADMIN']) {
+private static async verifyAdminRelations(adminGroups: string[] = ['EDA_ADMIN']) {
     const ADMIN_USER_ID = '135792467811111111111111';
     const ADMIN_GROUP_ID = '135792467811111111111110';
     
-    // Forzar relación bidireccional del admin principal
+    // Garantizar relación bidireccional del admin principal
     await Promise.all([
         User.updateOne(
             { _id: ADMIN_USER_ID },
@@ -504,6 +456,7 @@ private static updateUserRoles(
         groups: [] as any[]
     };
 
+    // Obtener grupos y usuarios administrativos
     const adminMongoGroups = await Group.find({ name: { $in: adminGroups } });
     const adminUsers = await User.find({
         role: { 
@@ -511,17 +464,19 @@ private static updateUserRoles(
         }
     });
 
+    // Verificar y corregir pertenencia a grupos
     for (const group of adminMongoGroups) {
         const usersInGroup = new Set<string>(group.users.map(id => id.toString()));
         const shouldBeInGroup = new Set<string>(adminUsers
             .filter(u => u.role.includes(group._id))
             .map(u => u._id.toString()));
 
-        // Asegurar que el admin principal siempre está en EDA_ADMIN
+        // Asegurar admin principal en EDA_ADMIN
         if (group._id.toString() === ADMIN_GROUP_ID) {
             shouldBeInGroup.add(ADMIN_USER_ID);
         }
 
+        // Actualizar si hay discrepancias
         if (!userAndGroupsToMongo.setsAreEqual(usersInGroup, shouldBeInGroup)) {
             operations.groups.push({
                 updateOne: {
@@ -532,17 +487,19 @@ private static updateUserRoles(
         }
     }
 
+    // Verificar y corregir roles de usuarios
     for (const user of adminUsers) {
         const userGroups = new Set<string>(user.role.map(id => id.toString()));
         const shouldBeInRoles = new Set<string>(adminMongoGroups
             .filter(g => g.users.includes(user._id))
             .map(g => g._id.toString()));
 
-        // Asegurar que el admin principal siempre tiene el rol EDA_ADMIN
+        // Asegurar rol EDA_ADMIN para admin principal
         if (user._id.toString() === ADMIN_USER_ID) {
             shouldBeInRoles.add(ADMIN_GROUP_ID);
         }
 
+        // Actualizar si hay discrepancias
         if (!userAndGroupsToMongo.setsAreEqual(userGroups, shouldBeInRoles)) {
             operations.users.push({
                 updateOne: {
@@ -553,6 +510,7 @@ private static updateUserRoles(
         }
     }
 
+    // Ejecutar operaciones si existen
     if (operations.groups.length || operations.users.length) {
         return Promise.all([
             operations.groups.length ? Group.bulkWrite(operations.groups) : null,
@@ -563,6 +521,12 @@ private static updateUserRoles(
     return null;
 }
 
+/**
+ * Compara dos Sets de strings para determinar si contienen los mismos elementos
+ * @param a - Primer Set a comparar
+ * @param b - Segundo Set a comparar
+ * @returns true si los Sets son iguales, false en caso contrario
+ */
 private static setsAreEqual(a: Set<string>, b: Set<string>): boolean {
     if (a.size !== b.size) return false;
     return [...a].every(value => b.has(value));
