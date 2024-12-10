@@ -1,3 +1,26 @@
+/**
+* Módulo de sincronización de usuarios y permisos entre CRM y MongoDB.
+* 
+* Este módulo implementa la lógica para mantener sincronizados los usuarios y grupos entre 
+* un CRM basado en MariaDB y una base de datos MongoDB. Las principales funcionalidades son:
+* 
+* - Sincronización de usuarios: importa usuarios del CRM, mantiene contraseñas actualizadas 
+*   y elimina usuarios inactivos preservando cuentas del sistema.
+* 
+* - Gestión de grupos: mantiene grupos SCRM_ sincronizados con el CRM mientras preserva 
+*   grupos propios de SDA (EDA_ADMIN, EDA_RO, etc).
+* 
+* - Relaciones bidireccionales: garantiza consistencia en las relaciones usuario-grupo 
+*   tanto desde la perspectiva del usuario como del grupo.
+* 
+* - Caché optimizada: implementa un sistema de caché que se reconstruye en cada ejecución 
+*   para optimizar consultas a MongoDB durante el proceso.
+* 
+* - Procesamiento por lotes: realiza operaciones de escritura en lotes para mejor rendimiento.
+* 
+* - Tratamiento especial para grupo EDA_ADMIN: mantiene sincronizada la pertenencia a este grupo
+*   según sda_def_user_groups.
+*/
 import mongoose, { connections, Model, mongo, Mongoose, QueryOptions } from "mongoose";
 import User, { IUser } from "../../admin/users/model/user.model";
 import Group, { IGroup } from "../../admin/groups/model/group.model";
