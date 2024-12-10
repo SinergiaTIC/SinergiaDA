@@ -180,10 +180,12 @@ export class userAndGroupsToMongo {
      * @param emailToMongoUser Mapa de usuarios existentes
      * @returns Resultado de operaciones bulk
      */
-    private static async synchronizeUsers(crmUsers: CRMUser[], emailToMongoUser: Map<string, MongoUser>) {
+    private static async synchronizeUsers(crmUsersRaw: CRMUser[], emailToMongoUser: Map<string, MongoUser>) {
         const batchSize = 100;
         const operations: any[] = [];
 
+        let crmUsers = crmUsersRaw.filter(element => element.active === 1);
+        
         for (let i = 0; i < crmUsers.length; i += batchSize) {
             const batch = crmUsers.slice(i, i + batchSize);
             
