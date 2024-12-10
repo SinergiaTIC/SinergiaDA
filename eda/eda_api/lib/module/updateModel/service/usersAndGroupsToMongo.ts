@@ -128,8 +128,6 @@ export class userAndGroupsToMongo {
                 groups: groupSyncResults
             });
 
-            await this.verifyAdminRelations();
-
             console.timeEnd("Total usersAndGroupsToMongo");
             return { userSyncResults, groupSyncResults };
         } catch (error) {
@@ -352,17 +350,34 @@ export class userAndGroupsToMongo {
                 crmUsersGroups.get(role.user_name)?.add(role.name);
             }
         });
-
+        
+        // Obtener usuarios que deben estar en EDA_ADMIN desde sda_def_user_groups
+        const edaAdminUsers = new Set<string>(
+            roles.filter(role => 
+                role.user_name && 
+                role.name === 'EDA_ADMIN'
+            ).map(role => role.user_name!)
+        );
+        
         // Procesamiento de grupos
         mongoGroups.forEach(group => {
             const uniqueUsers = new Set<mongoose.Types.ObjectId>();
             
-            if (group.name === 'EDA_ADMIN') {
-                group.users.forEach(userId => {
-                    uniqueUsers.add(userId);
-                    this.updateUserRoles(userUpdates, userId.toString(), group._id);
-                });
-            } else if (group.name.startsWith('SCRM_')) {
+           if (group.name === 'EDA_ADMIN') {
+                  // Mantener usuarios existentes
+            group.users.forEach(userId => {
+                uniqueUsers.add(userId);
+                this.updateUserRoles(userUpdates, userId.toString(), group._id);
+            });
+
+            // Añadir usuarios de sda_def_user_groups
+            usersCache.forEach(user => {
+                if (edaAdminUsers.has(user.email)) {
+                    uniqueUsers.add(user._id);
+                    this.updateUserRoles(userUpdates, user._id.toString(), group._id);
+                }
+            });
+            } else if (group.name.startsWith('SCRM_') || group.name === 'EDA_ADMIN') {
                 group.users.forEach(userId => {
                     const userEmail = idToEmail.get(userId.toString());
                     if (userEmail && crmUsersGroups.get(userEmail)?.has(group.name)) {
@@ -431,106 +446,4 @@ private static updateUserRoles(
     userUpdates.get(userId)?.add(groupId);
 }
 
-/**
- * Verifica y mantiene la integridad de las relaciones de usuarios administrativos
- * Asegura que el usuario admin principal tenga los permisos correctos
- * @param adminGroups - Grupos administrativos a verificar (por defecto solo EDA_ADMIN)
- * @returns Resultado de las operaciones de corrección o null si no hay cambios
- */
-private static async verifyAdminRelations(adminGroups: string[] = ['EDA_ADMIN']) {
-    const ADMIN_USER_ID = '135792467811111111111111';
-    const ADMIN_GROUP_ID = '135792467811111111111110';
-    
-    // Garantizar relación bidireccional del admin principal
-    await Promise.all([
-        User.updateOne(
-            { _id: ADMIN_USER_ID },
-            { $addToSet: { role: ADMIN_GROUP_ID } }
-        ),
-        Group.updateOne(
-            { _id: ADMIN_GROUP_ID },
-            { $addToSet: { users: ADMIN_USER_ID } }
-        )
-    ]);
-
-    const operations = {
-        users: [] as any[],
-        groups: [] as any[]
-    };
-
-    // Obtener grupos y usuarios administrativos
-    const adminMongoGroups = await Group.find({ name: { $in: adminGroups } });
-    const adminUsers = await User.find({
-        role: { 
-            $in: adminMongoGroups.map(g => g._id)
-        }
-    });
-
-    // Verificar y corregir pertenencia a grupos
-    for (const group of adminMongoGroups) {
-        const usersInGroup = new Set<string>(group.users.map(id => id.toString()));
-        const shouldBeInGroup = new Set<string>(adminUsers
-            .filter(u => u.role.includes(group._id))
-            .map(u => u._id.toString()));
-
-        // Asegurar admin principal en EDA_ADMIN
-        if (group._id.toString() === ADMIN_GROUP_ID) {
-            shouldBeInGroup.add(ADMIN_USER_ID);
-        }
-
-        // Actualizar si hay discrepancias
-        if (!userAndGroupsToMongo.setsAreEqual(usersInGroup, shouldBeInGroup)) {
-            operations.groups.push({
-                updateOne: {
-                    filter: { _id: group._id },
-                    update: { $set: { users: Array.from(shouldBeInGroup).map(id => new mongoose.Types.ObjectId(id)) } }
-                }
-            });
-        }
-    }
-
-    // Verificar y corregir roles de usuarios
-    for (const user of adminUsers) {
-        const userGroups = new Set<string>(user.role.map(id => id.toString()));
-        const shouldBeInRoles = new Set<string>(adminMongoGroups
-            .filter(g => g.users.includes(user._id))
-            .map(g => g._id.toString()));
-
-        // Asegurar rol EDA_ADMIN para admin principal
-        if (user._id.toString() === ADMIN_USER_ID) {
-            shouldBeInRoles.add(ADMIN_GROUP_ID);
-        }
-
-        // Actualizar si hay discrepancias
-        if (!userAndGroupsToMongo.setsAreEqual(userGroups, shouldBeInRoles)) {
-            operations.users.push({
-                updateOne: {
-                    filter: { _id: user._id },
-                    update: { $set: { role: Array.from(shouldBeInRoles).map(id => new mongoose.Types.ObjectId(id)) } }
-                }
-            });
-        }
-    }
-
-    // Ejecutar operaciones si existen
-    if (operations.groups.length || operations.users.length) {
-        return Promise.all([
-            operations.groups.length ? Group.bulkWrite(operations.groups) : null,
-            operations.users.length ? User.bulkWrite(operations.users) : null
-        ]);
-    }
-
-    return null;
-}
-
-/**
- * Compara dos Sets de strings para determinar si contienen los mismos elementos
- * @param a - Primer Set a comparar
- * @param b - Segundo Set a comparar
- * @returns true si los Sets son iguales, false en caso contrario
- */
-private static setsAreEqual(a: Set<string>, b: Set<string>): boolean {
-    if (a.size !== b.size) return false;
-    return [...a].every(value => b.has(value));
-}
 }
