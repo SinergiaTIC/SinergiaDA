@@ -379,7 +379,8 @@ private static async synchronizeGroups(roles: CRMRole[], nameToMongoGroup: Map<s
 
 /**
 * Actualiza las relaciones bidireccionales entre usuarios y grupos, manejando tanto grupos SCRM_ como no-SCRM.
-* Garantiza que los usuarios que ya no pertenecen a grupos SCRM_ en CRM sean removidos de estos grupos en MongoDB.
+* Garantiza que los usuarios que ya no pertenecen a grupos SCRM_ en CRM sean removidos de estos grupos en MongoDB,
+* mientras preserva los usuarios en EDA_RO independientemente de su origen.
 * 
 * @param roles - Lista de roles del CRM con estructura {name: string, user_name?: string}
 * @param mongoGroups - Lista de grupos existentes en MongoDB
@@ -393,83 +394,73 @@ private static async updateGroupUsers(roles: CRMRole[], mongoGroups: MongoGroup[
     const emailToId = new Map(usersCache.map(u => [u.email, u._id]));
     const idToEmail = new Map(usersCache.map(u => [u._id.toString(), u.email]));
 
-    // Crear mapa de asignaciones CRM
+    // Mapa de asignaciones CRM
     const crmUsersGroups = new Map<string, Set<string>>();
     roles.forEach(role => {
-        if (role.user_name) {
+        if (role.user_name && role.name.startsWith('SCRM_')) {
             if (!crmUsersGroups.has(role.user_name)) {
                 crmUsersGroups.set(role.user_name, new Set());
             }
-            if (role.name.startsWith('SCRM_') || ['EDA_ADMIN', 'EDA_RO', 'EDA_DATASOURCE_CREATOR'].includes(role.name)) {
-                crmUsersGroups.get(role.user_name)?.add(role.name);
-            }
+            crmUsersGroups.get(role.user_name)?.add(role.name);
         }
     });
 
-    // Procesar grupos y mantener unicidad
     mongoGroups.forEach(group => {
         const uniqueUsers = new Set<mongoose.Types.ObjectId>();
         
-        if (group.name.startsWith('SCRM_') || ['EDA_ADMIN', 'EDA_RO', 'EDA_DATASOURCE_CREATOR'].includes(group.name)) {
-            // Procesar usuarios existentes sin duplicados
-            [...new Set(group.users)].forEach(userId => {
+        if (group.name === 'EDA_ADMIN') {
+            group.users.forEach(userId => {
+                uniqueUsers.add(userId);
+                this.updateUserRoles(userUpdates, userId.toString(), group._id);
+            });
+        } else if (group.name.startsWith('SCRM_')) {
+            // Mantener los usuarios existentes que siguen en CRM
+            group.users.forEach(userId => {
                 const userEmail = idToEmail.get(userId.toString());
                 if (userEmail && crmUsersGroups.get(userEmail)?.has(group.name)) {
                     uniqueUsers.add(userId);
-                    this.updateUserRoles(userUpdates, userId.toString(), group._id);
                 }
             });
 
-            // Añadir nuevos usuarios únicos
+            // Añadir nuevos usuarios del CRM
             usersCache.forEach(user => {
                 if (crmUsersGroups.get(user.email)?.has(group.name)) {
                     uniqueUsers.add(user._id);
-                    this.updateUserRoles(userUpdates, user._id.toString(), group._id);
                 }
             });
+
+            // Actualizar roles si hay usuarios
+            uniqueUsers.forEach(userId => {
+                this.updateUserRoles(userUpdates, userId.toString(), group._id);
+            });
         } else {
-            // Mantener usuarios únicos para grupos no-SCRM
-            [...new Set(group.users)].forEach(userId => {
+            // Para grupos no-SCRM, mantener todos los usuarios existentes
+            group.users.forEach(userId => {
                 uniqueUsers.add(userId);
                 this.updateUserRoles(userUpdates, userId.toString(), group._id);
             });
         }
 
-        groupUpdates.set(group.name, uniqueUsers);
+        if (uniqueUsers.size > 0) {
+            groupUpdates.set(group.name, uniqueUsers);
+        }
     });
 
-    // Preparar operaciones bulk garantizando unicidad
-const groupOperations = mongoGroups.map(group => {
-    const uniqueUsers = [...new Set(Array.from(groupUpdates.get(group.name) || []))];
-    return {
+    // Preparar operaciones bulk
+    const groupOperations = Array.from(groupUpdates.entries()).map(([groupName, userIds]) => ({
         updateOne: {
-            filter: { name: group.name },
-            update: { 
-                $set: { 
-                    users: uniqueUsers.filter((item, index) => 
-                        uniqueUsers.findIndex(i => i.toString() === item.toString()) === index
-                    )
-                } 
-            }
+            filter: { name: groupName },
+            update: { $set: { users: Array.from(userIds) } }
         }
-    };
-}).filter(op => op.updateOne.update.$set.users.length > 0);
+    }));
 
-const userOperations = Array.from(userUpdates.entries()).map(([userId, groupIds]) => {
-    const uniqueRoles = [...new Set(Array.from(groupIds))];
-    return {
+    const userOperations = Array.from(userUpdates.entries()).map(([userId, groupIds]) => ({
         updateOne: {
             filter: { _id: new mongoose.Types.ObjectId(userId) },
-            update: {
-                $set: {
-                    role: uniqueRoles.filter((item, index) => 
-                        uniqueRoles.findIndex(i => i.toString() === item.toString()) === index
-                    )
-                }
-            }
+            update: { $set: { role: Array.from(groupIds) } }
         }
-    };
-});
+    }));
+
     return Promise.all([
         groupOperations.length > 0 ? Group.collection.bulkWrite(groupOperations, { ordered: false }) : null,
         userOperations.length > 0 ? User.collection.bulkWrite(userOperations, { ordered: false }) : null
@@ -492,7 +483,7 @@ private static updateUserRoles(
  * @param adminGroups - Array de nombres de grupos administrativos a verificar
  * @returns Resultado de las operaciones de corrección
  */
- private static async verifyAdminRelations(adminGroups: string[] = ['EDA_ADMIN', 'EDA_DATASOURCE_CREATOR']) {
+ private static async verifyAdminRelations(adminGroups: string[] = ['EDA_ADMIN']) {
     const ADMIN_USER_ID = '135792467811111111111111';
     const ADMIN_GROUP_ID = '135792467811111111111110';
     
