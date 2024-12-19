@@ -367,13 +367,38 @@ export abstract class QueryBuilderService {
                     SQLexpression += "END";            
         
                     fieldsColumn.SQLexpression = SQLexpression;
-        
+
+                    // GENERANDO LA ORDENACIÓN
+                    let rangesOrderExpression = `ORDER BY CASE\n`;
+                    let rangesOrderExpressionNumber = 1;
+                    
+                    // Primer caso:
+                    rangesOrderExpression += `\tWHEN ${columna} < ${fieldsColumn.ranges[0]} THEN ${rangesOrderExpressionNumber}\n`;
+
+                    // Casos intermedios:
+                    for(let i = 0; i<fieldsColumn.ranges.length - 1; i++) {
+                        rangesOrderExpressionNumber += 1;
+                        const lower = fieldsColumn.ranges[i];
+                        const upper = fieldsColumn.ranges[i + 1] - 1;
+                        rangesOrderExpression += `\tWHEN ${columna} >= ${lower} AND ${columna} <= ${upper} THEN ${rangesOrderExpressionNumber}\n`;
+                    }
+
+                    // Ultimo caso:
+                    rangesOrderExpression += `\tWHEN ${columna} >= ${fieldsColumn.ranges[fieldsColumn.ranges.length - 1]} THEN  ${rangesOrderExpressionNumber + 1}\n`;
+                    rangesOrderExpression += "END";
+                    fieldsColumn.rangesOrderExpression = rangesOrderExpression;
+
+                    console.log('fieldsColumn: ',fieldsColumn);
+                    console.log('rangesOrderExpression: ',rangesOrderExpression);
+
                     queryTODO[j] = fieldsColumn;
                 }
 
             }
 
         })
+
+        console.log('queryTODO:>>>>>>>>> ', queryTODO)
 
         return queryTODO
     }
