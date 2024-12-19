@@ -59,11 +59,15 @@ export class MySqlBuilderService extends QueryBuilderService {
       } else {
         out = false;
       }
+      if(  col.rangesOrderExpression && col.rangesOrderExpression != undefined){
+        out = `${col.rangesOrderExpression} ${col.ordenation_type}`
+      }
 
       return out;
     }).filter(e => e !== false);
 
     const order_columns_string = orderColumns.join(',');
+
     if (order_columns_string.length > 0) {
       myQuery = `${myQuery}\norder by ${order_columns_string}`;
     } else if (forSelector === true) {

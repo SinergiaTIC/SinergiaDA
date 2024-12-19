@@ -336,14 +336,6 @@ export abstract class QueryBuilderService {
                 if(fieldsColumn.ranges.length===0){
                     queryTODO.fields[j]=fieldsColumn;
                 } else {
-                    console.log(this.queryTODO);
-                    console.log('Ronald. Aqui también tienes que gesnerar la ordenacion ascendente o descendente   \
-                        CASE  WHEN sda_stic_payment_commitments.amount < 100 THEN 1 \
-        WHEN sda_stic_payment_commitments.amount >= 100 AND sda_stic_payment_commitments.amount <= 199 THEN 2  \
-        WHEN sda_stic_payment_commitments.amount >= 200 AND sda_stic_payment_commitments.amount <= 999 THEN 3  \
-        WHEN sda_stic_payment_commitments.amount >= 1000 AND sda_stic_payment_commitments.amount <= 9999 THEN 4  \
-        WHEN sda_stic_payment_commitments.amount >= 10000 THEN 5 end  \
-                        ');
 
                     fieldsColumn.computed_column = 'computed';
                     fieldsColumn.column_type = 'text';
@@ -369,7 +361,7 @@ export abstract class QueryBuilderService {
                     fieldsColumn.SQLexpression = SQLexpression;
 
                     // GENERANDO LA ORDENACIÓN
-                    let rangesOrderExpression = `ORDER BY CASE\n`;
+                    let rangesOrderExpression = "CASE\n";
                     let rangesOrderExpressionNumber = 1;
                     
                     // Primer caso:
@@ -388,17 +380,12 @@ export abstract class QueryBuilderService {
                     rangesOrderExpression += "END";
                     fieldsColumn.rangesOrderExpression = rangesOrderExpression;
 
-                    console.log('fieldsColumn: ',fieldsColumn);
-                    console.log('rangesOrderExpression: ',rangesOrderExpression);
-
                     queryTODO[j] = fieldsColumn;
                 }
 
             }
 
         })
-
-        console.log('queryTODO:>>>>>>>>> ', queryTODO)
 
         return queryTODO
     }
@@ -574,7 +561,6 @@ export abstract class QueryBuilderService {
         //console.log(v)
         return (v);
     }
-
 
 
     /** esto se usa para las consultas que hacemos a bbdd para generar el modelo */
