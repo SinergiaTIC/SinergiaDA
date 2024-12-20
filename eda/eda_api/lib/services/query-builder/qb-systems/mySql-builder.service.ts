@@ -54,12 +54,14 @@ export class MySqlBuilderService extends QueryBuilderService {
     const orderColumns = this.queryTODO.fields.map(col => {
       let out;
 
+      console.log('EL col >>>>>> ',col)
+
       if (col.ordenation_type !== 'No' && col.ordenation_type !== undefined) {
         out = `\`${col.display_name}\` ${col.ordenation_type}`
       } else {
         out = false;
       }
-      if(  col.rangesOrderExpression && col.rangesOrderExpression != undefined){
+      if(  col.rangesOrderExpression && col.rangesOrderExpression != undefined && col.ordenation_type !== 'No'){
         out = `${col.rangesOrderExpression} ${col.ordenation_type}`
       }
 
