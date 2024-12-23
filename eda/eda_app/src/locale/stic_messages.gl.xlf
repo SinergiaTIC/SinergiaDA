@@ -355,10 +355,6 @@
     <source>Buscar tipo</source>
     <target>Buscar un tipo</target>
   </trans-unit>
-  <trans-unit id="messageItemCrosstable">
-    <source>Este eje debe contener al menos un elemento</source>
-    <target>Este eixe debe conter polo menos un elemento</target>
-  </trans-unit>
 </body>
 </file>
 </xliff>
