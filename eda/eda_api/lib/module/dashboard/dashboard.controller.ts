@@ -25,7 +25,8 @@ export class DashboardController {
         privates = await DashboardController.getPrivateDashboards(req);
         group = await DashboardController.getGroupsDashboards(req);
         publics = await DashboardController.getPublicsDashboards();
-        shared = await DashboardController.getSharedDashboards();
+        // Hide public (shared) reports to normal users
+        /*SDA CUSTOM*/ // shared = await DashboardController.getSharedDashboards();
       }
 
       // Asegurarse de que la información del grupo esté incluida para dashboards de tipo "group"
@@ -816,7 +817,13 @@ export class DashboardController {
     }
 
     forbiddenTables = allTables.filter( t => !allowedTablesBySecurityForMe.includes( t )  );
-    return forbiddenTables;
+
+  // Filtra los valores que inicien con: 'sda_l_' en las tablas & los valores que contengan '__' en las tablas.
+  /* SDA CUSTOM*/   let newForbiddenTables = forbiddenTables.filter( table => {
+  /* SDA CUSTOM*/     return ((!table.startsWith('sda_l_') && !table.includes('__')))
+  /* SDA CUSTOM*/   })
+
+    return newForbiddenTables;
   }
 
 
