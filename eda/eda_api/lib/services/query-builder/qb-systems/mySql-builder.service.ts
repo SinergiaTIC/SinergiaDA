@@ -19,6 +19,7 @@ export class MySqlBuilderService extends QueryBuilderService {
     if (forSelector === true) {
       myQuery = `SELECT DISTINCT ${columns.join(', ')} \nFROM ${o}`;
     }
+ 
 
     // JOINS
     let joinString: any[];
@@ -37,8 +38,6 @@ export class MySqlBuilderService extends QueryBuilderService {
     joinString.forEach(x => {
       myQuery = myQuery + '\n' + x;
     });
-
-    const valor = 'hola'
 
     // WHERE
     myQuery += this.getFilters(filters, dest.length, o);
@@ -85,7 +84,7 @@ export class MySqlBuilderService extends QueryBuilderService {
 
   public getFilters(filters, destLongitud, pTable): any { 
 
-    /** si tenemos permisos y no hay destino lo añado a los filtros */
+    /** Si Tenemos Permisos Y No Hay Destino Lo Añado A Los Filtros */
 
     if ( this.permissions.length > 0 && destLongitud == 0) this.permissions.forEach( permission => { filters.push(permission); });
     else { this.permissions.forEach( permission => { if( permission.filter_table === pTable ) filters.push(permission);})}
@@ -102,7 +101,6 @@ export class MySqlBuilderService extends QueryBuilderService {
         column.joins = f.joins;
         column.valueListSource = f.valueListSource;
         const colname = this.getFilterColname(column);
-
         if (f.filter_type === 'not_null' || f.filter_type === 'not_null_nor_empty' || f.filter_type === 'null_or_empty') {
           filtersString += '\nand ' + this.filterToString(f);
         } else {
@@ -116,6 +114,7 @@ export class MySqlBuilderService extends QueryBuilderService {
             }
         }
       });
+
 
       /**Allow filter ranges */
       filtersString = this.mergeFilterStrings(filtersString, equalfilters);
@@ -158,7 +157,6 @@ export class MySqlBuilderService extends QueryBuilderService {
           }
           //Version compatibility string//array
 
-          // Agregado de los permisos en los join 
           let agregadoPermisos: any = '';
           if(destLongitud>0) {
             let equalfilters : any;
@@ -181,13 +179,14 @@ export class MySqlBuilderService extends QueryBuilderService {
 
             joinString.push(` ${myJoin} join ${t} on \`${e[j]}\`.\`${joinColumns[1]}\` = \`${e[i]}\`.\`${joinColumns[0]}\` ${agregadoPermisos}`);
 
-
           } else {
 
             let join = ` ${myJoin} join ${t} on`;
 
             joinColumns[0].forEach((_, x) => {
+
               join += ` \`${e[j]}\`.\`${joinColumns[1][x]}\` = \`${e[i]}\`.\`${joinColumns[0][x]}\` and`;
+
             });
 
             join = join.slice(0, join.length - 'and'.length);
@@ -196,14 +195,10 @@ export class MySqlBuilderService extends QueryBuilderService {
           }
 
           joined.push(e[j]);
-           
+
         }
       }
     });
-
-    // if(destLongitud>0) {
-    //   // TERMINARRRRRRRRRRRRRRRRRRRRRRRRRRRR
-    // }
 
     return joinString;
 
@@ -218,8 +213,8 @@ export class MySqlBuilderService extends QueryBuilderService {
     let joinString = [];
     const targetTableJoin = [];
 
-    for (const join of joinTree) {
 
+    for (const join of joinTree) {
 
         // División de las partes de la join
         const sourceLastDotInx = join[0].lastIndexOf('.');
@@ -271,7 +266,7 @@ export class MySqlBuilderService extends QueryBuilderService {
                 joinStr = `${joinType} JOIN \`${targetTable}\` ON  ${sourceJoin} = ${targetJoin} `;
             }
 
-            // Si la join no se ha incluido ya, se añade al array
+            // If the join has not already been included, it is added to the array
             if (!joinString.includes(joinStr)) {
                 targetTableJoin.push(aliasTargetTable || targetTable);
 
