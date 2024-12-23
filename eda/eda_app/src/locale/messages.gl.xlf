@@ -3620,7 +3620,7 @@
       </trans-unit>
       <trans-unit id="addOnlyValues">
         <source>Sólo valores</source>
-        <target>Only values</target>
+        <target>Sólo valores</target>
       </trans-unit>
 
       <trans-unit id="addValuesPercentages">
@@ -4259,7 +4259,7 @@
       <trans-unit id="DatePickerNull">
        <source>Fecha nula</source>
         <target>Data nula</target>
-      </trans-unit> 
+      </trans-unit>
 
       <trans-unit id="positionFilterInReport">
         <source>Posición del filtro en el informe</source>
@@ -4302,7 +4302,7 @@
         <source>VALORES NULOS O VACÍOS (null or = '')</source>
         <target>VALORES NULOS OU BALEIROS (null or = '')</target>
       </trans-unit>
-      
+
       <trans-unit id="aliasValuePh">
         <source>Alias del filtro (opcional)</source>
         <target>Filtrar alias (opcional)</target>

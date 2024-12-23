@@ -3625,7 +3625,7 @@
       </trans-unit>
       <trans-unit id="addOnlyValues">
         <source>Sólo valores</source>
-        <target>Only values</target>
+        <target>Solo valores</target>
       </trans-unit>
 
       <trans-unit id="addValuesPercentages">
