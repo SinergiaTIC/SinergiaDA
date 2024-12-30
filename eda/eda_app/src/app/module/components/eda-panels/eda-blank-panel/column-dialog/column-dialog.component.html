@@ -345,23 +345,19 @@
                                      </span>
                                  </div>
                                 
-                                <input 
-                                    type="text" 
-                                    style="font-size: 1rem;"
-                                    appOnlySignsAndNumbers
-                                    [(ngModel)]="rangeString"
-                                    [disabled]="showRange"> 
-
-                                <!-- (onClick)="addRango()" 
-                                [disabled]="'true'"
-                                i18n-label="@@addFilterBtn"  -->
+                                 <input 
+                                 type="text" 
+                                 style="font-size: 1rem;" 
+                                 [(ngModel)]="rangeString"
+                                 [disabled]="showRange"
+                                 (input)="validateInput($event)"> 
 
                             </div>
 
                             <p-button 
                                 (onClick)="addRange(rangeString)" 
                                 label="Añadir Rango"
-                                [disabled]="((!rangeString || rangeString.length === 0) || contieneLetra(rangeString)) || showRange"
+                                [disabled]="((!rangeString || rangeString.length === 0)) || showRange"
                                 i18n-label="@@addRange" 
                                 >
                             </p-button>

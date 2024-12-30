@@ -64,7 +64,7 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
     public selectedRange: string = '';
     public showRange: boolean = false;
     public allowedAggregations: boolean = true;
-    public ptooltipViewTextRanges: string = $localize`:@@ptooltipViewTextRanges:Al configurar un Rango las agregaciones quedarán bloqueadas, Ejemplo de un rango valido - 12:18:50:100 `;
+    public ptooltipViewTextRanges: string = $localize`:@@ptooltipViewTextRanges:Al configurar un Rango las agregaciones quedarán bloqueadas, Ejemplo de un rango válido - 12:18:50:100 `;
     public rangeDescriptionNumberError: string = $localize`:@@rangeDescriptionNumberError:El correcto orden de los límites del rango van de menor a mayor`;
     public rangeDescriptionCharacterError: string = $localize`:@@rangeDescriptionCharacterError:El último caracter del rango debe ser un número`;
 
@@ -717,17 +717,13 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
         }
     }
 
-    contieneLetra(rangeString: string){
-
-        const regexNumber = /^[0-9]/;
-        // const regexLetrasEspacio = /[a-zA-Z\s]/;
-
-        if(regexNumber.test(rangeString[0])){
-            // return regexLetrasEspacio.test(rangeString);
-        }
-        else {
-            return !regexNumber.test(rangeString[0])
-        }
-
+    validateInput(event: Event): void {
+        const inputElement = event.target as HTMLInputElement;
+        const validCharacters = /[1234567890.,:-]*/g;
+        inputElement.value = inputElement.value.match(validCharacters)?.join('') || '';
+        // Si el input inicia con (. , :) no se habilitara el botón del rango ni se agregará el signo en el input. Se debe empezar con un número o con un signo (-) y un número para los negativos.
+        if(inputElement.value=== '.' || inputElement.value===',' || inputElement.value===':') inputElement.value = '';
+        this.rangeString = inputElement.value; // Se actualiza ngModel
     }
+
 }
