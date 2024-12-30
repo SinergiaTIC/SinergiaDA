@@ -59,12 +59,17 @@
                         <ng-container [ngSwitch]="col.type">
                             <!-- ngSwitch TEXT -->
                             <ng-container *ngSwitchCase="'EdaColumnText'">
+
                                 <div *ngIf="inject.linkedDashboardProps && inject.linkedDashboardProps.sourceCol === col.field" [pTooltip]="getLinkTooltip(col)">
                                     {{ lodash.get(rowData, col.field) }}
                                 </div>
 
-                                <div *ngIf="!inject.linkedDashboardProps || inject.linkedDashboardProps.sourceCol !== col.field">
+                                <div *ngIf="(!inject.linkedDashboardProps || inject.linkedDashboardProps.sourceCol !== col.field) && !col.rangeOption">
                                     {{ lodash.get(rowData, col.field) }}
+                                </div>
+
+                                <div *ngIf="(!inject.linkedDashboardProps || inject.linkedDashboardProps.sourceCol !== col.field) && col.rangeOption"
+                                     [innerHTML]="formatValoresRango(rowData, col.field)">
                                 </div>
 
                             </ng-container>

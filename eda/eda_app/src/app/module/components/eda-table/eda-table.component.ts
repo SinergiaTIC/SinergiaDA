@@ -36,6 +36,9 @@ export class EdaTableComponent implements OnInit {
         }else if(this.inject.styles && this.inject.pivot){
             this.applyPivotSyles(this.inject.styles)
         }
+
+
+        console.log('inject: ', this.inject)
     }
 
 
@@ -282,6 +285,14 @@ export class EdaTableComponent implements OnInit {
     private getNiceName(name) {
         return name.replace('%', 'percent').replace(/ /g, '').replace(/[^a-zA-Z0-9-_-\wáéíóúüñÁÉÍÓÚÜÑ ]/g, '').replace('_','');
     }
+
+    formatValoresRango(rowData: any, colField: string): string {
+        const valor = _.get(rowData, colField);
+        
+
+        return valor;
+
+      }
 
 
 }

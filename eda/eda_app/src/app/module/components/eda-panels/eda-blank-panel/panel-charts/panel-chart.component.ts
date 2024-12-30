@@ -701,6 +701,8 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
             const label = this.props.data.labels[i];
             const r: Column = this.props.query[i];
 
+            console.log('r: ', r);
+
             if (_.isEqual(r.column_type, 'date')) {
 
                 tableColumns.push(new EdaColumnDate({ header: r.display_name.default, field: label, description: r.description.default }));
@@ -708,7 +710,17 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
 
                 tableColumns.push(new EdaColumnNumber({ header: r.display_name.default, field: label, description: r.description.default , decimals: r.minimumFractionDigits}))
             } else if (_.isEqual(r.column_type, 'text')) {
-                tableColumns.push(new EdaColumnText({ header: r.display_name.default, field: label, description: r.description.default }));
+                let rangeOption = false;
+                if(r.ranges === undefined) {
+                    tableColumns.push(new EdaColumnText({ header: r.display_name.default, field: label, description: r.description.default }));
+                } else {
+                    if(r.ranges.length > 0) {
+                        rangeOption = true;
+                        tableColumns.push(new EdaColumnText({ header: r.display_name.default, field: label, description: r.description.default, rangeOption: rangeOption }));
+                    } else {
+                        tableColumns.push(new EdaColumnText({ header: r.display_name.default, field: label, description: r.description.default, rangeOption: rangeOption }));
+                    }
+                }
             } else if (_.isEqual(r.column_type, 'coordinate')) {
                 tableColumns.push(new EdaColumnNumber({ header: r.display_name.default, field: label, description: r.description.default }));
             }
