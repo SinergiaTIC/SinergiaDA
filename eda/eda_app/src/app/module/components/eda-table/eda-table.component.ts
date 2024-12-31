@@ -8,6 +8,8 @@ import es from '@angular/common/locales/es';
 import * as _ from 'lodash';
 import { StyleService } from '@eda/services/service.index';
 import { EdaColumnChartOptions } from './eda-columns/eda-column-chart-options';
+import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
+
 
 @Component({
     selector: 'eda-table',
@@ -25,7 +27,7 @@ export class EdaTableComponent implements OnInit {
     public colors = {};
     public styles = {};
 
-    constructor(private elementRef: ElementRef, private styleService: StyleService) {
+    constructor(private elementRef: ElementRef, private styleService: StyleService, private sanitizer: DomSanitizer) {
         registerLocaleData(es);
         /** Definim les caracteristiques del gràfic dintre de la taula.......................... */
         this.chartOptions = EdaColumnChartOptions;
@@ -36,9 +38,6 @@ export class EdaTableComponent implements OnInit {
         }else if(this.inject.styles && this.inject.pivot){
             this.applyPivotSyles(this.inject.styles)
         }
-
-
-        console.log('inject: ', this.inject)
     }
 
 
@@ -111,7 +110,6 @@ export class EdaTableComponent implements OnInit {
             });
 
         });
-        //console.log(limits);
 
         //Set ranges
         fields.forEach(field => {
@@ -286,13 +284,40 @@ export class EdaTableComponent implements OnInit {
         return name.replace('%', 'percent').replace(/ /g, '').replace(/[^a-zA-Z0-9-_-\wáéíóúüñÁÉÍÓÚÜÑ ]/g, '').replace('_','');
     }
 
-    formatValoresRango(rowData: any, colField: string): string {
-        const valor = _.get(rowData, colField);
-        
+    formatValoresRango(rowData: any, colField: string): SafeHtml  {
+        let valor = _.get(rowData, colField);
+        let str = '';
 
-        return valor;
+        const regexNegative = /-\d+/g;
+        const regexPositive = /(?<!-)\b\d+\b/g;
+        let negativos = valor.match(regexNegative)?.map(Number) || [];
+        let positivos = valor.match(regexPositive)?.map(Number) || [];
+
+
+        if(negativos.length === 0) {
+            str = `<span>${valor}</span>`;
+        } else {
+            if(negativos.length === 1) {
+                if(valor.includes('<')) {
+                    valor = negativos[0];
+                    str = `<span>< <span style = "color: green">${valor}</span></span>`;
+                }
+                else if(valor.includes('>=')){
+                    valor = negativos[0];
+                    str = `<span>>= <span style = "color: yellowgreen">${valor}</span></span>`;
+                }
+                else {
+                    valor = negativos[0];
+                    str = `<span> <span style = "color: red">${valor}</span> <span> - </span> <span>${positivos[0]}</span> </span>`;
+                }
+            } 
+            else {
+                str = `<span> <span style = "color: tomato">${negativos[0]}</span> <span> - </span> <span style = "color: tomato">${negativos[1]}</span> </span>`;
+            }
+        }
+        
+        return this.sanitizer.bypassSecurityTrustHtml(str);
 
       }
-
 
 }
