@@ -300,11 +300,11 @@ export class EdaTableComponent implements OnInit {
             if(negativos.length === 1) {
                 if(valor.includes('<')) {
                     valor = negativos[0];
-                    str = `<span>< <span style = "color: green">${valor}</span></span>`;
+                    str = `<span>< <span style = "color: red">${valor}</span></span>`;
                 }
                 else if(valor.includes('>=')){
                     valor = negativos[0];
-                    str = `<span>>= <span style = "color: yellowgreen">${valor}</span></span>`;
+                    str = `<span>>= <span style = "color: red">${valor}</span></span>`;
                 }
                 else {
                     valor = negativos[0];
@@ -312,7 +312,7 @@ export class EdaTableComponent implements OnInit {
                 }
             } 
             else {
-                str = `<span> <span style = "color: tomato">${negativos[0]}</span> <span> - </span> <span style = "color: tomato">${negativos[1]}</span> </span>`;
+                str = `<span> <span style = "color: red">${negativos[0]}</span> <span> - </span> <span style = "color: red">${negativos[1]}</span> </span>`;
             }
         }
         
