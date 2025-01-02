@@ -159,6 +159,8 @@ export class TableDialogComponent extends EdaDialogAbstract implements AfterView
   private percentages() {
 
     const currentConfig = this.myPanelChartComponent.currentConfig;
+    console.log('****************************** currentConfig: ', currentConfig);
+    console.log('this.onlyPercentages: ', this.onlyPercentages);
 
     if (this.onlyPercentages === true) {
 
@@ -180,8 +182,10 @@ export class TableDialogComponent extends EdaDialogAbstract implements AfterView
   }
 
   private setOnlyPercentages() {
-
+    
     const currentConfig = this.myPanelChartComponent.currentConfig;
+    console.log('============================== currentConfig: ', currentConfig);
+    console.log('this.onlyPercentages: ', this.onlyPercentages);
 
     currentConfig.resultAsPecentage = !currentConfig.onlyPercentages;
     currentConfig.onlyPercentages = !currentConfig.onlyPercentages;
@@ -314,6 +318,7 @@ export class TableDialogComponent extends EdaDialogAbstract implements AfterView
   }
 
   private setItems() {
+
     if (this.controller.params.panelChart.chartType === 'table') {
       this.items = [
         {
@@ -370,6 +375,7 @@ export class TableDialogComponent extends EdaDialogAbstract implements AfterView
         }
       ]
     } else {
+      console.log('==> crosstable')
       this.items = [
         {
           label: this.addTotals,
@@ -426,6 +432,7 @@ export class TableDialogComponent extends EdaDialogAbstract implements AfterView
         }
 
       ];
+
     }
   }
 

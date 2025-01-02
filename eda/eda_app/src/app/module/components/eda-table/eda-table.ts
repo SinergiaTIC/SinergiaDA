@@ -704,17 +704,25 @@ extractDataValues(val) {
         this.cols = newColumns;
         //set new headers
         if (this.pivot && !this.onlyPercentages) {
+
             const numericColumns = Array.from(new Set(this.series[this.series.length - 1].labels
                 .map(serie => serie.title))).length;
+
             this.series.forEach((serie, i) => {
                 serie.labels.forEach((column, j) => {
                     if (column.isTotal) {
                         column.colspan = numericColumns * 2;
-                    } else if (i !== 0 || j !== 0) {
+                    } else if (i !== 0 && j >= 0) {
                         column.colspan = column.colspan * 2;
                     }
+
+                    if(i===0 && column.rowspan===1) {
+                        column.colspan = column.colspan * 2;
+                    }
+
                 });
             })
+            
         }
 
         if (this.onlyPercentages === true) {
