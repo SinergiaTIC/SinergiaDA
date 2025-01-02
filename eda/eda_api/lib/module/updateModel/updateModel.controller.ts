@@ -14,7 +14,7 @@ const mariadb = require("mariadb");
 const sinergiaDatabase = require("../../../config/sinergiacrm.config");
 
 export class updateModel {
-/** Updates the SinergiaDA data model of an instance */
+  /** Updates the SinergiaDA data model of an instance */
   static async update(req: Request, res: Response) {
     let crm_to_eda: any = {};
     let modelToExport: any = {};
@@ -67,7 +67,7 @@ export class updateModel {
             " where bridge_table != '' ";
           await connection.query(my_query).then(async rows => {
             let columns = rows;
-             // Select relationships
+            // Select relationships
             await connection
               .query(
                 ` 
@@ -356,7 +356,7 @@ export class updateModel {
           type: "users"
         };
         if (!hasExistingFullTablePermission(gr3)) {
-          destGrantedRoles.push(gr3);
+        destGrantedRoles.push(gr3);
         }
       }
     });
@@ -605,18 +605,12 @@ export class updateModel {
 
   /** Formats and pushes the final model to MongoDB */
   static async extractJsonModelAndPushToMongo(tables: any, grantedRoles: any, res: any) {
-    // Inicio del formateo JSON
+    // Format tables as JSON
     console.timeLog("UpdateModel", "(Start JSON formatting)");
     
-    // Cargar y configurar modelo base
-    let main_model = await JSON.parse(
-      fs.readFileSync(
-        path.join(__dirname, '../../../config/base_datamodel.json'), 
-        "utf-8"
-      )
-    );
- 
-    // Configurar conexión
+    // Load and configure base model
+    let main_model = await JSON.parse(fs.readFileSync(path.join(__dirname, '../../../config/base_datamodel.json'), "utf-8"));
+    
     main_model.ds.connection.host = sinergiaDatabase.sinergiaConn.host;
     main_model.ds.connection.database = sinergiaDatabase.sinergiaConn.database;
     main_model.ds.connection.port = sinergiaDatabase.sinergiaConn.port;
