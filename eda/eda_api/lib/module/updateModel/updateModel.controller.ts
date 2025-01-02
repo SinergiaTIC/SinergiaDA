@@ -6,7 +6,7 @@ import { EnCrypterService } from "../../services/encrypter/encrypter.service";
 import { userAndGroupsToMongo } from "./service/usersAndGroupsToMongo";
 import { Enumerations } from "./service/enumerations";
 import { pushModelToMongo } from "./service/push.Model.to.Mongo";
-
+import path from 'path';
 import fs from "fs";
 import { CleanModel } from "./service/cleanModel";
 
@@ -14,7 +14,7 @@ const mariadb = require("mariadb");
 const sinergiaDatabase = require("../../../config/sinergiacrm.config");
 
 export class updateModel {
-  /** Updates the SinergiaDA data model of an instance */
+/** Updates the SinergiaDA data model of an instance */
   static async update(req: Request, res: Response) {
     let crm_to_eda: any = {};
     let modelToExport: any = {};
@@ -67,7 +67,7 @@ export class updateModel {
             " where bridge_table != '' ";
           await connection.query(my_query).then(async rows => {
             let columns = rows;
-            // Select relationships
+             // Select relationships
             await connection
               .query(
                 ` 
@@ -113,15 +113,38 @@ export class updateModel {
                 let relations = rows;
                 // Select users
                 await connection
-                  .query(
-                    "SELECT name as name, user_name as email, password as password, active as active FROM  sda_def_users WHERE password IS NOT NULL ;"
+                  .query(`
+                       SELECT
+                           DISTINCT u.name as name,
+                           u.user_name as email,
+                           u.password as password,
+                           if(ISNULL(g.name),0,1) as active
+                         FROM
+                           sda_def_users u
+                         LEFT JOIN sda_def_user_groups g ON
+                           u.user_name = g.user_name
+                         WHERE
+                           u.password IS NOT NULL`
                   )
                   .then(async users => {
                     let users_crm = users;
                     // Select EDA roles
                     await connection
-                      .query(
-                        'select "EDA_USER_ROLE" as role, b.name, "" as user_name  from sda_def_groups b union select "EDA_USER_ROLE" as role, g.name as name , g.user_name from sda_def_user_groups g; '
+                      .query(`
+                         SELECT
+                           "EDA_USER_ROLE" as role,
+                           b.name,
+                           "" as user_name
+                         FROM
+                           sda_def_groups b
+                         INNER JOIN sda_def_user_groups sdug ON sdug.name = b.name
+                         union
+                         SELECT
+                           "EDA_USER_ROLE" as role,
+                           g.name as name ,
+                           g.user_name
+                         FROM
+                           sda_def_user_groups g; `
                       )
                       .then(async role => {
                         let roles = role;
@@ -263,7 +286,18 @@ export class updateModel {
 
     const usersFound = await User.find();
     const mongoGroups = await Group.find();
-
+ 
+    // Función para verificar permisos duplicados
+    const hasExistingFullTablePermission = (newRole: any) => {
+        return destGrantedRoles.some(existing => 
+            existing.column === "fullTable" && 
+            existing.table === newRole.table && 
+            existing.type === newRole.type &&
+            existing.users?.toString() === newRole.users?.toString()
+        );
+    };
+ 
+    
     fullTablePermissionsForRoles.forEach(line => {
       let match = mongoGroups.filter(i => {
         return i.name === line.group;
@@ -286,6 +320,11 @@ export class updateModel {
             permission: true,
             type: "users"
           };
+                
+                // Verificar duplicados antes de agregar
+                if (!hasExistingFullTablePermission(gr)) {
+                    destGrantedRoles.push(gr);
+                }
         } else {
           gr = {
             groups: [mongoId],
@@ -316,7 +355,9 @@ export class updateModel {
           permission: true,
           type: "users"
         };
-        destGrantedRoles.push(gr3);
+        if (!hasExistingFullTablePermission(gr3)) {
+          destGrantedRoles.push(gr3);
+        }
       }
     });
 
@@ -367,8 +408,6 @@ export class updateModel {
         } else {
           console.log("Error: Direct group permissions found - not allowed in this context");
         }
-
-        destGrantedRoles.push(gr4);
       }
     });
 
@@ -566,8 +605,18 @@ export class updateModel {
 
   /** Formats and pushes the final model to MongoDB */
   static async extractJsonModelAndPushToMongo(tables: any, grantedRoles: any, res: any) {
-    // Format tables as JSON
-    let main_model = await JSON.parse(fs.readFileSync("config/base_datamodel.json", "utf-8"));
+    // Inicio del formateo JSON
+    console.timeLog("UpdateModel", "(Start JSON formatting)");
+    
+    // Cargar y configurar modelo base
+    let main_model = await JSON.parse(
+      fs.readFileSync(
+        path.join(__dirname, '../../../config/base_datamodel.json'), 
+        "utf-8"
+      )
+    );
+ 
+    // Configurar conexión
     main_model.ds.connection.host = sinergiaDatabase.sinergiaConn.host;
     main_model.ds.connection.database = sinergiaDatabase.sinergiaConn.database;
     main_model.ds.connection.port = sinergiaDatabase.sinergiaConn.port;
@@ -577,14 +626,18 @@ export class updateModel {
     main_model.ds.model.tables = tables;
     main_model.ds.metadata.model_granted_roles = await grantedRoles;
 
+    console.timeLog("UpdateModel", "(Model configuration completed)");
+ 
     try {
       const cleanM = new CleanModel();
       main_model = await cleanM.cleanModel(main_model);
+      console.timeLog("UpdateModel", "(Model cleaning completed)");
       fs.writeFile(`metadata.json`, JSON.stringify(main_model), { encoding: `utf-8` }, err => {
         if (err) {
           throw err;
         }
       });
+      console.timeLog("UpdateModel", "(Metadata file written)");
       await new pushModelToMongo().pushModel(main_model, res);
       res.status(200).json({ status: "ok" });
     } catch (e) {
