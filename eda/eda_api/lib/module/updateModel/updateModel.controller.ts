@@ -111,7 +111,7 @@ export class updateModel {
               )
               .then(async rows => {
                 let relations = rows;
-                // Select users
+                // Select users: Since the sda_def_user_groups view has set a limitation on the number of users coming from SinergiaCRM, this view is used to filter the users that should be active in SDA, through a left join with the sda_def_user_groups table. If the user is in this table, they are active, otherwise inactive.
                 await connection
                   .query(`
                        SELECT
@@ -128,7 +128,7 @@ export class updateModel {
                   )
                   .then(async users => {
                     let users_crm = users;
-                    // Select EDA roles
+                    // Select EDA roles/groups: The sda_def_user_groups table is used to filter the groups/roles that should be created in SDA, omitting those that are not present in this table (i.e., they have no users) despite being in sda_def_groups (which by default contains all the groups from SinergiaCRM).
                     await connection
                       .query(`
                          SELECT
