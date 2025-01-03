@@ -1409,6 +1409,9 @@ extractDataValues(val) {
         colsInfo.textDescriptions.splice(0, 1);
 
         //if there is only one metric the metric is the header
+
+        console.log('labels::::::::: ',labels)
+
         if (labels.axes[0].itemZ.length > 1) {
             for (let i = 0; i < labels.seriesLabels[0].length; i++) {
                 series[0].labels.push({
@@ -1437,7 +1440,7 @@ extractDataValues(val) {
             for (let j = 0; j < labels.seriesLabels[i].length * mult; j++) {
                 serie.labels.push({
                     title: labels.seriesLabels[i][j % labels.seriesLabels[i].length], description : labels.axes[0].itemY[i].description,
-                    rowspan: 1, colspan: colspanDiv / labels.seriesLabels[i].length, sortable: false
+                    rowspan: 1, colspan: colspanDiv / labels.seriesLabels[i].length, sortable: false, metric:labels.axes[0].itemZ[0].description
                 });
             }
             series.push(serie);
@@ -1459,9 +1462,13 @@ extractDataValues(val) {
         }
         this.series = series;
 
+        
+        console.log('this.series:::::::: ', this.series)
+        console.log('this.cols:::::::: ', this.cols)
+
         //set column name for column labels
         this.series[this.series.length - 1].labels.forEach((label, i) => {
-            label.column = this.cols[(this.series[0].labels.length - 1) + i].field;
+            label.column = this.cols[i + 1].field;
             label.sortable = true;
             label.sortState = false;
         });
