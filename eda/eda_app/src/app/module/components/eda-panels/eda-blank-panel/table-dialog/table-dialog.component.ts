@@ -207,6 +207,12 @@ export class TableDialogComponent extends EdaDialogAbstract implements AfterView
   }
 
   private setStyle(col) {
+
+    console.log('##### -- Colores -- #####')
+    console.log('col: ', col)
+    console.log('TIPO DE TABLA: ', this.controller.params.panelChart.chartType)
+    console.log('this.cols: ', this.cols);
+
     if (this.controller.params.panelChart.chartType === 'table') {
       this.gradientMenuController = new EdaDialogController({
         params: {
@@ -223,10 +229,16 @@ export class TableDialogComponent extends EdaDialogAbstract implements AfterView
         },
         close: (event, response) => this.onCloseGradientController(event, response, col)
       })
+
+      console.log('this.gradientMenuController: ', this.gradientMenuController);
+
     }
   }
 
   private setCols() {
+
+    console.log('VALORES COL: ',this.cols);
+    console.log('Tipo de tabla: ', this.controller.params.panelChart.chartType);
 
     if (this.controller.params.panelChart.chartType === 'table') {
 
@@ -241,9 +253,12 @@ export class TableDialogComponent extends EdaDialogAbstract implements AfterView
       this.cols = [];
 
       let series = this.myPanelChartComponent.componentRef.instance.inject.series;
-
+      
       let cols = new Map();
-
+      
+      console.log('--> series:::: ', series);
+      console.log('--> cols:::: ', cols);
+      
       series[series.length - 1].labels.forEach(serie => {
         if (!cols.has(serie.metric)) {
           cols.set(serie.metric, [serie.column])
@@ -254,6 +269,9 @@ export class TableDialogComponent extends EdaDialogAbstract implements AfterView
           cols.set(serie.metric, col);
         }
       });
+
+      console.log('<---series:::: ', series);
+      console.log('<---cols:::: ', cols);
 
       cols.forEach((value, key) => {
         this.cols.push({ header: key, col: value, field: key })
@@ -375,7 +393,7 @@ export class TableDialogComponent extends EdaDialogAbstract implements AfterView
         }
       ]
     } else {
-      console.log('==> crosstable')
+
       this.items = [
         {
           label: this.addTotals,
@@ -430,7 +448,6 @@ export class TableDialogComponent extends EdaDialogAbstract implements AfterView
           }),
           disabled: this.onlyPercentages
         }
-
       ];
 
     }

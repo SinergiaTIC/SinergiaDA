@@ -707,7 +707,7 @@ extractDataValues(val) {
 
             const numericColumns = Array.from(new Set(this.series[this.series.length - 1].labels
                 .map(serie => serie.title))).length;
-
+            
             this.series.forEach((serie, i) => {
                 serie.labels.forEach((column, j) => {
                     if (column.isTotal) {
@@ -1461,7 +1461,7 @@ extractDataValues(val) {
 
         //set column name for column labels
         this.series[this.series.length - 1].labels.forEach((label, i) => {
-            label.column = this.cols[i + 1].field;
+            label.column = this.cols[(this.series[0].labels.length - 1) + i].field;
             label.sortable = true;
             label.sortState = false;
         });
