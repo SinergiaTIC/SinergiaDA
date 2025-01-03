@@ -1410,8 +1410,6 @@ extractDataValues(val) {
 
         //if there is only one metric the metric is the header
 
-        console.log('labels::::::::: ',labels)
-
         if (labels.axes[0].itemZ.length > 1) {
             for (let i = 0; i < labels.seriesLabels[0].length; i++) {
                 series[0].labels.push({
@@ -1462,13 +1460,9 @@ extractDataValues(val) {
         }
         this.series = series;
 
-        
-        console.log('this.series:::::::: ', this.series)
-        console.log('this.cols:::::::: ', this.cols)
-
         //set column name for column labels
         this.series[this.series.length - 1].labels.forEach((label, i) => {
-            label.column = this.cols[i + 1].field;
+            label.column = this.cols[i + (this.cols.length - this.series[this.series.length - 1].labels.length)].field;
             label.sortable = true;
             label.sortState = false;
         });
