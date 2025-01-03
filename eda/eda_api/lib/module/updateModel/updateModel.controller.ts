@@ -111,7 +111,9 @@ export class updateModel {
               )
               .then(async rows => {
                 let relations = rows;
-                // Select users: Since the sda_def_user_groups view has set a limitation on the number of users coming from SinergiaCRM, this view is used to filter the users that should be active in SDA, through a left join with the sda_def_user_groups table. If the user is in this table, they are active, otherwise inactive.
+                // Select users: Since the sda_def_user_groups view has set a limitation on the number of users
+                // coming from SinergiaCRM, this view is used to filter the users that should be active in SDA,
+                // through a left join with the sda_def_user_groups table. If the user is in this table, they are active, otherwise inactive.
                 await connection
                   .query(`
                        SELECT
@@ -128,7 +130,9 @@ export class updateModel {
                   )
                   .then(async users => {
                     let users_crm = users;
-                    // Select EDA roles/groups: The sda_def_user_groups table is used to filter the groups/roles that should be created in SDA, omitting those that are not present in this table (i.e., they have no users) despite being in sda_def_groups (which by default contains all the groups from SinergiaCRM).
+                    // Select EDA roles/groups: The sda_def_user_groups table is used to filter the groups/roles
+                    // that should be created in SDA, omitting those that are not present in this table (i.e., they have no users)
+                    // despite being in sda_def_groups (which by default contains all the groups from SinergiaCRM).
                     await connection
                       .query(`
                          SELECT
@@ -270,6 +274,15 @@ export class updateModel {
   }
 
   /** Generates and processes model roles */
+  /**
+   * Retrieves the granted roles for a model based on various permissions.
+   * @param fullTablePermissionsForRoles - The permissions for roles with full table access.
+   * @param crmTables - The CRM tables.
+   * @param fullTablePermissionsForUsers - The permissions for users with full table access.
+   * @param dynamicPermisssionsForGroup - The dynamic permissions for groups.
+   * @param dynamicPermisssionsForUser - The dynamic permissions for users.
+   * @returns An array of granted roles for the model.
+   */
   static async grantedRolesToModel(
     fullTablePermissionsForRoles: any,
     crmTables: any,
@@ -287,7 +300,11 @@ export class updateModel {
     const usersFound = await User.find();
     const mongoGroups = await Group.find();
  
-    // Función para verificar permisos duplicados
+    /**
+     * Checks if there is an existing permission for a full table access.
+     * @param newRole - The new role to check against existing permissions.
+     * @returns True if there is an existing permission, false otherwise.
+     */
     const hasExistingFullTablePermission = (newRole: any) => {
         return destGrantedRoles.some(existing => 
             existing.column === "fullTable" && 
@@ -321,7 +338,7 @@ export class updateModel {
             type: "users"
           };
                 
-                // Verificar duplicados antes de agregar
+                // Verify duplicates before adding
                 if (!hasExistingFullTablePermission(gr)) {
                     destGrantedRoles.push(gr);
                 }
@@ -355,6 +372,7 @@ export class updateModel {
           permission: true,
           type: "users"
         };
+        // Verify duplicates before adding
         if (!hasExistingFullTablePermission(gr3)) {
         destGrantedRoles.push(gr3);
         }
@@ -608,7 +626,7 @@ export class updateModel {
     // Format tables as JSON
     console.timeLog("UpdateModel", "(Start JSON formatting)");
     
-    // Load and configure base model
+    // Load and configure base model using path library to avoid errors reading the file
     let main_model = await JSON.parse(fs.readFileSync(path.join(__dirname, '../../../config/base_datamodel.json'), "utf-8"));
     
     main_model.ds.connection.host = sinergiaDatabase.sinergiaConn.host;
