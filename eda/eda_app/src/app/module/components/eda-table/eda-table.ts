@@ -331,7 +331,6 @@ export class EdaTable {
                 this.series[0].labels.push({ title: this.Totals, rowspan: (this.series.length-1), colspan: valuesKeys.length, isTotal: true, description: this.Totals });
             }
 
-
             //add cols and headers --> se agrego las descripciones de las columnas
             valuesKeys.forEach((valueKey, i) => {
                 if (!colNames.includes(valueKey)) {
@@ -967,19 +966,6 @@ extractDataValues(val) {
             }
         })
 
-        // VERIFICAR SI SE RELLENAN CON CEROS LOS VALORES QUE LLEGAN VACIOS
-        // newRows.forEach(row => {
-        //     let contador = 0;
-        //     for(const propiedad in row){
-        //         contador++
-        //         if(contador > axes[0].itemX.length){
-        //             if(row[propiedad]===""){
-        //                 row[propiedad] = 0;
-        //             }
-        //         }
-        //     }
-        // })
-
         return newRows;
     }
 
@@ -1070,8 +1056,6 @@ extractDataValues(val) {
         return map;
     }
 
-    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
     /**
      * Returns a Cross Map
      */
@@ -1103,9 +1087,6 @@ extractDataValues(val) {
         }
         return map;
     }
-
-
-    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     /**
      * Puts values in the tree map
@@ -1157,7 +1138,7 @@ extractDataValues(val) {
         });
         return map;
     }
-    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
     /**
      * Builds new rows given a tree map
      */
@@ -1195,7 +1176,6 @@ extractDataValues(val) {
         return row;
     }
 
-    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     buildNewCrossRows(map: Map<string, any>, mainColsLabels: any, serieLabel: string, newCols: any) {
         const arraysMain = []; // Arreglo de los nombres de las columnas principales
         const rows = []
@@ -1274,9 +1254,6 @@ extractDataValues(val) {
         combine(0, []);
         return result;
     }
-
-    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
 
     getNewColumnsNames(sampleRow: any) {
         return Object.keys(sampleRow);
@@ -1549,9 +1526,5 @@ extractDataValues(val) {
             label.sortState = false;
         });
     }
-
-
-
-
 
 }
