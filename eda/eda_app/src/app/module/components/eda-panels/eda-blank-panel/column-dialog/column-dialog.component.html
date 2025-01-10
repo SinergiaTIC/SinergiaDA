@@ -327,7 +327,7 @@
 
                         </ng-container>
 
-                        <ng-container *ngIf="(selectedColumn.column_type === 'numeric') || (selectedColumn.column_type === 'text' && this.ranges.length!==0)">
+                        <ng-container *ngIf="selectedColumn.aggregation_type.length===7">
 
                             <h4 i18n="@@dateFormatH4"> Formato </h4>
 
