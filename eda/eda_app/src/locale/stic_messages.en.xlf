@@ -355,18 +355,6 @@
     <source>Buscar tipo</source>
     <target>Search a type</target>
   </trans-unit>
-  <trans-unit id="messageItemX">
-    <source>Arrastre aquí los campos para el eje vertical de la tabla cruzada</source>
-    <target>Drag fields for the vertical axis of the cross table here</target>
-  </trans-unit>
-  <trans-unit id="messageItemY">
-    <source>Arrastre aquí los campos para el eje horizontal de la tabla cruzada</source>
-    <target>Drag fields for the horizontal axis of the cross table here</target>
-  </trans-unit>
-  <trans-unit id="messageItemZ">
-    <source>Arrastre aquí solo los campos numéricos (num) de la tabla cruzada (La suma es la agregación por defecto)</source>
-    <target>Drag only numeric (num) fields from the crosstab here (Sum is the default aggregation)</target>
-  </trans-unit>
 </body>
 </file>
 </xliff>

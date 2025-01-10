@@ -152,7 +152,7 @@ export class TableDialogComponent extends EdaDialogAbstract implements AfterView
     this.myPanelChartComponent.componentRef.instance.inject.checkTotals(null);
     this.noRepetitions = currentConfig.noRepetitions;
 
-    
+
     this.setItems();
   }
 
@@ -180,7 +180,7 @@ export class TableDialogComponent extends EdaDialogAbstract implements AfterView
   }
 
   private setOnlyPercentages() {
-
+    
     const currentConfig = this.myPanelChartComponent.currentConfig;
 
     currentConfig.resultAsPecentage = !currentConfig.onlyPercentages;
@@ -192,7 +192,8 @@ export class TableDialogComponent extends EdaDialogAbstract implements AfterView
 
     currentConfig.withColTotals = false;
     this.col_totals = currentConfig.withColTotals;
-    
+
+
     this.myPanelChartComponent.componentRef.instance.inject.checkTotals(null);
     this.resultAsPecentage = currentConfig.resultAsPecentage;
     this.onlyPercentages = currentConfig.onlyPercentages;
@@ -202,6 +203,7 @@ export class TableDialogComponent extends EdaDialogAbstract implements AfterView
   }
 
   private setStyle(col) {
+
     if (this.controller.params.panelChart.chartType === 'table') {
       this.gradientMenuController = new EdaDialogController({
         params: {
@@ -218,6 +220,7 @@ export class TableDialogComponent extends EdaDialogAbstract implements AfterView
         },
         close: (event, response) => this.onCloseGradientController(event, response, col)
       })
+
     }
   }
 
@@ -236,9 +239,8 @@ export class TableDialogComponent extends EdaDialogAbstract implements AfterView
       this.cols = [];
 
       let series = this.myPanelChartComponent.componentRef.instance.inject.series;
-
       let cols = new Map();
-
+      
       series[series.length - 1].labels.forEach(serie => {
         if (!cols.has(serie.metric)) {
           cols.set(serie.metric, [serie.column])
@@ -265,7 +267,7 @@ export class TableDialogComponent extends EdaDialogAbstract implements AfterView
   onClose(event: EdaDialogCloseEvent, response?: any): void {
     return this.controller.close(event, response);
   }
-  
+
   saveChartConfig() {
 
     const config = (<TableConfig>this.panelChartConfig.config.getConfig());
@@ -313,6 +315,7 @@ export class TableDialogComponent extends EdaDialogAbstract implements AfterView
   }
 
   private setItems() {
+
     if (this.controller.params.panelChart.chartType === 'table') {
       this.items = [
         {
@@ -369,6 +372,7 @@ export class TableDialogComponent extends EdaDialogAbstract implements AfterView
         }
       ]
     } else {
+
       this.items = [
         {
           label: this.addTotals,
@@ -423,8 +427,8 @@ export class TableDialogComponent extends EdaDialogAbstract implements AfterView
           }),
           disabled: this.onlyPercentages
         }
-
       ];
+
     }
   }
 

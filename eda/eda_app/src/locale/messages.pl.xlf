@@ -3953,17 +3953,21 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
     <source>Diseño de la tabla cruzada: </source>
     <target>Projektowanie stołów krzyżowych: </target>
   </trans-unit>
-  <trans-unit id="messageItemX">
-    <source>Arrastre aquí los campos para el eje vertical de la tabla cruzada</source>
-    <target>Przeciągnij tutaj pola osi pionowej tabeli krzyżowej</target>
+  <trans-unit id="messageItemCrosstable">
+    <source>Este eje debe contener al menos un elemento</source>
+    <target>Oś ta musi zawierać co najmniej jeden element</target>
   </trans-unit>
-  <trans-unit id="messageItemY">
-    <source>Arrastre aquí los campos para el eje horizontal de la tabla cruzada</source>
-    <target>Przeciągnij tutaj pola osi poziomej tabeli krzyżowej</target>
+  <trans-unit id="textoTablaCruzadaEjeX">
+    <source> • Eje vertical: Arrastre aquí los campos.</source>
+    <target>• Eix vertical: Arrossegueu aquí els camps.</target>
   </trans-unit>
-  <trans-unit id="messageItemZ">
-    <source>Arrastre aquí solo los campos numéricos (num) de la tabla cruzada (La suma es la agregación por defecto)</source>
-    <target>Przeciągnij tutaj tylko pola numeryczne (num) tabeli krzyżowej (domyślną agregacją jest Suma)</target>
+  <trans-unit id="textoTablaCruzadaEjeY">
+    <source> • Eje horizontal: Arrastre aquí los campos para el eje horizontal de la tabla cruzada.</source>
+    <target>• Eix horitzontal: Arrossegueu aquí els camps per a l'eix horitzontal de la taula creuada.</target>
+  </trans-unit>
+  <trans-unit id="textoTablaCruzadaEjeZ">
+    <source> • Eje numérico: Arrastre aquí solo los campos numéricos.</source>
+    <target>• Eix numèric: Arrossegueu aquí només els camps numèrics.</target>
   </trans-unit>
 </body>
 </file>

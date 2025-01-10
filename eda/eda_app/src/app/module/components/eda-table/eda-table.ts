@@ -18,28 +18,27 @@ import { values } from 'd3';
 import { title } from 'process';
 
 interface PivotTableSerieParams {
-    mainCol: any, // Columna dinámica principal
-    mainColLabel: string, // Nombre de la columna principal
-    mainColValues: Array<string>, // valores de la columna principal
-    aggregatedColLabels: Array<string>, // Valores numéricos ----------> Eje Z
-    pivotColsLabels: Array<string>, // Nombres de las columnas del pivot ----------> Eje Y
-    pivotCols: Array<Column>, // Columnas dinámicas del pivot
-    oldRows: Array<any>, // Valores de la tabla básica
-    newCols: Array<any> // Arreglo del grupo de columnas de la seccion principal
-
+  mainCol: any, // Main dynamic column
+  mainColLabel: string, // Main column name
+  mainColValues: Array<string>, // Main column values
+  aggregatedColLabels: Array<string>, // Numeric values ----------> Z axis
+  pivotColsLabels: Array<string>, // Pivot column names ----------> Y axis
+  pivotCols: Array<Column>, // Dynamic pivot columns
+  oldRows: Array<any>, // Base table values
+  newCols: Array<any> // Array of column groups from main section
 }
 
 interface CrossTableSerieParams {
-    mainColsLabels: Array<string>, // NUEVO ----------> Eje X
-    mainCols: Array<Column>, // NUEVO 
-    
-    pivotColsLabels: Array<string>, // Nombres de las columnas del pivot ----------> Eje Y
-    pivotCols: Array<Column>, // Columnas dinámicas del pivot
+  mainColsLabels: Array<string>, // NEW ----------> X axis
+  mainCols: Array<Column>, // NEW
 
-    aggregatedColLabels: Array<string>, // Valores numéricos ----------> Eje Z
+  pivotColsLabels: Array<string>, // Pivot column names ----------> Y axis
+  pivotCols: Array<Column>, // Dynamic pivot columns
 
-    oldRows: Array<any>, // Valores de la tabla básica
-    newCols: Array<any> // Arreglo del grupo de columnas de la seccion principal
+  aggregatedColLabels: Array<string>, // Numeric values ----------> Z axis
+
+  oldRows: Array<any>, // Base table values
+  newCols: Array<any> // Array of column groups from main section
 }
 
 
@@ -50,7 +49,7 @@ export class EdaTable {
     public onSortColEvent: EventEmitter<any> = new EventEmitter();
 
     public _value: any[] = [];
-    
+
     public cols: EdaColumn[] = [];
     public rows: number = 10;
     public initRows: number = 10;
@@ -81,7 +80,7 @@ export class EdaTable {
     public resultAsPecentage: boolean = false;
     public onlyPercentages: boolean = false;
     public percentageColumns: Array<any> = [];
-    public noRepetitions: boolean; 
+    public noRepetitions: boolean;
     public origValues: any[] = [];
 
 
@@ -108,24 +107,23 @@ export class EdaTable {
     }
 
     set value(values: any[]) {
-        this.clear();
-        this._value = values;
-        /* Inicialitzar filtres */
-        if (!_.isEmpty(this.value)) {
-            _.forEach(this.cols, c => {
-                if (!_.isNil(c.filter)) {
-                    /* Obtenim tots els valors sense repetits d'aquella columna per inicialitzar el filtre */
-                    c.filter.init(_.orderBy(_.uniq(_.map(this.value, c.field))));
-                }
-            });
-        }
-        if (this.pivot) {
-            this.PivotTable();
-        }
-        if (this.sortedSerie) {
-            this.loadSort();
-        }
-
+      this.clear();
+      this._value = values;
+      /* Initialize filters */
+      if (!_.isEmpty(this.value)) {
+          _.forEach(this.cols, c => {
+              if (!_.isNil(c.filter)) {
+                  /* Get all unique values from that column to initialize the filter */
+                  c.filter.init(_.orderBy(_.uniq(_.map(this.value, c.field))));
+              }
+          });
+      }
+      if (this.pivot) {
+          this.PivotTable();
+      }
+      if (this.sortedSerie) {
+          this.loadSort();
+      }
     }
 
     public clear() {
@@ -238,7 +236,7 @@ export class EdaTable {
         }
         if (this.withColSubTotals) {
             event ? this.colSubTotals(event.first / event.rows + 1) : this.colSubTotals(1);
-        } 
+        }
         // SDA CUSTOM Este código produce repeticiones en tabnlas normales y tablas cruzadas  Issue 96 y 101
         // SDA CUSTOM if (this.noRepetitions || !this.noRepetitions) {
         // SDA CUSTOM    this.noRepeatedRows();
@@ -261,7 +259,7 @@ export class EdaTable {
         if (withTotalcols) {
             this.cols = this.cols.filter(col => col.rowTotal !== true);
             this.series[numSeries - 2].labels = this.series[numSeries - 2].labels.filter(label => label.isTotal !== true);
-            //percentage columns has no label 
+            //percentage columns has no label
 
             if(this.ordering[0]!==undefined){
                 if(this.ordering[0].axes[0].itemX.length>1){
@@ -290,7 +288,7 @@ export class EdaTable {
         this.cols = this.cols.filter(col => col.rowTotal !== true);
         this.series[numSeries - 2].labels = this.series[numSeries - 2].labels.filter(label => label.isTotal !== true);
 
-        //percentage columns has no label 
+        //percentage columns has no label
         const lastLayerLabels = this.cols.filter(col => col.type !== "EdaColumnPercentage").length - 1;
         this.series[numSeries - 1].labels = this.series[numSeries - 1].labels.slice(0, lastLayerLabels);
 
@@ -308,10 +306,10 @@ export class EdaTable {
             const keys = Object.keys(this._value[0])
                 .filter(key => numericCols.includes(key))
                 .map(key => key.slice(key.lastIndexOf('~') + 1));
-            const valuesKeys = Array.from(new Set(keys));    
-            
+            const valuesKeys = Array.from(new Set(keys));
+
             //get names for new columns from series array
-            let pretyNames; // Valores Numéricos de Columna. 
+            let pretyNames; // Valores Numéricos de Columna.
             if (this.series[0].labels.length > 2) {
 
                 if(this.ordering[0]!==undefined){
@@ -333,7 +331,6 @@ export class EdaTable {
                 this.series[0].labels.push({ title: this.Totals, rowspan: (this.series.length-1), colspan: valuesKeys.length, isTotal: true, description: this.Totals });
             }
 
-
             //add cols and headers --> se agrego las descripciones de las columnas
             valuesKeys.forEach((valueKey, i) => {
                 if (!colNames.includes(valueKey)) {
@@ -351,13 +348,13 @@ export class EdaTable {
                 valuesKeys.forEach(key => {
                     totals[key] = 0;
                     row[key] = 0;
-                });                
+                });
 
                 numericCols.forEach(key => {
                     valuesKeys.forEach(valueKey => {
                       let keyArray = key.split('~');
                         if (keyArray.includes(valueKey)) {
-                            let decimalplaces = new EdaColumnNumber({}).decimals;  /** esto se hace  para ajustar el número de dicimales porque 3.1+2.5 puede dar 5.600004 */ 
+                            let decimalplaces = new EdaColumnNumber({}).decimals;  /** esto se hace  para ajustar el número de dicimales porque 3.1+2.5 puede dar 5.600004 */
                             try{
                                 if(  row[key].toString().split(".")[1].length > 0){
                                     decimalplaces =  row[key].toString().split(".")[1].length;
@@ -547,7 +544,7 @@ export class EdaTable {
                         border: '',
                         type: col.type
                     });
-            } 
+            }
             else {
                 if (firstNonNumericRow) {
                     this.totalsRow.push({ data: `${this.Totals} `, border: " ", class: 'total-row-header', type: col.type });
@@ -559,27 +556,23 @@ export class EdaTable {
         });
     }
 
-    // Funcion que rellena de ceros en los totales
+    // Function that fills totals with zeros
     buildTotalRow() {
         let row = {};
         const keys = Object.keys(this._value[0]);
         for (let i = 0; i < keys.length; i++) {
             row[keys[i]] = 0;
         }
-
         return row;
-
     }
     sumPartialRows(offset: number) {
-
         let row = this.buildTotalRow();
         const values = this._value;
         const keys = this.cols.map(col => col.field);
         const lastValue = this.initRows + offset;
-
         for (let i = offset; i < lastValue; i++) {
             for (let j = 0; j < keys.length; j++) {
-                const currentCol = this.cols.filter(col => col.field === keys[j])[0];                
+                const currentCol = this.cols.filter(col => col.field === keys[j])[0];
                 if (i < values.length) {
                     if (currentCol.type === "EdaColumnNumber") {
                         if(values[i][keys[j]] === '') {
@@ -596,44 +589,45 @@ export class EdaTable {
         return row;
     }
 
-    //usamos la extracción de valores para el noRepetitions
-    extractDataValues(val) {
-        //separamos valores de claves
-        let values = [];
-        for (let i=0; i<val.length;i++) {
-            values.push(Object.values(val[i]));
-        }
-        return values;
-    }
-    //usamos la extracción de labels para el noRepetitions
-    extractLabels(val) {
-        let labels = [];      
-        labels.push(Object.keys(val[0])); //insertamos el primer objeto con el cabecero para iterar y extraer los datos
+//extract values for noRepetitions
+extractDataValues(val) {
+  //separate values from keys
+  let values = [];
+  for (let i=0; i<val.length;i++) {
+      values.push(Object.values(val[i]));
+  }
+  return values;
+}
+
+      //extract labels for noRepetitions
+      extractLabels(val) {
+        let labels = [];
+        labels.push(Object.keys(val[0])); //insert first object with header to iterate and extract data
         labels.forEach(e => {
             e.forEach(function(key,val) {
                 labels.push(key);
-                
+
             })
         })
         return labels;
     }
-    
+
     noRepeatedRows() {
 
         if (!this.noRepetitions) {
-           this.value = this.origValues  ;
+          this.value = this.origValues;
         } else {
-            //separamos valores de claves
+            //separate values from keys
             let values = this.extractDataValues(this.value);
-            //tomamos claves que serán el cabecero
+            //get keys that will be the header
             let labels = this.extractLabels(this.value)
-            labels.shift(); //borramos el primer objeto.
+            labels.shift(); //delete first object
             let output = [];
-            // ESTO SE HACE PARA EVITAR REPETIDOS EN LA TABLA. SI UN CAMPO TIENE UNA COLUMNA QUE SE REPITE 
+            //this is done to avoid duplicates in the table. if a field has a repeating column
             let first  = _.cloneDeep(values[0]);
             for (let i = 0; i < values.length; i += 1) {
                 const obj = [];
-                if(i == 0){   
+                if(i == 0){
                     for (let e = 0; e < values[i].length; e += 1) {
                             obj[labels[e]] = values[i][e];
                         }
@@ -647,10 +641,10 @@ export class EdaTable {
                         first[e]  =  values[i][e]; //AQUI SE SUTITUYE EL PRIMER VALOR
                         }
                 }
-                output.push(obj);   
+                output.push(obj);
             }
-            this.value = output;  
-        }   
+            this.value = output;
+        }
 
 
     }
@@ -709,17 +703,25 @@ export class EdaTable {
         this.cols = newColumns;
         //set new headers
         if (this.pivot && !this.onlyPercentages) {
+
             const numericColumns = Array.from(new Set(this.series[this.series.length - 1].labels
                 .map(serie => serie.title))).length;
+            
             this.series.forEach((serie, i) => {
                 serie.labels.forEach((column, j) => {
                     if (column.isTotal) {
                         column.colspan = numericColumns * 2;
-                    } else if (i !== 0 || j !== 0) {
+                    } else if (i !== 0 && j >= 0) {
                         column.colspan = column.colspan * 2;
                     }
+
+                    if(i===0 && column.rowspan===1) {
+                        column.colspan = column.colspan * 2;
+                    }
+
                 });
             })
+            
         }
 
         if (this.onlyPercentages === true) {
@@ -824,12 +826,12 @@ export class EdaTable {
         for (let i = 0; i < colsInfo.numeric.length; i++) {
             seriesLabels.push(Object.keys(oldRows[0])[colsInfo.numeric[i]]);
         }
-        
+
         const rowsToMerge = [];
         const colsToMerge = [];
         let newLabels;
 
-        // INICIA EL REORDENAMIENTO
+        // Start reorganization
         if(this.ordering!=undefined && this.ordering.length!==0) {
             axes = this.ordering[0].axes
 
@@ -856,7 +858,7 @@ export class EdaTable {
             this.cols = this.mergeCrossColumns(colsToMerge, axes); // Nueva función que genera las columnas de la tabla cruzada
             this.buildCrossHeaders(newLabels, colsInfo); // Nueva función para la creación de los encabezados
 
-            return 
+            return
         }
 
         seriesLabels.forEach((serie, index) => {
@@ -867,7 +869,7 @@ export class EdaTable {
                 newLabels = colsRows.newLabels; //new labels are equal for each serie, first execution is enough to get new labels
             }
         });
-        
+
         newLabels.metricsLabels = colsInfo.numericLabels;
         newLabels.metricsDescriptions = colsInfo.numericDescriptions;
         newLabels.textDescriptions = colsInfo.textDescriptions;
@@ -879,10 +881,9 @@ export class EdaTable {
 
     /**
      * Build a serie to pivot (one serie per metric)
-     * @param serieIndex 
+     * @param serieIndex
      */
     buildPivotSerie(serieIndex: number) {
-
         const params = this.generatePivotParams();
         // console.log(`params ---> serieIndex ${serieIndex} <---`, params);
         const mapTree = this.buildMainMap(params.mainColValues, params.newCols);
@@ -892,7 +893,6 @@ export class EdaTable {
 
         let newRows = this.buildNewRows(populatedMap, params.mainColLabel, params.aggregatedColLabels[serieIndex]);
         let newColNames = this.getNewColumnsNames(newRows[0]).slice(1); //For left column we want user's name, not technical
-
         const tableColumns = [];
         tableColumns.push(new EdaColumnText({ header: params.mainCol.header, field: params.mainCol.field }));
         newColNames.forEach(col => {
@@ -901,7 +901,6 @@ export class EdaTable {
         let newLabels = { mainLabel: '', seriesLabels: [], metricsLabels: [] };
         newLabels.mainLabel = params.mainColLabel;
         newLabels.seriesLabels = params.newCols.splice(1);
-
         return { cols: tableColumns, rows: newRows, newLabels: newLabels }
     }
 
@@ -927,18 +926,18 @@ export class EdaTable {
         newColNames.forEach(col => {
             tableColumns.push(new EdaColumnNumber({ header: col, field: col }));
         })
-        
+
         let newLabels = { mainsLabels: [], seriesLabels: [], metricsLabels: [] };
         newLabels.mainsLabels = params.mainColsLabels;
         newLabels.seriesLabels = params.newCols.splice(params.mainColsLabels.length);
-        
+
         return { cols: tableColumns, rows: newRows, newLabels: newLabels }
 
     }
 
     /**
      * Merges series rows in one set of rows
-     * @param rowsToMerge 
+     * @param rowsToMerge
      */
     mergeCrossRows(rowsToMerge: any, axes: any) {
         const NUM_ROWS_IN_SERIES = rowsToMerge[0].length;
@@ -985,14 +984,14 @@ export class EdaTable {
     }
 
     mergeCrossColumns(colsToMerge: any, axes: any){
-        
+
         const NUM_COLS = colsToMerge[0].length;
         let cols = [];  //first column is the same for each serie
 
         for (let i = 0; i < axes[0].itemX.length; i++) {
             cols.push(colsToMerge[0][i]);
         }
-        
+
         for (let col = axes[0].itemX.length; col < NUM_COLS; col++) {
             colsToMerge.forEach(serie => {
                 cols.push(serie[col])
@@ -1004,7 +1003,7 @@ export class EdaTable {
 
     /**
      * Merges series columns in one set of columns
-     * @param colsToMerge 
+     * @param colsToMerge
      */
     mergeColumns(colsToMerge: any) {
         const NUM_COLS = colsToMerge[0].length;
@@ -1041,7 +1040,7 @@ export class EdaTable {
     }
     /**
      * Build a map of maps recursively
-     * @param cols 
+     * @param cols
      */
     buildMapRecursive(cols: Array<Array<string>>) {
         let map = new Map();
@@ -1056,8 +1055,6 @@ export class EdaTable {
         }
         return map;
     }
-
-    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     /**
      * Returns a Cross Map
@@ -1075,7 +1072,7 @@ export class EdaTable {
     }
     /**
      * Build a map of maps recursively
-     * @param cols 
+     * @param cols
      */
     buildMapCrossRecursive(cols: Array<Array<string>>) {
         let map = new Map();
@@ -1090,9 +1087,6 @@ export class EdaTable {
         }
         return map;
     }
-
-
-    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     /**
      * Puts values in the tree map
@@ -1144,7 +1138,7 @@ export class EdaTable {
         });
         return map;
     }
-    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
     /**
      * Builds new rows given a tree map
      */
@@ -1163,10 +1157,10 @@ export class EdaTable {
     }
     /**
      * Buils new rows recursively (iterating over the tree until last nodes are found)
-     * @param map 
-     * @param colLabel 
-     * @param row 
-     * @param serieLabel 
+     * @param map
+     * @param colLabel
+     * @param row
+     * @param serieLabel
      */
     buildNewRowsRecursive(map: Map<string, any>, colLabel: string, row: any, serieLabel: string) {
         map.forEach((value, key) => {
@@ -1182,7 +1176,6 @@ export class EdaTable {
         return row;
     }
 
-    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     buildNewCrossRows(map: Map<string, any>, mainColsLabels: any, serieLabel: string, newCols: any) {
         const arraysMain = []; // Arreglo de los nombres de las columnas principales
         const rows = []
@@ -1214,12 +1207,12 @@ export class EdaTable {
             rowsTest.push(row);
 
         });
-        
+
         // totalRows:
         const totalRows = rows.map((item, index) => {
             return { ...item, ...rowsTest[index] };
         });
-        
+
         return totalRows;
     }
 
@@ -1262,9 +1255,6 @@ export class EdaTable {
         return result;
     }
 
-    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
     getNewColumnsNames(sampleRow: any) {
         return Object.keys(sampleRow);
     }
@@ -1273,11 +1263,11 @@ export class EdaTable {
      * Generates params to build crosstable
      */
     generatePivotParams(): PivotTableSerieParams {
-        //get old rows to build new ones 
+        //get old rows to build new ones
         const oldRows = this.getValues();
         //get index for numeric and text/date columns
         const typesIndex = this.getColsInfo();
-        //Get left column 
+        //Get left column
         const mainCol = this.cols[typesIndex.text[0]];
         const mainColLabel = Object.keys(oldRows[0])[typesIndex.text[0]];
         const mainColValues = _.orderBy(_.uniq(_.map(this.value, mainCol.field)));
@@ -1315,7 +1305,7 @@ export class EdaTable {
     }
 
     generateCrossParams(axes: any[]): CrossTableSerieParams {
-        const oldRows = this.getValues(); //get old rows to build new ones 
+        const oldRows = this.getValues(); //get old rows to build new ones
         // const typesIndex = this.getColsInfo(); //get index for numeric and text/date columns
         //get aggregation columns
 
@@ -1396,6 +1386,7 @@ export class EdaTable {
         colsInfo.textDescriptions.splice(0, 1);
 
         //if there is only one metric the metric is the header
+
         if (labels.axes[0].itemZ.length > 1) {
             for (let i = 0; i < labels.seriesLabels[0].length; i++) {
                 series[0].labels.push({
@@ -1424,7 +1415,7 @@ export class EdaTable {
             for (let j = 0; j < labels.seriesLabels[i].length * mult; j++) {
                 serie.labels.push({
                     title: labels.seriesLabels[i][j % labels.seriesLabels[i].length], description : labels.axes[0].itemY[i].description,
-                    rowspan: 1, colspan: colspanDiv / labels.seriesLabels[i].length, sortable: false
+                    rowspan: 1, colspan: colspanDiv / labels.seriesLabels[i].length, sortable: false, metric:labels.axes[0].itemZ[0].description
                 });
             }
             series.push(serie);
@@ -1448,14 +1439,14 @@ export class EdaTable {
 
         //set column name for column labels
         this.series[this.series.length - 1].labels.forEach((label, i) => {
-            label.column = this.cols[i + 1].field;
+            label.column = this.cols[i + (this.cols.length - this.series[this.series.length - 1].labels.length)].field;
             label.sortable = true;
             label.sortState = false;
         });
     }
-    
+
     /**
-     * 
+     *
      * @param labels labels to set headers
      * @param colsInfo contains userName for main column
      */
@@ -1535,9 +1526,5 @@ export class EdaTable {
             label.sortState = false;
         });
     }
-
-
-
-   
 
 }

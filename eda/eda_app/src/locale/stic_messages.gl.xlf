@@ -355,18 +355,6 @@
     <source>Buscar tipo</source>
     <target>Buscar un tipo</target>
   </trans-unit>
-  <trans-unit id="messageItemX">
-    <source>Arrastre aquí los campos para el eje vertical de la tabla cruzada</source>
-    <target>Arrastre aquí os campos para o eixe vertical da táboa transversal</target>
-  </trans-unit>
-  <trans-unit id="messageItemY">
-    <source>Arrastre aquí los campos para el eje horizontal de la tabla cruzada</source>
-    <target>Arrastre aquí os campos do eixe horizontal da táboa transversal</target>
-  </trans-unit>
-  <trans-unit id="messageItemZ">
-    <source>Arrastre aquí solo los campos numéricos (num) de la tabla cruzada (La suma es la agregación por defecto)</source>
-    <target>Arrastre aquí só os campos numéricos (num) da táboa cruzada (Suma é a agregación predeterminada)</target>
-  </trans-unit>
 </body>
 </file>
 </xliff>
