@@ -125,8 +125,6 @@ export abstract class QueryBuilderService {
         });
 
 
-/* esto no deberíamos hacerlo. */
-
         if (this.permissions.length > 0) {
             this.permissions.forEach(permission => {
                 if (!dest.includes(permission.filter_table) && permission.filter_table !== origin) {
