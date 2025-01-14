@@ -4342,6 +4342,10 @@
         <source>El último caracter del rango debe ser un número</source>
         <target>El último caracter del rango debe ser un número</target>
       </trans-unit>
+      <trans-unit id="ptooltipNotAvailableRanges">
+        <source>No es posible crear un rango nuevo por que ya existe uno configurado</source>
+        <target>No es posible crear un rango nuevo por que ya existe uno configurado</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>

@@ -4313,6 +4313,10 @@
         <source>El último caracter del rango debe ser un número</source>
         <target>The last character of the range must be a number</target>
       </trans-unit>
+      <trans-unit id="ptooltipNotAvailableRanges">
+        <source>No es posible crear un rango nuevo por que ya existe uno configurado</source>
+        <target>It is not possible to create a new range because a configured one already exists</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>

@@ -63,8 +63,10 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
     public rangeString: string;
     public selectedRange: string = '';
     public showRange: boolean = false;
+    public availableRange: boolean = true;
     public allowedAggregations: boolean = true;
     public ptooltipViewTextRanges: string = $localize`:@@ptooltipViewTextRanges:Al configurar un Rango las agregaciones quedarán bloqueadas, Ejemplo de un rango válido - 12:18:50:100 `;
+    public ptooltipNotAvailableRanges: string = $localize`:@@ptooltipNotAvailableRanges:No es posible crear un rango nuevo por que ya existe uno configurado`;
     public rangeDescriptionNumberError: string = $localize`:@@rangeDescriptionNumberError:El correcto orden de los límites del rango van de menor a mayor`;
     public rangeDescriptionCharacterError: string = $localize`:@@rangeDescriptionCharacterError:El último caracter del rango debe ser un número`;
 
@@ -113,6 +115,15 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
             this.filter.types = allowed;
         }
 
+        if(this.controller.params.currentQuery.find( elemento => elemento.ranges.length!==0)) {
+            if(this.selectedColumn.ranges.length!==0) {
+                this.availableRange = true;
+            } else {
+                this.availableRange = false;
+            }
+        } else {
+            this.availableRange = true;
+        }
     }
 
     private carregarValidacions(): void {

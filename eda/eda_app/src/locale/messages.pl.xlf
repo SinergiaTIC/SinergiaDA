@@ -3969,6 +3969,10 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
   <source>El último caracter del rango debe ser un número</source>
   <target>Ostatni znak zakresu musi być liczbą</target>
 </trans-unit>
+<trans-unit id="ptooltipNotAvailableRanges">
+  <source>No es posible crear un rango nuevo por que ya existe uno configurado</source>
+  <target>Nie można utworzyć nowego zakresu, ponieważ jeden już istnieje i jest skonfigurowany.</target>
+</trans-unit>
 </body>
 </file>
 </xliff>
