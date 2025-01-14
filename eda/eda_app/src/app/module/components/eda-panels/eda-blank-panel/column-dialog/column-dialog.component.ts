@@ -115,8 +115,8 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
             this.filter.types = allowed;
         }
 
-        if(this.controller.params.currentQuery.find( elemento => elemento.ranges.length!==0)) {
-            if(this.selectedColumn.ranges.length!==0) {
+        if(this.controller.params.currentQuery.find( elemento => elemento.hasOwnProperty('ranges') &&  elemento.ranges.length!==0)) {
+            if(this.selectedColumn.hasOwnProperty('ranges') && this.selectedColumn.ranges.length!==0) {
                 this.availableRange = true;
             } else {
                 this.availableRange = false;
