@@ -54,8 +54,6 @@ export class MySqlBuilderService extends QueryBuilderService {
     const orderColumns = this.queryTODO.fields.map(col => {
       let out;
 
-      console.log('EL col >>>>>> ',col)
-
       if (col.ordenation_type !== 'No' && col.ordenation_type !== undefined) {
         out = `\`${col.display_name}\` ${col.ordenation_type}`
       } else {
@@ -67,6 +65,8 @@ export class MySqlBuilderService extends QueryBuilderService {
 
       return out;
     }).filter(e => e !== false);
+
+    // console.log('orderColumns:::::::::::::::::::::::::::::::::: ', orderColumns);
 
     const order_columns_string = orderColumns.join(',');
 

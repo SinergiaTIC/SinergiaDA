@@ -124,6 +124,8 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
         } else {
             this.availableRange = true;
         }
+
+        console.log('selectedColum', this.selectedColumn);
     }
 
     private carregarValidacions(): void {

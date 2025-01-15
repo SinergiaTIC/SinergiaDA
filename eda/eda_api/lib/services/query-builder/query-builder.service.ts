@@ -114,6 +114,7 @@ export abstract class QueryBuilderService {
 
         // Verificando el Rango, si existe agrega los cambios sino el this.queryTODO queda igual.
         this.queryTODO = this.verifyRange(this.queryTODO);
+
         const filterTables = this.queryTODO.filters.map(filter => filter.filter_table);
 
         // Afegim a dest les taules dels filtres
@@ -326,6 +327,8 @@ export abstract class QueryBuilderService {
     public verifyRange(queryTODO: any){
         // let columnRange = queryTODO.fields.find( c => c.ranges.length!==0);
 
+        console.log('queryTODO <-inicio->: ', queryTODO);
+
         queryTODO.fields.forEach( (fieldsColumn:any, j: number) => {
             
             if(fieldsColumn.ranges===undefined) {
@@ -381,6 +384,65 @@ export abstract class QueryBuilderService {
                     fieldsColumn.rangesOrderExpression = rangesOrderExpression;
 
                     queryTODO[j] = fieldsColumn;
+
+                    // ##########################################################################################################################
+                    // Agregado de ceros y nulos para los campos que tengan agregaciones de: suma, cuenta de valores y valores diferentes
+
+                    let withRanges = "WITH ranges AS (\n";
+
+                    withRanges += `    SELECT ' < ${fieldsColumn.ranges[0]}' as \`range\`\n`;
+
+                    for (let i = 0; i < fieldsColumn.ranges.length - 1; i++) {
+                        withRanges += `    UNION SELECT ' ${fieldsColumn.ranges[i]} - ${fieldsColumn.ranges[i + 1] - 1}'\n`;
+                    }
+
+                    withRanges += `    UNION SELECT '>= ${fieldsColumn.ranges[fieldsColumn.ranges.length - 1]}'\n`;
+                    withRanges += ")\n";
+
+                    let coalesceRanges = `SELECT\n    r.range AS \`${fieldsColumn.display_name}\`,\n`;
+
+                    let coalesceRangesAux = '';
+                    queryTODO.fields.forEach( col => {
+                        if(col.ranges.length===0) {
+                            if(col.column_type==='numeric') {
+                                coalesceRangesAux += `    COALESCE(t.\`${col.display_name}\`, 0) AS \`${col.display_name}\`,\n`
+                            } else if(col.column_type==='text') {
+                                coalesceRangesAux += `    COALESCE(t.\`${col.display_name}\`, null) AS \`${col.display_name}\`,\n`
+                            } else {
+                                coalesceRangesAux += `    COALESCE(t.\`${col.display_name}\`, 0) AS \`${col.display_name}\`,\n` // Verificar las fechas
+                            }
+                        }
+                    })
+
+                    coalesceRanges = coalesceRanges + coalesceRangesAux + `FROM ranges r\nLEFT JOIN(`;
+                    withRanges = withRanges + coalesceRanges
+                    fieldsColumn.withRanges = withRanges; // agregando withRanges en field del campo que tiene un rango
+                    // console.log('withRanges::::::::::::::::::::::::::::::::::::: \n')
+                    // console.log(withRanges);
+
+
+
+                    
+
+                    let orderRanges = `) t ON r.range = t.\`${fieldsColumn.display_name}\`\nORDER BY\n`;
+
+                    orderRanges += `    CASE\n`;
+                    orderRanges += `        WHEN r.range = '< ${fieldsColumn.ranges[0]}' THEN 1\n`;
+
+
+                    // Generar los casos intermedios
+                    for (let i = 0; i < fieldsColumn.ranges.length - 1; i++) {
+                        orderRanges += `        WHEN r.range = ' ${fieldsColumn.ranges[i]} - ${fieldsColumn.ranges[i + 1] - 1}' THEN ${i + 2}\n`;
+                    }
+
+                    // Agregar el último caso para valores mayores o iguales al último elemento
+                    orderRanges += `        WHEN r.range = '>= ${fieldsColumn.ranges[fieldsColumn.ranges.length - 1]}' THEN ${fieldsColumn.ranges.length + 1}\n`;
+                    orderRanges += `    END;`;
+
+                    fieldsColumn.orderRanges = orderRanges;
+
+                    // console.log('orderRanges: @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@', orderRanges);
+                    // console.log('queryTODO <-Fin->: ', queryTODO);
                 }
 
             }
