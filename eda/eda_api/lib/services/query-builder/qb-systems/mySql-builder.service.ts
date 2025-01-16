@@ -66,8 +66,6 @@ export class MySqlBuilderService extends QueryBuilderService {
       return out;
     }).filter(e => e !== false);
 
-    // console.log('orderColumns:::::::::::::::::::::::::::::::::: ', orderColumns);
-
     const order_columns_string = orderColumns.join(',');
 
     if (order_columns_string.length > 0) {
@@ -83,10 +81,29 @@ export class MySqlBuilderService extends QueryBuilderService {
         myQuery = myQuery.split(key).join(`\`${alias[key]}\``);
       }
     }
-
+  
+    myQuery = this.queryAddedRange(this.queryTODO.fields, myQuery)
 
     return myQuery;
   };
+
+  public queryAddedRange(fields, myQuery) {
+
+    if(fields.find(field => field.ranges.length!==0)) {
+
+      if(fields.find(field => field.aggregation_type === 'count_distinct' || field.aggregation_type === 'sum' || field.aggregation_type === 'count')) {
+        const fieldRango = fields.find(field => field.ranges.length!==0)
+        myQuery = fieldRango.withRanges + myQuery + fieldRango.orderRanges;
+        return myQuery
+      } else {
+        return myQuery
+      }
+      
+    } else {
+      return myQuery
+    }
+
+  }
 
   public getFilters(filters): any { 
 

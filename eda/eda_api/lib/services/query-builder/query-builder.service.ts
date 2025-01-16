@@ -309,7 +309,6 @@ export abstract class QueryBuilderService {
             }
         }).filter(f=> ![ 'not_null' , 'not_null_nor_empty' , 'null_or_empty'].includes( f.filter_type));
 
-
         if (this.queryTODO.simple) {
             this.query = this.simpleQuery(columns, origin);
             return this.query;
@@ -326,8 +325,6 @@ export abstract class QueryBuilderService {
 
     public verifyRange(queryTODO: any){
         // let columnRange = queryTODO.fields.find( c => c.ranges.length!==0);
-
-        console.log('queryTODO <-inicio->: ', queryTODO);
 
         queryTODO.fields.forEach( (fieldsColumn:any, j: number) => {
             
@@ -414,21 +411,19 @@ export abstract class QueryBuilderService {
                         }
                     })
 
+                    // Eliminando la ultima coma del salto de linea
+                    const lastCommaIndex = coalesceRangesAux.lastIndexOf(',\n');
+                    if (lastCommaIndex !== -1) {
+                        coalesceRangesAux = coalesceRangesAux.slice(0, lastCommaIndex) + coalesceRangesAux.slice(lastCommaIndex + 1);
+                    }
+
                     coalesceRanges = coalesceRanges + coalesceRangesAux + `FROM ranges r\nLEFT JOIN(`;
                     withRanges = withRanges + coalesceRanges
                     fieldsColumn.withRanges = withRanges; // agregando withRanges en field del campo que tiene un rango
-                    // console.log('withRanges::::::::::::::::::::::::::::::::::::: \n')
-                    // console.log(withRanges);
-
-
-
-                    
 
                     let orderRanges = `) t ON r.range = t.\`${fieldsColumn.display_name}\`\nORDER BY\n`;
-
                     orderRanges += `    CASE\n`;
                     orderRanges += `        WHEN r.range = '< ${fieldsColumn.ranges[0]}' THEN 1\n`;
-
 
                     // Generar los casos intermedios
                     for (let i = 0; i < fieldsColumn.ranges.length - 1; i++) {
@@ -441,8 +436,6 @@ export abstract class QueryBuilderService {
 
                     fieldsColumn.orderRanges = orderRanges;
 
-                    // console.log('orderRanges: @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@', orderRanges);
-                    // console.log('queryTODO <-Fin->: ', queryTODO);
                 }
 
             }
