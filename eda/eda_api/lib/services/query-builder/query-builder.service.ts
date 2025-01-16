@@ -417,11 +417,11 @@ export abstract class QueryBuilderService {
                         coalesceRangesAux = coalesceRangesAux.slice(0, lastCommaIndex) + coalesceRangesAux.slice(lastCommaIndex + 1);
                     }
 
-                    coalesceRanges = coalesceRanges + coalesceRangesAux + `FROM ranges r\nLEFT JOIN(`;
+                    coalesceRanges = coalesceRanges + coalesceRangesAux + `FROM ranges r\nLEFT JOIN(\n`;
                     withRanges = withRanges + coalesceRanges
                     fieldsColumn.withRanges = withRanges; // agregando withRanges en field del campo que tiene un rango
 
-                    let orderRanges = `) t ON r.range = t.\`${fieldsColumn.display_name}\`\nORDER BY\n`;
+                    let orderRanges = `\n) t ON r.range = t.\`${fieldsColumn.display_name}\`\nORDER BY\n`;
                     orderRanges += `    CASE\n`;
                     orderRanges += `        WHEN r.range = '< ${fieldsColumn.ranges[0]}' THEN 1\n`;
 
