@@ -111,28 +111,36 @@ export class updateModel {
               )
               .then(async rows => {
                 let relations = rows;
-                // Select users: Since the sda_def_user_groups view has set a limitation on the number of users
-                // coming from SinergiaCRM, this view is used to filter the users that should be active in SDA,
-                // through a left join with the sda_def_user_groups table. If the user is in this table, they are active, otherwise inactive.
+                /*
+                * Retrieves users and their active status based on group membership:
+                * - The sda_def_user_groups view enforces user limitations from SinergiaCRM
+                * - Users are considered active if they either:
+                *   a) Have an entry in sda_def_user_groups
+                *   b) Are marked as active in sda_def_users but don't belong to any group (e.g., administrators)
+                */
                 await connection
                   .query(`
-                       SELECT
-                           DISTINCT u.name as name,
-                           u.user_name as email,
-                           u.password as password,
-                           if(ISNULL(g.name),0,1) as active
-                         FROM
-                           sda_def_users u
-                         LEFT JOIN sda_def_user_groups g ON
-                           u.user_name = g.user_name
-                         WHERE
-                           u.password IS NOT NULL`
-                  )
+                        SELECT 
+                          u.name,
+                          u.user_name as email,
+                          u.password,
+                          CASE 
+                              WHEN g.user_name IS NOT NULL THEN 1
+                              WHEN (g.user_name IS NULL AND u.active = 1) THEN 1
+                              ELSE 0
+                          END as active
+                        FROM sda_def_users u
+                        LEFT JOIN sda_def_user_groups g ON u.user_name = g.user_name
+                        WHERE u.password IS NOT NULL`
+                      )
                   .then(async users => {
                     let users_crm = users;
-                    // Select EDA roles/groups: The sda_def_user_groups table is used to filter the groups/roles
-                    // that should be created in SDA, omitting those that are not present in this table (i.e., they have no users)
-                    // despite being in sda_def_groups (which by default contains all the groups from SinergiaCRM).
+                    /*
+                    * Retrieves EDA roles and groups based on active membership:
+                    * - Only includes groups/roles that have active users in sda_def_user_groups
+                    * - Excludes empty groups from sda_def_groups (which mirrors all SinergiaCRM groups)
+                    * - This ensures roles are only created in SDA when they have assigned users
+                    */
                     await connection
                       .query(`
                          SELECT
