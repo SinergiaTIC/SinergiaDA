@@ -396,7 +396,7 @@ export abstract class QueryBuilderService {
                     withRanges += `    UNION SELECT '>= ${fieldsColumn.ranges[fieldsColumn.ranges.length - 1]}'\n`;
                     withRanges += ")\n";
 
-                    let coalesceRanges = `SELECT\n    r.range AS \`${fieldsColumn.display_name}\`,\n`;
+                    let coalesceRanges = `SELECT\n`;
 
                     let coalesceRangesAux = '';
                     queryTODO.fields.forEach( col => {
@@ -408,6 +408,8 @@ export abstract class QueryBuilderService {
                             } else {
                                 coalesceRangesAux += `    COALESCE(t.\`${col.display_name}\`, 0) AS \`${col.display_name}\`,\n` // Verificar las fechas
                             }
+                        } else {
+                            coalesceRangesAux += `    r.range AS \`${fieldsColumn.display_name}\`,\n`;
                         }
                     })
 
