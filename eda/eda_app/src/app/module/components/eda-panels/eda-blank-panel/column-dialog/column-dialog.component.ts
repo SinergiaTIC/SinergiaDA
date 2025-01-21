@@ -18,7 +18,7 @@ import { aggTypes } from 'app/config/aggretation-types';
 @Component({
     selector: 'app-column-dialog',
     templateUrl: './column-dialog.component.html',
-    styleUrls: []
+    styleUrls: ['./column-dialog.component.css']
 })
 
 export class ColumnDialogComponent extends EdaDialogAbstract {
@@ -51,12 +51,28 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
     public formatDates: FormatDates[];
     public formatDate: FormatDates;
     public aggregationsTypes: any[] = [];
+    public aggregationSelected: any;
     public inputType: string;
     public dropDownFields: SelectItem[] = [];
     public limitSelectionFields: number;
     public cumulativeSum: boolean;
     public cumulativeSumTooltip: string = $localize`:@@cumulativeSumTooltip:Si activas ésta función se calculará la suma acumulativa 
                                             para los campos numéricos que eligas. Sólo se puede activar si la fecha está agregada por mes, semana o dia.`
+
+    public filterBeforeAfter = {
+        filterBeforeGrouping: true, // valor por defecto true ==> WHERE / valor false ==> HAVING
+        elements: [
+            {label: 'Aplicar el filtro sobre todos los registros.', value: true},
+            {label: 'Aplicar el filtro sobre los resultados.', value: false},
+        ],
+    }
+    public filterBeforeAfterSelected: any;
+    public aggregationType: any = null;
+
+    // Tooltip
+    public whereMessage: string = $localize`:@@whereMessage: Filtro sobre todos los registros`;
+    public havingMessage: string = $localize`:@@havingMessage: Filtro sobre los resultados`;
+    public textBetween: string = $localize`:@@textBetween:Entre`
 
 
     public ranges: number[] = [];
@@ -89,6 +105,9 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
             title: $localize`:@@col:Atributo`
         });
         this.dialog.style = { width: '85%', height: '75%', top: "-4em", left: '1em' };
+
+        // Inicializando el valor del WHERE / HAVING
+        this.filterBeforeAfterSelected = this.filterBeforeAfter.elements[0]
     }
 
     onShow(): void {
@@ -115,6 +134,12 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
             this.filter.types = allowed;
         }
 
+        // Buscando el valor inicial de agregacion de la columna seleccionada
+        for(let agg of this.selectedColumn.aggregation_type) {
+            if(agg.selected){
+                this.aggregationSelected = _.cloneDeep(agg);
+            }
+        }        
         if(this.controller.params.currentQuery.find( elemento => elemento.hasOwnProperty('ranges') &&  elemento.ranges.length!==0)) {
             if(this.selectedColumn.hasOwnProperty('ranges') && this.selectedColumn.ranges.length!==0) {
                 this.availableRange = true;
@@ -150,6 +175,9 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
         const valueListSource = this.selectedColumn.valueListSource;
         const joins = this.selectedColumn.joins;
         const autorelation = this.selectedColumn.autorelation;
+        const filterBeforeGrouping = this.filterBeforeAfter.filterBeforeGrouping;
+        const aggregation_type = this.aggregationSelected ? this.aggregationSelected.value : null;
+        
 
         const filter = this.columnUtils.setFilter({
             obj: this.filterValue,
@@ -160,7 +188,9 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
             selectedRange,
             valueListSource,
             autorelation,
-            joins
+            joins,
+            filterBeforeGrouping,
+            aggregation_type,
         });
 
         this.filter.selecteds.push(filter);        
@@ -171,6 +201,10 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
         this.filterSelected = undefined; // filtre seleccionat cap
         this.filterValue = {}; // filtre ningun
         this.filter.range = null;
+
+        // Regresando al valor inicial el WHERE / HAVING
+        this.filterBeforeAfter.filterBeforeGrouping = true;
+        this.filterBeforeAfterSelected = this.filterBeforeAfter.elements[0]
     }
 
     removeFilter(item: any) {
@@ -184,7 +218,8 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
 
     }
 
-    addAggregation(type: any) {
+    addAggregation(type: any) {    
+        
         this.aggregationsTypes.find((ag: any) => ag.value === type.value).selected = true;
 
         for (let ag of this.aggregationsTypes) {
@@ -202,6 +237,18 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
         if (addAggr) {
             addAggr.aggregation_type = JSON.parse(JSON.stringify(this.selectedColumn.aggregation_type));
         }
+
+        // Seteo de aggregationSelected dependiendo de la selección realizada por el usuario
+        this.aggregationSelected = _.cloneDeep(type);
+
+        // En caso no tengamos agregación el selected Where/Having se establece en Where
+        if(this.aggregationSelected.value==='none') {
+            this.whereHavingSwitch({
+                label: 'WHERE',
+                value: true,
+            })
+        }
+
     }
 
     addOrdenation(ord: any) {
@@ -288,7 +335,7 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
             this.display.between = handler.between;
             this.display.filterValue = !_.isEqual(this.selectedColumn.column_type, 'date') ? handler.value : false;
             this.display.calendar = _.isEqual(this.selectedColumn.column_type, 'date') ? handler.value : false;
-            this.display.switchButton = _.isEqual(filter.value, 'not_null') || _.isEqual(filter.value, 'not_null_nor_empty') || _.isEqual(filter.value, 'null_or_empty');
+            this.display.switchButton = _.isEqual(filter.value, 'not_null') || _.isEqual(filter.value, 'not_null_nor_empty') || _.isEqual(filter.value, 'null_or_empty'); // se usa para deshabilitar el boton que da las opciones en el selector.
             this.display.filterButton = filter.value == 'not_null' || filter.value == 'not_null_nor_empty' || filter.value == 'null_or_empty' ? false : true ;
             this.limitSelectionFields = handler.limitFields === 1 ? 1 : 50;
             this.filter.switch = handler.switchBtn;
@@ -322,6 +369,7 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
 
     /**Gestiona las agregaciones de la columna seleccionada */
     public handleAggregationType(): void {
+
         const column = this.selectedColumn;
 
         const matchingQuery = this.controller.params.currentQuery.find((c: any) =>
@@ -329,7 +377,7 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
             c.column_name === column.column_name &&
             c.display_name.default === column.display_name.default
         );
-
+        
         if (this.controller.params.panel.content) {
             const tmpAggTypes = [];
             
@@ -339,8 +387,9 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
 
             // Si ja s'ha carregat el panell i tenim dades a this.select
             if (selectedAggregation) {
+                
                 tmpAggTypes.push(...column.aggregation_type);
-                  
+                
                 if (matchingQuery) {
                     this.aggregationsTypes = JSON.parse(JSON.stringify(matchingQuery.aggregation_type));
                 }
@@ -349,6 +398,7 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
             } else{
                 this.aggregationsTypes = JSON.parse(JSON.stringify(this.controller.params.selectedColumn.aggregation_type));
             }
+
         } else {
             if (!matchingQuery) {
                 const tmpAggTypes = column.aggregation_type.map(agg => ({
@@ -366,6 +416,7 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
         if (matchingQuery) {
             matchingQuery.aggregation_type = JSON.parse(JSON.stringify(this.aggregationsTypes));
         }
+
     }
 
     public findColumn(column: Column, columns: any[]) {
@@ -597,6 +648,18 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
         return aggTypes.filter(agg => agg.value === value)[0].label;
     }
 
+    getAggregationText(value: any) {
+        const label = aggTypes.filter(agg => {
+            return (agg.value === value.aggregation_type);
+        })[0].label;
+        return label;
+    }
+
+    getFilterText(value) {
+        if(value.filter_type === 'between') return this.textBetween;
+        return value.filter_type;
+    }
+
     processPickerEvent(event) {
         if (event.dates) {
             const dtf = new Intl.DateTimeFormat('en', { year: 'numeric', month: '2-digit', day: '2-digit' });
@@ -645,6 +708,18 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
 
     onClose(event: EdaDialogCloseEvent, response?: any): void {
         return this.controller.close(event, response);
+    }
+
+    whereHavingSwitch(selected) {
+
+        if(selected.value) {
+            this.filterBeforeAfter.filterBeforeGrouping = true;
+            return true
+        } else {
+            this.filterBeforeAfter.filterBeforeGrouping = false;
+            return false
+        }
+
     }
 
     addRange(rangeString: string) {
