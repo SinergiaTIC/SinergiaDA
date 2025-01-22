@@ -4317,6 +4317,10 @@
         <source>No es posible crear un rango nuevo por que ya existe uno configurado</source>
         <target>It is not possible to create a new range because a configured one already exists</target>
       </trans-unit>
+      <trans-unit id="textBetween">
+        <source>Entre</source>
+        <target>Between</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>

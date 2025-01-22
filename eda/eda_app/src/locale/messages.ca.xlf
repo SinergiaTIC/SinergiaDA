@@ -4343,6 +4343,10 @@
         <source>No es posible crear un rango nuevo por que ya existe uno configurado</source>
         <target>No és possible crear un rang nou perquè existeixi un configurat</target>
       </trans-unit>
+      <trans-unit id="textBetween">
+        <source>Entre</source>
+        <target>Entre</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>
