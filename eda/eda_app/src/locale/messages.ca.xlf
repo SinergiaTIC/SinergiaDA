@@ -4328,16 +4328,16 @@
         <target>Aquest eix ha de contenir almenys un element</target>
       </trans-unit>
       <trans-unit id="textoTablaCruzadaEjeX">
-        <source>• Eje vertical: Arrastre aquí los campos.</source>
-        <target> • Eix vertical: Arrossegueu aquí els camps.</target>
+        <source> • Eje vertical: Arrastre aquí los campos.</source>
+        <target>• Eix vertical: Arrossegueu aquí els camps.</target>
       </trans-unit>
       <trans-unit id="textoTablaCruzadaEjeY">
-        <source>• Eje horizontal: Arrastre aquí los campos para el eje horizontal de la tabla cruzada.</source>
-        <target> • Eix horitzontal: Arrossegueu aquí els camps per a l'eix horitzontal de la taula creuada.</target>
+        <source> • Eje horizontal: Arrastre aquí los campos para el eje horizontal de la tabla cruzada.</source>
+        <target>• Eix horitzontal: Arrossegueu aquí els camps per a l'eix horitzontal de la taula creuada.</target>
       </trans-unit>
       <trans-unit id="textoTablaCruzadaEjeZ">
-        <source>• Eje numérico: Arrastre aquí solo los campos numéricos.</source>
-        <target> • Eix numèric: Arrossegueu aquí només els camps numèrics.</target>
+        <source> • Eje numérico: Arrastre aquí solo los campos numéricos.</source>
+        <target>• Eix numèric: Arrossegueu aquí només els camps numèrics.</target>
       </trans-unit>
       <trans-unit id="whereMessage">
         <source>Filtro sobre todos los registros</source>
