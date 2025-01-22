@@ -3940,10 +3940,25 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
     <source>Este panel no está disponible por falta de permisos en un filtro</source>
     <target>Ten panel jest niedostępny ze względu na brak uprawnień do filtra</target>
   </trans-unit>
-
+<trans-unit id="aplicarBtn">
+  <source>Aplicar</source>
+  <target>Stosować</target>
+</trans-unit>
 <trans-unit id="DatePickerYearPreviousYearFull">
   <source>El año pasado, completo</source>
   <target>W zeszłym roku, kompletne</target>
+</trans-unit>
+<trans-unit id="whereMessage">
+  <source>Filtro sobre todos los registros</source>
+  <target>Filtruj według wszystkich rekordów</target>
+</trans-unit>
+<trans-unit id="havingMessage">
+  <source>Filtro sobre los resultados</source>
+  <target>Filtruj wyniki</target>
+</trans-unit>
+<trans-unit id="aggregationText">
+  <source>Agregación</source>
+  <target>Zbiór</target>
 </trans-unit>
 <trans-unit id="ptooltipViewTextRanges">
   <source>Al configurar un Rango las agregaciones quedarán bloqueadas, Ejemplo de un rango válido - 12:18:50:100 </source>
