@@ -4303,7 +4303,7 @@
       </trans-unit>
       <trans-unit id="havingMessageLabel">
         <source>Aplicar el filtro sobre los resultados</source>
-        <target>Apply el on results</target>
+        <target>Apply filter on results</target>
       </trans-unit>
       <trans-unit id="aggregationText">
         <source>Agregación</source>
