@@ -4327,15 +4327,15 @@
       </trans-unit>
       <trans-unit id="ptooltipViewTextRanges">
         <source>Al configurar un Rango las agregaciones quedarán bloqueadas, Ejemplo de un rango válido - 12:18:50:100 </source>
-        <target>When setting a Range, the aggregations will be blocked. Example of a valid range - 12:18:50:100 </target>
+        <target>When setting a range, the aggregations will be blocked. Example of a valid range: 12:18:50:100 </target>
       </trans-unit>
       <trans-unit id="rangesExpresionH5">
         <source>Rangos: </source>
-        <target>Ranks: </target>
+        <target>Ranges: </target>
       </trans-unit>
       <trans-unit id="addRange">
         <source>Añadir Rango</source>
-        <target>Add Rank</target>
+        <target>Add a range</target>
       </trans-unit>
       <trans-unit id="rangeDescriptionB">
         <source>Rango</source>
@@ -4351,7 +4351,7 @@
       </trans-unit>
       <trans-unit id="ptooltipNotAvailableRanges">
         <source>No es posible crear un rango nuevo por que ya existe uno configurado</source>
-        <target>It is not possible to create a new range because a configured one already exists</target>
+        <target>It is not possible to create a new range because there is already one</target>
       </trans-unit>
       <trans-unit id="textBetween">
         <source>Entre</source>
