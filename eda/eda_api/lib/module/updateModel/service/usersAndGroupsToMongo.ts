@@ -74,50 +74,40 @@ interface SyncResults {
 class DataCache {
     private static instance: DataCache;
     private cache: Map<string, MongoUser[] | MongoGroup[]>;
+    private needsRefresh: boolean = false;
 
     private constructor() {
         this.cache = new Map();
     }
 
-    /**
-     * Obtiene o crea la instancia única del caché
-     * @returns Instancia del caché limpia
-     */
     static getInstance(): DataCache {
         if (!DataCache.instance) {
             DataCache.instance = new DataCache();
         }
-        DataCache.instance.clearCache();
         return DataCache.instance;
     }
 
-    /**
-     * Elimina todos los datos almacenados en caché
-     */
-    private clearCache(): void {
-        this.cache.clear();
+    markForRefresh(): void {
+        this.needsRefresh = true;
     }
 
-    /**
-     * Recupera usuarios de MongoDB usando caché
-     * @returns Lista de usuarios
-     */
+    private clearCache(): void {
+        this.cache.clear();
+        this.needsRefresh = false;
+    }
+
     async getUsers(): Promise<MongoUser[]> {
         const cacheKey = 'all_users';
-        if (!this.cache.has(cacheKey)) {
+        if (!this.cache.has(cacheKey) || this.needsRefresh) {
             const users = await User.find().lean() as unknown as MongoUser[];
             this.cache.set(cacheKey, users);
         }
         return this.cache.get(cacheKey) as MongoUser[];
     }
 
-    /**
-     * Recupera grupos de MongoDB usando caché
-     * @returns Lista de grupos
-     */
     async getGroups(): Promise<MongoGroup[]> {
         const cacheKey = 'all_groups';
-        if (!this.cache.has(cacheKey)) {
+        if (!this.cache.has(cacheKey) || this.needsRefresh) {
             const groups = await Group.find().lean() as unknown as MongoGroup[];
             this.cache.set(cacheKey, groups);
         }
@@ -139,12 +129,17 @@ export class userAndGroupsToMongo {
         console.log(`Starting sync: ${users.length} users and ${roles.length} role assignments`);
 
         try {
-            // Asegura índices únicos
             await User.collection.createIndex({ email: 1 }, { unique: true });
             await Group.collection.createIndex({ name: 1 }, { unique: true });
 
             const userSyncResults = await this.optimizedUserSync(users);
             const groupSyncResults = await this.optimizedGroupSync(roles);
+
+            // Forzar actualización del caché antes de actualizar las relaciones
+            DataCache.getInstance().markForRefresh();
+            
+            // Actualizar las relaciones después de que los usuarios y grupos están creados
+            await this.updateGroupUsers(roles, await DataCache.getInstance().getGroups());
 
             console.log('Sync completed:', {
                 users: userSyncResults,
@@ -204,6 +199,7 @@ export class userAndGroupsToMongo {
     private static async synchronizeUsers(crmUsersRaw: CRMUser[], emailToMongoUser: Map<string, MongoUser>) {
         const batchSize = 100;
         const operations: any[] = [];
+        let hasChanges = false;
 
         let crmUsers = crmUsersRaw.filter(element => element.active === 1);
         
@@ -224,6 +220,7 @@ export class userAndGroupsToMongo {
                             }
                         }
                     });
+                    hasChanges = true;
                 } else if (existingUser.password !== crmUser.password) {
                     operations.push({
                         updateOne: {
@@ -231,12 +228,17 @@ export class userAndGroupsToMongo {
                             update: { $set: { password: crmUser.password } }
                         }
                     });
+                    hasChanges = true;
                 }
             });
         }
 
         if (operations.length > 0) {
-            return await User.collection.bulkWrite(operations, { ordered: false });
+            const result = await User.collection.bulkWrite(operations, { ordered: false });
+            if (hasChanges) {
+                DataCache.getInstance().markForRefresh();
+            }
+            return result;
         }
         
         return null;
@@ -323,6 +325,7 @@ export class userAndGroupsToMongo {
     private static async synchronizeGroups(roles: CRMRole[], nameToMongoGroup: Map<string, MongoGroup>) {
         const uniqueGroups = [...new Set(roles.map(item => item.name))];
         const operations: any[] = [];
+        let hasChanges = false;
 
         uniqueGroups.forEach(groupName => {
             if (!nameToMongoGroup.has(groupName) &&
@@ -337,11 +340,16 @@ export class userAndGroupsToMongo {
                         }
                     }
                 });
+                hasChanges = true;
             }
         });
 
         if (operations.length > 0) {
-            return await Group.collection.bulkWrite(operations, { ordered: false });
+            const result = await Group.collection.bulkWrite(operations, { ordered: false });
+            if (hasChanges) {
+                DataCache.getInstance().markForRefresh();
+            }
+            return result;
         }
 
         return null;
