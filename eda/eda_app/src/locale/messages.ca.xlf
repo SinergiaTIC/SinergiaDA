@@ -4349,11 +4349,11 @@
       </trans-unit>
       <trans-unit id="whereMessageLabel">
         <source>Aplicar el filtro sobre todos los registros</source>
-        <target>Aplicar el filtre sobre tots els registres</target>
+        <target>Aplica el filtre sobre tots els registres</target>
       </trans-unit>
       <trans-unit id="havingMessageLabel">
         <source>Aplicar el filtro sobre los resultados</source>
-        <target>Aplicar el filtre sobre els resultats</target>
+        <target>Aplica el filtre sobre els resultats</target>
       </trans-unit>
       <trans-unit id="aggregationText">
         <source>Agregación</source>
