@@ -140,7 +140,7 @@ export class updateModel {
                    // Obtener roles EDA
                    await connection
                      .query(
-                       'select "EDA_USER_ROLE" as role, b.name, "" as user_name  from sda_def_groups b union select "EDA_USER_ROLE" as role, g.name as name , g.user_name from sda_def_user_groups g; '
+                       'select "EDA_USER_ROLE" as role, g.name as name , g.user_name from sda_def_user_groups g; '
                      )
                      .then(async role => {
                        let roles = role;
