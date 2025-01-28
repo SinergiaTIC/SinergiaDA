@@ -29,7 +29,7 @@ export abstract class QueryBuilderService {
         this.tables = dataModel.ds.model.tables;
     }
 
-    abstract getFilters(filters, type: string);
+    abstract getFilters(filters, type: string, pTable: string);
     abstract getJoins(joinTree: any[], dest: any[], tables: Array<any>, 
         joinType:string, valueListJoins:Array<any>, schema?: string, database?: string);
     abstract getSeparedColumns(origin: string, dest: string[]);
@@ -114,7 +114,6 @@ export abstract class QueryBuilderService {
 
         /** ..........................PER ELS VALUE LISTS................................ */
 
-
         const filterTables = this.queryTODO.filters.map(filter => filter.filter_table);
 
         // Afegim a dest les taules dels filtres
@@ -123,6 +122,7 @@ export abstract class QueryBuilderService {
                 dest.push(table);
             }
         });
+
 
         if (this.permissions.length > 0) {
             this.permissions.forEach(permission => {
@@ -275,18 +275,15 @@ export abstract class QueryBuilderService {
             let column =  this.queryTODO.fields.find(c=> f.filter_table == c.table_id && f.filter_column == c.column_name );
             if(column){
                 if(column.hasOwnProperty('aggregation_type')){
-                    return column.aggregation_type==='none' || [ 'not_null' , 'not_null_nor_empty' , 'null_or_empty'].includes( f.filter_type) ?true:false;
+                    return column.aggregation_type==='none' || [ 'not_null' , 'not_null_nor_empty' , 'null_or_empty'].includes( f.filter_type) ?true:false || f.filterBeforeGrouping;
                 }else{
                     return true;
                 }
             }else{
-                return true;
+                return f.filterBeforeGrouping;
             }
-            });
+        });
 
-
-
-            
         // para los filtros en los value list
         filters.forEach(f => {
             if (f.valueListSource) {
@@ -296,16 +293,13 @@ export abstract class QueryBuilderService {
             }
         });
 
-
-
-
         //TO HAVING CLAUSE 
         const havingFilters = this.queryTODO.filters.filter(f => {
             const column = this.queryTODO.fields.find(e => e.table_id === f.filter_table &&   f.filter_column === e.column_name);
             if(column){
-            return column.column_type=='numeric' && column.aggregation_type!=='none'?true:false;
+            return (column.column_type=='numeric' && column.aggregation_type!=='none'?true:false) && !f.filterBeforeGrouping;
             }else{
-                return false;
+                return !f.filterBeforeGrouping;
             }
         }).filter(f=> ![ 'not_null' , 'not_null_nor_empty' , 'null_or_empty'].includes( f.filter_type));
 
@@ -316,6 +310,7 @@ export abstract class QueryBuilderService {
         } else {
             let tables = this.dataModel.ds.model.tables
                 .map(table => { return { name: table.table_name, query: table.query } });
+            
             this.query = this.normalQuery(columns, origin, dest, joinTree, grouping,  filters, havingFilters,  tables,
                 this.queryTODO.queryLimit,   this.queryTODO.joinType, valueListJoins, this.dataModel.ds.connection.schema, 
                 this.dataModel.ds.connection.database, this.queryTODO.forSelector);
@@ -490,8 +485,6 @@ export abstract class QueryBuilderService {
             })
 
         }
-        //console.log('disgtra devuelve: ');
-        //console.log(v)
         return (v);
     }
 
@@ -530,7 +523,6 @@ export abstract class QueryBuilderService {
         const permissions = this.getUserPermissions(modelPermissions);
 
        const relatedTables = this.checkRelatedTables(modelTables, originTable); 
-        //console.log('relatedTables', relatedTables);
 
         let found = -1;
         if (relatedTables !== null && permissions !== null) {
@@ -557,8 +549,6 @@ export abstract class QueryBuilderService {
             });
         }
 
-
-       // console.log(filters);
         return filters;
     }
 
@@ -570,12 +560,10 @@ export abstract class QueryBuilderService {
          * Tengo que añadir los wheres que tocan a la consulta para implmentar los permisos.
          **/      
 
-        //console.log('Tree Model permissions');
         let filters = [];
         let columns = [];
        
         const permissions = this.getUserPermissions(modelPermissions);
-        //console.log('No recursively....');
 
         query.fields.forEach(f => {
             columns.push( { table_name:  f.table_id,  column_name: f.column_name } )
@@ -686,8 +674,36 @@ export abstract class QueryBuilderService {
         return col;
     }
 
-    public findHavingColumn(table: string, column: string) {
-        return this.queryTODO.fields.find((f: any)=> f.table_id === table && f.column_name === column);
+    public findHavingColumn( havingFilter:any) {
+        
+
+        if(this.queryTODO.fields.find((f: any)=> f.table_id === havingFilter.filter_table && 
+                                            f.filter === havingFilter.filter_column)){
+            return this.queryTODO.fields.find((f: any)=> f.table_id === havingFilter.filter_table && 
+                                             f.filter === havingFilter.filter_column);
+        }else{
+
+            return  { // devolvemos una columna ficticia con los valores que necesitamos para hacer el having
+                table_id: havingFilter.filter_table ,
+                column_name: havingFilter.filter_column,
+                display_name: havingFilter.filter_column,
+                column_type: havingFilter.filter_column_type,
+                old_column_type: havingFilter.filter_column_type,
+                aggregation_type: havingFilter.aggregation_type,
+                ordenation_type: 'Asc',
+                order: 1,
+                column_granted_roles: [],
+                row_granted_roles: [],
+                tableCount: 0,
+                minimumFractionDigits: 0,
+                whatif_column: false,
+                whatif: {},
+                joins: [],
+                autorelation: false
+            }
+        }
+
+        
     }
 
     public setFilterType(filter: string) {
