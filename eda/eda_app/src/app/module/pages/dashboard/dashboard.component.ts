@@ -109,6 +109,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     public Seconds_to_refresh = $localize`:@@seconds_to_refresh:Intervalo de recarga`;
     public canIeditTooltip = $localize`:@@canIeditTooltip:Si esta opción está seleccionada sólo el propietario del informe y los administradores podrán guardar los cambios`;
     //public globalFilter: any;
+    public notDataAllowed: boolean = false;
 
     constructor(
         private router: Router,
@@ -564,12 +565,20 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
         const user = sessionStorage.getItem('user');
         const userID = JSON.parse(user)._id;
 
+        // Buscamos en todos los paneles si existe un con los campos vacios, lo cual indica que no tiene permisos para visualizar la data
+        if(this.panels.some(panel => panel.content?.query.query.fields.length===0)){
+            this.notDataAllowed=true;
+        }
+
         this.inject = {
             dataSource: this.dataSource,
             dashboard_id: this.dashboard.id,
             applyToAllfilter: this.applyToAllfilter,
-            isObserver: this.grups.filter(group => group.name === 'EDA_RO' && group.users.includes(userID)).length !== 0
+            isObserver: (this.grups.filter(group => group.name === 'EDA_RO' && group.users.includes(userID)).length !== 0) || this.notDataAllowed, // No permite la visibilidad a las opciones, depende de la variable notDataAllowed
         }
+        
+        // No permite la visibilidad al sidebar, depende de la variable notDataAllowed
+        this.display_v.edit_mode = !this.notDataAllowed;
     }
 
     private setPanelSizes(panel) {
