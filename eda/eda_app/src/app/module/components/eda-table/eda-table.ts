@@ -762,13 +762,76 @@ extractDataValues(val) {
         this.cols = cols;
 
     }
+
     onHeaderClick(serie) {
+
+        if(!serie.sortable) {
+            console.log('NO ES UN CAMPO PARA ORDENAR')
+            return
+        } else {
+
+            const actualField = serie.column;
+            const actualCol = _.cloneDeep(this.cols.find(col => col.field === actualField))
+
+            this.value.sort((data1, data2) => {
+                let value1 = data1[serie.column];
+                let value2 = data2[serie.column];
+                let result = null 
+
+                if (value1 == null && value2 != null)
+                    result = -1;
+                else if (value1 != null && value2 == null)
+                    result = 1;
+                else if (value1 == null && value2 == null)
+                    result = 0;
+                else if (typeof value1 === 'string' && typeof value2 === 'string') {
+                    if(actualCol.rangeOption) {
+                        const match1 = this.extractNumberRange(value1)
+                        const match2 = this.extractNumberRange(value2)
+                        result = (match1 < match2) ? -1 : (match1 > match2) ? 1 : 0;
+                    } else
+                        result = value1.localeCompare(value2);
+                }
+                else
+                    result = (value1 < value2) ? -1 : (value1 > value2) ? 1 : 0;
+    
+                return (serie.order * result);
+            })
+
+            if(serie.order === undefined){
+                serie.order = 1;
+            } else {
+                serie.order = serie.order*(-1);
+            }
+
+            console.log('serie: ',serie)
+            console.log('cols: ', this.cols)
+            console.log('this: ', this);
+            console.log('this.value::: ',this.value)
+
+        }
+
         serie.sortState = !serie.sortState;
         this.sort(serie);
         this.sortedSerie = serie;
         this.onSortPivotEvent.emit(this.sortedSerie);
         this.checkTotals(null);
     };
+
+    extractNumberRange(input) {
+        const regex = /(?:<|<=|>|>=)?\s*(-?\d+)\s*(?:-|<|<=|>|>=)?\s*(-?\d+)?/;
+        const match = input.trim().match(regex);
+        
+        if (match) {
+          // Determina qué número extraer en base al formato del string
+          if (input.includes('<') || input.includes('>')) {
+            return parseInt(match[1], 10); // Extrae el primer número
+          } else {
+            return match[2] ? parseInt(match[2], 10) : null; // Extrae el segundo número si está presente
+          }
+        }
+        return null; // Si no hay coincidencia
+    }
 
     loadSort() {
         this.checkTotals(null);
@@ -921,7 +984,7 @@ extractDataValues(val) {
 
         const tableColumns = [];
         params.mainCols.forEach(element => {
-            tableColumns.push(new EdaColumnText({ header: element['header'], field: element['field'] }))
+            tableColumns.push(new EdaColumnText({ header: element['header'], field: element['field'], rangeOption: element['rangeOption'] }))
         })
         newColNames.forEach(col => {
             tableColumns.push(new EdaColumnNumber({ header: col, field: col }));
