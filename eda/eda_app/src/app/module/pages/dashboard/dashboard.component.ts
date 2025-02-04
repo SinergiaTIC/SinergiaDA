@@ -560,6 +560,10 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
         });
     }
 
+    public notAllowedFilterFunction(event) {
+        if(event[0]==='noFilterAllowed') this.display_v.edit_mode = false;
+    }
+
     // Dashboard Panels
     private initializePanels(): void {
         const user = sessionStorage.getItem('user');
