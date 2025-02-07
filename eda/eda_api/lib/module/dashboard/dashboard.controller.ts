@@ -293,7 +293,10 @@ export class DashboardController {
 			
             const includesAdmin = req.user.role.includes("135792467811111111111110")
 
+            let is_filtered = false;
+
             if (!includesAdmin) {
+              console.log('epaaaaaaaaaAAAA AQUIIIII');
               try {
                 // Poso taules prohivides a false
                 if (uniquesForbiddenTables.length > 0) {
@@ -305,7 +308,8 @@ export class DashboardController {
                           toJson.ds.model.tables[x].table_name
                         )
                       ) {
-                        toJson.ds.model.tables[x].visible = false
+                        toJson.ds.model.tables[x].visible = false;
+                        is_filtered = true;
                       }
                     } catch (e) {
                       console.log('Error evaluating role permission')
@@ -348,10 +352,12 @@ export class DashboardController {
                       if (notAllowedColumns.length > 0) {
                         dashboard.config.panel[
                           i
-                        ].content.query.query.fields = MyFields
+                        ].content.query.query.fields = MyFields;
+                        is_filtered = true;
                       }
                     }
                   }
+                  
                 }
               } catch (error) {
 
@@ -360,11 +366,11 @@ export class DashboardController {
 
             }
 
-
             const ds = {
               _id: datasource._id,
               model: toJson.ds.model,
-              name: toJson.ds.metadata.model_name
+              name: toJson.ds.metadata.model_name,
+              is_filtered: is_filtered,
             }
 
             insertServerLog(
@@ -617,9 +623,6 @@ export class DashboardController {
         }
       }
     }
-    //console.log('Tablas prohividas para el grupo');
-    //console.log(forbiddenTables);
-
 
     /** allowed tables by security */
     if (dataModelObject.ds.metadata.model_granted_roles !== undefined) {
