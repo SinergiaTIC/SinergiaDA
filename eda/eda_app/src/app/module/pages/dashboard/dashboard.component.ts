@@ -417,6 +417,13 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
                         grp = res.dashboard.group;
                     }
 
+
+/**SDA CUSTOM */    if(  res.datasource.hasOwnProperty('is_filtered') &&  res.datasource.is_filtered == true){
+/**SDA CUSTOM */        if (res.dashboard.config.panel){
+/**SDA CUSTOM */            res.dashboard.config.panel = res.dashboard.config.panel.filter( (p)=> p.content.query.query.queryMode != 'SQL' )
+/**SDA CUSTOM */       }
+/**SDA CUSTOM */    }
+
                     // Si el dashboard no te cap panel es crea un automatic
                     if (!res.dashboard.config.panel) {
                         me.panels.push(
