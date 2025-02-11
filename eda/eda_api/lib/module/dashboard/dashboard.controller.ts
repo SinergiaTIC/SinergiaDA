@@ -293,6 +293,8 @@ export class DashboardController {
 			
             const includesAdmin = req.user.role.includes("135792467811111111111110")
 
+            let is_filtered = false;
+
             if (!includesAdmin) {
               try {
                 // Poso taules prohivides a false
@@ -306,13 +308,13 @@ export class DashboardController {
                         )
                       ) {
                         toJson.ds.model.tables[x].visible = false
+                        is_filtered= true;
                       }
                     } catch (e) {
                       console.log('Error evaluating role permission')
                       console.log(e)
                     }
                   }
-
                   // Oculto columnes als panells
                   for (let i = 0; i < dashboard.config.panel.length; i++) {
                     if (dashboard.config.panel[i].content != undefined) {
@@ -348,23 +350,21 @@ export class DashboardController {
                       if (notAllowedColumns.length > 0) {
                         dashboard.config.panel[
                           i
-                        ].content.query.query.fields = MyFields
+                        ].content.query.query.fields = MyFields;
+                        is_filtered= true;
                       }
                     }
                   }
                 }
               } catch (error) {
-
                 console.log('no pannels in dashboard')
               }
-
             }
-
-
             const ds = {
               _id: datasource._id,
               model: toJson.ds.model,
-              name: toJson.ds.metadata.model_name
+              name: toJson.ds.metadata.model_name,
+              is_filtered: is_filtered
             }
 
             insertServerLog(
@@ -1293,7 +1293,7 @@ export class DashboardController {
             for (var i = 0; i < results.length; i++) {
               var e = results[i]
               for (var j = 0; j < e.length; j++) {
-                if(oracleDataTypes[j][0]=='int'  ){
+                if( oracleDataTypes[j][0] && oracleDataTypes[j][0]=='int'  ){
                   if ( results[i][j] ==  eda_api_config.null_value ) {
                     results[i][j] = null;
                   }
