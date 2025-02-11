@@ -1149,6 +1149,7 @@ export class DashboardController {
       /**Security check */
       const allowed = DashboardController.securityCheck(dataModel, req.user)
       if (!allowed) {
+        console.log('SQL Query not allowed by security');
         return next(
           new HttpException(
             500,
@@ -1196,7 +1197,7 @@ export class DashboardController {
           return next(new HttpException(500,'Queries in format "select x from A, B" are not suported'));
         }
 
-        console.log('\x1b[32m%s\x1b[0m', `QUERY for user ${req.user.name}, with ID: ${req.user._id},  at: ${formatDate(new Date())} `);
+        console.log('\x1b[32m%s\x1b[0m', `SQL QUERY for user ${req.user.name}, with ID: ${req.user._id},  at: ${formatDate(new Date())} `);
         console.log(query)
         console.log('\n-------------------------------------------------------------------------------\n');
 

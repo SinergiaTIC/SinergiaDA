@@ -393,7 +393,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
                     this.checkVisibility(res.dashboard);
                     me.setDashboardCreator(res.dashboard);
                     me.title = config.title; // Titul del dashboard, utilitzat per visualització
-                    me.gFilter.initGlobalFilters(config.filters||[]); // Filtres del dashboard
+                    me.gFilter.initGlobalFilters(   this.checkFiltersVisibility( config.filters , res.datasource.model.tables ) ||[]); // Filtres del dashboard
                     me.dataSource = res.datasource; // DataSource del dashboard
                     me.datasourceName = res.datasource.name;
                     me.applyToAllfilter = config.applyToAllfilter || { present: false, refferenceTable: null, id: null };
@@ -417,13 +417,6 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
                     if (config.visible === 'group' && res.dashboard.group) {
                         grp = res.dashboard.group;
                     }
-
-
-/**SDA CUSTOM */    if(  res.datasource.hasOwnProperty('is_filtered') &&  res.datasource.is_filtered == true){
-/**SDA CUSTOM */        if (res.dashboard.config.panel){
-/**SDA CUSTOM */            res.dashboard.config.panel = res.dashboard.config.panel.filter( (p)=> p.content.query.query.queryMode != 'SQL' )
-/**SDA CUSTOM */       }
-/**SDA CUSTOM */    }
 
                     // Si el dashboard no te cap panel es crea un automatic
                     if (!res.dashboard.config.panel) {
@@ -660,6 +653,24 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
         }catch(e){
             // todavia no se han seteado me.grups o me.dashboard.goup.
         }
+    }
+
+
+
+/** 
+ * Comprueba la configuración de seguridad de los filtros y pone la columna a invisible si el filtro no es visible para el usuario por motivos de filtro de seguridad
+ * @param filters - recibe el array de filtros del informe
+ * @param tables - recibe el array de tablas del modelo.
+ * @returns  - el array de filtros del informe informando cual es oculto por la seguridad
+ */
+    private checkFiltersVisibility( filters, tables){
+        filters.forEach(  (f) => {
+            f.selectedColumn.visible =  ( 
+                  ( tables.filter((t)=> t.table_name == f.selectedTable.table_name   )[0]?.visible  == true )    &&
+                  ( tables.filter((t)=> t.table_name == f.selectedTable.table_name   )[0]?.columns.filter( (c)=>c.column_name == f.selectedColumn.column_name )[0]?.visible  == true )   
+                                        )
+        })
+        return filters;
     }
 
     private checkVisibility(dashboard) {
