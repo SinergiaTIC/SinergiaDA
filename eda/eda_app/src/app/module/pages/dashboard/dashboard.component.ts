@@ -669,6 +669,10 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
                   ( tables.filter((t)=> t.table_name == f.selectedTable.table_name   )[0]?.visible  == true )    &&
                   ( tables.filter((t)=> t.table_name == f.selectedTable.table_name   )[0]?.columns.filter( (c)=>c.column_name == f.selectedColumn.column_name )[0]?.visible  == true )   
                                         )
+            // si he puesto el valor a false deshabilito el que pueda gaurdar.
+            if(f.selectedColumn.visible  == false ){
+                this.notDataAllowed = true;
+            }
         })
         return filters;
     }
