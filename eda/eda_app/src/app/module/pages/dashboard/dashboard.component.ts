@@ -664,16 +664,18 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
  * @returns  - el array de filtros del informe informando cual es oculto por la seguridad
  */
     private checkFiltersVisibility( filters, tables){
-        filters.forEach(  (f) => {
-            f.selectedColumn.visible =  ( 
-                  ( tables.filter((t)=> t.table_name == f.selectedTable.table_name   )[0]?.visible  == true )    &&
-                  ( tables.filter((t)=> t.table_name == f.selectedTable.table_name   )[0]?.columns.filter( (c)=>c.column_name == f.selectedColumn.column_name )[0]?.visible  == true )   
-                                        )
-            // si he puesto el valor a false deshabilito el que pueda gaurdar.
-            if(f.selectedColumn.visible  == false ){
-                this.notDataAllowed = true;
-            }
-        })
+        if(filters && filters.length >0 ){
+            filters.forEach(  (f) => {
+                f.selectedColumn.visible =  ( 
+                    ( tables.filter((t)=> t.table_name == f.selectedTable.table_name   )[0]?.visible  == true )    &&
+                    ( tables.filter((t)=> t.table_name == f.selectedTable.table_name   )[0]?.columns.filter( (c)=>c.column_name == f.selectedColumn.column_name )[0]?.visible  == true )   
+                                            )
+                // si he puesto el valor a false deshabilito el que pueda gaurdar.
+                if(f.selectedColumn.visible  == false ){
+                    this.notDataAllowed = true;
+                }
+            })
+        }
         return filters;
     }
 
