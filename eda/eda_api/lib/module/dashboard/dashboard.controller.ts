@@ -318,39 +318,27 @@ export class DashboardController {
                   // Oculto columnes als panells
                   for (let i = 0; i < dashboard.config.panel.length; i++) {
                     if (dashboard.config.panel[i].content != undefined) {
-                      let MyFields = []
-                      let notAllowedColumns = []
-                      for (
-                        let c = 0;
-                        c <
-                        dashboard.config.panel[i].content.query.query.fields
-                          .length;
-                        c++
-                      ) {
-                        if (
-                          uniquesForbiddenTables.includes(
-                            dashboard.config.panel[i].content.query.query.fields[
-                              c
-                            ].table_id
-                          )
-                        ) {
+                      let MyFields = [];
+                      let notAllowedColumns = [];
+
+                      for ( let c = 0; c < dashboard.config.panel[i].content.query.query.fields.length; c++ ) {
+                        if ( uniquesForbiddenTables.includes( dashboard.config.panel[i].content.query.query.fields[ c ].table_id.split('.')[0]  ) ) { /** split('.')[0]  esto se hace para el  filtro en modo arbol */
                           notAllowedColumns.push(
-                            dashboard.config.panel[i].content.query.query.fields[
-                            c
-                            ]
+                            dashboard.config.panel[i].content.query.query.fields[ c ]
                           )
                         } else {
                           MyFields.push(
-                            dashboard.config.panel[i].content.query.query.fields[
-                            c
-                            ]
+                            dashboard.config.panel[i].content.query.query.fields[ c ]
                           )
                         }
                       }
                       if (notAllowedColumns.length > 0) {
-                        dashboard.config.panel[
-                          i
-                        ].content.query.query.fields = MyFields;
+                        dashboard.config.panel[ i ].content.query.query.fields = MyFields;
+                        is_filtered= true;
+                      }
+                      // SI NO TENGO PERMISOS SOBRE LA TABLA PRINCIPAL DEL ARBOL NO VEO NADA 
+                      if( dashboard.config.panel[i].content.query.query.queryMode == 'EDA2'  &&  uniquesForbiddenTables.includes( dashboard.config.panel[i].content.query.query.rootTable ) ) {
+                        dashboard.config.panel[ i ].content.query.query.fields = [];
                         is_filtered= true;
                       }
                     }

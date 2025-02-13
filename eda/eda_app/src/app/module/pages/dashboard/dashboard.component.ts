@@ -579,6 +579,10 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
         
         // No permite la visibilidad al sidebar, depende de la variable notDataAllowed
         this.display_v.edit_mode = !this.notDataAllowed;
+        // Verifica que el si el dashboard si esta filtrado o no. 
+        if(this.dashboard.datasSource.is_filtered) {
+            this.display_v.edit_mode = false;
+        }
     }
 
     private setPanelSizes(panel) {
