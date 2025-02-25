@@ -583,10 +583,6 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
         if(this.dashboard.datasSource.is_filtered) {
             this.display_v.edit_mode = false;
         }
-        // Si soy el propietario del informe se habilita todo el control.
-        if( this.dashboard.user == this.userService.user._id){
-            this.display_v.edit_mode = true;
-        }
     }
 
     private setPanelSizes(panel) {

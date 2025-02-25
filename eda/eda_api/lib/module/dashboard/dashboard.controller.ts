@@ -302,13 +302,8 @@ export class DashboardController {
                   // Poso taules prohivides a false
                   for (let x = 0; x < toJson.ds.model.tables.length; x++) {
                     try {
-                      if (
-                        uniquesForbiddenTables.includes(
-                          toJson.ds.model.tables[x].table_name
-                        )
-                      ) {
-                        toJson.ds.model.tables[x].visible = false
-                        is_filtered= true;
+                      if ( uniquesForbiddenTables.includes( toJson.ds.model.tables[x].table_name ) ) {
+                        toJson.ds.model.tables[x].visible = false;
                       }
                     } catch (e) {
                       console.log('Error evaluating role permission')
@@ -421,6 +416,7 @@ export class DashboardController {
         const createdAt=dashboard.config.createdAt
         dashboard.config = body.config
         dashboard.config.createdAt = createdAt
+        dashboard.user = req.user._id
         dashboard.group = body.group
         /**avoid dashboards without name */
         if (dashboard.config.title === null) { dashboard.config.title = '-' };
