@@ -336,6 +336,14 @@ export class DashboardController {
                         dashboard.config.panel[ i ].content.query.query.fields = [];
                         is_filtered= true;
                       }
+
+                      // si no tengo permiso sobre los filtros.
+                      for ( let c = 0; c < dashboard.config.panel[i].content.query.query.filters.length; c++ ) {
+                        if ( uniquesForbiddenTables.includes( dashboard.config.panel[i].content.query.query.filters[c].filter_table.split('.')[0]   ) ) { /** split('.')[0]  esto se hace para el  filtro en modo arbol */
+                          is_filtered= true;
+                        } 
+                      }
+
                     }
                   }
                 }
