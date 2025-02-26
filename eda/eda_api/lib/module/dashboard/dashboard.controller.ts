@@ -343,7 +343,13 @@ export class DashboardController {
                           is_filtered= true;
                         } 
                       }
-
+                      if(dashboard.config.panel[i].content.query.query.queryMode == 'SQL'){
+                        for(let j=0; j<uniquesForbiddenTables.length; j++ ){
+                          if ( dashboard.config.panel[i].content.query.query.SQLexpression.toUpperCase().indexOf( uniquesForbiddenTables[j].toUpperCase()   ) > 0  ) {  
+                            is_filtered= true;
+                          } 
+                        }
+                      }
                     }
                   }
                 }
