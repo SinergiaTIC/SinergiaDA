@@ -574,11 +574,12 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
             dataSource: this.dataSource,
             dashboard_id: this.dashboard.id,
             applyToAllfilter: this.applyToAllfilter,
-            isObserver: (this.grups.filter(group => group.name === 'EDA_RO' && group.users.includes(userID)).length !== 0) || this.notDataAllowed, // No permite la visibilidad a las opciones, depende de la variable notDataAllowed
+            isObserver: (this.grups.filter(group => group.name === 'EDA_RO' && group.users.includes(userID)).length !== 0) 
+                        || userID == '135792467811111111111112' // Si el usuario es edaanonim
+                        || this.notDataAllowed, // No permite la visibilidad a las opciones, depende de la variable notDataAllowed
         }
-        
         // No permite la visibilidad al sidebar, depende de la variable notDataAllowed
-        this.display_v.edit_mode = !this.notDataAllowed;
+        this.display_v.edit_mode = !this.notDataAllowed && !this.display_v.anonimous_mode;
         // Verifica que el si el dashboard si esta filtrado o no. 
         if(this.dashboard.datasSource.is_filtered) {
             this.display_v.edit_mode = false;
@@ -632,7 +633,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
         const userName = JSON.parse(user).name;
         const userID = JSON.parse(user)._id;
         this.display_v.edit_mode = (userName !== 'edaanonim') && !(this.grups.filter(group => group.name === 'EDA_RO' && group.users.includes(userID)).length !== 0)
-        this.display_v.anonimous_mode = (userName !== 'edaanonim');
+        this.display_v.anonimous_mode = userName == 'edaanonim';
     }
 
 
