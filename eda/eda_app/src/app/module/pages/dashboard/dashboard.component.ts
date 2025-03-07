@@ -684,8 +684,13 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
         return filters;
     }
 
+    /**
+     *  comprueba si se puede consultar un informe. Esto esta hecho para que  si estás con el usuario anónimo
+     *  Sólo puedas ver informes públicos.
+     * @param dashboard   dashboard a comprobar
+     */
     private checkVisibility(dashboard) {
-        if (!this.display_v.anonimous_mode && dashboard.config.visible !== 'shared') {
+        if (this.display_v.anonimous_mode && dashboard.config.visible !== 'shared') {
             console.log('Check visibility... you cannot see this dashboard');
             this.router.navigate(['/login']);
         }
