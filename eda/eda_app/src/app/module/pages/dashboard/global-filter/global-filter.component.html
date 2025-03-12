@@ -21,18 +21,18 @@
           <!-- SDA CUSTOM --> <span *ngIf="( isAdmin || isDashboardCreator || (['public', 'readOnly'].includes(filter.visible)   &&  (filter.selectedColumn?.visible || filter.column?.value?.visible)) )" class="filter-name filters-size">
                 {{getFilterLabel(filter)}}:
             </span>
-
-
-            <!-- SDA CUSTOM --> <ng-container
+        
+        
+            <!-- SDA CUSTOM --> <ng-container 
             *ngIf="( isAdmin || isDashboardCreator || (['public', 'readOnly'].includes(filter.visible)   &&  (filter.selectedColumn?.visible || filter.column?.value.visible)) )"
             [ngSwitch]="getFilterType(filter)" >
                 <div *ngSwitchCase="'date'">
-                    <eda-date-picker
+                    <eda-date-picker 
                         [autoClear]="true"
                         [inject]="datePickerConfigs[filter.id]"
                         (onRemove)="removeGlobalFilter(filter, true)"
                         (onDatesChanges)="processPickerEvent($event, filter)">
-      
+        
                         <ng-container footer>
                             <button id="dashFilterConf"
                                 pButton pRipple type="button"
@@ -58,7 +58,7 @@
                         [style]="{'max-width': '250px', 'min-width':'200px', 'font-family':'var(--eda-filters-font-family)'}"
                         [Show]="dropdownFiltersSize(filter)"
                         (onChange)="setGlobalFilterItems(filter)">
-    
+        
                         <p-footer>
                             <button *ngIf="dashboard.canIedit()" id="dashFilterConf"
                                 pButton pRipple type="button"
