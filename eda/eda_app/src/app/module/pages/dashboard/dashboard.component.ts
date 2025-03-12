@@ -141,6 +141,8 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
 
     // ng cycle lives
     public ngOnInit(): void {
+
+      console.log('abc');
         this.dashboard = new Dashboard({});
 
         this.initializeDashboard();
@@ -393,6 +395,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
                     this.checkVisibility(res.dashboard);
                     me.setDashboardCreator(res.dashboard);
                     me.title = config.title; // Titul del dashboard, utilitzat per visualització
+                    console.log('recuperando DS');
                     me.gFilter.initGlobalFilters(   this.checkFiltersVisibility( config.filters , res.datasource.model.tables ) ||[]); // Filtres del dashboard
                     me.dataSource = res.datasource; // DataSource del dashboard
                     me.datasourceName = res.datasource.name;
@@ -576,10 +579,10 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
             applyToAllfilter: this.applyToAllfilter,
             isObserver: (this.grups.filter(group => group.name === 'EDA_RO' && group.users.includes(userID)).length !== 0) || this.notDataAllowed, // No permite la visibilidad a las opciones, depende de la variable notDataAllowed
         }
-        
+
         // No permite la visibilidad al sidebar, depende de la variable notDataAllowed
         this.display_v.edit_mode = !this.notDataAllowed;
-        // Verifica que el si el dashboard si esta filtrado o no. 
+        // Verifica que el si el dashboard si esta filtrado o no.
         if(this.dashboard.datasSource.is_filtered) {
             this.display_v.edit_mode = false;
         }
@@ -661,25 +664,42 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
 
 
 
-/** 
+/**
  * Comprueba la configuración de seguridad de los filtros y pone la columna a invisible si el filtro no es visible para el usuario por motivos de filtro de seguridad
  * @param filters - recibe el array de filtros del informe
  * @param tables - recibe el array de tablas del modelo.
  * @returns  - el array de filtros del informe informando cual es oculto por la seguridad
  */
     private checkFiltersVisibility( filters, tables){
+      console.log('filters',filters);
+      console.log('tables', tables);
+
         if(filters && filters.length >0 ){
-            filters.forEach(  (f) => {
-                f.selectedColumn.visible =  ( 
-                    ( tables.filter((t)=> t.table_name == f.selectedTable.table_name   )[0]?.visible  == true )    &&
-                    ( tables.filter((t)=> t.table_name == f.selectedTable.table_name   )[0]?.columns.filter( (c)=>c.column_name == f.selectedColumn.column_name )[0]?.visible  == true )   
-                                            )
-                // si he puesto el valor a false deshabilito el que pueda gaurdar.
-                if(f.selectedColumn.visible  == false ){
-                    this.notDataAllowed = true;
-                }
-            })
+          filters.forEach((f) => {
+            if (f.selectedColumn && f.selectedTable) {
+              f.selectedColumn.visible = (
+                (tables.filter((t) => t.table_name == f.selectedTable.table_name)[0]?.visible == true) &&
+                (tables.filter((t) => t.table_name == f.selectedTable.table_name)[0]?.columns.filter((c) => c.column_name == f.selectedColumn.column_name)[0]?.visible == true)
+              )
+              // si he puesto el valor a false deshabilito el que pueda guardar.
+              if (f.selectedColumn.visible == false) {
+                this.notDataAllowed = true;
+              }
+            } else {
+              f.column.value.visible = (
+                (tables.filter((t) => t.table_name == f.table.label)[0]?.visible == true) &&
+                (tables.filter((t) => t.table_name == f.table.label)[0]?.columns.filter((c) => c.column_name == f.column.value.column_name)[0]?.visible == true)
+              )
+              // si he puesto el valor a false deshabilito el que pueda guardar.
+              if (f.column.value.visible == false) {
+                this.notDataAllowed = true;
+              }
+            }
+          })
         }
+      console.log('filters2',filters);
+      console.log('tables2', tables);
+
         return filters;
     }
 
