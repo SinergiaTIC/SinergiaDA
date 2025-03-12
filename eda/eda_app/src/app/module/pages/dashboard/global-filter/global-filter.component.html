@@ -17,12 +17,13 @@
 
     
         <div *ngFor="let filter of globalFilters" class="filter-set d-flex align-items-center">
-
+          <!-- SDA CUSTOM <span *ngIf="( isAdmin || isDashboardCreator || ['public', 'readOnly'].includes(filter.visible) )  &&  filter.selectedColumn.visible " class="filter-name filters-size"> --> 
           <!-- SDA CUSTOM --> <span *ngIf="( isAdmin || isDashboardCreator || (['public', 'readOnly'].includes(filter.visible)   &&  (filter.selectedColumn?.visible || filter.column?.value?.visible)) )" class="filter-name filters-size">
                 {{getFilterLabel(filter)}}:
             </span>
             
-            
+            <!-- SDA CUSTOM  <ng-container -->
+            <!-- SDA CUSTOM *ngIf="( isAdmin || isDashboardCreator ||   ['public', 'readOnly'].includes(filter.visible) ) &&  filter.selectedColumn.visible  " --> 
             <!-- SDA CUSTOM --> <ng-container 
             *ngIf="( isAdmin || isDashboardCreator || (['public', 'readOnly'].includes(filter.visible)   &&  (filter.selectedColumn?.visible || filter.column?.value.visible)) )"
             [ngSwitch]="getFilterType(filter)" >
@@ -45,6 +46,7 @@
                 </div>
                 <div *ngSwitchDefault>
 
+                    <!-- SDA CUSTOM <p-multiSelect *ngIf="filter.data && ( isAdmin || isDashboardCreator || (['public', 'readOnly'].includes(filter.visible)   &&  (filter.selectedColumn?.visible || filter.column?.value.visible)) )" -->
                     <!-- SDA CUSTOM --> <p-multiSelect *ngIf="filter.data && ( isAdmin || isDashboardCreator || (['public', 'readOnly'].includes(filter.visible)   &&  (filter.selectedColumn?.visible || filter.column?.value.visible)) )"
                         [options]="filter.data"
                         [(ngModel)]="filter.selectedItems"

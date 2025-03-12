@@ -670,18 +670,18 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     private checkFiltersVisibility( filters, tables){
         if(filters && filters.length >0 ){
             filters.forEach(  (f) => {
-        // Check if filter is designed in EDA2 mode (tree mode)
+        /*SDA CUSTOM*/ // Check if filter is designed in EDA2 mode (tree mode)
         /*SDA CUSTOM*/ if (f.selectedColumn && f.selectedTable) {
                 f.selectedColumn.visible =  (
                     ( tables.filter((t)=> t.table_name == f.selectedTable.table_name)[0]?.visible  == true )    &&
                     ( tables.filter((t)=> t.table_name == f.selectedTable.table_name)[0]?.columns.filter( (c)=>c.column_name == f.selectedColumn.column_name )[0]?.visible  == true )
                                             )
-          // Check if the column is not visible and is not admin then limit hide side bar functionality
+          /*SDA CUSTOM*/ // Check if the column is not visible and is not admin then limit hide side bar functionality
           if (f.selectedColumn.visible == false && !this.userService.isAdmin) {
             this.notDataAllowed = true;
           }
         /*SDA CUSTOM*/ }
-        // if selectedColumn is not defined, the filter is designed in EDA mode
+        /*SDA CUSTOM*/ // if selectedColumn is not defined, the filter is designed in EDA mode
         /*SDA CUSTOM*/ else {
         /*SDA CUSTOM*/   f.column.value.visible = (
         /*SDA CUSTOM*/     (tables.filter((t) => t.table_name == f.table.value)[0]?.visible == true) &&
