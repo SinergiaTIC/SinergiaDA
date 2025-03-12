@@ -576,10 +576,10 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
             applyToAllfilter: this.applyToAllfilter,
             isObserver: (this.grups.filter(group => group.name === 'EDA_RO' && group.users.includes(userID)).length !== 0) || this.notDataAllowed, // No permite la visibilidad a las opciones, depende de la variable notDataAllowed
         }
-
+        
         // No permite la visibilidad al sidebar, depende de la variable notDataAllowed
         this.display_v.edit_mode = !this.notDataAllowed;
-        // Verifica que el si el dashboard si esta filtrado o no.
+        // Verifica que el si el dashboard si esta filtrado o no. 
         if(this.dashboard.datasSource.is_filtered) {
             this.display_v.edit_mode = false;
         }
@@ -661,7 +661,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
 
 
 
-/**
+/** 
  * Comprueba la configuración de seguridad de los filtros y pone la columna a invisible si el filtro no es visible para el usuario por motivos de filtro de seguridad
  * @param filters - recibe el array de filtros del informe
  * @param tables - recibe el array de tablas del modelo.

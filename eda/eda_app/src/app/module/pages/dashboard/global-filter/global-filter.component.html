@@ -4,7 +4,6 @@
 <div [ngClass]="{'noShow': hideFilters }" >
     <!--   panel mode es per quan vull mostrat nomes un panell-->
     <div *ngIf="globalFilters.length > 0" class="d-flex align-items-end" style="margin: 0.5em; gap: 10px; flex-wrap: wrap;" >
-
         <button
             *ngIf="isAdmin || isDashboardCreator || filterButtonVisibility.public"
             id="dashFilterBtn"
@@ -16,12 +15,11 @@
             class="p-button-raised p-button-outlined filters-size">
         </button>
 
-
+   
         <div *ngFor="let filter of globalFilters" class="filter-set d-flex align-items-center">
 
           <!-- SDA CUSTOM --> <span *ngIf="( isAdmin || isDashboardCreator || (['public', 'readOnly'].includes(filter.visible)   &&  (filter.selectedColumn?.visible || filter.column?.value?.visible)) )" class="filter-name filters-size">
                 {{getFilterLabel(filter)}}:
-
             </span>
 
 
@@ -34,7 +32,7 @@
                         [inject]="datePickerConfigs[filter.id]"
                         (onRemove)="removeGlobalFilter(filter, true)"
                         (onDatesChanges)="processPickerEvent($event, filter)">
-
+      
                         <ng-container footer>
                             <button id="dashFilterConf"
                                 pButton pRipple type="button"
@@ -60,7 +58,7 @@
                         [style]="{'max-width': '250px', 'min-width':'200px', 'font-family':'var(--eda-filters-font-family)'}"
                         [Show]="dropdownFiltersSize(filter)"
                         (onChange)="setGlobalFilterItems(filter)">
-
+    
                         <p-footer>
                             <button *ngIf="dashboard.canIedit()" id="dashFilterConf"
                                 pButton pRipple type="button"
