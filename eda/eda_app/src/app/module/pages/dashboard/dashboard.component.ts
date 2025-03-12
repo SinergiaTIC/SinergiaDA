@@ -142,7 +142,6 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     // ng cycle lives
     public ngOnInit(): void {
 
-      console.log('abc');
         this.dashboard = new Dashboard({});
 
         this.initializeDashboard();
@@ -671,11 +670,6 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
  * @returns  - el array de filtros del informe informando cual es oculto por la seguridad
  */
     private checkFiltersVisibility( filters, tables){
-      console.log('filters',filters);
-      console.log('tables', tables);
-      console.log('isAdmin', this.canIedit());
-
-
         if(filters && filters.length >0 ){
           filters.forEach((f) => {
             // Check if filter is designed in EDA2 mode (tree mode)
@@ -684,8 +678,8 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
                 (tables.filter((t) => t.table_name == f.selectedTable.table_name)[0]?.visible == true) &&
                 (tables.filter((t) => t.table_name == f.selectedTable.table_name)[0]?.columns.filter((c) => c.column_name == f.selectedColumn.column_name)[0]?.visible == true)
               )
-              // si he puesto el valor a false deshabilito el que pueda guardar.
-              if (f.selectedColumn.visible == false) {
+              // Check if the column is not visible and is not admin then limit hide side bar functionality
+              if (f.selectedColumn.visible == false && !this.userService.isAdmin) {
                 this.notDataAllowed = true;
               }
             }
@@ -695,15 +689,13 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
                 (tables.filter((t) => t.table_name == f.table.label)[0]?.visible == true) &&
                 (tables.filter((t) => t.table_name == f.table.label)[0]?.columns.filter((c) => c.column_name == f.column.value.column_name)[0]?.visible == true)
               )
-              // si he puesto el valor a false deshabilito el que pueda guardar.
-              if (f.column.value.visible == false) {
+              // Check if the column is not visible and is not admin then limit hide side bar functionality
+              if (f.column.value.visible == false && !this.userService.isAdmin) {
                 this.notDataAllowed = true;
               }
             }
           })
         }
-      console.log('filters2',filters);
-      console.log('tables2', tables);
 
         return filters;
     }
