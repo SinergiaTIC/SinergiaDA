@@ -673,9 +673,12 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     private checkFiltersVisibility( filters, tables){
       console.log('filters',filters);
       console.log('tables', tables);
+      console.log('isAdmin', this.canIedit());
+
 
         if(filters && filters.length >0 ){
           filters.forEach((f) => {
+            // Check if filter is designed in EDA2 mode (tree mode)
             if (f.selectedColumn && f.selectedTable) {
               f.selectedColumn.visible = (
                 (tables.filter((t) => t.table_name == f.selectedTable.table_name)[0]?.visible == true) &&
@@ -685,7 +688,9 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
               if (f.selectedColumn.visible == false) {
                 this.notDataAllowed = true;
               }
-            } else {
+            }
+            // if selectedColumn is not defined, the filter is designed in EDA mode
+            else {
               f.column.value.visible = (
                 (tables.filter((t) => t.table_name == f.table.label)[0]?.visible == true) &&
                 (tables.filter((t) => t.table_name == f.table.label)[0]?.columns.filter((c) => c.column_name == f.column.value.column_name)[0]?.visible == true)
