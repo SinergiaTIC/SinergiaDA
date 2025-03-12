@@ -141,7 +141,6 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
 
     // ng cycle lives
     public ngOnInit(): void {
-
         this.dashboard = new Dashboard({});
 
         this.initializeDashboard();
@@ -394,7 +393,6 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
                     this.checkVisibility(res.dashboard);
                     me.setDashboardCreator(res.dashboard);
                     me.title = config.title; // Titul del dashboard, utilitzat per visualització
-                    console.log('recuperando DS');
                     me.gFilter.initGlobalFilters(   this.checkFiltersVisibility( config.filters , res.datasource.model.tables ) ||[]); // Filtres del dashboard
                     me.dataSource = res.datasource; // DataSource del dashboard
                     me.datasourceName = res.datasource.name;
@@ -671,34 +669,34 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
  */
     private checkFiltersVisibility( filters, tables){
         if(filters && filters.length >0 ){
-          filters.forEach((f) => {
-            // Check if filter is designed in EDA2 mode (tree mode)
-            if (f.selectedColumn && f.selectedTable) {
-              f.selectedColumn.visible = (
-                (tables.filter((t) => t.table_name == f.selectedTable.table_name)[0]?.visible == true) &&
-                (tables.filter((t) => t.table_name == f.selectedTable.table_name)[0]?.columns.filter((c) => c.column_name == f.selectedColumn.column_name)[0]?.visible == true)
-              )
-              // Check if the column is not visible and is not admin then limit hide side bar functionality
-              if (f.selectedColumn.visible == false && !this.userService.isAdmin) {
-                this.notDataAllowed = true;
-              }
-            }
-            // if selectedColumn is not defined, the filter is designed in EDA mode
-            else {
-              f.column.value.visible = (
-                (tables.filter((t) => t.table_name == f.table.label)[0]?.visible == true) &&
-                (tables.filter((t) => t.table_name == f.table.label)[0]?.columns.filter((c) => c.column_name == f.column.value.column_name)[0]?.visible == true)
-              )
-              // Check if the column is not visible and is not admin then limit hide side bar functionality
-              if (f.column.value.visible == false && !this.userService.isAdmin) {
-                this.notDataAllowed = true;
-              }
-            }
-          })
-        }
-
-        return filters;
+            filters.forEach(  (f) => {
+        // Check if filter is designed in EDA2 mode (tree mode)
+        /*SDA CUSTOM*/ if (f.selectedColumn && f.selectedTable) {
+                f.selectedColumn.visible =  (
+                    ( tables.filter((t)=> t.table_name == f.selectedTable.table_name)[0]?.visible  == true )    &&
+                    ( tables.filter((t)=> t.table_name == f.selectedTable.table_name)[0]?.columns.filter( (c)=>c.column_name == f.selectedColumn.column_name )[0]?.visible  == true )
+                                            )
+          // Check if the column is not visible and is not admin then limit hide side bar functionality
+          if (f.selectedColumn.visible == false && !this.userService.isAdmin) {
+            this.notDataAllowed = true;
+          }
+        /*SDA CUSTOM*/ }
+        // if selectedColumn is not defined, the filter is designed in EDA mode
+        /*SDA CUSTOM*/ else {
+        /*SDA CUSTOM*/   f.column.value.visible = (
+        /*SDA CUSTOM*/     (tables.filter((t) => t.table_name == f.table.value)[0]?.visible == true) &&
+        /*SDA CUSTOM*/     (tables.filter((t) => t.table_name == f.table.value)[0]?.columns.filter((c) => c.column_name == f.column.value.column_name)[0]?.visible == true)
+        /*SDA CUSTOM*/   )
+        /*SDA CUSTOM*/   // Check if the column is not visible and is not admin then limit hide side bar functionality
+        /*SDA CUSTOM*/   if (f.column.value.visible == false && !this.userService.isAdmin) {
+        /*SDA CUSTOM*/     this.notDataAllowed = true;
+        /*SDA CUSTOM*/   }
+        /*SDA CUSTOM*/ }
+      })
     }
+
+    return filters;
+  }
 
     private checkVisibility(dashboard) {
         if (!this.display_v.anonimous_mode && dashboard.config.visible !== 'shared') {
