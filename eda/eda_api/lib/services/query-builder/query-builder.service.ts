@@ -62,6 +62,25 @@ export abstract class QueryBuilderService {
         /** joins per els value list */
         let valueListJoins = [];
 
+        /** Reviso  els filtres per si hi ha cap numeric amb valor '' per que es un null .....  */
+        this.queryTODO.filters.forEach(e=>{           
+            if( e.filter_column_type == 'numeric'  && 
+                e.filter_type == 'in' && 
+                e.filter_elements[0].value1.includes( '' ) ){
+                    //Si filtro por un vacío en un numérico realmente quiero filtrar por un nulo. Añado el filtro nulos
+                    let ee =  JSON.parse(JSON.stringify(e));
+                    ee.filter_id = ee.filter_id.split('-')[0]
+                    ee.filter_type = 'is_null' 
+                    e.filter_elements[0].value1 = e.filter_elements[0].value1.filter(obj => {return obj !== ''});
+
+                    this.queryTODO.filters.push(ee);   
+                    // Si el filtro queda vacío lo elimino
+                    if(e.filter_elements[0].value1.length == 0){
+                        this.queryTODO.filters = this.queryTODO.filters.filter( obj => {return obj !== e});
+                    }     
+                }
+    });
+
         if (!this.queryTODO.queryMode || this.queryTODO.queryMode == 'EDA') {
             /** Reviso si cap columna de la  consulta es un multivalueliest..... */
             this.queryTODO.fields.forEach( e=>{

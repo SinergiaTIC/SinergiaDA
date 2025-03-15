@@ -134,9 +134,9 @@ export class MySqlBuilderService extends QueryBuilderService {
           filtersString += '\nand ' + this.filterToString(f);
         } else {
           /* Control de nulos... se genera la consutla de forma diferente */
-            if (   f.filter_type == 'is_null' && f.filter_elements[0].value1.length === 1 && filters.length >1 ) {// Si tengo varios filtors es filtro por X o es nulo.
+            if (   f.filter_type == 'is_null' && f.filter_elements[0].value1.length === 1 && filters.filter( (f)=>f.filter_column == column.column_name && f.filter_table == column.table_id ).length  >1 ) {// Si tengo varios filtros sobre una misma columna  es filtro por X o es nulo.
                    filtersString += `\nor ${colname}  is null `;
-            } if (   f.filter_type == 'is_null' && f.filter_elements[0].value1.length === 1 && filters.length ==1 ) { // si soolo tengo el filtro de nulo es un and poqque digo 1=1 y es nulo.
+            } if (   f.filter_type == 'is_null' && f.filter_elements[0].value1.length === 1 && filters.filter( (f)=>f.filter_column == column.column_name && f.filter_table == column.table_id ).length  ==1 ) { // si solo tengo el filtro de nulo es un and porque digo 1=1 y es nulo.
               filtersString += `\nand ${colname}  is null `;
             } else {  
                 filtersString += `\nand (${this.filterToString(f)} ) `;
