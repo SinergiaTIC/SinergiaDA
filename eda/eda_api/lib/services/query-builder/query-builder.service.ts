@@ -1177,10 +1177,12 @@ export abstract class QueryBuilderService {
         if (equalfilters.toRemove.length > 0) {
             equalfilters.map.forEach((value, key) => {
                 let filterSTR = '\nand ( '    
-                let n = value.filter( f=> (f.filter_type == 'not_null'  || f.filter_type == 'not_null_nor_empty' || f.filter_type == 'null_or_empty') );
-                let values = [...n, ...value.filter( f=> f.filter_type != 'not_null')];            
+                //ponemos los nulos primero
+                let n = value.filter( f=> (f.filter_type == 'not_null'  || f.filter_type == 'not_null_nor_empty' || f.filter_type == 'null_or_empty' || f.filter_type == 'is_null' ) );
+                // y los valores despues.
+                let values = [...n, ...value.filter( f=> f.filter_type != 'not_null' && f.filter_type != 'not_null_nor_empty' && f.filter_type != 'null_or_empty' && f.filter_type != 'is_null' )];          
                 values.forEach((f) => {
-                    if (f.filter_type == 'not_null' || f.filter_type == 'not_null_nor_empty' || f.filter_type == 'null_or_empty') {                        //Fins que no es pugi determinar el tipus de conjunció. Els filtres sobre una mateixa columna es un or perque vull dos grups. EXCEPTE QUAN ES UN NULL
+                    if (f.filter_type == 'not_null' || f.filter_type == 'not_null_nor_empty' ) {                        //Fins que no es pugi determinar el tipus de conjunció. Els filtres sobre una mateixa columna es un or perque vull dos grups. EXCEPTE QUAN ES UN NULL
                         filterSTR += this.filterToString(f) + '\n  and ';
                     } else {
                         filterSTR += this.filterToString(f) + '\n  or ';

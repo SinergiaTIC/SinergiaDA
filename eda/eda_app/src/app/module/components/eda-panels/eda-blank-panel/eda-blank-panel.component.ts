@@ -129,6 +129,7 @@ export class EdaBlankPanelComponent implements OnInit {
     public ptooltipViewQuery: string = $localize`:@@ptooltipViewQuery:Ver consulta SQL`;
     public aggregationText: string = $localize`:@@aggregationText:Agregación`;
     public textBetween: string = $localize`:@@textBetween:Entre`
+    public emptyStringString: string = $localize`:@@emptyStringTxt:Vacío` 
 
 
     /** Query Variables */
@@ -1403,6 +1404,8 @@ export class EdaBlankPanelComponent implements OnInit {
                     valueStr = `"${values[0]}"`;
                 }  else if (values.length > 1 || ['in', 'not_in'].includes(filter.filter_type)) {
                     valueStr = `[${values.map((v: string) => (`"${v}"`) ).join(', ')}]`;
+                    valueStr =  valueStr.replace('emptyString', this.emptyStringString ); // Esto se hace por si se filtran nulos desde el dashboard que se pueda internacionalizar
+
                 }
 
                 if (values2) {
