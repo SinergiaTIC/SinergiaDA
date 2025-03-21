@@ -936,7 +936,7 @@ export class DashboardController {
         a.filter_elements.forEach(b => {
           if( b.value1){
             if ( 
-                ( b.value1.includes('null') || b.value1.includes('1900-01-01') )  
+                ( b.value1.includes('null') ||  b.value1.includes( eda_api_config.null_value ) ||  b.value1.includes('1900-01-01') )  
                 && b.value1.length > 1  /** Si tengo varios elementos  */
                 && ( a.filter_type == '=' || a.filter_type == 'in' ||  a.filter_type == 'like' || a.filter_type == 'between')
             ) {
@@ -952,7 +952,7 @@ export class DashboardController {
                             } 
                 b.value1 = b.value1.filter(c => c != 'null')
                 filters.push(nullFilter);
-              }else  if ( ( b.value1.includes('null') || b.value1.includes('1900-01-01') ) 
+              }else  if ( ( b.value1.includes('null')||  b.value1.includes( eda_api_config.null_value )  || b.value1.includes('1900-01-01') ) 
               && b.value1.length > 1  /** Si tengo varios elementos  */
               && ( a.filter_type == '!=' || a.filter_type == 'not_in' ||  a.filter_type == 'not_like' )
               ) {
