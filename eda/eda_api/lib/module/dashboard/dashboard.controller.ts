@@ -940,8 +940,33 @@ export class DashboardController {
       let nullFilter = {};
       const filters = myQuery.filters;
 
-
       filters.forEach(a => {
+       /**  filtrar nulos y vacios desde el dashboard */
+        /** si en el selector hay valore vacíos se deben tratar SDA CUSTOM?  */ 
+        a.filter_elements.forEach(b => {
+          if( b.value1){
+            if ( b.value1.includes('emptyString')  && b.value1.length  == 1 ){
+              // si es uno lo convierto en un nulo o vacío
+              a.filter_type = 'null_or_empty'
+            }if ( b.value1.includes('emptyString')  && b.value1.length  > 1 ){
+             // si son más de uno lo saco a un filtro a parte
+              nullFilter =  {
+                filter_id: 'is_null',
+                filter_table: a.filter_table,
+                filter_column: a.filter_column  ,
+                filter_type: 'null_or_empty',
+                filter_elements: [{value1:['null']}],
+                filter_column_type: a.filter_column_type,
+                isGlobal: true,
+                applyToAll: false
+              } 
+              b.value1 = b.value1.filter(c => c != 'emptyString')
+              filters.push(nullFilter);
+            
+            } 
+          }
+        });
+
         a.filter_elements.forEach(b => {
           if( b.value1){
             if ( 
@@ -978,13 +1003,13 @@ export class DashboardController {
               b.value1 = b.value1.filter(c => c != 'null')
               filters.push(nullFilter);
             } else if ( 
-              ( b.value1.includes('null') || b.value1.includes('1900-01-01') )  
+              ( b.value1.includes('null') ||  b.value1.includes( eda_api_config.null_value ) || b.value1.includes('1900-01-01') )  
               && b.value1.length == 1  
               && ( a.filter_type == '=' || a.filter_type == 'in' ||  a.filter_type == 'like' || a.filter_type == 'between') 
               ){
                 a.filter_type='is_null';
             } else if ( 
-              ( b.value1.includes('null') || b.value1.includes('1900-01-01') )  
+              ( b.value1.includes('null') ||  b.value1.includes( eda_api_config.null_value ) || b.value1.includes('1900-01-01') )  
               && b.value1.length == 1  
               &&  ( a.filter_type == '!=' || a.filter_type == 'not_in' ||  a.filter_type == 'not_like') 
             ){
@@ -1089,6 +1114,7 @@ export class DashboardController {
             }
 
           })
+
 
           results.push(output)          
         }
