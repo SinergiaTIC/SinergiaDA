@@ -931,7 +931,7 @@ export abstract class QueryBuilderService {
         const origin = table;
         const dest = [];
         const modelPermissions = this.dataModel.ds.metadata.model_granted_roles;
-        const permissions = this.getPermissions(modelPermissions, this.tables, origin);
+        /*SDA CUSTOM security for own tables*/const permissions = this.getPermissions(modelPermissions, this.tables, origin).filter( (p)=> p.filter_table == table );
         const joinType = 'inner'; // es per els permisos. Ha de ser així.
         const valueListJoins = []; // anulat
 
@@ -1196,10 +1196,12 @@ export abstract class QueryBuilderService {
         if (equalfilters.toRemove.length > 0) {
             equalfilters.map.forEach((value, key) => {
                 let filterSTR = '\nand ( '    
-                let n = value.filter( f=> (f.filter_type == 'not_null'  || f.filter_type == 'not_null_nor_empty' || f.filter_type == 'null_or_empty') );
-                let values = [...n, ...value.filter( f=> f.filter_type != 'not_null')];            
+                //ponemos los nulos primero
+                let n = value.filter( f=> (f.filter_type == 'not_null'  || f.filter_type == 'not_null_nor_empty' || f.filter_type == 'null_or_empty' || f.filter_type == 'is_null' ) );
+                // y los valores despues.
+                let values = [...n, ...value.filter( f=> f.filter_type != 'not_null' && f.filter_type != 'not_null_nor_empty' && f.filter_type != 'null_or_empty' && f.filter_type != 'is_null' )];          
                 values.forEach((f) => {
-                    if (f.filter_type == 'not_null' || f.filter_type == 'not_null_nor_empty' || f.filter_type == 'null_or_empty') {                        //Fins que no es pugi determinar el tipus de conjunció. Els filtres sobre una mateixa columna es un or perque vull dos grups. EXCEPTE QUAN ES UN NULL
+                    if (f.filter_type == 'not_null' || f.filter_type == 'not_null_nor_empty' ) {                        //Fins que no es pugi determinar el tipus de conjunció. Els filtres sobre una mateixa columna es un or perque vull dos grups. EXCEPTE QUAN ES UN NULL
                         filterSTR += this.filterToString(f) + '\n  and ';
                     } else {
                         filterSTR += this.filterToString(f) + '\n  or ';

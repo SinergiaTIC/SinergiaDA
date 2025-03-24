@@ -4309,11 +4309,11 @@
       </trans-unit>
       <trans-unit id="noDataAllowed">
         <source>Este panel no está disponible por falta de permisos</source>
-        <target>Este panel non está dispoñible por falta de permisos</target>
+        <target>Este panel non está dispoñible por falta de permisos, o informe ábrese en modo de só lectura.</target>
       </trans-unit>
       <trans-unit id="noFilterAllowed">
         <source>Este panel no está disponible por falta de permisos en un filtro</source>
-        <target>Este panel non está dispoñible debido á falta de permisos nun filtro</target>
+        <target>Este panel non está dispoñible debido á falta de permisos nun filtro, o informe ábrese en modo de só lectura.</target>
       </trans-unit>
       <trans-unit id="DatePickerYearPreviousYearFull">
         <source>El año pasado, completo</source>
@@ -4394,6 +4394,10 @@
       <trans-unit id="textBetween">
         <source>Entre</source>
         <target>Entre</target>
+      </trans-unit>
+      <trans-unit id="emptyStringTxt">
+        <source>Vacío</source>
+        <target>Baleiro</target>
       </trans-unit>
     </body>
   </file>

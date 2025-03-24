@@ -129,6 +129,7 @@ export class EdaBlankPanelComponent implements OnInit {
     public ptooltipViewQuery: string = $localize`:@@ptooltipViewQuery:Ver consulta SQL`;
     public aggregationText: string = $localize`:@@aggregationText:Agregación`;
     public textBetween: string = $localize`:@@textBetween:Entre`
+    public emptyStringString: string = $localize`:@@emptyStringTxt:Vacío` 
 
 
     /** Query Variables */
@@ -247,9 +248,13 @@ export class EdaBlankPanelComponent implements OnInit {
 
                 if (modeSQL || queryMode=='SQL') {
                     this.currentSQLQuery = contentQuery.query.SQLexpression;
-
-                    this.sqlOriginTable = this.tables.filter(t => t.table_name === contentQuery.query.fields[0].table_id)
+                    try{
+                        this.sqlOriginTable = this.tables.filter(t => t.table_name === contentQuery.query.fields[0].table_id)
                         .map(table => ({ label: table.display_name.default, value: table.table_name }))[0];
+                    }catch(e){
+                        console.log('Si hay filtros de seguridad puede que no se encuentre la tabla de origen');
+                    }
+
                 }
 
                 this.loadChartsData(this.panel.content);
@@ -1399,6 +1404,8 @@ export class EdaBlankPanelComponent implements OnInit {
                     valueStr = `"${values[0]}"`;
                 }  else if (values.length > 1 || ['in', 'not_in'].includes(filter.filter_type)) {
                     valueStr = `[${values.map((v: string) => (`"${v}"`) ).join(', ')}]`;
+                    valueStr =  valueStr.replace('emptyString', this.emptyStringString ); // Esto se hace por si se filtran nulos desde el dashboard que se pueda internacionalizar
+
                 }
 
                 if (values2) {
