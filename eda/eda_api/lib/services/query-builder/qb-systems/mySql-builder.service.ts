@@ -15,8 +15,8 @@ export class MySqlBuilderService extends QueryBuilderService {
     let myQuery = `SELECT ${columns.join(', ')} \nFROM ${o}`;
 
     /** SI ES UN SELECT PARA UN SELECTOR  VOLDRÉ VALORS ÚNICS */
-    if (forSelector === true) {
-      myQuery = `SELECT DISTINCT ${columns.join(', ')} \nFROM ${o}`;
+    if (forSelector === true && columns.length == 1 ) {
+      myQuery = `SELECT DISTINCT ${columns} \nFROM ${o}`;
     }
  
 
@@ -346,9 +346,10 @@ export class MySqlBuilderService extends QueryBuilderService {
       let table_column;
 
       if (el.autorelation && !el.valueListSource && !this.queryTODO.forSelector ) {
-
         table_column = `\`${el.joins[el.joins.length-1][0]}\`.\`${el.column_name}\``;
-      } else {
+      } else if(this.queryTODO.forSelector) {
+        table_column = `IFNULL( \`${el.table_id}\`.\`${el.column_name}\`, '')`;
+      }else{
         table_column = `\`${el.table_id}\`.\`${el.column_name}\``;
       }
 
