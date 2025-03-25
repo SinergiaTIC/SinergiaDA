@@ -4367,7 +4367,7 @@
       </trans-unit>
       <trans-unit id="emptyStringTxt">
         <source>Vacío</source>
-        <target>Empty</target>
+        <target>(Empty)</target>
       </trans-unit>
     </body>
   </file>

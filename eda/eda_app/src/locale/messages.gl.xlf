@@ -4397,7 +4397,7 @@
       </trans-unit>
       <trans-unit id="emptyStringTxt">
         <source>Vacío</source>
-        <target>Baleiro</target>
+        <target>(Baleiro)</target>
       </trans-unit>
     </body>
   </file>
