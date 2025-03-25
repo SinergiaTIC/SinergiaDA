@@ -406,17 +406,15 @@ export class GlobalFilterComponent implements OnInit {
                 this.globalFilters;
             }
             
-
-
-
-            const data = res[1].filter(item => !!item[0] && item[0] != '').map(item => ({ label: item[0], value: item[0] }));
+            let data : any[] ;
+            if(res[1].length > 0){
+                data = res[1].filter(item => item[0].toString()  != '').map(item => ({ label: item[0].toString(), value: item[0].toString() }));
+            }
 
             /** SI TENGO VALORES VACÍOS LOS SUSTITUYO POR EL TEXTO DE CADENA VACÍA....... ESO ES EQUIVALENTE A IS NULL OR EMPTY */
-            if( res[1].filter(item => item[0] == '').length == 1 ){
-                data.push(    { label: $localize`:@@emptyStringTxt:Vacío`  , value:  'emptyString'  }  )
+            if( res[1].filter(item => item[0].toString() == '').length == 1 ){
+                data.unshift(    { label: $localize`:@@emptyStringTxt:Vacío`  , value:  'emptyString'  }  )
             }
-    
-            
 
             this.globalFilters.find((gf: any) => gf.id == globalFilter.id).data = data;
         } catch (err) {
