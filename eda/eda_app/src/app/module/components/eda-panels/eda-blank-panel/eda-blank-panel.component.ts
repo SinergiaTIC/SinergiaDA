@@ -1442,14 +1442,19 @@ export class EdaBlankPanelComponent implements OnInit {
         this.display_v.whatIf_dialog = true;
     }
 
+    public onCloseWhatIfDialog(): void {
+        this.display_v.whatIf_dialog = false;
+    }
+
     public filterAndOrDialog(): void {
         this.display_v.filterAndOr_dialog = true;
         console.log('this.display_v.filterAndOr_dialog: ',this.display_v.filterAndOr_dialog)
     }
 
-    public onCloseWhatIfDialog(): void {
-        this.display_v.whatIf_dialog = false;
-    }
+    public onCloseFilterAndOrDialog(): void {
+        this.display_v.filterAndOr_dialog = false;
+        console.log('this.display_v.filterAndOr_dialog: ',this.display_v.filterAndOr_dialog)
+    }   
 
     public disableRunQuery(): boolean {
         let disable = false;
