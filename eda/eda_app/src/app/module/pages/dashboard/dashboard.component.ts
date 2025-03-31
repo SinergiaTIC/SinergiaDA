@@ -109,6 +109,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     public Seconds_to_refresh = $localize`:@@seconds_to_refresh:Intervalo de recarga`;
     public canIeditTooltip = $localize`:@@canIeditTooltip:Si esta opción está seleccionada sólo el propietario del informe y los administradores podrán guardar los cambios`;
     //public globalFilter: any;
+    public notDataAllowed: boolean = false;
 
     constructor(
         private router: Router,
@@ -392,7 +393,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
                     this.checkVisibility(res.dashboard);
                     me.setDashboardCreator(res.dashboard);
                     me.title = config.title; // Titul del dashboard, utilitzat per visualització
-                    me.gFilter.initGlobalFilters(config.filters||[]); // Filtres del dashboard
+                    me.gFilter.initGlobalFilters(   this.checkFiltersVisibility( config.filters , res.datasource.model.tables ) ||[]); // Filtres del dashboard
                     me.dataSource = res.datasource; // DataSource del dashboard
                     me.datasourceName = res.datasource.name;
                     me.applyToAllfilter = config.applyToAllfilter || { present: false, refferenceTable: null, id: null };
@@ -564,11 +565,24 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
         const user = sessionStorage.getItem('user');
         const userID = JSON.parse(user)._id;
 
+        // Buscamos en todos los paneles si existe un con los campos vacios, lo cual indica que no tiene permisos para visualizar la data
+        if(this.panels.some(panel => panel.content?.query.query.fields.length===0)){
+            this.notDataAllowed=true;
+        }
+
         this.inject = {
             dataSource: this.dataSource,
             dashboard_id: this.dashboard.id,
             applyToAllfilter: this.applyToAllfilter,
-            isObserver: this.grups.filter(group => group.name === 'EDA_RO' && group.users.includes(userID)).length !== 0
+            isObserver: (this.grups.filter(group => group.name === 'EDA_RO' && group.users.includes(userID)).length !== 0)
+                        || userID == '135792467811111111111112' // If user is edaanonim
+                        || this.notDataAllowed,
+        }
+        // No permite la visibilidad al sidebar, depende de la variable notDataAllowed
+        this.display_v.edit_mode = !this.notDataAllowed && !this.display_v.anonimous_mode;
+        // Verifica que el si el dashboard si esta filtrado o no.
+        if(this.dashboard.datasSource.is_filtered) {
+            this.display_v.edit_mode = false;
         }
     }
 
@@ -619,7 +633,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
         const userName = JSON.parse(user).name;
         const userID = JSON.parse(user)._id;
         this.display_v.edit_mode = (userName !== 'edaanonim') && !(this.grups.filter(group => group.name === 'EDA_RO' && group.users.includes(userID)).length !== 0)
-        this.display_v.anonimous_mode = (userName !== 'edaanonim');
+        this.display_v.anonimous_mode = userName == 'edaanonim';
     }
 
 
@@ -646,8 +660,54 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
         }
     }
 
+
+
+/**
+ * Comprueba la configuración de seguridad de los filtros y pone la columna a invisible si el filtro no es visible para el usuario por motivos de filtro de seguridad
+ * @param filters - recibe el array de filtros del informe
+ * @param tables - recibe el array de tablas del modelo.
+ * @returns  - el array de filtros del informe informando cual es oculto por la seguridad
+ */
+    private checkFiltersVisibility( filters, tables){
+        if(filters && filters.length >0 ){
+            filters.forEach(  (f) => {
+        /*SDA CUSTOM*/ // Check if filter is designed in EDA2 mode (tree mode)
+        /*SDA CUSTOM*/ if (f.selectedColumn && f.selectedTable) {
+                f.selectedColumn.visible =  (
+                    ( tables.filter((t)=> t.table_name == f.selectedTable.table_name)[0]?.visible  == true )    &&
+                    ( tables.filter((t)=> t.table_name == f.selectedTable.table_name)[0]?.columns.filter( (c)=>c.column_name == f.selectedColumn.column_name )[0]?.visible  == true )
+                                            )
+          /*SDA CUSTOM*/ // Check if the column is not visible and is not admin then limit hide side bar functionality
+          if (f.selectedColumn.visible == false && !this.userService.isAdmin) {
+            this.notDataAllowed = true;
+          }
+        /*SDA CUSTOM*/ }
+        /*SDA CUSTOM*/ // if selectedColumn is not defined, the filter is designed in EDA mode
+        /*SDA CUSTOM*/ else {
+        /*SDA CUSTOM*/   f.column.value.visible = (
+        /*SDA CUSTOM*/     (tables.filter((t) => t.table_name == f.table.value)[0]?.visible == true) &&
+        /*SDA CUSTOM*/     (tables.filter((t) => t.table_name == f.table.value)[0]?.columns.filter((c) => c.column_name == f.column.value.column_name)[0]?.visible == true)
+        /*SDA CUSTOM*/   )
+        /*SDA CUSTOM*/   // Check if the column is not visible and is not admin then limit hide side bar functionality
+        /*SDA CUSTOM*/   if (f.column.value.visible == false && !this.userService.isAdmin) {
+        /*SDA CUSTOM*/     this.notDataAllowed = true;
+        /*SDA CUSTOM*/   }
+        /*SDA CUSTOM*/ }
+      })
+    }
+        return filters;
+  }
+
+    /**
+     * Checks the visibility of the given dashboard and performs actions based on its configuration.
+     * If user is anonymous and the dashboard is not public, the user is redirected to the login page.
+     * If the dashboard is not shared and the application is in anonymous mode, the user is redirected to the login page.
+     * If the dashboard is shared, a shared URL is generated and the shared display mode is enabled.
+     *
+     * @param dashboard - The dashboard object to check visibility for.
+     */
     private checkVisibility(dashboard) {
-        if (!this.display_v.anonimous_mode && dashboard.config.visible !== 'shared') {
+        if (this.display_v.anonimous_mode && dashboard.config.visible !== 'shared') {
             console.log('Check visibility... you cannot see this dashboard');
             this.router.navigate(['/login']);
         }

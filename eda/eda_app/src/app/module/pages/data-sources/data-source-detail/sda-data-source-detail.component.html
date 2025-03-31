@@ -1,6 +1,6 @@
 <div *ngIf="dataModelService.model_id=='111111111111111111111111'" id="deleteModel" class="alert alert-primary flex" role="alert" >
   <i class="mdi mdi-information-outline" style="font-size: 24px"></i>
-  <div i18n="@@partialEditDataSourceNotice" style="margin-left:10px;">Algunas áreas de la configuración de la fuente de datos SinergiaDA se encuentran desactivadas porque se configuran automáticamente durante el proceso de sincronización de datos con SinergiaCRM.
+  <div i18n="@@partialEditDataSourceNotice" style="margin-left:10px;">Algunas áreas de la configuración de la fuente de datos SinergiaCRM se encuentran desactivadas porque se configuran automáticamente durante el proceso de sincronización de datos con SinergiaCRM.
   </div>
 </div>
 
@@ -328,7 +328,7 @@
                     </div>
 
 
-            <div style="margin-bottom: 1rem;" class="col-12 hidden">
+            <div style="margin-bottom: 1rem;" class="col-12">
 
                 <h4 style="margin-bottom: 4px; border-bottom: 1px solid #d4d4d4;"> {{functionalities}} </h4>
 
@@ -336,9 +336,9 @@
 
                     <button pButton type="button" icon="pi pi-map" [label]="addMap" class="p-button-secondary"
                         (click)="openNewMapDialog()" style="margin-bottom: 1px;"> </button>
-                    <button pButton type="button" icon="pi pi-plus" [label]="addView" class="p-button-secondary"
+                    <button pButton type="button" icon="pi pi-plus" [label]="addView" class="p-button-secondary hidden"
                         (click)="openNewViewDialog()" style="margin-bottom: 1px;"> </button>
-                    <button pButton type="button" icon="pi pi-plus" [label]="addCSV" class="p-button-secondary"
+                    <button pButton type="button" icon="pi pi-plus" [label]="addCSV" class="p-button-secondary hidden"
                         (click)="openCSVDialog()" style="margin-bottom: 1px;"> </button>
                 </span>
             </div>
