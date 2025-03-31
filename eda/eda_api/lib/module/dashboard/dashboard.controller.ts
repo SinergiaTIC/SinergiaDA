@@ -317,7 +317,7 @@ export class DashboardController {
                       let notAllowedColumns = [];
 
                       for ( let c = 0; c < dashboard.config.panel[i].content.query.query.fields.length; c++ ) {
-                        if ( uniquesForbiddenTables.includes( dashboard.config.panel[i].content.query.query.fields[ c ].table_id.split('.')[0]  ) ) { /** split('.')[0]  esto se hace para el  filtro en modo arbol */
+                        if ( uniquesForbiddenTables.includes( dashboard.config.panel[i].content.query.query.fields[ c ].table_id.split('.')[0]  ) ) { // split('.')[0]  This is done for the filter in tree mode
                           notAllowedColumns.push(
                             dashboard.config.panel[i].content.query.query.fields[ c ]
                           )
@@ -331,15 +331,15 @@ export class DashboardController {
                         dashboard.config.panel[ i ].content.query.query.fields = MyFields;
                         is_filtered= true;
                       }
-                      // SI NO TENGO PERMISOS SOBRE LA TABLA PRINCIPAL DEL ARBOL NO VEO NADA 
+                      // IF I DON'T HAVE PERMISSIONS ON THE MAIN TREE TABLE I DON'T SEE ANYTHING
                       if( dashboard.config.panel[i].content.query.query.queryMode == 'EDA2'  &&  uniquesForbiddenTables.includes( dashboard.config.panel[i].content.query.query.rootTable ) ) {
                         dashboard.config.panel[ i ].content.query.query.fields = [];
                         is_filtered= true;
                       }
 
-                      // si no tengo permiso sobre los filtros.
+                      // if I don't have permission on the filters.
                       for ( let c = 0; c < dashboard.config.panel[i].content.query.query.filters.length; c++ ) {
-                        if ( uniquesForbiddenTables.includes( dashboard.config.panel[i].content.query.query.filters[c].filter_table.split('.')[0]   ) ) { /** split('.')[0]  esto se hace para el  filtro en modo arbol */
+                        if ( uniquesForbiddenTables.includes( dashboard.config.panel[i].content.query.query.filters[c].filter_table.split('.')[0]   ) ) { // split('.')[0]  This is done for the filter in tree mode 
                           is_filtered= true;
                         } 
                       }
@@ -393,7 +393,7 @@ export class DashboardController {
         dashboard.group = body.group
       }
 
-      /**avoid dashboards without name */
+      //avoid dashboards without name 
       if (dashboard.config.title === null) { dashboard.config.title = '-' };
       //Save dashboard in db
       dashboard.save((err, dashboard) => {
@@ -432,7 +432,7 @@ export class DashboardController {
         dashboard.config.createdAt = createdAt
         dashboard.user = req.user._id
         dashboard.group = body.group
-        /**avoid dashboards without name */
+        // avoid dashboards without name 
         if (dashboard.config.title === null) { dashboard.config.title = '-' };
         
         // Update modifiedAt with current date and time
@@ -531,7 +531,7 @@ export class DashboardController {
 
 
   /**
-   *  Filtra tablas prohividas en un modelo de datos. Devuelve el listado de tablas prohividas para un usuario.
+   *  Filter prohibited tables in a data model. Returns a list of prohibited tables for an user.
    */
   static getForbiddenTables(
     dataModelObject: any,
@@ -554,9 +554,9 @@ export class DashboardController {
 
   
   /**
-   *  Filtra tablas prohividas en un modelo de datos. Devuelve el listado de tablas prohividas para un usuario. 
-   *  SUPONIENDO QUE PUEDE VER TODAS EN LAS QUE NO HAY SEGURIDAD Y LAS SUYAS FILTRADAS. 
-   *  TAN SÓLO NO VE AQUELLAS EN LAS QUE SE LE HA NEGADO EL ACCESO.
+  * Filters prohibited tables in a data model. Returns the list of prohibited tables for a user.
+  * ASSUMES THEY CAN SEE ALL UNSECURED TABLES AND THEIR OWN FILTERED TABLES.
+  * THEY ONLY STOP SEEING THOSE TO WHICH THEY HAVE BEEN DENIED ACCESS.
    */
   static getForbiddenTablesOpen(
     dataModelObject: any,
@@ -565,7 +565,7 @@ export class DashboardController {
   ) {
     let forbiddenTables = [];
     const allTables = [];
-    let allowedTablesBySecurityForOthers = []; // Si otros lo ven. Yo no lo puedo ver (en modelos exclusivos)
+    let allowedTablesBySecurityForOthers = []; // If others see it, I can't see it (on exclusive models)
     let allowedTablesBySecurityForMe = [];
     dataModelObject.ds.model.tables.forEach(e => {
       allTables.push(e.table_name)
@@ -574,7 +574,7 @@ export class DashboardController {
       for (
         var i = 0; i < dataModelObject.ds.metadata.model_granted_roles.length;  i++  ) {
         if (
-          /** Si NO puedo ver la tabla */
+          // If I can't see the table
           dataModelObject.ds.metadata.model_granted_roles[i].column === 'fullTable' &&
           dataModelObject.ds.metadata.model_granted_roles[i].permission === false
         ) {
@@ -591,7 +591,7 @@ export class DashboardController {
       }
     }
 
-    /** TAULES OCULTES PER EL GRUP */
+    //HIDDEN TABLES FOR THE GROUP 
     if (dataModelObject.ds.metadata.model_granted_roles !== undefined) {
       for (
         var i = 0;
@@ -615,11 +615,9 @@ export class DashboardController {
         }
       }
     }
-    //console.log('Tablas prohividas para el grupo');
-    //console.log(forbiddenTables);
 
 
-    /** allowed tables by security */
+    // allowed tables by security 
     if (dataModelObject.ds.metadata.model_granted_roles !== undefined) {
       for (var i = 0; i < dataModelObject.ds.metadata.model_granted_roles.length; i++ ) {
         if (
@@ -640,15 +638,11 @@ export class DashboardController {
       }
     }
 
-    //console.log('Tablas permitidas para otros');
-    //console.log(allowedTablesBySecurityForOthers);
-    //console.log('Tablas permitidas para mi');
-    //console.log(allowedTablesBySecurityForMe);
 
-    /** puedo ver la tabla porque puedo ver datos de una columna */
+    // I can see the table because I can see data from a column
     if (dataModelObject.ds.metadata.model_granted_roles !== undefined) {
       for (var i = 0; i < dataModelObject.ds.metadata.model_granted_roles.length; i++ ) {
-        if ( /** puedo ver valores de una columna de la tabla */
+        if ( // I can see values ​​from a column in the table
           dataModelObject.ds.metadata.model_granted_roles[i].global === false &&
           dataModelObject.ds.metadata.model_granted_roles[i].none === false &&
           dataModelObject.ds.metadata.model_granted_roles[i].value.length > 0
@@ -667,12 +661,8 @@ export class DashboardController {
       }
     }
 
-    //console.log('Tablas permitidas para otros');
-    //console.log(allowedTablesBySecurityForOthers);
-    //console.log('Tablas permitidas para mi');
-    //console.log(allowedTablesBySecurityForMe);
 
-    /** TAULES PERMESES PER EL GRUP */
+    // TAULES PERMITTED BY THE GROUP
     if (dataModelObject.ds.metadata.model_granted_roles !== undefined) {
       for ( var i = 0; i < dataModelObject.ds.metadata.model_granted_roles.length;  i++ ) {
         if ( dataModelObject.ds.metadata.model_granted_roles[i].column === 'fullTable' &&
@@ -700,10 +690,6 @@ export class DashboardController {
     allowedTablesBySecurityForOthers = allowedTablesBySecurityForOthers.filter(  unique   )
     allowedTablesBySecurityForMe = allowedTablesBySecurityForMe.filter( unique )
 
-    //console.log('Tablas permitidas para otros por grupo');
-    //console.log(allowedTablesBySecurityForOthers);
-    //console.log('Tablas permitidas para mi');
-    //console.log(allowedTablesBySecurityForMe);
 
     allowedTablesBySecurityForMe.forEach(e => {
       allowedTablesBySecurityForOthers = allowedTablesBySecurityForOthers.filter(
@@ -720,8 +706,8 @@ export class DashboardController {
 
 
   /**
-   *  Filtra tablas prohividas en un modelo de datos. Devuelve el listado de tablas prohividas para un usuario. 
-   *  SUPONIENDO QUE PUEDE VER SOLO AQUELLAS TABLAS PARA LAS QUE TIENE PERMISO EXPLICITO.
+  * Filter prohibited tables in a data model. Returns the list of prohibited tables for a user.
+  *  ASSUMES YOU CAN SEE ONLY THOSE TABLES FOR WHICH YOU HAVE EXPLICIT PERMISSION.
    */
   static getForbiddenTablesClose(
     dataModelObject: any,
@@ -735,9 +721,9 @@ export class DashboardController {
       allTables.push(e.table_name)
     })
 
-    // Aqui marco las tablas que si que puedo ver. El resto están prohividas
+    // Here I've marked the tables I can see. The rest are prohibited.
 
-    /** allowed tables by security */
+    // allowed tables by security 
     if (dataModelObject.ds.metadata.model_granted_roles !== undefined) {
       for (var i = 0; i < dataModelObject.ds.metadata.model_granted_roles.length; i++ ) {
         if (
@@ -755,12 +741,12 @@ export class DashboardController {
         }
       }
     }
-    //console.log('Tablas que el usuario puede ver', allowedTablesBySecurityForMe );
 
-    /** puedo ver la tabla porque puedo ver datos de una columna */
+
+    // I can see the table because I can see data from a column 
     if (dataModelObject.ds.metadata.model_granted_roles !== undefined) {
       for (var i = 0; i < dataModelObject.ds.metadata.model_granted_roles.length; i++ ) {
-        if ( /** puedo ver valores de una columna de la tabla */
+        if ( // I can see values ​​from a column in the table 
           dataModelObject.ds.metadata.model_granted_roles[i].global === false &&
           dataModelObject.ds.metadata.model_granted_roles[i].none === false &&
           dataModelObject.ds.metadata.model_granted_roles[i].value.length > 0
@@ -775,10 +761,9 @@ export class DashboardController {
         }
       }
     }
-    //console.log('Tablas PERMITIDAS   para el usuario porque pueden ver una columna',allowedTablesBySecurityForMe );
 
 
-    /** TAULES PERMESES PER EL GRUP */
+    // TAULES PERMITTED BY THE GROUP
     if (dataModelObject.ds.metadata.model_granted_roles !== undefined) {
       for ( var i = 0; i < dataModelObject.ds.metadata.model_granted_roles.length;  i++ ) {
         if ( dataModelObject.ds.metadata.model_granted_roles[i].column === 'fullTable' &&
@@ -816,7 +801,7 @@ export class DashboardController {
 
     forbiddenTables = allTables.filter( t => !allowedTablesBySecurityForMe.includes( t )  );
 
-  // Filtra los valores que inicien con: 'sda_l_' en las tablas & los valores que contengan '__' en las tablas.
+  // Filters values ​​starting with: 'sda_l_' in tables & values ​​containing '__' in tables.
   /* SDA CUSTOM*/   let newForbiddenTables = forbiddenTables.filter( table => {
   /* SDA CUSTOM*/     return ((!table.startsWith('sda_l_') && !table.includes('__')))
   /* SDA CUSTOM*/   })
@@ -830,7 +815,7 @@ export class DashboardController {
 
 
   /**
-   * Executa una consulta EDA per un dashboard
+   * Execute an EDA query for a dashboard
    */
   static async execQuery(req: Request, res: Response, next: NextFunction) {
 
@@ -862,7 +847,7 @@ export class DashboardController {
 
       const includesAdmin = req['user'].role.includes("135792467811111111111110")
       if(includesAdmin){
-        // el admin ve todo
+        //the admin sees everything
        uniquesForbiddenTables = [];
       }
 	  
@@ -895,14 +880,14 @@ export class DashboardController {
           myQuery.filters = req.body.query.filters
         }
       } else {
-        // las etiquetas son el nombre técnico...
+        // Labels are the technical name...
         myQuery = JSON.parse(JSON.stringify(req.body.query))
         for (let c = 0; c < req.body.query.fields.length; c++) {
           mylabels.push(req.body.query.fields[c].column_name)
         }
       }
-      myQuery.queryMode = req.body.query.queryMode? req.body.query.queryMode: 'EDA'; /** lo añado siempre */
-      myQuery.rootTable = req.body.query.rootTable? req.body.query.rootTable: ''; /** lo añado siempre */
+      myQuery.queryMode = req.body.query.queryMode? req.body.query.queryMode: 'EDA'; // I always add it
+      myQuery.rootTable = req.body.query.rootTable? req.body.query.rootTable: ''; // I always add it
       myQuery.simple = req.body.query.simple;
       myQuery.queryLimit = req.body.query.queryLimit;
       myQuery.joinType = req.body.query.joinType ? req.body.query.joinType : 'inner';
@@ -918,8 +903,9 @@ export class DashboardController {
       }
 
 
-      /** por compatibilidad. Si no tengo el tipo de columna en el filtro lo añado */
-      /** por compatibilidad. Si no tengo el el tipo de agregación en el filtro.....*/
+      // For compatibility. If I don't have the column type in the filter, I'll add it.
+
+      // For compatibility. If I don't have the aggregation type in the filter.....
       if(myQuery.filters){
         for (const filter of myQuery.filters) {
           if (!filter.filter_column_type) {
@@ -930,7 +916,7 @@ export class DashboardController {
               filter.filter_column_type = filterColumn?.column_type || 'text';
             }
           }
-          /** por compatibilidad. Si no tengo el el tipo de agregación en el filtro lo pongo en el where*/ 
+          // por compatibilidad. Si no tengo el el tipo de agregación en el filtro lo pongo en el where
           if(! filter.hasOwnProperty('filterBeforeGrouping') ){
             filter.filterBeforeGrouping = true;
           }
@@ -941,8 +927,7 @@ export class DashboardController {
       const filters = myQuery.filters;
 
       filters.forEach(a => {
-       /**  filtrar nulos y vacios desde el dashboard */
-        /** si en el selector hay valore vacíos se deben tratar SDA CUSTOM?  */ 
+      // Filter nulls and empty values ​​from the dashboard . If the selector contains empty values, should they be treated as SDA CUSTOM? 
         a.filter_elements.forEach(b => {
           if( b.value1){
             if ( b.value1.includes('emptyString')  && b.value1.length  == 1 ){
@@ -969,10 +954,10 @@ export class DashboardController {
           if( b.value1){
             if ( 
                 ( b.value1.includes('null') ||  b.value1.includes( eda_api_config.null_value ) ||  b.value1.includes('1900-01-01') )  
-                && b.value1.length > 1  /** Si tengo varios elementos  */
+                && b.value1.length > 1  //If I have multiple elements 
                 && ( a.filter_type == '=' || a.filter_type == 'in' ||  a.filter_type == 'like' || a.filter_type == 'between')
             ) {
-                // si son más de uno lo saco a un filtro a parte
+                // If there are more than one, I remove it from a separate filter.
               const nullFilter = JSON.parse(JSON.stringify(a));
               nullFilter.filter_id = 'is_null';
               nullFilter.filter_type = 'is_null';
@@ -983,7 +968,7 @@ export class DashboardController {
               && b.value1.length > 1  /** Si tengo varios elementos  */
               && ( a.filter_type == '!=' || a.filter_type == 'not_in' ||  a.filter_type == 'not_like' )
               ) {
-                  // si son más de uno lo saco a un filtro a parte
+                  // If there are more than one, I remove it from a separate filter.
                   const nullFilter = JSON.parse(JSON.stringify(a));
                   nullFilter.filter_id = 'not_null';
                   nullFilter.filter_type = 'not_null';
@@ -1050,7 +1035,7 @@ export class DashboardController {
         const getResults = await connection.execQuery(query)
 
         let numerics = []
-        /** si es oracle   o alguns mysql  haig de fer una merda per tornar els numeros normals. */
+        // If it is oracle or some mysql it will be difficult to make the numbers normal.
         if (
           dataModel.ds.connection.type == 'oracle' ||
           dataModel.ds.connection.type == 'mysql'
@@ -1070,7 +1055,7 @@ export class DashboardController {
         for (let i = 0, n = getResults.length; i < n; i++) {
           const r = getResults[i]
           const output = Object.keys(r).map((i, ind) => {
-            /** si es oracle  o alguns mysql haig de fer una merda per tornar els numeros normals. */
+            // If it is oracle or some mysql it will be a bit difficult to make the numbers normal. 
             if (
               dataModel.ds.connection.type == 'oracle' ||
               dataModel.ds.connection.type == 'mysql'
@@ -1083,7 +1068,7 @@ export class DashboardController {
                   return res
                 }
               } else {
-                //això es per evitar els null trec els nulls i els canvio per '' dels lavels
+                // this is to avoid nulls I remove the nulls and change them to '' from the values
                 if (r[i] === null) {
                   return eda_api_config.null_value;
                 } else {
@@ -1091,7 +1076,7 @@ export class DashboardController {
                 }
               }
             } else {
-              // trec els nulls i els canvio per eda_api_config.null_value dels lavels
+              // I remove the eyes and change them to eda_api_config.null value of the levels
               if (numerics[ind] != 'true' && r[i] == null) {
                 return eda_api_config.null_value;
               } else {
@@ -1106,16 +1091,16 @@ export class DashboardController {
 
           results.push(output)          
         }
-        // las etiquetas son el nombre técnico...
+        // Labels are the technical name...
         const output = [mylabels, results]
         if (output[1].length < cache_config.MAX_STORED_ROWS && cacheEnabled) {
           CachedQueryService.storeQuery(req.body.model_id, query, output)
         }
 
-        /**SUMA ACUMULATIVA ->
-         * Si hay fechas agregadas por mes o dia
-         * y el flag cumulative está activo se hace la suma acumulativa en todos los campos numéricos
-         */
+        /**CUMULATIVE SUM ->
+        * If dates are aggregated by month or day
+        * and the cumulative flag is set, the cumulative sum is performed on all numeric fields
+        */
         DashboardController.cumulativeSum(output, req.body.query)
 
         console.log(
@@ -1129,12 +1114,12 @@ export class DashboardController {
         return res.status(200).json(output)
 
         /**
-         * La consulta és a la caché
+         * The query is to the cache
          */
       } else {
         /**SUMA ACUMULATIVA ->
-         * Si hay fechas agregadas por mes o dia
-         * y el flag cumulative está activo se hace la suma acumulativa en todos los campos numéricos
+        * If dates are added by month or day
+        * and the cumulative flag is active, the cumulative sum is performed on all numeric fields.
          */
         console.log('\x1b[36m%s\x1b[0m', '💾 Cached query 💾')
         DashboardController.cumulativeSum(
@@ -1156,7 +1141,7 @@ export class DashboardController {
 
 
   /**
-   * Executa una consulta SQL  per un dashboard
+   * Run a SQL query for a dashboard
    */
   static async execSqlQuery(req: Request, res: Response, next: NextFunction) {
     try {
@@ -1185,7 +1170,7 @@ export class DashboardController {
       )
       const includesAdmin = req['user'].role.includes("135792467811111111111110")
       if(includesAdmin){
-        // el admin ve todo
+        // the admin sees everything
        uniquesForbiddenTables = [];
       }
 /* SDA CUSTOM */      if( req.user._id == '135792467811111111111112'){
@@ -1243,8 +1228,8 @@ export class DashboardController {
 
           for (let i = 0, n = getResults.length; i < n; i++) {
             const r = getResults[i]
-            /** si es oracle  o alguns mysql haig de fer una merda per tornar els numeros normals. */
-            /** poso els resultats al resultat i faig una matriu de tipus de numero. també faig una copia de seguretat */
+            // if it's oracle or some mysql I have to do some shit to get back the normal numbers. 
+            // I put the results in the result and make an array of number types. I also make a backup 
             if (
               dataModel.ds.connection.type == 'oracle' ||
               dataModel.ds.connection.type == 'mysql'
@@ -1258,8 +1243,8 @@ export class DashboardController {
                 if (DashboardController.isNotNumeric(val)) {
                   tmpArray.push('NaN');
                   if(val===null  ){
-                    output[index] =  eda_api_config.null_value;  // los valores nulos  les canvio per un espai en blanc pero que si no tinc problemes
-                    resultsRollback[i][index] =  eda_api_config.null_value; // los valores nulos  les canvio per un espai en blanc pero que si no tinc problemes
+                    output[index] =  eda_api_config.null_value;  // I change the null values ​​to a blank space but otherwise I have no problems.
+                    resultsRollback[i][index] =  eda_api_config.null_value; // I change the null values ​​to a blank space but otherwise I have no problems.
                   }
                 } else {
                   tmpArray.push('int')
@@ -1279,8 +1264,8 @@ export class DashboardController {
               const output = Object.keys(r).map(i => r[i]);
               output.forEach((val, index) => {
                 if(val===null  ){
-                  output[index] =  eda_api_config.null_value;// los valores nulos les canvio per un espai en blanc pero que si no tinc problemes
-                  resultsRollback[i][index] =   eda_api_config.null_value; // los valores nulos les canvio per un espai en blanc pero que si no tinc problemes
+                  output[index] =  eda_api_config.null_value;//I change the null values ​​to a blank space  otherwise I have  problems.
+                  resultsRollback[i][index] =   eda_api_config.null_value; //I change the null values ​​to a blank space  otherwise I have  problems.
                 }
               })
               results.push(output)
@@ -1288,9 +1273,8 @@ export class DashboardController {
             }
           }
 
-
-          /** si tinc resultats de oracle evaluo la matriu de tipus de numero per verure si tinc enters i textos barrejats.
-           * miro cada  valor amb el seguent per baix de la matriu. */
+          // if I have oracle results I evaluate the number type array to see if I have mixed integers and text.
+          //I check each value with the next one below the array. 
           if (oracleDataTypes.length > 1) {
             for (var i = 0; i < oracleDataTypes.length - 1; i++) {
               var e = oracleDataTypes[i]
@@ -1303,7 +1287,7 @@ export class DashboardController {
               }
             }
           }
-          /** si tinc numeros barrejats. Poso el rollback */
+         // if I have mixed numbers. I put the rollback 
           if (oracleEval !== true) {
             results = resultsRollback
           }else{
@@ -1329,8 +1313,6 @@ export class DashboardController {
             `Date: ${formatDate(new Date())} Dashboard:${req.body.dashboard.dashboard_id
             } Panel:${req.body.dashboard.panel_id} DONE\n`
           )
-          //console.log('Query output');
-          //console.log(output);
           return res.status(200).json(output)
         } else {
           console.log('\x1b[36m%s\x1b[0m', '💾 Cached query 💾')
@@ -1349,9 +1331,9 @@ export class DashboardController {
   }
 
 
-  /*
-  Check if a value is not numeric
-  */
+  
+  //Check if a value is not numeric
+  
   static isNotNumeric(val) {
 
     let isNotNumeric = false;
@@ -1436,8 +1418,8 @@ export class DashboardController {
       const dataModel = await connection.getDataSource(req.body.model_id)
       const dataModelObject = JSON.parse(JSON.stringify(dataModel));
 
-      /** por compatibilidad. Si no tengo el tipo de columna en el filtro lo añado */
-      /** por compatibilidad. Si no tengo el el tipo de agregación en el filtro.....*/
+      //for compatibility If I don't have the type of column in the filter I add it
+      //for compatibility If I don't have the type of aggregation in the filter...
       if(req.body.query.filters){
         for (const filter of req.body.query.filters) {
           if (!filter.filter_column_type) {
@@ -1447,7 +1429,7 @@ export class DashboardController {
               filter.filter_column_type = filterColumn?.column_type || 'text';
             }
           }
-          /** por compatibilidad. Si no tengo el el tipo de agregación en el filtro lo pongo en el where*/ 
+          //for compatibility If I don't have the type of aggregation in the filter, I put it in the where
           if(! filter.hasOwnProperty('filterBeforeGrouping') ){
             filter.filterBeforeGrouping = true;
           }
