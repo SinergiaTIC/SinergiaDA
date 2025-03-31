@@ -44,7 +44,8 @@ import {
     BubblechartDialog,
     CumSumAlertDialogComponent,
     EdaSunburstComponent,
-    SunburstDialogComponent
+    SunburstDialogComponent,
+    FilterAndOrDialogComponent,
 
  } from './component.index';
  
@@ -98,7 +99,8 @@ import { DragDropComponent } from './drag-drop/drag-drop.component';
         BubblechartDialog,
         EdaSunburstComponent,
         SunburstDialogComponent,
-        DragDropComponent
+        DragDropComponent,
+        FilterAndOrDialogComponent
     ],
     exports: [
         EdaBlankPanelComponent,
@@ -128,7 +130,8 @@ import { DragDropComponent } from './drag-drop/drag-drop.component';
         BubblechartDialog,
         EdaSunburstComponent,
         SunburstDialogComponent,
-        DragDropComponent
+        DragDropComponent,
+        FilterAndOrDialogComponent
     ],
     schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
