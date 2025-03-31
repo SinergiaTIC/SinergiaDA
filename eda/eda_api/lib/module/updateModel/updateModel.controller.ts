@@ -634,9 +634,9 @@ export class updateModel {
     main_model.ds.metadata.model_granted_roles = await grantedRoles;
 
     try{
-      // Verificando si desde Sinergia CRM viene enabled la información del cache 
+      // Checking if the cache information is enabled from Sinergia CRM
       let sda_config_cache_enabled_value = cache_configSDA.find( v => v.key === 'sda_config_cache_enabled').value
-      // Se pueden configurar mas variables
+      // More variables can be configured
       if(sda_config_cache_enabled_value === "1") {
         main_model.ds.metadata.cache_config = {
           units: cache_configSDA.find( (v: any) => v.key === 'sda_config_cache_units').value,
