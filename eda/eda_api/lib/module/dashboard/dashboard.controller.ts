@@ -216,6 +216,7 @@ export class DashboardController {
   
       return [publics, privates, groups, shared]
     } catch (err) {
+      console.log(err);
       throw new HttpException(400, 'Error loading dashboards for admin')
     }
   }
