@@ -260,6 +260,8 @@ export class EdaFilterAndOrComponent implements OnInit {
       // item recursivo
       const { cols, rows, y, x, filter_table, filter_column, filter_type, filter_column_type, filter_elements, value } = item;
 
+      console.log('FILTER - item: ', item);
+
       // Verificar  (Hay dos filtros por revisar ==> | not_null_nor_empty | null_nor_empty | )
       ////////////////////////////////////////////////// filter_type ////////////////////////////////////////////////// 
       let filter_type_value = '';
@@ -285,7 +287,6 @@ export class EdaFilterAndOrComponent implements OnInit {
       // console.log('longitud: ',filter_elements.length)
       if(filter_elements.length === 0) {}
       else {
-        console.log('valores: ', filter_elements[0].value1)
         if(filter_elements[0].value1.length === 1){
           // Para solo un valor  ==> Agregar mas tipos de valores si fuera necesario
 
@@ -301,9 +302,7 @@ export class EdaFilterAndOrComponent implements OnInit {
 
         } else {
           // Para varios valores
-          filter_elements_value = filter_elements_value + '('
-
-          console.log('filter_column_type: ', filter_column_type);
+          filter_elements_value = filter_elements_value + '(';
 
           // Valores de tipo text
           if(filter_column_type === 'text'){

@@ -419,8 +419,8 @@ export class EdaBlankPanelComponent implements OnInit {
         return out;
     }
 
-    public setTablesData = () => {
-        const tables = TableUtils.getTablesData(this.inject.dataSource.model.tables, this.inject.applyToAllfilter);
+    public setTablesData = () => {        
+        const tables = TableUtils.getTablesData(this.inject.dataSource.model.tables, this.inject.applyToAllfilter);        
         this.tables = [].concat(_.cloneDeep(tables.allTables), this.assertedTables);
         this.tablesToShow = [].concat(_.cloneDeep(tables.tablesToShow), this.assertedTables);
         this.sqlOriginTables = _.cloneDeep(tables.sqlOriginTables);
