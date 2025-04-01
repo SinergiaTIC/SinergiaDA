@@ -13,6 +13,7 @@ export * from './eda-map/eda-map.component';
 export * from './eda-map/eda-geoJsonMap.component';
 export * from './eda-funnel/eda-funnel.component';
 export * from './eda-d3-bubblechart/eda-bubblechart.component';
+export * from './eda-filter-and-or/eda-filter-and-or.component';
 
  // export * from './eda-d3/eda-d3.component';
 

@@ -46,6 +46,7 @@ import {
     EdaSunburstComponent,
     SunburstDialogComponent,
     FilterAndOrDialogComponent,
+    EdaFilterAndOrComponent,
 
  } from './component.index';
  
@@ -100,7 +101,8 @@ import { DragDropComponent } from './drag-drop/drag-drop.component';
         EdaSunburstComponent,
         SunburstDialogComponent,
         DragDropComponent,
-        FilterAndOrDialogComponent
+        FilterAndOrDialogComponent,
+        EdaFilterAndOrComponent,
     ],
     exports: [
         EdaBlankPanelComponent,
@@ -131,7 +133,8 @@ import { DragDropComponent } from './drag-drop/drag-drop.component';
         EdaSunburstComponent,
         SunburstDialogComponent,
         DragDropComponent,
-        FilterAndOrDialogComponent
+        FilterAndOrDialogComponent,
+        EdaFilterAndOrComponent
     ],
     schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
