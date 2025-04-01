@@ -1,1 +1,44 @@
 <p>FUNCIONA EL COMPONENTE DE FILTROS AND-OR</p>
+<!-- <p>Inicio del la malla de filtros</p> -->
+
+<div class="col-12 foot-card">
+
+    <p-scrollPanel [style]="{width: '98%', height: '80px'}" styleClass="custombar1">
+        <p class="text-query"  [innerHTML]="stringQuery"></p>
+    </p-scrollPanel>
+
+</div>
+
+<br>
+
+<div>
+    <gridster class="gridster" [options]="options">
+        <gridster-item [item]="item" *ngFor="let item of dashboard" class="gridster-item">
+        <div class="d-flex justify-content-between align-items-center">
+            <div class="button-holder" *ngIf="!(item.x==0 && item.y==0)">
+
+                <p-selectButton 
+                    [options]="selectedButton" 
+                    [(ngModel)]="item.value"
+                    [disabled]="(item.x==0 && item.y==0)"
+                    class="small-button"
+                    (click)="onButtonClick()"
+                ></p-selectButton>
+
+            </div>
+            <h5 class="texto-filtro" [class.texto-derecha]="item.x == 0 && item.y == 0">{{item.filter_column}} </h5>
+        </div>
+        </gridster-item>
+    </gridster>
+</div>
+
+<!-- Para usar en caso de pruebas -->
+<!-- <div class="button-holder" *ngIf="!(item.x==0 && item.y==0)">
+    <button
+    mat-mini-fab
+    (mousedown)="removeItem($event, item)"
+    (touchstart)="removeItem($event, item)"
+    >
+    <mat-icon>delete</mat-icon>
+    </button>
+</div> -->

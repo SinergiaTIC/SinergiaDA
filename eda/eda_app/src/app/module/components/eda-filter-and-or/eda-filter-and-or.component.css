@@ -1,0 +1,69 @@
+
+.gridster {
+    background-color: transparent; 
+    border: 1px solid #13d60c00;  /* Líneas de borde alrededor de cada ítem */
+    /* position: static; */
+    width: 96%;
+    /* Es el valor por el cual dara espacio para escribir la query  */
+    /* width: 65%;  */
+    height: 50%;
+}
+
+.gridster .gridster-column {
+    border-left: 1px solid rgb(240, 240, 243);
+    border-right: 1px solid rgb(240, 240, 243);
+    outline: 1px solid rgb(240, 240, 243);
+}
+.gridster .gridster-row {
+    border-top: 1px solid rgb(240, 240, 243);
+    border-bottom: 1px solid rgb(240, 240, 243);
+    outline: 1px solid rgb(240, 240, 243);
+}
+
+.gridster-item {
+    background-color: #ffffff; /* Cambia este valor por el color que desees */
+    border: 1.5px solid #b5b2b2c3;  /* Líneas de borde alrededor de cada ítem */
+    cursor: pointer;
+    padding: 0 10px;
+    border-radius: 5px;
+}
+
+/* Cambiar el color de la previsualización del item */
+.gridster-preview {
+    background-color: transparent; /* Cambia este valor por el color que desees */
+}
+
+/* Ajustar el tamaño del botón */
+.small-button .p-button {
+    padding: 3px 6px !important;  /* Reduce el padding (espaciado interno) */
+    height: 22px !important;      /* Reduce la altura del botón */
+    min-width: 20px !important;   /* Ajusta el ancho mínimo del botón */
+    font-size: 8px !important;   /* Cambia el tamaño de la fuente (si lo deseas) */
+    font-style: italic;
+    font-weight: 500;
+}
+
+/* Asegurarse de que el contenedor también sea pequeño */
+.small-button .p-selectbutton {
+    height: 22px !important;      /* Reduce la altura */
+}
+
+.texto-filtro {
+    font-style: italic;
+    font-size: 0.8rem;
+    color: rgb(73, 80, 87);
+    margin: 5px 10px 5px 10px;
+}
+
+/* Clase que alinea el texto a la derecha cuando no hay botón */
+.texto-derecha {
+    margin-left: auto; /* Empuja el texto hacia la derecha */
+}
+
+.text-query {
+    font-weight: bold;
+    font-size: 0.7rem;
+}
+
+
+
