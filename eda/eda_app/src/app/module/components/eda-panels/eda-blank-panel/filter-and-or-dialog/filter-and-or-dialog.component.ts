@@ -9,6 +9,7 @@ export class FilterAndOrDialogComponent implements OnInit {
 
   @Input() selectedFilters: any[] = [];
   @Input() globalFilters: any[] = [];
+  @Input() tables: any[] = [];
   @Output() close: EventEmitter<any> = new EventEmitter<any>();
 
   public display: boolean = false;

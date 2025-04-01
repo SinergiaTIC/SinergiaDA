@@ -32,6 +32,7 @@ export class EdaFilterAndOrComponent implements OnInit {
   
   @Input() selectedFilters: any[] = []; // Filtros de los paneles
   @Input() globalFilters: any[] = []; // Filtros globales
+  @Input() tables: any[] = []; // tables del Eda-Blank-Panel
   @Output() dashboardChanged: EventEmitter<any> = new EventEmitter<any>();
 
   options: GridsterConfig;
@@ -85,6 +86,7 @@ export class EdaFilterAndOrComponent implements OnInit {
 
     console.log('this.selectedFilters: ', this.selectedFilters);
     console.log('this.globalFilters: ', this.globalFilters);
+    console.log('this.tables: ', this.tables);
 
     // Agregado de Filtros de Panel
     this.selectedFilters.forEach((sf, j) => {
