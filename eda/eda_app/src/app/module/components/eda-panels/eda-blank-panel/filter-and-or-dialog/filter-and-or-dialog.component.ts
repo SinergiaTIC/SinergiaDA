@@ -25,12 +25,12 @@ export class FilterAndOrDialogComponent implements OnInit {
     }
   
     public onApplyFilterAndOrDialog() {
-      console.log('Dashboard final para tratar: ', this.dashboardRecibido);
+      console.log('Se confirman los cambios : ', this.dashboardRecibido);
       this.close.emit();
     }
   
     public oncloseFilterAndOrDialog() {
-      console.log('desde el hijo: oncloseFilterAndOrDialog')
+      console.log('Se ha cerrado el filter-and-or-dialog')
       this.close.emit();
     }
   
