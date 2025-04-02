@@ -57,7 +57,7 @@ export class GlobalFilterComponent implements OnInit {
         }
     }
 
-    // métode per descobrir o amagar el botó de filtrar al dashboard
+    // method to show or hide the filter button on the dashboard
     private setFilterButtonVisibilty(): void {
         
         let myFilters = _.cloneDeep(this.globalFilters);
@@ -411,7 +411,7 @@ export class GlobalFilterComponent implements OnInit {
                 data = res[1].filter(item => item[0].toString()  != '').map(item => ({ label: item[0].toString(), value: item[0].toString() }));
             }
 
-            /** SI TENGO VALORES VACÍOS LOS SUSTITUYO POR EL TEXTO DE CADENA VACÍA....... ESO ES EQUIVALENTE A IS NULL OR EMPTY */
+            /** IF I HAVE EMPTY VALUES I REPLACE THEM WITH THE EMPTY STRING TEXT....... THAT IS EQUIVALENT TO IS NULL OR EMPTY */
             if( res[1].filter(item => item[0].toString() == '').length == 1 ){
                 data.unshift(    { label: $localize`:@@emptyStringTxt:Vacío`  , value:  'emptyString'  }  )
             }
@@ -431,7 +431,7 @@ export class GlobalFilterComponent implements OnInit {
                 if ((item.value || []).length > 60) bol = true;
             }
 
-            // si els elements del filtre son llargs amplio el multiselect. 
+            // if the filter elements are long wide the multiselect. 
             if (bol) {
                 const dropdowns = document.querySelectorAll('p-multiselect');
                 try {

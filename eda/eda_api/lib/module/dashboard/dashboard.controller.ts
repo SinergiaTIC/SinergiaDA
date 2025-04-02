@@ -28,8 +28,7 @@ export class DashboardController {
         // Hide public (shared) reports to normal users
         /*SDA CUSTOM*/ // shared = await DashboardController.getSharedDashboards();
       }
-
-      // Asegurarse de que la información del grupo esté incluida para dashboards de tipo "group"
+      // Ensure group information is included for ‘group’ dashboards type.
       group = await DashboardController.addGroupInfo(group);
 
       return res.status(200).json({
@@ -87,7 +86,7 @@ export class DashboardController {
         'config.title config.visible group config.tag config.onlyIcanEdit config.description config.createdAt config.ds user'
       ).populate('user','name').exec()
       
-      // Añadir información de grupo aquí también
+      // Add group information here as well
       return DashboardController.addGroupInfo(dashboards);
     } catch (err) {
       console.log(err);
@@ -179,7 +178,7 @@ export class DashboardController {
       const shared = []
   
       for (const dashboard of dashboards) {
-        // Buscar información del usuario para todos los dashboards
+        // Search user information for all dashboards
         dashboard.user = await User.findById(
           { _id: dashboard.user },
           'name'
@@ -277,16 +276,16 @@ export class DashboardController {
             }
             let toJson = JSON.parse(JSON.stringify(datasource))
 
-            // Filtre de seguretat per les taules. Si no es te permis sobre una taula es posa com a oculta.
-            // Per si de cas es fa servir a una relació.
+            // Security filter for the tables. If you do not have permission on a table it is set as hidden.
+            // In case it is used in a relation.
             let uniquesForbiddenTables = DashboardController.getForbiddenTables(
               toJson,
               userGroups,
               req.user._id
             )
 
-            // Esto se hace para hacer un bypass de la seguridad en caso de que el usuario sea anonimo y por lo tanto
-              // un informe público
+            // This is done in order to bypass security in case the user is anonymous and therefore
+              // a public report
             if(req.user._id == '135792467811111111111112'){
               console.log('ANONYMOUS USER QUERY....NO PERMISSIONS APPLY HERE.....');
               uniquesForbiddenTables = [];
@@ -298,9 +297,9 @@ export class DashboardController {
 
             if (!includesAdmin) {
               try {
-                // Poso taules prohivides a false
+                // Set prohibited tables to false
                 if (uniquesForbiddenTables.length > 0) {
-                  // Poso taules prohivides a false
+                  //  Set prohibited tables to false
                   for (let x = 0; x < toJson.ds.model.tables.length; x++) {
                     try {
                       if ( uniquesForbiddenTables.includes( toJson.ds.model.tables[x].table_name ) ) {
@@ -311,7 +310,7 @@ export class DashboardController {
                       console.log(e)
                     }
                   }
-                  // Oculto columnes als panells
+                  // Hidden columns in panels
                   for (let i = 0; i < dashboard.config.panel.length; i++) {
                     if (dashboard.config.panel[i].content != undefined) {
                       let MyFields = [];
@@ -541,10 +540,10 @@ export class DashboardController {
   ) {
     let forbiddenTables = [];
     if( dataModelObject.ds.metadata.model_granted_roles.filter( r=>r.type == "anyoneCanSee" && r.permission == true ).length > 0 ){
-      // En el caso de que cualquier usuario pueda ver el modelo y tengamos un esquema benevolente
+      // In case where any user can visualize the model and we have a benevolent scheme
       forbiddenTables = this.getForbiddenTablesOpen( dataModelObject, userGroups, user ); 
     }else{
-      // En el caso de que tan sólo pueda ver las tablas para las que tengo permiso explicito
+      // In case I can only see the tables for which I have explicit permissions
       forbiddenTables = this.getForbiddenTablesClose( dataModelObject, userGroups, user ); 
     }
 
@@ -663,7 +662,7 @@ export class DashboardController {
     }
 
 
-    // TAULES PERMITTED BY THE GROUP
+    // TABLES PERMITTED BY THE GROUP
     if (dataModelObject.ds.metadata.model_granted_roles !== undefined) {
       for ( var i = 0; i < dataModelObject.ds.metadata.model_granted_roles.length;  i++ ) {
         if ( dataModelObject.ds.metadata.model_granted_roles[i].column === 'fullTable' &&
@@ -764,7 +763,7 @@ export class DashboardController {
     }
 
 
-    // TAULES PERMITTED BY THE GROUP
+    // TABLES PERMITTED BY THE GROUP
     if (dataModelObject.ds.metadata.model_granted_roles !== undefined) {
       for ( var i = 0; i < dataModelObject.ds.metadata.model_granted_roles.length;  i++ ) {
         if ( dataModelObject.ds.metadata.model_granted_roles[i].column === 'fullTable' &&
@@ -917,7 +916,7 @@ export class DashboardController {
               filter.filter_column_type = filterColumn?.column_type || 'text';
             }
           }
-          // por compatibilidad. Si no tengo el el tipo de agregación en el filtro lo pongo en el where
+          // for compatibility. If I don't have the aggregation type in the filter I put it in where
           if(! filter.hasOwnProperty('filterBeforeGrouping') ){
             filter.filterBeforeGrouping = true;
           }
@@ -932,10 +931,10 @@ export class DashboardController {
         a.filter_elements.forEach(b => {
           if( b.value1){
             if ( b.value1.includes('emptyString')  && b.value1.length  == 1 ){
-              // si es uno lo convierto en un nulo o vacío
+              // if it is one I turn it into a null or empty
               a.filter_type = 'null_or_empty'
             }if ( b.value1.includes('emptyString')  && b.value1.length  > 1 ){
-             // si son más de uno lo saco a un filtro a parte
+             // if there are more than one, I remove them to a separate filter.
              const nullFilter = JSON.parse(JSON.stringify(a));
              nullFilter.filter_id = 'is_null';
              nullFilter.filter_type = 'null_or_empty';
@@ -966,7 +965,7 @@ export class DashboardController {
               b.value1 = b.value1.filter(c => c != 'null')
               filters.push(nullFilter);
               }else  if ( ( b.value1.includes('null')||  b.value1.includes( eda_api_config.null_value )  || b.value1.includes('1900-01-01') ) 
-              && b.value1.length > 1  /** Si tengo varios elementos  */
+              && b.value1.length > 1  /** If I have multiple elements  */
               && ( a.filter_type == '!=' || a.filter_type == 'not_in' ||  a.filter_type == 'not_like' )
               ) {
                   // If there are more than one, I remove it from a separate filter.
@@ -1292,7 +1291,7 @@ export class DashboardController {
           if (oracleEval !== true) {
             results = resultsRollback
           }else{
-            // pongo a nulo los numeros nulos
+            // I put in null state the null numbers
             for (var i = 0; i < results.length; i++) {
               var e = results[i]
               for (var j = 0; j < e.length; j++) {
