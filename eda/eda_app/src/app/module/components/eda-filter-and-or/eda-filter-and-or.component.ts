@@ -391,4 +391,18 @@ export class EdaFilterAndOrComponent implements OnInit {
     this.dashboardClone = _.cloneDeep(this.dashboard);
   }
 
+  public getDisplayFilterStrAndOr(item: any) {
+
+      let str = '';
+      const table = this.tables.find(table => table.table_name === item.filter_table.split('.')[0]);
+
+      if (table && table.table_name) {
+          const tableName = table.display_name?.default;
+          const columnName = table.columns.find((c) => c.column_name == item.filter_column)?.display_name?.default;
+          str = `<strong>${tableName}</strong>&nbsp>&nbsp<strong>${columnName}</strong>`;
+      }
+
+      return str;
+  }
+
 }

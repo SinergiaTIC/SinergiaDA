@@ -26,7 +26,7 @@
                 ></p-selectButton>
 
             </div>
-            <h5 class="texto-filtro" [class.texto-derecha]="item.x == 0 && item.y == 0">{{item.filter_column}} </h5>
+            <span class="texto-filtro" [class.texto-derecha]="item.x == 0 && item.y == 0" [innerHTML]="getDisplayFilterStrAndOr(item)" ></span>
         </div>
         </gridster-item>
     </gridster>
