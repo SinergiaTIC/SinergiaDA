@@ -31,13 +31,8 @@ export class FilterAndOrDialogComponent implements OnInit {
     }
   
     public oncloseFilterAndOrDialog() {
-      console.log('Se ha cerrado el filter-and-or-dialog')
+      console.log('Se ha cancelado los cambios ')
       this.close.emit();
     }
-  
-    public disableApply() {
-      return false;
-    }
-
 
 }

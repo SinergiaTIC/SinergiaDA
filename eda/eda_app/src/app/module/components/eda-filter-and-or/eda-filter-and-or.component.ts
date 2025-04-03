@@ -80,13 +80,15 @@ export class EdaFilterAndOrComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.initAndOrFilters();
+  }
 
+  initAndOrFilters () {
     // Integración:
     this.dashboard = [];
 
     console.log('this.selectedFilters: ', this.selectedFilters);
     console.log('this.globalFilters: ', this.globalFilters);
-    console.log('this.tables: ', this.tables);
 
     // Agregado de Filtros de Panel
     this.selectedFilters.forEach((sf, j) => {
@@ -105,9 +107,8 @@ export class EdaFilterAndOrComponent implements OnInit {
     this.dashboardChanged.emit(this.dashboard);
 
     // Al inicio de la ejecución
-    // this.creacionQueryFiltros(this.dashboard);
+    this.creacionQueryFiltros(this.dashboard);
     // console.log('dashboard: ',this.dashboard)
-
   }
 
   onItemChange(item: GridsterItem): void {
@@ -391,6 +392,7 @@ export class EdaFilterAndOrComponent implements OnInit {
     this.dashboardClone = _.cloneDeep(this.dashboard);
   }
 
+  // Función que muestra los nombre de tabla y columna de los filtros AND | OR
   public getDisplayFilterStrAndOr(item: any) {
 
       let str = '';
