@@ -15,6 +15,7 @@ import {
     EdaPageDialogComponent, EdaDialogController, EdaContextMenu, EdaDialogCloseEvent
 } from '@eda/shared/components/shared-components.index';
 import { EdaChartComponent } from '@eda/components/component.index';
+import { EdaFilterAndOrComponent } from '../../eda-filter-and-or/eda-filter-and-or.component';
 import { PanelChart } from './panel-charts/panel-chart';
 import * as _ from 'lodash';
 import { ChartConfig } from './panel-charts/chart-configuration-models/chart-config';
@@ -554,6 +555,10 @@ export class EdaBlankPanelComponent implements OnInit {
 
         // Se mantiene en falso luego de guardar
         this.hiddenButtonExecuter = false;
+
+        // Se reinicia la variable estatica de los filtros AND | OR
+        EdaFilterAndOrComponent.reiniciarDashboard()
+
     }
 
     public initObjectQuery() {
@@ -922,6 +927,7 @@ export class EdaBlankPanelComponent implements OnInit {
      * Reset state when panel edition is cancelled
      */
     public closeEditarConsulta(): void {
+
         // Reset all the variables
         this.display_v.saved_panel = false;
         this.columns = [];
@@ -949,6 +955,10 @@ export class EdaBlankPanelComponent implements OnInit {
 
         // After canceling, the value returns to false
         this.hiddenButtonExecuter = false
+
+        // Se reinicia la variable estatica de los filtros AND | OR
+        EdaFilterAndOrComponent.reiniciarDashboard()
+
     }
 
     /**
@@ -1217,7 +1227,7 @@ export class EdaBlankPanelComponent implements OnInit {
     public runManualQuery = () => {
         this.hiddenButtonExecuter = true;
         // isNewAxes --> Verifica si la construcción del axes es nueva.
-        QueryUtils.runManualQuery(this)
+        QueryUtils.runManualQuery(this);
     };
 
     public moveItem = (column: any) => {

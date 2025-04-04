@@ -29,6 +29,20 @@ import _ from 'lodash';
   encapsulation: ViewEncapsulation.None
 })
 export class EdaFilterAndOrComponent implements OnInit {
+
+  private static previousDashboard: GridsterItem[] | null = null;
+
+  public static guardarDashboard(dashboard: GridsterItem[]): void {
+    EdaFilterAndOrComponent.previousDashboard = _.cloneDeep(dashboard);
+  }
+
+  public static obtenerDashboard(): GridsterItem[] | null {
+    return EdaFilterAndOrComponent.previousDashboard;
+  }
+
+  public static reiniciarDashboard(): void {
+    EdaFilterAndOrComponent.previousDashboard = null;
+  }
   
   @Input() selectedFilters: any[] = []; // Filtros de los paneles
   @Input() globalFilters: any[] = []; // Filtros globales
@@ -42,7 +56,6 @@ export class EdaFilterAndOrComponent implements OnInit {
   selectedButton: any[]; 
   selectedButtonInitialValue: string; // Valor seleccionado por defecto
   stringQuery: string = '';
-
   existeIntercambioItems: boolean = false;
 
   constructor() { 
@@ -60,8 +73,8 @@ export class EdaFilterAndOrComponent implements OnInit {
       },
       minCols: 10,
       maxCols: 10,
-      minRows: 9, // Hacer dinámico este valor
-      maxRows: 9, // Hacer dinámico este valor
+      minRows: 9, // Hacer dinámico este valor - pendiente
+      maxRows: 9, // Hacer dinámico este valor - pendiente
       margin: 0.2, // Reduce el margen entre celdas
       fixedRowHeight: 29, // Altura del elemento
       fixedColWidth: 80, // Anchura del elemento
@@ -80,7 +93,17 @@ export class EdaFilterAndOrComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.initAndOrFilters();
+
+    const previo = EdaFilterAndOrComponent.obtenerDashboard();
+
+    if(previo) {
+      this.dashboard = _.cloneDeep(previo);
+      this.dashboardClone = _.cloneDeep(previo);
+      this.creacionQueryFiltros(this.dashboard);
+    } else {
+      this.initAndOrFilters();
+    }
+
   }
 
   initAndOrFilters () {

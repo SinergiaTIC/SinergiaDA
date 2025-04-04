@@ -1,4 +1,6 @@
 import { Component, EventEmitter, OnInit, Output, Input  } from '@angular/core';
+import { EdaFilterAndOrComponent } from '../../../eda-filter-and-or/eda-filter-and-or.component';
+
 
 @Component({
   selector: 'filter-and-or-dialog',
@@ -27,6 +29,10 @@ export class FilterAndOrDialogComponent implements OnInit {
   
     public onApplyFilterAndOrDialog() {
       console.log('Se confirman los cambios : ', this.dashboardRecibido);
+      if (this.dashboardRecibido?.length) {
+        EdaFilterAndOrComponent.guardarDashboard(this.dashboardRecibido);
+        
+      }
       this.close.emit();
     }
   
