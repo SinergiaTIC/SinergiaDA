@@ -271,6 +271,16 @@ export abstract class QueryBuilderService {
             grouping = separedCols[1];
         }
 
+
+
+        // jj. quizás llevarse esto a un método nuevo. 
+        // jj. aqui se evalua si se filtra "normal " o con la ordenación.
+
+        console.log('<<< queryTODO >>>', this.queryTODO);
+
+        // const filterOrdered = this.queryTODO.filterOrdered
+
+
         //to WHERE CLAUSE
         const filters = this.queryTODO.filters.filter(f => {
             let column =  this.queryTODO.fields.find(c=> f.filter_table == c.table_id && f.filter_column == c.column_name );

@@ -522,8 +522,11 @@ export class EdaBlankPanelComponent implements OnInit {
      * Updates panel content with actual state
      */
     public savePanel() {
+        
+        console.log('panel <<<>>>', this.panel);
 
         this.panel.title = this.pdialog.getTitle();
+
 
         if (this.panel?.content) {
             this.panel.content.query.query.queryMode = this.selectedQueryMode;

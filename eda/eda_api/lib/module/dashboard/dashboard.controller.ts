@@ -941,6 +941,8 @@ export class DashboardController {
       const filters = myQuery.filters;
 
 
+
+      // Si tengo un filtro con vario elementos y uno de ellos es nulo. Por ejemplo flitro por 3,5,7,null 
       filters.forEach(a => {
         a.filter_elements.forEach(b => {
           if( b.value1){
@@ -995,6 +997,7 @@ export class DashboardController {
       }) 
 
       myQuery.filters = filters;
+      // jj aqui añado mi filterSorted. myQuery.filterSorted = filterSorted;
 
 
       if(uniquesForbiddenTables.length > 0){
