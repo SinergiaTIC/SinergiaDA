@@ -145,6 +145,7 @@ export class EdaBlankPanelComponent implements OnInit {
     public currentSQLQuery: string = '';
     public queryLimit: number;
     public joinType: string = 'inner';
+    public sortedFilters: any[] = [];
 
     public queryModes: any[] = [
         { label: $localize`:@@PanelModeSelectorEDA:Modo EDA`, value: 'EDA' },
@@ -522,7 +523,7 @@ export class EdaBlankPanelComponent implements OnInit {
      * Updates panel content with actual state
      */
     public savePanel() {
-        
+
         console.log('panel <<<>>>', this.panel);
 
         this.panel.title = this.pdialog.getTitle();
@@ -1532,6 +1533,11 @@ export class EdaBlankPanelComponent implements OnInit {
         config['ordering'] = [{axes: newAxes}]; // Agrego el nuevo axes a la config
         this.copyConfigCrossTable = JSON.parse(JSON.stringify(config));;
         QueryUtils.runManualQuery(this) // Ejecutando con la nueva configuracion de currentQuery
+    }
+
+    public newSortedFiltersFunction(event: any[]) {
+        this.sortedFilters = event;
+        console.log('recibido en el EDP: ', event);
     }
 
 }

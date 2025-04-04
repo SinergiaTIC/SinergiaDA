@@ -13,6 +13,8 @@ export class FilterAndOrDialogComponent implements OnInit {
   @Input() globalFilters: any[] = [];
   @Input() tables: any[] = [];
   @Output() close: EventEmitter<any> = new EventEmitter<any>();
+  @Output() newSortedFilters: EventEmitter<any[]> = new EventEmitter<any[]>();
+
 
   public display: boolean = false;
   public dashboardRecibido = [];
@@ -31,7 +33,7 @@ export class FilterAndOrDialogComponent implements OnInit {
       console.log('Se confirman los cambios : ', this.dashboardRecibido);
       if (this.dashboardRecibido?.length) {
         EdaFilterAndOrComponent.guardarDashboard(this.dashboardRecibido);
-        
+        this.newSortedFilters.emit(this.dashboardRecibido); // Emitiendo al EBP
       }
       this.close.emit();
     }
