@@ -246,6 +246,7 @@ export class EdaBlankPanelComponent implements OnInit {
 
                 if (queryMode == 'EDA2') {
                     this.rootTable = contentQuery.query.rootTable;
+                    this.sortedFilters = contentQuery.query.sortedFilters; // se extrae sortedFilters del servidor 
                 }
 
                 if (modeSQL || queryMode=='SQL') {
@@ -1536,7 +1537,8 @@ export class EdaBlankPanelComponent implements OnInit {
     }
 
     public newSortedFiltersFunction(event: any[]) {
-        this.sortedFilters = event;
+        this.sortedFilters = event; // guardamos el sortedFilters en el EBP
+        this.display_v.btnSave = true; // Se deshabilita el botón de confirmar  
         console.log('recibido en el EDP: ', event);
     }
 
