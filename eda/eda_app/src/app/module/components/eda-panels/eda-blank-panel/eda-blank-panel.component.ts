@@ -246,8 +246,9 @@ export class EdaBlankPanelComponent implements OnInit {
 
                 if (queryMode == 'EDA2') {
                     this.rootTable = contentQuery.query.rootTable;
-                    this.sortedFilters = contentQuery.query.sortedFilters; // se extrae sortedFilters del servidor 
                 }
+
+                this.sortedFilters = contentQuery.query.sortedFilters; // se extrae sortedFilters del servidor 
 
                 if (modeSQL || queryMode=='SQL') {
                     this.currentSQLQuery = contentQuery.query.SQLexpression;
