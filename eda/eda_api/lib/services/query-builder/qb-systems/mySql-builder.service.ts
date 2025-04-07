@@ -18,7 +18,6 @@ export class MySqlBuilderService extends QueryBuilderService {
     if (forSelector === true) {
       myQuery = `SELECT DISTINCT ${columns.join(', ')} \nFROM ${o}`;
     }
- 
 
     // JOINS
     let joinString: any[];
@@ -88,6 +87,8 @@ export class MySqlBuilderService extends QueryBuilderService {
     }
   
     myQuery = this.queryAddedRange(this.queryTODO.fields, myQuery)
+    
+    console.log('myQuery ::>> \n', myQuery);
 
     return myQuery;
   };

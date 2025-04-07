@@ -271,15 +271,7 @@ export abstract class QueryBuilderService {
             grouping = separedCols[1];
         }
 
-
-
-        // jj. quizás llevarse esto a un método nuevo. 
-        // jj. aqui se evalua si se filtra "normal " o con la ordenación.
-
-        console.log('<<< queryTODO >>>', this.queryTODO);
-        console.log('<<< query >>>', this.query);
-
-        // const filterOrdered = this.queryTODO.filterOrdered
+        // console.log('<<< queryTODO >>>', this.queryTODO);
 
 
         //to WHERE CLAUSE
@@ -321,7 +313,7 @@ export abstract class QueryBuilderService {
         } else {
             let tables = this.dataModel.ds.model.tables
                 .map(table => { return { name: table.table_name, query: table.query } });
-            
+
             this.query = this.normalQuery(columns, origin, dest, joinTree, grouping,  filters, havingFilters,  tables,
                 this.queryTODO.queryLimit,   this.queryTODO.joinType, valueListJoins, this.dataModel.ds.connection.schema, 
                 this.dataModel.ds.connection.database, this.queryTODO.forSelector);
