@@ -47,6 +47,7 @@ export class EdaFilterAndOrComponent implements OnInit {
   @Input() selectedFilters: any[] = []; // Filtros de los paneles
   @Input() globalFilters: any[] = []; // Filtros globales
   @Input() tables: any[] = []; // tables del Eda-Blank-Panel
+  @Input() sortedFilters: any[] = []; // sortedFilters recibido del servidor
   @Output() dashboardChanged: EventEmitter<any> = new EventEmitter<any>();
 
   options: GridsterConfig;
@@ -93,6 +94,11 @@ export class EdaFilterAndOrComponent implements OnInit {
   }
 
   ngOnInit(): void {
+
+    // Verify if the sortedFilters comes empty from the server
+    if(this.sortedFilters.length !== 0) {
+      EdaFilterAndOrComponent.previousDashboard = this.sortedFilters;
+    }
 
     const previo = EdaFilterAndOrComponent.obtenerDashboard();
 

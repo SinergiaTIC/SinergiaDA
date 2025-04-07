@@ -12,6 +12,7 @@ export class FilterAndOrDialogComponent implements OnInit {
   @Input() selectedFilters: any[] = [];
   @Input() globalFilters: any[] = [];
   @Input() tables: any[] = [];
+  @Input() sortedFilters: any[] = []; // sortedFilters from the API
   @Output() close: EventEmitter<any> = new EventEmitter<any>();
   @Output() newSortedFilters: EventEmitter<any[]> = new EventEmitter<any[]>();
 
