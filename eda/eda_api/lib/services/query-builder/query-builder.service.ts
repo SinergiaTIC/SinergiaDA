@@ -277,6 +277,7 @@ export abstract class QueryBuilderService {
         // jj. aqui se evalua si se filtra "normal " o con la ordenación.
 
         console.log('<<< queryTODO >>>', this.queryTODO);
+        console.log('<<< query >>>', this.query);
 
         // const filterOrdered = this.queryTODO.filterOrdered
 
