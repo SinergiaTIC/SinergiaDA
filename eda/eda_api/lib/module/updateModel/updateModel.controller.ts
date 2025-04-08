@@ -173,8 +173,6 @@ export class updateModel {
                                           await connection.query("select `key`, `value` from sda_def_config")
                                           .then(async cacheConfigSDA => {
                                             let cache_config_SDA = cacheConfigSDA;
-
-
                                             try {
                                               crm_to_eda = await userAndGroupsToMongo.crm_to_eda_UsersAndGroups(
                                                 users_crm,
@@ -231,6 +229,46 @@ export class updateModel {
       console.log("Error : ", e);
     }
   }
+  
+  /**
+  * receives an cache_config SDA object and check if it's correct. Safety first
+  * 
+  * @param cache_config_SDA - cache_config SDA object  with the cache configuration
+  * @returns cache_config_SDA checked if the result is not acceptable cache is disabled.
+  */
+  static assertCacheConfig(cache_config_SDA:any) {
+    if( cache_config_SDA.find( (v: any) => v.key === 'sda_config_cache_enabled').value  === "1") {
+      if (  ! [ 'days', 'hours'].includes ( cache_config_SDA.find( (v: any) => v.key === 'sda_config_cache_units').value  )  ){
+          // no correct units. Cache = false.
+          console.log('Error in cache configuration units : ' + cache_config_SDA.find( (v: any) => v.key === 'sda_config_cache_units').value  );
+          cache_config_SDA['sda_config_cache_enabled'] = false;
+        }
+      if (  ! (cache_config_SDA.find( (v: any) => v.key === 'sda_config_cache_quantity').value  >0 
+        &&  cache_config_SDA.find( (v: any) => v.key === 'sda_config_cache_quantity').value < 200 )  ){
+          // no correct units. Cache = false.
+          console.log('Error in cache configuration quantity  : ' + cache_config_SDA.find( (v: any) => v.key === 'sda_config_cache_quantity').value  );
+          cache_config_SDA.find( (v: any) => v.key === 'sda_config_cache_enabled').value  = '0'  ;
+        }
+      if (  ! (cache_config_SDA.find( (v: any) => v.key === 'sda_config_cache_hours').value  >=0 
+        &&  cache_config_SDA.find( (v: any) => v.key === 'sda_config_cache_hours').value < 24 ) ){
+          // no correct units. Cache = false.
+          console.log('Error in cache configuration hours  : ' + cache_config_SDA.find( (v: any) => v.key === 'sda_config_cache_hours').value );
+          cache_config_SDA.find( (v: any) => v.key === 'sda_config_cache_enabled').value  = '0'  ;
+        }
+      if (  ! (cache_config_SDA.find( (v: any) => v.key === 'sda_config_cache_minutes').value  >=0 
+        &&  cache_config_SDA.find( (v: any) => v.key === 'sda_config_cache_minutes').value < 60) ){
+          // no correct units. Cache = false.
+          console.log('Error in cache configuration minutes  : ' + cache_config_SDA.find( (v: any) => v.key === 'sda_config_cache_minutes').value );
+          cache_config_SDA.find( (v: any) => v.key === 'sda_config_cache_enabled').value  = '0' ;
+        }
+    }else{
+      console.log('Cache disabled : ' + cache_config_SDA['sda_config_cache_enabled']  );
+      cache_config_SDA.find( (v: any) => v.key === 'sda_config_cache_enabled').value  = '0' ;
+    }
+  return cache_config_SDA;
+  }
+
+
   /** Checks if columns and tables defined in the model exist */
   static async checkSinergiaModel(con: any) {
     let tablas = [];
@@ -632,6 +670,10 @@ export class updateModel {
     main_model.ds.connection.password = EnCrypterService.encrypt(sinergiaDatabase.sinergiaConn.password);
     main_model.ds.model.tables = tables;
     main_model.ds.metadata.model_granted_roles = await grantedRoles;
+
+
+    cache_configSDA = this.assertCacheConfig(cache_configSDA);
+
 
     try{
       // Checking if the cache information is enabled from Sinergia CRM
