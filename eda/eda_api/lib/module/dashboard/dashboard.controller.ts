@@ -965,7 +965,7 @@ export class DashboardController {
               b.value1 = b.value1.filter(c => c != 'null')
               filters.push(nullFilter);
               }else  if ( ( b.value1.includes('null')||  b.value1.includes( eda_api_config.null_value )  || b.value1.includes('1900-01-01') ) 
-              && b.value1.length > 1  /** If I have multiple elements  */
+              && b.value1.length > 1  // If I have multiple elements  
               && ( a.filter_type == '!=' || a.filter_type == 'not_in' ||  a.filter_type == 'not_like' )
               ) {
                   // If there are more than one, I remove it from a separate filter.
