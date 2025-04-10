@@ -45,18 +45,11 @@ export class MySqlBuilderService extends QueryBuilderService {
       // Verificación si existe ordenación de filtros AND | OR.
     if(Array.isArray(sortedFilters) && sortedFilters.length !== 0) {
         // sortedFilters tiene elementos
-      myQuery += this.getSortedFilters(sortedFilters);
-
+      myQuery += this.getSortedFilters(sortedFilters, filters);
     } else {
         // sortedFilters esta vacio  
-      myQuery += this.getFilters(filters, dest.length, o);
+        myQuery += this.getFilters(filters, dest.length, o);
     }
-
-    // myQuery += this.getFilters(filters, dest.length, o);
-    console.log('\n');
-    console.log('myQuery ::>> 3 ::\n', myQuery);
-    console.log('joinString ::>> 3 ::', joinString);
-    console.log('alias ::>> 3 ::', alias);
 
     // GroupBy
     if (grouping.length > 0) {
@@ -108,8 +101,20 @@ export class MySqlBuilderService extends QueryBuilderService {
     return myQuery;
   };
 
-  public getSortedFilters(sortedFilters: any[]): any {
-    console.log('<<< sortedFilters >>> : ', sortedFilters);
+  public getSortedFilters(sortedFilters: any[], filters: any[]): any {
+
+    console.log('AHORAAAA AQUIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII::: ')
+    console.log('Verificacion: filters: ', filters)
+
+    filters.forEach((filter: any) => {
+      if(filter.valueListSource !== undefined && filter.valueListSource !== null) {
+        // console.log('Mira ::: ',filter.valueListSource.target_table);
+        // console.log('Mira 2: ',sortedFilters.find((e: any) => e.filter_column === filter.valueListSource.source_column));
+        sortedFilters.find((e: any) => e.filter_column === filter.valueListSource.source_column).valueListSource = filter.valueListSource;
+      }
+    })
+
+    console.log('Verificacion: <<<<< sortedFilters >>>>>', sortedFilters)
     
     // Ordenamiento del dashboard en el eje y de menor a mayor. 
     sortedFilters.sort((a: any, b: any) => a.y - b.y); 
@@ -120,7 +125,7 @@ export class MySqlBuilderService extends QueryBuilderService {
     // Función recursiva para la anidación necesaria según el gráfico de los filtros AND/OR.
     function cadenaRecursiva(item: any) {
       // item recursivo
-      const { cols, rows, y, x, filter_table, filter_column, filter_type, filter_column_type, filter_elements, value } = item;
+      const { cols, rows, y, x, filter_table, filter_column, filter_type, filter_column_type, filter_elements, value, valueListSource } = item;
 
       // Verificar  (Hay dos filtros por revisar ==> | not_null_nor_empty | null_nor_empty | )
       ////////////////////////////////////////////////// filter_type ////////////////////////////////////////////////// 
@@ -143,7 +148,6 @@ export class MySqlBuilderService extends QueryBuilderService {
 
       ////////////////////////////////////////////////// filter_elements ////////////////////////////////////////////////// 
       let filter_elements_value = '';
-      // console.log('longitud: ',filter_elements.length)
       if(filter_elements.length === 0) {}
       else {
         if(filter_elements[0].value1.length === 1){
@@ -188,9 +192,8 @@ export class MySqlBuilderService extends QueryBuilderService {
       /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
       // RESULTADO DE TODO EL STRING
-      let resultado = `\`${filter_table}\`.\`${filter_column}\` ${filter_type_value} ${filter_elements_value}`;
+      let resultado = `\`${(valueListSource !== undefined && valueListSource !== null) ? valueListSource.target_table : filter_table}\`.\`${(valueListSource !== undefined && valueListSource !== null)? valueListSource.target_description_column : filter_column}\` ${filter_type_value} ${filter_elements_value}`;
       
-
       let elementosHijos = []; // Arreglo de items hijos
 
       for(let n = y+1; n<sortedFilters.length; n++){
@@ -202,7 +205,7 @@ export class MySqlBuilderService extends QueryBuilderService {
       const itemGenerico = sortedFilters.filter((item: any) => item.y === y + 1)[0];
 
       if(elementosHijos.length>0) {
-        let space = '            ';
+        let space = '            '; // Saltos para la identación
         let variableSpace = space.repeat(x+1);
 
         let hijoArreglo = elementosHijos.map(itemHijo => {
@@ -222,8 +225,7 @@ export class MySqlBuilderService extends QueryBuilderService {
       return resultado;
     }
 
-
-    // Iteración del dashboard para conseguir el string anidado correcto
+    // Iteración del dashboard para conseguir el correcto string anidado
     let itemsString = '( '
     for(let r=0; r<sortedFilters.length; r++){
       if(sortedFilters[r].x === 0){
