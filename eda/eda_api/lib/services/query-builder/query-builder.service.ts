@@ -38,7 +38,7 @@ export abstract class QueryBuilderService {
     abstract processFilter(filter: any, columnType: string);
     abstract normalQuery(columns: string[], origin: string, dest: any[], joinTree: any[],
         grouping: any[], filters: any[], havingFilters: any[], tables: Array<any>, limit: number, 
-        joinType: string,valueListJoins:any[], Schema?: string, database?: string, forSelector?: any );
+        joinType: string,valueListJoins:any[], Schema?: string, database?: string, forSelector?: any, sortedFilters?: any[] );
     abstract sqlQuery(query: string, filters: any[], filterMarks: string[]): string;
     abstract buildPermissionJoin(origin: string, join: string[], permissions: any[], schema?: string);
     abstract parseSchema(tables: string[], schema?: string, database?: string);
@@ -272,6 +272,7 @@ export abstract class QueryBuilderService {
         }
 
         // console.log('<<< queryTODO >>>', this.queryTODO);
+        // console.log('sortedFilters -->>', this.queryTODO.sortedFilters);
 
 
         //to WHERE CLAUSE
@@ -316,7 +317,7 @@ export abstract class QueryBuilderService {
 
             this.query = this.normalQuery(columns, origin, dest, joinTree, grouping,  filters, havingFilters,  tables,
                 this.queryTODO.queryLimit,   this.queryTODO.joinType, valueListJoins, this.dataModel.ds.connection.schema, 
-                this.dataModel.ds.connection.database, this.queryTODO.forSelector);
+                this.dataModel.ds.connection.database, this.queryTODO.forSelector, this.queryTODO.sortedFilters);
             
             return this.query;
         }

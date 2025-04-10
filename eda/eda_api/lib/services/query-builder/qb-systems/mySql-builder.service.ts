@@ -10,7 +10,8 @@ export class MySqlBuilderService extends QueryBuilderService {
   }
 
   public normalQuery(columns: string[], origin: string, dest: any[], joinTree: any[], grouping: any[], filters: any[], havingFilters: any[], 
-    tables: Array<any>, limit: number,  joinType: string, valueListJoins: Array<any> ,schema: string, database: string, forSelector: any ) {
+    tables: Array<any>, limit: number,  joinType: string, valueListJoins: Array<any> ,schema: string, database: string, forSelector: any, sortedFilters: any[]) {
+
     let o = tables.filter(table => table.name === origin).map(table => { return table.query ? table.query : table.name })[0];
     let myQuery = `SELECT ${columns.join(', ')} \nFROM ${o}`;
 
@@ -18,6 +19,9 @@ export class MySqlBuilderService extends QueryBuilderService {
     if (forSelector === true) {
       myQuery = `SELECT DISTINCT ${columns.join(', ')} \nFROM ${o}`;
     }
+
+    // Si es EDA no hay alias
+    // Si es EDA2 = Modo Árbol => si existe alias
 
     // JOINS
     let joinString: any[];
@@ -38,7 +42,21 @@ export class MySqlBuilderService extends QueryBuilderService {
     });
 
     // WHERE
-    myQuery += this.getFilters(filters, dest.length, o);
+      // Verificación si existe ordenación de filtros AND | OR.
+    if(Array.isArray(sortedFilters) && sortedFilters.length !== 0) {
+        // sortedFilters tiene elementos
+      myQuery += this.getSortedFilters(sortedFilters);
+
+    } else {
+        // sortedFilters esta vacio  
+      myQuery += this.getFilters(filters, dest.length, o);
+    }
+
+    // myQuery += this.getFilters(filters, dest.length, o);
+    console.log('\n');
+    console.log('myQuery ::>> 3 ::\n', myQuery);
+    console.log('joinString ::>> 3 ::', joinString);
+    console.log('alias ::>> 3 ::', alias);
 
     // GroupBy
     if (grouping.length > 0) {
@@ -52,7 +70,6 @@ export class MySqlBuilderService extends QueryBuilderService {
     /**SDA CUSTOM */ // if (forSelector === true) {
     /**SDA CUSTOM */ //    myQuery += `\n UNION \n SELECT '' `;
     /**SDA CUSTOM */ //  }
-
 
     // OrderBy
     const orderColumns = this.queryTODO.fields.map(col => {
@@ -88,10 +105,139 @@ export class MySqlBuilderService extends QueryBuilderService {
   
     myQuery = this.queryAddedRange(this.queryTODO.fields, myQuery)
     
-    console.log('myQuery ::>> \n', myQuery);
-
     return myQuery;
   };
+
+  public getSortedFilters(sortedFilters: any[]): any {
+    console.log('<<< sortedFilters >>> : ', sortedFilters);
+    
+    // Ordenamiento del dashboard en el eje y de menor a mayor. 
+    sortedFilters.sort((a: any, b: any) => a.y - b.y); 
+
+    // Variable que contiene la nueva cadena de los filtros AND/OR anidados correspondido con el diseño gráfico de los items.
+    let stringQuery = '\nwhere ';
+
+    // Función recursiva para la anidación necesaria según el gráfico de los filtros AND/OR.
+    function cadenaRecursiva(item: any) {
+      // item recursivo
+      const { cols, rows, y, x, filter_table, filter_column, filter_type, filter_column_type, filter_elements, value } = item;
+
+      // Verificar  (Hay dos filtros por revisar ==> | not_null_nor_empty | null_nor_empty | )
+      ////////////////////////////////////////////////// filter_type ////////////////////////////////////////////////// 
+      let filter_type_value = '';
+      if(filter_type === 'not_in'){
+        filter_type_value = 'not in';
+      } else {
+        if(filter_type === 'not_like') {
+          filter_type_value = 'not like';
+        } else {
+          if(filter_type === 'not_null') {
+            filter_type_value = 'is not null';
+          } else {
+            if(true){
+              filter_type_value = filter_type;
+            }
+          }
+        }
+      }
+
+      ////////////////////////////////////////////////// filter_elements ////////////////////////////////////////////////// 
+      let filter_elements_value = '';
+      // console.log('longitud: ',filter_elements.length)
+      if(filter_elements.length === 0) {}
+      else {
+        if(filter_elements[0].value1.length === 1){
+          // Para solo un valor  ==> Agregar mas tipos de valores si fuera necesario
+
+          // Valor de tipo text
+          if(filter_column_type === 'text'){
+            filter_elements_value = filter_elements_value + `'${filter_type === 'like' || filter_type === 'not_like'? '%': ''}${filter_elements[0].value1[0]}${filter_type === 'like' || filter_type === 'not_like'? '%': ''}'`;
+          } 
+
+          // Valor de tipo numeric
+          if(filter_column_type === 'numeric'){
+            filter_elements_value = filter_elements_value + `${filter_elements[0].value1[0]}`;
+          } 
+
+        } else {
+          // Para varios valores
+          filter_elements_value = filter_elements_value + '(';
+
+          // Valores de tipo text
+          if(filter_column_type === 'text'){
+            filter_elements[0].value1.forEach((element: any, index: number) => {
+              filter_elements_value += `'${element}'` + `${index===(filter_elements[0].value1.length-1)? ')': ','}`;
+            })
+          }
+
+          // Valores de tipo numeric
+          if(filter_column_type === 'numeric'){
+            filter_elements[0].value1.forEach((element: any, index: number) => {
+              filter_elements_value += `${element}` + `${index===(filter_elements[0].value1.length-1)? ')': ','}`;
+            })
+          }
+
+          // Valores que no tengan definido un filter_column_type
+          if(filter_column_type === undefined){
+            filter_elements[0].value1.forEach((element: any, index: number) => {
+              filter_elements_value += `'${element}'` + `${index===(filter_elements[0].value1.length-1)? ')': ','}`;
+            })
+          }
+        }
+      }
+      /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+      // RESULTADO DE TODO EL STRING
+      let resultado = `\`${filter_table}\`.\`${filter_column}\` ${filter_type_value} ${filter_elements_value}`;
+      
+
+      let elementosHijos = []; // Arreglo de items hijos
+
+      for(let n = y+1; n<sortedFilters.length; n++){
+        if(sortedFilters[n].x === x) break;
+        if(y < sortedFilters[n].y && sortedFilters[n].x === x+1) elementosHijos.push(sortedFilters[n]);
+      }
+
+      // variable que contiene el siguiente item del item tratado por la función recursiva.
+      const itemGenerico = sortedFilters.filter((item: any) => item.y === y + 1)[0];
+
+      if(elementosHijos.length>0) {
+        let space = '            ';
+        let variableSpace = space.repeat(x+1);
+
+        let hijoArreglo = elementosHijos.map(itemHijo => {
+          return cadenaRecursiva(itemHijo);
+        })
+
+        let hijosCadena = '';
+        hijoArreglo.forEach((hijo, index) => {
+          hijosCadena = hijosCadena + hijo;
+          if(index<elementosHijos.length-1){
+            hijosCadena = hijosCadena + ` \n ${variableSpace} ${elementosHijos[index+1].value.toUpperCase()} `
+          }
+        })
+
+        resultado = `(${resultado} \n ${variableSpace} ${itemGenerico.value.toUpperCase()} (${hijosCadena}))`;
+      }
+      return resultado;
+    }
+
+
+    // Iteración del dashboard para conseguir el string anidado correcto
+    let itemsString = '( '
+    for(let r=0; r<sortedFilters.length; r++){
+      if(sortedFilters[r].x === 0){
+        itemsString = itemsString +  (r === 0 ? '' : ' ' + sortedFilters[r].value.toUpperCase() + ' ' ) + sortedFilters.filter((e: any) => e.y===r).map(cadenaRecursiva)[0] + `\n`;
+      } else {
+        continue;
+      }
+    }
+
+    itemsString = itemsString + ' )';
+    stringQuery = stringQuery + itemsString
+
+    return stringQuery;
+  }
 
   public queryAddedRange(fields, myQuery) {
 
@@ -110,7 +256,6 @@ export class MySqlBuilderService extends QueryBuilderService {
     }
 
   }
-
 
   public getFilters(filters, destLongitud, pTable): any { 
 
