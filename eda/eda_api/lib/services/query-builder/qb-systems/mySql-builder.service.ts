@@ -116,19 +116,22 @@ export class MySqlBuilderService extends QueryBuilderService {
 
     console.log('Verificacion: <<<<< sortedFilters >>>>>', sortedFilters)
     
-    // Ordenamiento del dashboard en el eje y de menor a mayor. 
+    // Ordering the dashboard on the y-axis from lowest to highest.
     sortedFilters.sort((a: any, b: any) => a.y - b.y); 
 
-    // Variable que contiene la nueva cadena de los filtros AND/OR anidados correspondido con el diseño gráfico de los items.
+    // Variable containing the new string of nested AND/OR filters corresponding to the graphic design of the items.
     let stringQuery = '\nwhere ';
 
-    // Función recursiva para la anidación necesaria según el gráfico de los filtros AND/OR.
+    // Recursive function for the necessary nesting according to the AND/OR filter graph.
     function cadenaRecursiva(item: any) {
-      // item recursivo
+      // recursive item
       const { cols, rows, y, x, filter_table, filter_column, filter_type, filter_column_type, filter_elements, value, valueListSource } = item;
 
-      // Verificar  (Hay dos filtros por revisar ==> | not_null_nor_empty | null_nor_empty | )
+      // Check ( There are two filters to check ==> | not_null_nor_empty | null_nor_empty | )
       ////////////////////////////////////////////////// filter_type ////////////////////////////////////////////////// 
+
+      console.log('filter_type: ', filter_type);
+
       let filter_type_value = '';
       if(filter_type === 'not_in'){
         filter_type_value = 'not in';
@@ -151,37 +154,42 @@ export class MySqlBuilderService extends QueryBuilderService {
       if(filter_elements.length === 0) {}
       else {
         if(filter_elements[0].value1.length === 1){
-          // Para solo un valor  ==> Agregar mas tipos de valores si fuera necesario
 
-          // Valor de tipo text
+          //Value of type text
           if(filter_column_type === 'text'){
             filter_elements_value = filter_elements_value + `'${filter_type === 'like' || filter_type === 'not_like'? '%': ''}${filter_elements[0].value1[0]}${filter_type === 'like' || filter_type === 'not_like'? '%': ''}'`;
           } 
 
-          // Valor de tipo numeric
+          // Numeric type value
           if(filter_column_type === 'numeric'){
-            filter_elements_value = filter_elements_value + `${filter_elements[0].value1[0]}`;
+            if(filter_type === 'between') {
+              filter_elements_value = filter_elements_value + `${Number(filter_elements[0].value1[0])} and ${Number(filter_elements[1].value2[0])}`;
+            } else {
+              filter_elements_value = filter_elements_value + `${filter_elements[0].value1[0]}`;
+            }
           } 
 
+          // Add more value types if necessary
+
         } else {
-          // Para varios valores
+          // For several values
           filter_elements_value = filter_elements_value + '(';
 
-          // Valores de tipo text
+          // Text type values
           if(filter_column_type === 'text'){
             filter_elements[0].value1.forEach((element: any, index: number) => {
               filter_elements_value += `'${element}'` + `${index===(filter_elements[0].value1.length-1)? ')': ','}`;
             })
           }
 
-          // Valores de tipo numeric
+          // Numeric type values
           if(filter_column_type === 'numeric'){
             filter_elements[0].value1.forEach((element: any, index: number) => {
               filter_elements_value += `${element}` + `${index===(filter_elements[0].value1.length-1)? ')': ','}`;
             })
           }
 
-          // Valores que no tengan definido un filter_column_type
+          // Values ​​that do not have a filter_column_type defined
           if(filter_column_type === undefined){
             filter_elements[0].value1.forEach((element: any, index: number) => {
               filter_elements_value += `'${element}'` + `${index===(filter_elements[0].value1.length-1)? ')': ','}`;
@@ -191,21 +199,22 @@ export class MySqlBuilderService extends QueryBuilderService {
       }
       /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-      // RESULTADO DE TODO EL STRING
-      let resultado = `\`${(valueListSource !== undefined && valueListSource !== null) ? valueListSource.target_table : filter_table}\`.\`${(valueListSource !== undefined && valueListSource !== null)? valueListSource.target_description_column : filter_column}\` ${filter_type_value} ${filter_elements_value}`;
+      // RESULT OF THE WHOLE STRING
+      let validador = (valueListSource !== undefined && valueListSource !== null);
+      let resultado = `\`${ validador ? valueListSource.target_table : filter_table}\`.\`${ validador ? valueListSource.target_description_column : filter_column}\` ${filter_type_value} ${filter_elements_value}`;
       
-      let elementosHijos = []; // Arreglo de items hijos
+      let elementosHijos = []; // Arryas of child items
 
       for(let n = y+1; n<sortedFilters.length; n++){
         if(sortedFilters[n].x === x) break;
         if(y < sortedFilters[n].y && sortedFilters[n].x === x+1) elementosHijos.push(sortedFilters[n]);
       }
 
-      // variable que contiene el siguiente item del item tratado por la función recursiva.
+      // Variable that contains the next item of the item treated by the recursive function.
       const itemGenerico = sortedFilters.filter((item: any) => item.y === y + 1)[0];
 
       if(elementosHijos.length>0) {
-        let space = '            '; // Saltos para la identación
+        let space = '            '; // Jumps for indentation
         let variableSpace = space.repeat(x+1);
 
         let hijoArreglo = elementosHijos.map(itemHijo => {
