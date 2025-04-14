@@ -105,6 +105,8 @@ export class MySqlBuilderService extends QueryBuilderService {
 
     console.log('AHORAAAA AQUIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII::: ')
     console.log('Verificacion: filters: ', filters)
+    console.log('sortedFilters: ', sortedFilters)
+
 
     filters.forEach((filter: any) => {
       if(filter.valueListSource !== undefined && filter.valueListSource !== null) {
@@ -151,13 +153,24 @@ export class MySqlBuilderService extends QueryBuilderService {
 
       ////////////////////////////////////////////////// filter_elements ////////////////////////////////////////////////// 
       let filter_elements_value = '';
-      if(filter_elements.length === 0) {}
+      console.log('filter_column_type: ', filter_column_type);
+      console.log('filter_elements: ', filter_elements);
+      
+      if(filter_elements.length === 0) {
+        console.log('soy cero');
+      }
       else {
+        // For one value
+
         if(filter_elements[0].value1.length === 1){
 
           //Value of type text
           if(filter_column_type === 'text'){
-            filter_elements_value = filter_elements_value + `'${filter_type === 'like' || filter_type === 'not_like'? '%': ''}${filter_elements[0].value1[0]}${filter_type === 'like' || filter_type === 'not_like'? '%': ''}'`;
+            if(filter_type === 'in' || filter_type === 'not_in'){
+              filter_elements_value = filter_elements_value + `(\'${filter_elements[0].value1[0]}\')`;
+            } else {
+              filter_elements_value = filter_elements_value + `'${filter_type === 'like' || filter_type === 'not_like'? '%': ''}${filter_elements[0].value1[0]}${filter_type === 'like' || filter_type === 'not_like'? '%': ''}'`;
+            }
           } 
 
           // Numeric type value
@@ -165,9 +178,16 @@ export class MySqlBuilderService extends QueryBuilderService {
             if(filter_type === 'between') {
               filter_elements_value = filter_elements_value + `${Number(filter_elements[0].value1[0])} and ${Number(filter_elements[1].value2[0])}`;
             } else {
-              filter_elements_value = filter_elements_value + `${filter_elements[0].value1[0]}`;
+              if(filter_type === 'in' || filter_type === 'not_in') {
+                filter_elements_value = filter_elements_value + `(${filter_elements[0].value1[0]})`;
+              } else {
+                filter_elements_value = filter_elements_value + `${filter_elements[0].value1[0]}`;
+              }
             }
+
           } 
+
+          console.log('filter_column_type:::::::::::::::::::::::: ', filter_column_type);
 
           // Add more value types if necessary
 

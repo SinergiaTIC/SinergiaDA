@@ -95,6 +95,9 @@ export class EdaFilterAndOrComponent implements OnInit {
 
   ngOnInit(): void {
 
+    console.log('this.selectedFilters: ', this.selectedFilters);
+    console.log('this.globalFilters: ', this.globalFilters);
+
     // Verify if the sortedFilters comes empty from the server
     if(this.sortedFilters.length !== 0) {
       EdaFilterAndOrComponent.previousDashboard = this.sortedFilters;
@@ -115,9 +118,6 @@ export class EdaFilterAndOrComponent implements OnInit {
   initAndOrFilters () {
     // Integración:
     this.dashboard = [];
-
-    console.log('this.selectedFilters: ', this.selectedFilters);
-    console.log('this.globalFilters: ', this.globalFilters);
 
     // Agregado de Filtros de Panel
     this.selectedFilters.forEach((sf, j) => {

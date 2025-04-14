@@ -280,8 +280,6 @@ export const QueryUtils = {
       sortedFilters: ebp.sortedFilters,
     };
 
-    console.log('params :::: ',params)
-
     return ebp.queryBuilder.normalQuery(ebp.currentQuery, params, ebp.selectedQueryMode);
   },
 
