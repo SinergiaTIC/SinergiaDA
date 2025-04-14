@@ -160,7 +160,7 @@ export class MySqlBuilderService extends QueryBuilderService {
         console.log('soy cero');
       }
       else {
-        // For one value
+        // FOR ONE VALUE
 
         if(filter_elements[0].value1.length === 1){
 
@@ -184,15 +184,22 @@ export class MySqlBuilderService extends QueryBuilderService {
                 filter_elements_value = filter_elements_value + `${filter_elements[0].value1[0]}`;
               }
             }
-
           } 
+
+          if(filter_column_type === 'date'){
+            if(filter_type === 'between'){
+              filter_elements_value = filter_elements_value + `STR_TO_DATE(\'${filter_elements[0].value1[0]}\',\'%Y-%m-%d\')` + ' and ' + `STR_TO_DATE(\'${filter_elements[1].value2[0]} 23:59:59\',\'%Y-%m-%d %H:%i:%S\')`;
+            } else {
+              filter_elements_value = filter_elements_value + `STR_TO_DATE(\'${filter_elements[0].value1[0]}\',\'%Y-%m-%d\')`;
+            }
+          }
 
           console.log('filter_column_type:::::::::::::::::::::::: ', filter_column_type);
 
           // Add more value types if necessary
 
         } else {
-          // For several values
+          // FOR SEVERAL VALUES
           filter_elements_value = filter_elements_value + '(';
 
           // Text type values
