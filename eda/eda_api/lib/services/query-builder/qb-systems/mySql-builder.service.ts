@@ -141,13 +141,16 @@ export class MySqlBuilderService extends QueryBuilderService {
         if(filter_type === 'not_like') {
           filter_type_value = 'not like';
         } else {
-          if(filter_type === 'not_null') {
-            filter_type_value = 'is not null';
-          } else {
-            if(true){
-              filter_type_value = filter_type;
-            }
+          if(true){
+            filter_type_value = filter_type;
           }
+          // if(filter_type === 'not_null') {
+          //   filter_type_value = 'is not null';
+          // } else {
+          //   if(true){
+          //     filter_type_value = filter_type;
+          //   }
+          // }
         }
       }
 
@@ -157,7 +160,15 @@ export class MySqlBuilderService extends QueryBuilderService {
       console.log('filter_elements: ', filter_elements);
       
       if(filter_elements.length === 0) {
-        console.log('soy cero');
+        if(filter_type === 'not_null') {
+          filter_type_value = 'is not null';
+        }
+        if(filter_type === 'not_null_nor_empty') {
+          filter_type_value = 'is not null and';
+        }
+        if(filter_type === 'null_or_empty') {
+          filter_type_value = 'is not null or';
+        }
       }
       else {
         // FOR ONE VALUE
@@ -239,7 +250,16 @@ export class MySqlBuilderService extends QueryBuilderService {
       // RESULT OF THE WHOLE STRING
       let validador = (valueListSource !== undefined && valueListSource !== null);
       let resultado = `\`${ validador ? valueListSource.target_table : filter_table}\`.\`${ validador ? valueListSource.target_description_column : filter_column}\` ${filter_type_value} ${filter_elements_value}`;
-      
+
+      // Esta ubicado en esta posición debido a que en la query se debe duplicar la tabla y el campo (*observación)
+      if(filter_type === 'not_null_nor_empty') {
+        resultado = `${resultado} \`${ validador ? valueListSource.target_table : filter_table}\`.\`${ validador ? valueListSource.target_description_column : filter_column}\` != ''`;
+      }
+
+      if(filter_type === 'null_or_empty') {
+        resultado = `${resultado} \`${ validador ? valueListSource.target_table : filter_table}\`.\`${ validador ? valueListSource.target_description_column : filter_column}\` = ''`;
+      }
+
       let elementosHijos = []; // Arryas of child items
 
       for(let n = y+1; n<sortedFilters.length; n++){
