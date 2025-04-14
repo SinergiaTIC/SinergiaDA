@@ -190,7 +190,11 @@ export class MySqlBuilderService extends QueryBuilderService {
             if(filter_type === 'between'){
               filter_elements_value = filter_elements_value + `STR_TO_DATE(\'${filter_elements[0].value1[0]}\',\'%Y-%m-%d\')` + ' and ' + `STR_TO_DATE(\'${filter_elements[1].value2[0]} 23:59:59\',\'%Y-%m-%d %H:%i:%S\')`;
             } else {
-              filter_elements_value = filter_elements_value + `STR_TO_DATE(\'${filter_elements[0].value1[0]}\',\'%Y-%m-%d\')`;
+              if(filter_type==='in' || filter_type==='not_in') {
+                filter_elements_value = filter_elements_value + `(STR_TO_DATE(\'${filter_elements[0].value1[0]}\',\'%Y-%m-%d\'))`;
+              } else {
+                filter_elements_value = filter_elements_value + `STR_TO_DATE(\'${filter_elements[0].value1[0]}\',\'%Y-%m-%d\')`;
+              }
             }
           }
 
@@ -213,6 +217,12 @@ export class MySqlBuilderService extends QueryBuilderService {
           if(filter_column_type === 'numeric'){
             filter_elements[0].value1.forEach((element: any, index: number) => {
               filter_elements_value += `${element}` + `${index===(filter_elements[0].value1.length-1)? ')': ','}`;
+            })
+          }
+
+          if(filter_column_type === 'date'){
+            filter_elements[0].value1.forEach((element: any, index: number) => {
+              filter_elements_value += `STR_TO_DATE(\'${element}\',\'%Y-%m-%d\')` + `${index===(filter_elements[0].value1.length-1)? ')': ','}`;
             })
           }
 
