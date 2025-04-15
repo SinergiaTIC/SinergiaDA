@@ -97,6 +97,9 @@ export class EdaFilterAndOrComponent implements OnInit {
 
     console.log('this.selectedFilters: ', this.selectedFilters);
     console.log('this.globalFilters: ', this.globalFilters);
+    console.log('this.sortedFilters: ', this.sortedFilters);
+    console.log('previousDashboard: ', EdaFilterAndOrComponent.previousDashboard);
+
 
     // Verify if the sortedFilters comes empty from the server
     if(this.sortedFilters.length !== 0) {
@@ -307,7 +310,7 @@ export class EdaFilterAndOrComponent implements OnInit {
   // Función de generación de la cadena de los filtros AND/OR anidados correspondido con el diseño gráfico de los items.
   creacionQueryFiltros(dashboard: any) {
 
-    console.log('<<<>>> : ', dashboard);
+    // console.log('<<<>>> : ', dashboard);
     
     // Ordenamiento del dashboard en el eje y de menor a mayor. 
     dashboard.sort((a: any, b: any) => a.y - b.y); 
@@ -320,7 +323,7 @@ export class EdaFilterAndOrComponent implements OnInit {
       // item recursivo
       const { cols, rows, y, x, filter_table, filter_column, filter_type, filter_column_type, filter_elements, value } = item;
 
-      console.log('FILTER - item: ', item);
+      // console.log('FILTER - item: ', item);
 
       // Verificar  (Hay dos filtros por revisar ==> | not_null_nor_empty | null_nor_empty | )
       ////////////////////////////////////////////////// filter_type ////////////////////////////////////////////////// 
@@ -439,7 +442,7 @@ export class EdaFilterAndOrComponent implements OnInit {
 
     this.stringQuery = _.cloneDeep(stringQuery);
 
-    console.log('stringQuery: ',stringQuery)
+    // console.log('stringQuery: ',stringQuery)
     this.dashboardChanged.emit(this.dashboard); // Envio del dashboard - Se puede cambiar el envio. 
   }
 
