@@ -103,18 +103,18 @@ export class MySqlBuilderService extends QueryBuilderService {
 
   public getSortedFilters(sortedFilters: any[], filters: any[]): any {
 
-    console.log('AHORAAAA AQUIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII::: ')
-    console.log('Verificacion: filters: ', filters)
-    console.log('sortedFilters: ', sortedFilters)
-
-
+    console.log('INICIO DE FILTROSSSSSSSSSSSSSSSSSSSSSSS AND OR ')
+    console.log('--------------> filters <--------------', filters)
+    console.log('--------------> sortedFilters <--------------', sortedFilters)
+    
+    // Adding valueListSource to the filters And/Or
     filters.forEach((filter: any) => {
       if(filter.valueListSource !== undefined && filter.valueListSource !== null) {
         sortedFilters.find((e: any) => e.filter_id === filter.filter_id ).valueListSource = filter.valueListSource;
       }
     })
 
-    console.log('Verificacion: <<<<< sortedFilters >>>>>', sortedFilters)
+    console.log('VERIFICACIÓN --------------> sortedFilters <--------------', sortedFilters)
     
     // Ordering the dashboard on the y-axis from lowest to highest.
     sortedFilters.sort((a: any, b: any) => a.y - b.y); 
@@ -127,11 +127,7 @@ export class MySqlBuilderService extends QueryBuilderService {
       // recursive item
       const { cols, rows, y, x, filter_table, filter_column, filter_type, filter_column_type, filter_elements, value, valueListSource } = item;
 
-      // Check ( There are two filters to check ==> | not_null_nor_empty | null_nor_empty | )
       ////////////////////////////////////////////////// filter_type ////////////////////////////////////////////////// 
-
-      console.log('filter_type: ', filter_type);
-
       let filter_type_value = '';
       if(filter_type === 'not_in'){
         filter_type_value = 'not in';
@@ -142,13 +138,6 @@ export class MySqlBuilderService extends QueryBuilderService {
           if(true){
             filter_type_value = filter_type;
           }
-          // if(filter_type === 'not_null') {
-          //   filter_type_value = 'is not null';
-          // } else {
-          //   if(true){
-          //     filter_type_value = filter_type;
-          //   }
-          // }
         }
       }
 
@@ -156,7 +145,8 @@ export class MySqlBuilderService extends QueryBuilderService {
       let filter_elements_value = '';
       console.log('filter_column_type: ', filter_column_type);
       console.log('filter_elements: ', filter_elements);
-      
+      console.log('filter_type: ', filter_type);
+
       if(filter_elements.length === 0) {
         if(filter_type === 'not_null') {
           filter_type_value = 'is not null';
@@ -195,6 +185,7 @@ export class MySqlBuilderService extends QueryBuilderService {
             }
           } 
 
+          // Date type value
           if(filter_column_type === 'date'){
             if(filter_type === 'between'){
               filter_elements_value = filter_elements_value + `STR_TO_DATE(\'${filter_elements[0].value1[0]}\',\'%Y-%m-%d\')` + ' and ' + `STR_TO_DATE(\'${filter_elements[1].value2[0]} 23:59:59\',\'%Y-%m-%d %H:%i:%S\')`;
@@ -207,12 +198,9 @@ export class MySqlBuilderService extends QueryBuilderService {
             }
           }
 
-          console.log('filter_column_type:::::::::::::::::::::::: ', filter_column_type);
-
-          // Add more value types if necessary
-
         } else {
           // FOR SEVERAL VALUES
+
           filter_elements_value = filter_elements_value + '(';
 
           // Text type values
@@ -229,6 +217,7 @@ export class MySqlBuilderService extends QueryBuilderService {
             })
           }
 
+          // Date type values
           if(filter_column_type === 'date'){
             filter_elements[0].value1.forEach((element: any, index: number) => {
               filter_elements_value += `STR_TO_DATE(\'${element}\',\'%Y-%m-%d\')` + `${index===(filter_elements[0].value1.length-1)? ')': ','}`;
@@ -243,22 +232,26 @@ export class MySqlBuilderService extends QueryBuilderService {
           }
         }
       }
-      /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-      // RESULT OF THE WHOLE STRING
+      ////////////////////////////////////////////////// Building the query sequence by item ////////////////////////////////////////////////// 
+
+      // variable to find filters with valueListSource
       let validador = (valueListSource !== undefined && valueListSource !== null);
+      // RESULT OF THE WHOLE STRING 
       let resultado = `\`${ validador ? valueListSource.target_table : filter_table}\`.\`${ validador ? valueListSource.target_description_column : filter_column}\` ${filter_type_value} ${filter_elements_value}`;
 
-      // Esta ubicado en esta posición debido a que en la query se debe duplicar la tabla y el campo (*observación)
+      // It is located in this position because the table and field must be duplicated in the query (*observation)
       if(filter_type === 'not_null_nor_empty') {
         resultado = `${resultado} \`${ validador ? valueListSource.target_table : filter_table}\`.\`${ validador ? valueListSource.target_description_column : filter_column}\` != ''`;
       }
 
+      // It is located in this position because the table and field must be duplicated in the query (*observation)
       if(filter_type === 'null_or_empty') {
         resultado = `${resultado} \`${ validador ? valueListSource.target_table : filter_table}\`.\`${ validador ? valueListSource.target_description_column : filter_column}\` = ''`;
       }
 
-      let elementosHijos = []; // Arrays of child items
+      ////////////////////////////////////////////////// Arrays of child items ////////////////////////////////////////////////// 
+      let elementosHijos = []; 
 
       for(let n = y+1; n<sortedFilters.length; n++){
         if(sortedFilters[n].x === x) break;
@@ -286,6 +279,8 @@ export class MySqlBuilderService extends QueryBuilderService {
 
         resultado = `(${resultado} \n ${variableSpace} ${itemGenerico.value.toUpperCase()} (${hijosCadena}))`;
       }
+
+      // Final result of the recursive function
       return resultado;
     }
 
@@ -302,6 +297,7 @@ export class MySqlBuilderService extends QueryBuilderService {
     itemsString = itemsString + ' )';
     stringQuery = stringQuery + itemsString
 
+    // Final result of the constructed query
     return stringQuery;
   }
 
