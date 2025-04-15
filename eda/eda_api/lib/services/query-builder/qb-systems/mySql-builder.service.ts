@@ -110,9 +110,7 @@ export class MySqlBuilderService extends QueryBuilderService {
 
     filters.forEach((filter: any) => {
       if(filter.valueListSource !== undefined && filter.valueListSource !== null) {
-        // console.log('Mira ::: ',filter.valueListSource.target_table);
-        // console.log('Mira 2: ',sortedFilters.find((e: any) => e.filter_column === filter.valueListSource.source_column));
-        sortedFilters.find((e: any) => e.filter_column === filter.valueListSource.source_column).valueListSource = filter.valueListSource;
+        sortedFilters.find((e: any) => e.filter_id === filter.filter_id ).valueListSource = filter.valueListSource;
       }
     })
 
@@ -260,7 +258,7 @@ export class MySqlBuilderService extends QueryBuilderService {
         resultado = `${resultado} \`${ validador ? valueListSource.target_table : filter_table}\`.\`${ validador ? valueListSource.target_description_column : filter_column}\` = ''`;
       }
 
-      let elementosHijos = []; // Arryas of child items
+      let elementosHijos = []; // Arrays of child items
 
       for(let n = y+1; n<sortedFilters.length; n++){
         if(sortedFilters[n].x === x) break;
