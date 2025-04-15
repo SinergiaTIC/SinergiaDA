@@ -36,10 +36,6 @@ export class EdaFilterAndOrComponent implements OnInit {
     EdaFilterAndOrComponent.previousDashboard = _.cloneDeep(dashboard);
   }
 
-  public static obtenerDashboard(): GridsterItem[] | null {
-    return EdaFilterAndOrComponent.previousDashboard;
-  }
-
   public static reiniciarDashboard(): void {
     EdaFilterAndOrComponent.previousDashboard = null;
   }
@@ -100,21 +96,21 @@ export class EdaFilterAndOrComponent implements OnInit {
     console.log('this.sortedFilters: ', this.sortedFilters);
     console.log('previousDashboard: ', EdaFilterAndOrComponent.previousDashboard);
 
-
-    // Verify if the sortedFilters comes empty from the server
     if(this.sortedFilters.length !== 0) {
-      EdaFilterAndOrComponent.previousDashboard = this.sortedFilters;
-    }
-
-    const previo = EdaFilterAndOrComponent.obtenerDashboard();
-
-    if(previo) {
-      this.dashboard = _.cloneDeep(previo);
-      this.dashboardClone = _.cloneDeep(previo);
-      this.creacionQueryFiltros(this.dashboard);
+      this.dashboard = _.cloneDeep(this.sortedFilters);
     } else {
-      this.initAndOrFilters();
+      const previousDashboard = EdaFilterAndOrComponent.previousDashboard;
+  
+      if(previousDashboard) {
+        this.dashboard = _.cloneDeep(previousDashboard);
+        this.dashboardClone = _.cloneDeep(previousDashboard);
+        this.creacionQueryFiltros(this.dashboard);
+      } else {
+        this.initAndOrFilters();
+      }
     }
+
+
 
   }
 
