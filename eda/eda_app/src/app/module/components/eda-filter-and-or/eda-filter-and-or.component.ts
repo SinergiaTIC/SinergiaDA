@@ -96,11 +96,6 @@ export class EdaFilterAndOrComponent implements OnInit {
     console.log('sortedFilters: ', this.sortedFilters);
     console.log('previousDashboard', EdaFilterAndOrComponent.previousDashboard);
 
-    // Verify if the sortedFilters comes empty from the server
-    // if(this.sortedFilters.length !== 0) {
-    //   EdaFilterAndOrComponent.previousDashboard = this.sortedFilters;
-    // }
-
     const previousDashboard = EdaFilterAndOrComponent.previousDashboard;
 
     if(previousDashboard) {
@@ -114,7 +109,7 @@ export class EdaFilterAndOrComponent implements OnInit {
         this.dashboard = _.cloneDeep(this.sortedFilters);
         this.dashboardClone = _.cloneDeep(this.sortedFilters);
         this.creacionQueryFiltros(this.sortedFilters);
-
+        
       } else {
         this.initAndOrFilters();
       }
