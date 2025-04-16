@@ -146,6 +146,7 @@ export class EdaBlankPanelComponent implements OnInit {
     public queryLimit: number;
     public joinType: string = 'inner';
     public sortedFilters: any[] = [];
+    public temporalSortedFilters: any[] = [];
 
     public queryModes: any[] = [
         { label: $localize`:@@PanelModeSelectorEDA:Modo EDA`, value: 'EDA' },
@@ -224,6 +225,7 @@ export class EdaBlankPanelComponent implements OnInit {
     }
 
     ngOnInit(): void {
+        console.log('EDPPPPP')
         this.index = 0;
 /* SDA CUSTOM  */ this.showHiddenColumn = false;
 /* SDA CUSTOM  */ this.showIdForHiddenMode();
@@ -563,7 +565,10 @@ export class EdaBlankPanelComponent implements OnInit {
         this.hiddenButtonExecuter = false;
 
         // Se reinicia la variable estatica de los filtros AND | OR
-        EdaFilterAndOrComponent.reiniciarDashboard()
+        EdaFilterAndOrComponent.reiniciarDashboard();
+
+        console.log('sortedFilters', this.sortedFilters);
+        console.log('temporalSortedFilters', this.temporalSortedFilters);
 
     }
 
@@ -922,11 +927,18 @@ export class EdaBlankPanelComponent implements OnInit {
     }
 
     public openEditarConsulta(): void {
+        console.log('EDPPPPPP---->>>')
+
         this.display_v.page_dialog = true;
         this.ableBtnSave();
         PanelInteractionUtils.verifyData(this);
 /* SDA CUSTOM  */       this.showHiddenColumn = false;
-/* SDA CUSTOM  */       this.columns = this.columns.filter (c => !c.hidden) ;
+/* SDA CUSTOM  */       this.columns = this.columns.filter (c => !c.hidden);
+
+        // Almacenar temporalmente el sortedFilters en el temporalSortedFilters
+        this.temporalSortedFilters = _.cloneDeep(this.sortedFilters);
+        console.log('this.sortedFilters: ', this.sortedFilters)
+        console.log('this.temporalSortedFilters: ', this.temporalSortedFilters)
     }
 
     /**
@@ -962,8 +974,14 @@ export class EdaBlankPanelComponent implements OnInit {
         // After canceling, the value returns to false
         this.hiddenButtonExecuter = false
 
-        // Se reinicia la variable estatica de los filtros AND | OR
-        EdaFilterAndOrComponent.reiniciarDashboard()
+        
+        // Al cancelar la configuración del EBP, el valor de sortedFilters regresa a como era desde un inicio
+        this.sortedFilters = _.cloneDeep(this.temporalSortedFilters);
+        // Se reinicia la variable estatica previousDashboard de los filtros AND | OR del componente eda-filter-and-or
+        EdaFilterAndOrComponent.reiniciarDashboard();
+
+        console.log('sortedFilters', this.sortedFilters);
+        console.log('temporalSortedFilters', this.temporalSortedFilters);
 
     }
 
@@ -1538,6 +1556,9 @@ export class EdaBlankPanelComponent implements OnInit {
     }
 
     public newSortedFiltersFunction(event: any[]) {
+        console.log('SIIIIIIIIIIIIIIIIIIIIIIII');
+        console.log('sortedFilters', this.sortedFilters);
+        console.log('temporalSortedFilters', this.temporalSortedFilters);
         this.sortedFilters = event; // guardamos el sortedFilters en el EBP
         this.display_v.btnSave = true; // Se deshabilita el botón de confirmar  
         console.log('recibido en el EDP: ', event);
