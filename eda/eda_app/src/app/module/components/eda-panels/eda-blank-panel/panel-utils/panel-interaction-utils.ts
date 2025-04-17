@@ -450,9 +450,15 @@ export const PanelInteractionUtils = {
     const colName = column.column_name;
     const displayName = column.display_name.default
     const initializeAgregations = (column, tmpAggTypes) => {
-      column.aggregation_type.forEach((agg) => {
-        tmpAggTypes.push({ display_name: agg.display_name, value: agg.value, selected: agg.value === 'sum' });
-      });
+      if(column.column_type == 'numeric'){
+        column.aggregation_type.forEach((agg) => {
+          tmpAggTypes.push({ display_name: agg.display_name, value: agg.value, selected: agg.value === 'sum' });
+        });
+      }else{
+        column.aggregation_type.forEach((agg) => {
+          tmpAggTypes.push({ display_name: agg.display_name, value: agg.value, selected: agg.value === 'none' });
+        });
+      }
     }
 
     if (!voidPanel) {
