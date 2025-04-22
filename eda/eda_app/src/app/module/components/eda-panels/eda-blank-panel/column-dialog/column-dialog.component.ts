@@ -649,10 +649,14 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
     }
 
     getAggregationText(value: any) {
-        const label = aggTypes.filter(agg => {
-            return (agg.value === value.aggregation_type);
-        })[0].label;
-        return label;
+        if(!value.aggregation_type){
+            return 'none';
+        } else {
+            const label = aggTypes.filter(agg => {
+                return (agg.value === value.aggregation_type);
+            })[0].label;
+            return label;
+        }
     }
 
     getFilterText(value) {
