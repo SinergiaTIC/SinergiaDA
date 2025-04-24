@@ -1,4 +1,4 @@
-from node:23-bullseye
+from node:18-bullseye
 
 # instalar
 ENV DEBIAN_FRONTEND noninteractive
