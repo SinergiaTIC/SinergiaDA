@@ -241,25 +241,29 @@ export class updateModel {
       if (  ! [ 'days', 'hours'].includes ( cache_config_SDA.find( (v: any) => v.key === 'sda_config_cache_units').value  )  ){
           // no correct units. Cache = false.
           console.log('Error in cache configuration units : ' + cache_config_SDA.find( (v: any) => v.key === 'sda_config_cache_units').value  );
-          cache_config_SDA['sda_config_cache_enabled'] = false;
+          cache_config_SDA.find( (v: any) => v.key === 'sda_config_cache_enabled').value  = '0'  ;
+          cache_config_SDA.find( (v: any) => v.key === 'sda_config_cache_units').value  = 'days'  ;
         }
       if (  ! (cache_config_SDA.find( (v: any) => v.key === 'sda_config_cache_quantity').value  >0 
         &&  cache_config_SDA.find( (v: any) => v.key === 'sda_config_cache_quantity').value < 200 )  ){
           // no correct units. Cache = false.
           console.log('Error in cache configuration quantity  : ' + cache_config_SDA.find( (v: any) => v.key === 'sda_config_cache_quantity').value  );
           cache_config_SDA.find( (v: any) => v.key === 'sda_config_cache_enabled').value  = '0'  ;
+          cache_config_SDA.find( (v: any) => v.key === 'sda_config_cache_quantity').value  = 1  ;
         }
       if (  ! (cache_config_SDA.find( (v: any) => v.key === 'sda_config_cache_hours').value  >=0 
         &&  cache_config_SDA.find( (v: any) => v.key === 'sda_config_cache_hours').value < 24 ) ){
           // no correct units. Cache = false.
           console.log('Error in cache configuration hours  : ' + cache_config_SDA.find( (v: any) => v.key === 'sda_config_cache_hours').value );
           cache_config_SDA.find( (v: any) => v.key === 'sda_config_cache_enabled').value  = '0'  ;
+          cache_config_SDA.find( (v: any) => v.key === 'sda_config_cache_hours').value  = '00'  ;
         }
       if (  ! (cache_config_SDA.find( (v: any) => v.key === 'sda_config_cache_minutes').value  >=0 
         &&  cache_config_SDA.find( (v: any) => v.key === 'sda_config_cache_minutes').value < 60) ){
           // no correct units. Cache = false.
           console.log('Error in cache configuration minutes  : ' + cache_config_SDA.find( (v: any) => v.key === 'sda_config_cache_minutes').value );
           cache_config_SDA.find( (v: any) => v.key === 'sda_config_cache_enabled').value  = '0' ;
+          cache_config_SDA.find( (v: any) => v.key === 'sda_config_cache_minutes').value  = '00'  ;
         }
     }else{
       console.log('Cache disabled : ' + cache_config_SDA['sda_config_cache_enabled']  );
