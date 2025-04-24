@@ -31,6 +31,8 @@ import _ from 'lodash';
 export class EdaFilterAndOrComponent implements OnInit {
 
   private static previousDashboard: GridsterItem[] | null = null;
+  public static selectedFiltersCopy: any[];
+  public static globalFiltersCopy: any[];
 
   public static guardarDashboard(dashboard: GridsterItem[]): void {
     EdaFilterAndOrComponent.previousDashboard = _.cloneDeep(dashboard);
@@ -45,6 +47,7 @@ export class EdaFilterAndOrComponent implements OnInit {
   @Input() tables: any[] = []; // tables del Eda-Blank-Panel
   @Input() sortedFilters: any[] = []; // sortedFilters recibido del servidor
   @Output() dashboardChanged: EventEmitter<any> = new EventEmitter<any>();
+  @Output() dashboardChangedReboot: EventEmitter<any> = new EventEmitter<any>();
 
   options: GridsterConfig;
   dashboard: GridsterItem[];
@@ -96,24 +99,61 @@ export class EdaFilterAndOrComponent implements OnInit {
     console.log('sortedFilters: ', this.sortedFilters);
     console.log('previousDashboard', EdaFilterAndOrComponent.previousDashboard);
 
-    const previousDashboard = EdaFilterAndOrComponent.previousDashboard;
 
-    if(previousDashboard) {
-      this.dashboard = _.cloneDeep(previousDashboard);
-      this.dashboardClone = _.cloneDeep(previousDashboard);
-      this.creacionQueryFiltros(this.dashboard);
-    } else {
-      if(this.sortedFilters.length !== 0) {
-        // EdaFilterAndOrComponent.previousDashboard = this.sortedFilters;
+    console.log('selectedFiltersCopy', EdaFilterAndOrComponent.selectedFiltersCopy);
+    console.log('globalFiltersCopy', EdaFilterAndOrComponent.globalFiltersCopy);
 
-        this.dashboard = _.cloneDeep(this.sortedFilters);
-        this.dashboardClone = _.cloneDeep(this.sortedFilters);
-        this.creacionQueryFiltros(this.sortedFilters);
-        
+
+    if(_.isEqual(EdaFilterAndOrComponent.selectedFiltersCopy, this.selectedFilters) && _.isEqual(EdaFilterAndOrComponent.globalFiltersCopy, this.globalFilters)) {
+      console.log('NORMALLLL')
+
+      const previousDashboard = EdaFilterAndOrComponent.previousDashboard;
+
+      if(previousDashboard) {
+        this.dashboard = _.cloneDeep(previousDashboard);
+        this.dashboardClone = _.cloneDeep(previousDashboard);
+        this.creacionQueryFiltros(this.dashboard);
       } else {
-        this.initAndOrFilters();
+        if(this.sortedFilters.length !== 0) {
+          // EdaFilterAndOrComponent.previousDashboard = this.sortedFilters;
+  
+          this.dashboard = _.cloneDeep(this.sortedFilters);
+          this.dashboardClone = _.cloneDeep(this.sortedFilters);
+          this.creacionQueryFiltros(this.sortedFilters);
+          
+        } else {
+          this.initAndOrFilters();
+        }
       }
+
+    } else {
+      console.log('REINICIARRRRR')
+      this.dashboardChangedReboot.emit('holaxdsad');
+      EdaFilterAndOrComponent.selectedFiltersCopy = _.cloneDeep(this.selectedFilters)
+      EdaFilterAndOrComponent.globalFiltersCopy = _.cloneDeep(this.globalFilters)
+      EdaFilterAndOrComponent.reiniciarDashboard();
+      this.initAndOrFilters();
     }
+
+
+    // const previousDashboard = EdaFilterAndOrComponent.previousDashboard;
+
+    // if(previousDashboard) {
+    //   this.dashboard = _.cloneDeep(previousDashboard);
+    //   this.dashboardClone = _.cloneDeep(previousDashboard);
+    //   this.creacionQueryFiltros(this.dashboard);
+    // } else {
+    //   if(this.sortedFilters.length !== 0) {
+    //     // EdaFilterAndOrComponent.previousDashboard = this.sortedFilters;
+
+    //     this.dashboard = _.cloneDeep(this.sortedFilters);
+    //     this.dashboardClone = _.cloneDeep(this.sortedFilters);
+    //     this.creacionQueryFiltros(this.sortedFilters);
+        
+    //   } else {
+    //     this.initAndOrFilters();
+    //   }
+    // }
 
   }
 
@@ -163,7 +203,7 @@ export class EdaFilterAndOrComponent implements OnInit {
     this.dashboardClone = _.cloneDeep(this.dashboard);
 
     // Enviando el dashboard inicial al componente <filter-and-or-dialog>
-    this.dashboardChanged.emit(this.dashboard);
+    // this.dashboardChanged.emit(this.dashboard);
 
     // Al inicio de la ejecución
     this.creacionQueryFiltros(this.dashboard);

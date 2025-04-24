@@ -7,7 +7,7 @@
 
     <div content>
         <h6>Ordenamiento dinámico de los todos los filtros</h6>
-        <eda-filter-and-or [(selectedFilters)]="selectedFilters" [(globalFilters)] ="globalFilters" [tables]="tables" [sortedFilters]="sortedFilters" (dashboardChanged)="handleDashboardChanged($event)"></eda-filter-and-or>
+        <eda-filter-and-or [(selectedFilters)]="selectedFilters" [(globalFilters)] ="globalFilters" [tables]="tables" [sortedFilters]="sortedFilters" (dashboardChanged)="handleDashboardChanged($event)" (dashboardChangedReboot)="handleDashboardChangedReboot($event)"></eda-filter-and-or>
          <!-- <eda-filter-and-or></eda-filter-and-or> -->
     </div>
 
