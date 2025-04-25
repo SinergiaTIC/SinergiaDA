@@ -927,7 +927,7 @@ export class EdaBlankPanelComponent implements OnInit {
     }
 
     public openEditarConsulta(): void {
-        console.log('EBP---->>>')
+        console.log('EDPPPPPP---->>>')
 
         this.display_v.page_dialog = true;
         this.ableBtnSave();
@@ -937,10 +937,8 @@ export class EdaBlankPanelComponent implements OnInit {
 
         // Almacenar temporalmente el sortedFilters en el temporalSortedFilters
         this.temporalSortedFilters = _.cloneDeep(this.sortedFilters);
-        
-        EdaFilterAndOrComponent.selectedFiltersCopy = _.cloneDeep(this.selectedFilters);
-        EdaFilterAndOrComponent.globalFiltersCopy = _.cloneDeep(this.globalFilters);
-        
+        console.log('this.sortedFilters: ', this.sortedFilters)
+        console.log('this.temporalSortedFilters: ', this.temporalSortedFilters)
     }
 
     /**
@@ -1268,12 +1266,7 @@ export class EdaBlankPanelComponent implements OnInit {
 
     public loadColumns = (table: any) => PanelInteractionUtils.loadColumns(this, table);
 
-    public removeColumn = (c: Column, list?: string, event?: Event) => {
-        
-        console.log('VERIFICARRRRRRRRRRR cuando se borra un filtro ... ')
-        
-        PanelInteractionUtils.removeColumn(this, c, list);
-    }
+    public removeColumn = (c: Column, list?: string, event?: Event) => PanelInteractionUtils.removeColumn(this, c, list);
 
     public getOptionDescription = (value: string): string => EbpUtils.getOptionDescription(value);
 

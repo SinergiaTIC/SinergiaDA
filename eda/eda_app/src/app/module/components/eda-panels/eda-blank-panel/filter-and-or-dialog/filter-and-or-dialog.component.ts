@@ -29,16 +29,6 @@ export class FilterAndOrDialogComponent implements OnInit {
     public handleDashboardChanged(event: any) {
       this.dashboardRecibido = event
     }
-
-    public handleDashboardChangedReboot(event: any) {
-      // this.dashboardRecibido = event
-      console.log('ASDFASDFASDFASDFASDFASDFASDF')
-      console.log('event:::::::::::::: ', event);
-      // this.newSortedFilters.emit([]);
-      setTimeout(() => {
-        this.newSortedFilters.emit([]);
-      })
-    }
   
     public onApplyFilterAndOrDialog() {
       console.log('Se confirman los cambios : ', this.dashboardRecibido);
