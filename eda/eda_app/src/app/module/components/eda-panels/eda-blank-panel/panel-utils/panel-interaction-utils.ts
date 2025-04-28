@@ -695,6 +695,16 @@ export const PanelInteractionUtils = {
     * @param list where collumn is present (select, filters)
     */
   removeColumn: (ebp: EdaBlankPanelComponent, c: Column, list?: string) => {
+
+    // We check if when deleting a field it has a filter at selectedFilters
+    // console.log('AQUIIIII')
+    // console.log('Column: ', c);
+    // console.log('ebp -> selectedFilters: ', ebp.selectedFilters)
+
+    if(ebp.selectedFilters.some( (sf: any) => sf.filter_column === c.column_name )){
+      ebp.sortedFilters = []; // resets the values ​​because one or more filters were deleted
+    }
+
     ebp.disableBtnSave();
     // Busca de l'array index, la columna a borrar i ho fa
     if (list === 'select') {
@@ -747,8 +757,13 @@ export const PanelInteractionUtils = {
     const filters = ebp.selectedFilters.filter(f => f.filter_column === c.column_name);
     filters.forEach(f => ebp.selectedFilters = ebp.selectedFilters.filter(ff => ff.filter_id !== f.filter_id));
 
+    // console.log('AQUIIIII')
+    // console.log('Column: ', c);
+    // console.log('ebp -> selectedFilters: ', ebp.selectedFilters)
 
-    ebp.sortedFilters = [];
+    // debugger;
+
+    // ebp.sortedFilters = [];
     // console.log('ebp.sortedFilters', ebp.sortedFilters);
 
   }
