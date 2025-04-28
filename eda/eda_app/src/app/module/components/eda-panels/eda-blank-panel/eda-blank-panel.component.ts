@@ -225,7 +225,6 @@ export class EdaBlankPanelComponent implements OnInit {
     }
 
     ngOnInit(): void {
-        console.log('EDPPPPP')
         this.index = 0;
 /* SDA CUSTOM  */ this.showHiddenColumn = false;
 /* SDA CUSTOM  */ this.showIdForHiddenMode();

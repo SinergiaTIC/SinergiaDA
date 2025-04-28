@@ -98,22 +98,27 @@ export class EdaFilterAndOrComponent implements OnInit {
 
     const previousDashboard = EdaFilterAndOrComponent.previousDashboard;
 
-    if(previousDashboard) {
-      this.dashboard = _.cloneDeep(previousDashboard);
-      this.dashboardClone = _.cloneDeep(previousDashboard);
-      this.creacionQueryFiltros(this.dashboard);
+    if(this.sortedFilters.length===0){
+      this.initAndOrFilters();
     } else {
-      if(this.sortedFilters.length !== 0) {
-        // EdaFilterAndOrComponent.previousDashboard = this.sortedFilters;
-
-        this.dashboard = _.cloneDeep(this.sortedFilters);
-        this.dashboardClone = _.cloneDeep(this.sortedFilters);
-        this.creacionQueryFiltros(this.sortedFilters);
-        
+      if(previousDashboard) {
+        this.dashboard = _.cloneDeep(previousDashboard);
+        this.dashboardClone = _.cloneDeep(previousDashboard);
+        this.creacionQueryFiltros(this.dashboard);
       } else {
-        this.initAndOrFilters();
+        if(this.sortedFilters.length !== 0) {
+          // EdaFilterAndOrComponent.previousDashboard = this.sortedFilters;
+  
+          this.dashboard = _.cloneDeep(this.sortedFilters);
+          this.dashboardClone = _.cloneDeep(this.sortedFilters);
+          this.creacionQueryFiltros(this.sortedFilters);
+          
+        } else {
+          this.initAndOrFilters();
+        }
       }
     }
+
 
   }
 
@@ -161,9 +166,6 @@ export class EdaFilterAndOrComponent implements OnInit {
 
     // Se crea una clonación del dashboard
     this.dashboardClone = _.cloneDeep(this.dashboard);
-
-    // Enviando el dashboard inicial al componente <filter-and-or-dialog>
-    this.dashboardChanged.emit(this.dashboard);
 
     // Al inicio de la ejecución
     this.creacionQueryFiltros(this.dashboard);

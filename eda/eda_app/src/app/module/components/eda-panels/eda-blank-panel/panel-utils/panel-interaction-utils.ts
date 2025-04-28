@@ -746,6 +746,11 @@ export const PanelInteractionUtils = {
 
     const filters = ebp.selectedFilters.filter(f => f.filter_column === c.column_name);
     filters.forEach(f => ebp.selectedFilters = ebp.selectedFilters.filter(ff => ff.filter_id !== f.filter_id));
+
+
+    ebp.sortedFilters = [];
+    // console.log('ebp.sortedFilters', ebp.sortedFilters);
+
   }
 
 }
