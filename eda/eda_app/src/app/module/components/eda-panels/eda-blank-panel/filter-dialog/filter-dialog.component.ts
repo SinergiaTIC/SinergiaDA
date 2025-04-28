@@ -23,7 +23,7 @@ import { aggTypes } from 'app/config/aggretation-types';
 export class FilterDialogComponent extends EdaDialogAbstract {
 
     @ViewChild('myCalendar', { static: false }) datePicker: EdaDatePickerComponent;
-    @Output() removeFilterEventFilterDialog: EventEmitter<any> = new EventEmitter<any>();    
+    @Output() updateSortedFiltersFilterDialog: EventEmitter<any> = new EventEmitter<any>();    
 
 
     public dialog: EdaDialog;
@@ -138,6 +138,8 @@ export class FilterDialogComponent extends EdaDialogAbstract {
         this.filterBeforeAfterSelected = this.filterBeforeAfter.elements[0]
         this.aggregationType = {display_name: 'Suma', value: 'sum', selected: true};
 
+        this.updateSortedFiltersFilterDialog.emit(); // Emitting an event to the eda-blank-panel component
+
     }
 
     carrega() {
@@ -218,7 +220,7 @@ export class FilterDialogComponent extends EdaDialogAbstract {
 
     removeFilter(item: any) {
 
-        this.removeFilterEventFilterDialog.emit(); // Emitting an event to the eda-blank-panel component
+        this.updateSortedFiltersFilterDialog.emit(); // Emitting an event to the eda-blank-panel component
 
         this.filter.selecteds.find(f => _.startsWith(f.filter_id, item.filter_id) ).removed = true;
 

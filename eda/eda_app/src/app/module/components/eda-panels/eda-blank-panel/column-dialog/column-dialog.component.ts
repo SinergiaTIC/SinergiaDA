@@ -24,7 +24,7 @@ import { aggTypes } from 'app/config/aggretation-types';
 export class ColumnDialogComponent extends EdaDialogAbstract {
 
     @ViewChild('myCalendar', { static: false }) datePicker: EdaDatePickerComponent;
-    @Output() removeFilterEventColumnDialog: EventEmitter<any> = new EventEmitter<any>();
+    @Output() updateSortedFiltersColumnDialog: EventEmitter<any> = new EventEmitter<any>();
 
     public dialog: EdaDialog;
     public selectedColumn: Column;
@@ -206,11 +206,14 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
         // Regresando al valor inicial el WHERE / HAVING
         this.filterBeforeAfter.filterBeforeGrouping = true;
         this.filterBeforeAfterSelected = this.filterBeforeAfter.elements[0]
+
+        this.updateSortedFiltersColumnDialog.emit(); // Emitting an event to the eda-blank-panel component
+
     }
 
     removeFilter(item: any) {
 
-        this.removeFilterEventColumnDialog.emit(); // Emitting an event to the eda-blank-panel component
+        this.updateSortedFiltersColumnDialog.emit(); // Emitting an event to the eda-blank-panel component
 
         this.filter.selecteds.find(f => _.startsWith(f.filter_id, item.filter_id)).removed = true;
 
