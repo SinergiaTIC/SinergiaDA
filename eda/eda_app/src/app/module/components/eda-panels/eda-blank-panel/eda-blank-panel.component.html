@@ -599,9 +599,9 @@
 
 </eda-page-dialog>
 
-<app-column-dialog *ngIf="configController" [controller]="configController"></app-column-dialog>
+<app-column-dialog *ngIf="configController" [controller]="configController" (removeFilterEventColumnDialog)="removeFilterEventColumnDialogFunction()"></app-column-dialog>
 
-<app-filter-dialog *ngIf="filterController" [controller]="filterController"></app-filter-dialog>
+<app-filter-dialog *ngIf="filterController" [controller]="filterController" (removeFilterEventFilterDialog)="removeFilterEventFilterDialogFunction()"></app-filter-dialog>
 
 <app-chart-dialog *ngIf="chartController" [controller]="chartController"></app-chart-dialog>
 

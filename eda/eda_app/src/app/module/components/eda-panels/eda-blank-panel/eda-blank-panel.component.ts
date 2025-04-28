@@ -1563,4 +1563,12 @@ export class EdaBlankPanelComponent implements OnInit {
         console.log('recibido en el EDP: ', event);
     }
 
+    public removeFilterEventColumnDialogFunction() {
+        this.sortedFilters = []
+    }
+
+    public removeFilterEventFilterDialogFunction() {
+        this.sortedFilters = []
+    }
+
 }

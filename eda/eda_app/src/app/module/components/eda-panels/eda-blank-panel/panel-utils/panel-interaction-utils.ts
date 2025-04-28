@@ -696,11 +696,11 @@ export const PanelInteractionUtils = {
     */
   removeColumn: (ebp: EdaBlankPanelComponent, c: Column, list?: string) => {
 
-    // We check if when deleting a field it has a filter at selectedFilters
     // console.log('AQUIIIII')
     // console.log('Column: ', c);
     // console.log('ebp -> selectedFilters: ', ebp.selectedFilters)
-
+    
+    // We check if when deleting a field it has a filter at selectedFilters
     if(ebp.selectedFilters.some( (sf: any) => sf.filter_column === c.column_name )){
       ebp.sortedFilters = []; // resets the values ​​because one or more filters were deleted
     }

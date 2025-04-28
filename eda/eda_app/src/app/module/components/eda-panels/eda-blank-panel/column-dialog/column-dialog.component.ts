@@ -1,4 +1,4 @@
-import { Component, ViewChild } from '@angular/core';
+import { Component, EventEmitter, Output, ViewChild } from '@angular/core';
 import { SelectItem } from 'primeng/api';
 import { EdaDialog, EdaDialogCloseEvent, EdaDialogAbstract, EdaDatePickerComponent } from '@eda/shared/components/shared-components.index';
 import {
@@ -24,6 +24,7 @@ import { aggTypes } from 'app/config/aggretation-types';
 export class ColumnDialogComponent extends EdaDialogAbstract {
 
     @ViewChild('myCalendar', { static: false }) datePicker: EdaDatePickerComponent;
+    @Output() removeFilterEventColumnDialog: EventEmitter<any> = new EventEmitter<any>();
 
     public dialog: EdaDialog;
     public selectedColumn: Column;
@@ -208,6 +209,9 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
     }
 
     removeFilter(item: any) {
+
+        this.removeFilterEventColumnDialog.emit(); // Emitting an event to the eda-blank-panel component
+
         this.filter.selecteds.find(f => _.startsWith(f.filter_id, item.filter_id)).removed = true;
 
         this.filter.forDisplay = this.filter.selecteds.filter(f => {
