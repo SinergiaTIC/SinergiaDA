@@ -204,13 +204,14 @@ export class FilterDialogComponent extends EdaDialogAbstract {
     }
 
     getAggregationText(value: any) {
-
-        console.log('value:::: ', value);
-
-        const label = aggTypes.filter(agg => {
-            return (agg.value === value.aggregation_type);
-        })[0].label;
-        return label;
+        if(!value.aggregation_type){
+            return 'none'; //  if there isn`t aggregation, none is added.
+        } else {
+            const label = aggTypes.filter(agg => {
+                return (agg.value === value.aggregation_type);
+            })[0].label;
+            return label;
+        } 
     }
 
     getFilterText(value) {

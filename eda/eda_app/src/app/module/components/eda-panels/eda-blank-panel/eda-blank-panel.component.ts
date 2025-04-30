@@ -904,7 +904,7 @@ export class EdaBlankPanelComponent implements OnInit {
         const filterInx = this.globalFilters.findIndex((gf: any) => gf.filter_id === globalFilter.filter_id)
 
         if (filterInx != -1) {
-            this.globalFilters.splice(this.globalFilters[filterInx], 1);
+            this.globalFilters.splice(filterInx, 1); // Here is filterInx to update the globalFilters
             this.globalFilters.push(globalFilter);
         } else {
             this.globalFilters.push(globalFilter);
