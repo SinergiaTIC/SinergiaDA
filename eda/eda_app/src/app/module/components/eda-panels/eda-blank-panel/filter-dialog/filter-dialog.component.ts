@@ -138,7 +138,12 @@ export class FilterDialogComponent extends EdaDialogAbstract {
         this.filterBeforeAfterSelected = this.filterBeforeAfter.elements[0]
         this.aggregationType = {display_name: 'Suma', value: 'sum', selected: true};
 
-        this.updateSortedFiltersFilterDialog.emit(); // Emitting an event to the eda-blank-panel component
+        const addToSortedFilters = {
+            add: true,
+            filter: filter
+        };
+
+        this.updateSortedFiltersFilterDialog.emit(addToSortedFilters); // Emitting an event to the eda-blank-panel component
 
     }
 
@@ -221,7 +226,12 @@ export class FilterDialogComponent extends EdaDialogAbstract {
 
     removeFilter(item: any) {
 
-        this.updateSortedFiltersFilterDialog.emit(); // Emitting an event to the eda-blank-panel component
+        const addToSortedFilters = {
+            add: false,
+            filter: item
+        };
+
+        this.updateSortedFiltersFilterDialog.emit(addToSortedFilters); // Emitting an event to the eda-blank-panel component
 
         this.filter.selecteds.find(f => _.startsWith(f.filter_id, item.filter_id) ).removed = true;
 

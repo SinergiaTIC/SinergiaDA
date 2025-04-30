@@ -1265,7 +1265,13 @@ export class EdaBlankPanelComponent implements OnInit {
 
     public loadColumns = (table: any) => PanelInteractionUtils.loadColumns(this, table);
 
-    public removeColumn = (c: Column, list?: string, event?: Event) => PanelInteractionUtils.removeColumn(this, c, list);
+    public removeColumn = (c: Column, list?: string, event?: Event) => {
+            // We check if when deleting a field it has a filter at selectedFilters
+        if(this.selectedFilters.some( (sf: any) => sf.filter_column === c.column_name )){
+            this.sortedFilters = []; // resets the values ​​because one or more filters were deleted
+        }    
+        PanelInteractionUtils.removeColumn(this, c, list);
+    }
 
     public getOptionDescription = (value: string): string => EbpUtils.getOptionDescription(value);
 
@@ -1563,12 +1569,58 @@ export class EdaBlankPanelComponent implements OnInit {
         console.log('recibido en el EDP: ', event);
     }
 
-    public updateSortedFiltersColumnDialogFunction() {
-        this.sortedFilters = []
+    public updateSortedFiltersColumnDialogFunction(e: any) {
+        
+        if(e.add){
+
+            const lastElement = this.sortedFilters[this.sortedFilters.length-1];
+
+            const newSortedFilter = {
+                cols: 3,
+                rows: 1,
+                y: lastElement.y+1,
+                x: 0,
+                filter_table: e.filter.filter_table,
+                filter_column: e.filter.filter_column,
+                filter_type: e.filter.filter_type,
+                filter_column_type: e.filter.filter_column_type,
+                filter_elements: e.filter.filter_elements,
+                filter_id: e.filter.filter_id,
+                value: "and",
+            }
+
+            this.sortedFilters.push(newSortedFilter);
+
+        } else {
+            this.sortedFilters = [];
+        }
     }
 
-    public updateSortedFiltersFilterDialogFunction() {
-        this.sortedFilters = []
+    public updateSortedFiltersFilterDialogFunction(e: any) {
+
+        if(e.add){
+
+            const lastElement = this.sortedFilters[this.sortedFilters.length-1];
+
+            const newSortedFilter = {
+                cols: 3,
+                rows: 1,
+                y: lastElement.y+1,
+                x: 0,
+                filter_table: e.filter.filter_table,
+                filter_column: e.filter.filter_column,
+                filter_type: e.filter.filter_type,
+                filter_column_type: e.filter.filter_column_type,
+                filter_elements: e.filter.filter_elements,
+                filter_id: e.filter.filter_id,
+                value: "and",
+            }
+
+            this.sortedFilters.push(newSortedFilter);
+
+        } else {
+            this.sortedFilters = [];
+        }
     }
 
 }

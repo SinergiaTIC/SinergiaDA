@@ -207,13 +207,23 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
         this.filterBeforeAfter.filterBeforeGrouping = true;
         this.filterBeforeAfterSelected = this.filterBeforeAfter.elements[0]
 
-        this.updateSortedFiltersColumnDialog.emit(); // Emitting an event to the eda-blank-panel component
+        const addToSortedFilters = {
+            add: true,
+            filter: filter
+        };
+        
+        this.updateSortedFiltersColumnDialog.emit(addToSortedFilters); // Emitting an event to the eda-blank-panel component
 
     }
 
     removeFilter(item: any) {
 
-        this.updateSortedFiltersColumnDialog.emit(); // Emitting an event to the eda-blank-panel component
+        const addToSortedFilters = {
+            add: false,
+            filter: item
+        };
+
+        this.updateSortedFiltersColumnDialog.emit(addToSortedFilters); // Emitting an event to the eda-blank-panel component
 
         this.filter.selecteds.find(f => _.startsWith(f.filter_id, item.filter_id)).removed = true;
 

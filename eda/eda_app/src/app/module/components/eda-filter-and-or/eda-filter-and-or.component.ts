@@ -102,8 +102,8 @@ export class EdaFilterAndOrComponent implements OnInit {
       this.initAndOrFilters();
     } else {
       if(previousDashboard) {
-        this.dashboard = _.cloneDeep(previousDashboard);
-        this.dashboardClone = _.cloneDeep(previousDashboard);
+        this.dashboard = _.cloneDeep(this.sortedFilters);
+        this.dashboardClone = _.cloneDeep(this.sortedFilters);
         this.creacionQueryFiltros(this.dashboard);
       } else {
         if(this.sortedFilters.length !== 0) {
