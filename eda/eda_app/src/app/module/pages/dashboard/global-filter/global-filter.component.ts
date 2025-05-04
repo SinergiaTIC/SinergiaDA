@@ -287,6 +287,9 @@ export class GlobalFilterComponent implements OnInit {
     }
 
     public removeGlobalFilter(filter: any, reload?: boolean): void {
+
+        const formatedFilter = filter;
+
         // Remove 'applytoall' filter if it's the same fitler
         if (this.dashboard.applyToAllfilter && this.dashboard.applyToAllfilter.id === filter.id) {
             this.dashboard.applyToAllfilter = { present: false, refferenceTable: null, id: null };
@@ -295,11 +298,17 @@ export class GlobalFilterComponent implements OnInit {
         
         // Update fileterList and clean panels' filters
         this.globalFilters = this.globalFilters.filter((f: any) => f.id !== filter.id);
+
         
         this.dashboard.edaPanels.forEach(panel => {
             panel.globalFilters = panel.globalFilters.filter((f: any) => f.filter_id !== filter.id);
         });
 
+        // Verifying global filters in panels
+        filter.panelList.map((id: string) => this.dashboard.edaPanels.toArray().find(p => p.panel.id === id))
+        .forEach((panel: EdaBlankPanelComponent) => { // Aca tengo todo el arreglo de paneles que contienen el filtro global
+            if (panel) panel.rebootGlobalFilter(formatedFilter);
+        });
 
         if (reload) {
             //not saved alert message

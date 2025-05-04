@@ -123,10 +123,11 @@ export class EdaFilterAndOrComponent implements OnInit {
   }
 
   initAndOrFilters () {
-    // Integración:
+
+    // Integration:
     this.dashboard = [];
 
-    // Agregado de Filtros de Panel
+    // Adding Panel Filters
     this.selectedFilters.forEach((sf, j) => {
       this.dashboard.push(
         {
@@ -140,12 +141,13 @@ export class EdaFilterAndOrComponent implements OnInit {
           filter_column_type: sf.filter_column_type, 
           filter_elements: sf.filter_elements, 
           filter_id: sf.filter_id, 
+          isGlobal: sf.isGlobal,
           value: "and"
         }
       )
     });
 
-    // Agregado de Filtros Globales
+    // Adding Global Filters
     this.globalFilters.forEach((gf, i) => {
       this.dashboard.push(
         {
@@ -159,23 +161,24 @@ export class EdaFilterAndOrComponent implements OnInit {
           filter_column_type: gf.filter_column_type, 
           filter_elements: gf.filter_elements, 
           filter_id: gf.filter_id,
+          isGlobal: gf.isGlobal,
           value: "and"
         }
       )
     });
 
-    // Se crea una clonación del dashboard
+    // A clone of the dashboard is created
     this.dashboardClone = _.cloneDeep(this.dashboard);
 
-    // Al inicio de la ejecución
+    // At the beginning of the execution
     this.creacionQueryFiltros(this.dashboard);
-    // console.log('dashboard: ',this.dashboard)
+
   }
 
   onItemChange(item: GridsterItem): void {
 
     //---------------------------------------------------------------------------------
-    // Verificación del intercambio de items, para evitar que se duplique la ejecución
+    // Verification of item exchange, to avoid duplicate execution
     // 1. Cuando los items intercambian de posición
     let contadorIntercambioItems = 0;
     for( let i = 0; i < this.dashboard.length; i++ ) {
@@ -322,7 +325,7 @@ export class EdaFilterAndOrComponent implements OnInit {
     // Función recursiva para la anidación necesaria según el gráfico de los filtros AND/OR.
     function cadenaRecursiva(item: any) {
       // item recursivo
-      const { cols, rows, y, x, filter_table, filter_column, filter_type, filter_column_type, filter_elements, value } = item;
+      const { cols, rows, y, x, filter_table, filter_column, filter_type, filter_column_type, filter_elements, filter_id, isGlobal, value } = item;
 
       // console.log('FILTER - item: ', item);
 

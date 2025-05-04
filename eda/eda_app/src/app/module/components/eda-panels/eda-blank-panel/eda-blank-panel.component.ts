@@ -895,6 +895,7 @@ export class EdaBlankPanelComponent implements OnInit {
      * @param filter filter so set
      */
     public assertGlobalFilter(_filter: any) {
+
         const globalFilter = _.cloneDeep(_filter);
 
         if (_filter.pathList && _filter.pathList[this.panel.id]) {
@@ -909,6 +910,21 @@ export class EdaBlankPanelComponent implements OnInit {
         } else {
             this.globalFilters.push(globalFilter);
         }
+    }
+
+    public rebootGlobalFilter(_filter: any){
+
+        // console.log('EDPPPPPP---->>>')
+        // console.log('_filter---->>>', _filter)
+        // console.log('globalFilters', this.globalFilters)        
+        // console.log('this.sortedFilters: ', this.sortedFilters)
+        // console.log('this.temporalSortedFilters: ', this.temporalSortedFilters)
+
+        if(this.sortedFilters.some((sortedFilter: any) => _filter.id === sortedFilter.filter_id)){
+            this.sortedFilters = [];
+            this.savePanel(); // Panel setting saved
+        }
+
     }
 
     /* Funcions generals de la pagina */
@@ -926,7 +942,6 @@ export class EdaBlankPanelComponent implements OnInit {
     }
 
     public openEditarConsulta(): void {
-        console.log('EDPPPPPP---->>>')
 
         this.display_v.page_dialog = true;
         this.ableBtnSave();
@@ -934,10 +949,8 @@ export class EdaBlankPanelComponent implements OnInit {
 /* SDA CUSTOM  */       this.showHiddenColumn = false;
 /* SDA CUSTOM  */       this.columns = this.columns.filter (c => !c.hidden);
 
-        // Almacenar temporalmente el sortedFilters en el temporalSortedFilters
+        // Temporarily store the sortedFilters in the temporarySortedFilters
         this.temporalSortedFilters = _.cloneDeep(this.sortedFilters);
-        console.log('this.sortedFilters: ', this.sortedFilters)
-        console.log('this.temporalSortedFilters: ', this.temporalSortedFilters)
     }
 
     /**
