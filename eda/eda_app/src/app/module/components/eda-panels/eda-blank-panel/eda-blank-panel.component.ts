@@ -912,13 +912,41 @@ export class EdaBlankPanelComponent implements OnInit {
         }
     }
 
-    public rebootGlobalFilter(_filter: any){
-
-        // console.log('EDPPPPPP---->>>')
+    public addingGlobalFilterEbp(_filter: any) {
+        // console.log('EBP---->>>')
         // console.log('_filter---->>>', _filter)
         // console.log('globalFilters', this.globalFilters)        
         // console.log('this.sortedFilters: ', this.sortedFilters)
         // console.log('this.temporalSortedFilters: ', this.temporalSortedFilters)
+
+        if(this.sortedFilters.length !==0){
+            if(_filter.filter_elements[0].value1.length === 0){
+                this.sortedFilters = [];
+            } else {
+                
+                const lastElement = this.sortedFilters[this.sortedFilters.length-1];
+        
+                const newSortedFilter = {
+                    cols: 3,
+                    rows: 1,
+                    y: lastElement.y+1,
+                    x: 0,
+                    filter_table: _filter.filter_table,
+                    filter_column: _filter.filter_column,
+                    filter_type: _filter.filter_type,
+                    filter_column_type: _filter.filter_column_type,
+                    filter_elements: _filter.filter_elements,
+                    filter_id: _filter.filter_id,
+                    value: "and",
+                }
+        
+                this.sortedFilters.push(newSortedFilter);
+            }
+            this.savePanel()
+        }
+    }
+
+    public rebootGlobalFilter(_filter: any){
 
         if(this.sortedFilters.some((sortedFilter: any) => _filter.id === sortedFilter.filter_id)){
             this.sortedFilters = [];

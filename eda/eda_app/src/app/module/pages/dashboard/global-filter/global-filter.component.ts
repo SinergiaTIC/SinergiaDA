@@ -98,6 +98,16 @@ export class GlobalFilterComponent implements OnInit {
             });
     }
 
+    public addingGlobalFilter(filter: any): void {
+        const formatedFilter = this.globalFilterService.formatFilter(filter);
+
+        filter.panelList
+            .map((id: string) => this.dashboard.edaPanels.toArray().find(p => p.panel.id === id))
+            .forEach((panel: EdaBlankPanelComponent) => {
+                if (panel) panel.addingGlobalFilterEbp(formatedFilter);
+            });
+    }
+
     public setGlobalFilterItems(filter: any) {
         this.dashboard.edaPanels.forEach((panel: EdaBlankPanelComponent) => {
             if (filter.panelList.includes(panel.panel.id)) {
@@ -143,6 +153,9 @@ export class GlobalFilterComponent implements OnInit {
 
             if (this.globalFilter.isnew) {
                 this.globalFilters.push(this.globalFilter);
+
+                // Adding a Global filter
+                this.addingGlobalFilter(this.globalFilter);
             }
 
             for (const filter of this.globalFilters) {
