@@ -1495,7 +1495,7 @@ export class EdaBlankPanelComponent implements OnInit {
                 }
             }
 
-            let aggregationLabel = '';
+            let aggregationLabel = 'none';
             if(aggTypes.filter(agg => agg.value === aggregation).length !== 0) aggregationLabel = aggTypes.filter(agg => agg.value === aggregation)[0].label;
 
             // Agregado de internacionalización del between

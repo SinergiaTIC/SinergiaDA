@@ -54,6 +54,8 @@ export class EdaFilterAndOrComponent implements OnInit {
   selectedButtonInitialValue: string; // Valor seleccionado por defecto
   stringQuery: string = '';
   existeIntercambioItems: boolean = false;
+  public textBetween: string = $localize`:@@textBetween:Entre`
+
 
   constructor() { 
     this.options = {
@@ -73,8 +75,8 @@ export class EdaFilterAndOrComponent implements OnInit {
       minRows: 9, // Hacer dinámico este valor - pendiente
       maxRows: 9, // Hacer dinámico este valor - pendiente
       margin: 0.2, // Reduce el margen entre celdas
-      fixedRowHeight: 29, // Altura del elemento
-      fixedColWidth: 80, // Anchura del elemento
+      fixedRowHeight: 27, // Altura del elemento
+      fixedColWidth: 84, // Anchura del elemento
       // disableScrollHorizontal: true, // Desactiva scroll horizontal si es necesario
       // disableScrollVertical: true, // Desactiva scroll horizontal si es necesario
       itemChangeCallback: (item: GridsterItem) => this.onItemChange(item),
@@ -85,6 +87,10 @@ export class EdaFilterAndOrComponent implements OnInit {
       { label: "AND", value: "and" }, 
       { label: "OR", value: "or" } 
     ]; 
+
+    const ancho = window.innerWidth;
+    const alto = window.innerHeight;
+    console.log("Ancho:", ancho, "Alto:", alto);
 
 
   }
@@ -465,10 +471,63 @@ export class EdaFilterAndOrComponent implements OnInit {
       if (table && table.table_name) {
           const tableName = table.display_name?.default;
           const columnName = table.columns.find((c) => c.column_name == item.filter_column)?.display_name?.default;
-          str = `<strong>${tableName}</strong>&nbsp>&nbsp<strong>${columnName}</strong>`;
+          
+          let checksum = (tableName + columnName).length;
+
+          if(checksum <= 23) {
+            str = `<strong>${tableName}</strong>&nbsp>&nbsp<strong>${columnName}</strong>`;
+          } else {
+            str = `<strong>${tableName}</strong>&nbsp>&nbsp<strong>${columnName.substring(0, 13)}...</strong>`;
+          }
       }
 
       return str;
+  }
+
+  private findTable(t: string): any {
+    return this.tables.find(table => table.table_name === t);
+  }
+
+  public tooltipDescription(item: any) {
+        let str = '';
+
+        const table = this.findTable(item.filter_table.split('.')[0]);
+
+        if (table && table.table_name) {
+            const tableName = table.display_name?.default;
+            const columnName = table.columns.find((c) => c.column_name == item.filter_column)?.display_name?.default;
+
+            const values = item.filter_elements[0]?.value1;
+            const values2 = item.filter_elements[1]?.value2;
+
+            let valueStr = '';
+
+            if (values) {
+                if (values.length == 1 && !['in', 'not_in'].includes(item.filter_type)) {
+                    valueStr = `"${values[0]}"`;
+                }  else if (values.length > 1 || ['in', 'not_in'].includes(item.filter_type)) {
+                    valueStr = `[${values.map((v: string) => (`"${v}"`) ).join(', ')}]`;
+                }
+
+                if (values2) {
+                    if (values2.length == 1) {
+                        valueStr = `"${values[0]}" - "${values2[0]}"`;
+                    }  else if (values2.length > 1) {
+                        valueStr = `AND [${values2.map((v: string) => (`"${v}"`) ).join(', ')}]`;
+                    }
+                }
+            }
+
+            // Agregado de internacionalización del between
+            let filterType = item.filter_type
+            if(filterType === 'between') filterType = this.textBetween;
+
+            let filterDescription = item.isGlobal ? 'Filtro Global' : 'Filtro Panel';
+
+            str = `${tableName} [${columnName}] ${filterType} ${valueStr} > ${filterDescription}`;
+        }
+
+        return str;
   }
 
 }
