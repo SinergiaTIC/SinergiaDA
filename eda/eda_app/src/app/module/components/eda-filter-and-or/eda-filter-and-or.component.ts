@@ -40,10 +40,10 @@ export class EdaFilterAndOrComponent implements OnInit {
     EdaFilterAndOrComponent.previousDashboard = null;
   }
   
-  @Input() selectedFilters: any[] = []; // Filtros de los paneles
-  @Input() globalFilters: any[] = []; // Filtros globales
-  @Input() tables: any[] = []; // tables del Eda-Blank-Panel
-  @Input() sortedFilters: any[] = []; // sortedFilters recibido del servidor
+  @Input() selectedFilters: any[] = []; // Panel filters
+  @Input() globalFilters: any[] = []; // Global filters
+  @Input() tables: any[] = []; // Eda-Blank-Panel tables
+  @Input() sortedFilters: any[] = []; // sortedFilters received from the server
   @Output() dashboardChanged: EventEmitter<any> = new EventEmitter<any>();
 
   options: GridsterConfig;
@@ -51,56 +51,68 @@ export class EdaFilterAndOrComponent implements OnInit {
   dashboardClone: GridsterItem[];
   itemToPush!: GridsterItemComponent;
   selectedButton: any[]; 
-  selectedButtonInitialValue: string; // Valor seleccionado por defecto
+  selectedButtonInitialValue: string; // Default value selected
   stringQuery: string = '';
   existeIntercambioItems: boolean = false;
   public textBetween: string = $localize`:@@textBetween:Entre`
 
 
   constructor() { 
+    
+    let rowHeight = 0;
+    let colWidth = 0;
+    const widthScreen = window.innerWidth;
+    // console.log("widthScreen:", widthScreen);
+
+    if (widthScreen<1370) {
+      rowHeight = 27;
+      colWidth = 84;
+    } else if(widthScreen>=1370 && widthScreen<1500) {
+      rowHeight = 30;
+      colWidth = 88;
+    } else if(widthScreen>=1500) {
+      rowHeight = 44;
+      colWidth = 106;
+    }
+
     this.options = {
       gridType: GridType.Fixed,
       compactType: CompactType.None,
       displayGrid: DisplayGrid.Always,
       pushItems: false,
-      // disableScrollVertical: true, // Desactiva scroll interno
+      // disableScrollVertical: true, // Disable internal scroll
       draggable: {
         enabled: true
       },
       resizable: {
-        enabled: false // Elemento para que no se redimensione
+        enabled: false // Element that is not resized
       },
       minCols: 10,
       maxCols: 10,
-      minRows: 9, // Hacer dinámico este valor - pendiente
-      maxRows: 9, // Hacer dinámico este valor - pendiente
-      margin: 0.2, // Reduce el margen entre celdas
-      fixedRowHeight: 27, // Altura del elemento
-      fixedColWidth: 84, // Anchura del elemento
-      // disableScrollHorizontal: true, // Desactiva scroll horizontal si es necesario
-      // disableScrollVertical: true, // Desactiva scroll horizontal si es necesario
+      minRows: 9, // Make this value dynamic - pending
+      maxRows: 9, // Make this value dynamic - pending
+      margin: 0.2, // Reduce the margin between cells
+      fixedRowHeight: rowHeight, // Element height
+      fixedColWidth: colWidth, // Element width
+      // disableScrollHorizontal: true, // Disable horizontal scrolling if necessary
+      // disableScrollVertical: true, // Disable vertical scrolling if necessary
       itemChangeCallback: (item: GridsterItem) => this.onItemChange(item),
     };
 
-    // Valores and y or
+    // (and & or) => values
     this.selectedButton = [ 
       { label: "AND", value: "and" }, 
       { label: "OR", value: "or" } 
     ]; 
 
-    const ancho = window.innerWidth;
-    const alto = window.innerHeight;
-    console.log("Ancho:", ancho, "Alto:", alto);
-
-
   }
 
   ngOnInit(): void {
 
-    console.log('selectedFilters: ', this.selectedFilters);
-    console.log('globalFilters: ', this.globalFilters);
-    console.log('sortedFilters: ', this.sortedFilters);
-    console.log('previousDashboard', EdaFilterAndOrComponent.previousDashboard);
+    // console.log('selectedFilters: ', this.selectedFilters);
+    // console.log('globalFilters: ', this.globalFilters);
+    // console.log('sortedFilters: ', this.sortedFilters);
+    // console.log('previousDashboard', EdaFilterAndOrComponent.previousDashboard);
 
     const previousDashboard = EdaFilterAndOrComponent.previousDashboard;
 
@@ -317,20 +329,20 @@ export class EdaFilterAndOrComponent implements OnInit {
     }
   }
 
-  // Función de generación de la cadena de los filtros AND/OR anidados correspondido con el diseño gráfico de los items.
+  // Function for generating the chain of nested AND/OR filters corresponding to the graphic design of the items.
   creacionQueryFiltros(dashboard: any) {
 
     // console.log('<<<>>> : ', dashboard);
     
-    // Ordenamiento del dashboard en el eje y de menor a mayor. 
+    // Ordering the dashboard on the y-axis from lowest to highest.
     dashboard.sort((a: any, b: any) => a.y - b.y); 
 
-    // Variable que contiene la nueva cadena de los filtros AND/OR anidados correspondido con el diseño gráfico de los items.
+    // Variable containing the new string of nested AND/OR filters corresponding to the graphic design of the items.
     let stringQuery = 'where ';
 
-    // Función recursiva para la anidación necesaria según el gráfico de los filtros AND/OR.
+    // Recursive function for the necessary nesting according to the AND/OR filter graph.
     function cadenaRecursiva(item: any) {
-      // item recursivo
+      // recursive item
       const { cols, rows, y, x, filter_table, filter_column, filter_type, filter_column_type, filter_elements, filter_id, isGlobal, value } = item;
 
       // console.log('FILTER - item: ', item);
@@ -363,28 +375,28 @@ export class EdaFilterAndOrComponent implements OnInit {
         if(filter_elements[0].value1.length === 1){
           // Para solo un valor  ==> Agregar mas tipos de valores si fuera necesario
 
-          // Valor de tipo text
+          // Value of type text
           if(filter_column_type === 'text'){
             filter_elements_value = filter_elements_value + `'${filter_type === 'like' || filter_type === 'not_like'? '%': ''}${filter_elements[0].value1[0]}${filter_type === 'like' || filter_type === 'not_like'? '%': ''}'`;
           } 
 
-          // Valor de tipo numeric
+          // Value of type numeric
           if(filter_column_type === 'numeric'){
             filter_elements_value = filter_elements_value + `${filter_elements[0].value1[0]}`;
           } 
 
         } else {
-          // Para varios valores
+          // For several values
           filter_elements_value = filter_elements_value + '(';
 
-          // Valores de tipo text
+          // Value of type text
           if(filter_column_type === 'text'){
             filter_elements[0].value1.forEach((element: any, index: number) => {
               filter_elements_value += `'${element}'` + `${index===(filter_elements[0].value1.length-1)? ')': ','}`;
             })
           }
 
-          // Valores de tipo numeric
+          // Value of type numeric
           if(filter_column_type === 'numeric'){
             filter_elements[0].value1.forEach((element: any, index: number) => {
               filter_elements_value += `${element}` + `${index===(filter_elements[0].value1.length-1)? ')': ','}`;
@@ -401,18 +413,18 @@ export class EdaFilterAndOrComponent implements OnInit {
       }
       /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-      // RESULTADO DE TODO EL STRING
+      // RESULT OF THE WHOLE STRING
       let resultado = `\"${filter_table}\".\"${filter_column}\" ${filter_type_value} ${filter_elements_value}`;
       
 
-      let elementosHijos = []; // Arreglo de items hijos
+      let elementosHijos = []; // Array of child items
 
       for(let n = y+1; n<dashboard.length; n++){
         if(dashboard[n].x === x) break;
         if(y < dashboard[n].y && dashboard[n].x === x+1) elementosHijos.push(dashboard[n]);
       }
 
-      // variable que contiene el siguiente item del item tratado por la función recursiva.
+      // variable that contains the next item of the item treated by the recursive function.
       const itemGenerico = dashboard.filter((item: any) => item.y === y + 1)[0];
 
       if(elementosHijos.length>0) {
@@ -437,7 +449,7 @@ export class EdaFilterAndOrComponent implements OnInit {
     }
 
 
-    // Iteración del dashboard para conseguir el string anidado correcto
+    // Iterating the dashboard to get the correct nested string
     let itemsString = '( '
     for(let r=0; r<dashboard.length; r++){
       if(dashboard[r].x === 0){
@@ -456,13 +468,13 @@ export class EdaFilterAndOrComponent implements OnInit {
     this.dashboardChanged.emit(this.dashboard); // Envio del dashboard - Se puede cambiar el envio. 
   }
 
-  // Función que se ejecuta cuando se hace click en el p-selectButton AND | OR
+  // Function that is executed when the p-selectButton is clicked AND | OR
   onButtonClick() {
     this.creacionQueryFiltros(this.dashboard);
     this.dashboardClone = _.cloneDeep(this.dashboard);
   }
 
-  // Función que muestra los nombre de tabla y columna de los filtros AND | OR
+  // Function that displays the table and column names of AND | OR filters
   public getDisplayFilterStrAndOr(item: any) {
 
       let str = '';
@@ -518,7 +530,6 @@ export class EdaFilterAndOrComponent implements OnInit {
                 }
             }
 
-            // Agregado de internacionalización del between
             let filterType = item.filter_type
             if(filterType === 'between') filterType = this.textBetween;
 
