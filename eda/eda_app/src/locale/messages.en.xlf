@@ -4365,6 +4365,10 @@
         <source>Entre</source>
         <target>Between</target>
       </trans-unit>
+      <trans-unit id="filterSettings">
+        <source>Configuración de filtros</source>
+        <target>Filter settings</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>

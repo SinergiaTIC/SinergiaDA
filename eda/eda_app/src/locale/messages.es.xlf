@@ -4394,6 +4394,10 @@
         <source>Entre</source>
         <target>Entre</target>
       </trans-unit>
+      <trans-unit id="filterSettings">
+        <source>Configuración de filtros</source>
+        <target>Configuración de filtros</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>
