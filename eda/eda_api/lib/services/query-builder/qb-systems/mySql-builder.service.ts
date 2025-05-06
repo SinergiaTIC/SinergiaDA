@@ -102,10 +102,6 @@ export class MySqlBuilderService extends QueryBuilderService {
   };
 
   public getSortedFilters(sortedFilters: any[], filters: any[]): any {
-
-    console.log('INICIO DE FILTROSSSSSSSSSSSSSSSSSSSSSSS AND OR ')
-    console.log('--------------> filters <--------------', filters)
-    console.log('--------------> sortedFilters <--------------', sortedFilters)
     
     // Adding valueListSource to the filters And/Or
     filters.forEach((filter: any) => {
@@ -114,10 +110,35 @@ export class MySqlBuilderService extends QueryBuilderService {
       }
     })
 
-    console.log('VERIFICACIÓN --------------> sortedFilters <--------------', sortedFilters)
-    
     // Ordering the dashboard on the y-axis from lowest to highest.
     sortedFilters.sort((a: any, b: any) => a.y - b.y); 
+
+    // Calculating global filters and they are empty.
+    let nullSortedFilters  =  sortedFilters.filter((f: any) => ((f.isGlobal===true) && (f.filter_elements[0].value1.length === 0)));
+
+    // If we have empty values in the filters we define a new sortedFilters
+    if(nullSortedFilters.length !==0){
+
+      // Ordering
+      nullSortedFilters.sort((a: any, b: any) => a.y - b.y); 
+  
+      // Order in the x axis
+      nullSortedFilters.forEach( element =>{
+            for(let i= element.y + 1 ; i < sortedFilters.length - 1 ; i++ ){
+              if(element.x < sortedFilters[i].x) {
+                sortedFilters[i].x -= 1;
+              } else {
+                break;
+              }
+            }
+      }  )
+  
+      // Order in the y axis
+      let newSortedFilters = sortedFilters.filter((f: any) => !((f.isGlobal===true) && (f.filter_elements[0].value1.length === 0)));
+      newSortedFilters.forEach( (f,i) => f.y=i );
+
+      sortedFilters = _.cloneDeep(newSortedFilters);
+    }
 
     // Variable containing the new string of nested AND/OR filters corresponding to the graphic design of the items.
     let stringQuery = '\nwhere ';
@@ -143,9 +164,6 @@ export class MySqlBuilderService extends QueryBuilderService {
 
       ////////////////////////////////////////////////// filter_elements ////////////////////////////////////////////////// 
       let filter_elements_value = '';
-      console.log('filter_column_type: ', filter_column_type);
-      console.log('filter_elements: ', filter_elements);
-      console.log('filter_type: ', filter_type);
 
       if(filter_elements.length === 0) {
         if(filter_type === 'not_null') {
