@@ -109,10 +109,10 @@ export class EdaFilterAndOrComponent implements OnInit {
 
   ngOnInit(): void {
 
-    // console.log('selectedFilters: ', this.selectedFilters);
-    // console.log('globalFilters: ', this.globalFilters);
-    // console.log('sortedFilters: ', this.sortedFilters);
-    // console.log('previousDashboard', EdaFilterAndOrComponent.previousDashboard);
+    console.log('selectedFilters: ', this.selectedFilters);
+    console.log('globalFilters: ', this.globalFilters);
+    console.log('sortedFilters: ', this.sortedFilters);
+    console.log('previousDashboard', EdaFilterAndOrComponent.previousDashboard);
 
     const previousDashboard = EdaFilterAndOrComponent.previousDashboard;
 
