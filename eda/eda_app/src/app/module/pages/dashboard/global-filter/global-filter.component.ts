@@ -98,6 +98,7 @@ export class GlobalFilterComponent implements OnInit {
             });
     }
 
+    // Adding a Global filter 
     public addingGlobalFilter(filter: any): void {
         const formatedFilter = this.globalFilterService.formatFilter(filter);
 
@@ -153,9 +154,7 @@ export class GlobalFilterComponent implements OnInit {
 
             if (this.globalFilter.isnew) {
                 this.globalFilters.push(this.globalFilter);
-
-                // Adding a Global filter
-                this.addingGlobalFilter(this.globalFilter);
+                this.addingGlobalFilter(this.globalFilter); // Adding a Global filter
             }
 
             for (const filter of this.globalFilters) {

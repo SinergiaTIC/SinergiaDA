@@ -42,13 +42,11 @@ export class MySqlBuilderService extends QueryBuilderService {
     });
 
     // WHERE
-      // Verificación si existe ordenación de filtros AND | OR.
+      // Check if AND | OR filter sort exists
     if(Array.isArray(sortedFilters) && sortedFilters.length !== 0) {
-        // sortedFilters tiene elementos
-      myQuery += this.getSortedFilters(sortedFilters, filters);
+      myQuery += this.getSortedFilters(sortedFilters, filters); // sortedFilters has elements
     } else {
-        // sortedFilters esta vacio  
-        myQuery += this.getFilters(filters, dest.length, o);
+        myQuery += this.getFilters(filters, dest.length, o); // sortedFilters is empty
     }
 
     // GroupBy
@@ -255,7 +253,7 @@ export class MySqlBuilderService extends QueryBuilderService {
 
       // variable to find filters with valueListSource
       let validador = (valueListSource !== undefined && valueListSource !== null);
-      // RESULT OF THE WHOLE STRING 
+      // Result of the whole string 
       let resultado = `\`${ validador ? valueListSource.target_table : filter_table}\`.\`${ validador ? valueListSource.target_description_column : filter_column}\` ${filter_type_value} ${filter_elements_value}`;
 
       // It is located in this position because the table and field must be duplicated in the query (*observation)
@@ -302,7 +300,7 @@ export class MySqlBuilderService extends QueryBuilderService {
       return resultado;
     }
 
-    // Iteración del dashboard para conseguir el correcto string anidado
+    // Iterating the dashboard to get the correct nested string
     let itemsString = '( '
     for(let r=0; r<sortedFilters.length; r++){
       if(sortedFilters[r].x === 0){

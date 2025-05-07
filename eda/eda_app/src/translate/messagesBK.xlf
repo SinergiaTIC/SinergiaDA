@@ -1846,6 +1846,13 @@
           <context context-type="linenumber">396</context>
         </context-group>
       </trans-unit>
+      <trans-unit id="descriptionFilterSettings" datatype="html">
+        <source>Configuración avanzada de los todos los filtros</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/module/components/eda-panels/eda-blank-panel/filter-and-or-dialog/filter-and-or-dialog.component.html</context>
+          <context context-type="linenumber">11</context>
+        </context-group>
+      </trans-unit>
     </body>
   </file>
 </xliff>

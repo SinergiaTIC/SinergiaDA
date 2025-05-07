@@ -61,8 +61,7 @@ export class EdaFilterAndOrComponent implements OnInit {
     
     let rowHeight = 0;
     let colWidth = 0;
-    const widthScreen = window.innerWidth;
-    // console.log("widthScreen:", widthScreen);
+    const widthScreen = window.innerWidth; // screen width 
 
     if (widthScreen<1370) {
       rowHeight = 27;
@@ -109,10 +108,10 @@ export class EdaFilterAndOrComponent implements OnInit {
 
   ngOnInit(): void {
 
-    console.log('selectedFilters: ', this.selectedFilters);
-    console.log('globalFilters: ', this.globalFilters);
-    console.log('sortedFilters: ', this.sortedFilters);
-    console.log('previousDashboard', EdaFilterAndOrComponent.previousDashboard);
+    // console.log('selectedFilters: ', this.selectedFilters);
+    // console.log('globalFilters: ', this.globalFilters);
+    // console.log('sortedFilters: ', this.sortedFilters);
+    // console.log('previousDashboard', EdaFilterAndOrComponent.previousDashboard);
 
     const previousDashboard = EdaFilterAndOrComponent.previousDashboard;
 
@@ -274,9 +273,6 @@ export class EdaFilterAndOrComponent implements OnInit {
       this.dashboard = _.cloneDeep(this.dashboardClone);
     }
 
-    // console.log('ITEM:', item);
-    // console.log('TOTAL DE ITEMS:', this.dashboard);
-    // console.log('TOTAL DE ITEMS - CLONACIÓN', this.dashboardClone);
     // variable dashboard lista para la creación de la query de filtros and/or
     this.creacionQueryFiltros(this.dashboard);
   }
@@ -331,8 +327,6 @@ export class EdaFilterAndOrComponent implements OnInit {
 
   // Function for generating the chain of nested AND/OR filters corresponding to the graphic design of the items.
   creacionQueryFiltros(dashboard: any) {
-
-    // console.log('<<<>>> : ', dashboard);
     
     // Ordering the dashboard on the y-axis from lowest to highest.
     dashboard.sort((a: any, b: any) => a.y - b.y); 
@@ -344,8 +338,6 @@ export class EdaFilterAndOrComponent implements OnInit {
     function cadenaRecursiva(item: any) {
       // recursive item
       const { cols, rows, y, x, filter_table, filter_column, filter_type, filter_column_type, filter_elements, filter_id, isGlobal, value } = item;
-
-      // console.log('FILTER - item: ', item);
 
       // Verificar  (Hay dos filtros por revisar ==> | not_null_nor_empty | null_nor_empty | )
       ////////////////////////////////////////////////// filter_type ////////////////////////////////////////////////// 
@@ -369,7 +361,7 @@ export class EdaFilterAndOrComponent implements OnInit {
 
       ////////////////////////////////////////////////// filter_elements ////////////////////////////////////////////////// 
       let filter_elements_value = '';
-      // console.log('longitud: ',filter_elements.length)
+
       if(filter_elements.length === 0) {}
       else {
         if(filter_elements[0].value1.length === 1){
@@ -464,7 +456,6 @@ export class EdaFilterAndOrComponent implements OnInit {
 
     this.stringQuery = _.cloneDeep(stringQuery);
 
-    // console.log('stringQuery: ',stringQuery)
     this.dashboardChanged.emit(this.dashboard); // Envio del dashboard - Se puede cambiar el envio. 
   }
 

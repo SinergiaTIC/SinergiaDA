@@ -25,22 +25,20 @@ export class FilterAndOrDialogComponent implements OnInit {
   ngOnInit(): void {
   }
 
-    // Recibe el dashboard del componente <eda-filter-and-or>
+    // Receive the component dashboard from eda-filter-and-or
     public handleDashboardChanged(event: any) {
       this.dashboardRecibido = event
     }
   
     public onApplyFilterAndOrDialog() {
-      console.log('Se confirman los cambios : ', this.dashboardRecibido);
       if (this.dashboardRecibido?.length) {
         EdaFilterAndOrComponent.guardarDashboard(this.dashboardRecibido);
-        this.newSortedFilters.emit(this.dashboardRecibido); // Emitiendo al EBP
+        this.newSortedFilters.emit(this.dashboardRecibido); // Emitting to EBP
       }
       this.close.emit();
     }
   
     public oncloseFilterAndOrDialog() {
-      console.log('Se ha cancelado los cambios ')
       this.close.emit();
     }
 

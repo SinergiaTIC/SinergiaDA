@@ -4369,6 +4369,10 @@
         <source>Configuración de filtros</source>
         <target>Filter settings</target>
       </trans-unit>
+      <trans-unit id="descriptionFilterSettings">
+        <source>Configuración avanzada de los todos los filtros</source>
+        <target>Advanced settings for all filters</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>

@@ -527,10 +527,7 @@ export class EdaBlankPanelComponent implements OnInit {
      */
     public savePanel() {
 
-        console.log('panel <<<>>>', this.panel);
-
         this.panel.title = this.pdialog.getTitle();
-
 
         if (this.panel?.content) {
             this.panel.content.query.query.queryMode = this.selectedQueryMode;
@@ -563,11 +560,8 @@ export class EdaBlankPanelComponent implements OnInit {
         // Se mantiene en falso luego de guardar
         this.hiddenButtonExecuter = false;
 
-        // Se reinicia la variable estatica de los filtros AND | OR
+        // The static variable of the AND | OR filters is reset
         EdaFilterAndOrComponent.reiniciarDashboard();
-
-        console.log('sortedFilters', this.sortedFilters);
-        console.log('temporalSortedFilters', this.temporalSortedFilters);
 
     }
 
@@ -913,11 +907,6 @@ export class EdaBlankPanelComponent implements OnInit {
     }
 
     public addingGlobalFilterEbp(_filter: any) {
-        // console.log('EBP---->>>')
-        // console.log('_filter---->>>', _filter)
-        // console.log('globalFilters', this.globalFilters)        
-        // console.log('this.sortedFilters: ', this.sortedFilters)
-        // console.log('this.temporalSortedFilters: ', this.temporalSortedFilters)
 
         if(this.sortedFilters.length !==0){
             if(_filter.filter_elements[0].value1.length === 0){
@@ -1014,14 +1003,10 @@ export class EdaBlankPanelComponent implements OnInit {
         // After canceling, the value returns to false
         this.hiddenButtonExecuter = false
 
-        
-        // Al cancelar la configuración del EBP, el valor de sortedFilters regresa a como era desde un inicio
+        // When you cancel the EBP configuration, sortedFilters value returns to what it was from the beginning.
         this.sortedFilters = _.cloneDeep(this.temporalSortedFilters);
-        // Se reinicia la variable estatica previousDashboard de los filtros AND | OR del componente eda-filter-and-or
+        // The static variable previousDashboard of the AND | OR filters of the eda-filter-and-or component is reset.
         EdaFilterAndOrComponent.reiniciarDashboard();
-
-        console.log('sortedFilters', this.sortedFilters);
-        console.log('temporalSortedFilters', this.temporalSortedFilters);
 
     }
 
@@ -1602,12 +1587,8 @@ export class EdaBlankPanelComponent implements OnInit {
     }
 
     public newSortedFiltersFunction(event: any[]) {
-        console.log('SIIIIIIIIIIIIIIIIIIIIIIII');
-        console.log('sortedFilters', this.sortedFilters);
-        console.log('temporalSortedFilters', this.temporalSortedFilters);
-        this.sortedFilters = event; // guardamos el sortedFilters en el EBP
-        this.display_v.btnSave = true; // Se deshabilita el botón de confirmar  
-        console.log('recibido en el EDP: ', event);
+        this.sortedFilters = event; // We save the sortedFilters in the EBP
+        this.display_v.btnSave = true; // The confirm button is disabled
     }
 
     public updateSortedFiltersColumnDialogFunction(e: any) {
