@@ -1595,23 +1595,25 @@ export class EdaBlankPanelComponent implements OnInit {
         
         if(e.add){
 
-            const lastElement = this.sortedFilters[this.sortedFilters.length-1];
-
-            const newSortedFilter = {
-                cols: 3,
-                rows: 1,
-                y: lastElement.y+1,
-                x: 0,
-                filter_table: e.filter.filter_table,
-                filter_column: e.filter.filter_column,
-                filter_type: e.filter.filter_type,
-                filter_column_type: e.filter.filter_column_type,
-                filter_elements: e.filter.filter_elements,
-                filter_id: e.filter.filter_id,
-                value: "and",
+            if(this.sortedFilters.length !==0){
+                const lastElement = this.sortedFilters[this.sortedFilters.length-1];
+    
+                const newSortedFilter = {
+                    cols: 3,
+                    rows: 1,
+                    y: lastElement.y+1,
+                    x: 0,
+                    filter_table: e.filter.filter_table,
+                    filter_column: e.filter.filter_column,
+                    filter_type: e.filter.filter_type,
+                    filter_column_type: e.filter.filter_column_type,
+                    filter_elements: e.filter.filter_elements,
+                    filter_id: e.filter.filter_id,
+                    value: "and",
+                }
+    
+                this.sortedFilters.push(newSortedFilter);
             }
-
-            this.sortedFilters.push(newSortedFilter);
 
         } else {
             this.sortedFilters = [];
@@ -1622,23 +1624,25 @@ export class EdaBlankPanelComponent implements OnInit {
 
         if(e.add){
 
-            const lastElement = this.sortedFilters[this.sortedFilters.length-1];
-
-            const newSortedFilter = {
-                cols: 3,
-                rows: 1,
-                y: lastElement.y+1,
-                x: 0,
-                filter_table: e.filter.filter_table,
-                filter_column: e.filter.filter_column,
-                filter_type: e.filter.filter_type,
-                filter_column_type: e.filter.filter_column_type,
-                filter_elements: e.filter.filter_elements,
-                filter_id: e.filter.filter_id,
-                value: "and",
+            if(this.sortedFilters.length !==0){
+                const lastElement = this.sortedFilters[this.sortedFilters.length-1];
+    
+                const newSortedFilter = {
+                    cols: 3,
+                    rows: 1,
+                    y: lastElement.y+1,
+                    x: 0,
+                    filter_table: e.filter.filter_table,
+                    filter_column: e.filter.filter_column,
+                    filter_type: e.filter.filter_type,
+                    filter_column_type: e.filter.filter_column_type,
+                    filter_elements: e.filter.filter_elements,
+                    filter_id: e.filter.filter_id,
+                    value: "and",
+                }
+    
+                this.sortedFilters.push(newSortedFilter);
             }
-
-            this.sortedFilters.push(newSortedFilter);
 
         } else {
             this.sortedFilters = [];
