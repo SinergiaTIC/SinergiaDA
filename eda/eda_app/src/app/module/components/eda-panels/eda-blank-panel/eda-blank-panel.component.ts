@@ -1295,6 +1295,9 @@ export class EdaBlankPanelComponent implements OnInit {
     public removeColumn = (c: Column, list?: string, event?: Event) => {
             // We check if when deleting a field it has a filter at selectedFilters
         if(this.selectedFilters.some( (sf: any) => sf.filter_column === c.column_name )){
+            if(this.sortedFilters.length !==0) {
+                this.alertService.addWarning($localize`:@@filterSettingsReboot:La configuración de filtros se ha reiniciado`);
+            }
             this.sortedFilters = []; // resets the values ​​because one or more filters were deleted
         }    
         PanelInteractionUtils.removeColumn(this, c, list);
