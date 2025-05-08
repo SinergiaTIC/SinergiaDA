@@ -939,7 +939,7 @@ export class EdaBlankPanelComponent implements OnInit {
     public rebootGlobalFilter(_filter: any){
 
         if(this.sortedFilters.length !==0) {
-            this.alertService.addWarning($localize`:@@filterSettingsReboot:La configuración de filtros se ha reiniciado`);
+            this.alertService.addWarning($localize`:@@globalFilterSettingsReboot:La configuración de filtros del panel involucrado se ha reiniciado`);
         }
 
         if(this.sortedFilters.some((sortedFilter: any) => _filter.id === sortedFilter.filter_id)){
