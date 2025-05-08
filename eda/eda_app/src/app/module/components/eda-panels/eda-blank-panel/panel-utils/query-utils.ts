@@ -106,6 +106,9 @@ export const QueryUtils = {
   runQuery: async (ebp: EdaBlankPanelComponent, globalFilters: boolean) => {
 
     // Update of the globalFilters Elements
+
+    if(ebp.sortedFilters === undefined) ebp.sortedFilters = []; // if it is an old report, we define the report as empty
+
     for(let i=0; i<ebp.sortedFilters.length; i++){
       if(ebp.sortedFilters[i].isGlobal) {
         ebp.sortedFilters[i].filter_elements = ebp.globalFilters.find((globalFilter: any) => globalFilter.filter_id === ebp.sortedFilters[i].filter_id).filter_elements;
