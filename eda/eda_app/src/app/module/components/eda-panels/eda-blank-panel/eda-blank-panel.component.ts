@@ -1522,13 +1522,19 @@ export class EdaBlankPanelComponent implements OnInit {
     }
 
     public filterAndOrDialog(): void {
-        this.display_v.filterAndOr_dialog = true;
-        console.log('this.display_v.filterAndOr_dialog: ',this.display_v.filterAndOr_dialog)
+
+        const numFilters = this.selectedFilters.length + this.globalFilters.length;
+
+        if(numFilters === 0) {
+            this.alertService.addWarning($localize`:@@withoutFilters:Aún no has configurado filtros. Usa el panel de filtros o los filtros globales`);
+            return;
+        } else {
+            this.display_v.filterAndOr_dialog = true;
+        }
     }
 
     public onCloseFilterAndOrDialog(): void {
         this.display_v.filterAndOr_dialog = false;
-        console.log('this.display_v.filterAndOr_dialog: ',this.display_v.filterAndOr_dialog)
     }   
 
     public disableRunQuery(): boolean {

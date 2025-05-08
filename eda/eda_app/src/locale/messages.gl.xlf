@@ -4415,6 +4415,10 @@
         <source>La configuración de filtros del panel involucrado se ha reiniciado</source>
         <target>Restablecéronse a configuración do filtro para o panel implicado</target>
       </trans-unit>
+      <trans-unit id="withoutFilters">
+        <source>Aún no has configurado filtros. Usa el panel de filtros o los filtros globales</source>
+        <target>Aínda non configuraches os filtros. Usar o panel de filtros ou os filtros globais</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>

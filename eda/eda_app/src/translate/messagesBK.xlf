@@ -1867,6 +1867,13 @@
           <context context-type="linenumber">492</context>
         </context-group>
       </trans-unit>
+      <trans-unit id="withoutFilters" datatype="ts">
+        <source>Aún no has configurado filtros. Usa el panel de filtros o los filtros globales</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/module/components/eda-panels/eda-blank-panel/eda-blank-panel.component.ts</context>
+          <context context-type="linenumber">1529</context>
+        </context-group>
+      </trans-unit>
     </body>
   </file>
 </xliff>
