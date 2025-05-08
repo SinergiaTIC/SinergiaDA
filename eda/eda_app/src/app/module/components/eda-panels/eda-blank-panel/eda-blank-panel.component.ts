@@ -279,6 +279,8 @@ export class EdaBlankPanelComponent implements OnInit {
             header: $localize`:@@panelOptions0:OPCIONES DEL PANEL`,
             contextMenuItems: PanelOptions.generateMenu(this)
         });
+
+        if(this.sortedFilters === undefined) this.sortedFilters = []; // if it is an old report, we define the report as empty
     }
 
     /**
@@ -909,8 +911,6 @@ export class EdaBlankPanelComponent implements OnInit {
 
     public addingGlobalFilterEbp(_filter: any) {
 
-        if(this.sortedFilters === undefined) this.sortedFilters = []; // if it is an old report, we define the report as empty
-
         if(this.sortedFilters.length !==0){
             if(_filter.filter_elements[0].value1.length === 0){
                 this.sortedFilters = [];
@@ -939,8 +939,6 @@ export class EdaBlankPanelComponent implements OnInit {
     }
 
     public rebootGlobalFilter(_filter: any){
-
-        if(this.sortedFilters === undefined) this.sortedFilters = []; // if it is an old report, we define the report as empty
 
         if(this.sortedFilters.length !==0) {
             this.alertService.addWarning($localize`:@@globalFilterSettingsReboot:La configuración de filtros del panel involucrado se ha reiniciado`);
@@ -1303,7 +1301,6 @@ export class EdaBlankPanelComponent implements OnInit {
     public removeColumn = (c: Column, list?: string, event?: Event) => {
             // We check if when deleting a field it has a filter at selectedFilters
         if(this.selectedFilters.some( (sf: any) => sf.filter_column === c.column_name )){
-            if(this.sortedFilters === undefined) this.sortedFilters = []; // if it is an old report, we define the report as empty
             if(this.sortedFilters.length !==0) {
                 this.alertService.addWarning($localize`:@@filterSettingsReboot:La configuración de filtros se ha reiniciado`);
             }
@@ -1613,8 +1610,6 @@ export class EdaBlankPanelComponent implements OnInit {
     }
 
     public updateSortedFiltersColumnDialogFunction(e: any) {
-
-        if(this.sortedFilters === undefined) this.sortedFilters = []; // if it is an old report, we define the report as empty
         
         if(e.add){
 
@@ -1648,8 +1643,6 @@ export class EdaBlankPanelComponent implements OnInit {
     }
 
     public updateSortedFiltersFilterDialogFunction(e: any) {
-
-        if(this.sortedFilters === undefined) this.sortedFilters = []; // if it is an old report, we define the report as empty
 
         if(e.add){
 
