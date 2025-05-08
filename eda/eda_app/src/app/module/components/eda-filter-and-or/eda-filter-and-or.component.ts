@@ -115,6 +115,8 @@ export class EdaFilterAndOrComponent implements OnInit {
 
     const previousDashboard = EdaFilterAndOrComponent.previousDashboard;
 
+    if(this.sortedFilters === undefined) this.sortedFilters = []; // if it is an old report, we define the report as empty
+
     if(this.sortedFilters.length===0){
       this.initAndOrFilters();
     } else {
