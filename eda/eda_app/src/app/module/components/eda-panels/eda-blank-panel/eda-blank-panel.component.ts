@@ -1619,6 +1619,9 @@ export class EdaBlankPanelComponent implements OnInit {
             }
 
         } else {
+            if(this.sortedFilters.length !==0) {
+                this.alertService.addWarning($localize`:@@filterSettingsReboot:La configuración de filtros se ha reiniciado`);
+            }
             this.sortedFilters = [];
         }
     }
@@ -1648,6 +1651,9 @@ export class EdaBlankPanelComponent implements OnInit {
             }
 
         } else {
+            if(this.sortedFilters.length !==0) {
+                this.alertService.addWarning($localize`:@@filterSettingsReboot:La configuración de filtros se ha reiniciado`);
+            }
             this.sortedFilters = [];
         }
     }

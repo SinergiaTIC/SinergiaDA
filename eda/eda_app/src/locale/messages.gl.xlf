@@ -4407,6 +4407,10 @@
         <source>Vacío</source>
         <target>(Baleiro)</target>
       </trans-unit>
+      <trans-unit id="filterSettingsReboot">
+        <source>La configuración de filtros se ha reiniciado</source>
+        <target>Restableceuse a configuración do filtro</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>

@@ -1853,6 +1853,13 @@
           <context context-type="linenumber">11</context>
         </context-group>
       </trans-unit>
+      <trans-unit id="filterSettingsReboot" datatype="ts">
+        <source>La configuración de filtros se ha reiniciado</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/module/components/eda-panels/eda-blank-panel/eda-blank-panel.component.ts</context>
+          <context context-type="linenumber">1623</context>
+        </context-group>
+      </trans-unit>
     </body>
   </file>
 </xliff>
