@@ -61,7 +61,7 @@ export class EdaBlankPanelComponent implements OnInit {
     @Output() duplicate: EventEmitter<any> = new EventEmitter();
     @Output() action: EventEmitter<IPanelAction> = new EventEmitter<IPanelAction>();
 
-    /** propietats que s'injecten al dialog amb les propietats específiques de cada gràfic. */
+    /** properties that are injected into the dialogue with the specific properties of each chart. */
     public configController: EdaDialogController;
     public filterController: EdaDialogController;
     public chartController: EdaDialogController;
@@ -96,7 +96,7 @@ export class EdaBlankPanelComponent implements OnInit {
     public display_v = {
         page_dialog: false, // page dialog
         saved_panel: false, // saved panel
-        btnSave: false, // button guardar
+        btnSave: false, // save button
         aggreg_dialog: false, // aggregation dialog
         whatIf_dialog: false,
         calendar: false, // calendars inputs
@@ -131,6 +131,7 @@ export class EdaBlankPanelComponent implements OnInit {
     public ptooltipViewQuery: string = $localize`:@@ptooltipViewQuery:Ver consulta SQL`;
     public aggregationText: string = $localize`:@@aggregationText:Agregación`;
     public textBetween: string = $localize`:@@textBetween:Entre`
+    public emptyStringString: string = $localize`:@@emptyStringTxt:Vacío` 
 
 
     /** Query Variables */
@@ -236,7 +237,7 @@ export class EdaBlankPanelComponent implements OnInit {
             try{
                 const contentQuery = this.panel.content.query;
 
-                const modeSQL = contentQuery.query.modeSQL; // Comptabilitzar dashboard antics sense queryMode informat
+                const modeSQL = contentQuery.query.modeSQL; // Count old dashboards without queryMode reported
                 let queryMode = contentQuery.query.queryMode;
 
                 if (!queryMode) {
@@ -358,7 +359,7 @@ export class EdaBlankPanelComponent implements OnInit {
 
     public async runWhatIfQuery(column?: any): Promise<void> {
         try {
-            /* Este código actualiza el nombre de la columna. pero No lo actualizamos
+            /* This code updates the column name. but we do not update it.
             const updateDisplayName = (col: any) => {
                 const origin = col.whatif.origin;
                 if (origin) {
@@ -386,7 +387,7 @@ export class EdaBlankPanelComponent implements OnInit {
 
         this.chartForm = this.formBuilder.group({ chart: [null, Validators.required] });
 
-        this.chartTypes = this.chartUtils.chartTypes; // Loading all disponibles chart type from a chartUtilService
+        this.chartTypes = this.chartUtils.chartTypes; // Loading all avabile chart type from a chartUtilService
 
         this.filterTypes = this.chartUtils.filterTypes;
 
@@ -449,7 +450,7 @@ export class EdaBlankPanelComponent implements OnInit {
             try {
                 const response = await QueryUtils.switchAndRun(this, panelContent.query);
                 this.chartLabels = this.chartUtils.uniqueLabels(response[0]);
-                this.chartData = response[1].map(item => item.map(a => a == null ? NULL_VALUE : a)); // canviem els null per valor customitzable
+                this.chartData = response[1].map(item => item.map(a => a == null ? NULL_VALUE : a)); // we change the nulls for customisable value
                 this.buildGlobalconfiguration(panelContent);
             } catch (err) {
                 this.alertService.addError(err);
@@ -557,7 +558,7 @@ export class EdaBlankPanelComponent implements OnInit {
         //not saved alert message
         this.dashboardService._notSaved.next(true);
 
-        // Se mantiene en falso luego de guardar
+        // It remains false after saving
         this.hiddenButtonExecuter = false;
 
         // The static variable of the AND | OR filters is reset
@@ -643,7 +644,7 @@ export class EdaBlankPanelComponent implements OnInit {
      */
     public changeChartType(type: string, subType: string, config?: ChartConfig) {
 
-        this.graphicType = type; // Actualizamos el tipo de variable para el componente drag-drop
+        this.graphicType = type; // Update the variable type for the drag-drop component
         this.graficos = {};
         let allow = _.find(this.chartTypes, c => c.value === type && c.subValue == subType);
         this.display_v.chart = type;
@@ -756,14 +757,14 @@ export class EdaBlankPanelComponent implements OnInit {
             moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
         } else {
             transferArrayItem(event.previousContainer.data, event.container.data, event.previousIndex, event.currentIndex);
-            //obor dialeg o filre
+            //open dialog or filter
             const column = <Column><unknown>event.container.data[event.currentIndex];
             if(event.container.element.nativeElement.className.toString().includes('select-list')) {
                 this.moveItem(column);
                 this.openColumnDialog(column);
             } else {
                 this.openColumnDialog(column, true);
-                // Trec la agregació si puc.
+                // I remove the aggregation if I can.
                 try{
                     const c:Column = <Column><unknown>event.container.data[event.currentIndex];
                     c.aggregation_type.forEach( e=> e.selected = false);
@@ -778,7 +779,7 @@ export class EdaBlankPanelComponent implements OnInit {
 
 
 
-    /* Condicions Drag&Drop */
+    /* Drag&Drop conditions */
     public isAllowed = (drag?: CdkDrag, drop?) => false;
 
     /**
@@ -1130,7 +1131,7 @@ export class EdaBlankPanelComponent implements OnInit {
             this.renderChart(this.currentQuery, this.chartLabels, this.chartData, this.graficos.chartType, this.graficos.edaChart, config);
             this.dashboardService._notSaved.next(true);
         }
-        // Fa que desapareixi el dialeg
+        // Makes dialog disappear
         this.sunburstController = undefined;
     }
     public onCloseKnobProperties(event, response): void {
@@ -1220,7 +1221,7 @@ export class EdaBlankPanelComponent implements OnInit {
     public runQueryFromDashboard = (globalFilters: boolean) => QueryUtils.runQuery(this, globalFilters);
 
     /**
-    * Función que inicializa el axes en su forma básica --> Tabla cruzada básica.
+    * Function that initialises the axes in its basic form --> Basic cross table.
     */
     public initAxes(currenQuery) {
 
@@ -1237,7 +1238,7 @@ export class EdaBlankPanelComponent implements OnInit {
             objx = {column_name: vx.column_name, column_type: vx.column_type, description: vx.display_name.default}
             itemX = [objx]
             if (indexX !== -1) {
-                currenQueryCopy.splice(indexX, 1); // Elimina el elemento encontrado
+                currenQueryCopy.splice(indexX, 1); // Deletes the found item
             }
         } else {
             objx = {column_name: vx.column_name, column_type: vx.column_type, description: vx.display_name.default}
@@ -1314,7 +1315,7 @@ export class EdaBlankPanelComponent implements OnInit {
         } else return null;
     }
 
-    /** duplica un patell del dashboard i el posiciona un punt per sota del origina./ */
+    /** duplicates a dashboard panel and positions it one point below the original one. */
     public duplicatePanel(): void {
         let duplicatedPanel =   _.cloneDeep(this.panel, true);
         duplicatedPanel.id = this.fileUtiles.generateUUID();
@@ -1378,7 +1379,7 @@ export class EdaBlankPanelComponent implements OnInit {
         this.action.emit({ code: 'QUERYMODE', data: { queryMode: this.selectedQueryMode, panel: this.panel } })
     }
 
-/** Esta función permite al switch en la columna atributos ver u ocultar las columnas con el atributo hidden */
+/** This function allows the switch in the attribute column to see or hide the columns with the hidden attribute. */
 /* SDA CUSTOM  */    public async changeHiddenMode(): Promise<void> {
 /* SDA CUSTOM  */       this.showHiddenColumn = !this.showHiddenColumn;
 /* SDA CUSTOM  */       const selectedTable = this.getUserSelectedTable();
@@ -1456,10 +1457,10 @@ export class EdaBlankPanelComponent implements OnInit {
             const whereMessage: string = $localize`:@@whereMessage: Filtro sobre todos los registros`;
             const havingMessage: string = $localize`:@@havingMessage: Filtro sobre los resultados`;
         
-            // Nomenclatura:  WHERE => Filtro sobre todos los registros | HAVING => Filtro sobre los resultados
+            // Nomenclature:  WHERE => Filtering on all records | HAVING => Filtering on results
             const filterBeforeGroupingText = filter.filterBeforeGrouping ? whereMessage : havingMessage
 
-            // Agregación
+            // Aggregation
             const aggregation = filter.aggregation_type;
 
             let valueStr = '';
@@ -1469,6 +1470,8 @@ export class EdaBlankPanelComponent implements OnInit {
                     valueStr = `"${values[0]}"`;
                 }  else if (values.length > 1 || ['in', 'not_in'].includes(filter.filter_type)) {
                     valueStr = `[${values.map((v: string) => (`"${v}"`) ).join(', ')}]`;
+                    valueStr =  valueStr.replace('emptyString', this.emptyStringString ); // This is done in case nulls are filtered out from the dashboard that can be internationalised.
+
                 }
 
                 if (values2) {
@@ -1483,7 +1486,7 @@ export class EdaBlankPanelComponent implements OnInit {
             let aggregationLabel = 'none';
             if(aggTypes.filter(agg => agg.value === aggregation).length !== 0) aggregationLabel = aggTypes.filter(agg => agg.value === aggregation)[0].label;
 
-            // Agregado de internacionalización del between
+            // Aggregate of internationalisation of the between
             let filterType = filter.filter_type
             if(filterType === 'between') filterType = this.textBetween;
 
@@ -1538,7 +1541,7 @@ export class EdaBlankPanelComponent implements OnInit {
     }
 
     /**
-    * Funcion que reordena el arreglo currentQuery segun el nuevo valor de ordenamiento de la variable axes devuelta por el componete drag-drop
+    * Function that reorders the currentQuery array according to the new sort value of the axes variable returned by the drag-drop component.
     */
     public newCurrentQuery(currenQuery, axes) {
 
@@ -1575,15 +1578,15 @@ export class EdaBlankPanelComponent implements OnInit {
 
     }
 
-    // Funcion que recibe la variable axes moficicada por el componente drag-drop
+    // Function that receives the axes variable modified by the drag-drop component.
     public newAxesOrdering(newAxes) {
         this.axes = newAxes;
-        this.newAxesChanged = true; // Indica que se utilizara la tabla cruzada generica
-        const config = this.panelChartConfig.config.getConfig(); // Adquiera la configuración config
-        this.currentQuery = this.newCurrentQuery(this.currentQuery, newAxes); // Reordeno el currentQuery
-        config['ordering'] = [{axes: newAxes}]; // Agrego el nuevo axes a la config
+        this.newAxesChanged = true; // Indicates that the generic cross table will be used.
+        const config = this.panelChartConfig.config.getConfig(); // Acquire the configuration config
+        this.currentQuery = this.newCurrentQuery(this.currentQuery, newAxes); // I reorder the currentQuery
+        config['ordering'] = [{axes: newAxes}]; // I add the new axes to the config
         this.copyConfigCrossTable = JSON.parse(JSON.stringify(config));;
-        QueryUtils.runManualQuery(this) // Ejecutando con la nueva configuracion de currentQuery
+        QueryUtils.runManualQuery(this) // Running with the new currentQuery configuration
     }
 
     public newSortedFiltersFunction(event: any[]) {

@@ -4402,6 +4402,10 @@
       <trans-unit id="descriptionFilterSettings">
         <source>Configuración avanzada de los todos los filtros</source>
         <target>Configuración avanzada para todos os filtros</target>
+       </trans-unit>
+      <trans-unit id="emptyStringTxt">
+        <source>Vacío</source>
+        <target>(Baleiro)</target>
       </trans-unit>
     </body>
   </file>

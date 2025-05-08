@@ -4402,6 +4402,10 @@
         <source>Configuración avanzada de los todos los filtros</source>
         <target>Configuración avanzada de los todos los filtros</target>
       </trans-unit>
+        <trans-unit id="emptyStringTxt">
+        <source>Vacío</source>
+        <target>(Vacío)</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>

@@ -4372,6 +4372,10 @@
       <trans-unit id="descriptionFilterSettings">
         <source>Configuración avanzada de los todos los filtros</source>
         <target>Advanced settings for all filters</target>
+      <trans-unit id="emptyStringTxt">
+        <source>Vacío</source>
+        <target>(Empty)</target>
+        </trans-unit>
       </trans-unit>
     </body>
   </file>
