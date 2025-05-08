@@ -4410,6 +4410,10 @@
         <source>La configuración de filtros se ha reiniciado</source>
         <target>La configuración de filtros se ha reiniciado</target>
       </trans-unit>
+      <trans-unit id="globalFilterSettingsReboot">
+        <source>La configuración de filtros del panel involucrado se ha reiniciado</source>
+        <target>La configuración de filtros del panel involucrado se ha reiniciado</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>
