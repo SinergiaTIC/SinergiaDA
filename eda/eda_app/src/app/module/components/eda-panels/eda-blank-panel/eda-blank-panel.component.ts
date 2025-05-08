@@ -909,6 +909,8 @@ export class EdaBlankPanelComponent implements OnInit {
 
     public addingGlobalFilterEbp(_filter: any) {
 
+        if(this.sortedFilters === undefined) this.sortedFilters = []; // if it is an old report, we define the report as empty
+
         if(this.sortedFilters.length !==0){
             if(_filter.filter_elements[0].value1.length === 0){
                 this.sortedFilters = [];
@@ -937,6 +939,8 @@ export class EdaBlankPanelComponent implements OnInit {
     }
 
     public rebootGlobalFilter(_filter: any){
+
+        if(this.sortedFilters === undefined) this.sortedFilters = []; // if it is an old report, we define the report as empty
 
         if(this.sortedFilters.length !==0) {
             this.alertService.addWarning($localize`:@@globalFilterSettingsReboot:La configuración de filtros del panel involucrado se ha reiniciado`);
