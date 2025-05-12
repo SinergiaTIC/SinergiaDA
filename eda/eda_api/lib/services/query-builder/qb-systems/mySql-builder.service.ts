@@ -100,6 +100,9 @@ export class MySqlBuilderService extends QueryBuilderService {
   };
 
   public getSortedFilters(sortedFilters: any[], filters: any[]): any {
+
+    // console.log('filters: ', filters)
+    // console.log('sortedFilters: ', sortedFilters)
     
     // Adding valueListSource to the filters And/Or
     filters.forEach((filter: any) => {
@@ -112,18 +115,19 @@ export class MySqlBuilderService extends QueryBuilderService {
     sortedFilters.sort((a: any, b: any) => a.y - b.y); 
 
     // Calculating global filters and they are empty.
-    let nullSortedFilters  =  sortedFilters.filter((f: any) => ((f.isGlobal===true) && (f.filter_elements[0].value1.length === 0)));
+    const nullSortedFilters  =  sortedFilters.filter((f: any) => ((f.isGlobal===true) && (f.filter_elements[0].value1.length === 0)));
 
     // If we have empty values in the filters we define a new sortedFilters
     if(nullSortedFilters.length !==0){
 
       // Ordering
       nullSortedFilters.sort((a: any, b: any) => a.y - b.y); 
+      // console.log('nullSortedFilters: ', nullSortedFilters);
   
       // Order in the x axis
       nullSortedFilters.forEach( element =>{
-            for(let i= element.y + 1 ; i < sortedFilters.length - 1 ; i++ ){
-              if(element.x < sortedFilters[i].x) {
+            for(let i= element.y + 1 ; i < sortedFilters.length; i++ ){
+              if(element.x  < sortedFilters[i].x) {
                 sortedFilters[i].x -= 1;
               } else {
                 break;
@@ -132,11 +136,13 @@ export class MySqlBuilderService extends QueryBuilderService {
       }  )
   
       // Order in the y axis
-      let newSortedFilters = sortedFilters.filter((f: any) => !((f.isGlobal===true) && (f.filter_elements[0].value1.length === 0)));
+      const newSortedFilters = sortedFilters.filter((f: any) => !((f.isGlobal===true) && (f.filter_elements[0].value1.length === 0)));
+      // console.log('newSortedFilters : ',newSortedFilters)
       newSortedFilters.forEach( (f,i) => f.y=i );
 
       sortedFilters = _.cloneDeep(newSortedFilters);
     }
+
 
     // Variable containing the new string of nested AND/OR filters corresponding to the graphic design of the items.
     let stringQuery = '\nwhere ';
