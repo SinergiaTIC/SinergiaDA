@@ -907,6 +907,7 @@ export class EdaBlankPanelComponent implements OnInit {
         } else {
             this.globalFilters.push(globalFilter);
         }
+
     }
 
     public addingGlobalFilterEbp(_filter: any) {
@@ -929,6 +930,7 @@ export class EdaBlankPanelComponent implements OnInit {
                     filter_column_type: _filter.filter_column_type,
                     filter_elements: _filter.filter_elements,
                     filter_id: _filter.filter_id,
+                    isGlobal: _filter.isGlobal,
                     value: "and",
                 }
         
