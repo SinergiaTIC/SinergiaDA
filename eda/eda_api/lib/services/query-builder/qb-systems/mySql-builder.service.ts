@@ -103,6 +103,9 @@ export class MySqlBuilderService extends QueryBuilderService {
 
     // console.log('filters: ', filters)
     // console.log('sortedFilters: ', sortedFilters)
+
+    // If the there is no filters 
+    if(filters.length === 0) { return ''; }
     
     // Adding valueListSource to the filters And/Or
     filters.forEach((filter: any) => {
