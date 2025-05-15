@@ -47,6 +47,11 @@ export class GlobalFilterComponent implements OnInit {
         this.isDashboardCreator = this.dashboard.isDashboardCreator;
         this.setFiltersVisibility();
         this.setFilterButtonVisibilty();
+
+        // console.log('Global-filter ==> globalFilters', this.globalFilters);
+        this.globalFilters.forEach(filter => {
+            this.setGlobalEmptyFilter(filter);
+        })
     }
 
     private setFiltersVisibility(): void {
@@ -123,6 +128,19 @@ export class GlobalFilterComponent implements OnInit {
                 }
             }
         })
+    }
+
+    public setGlobalEmptyFilter(filter: any) {
+
+        setTimeout(() => {
+            this.dashboard.edaPanels.forEach((panel: EdaBlankPanelComponent) => {
+                if (filter.panelList.includes(panel.panel.id)) {
+                        const formatedFilter = this.globalFilterService.formatFilter(filter);
+                        panel.assertGlobalEmptyFilter(formatedFilter);
+                }
+            })
+        }, 100);
+
     }
 
     // Main Global Filter
@@ -466,7 +484,7 @@ export class GlobalFilterComponent implements OnInit {
                         }
                     })
                 } catch (e) {
-                    console.warn('dropdownFilterStyles' + e);
+                    // console.warn('dropdownFilterStyles' + e);
                 }
 
             }

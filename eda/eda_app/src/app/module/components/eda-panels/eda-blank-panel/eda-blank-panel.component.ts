@@ -210,6 +210,8 @@ export class EdaBlankPanelComponent implements OnInit {
     // Hide the executing button
     public hiddenButtonExecuter: boolean = false;
 
+    public variableTemporal: any[] = [];
+
     constructor(
         public queryBuilder: QueryBuilderService,
         public fileUtiles: FileUtiles,
@@ -910,6 +912,27 @@ export class EdaBlankPanelComponent implements OnInit {
 
     }
 
+    public assertGlobalEmptyFilter(_filter: any) {
+
+        const globalFilter = _.cloneDeep(_filter);
+
+        if (_filter.pathList && _filter.pathList[this.panel.id]) {
+            globalFilter.joins = _filter.pathList[this.panel.id].path
+            globalFilter.filter_table = _filter.pathList[this.panel.id].table_id;
+        }
+        const filterInx = this.globalFilters.findIndex((gf: any) => gf.filter_id === globalFilter.filter_id)
+
+        if (filterInx != -1) {
+            this.globalFilters.splice(filterInx, 1); // Here is filterInx to update the globalFilters
+            this.globalFilters.push(globalFilter);
+        } else {
+            this.globalFilters.push(globalFilter);
+        }
+
+        // console.log('globalFilters: ', this.globalFilters);
+        this.variableTemporal = _.cloneDeep(this.globalFilters);
+    }
+
     public addingGlobalFilterEbp(_filter: any) {
 
         if(this.sortedFilters.length !==0){
@@ -963,6 +986,18 @@ export class EdaBlankPanelComponent implements OnInit {
     }
 
     public openEditarConsulta(): void {
+
+        // console.log('openEditarConsulta')
+        // console.log('globalFilters', this.globalFilters)
+        // console.log('variableTemporal', this.variableTemporal)
+
+        // Only affected at the start of the dashboard
+        if(this.variableTemporal.some(filter => {
+            return filter.filter_elements[0].value1.length === 0
+        }) && this.variableTemporal.length != 0) {
+            this.globalFilters = _.cloneDeep(this.variableTemporal);
+            this.variableTemporal = [];
+        }
 
         this.display_v.page_dialog = true;
         this.ableBtnSave();
