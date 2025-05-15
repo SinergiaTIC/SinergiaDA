@@ -996,8 +996,9 @@ export class EdaBlankPanelComponent implements OnInit {
             return filter.filter_elements[0].value1.length === 0
         }) && this.variableTemporal.length != 0) {
             this.globalFilters = _.cloneDeep(this.variableTemporal);
-            this.variableTemporal = [];
         }
+
+        this.variableTemporal = [];
 
         this.display_v.page_dialog = true;
         this.ableBtnSave();
