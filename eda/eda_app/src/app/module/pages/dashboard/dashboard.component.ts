@@ -619,10 +619,17 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
 
     public reloadPanels(): void {
 
-        const globalFilters = this.gFilter?.globalFilters        
-        globalFilters.forEach(filter => {
-            this.gFilter.setGlobalEmptyFilter(filter);
-        })
+        const globalFilters = this.gFilter?.globalFilters;
+        
+        if(globalFilters.length !== 0) {
+            globalFilters.forEach(filter => {
+                this.gFilter.setGlobalEmptyFilter(filter);
+            })
+        } else {
+            this.edaPanels.forEach((panel: EdaBlankPanelComponent) => {
+                panel.variableTemporal = [];
+            })
+        }
 
         this.edaPanels.forEach(async (panel) => {
             if (panel.currentQuery.length !== 0) {
@@ -796,12 +803,6 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     public reloadOnGlobalFilter(): void {
-
-        const globalFilters = this.gFilter?.globalFilters
-
-        globalFilters.forEach(filter => {
-            this.gFilter.setGlobalEmptyFilter(filter);
-        })
 
         //not saved alert message
         this.dashboardService._notSaved.next(true);

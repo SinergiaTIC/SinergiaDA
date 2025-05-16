@@ -139,7 +139,7 @@ export class GlobalFilterComponent implements OnInit {
                         panel.assertGlobalEmptyFilter(formatedFilter);
                 }
             })
-        }, 100);
+        }, 500);
 
     }
 
