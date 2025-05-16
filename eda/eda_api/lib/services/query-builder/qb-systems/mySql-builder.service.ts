@@ -147,6 +147,20 @@ export class MySqlBuilderService extends QueryBuilderService {
     }
 
 
+    // If we have a global filter with only one empty value selected
+    filters.forEach(filter => {
+      if(filter.isGlobal && (filter.filter_type === 'null_or_empty')) {
+        const selectedFilter = sortedFilters.find(filter => filter.filter_id === filter.filter_id);
+
+        if(selectedFilter) {
+          selectedFilter.filter_type = 'null_or_empty';
+          selectedFilter.filter_elements = [];
+        }
+
+      }
+    })
+
+
     // Variable containing the new string of nested AND/OR filters corresponding to the graphic design of the items.
     let stringQuery = '\nwhere ';
 
@@ -180,7 +194,7 @@ export class MySqlBuilderService extends QueryBuilderService {
           filter_type_value = 'is not null and';
         }
         if(filter_type === 'null_or_empty') {
-          filter_type_value = 'is not null or';
+          filter_type_value = 'is null or';
         }
       }
       else {
@@ -263,16 +277,18 @@ export class MySqlBuilderService extends QueryBuilderService {
       // variable to find filters with valueListSource
       let validador = (valueListSource !== undefined && valueListSource !== null);
       // Result of the whole string 
-      let resultado = `\`${ validador ? valueListSource.target_table : filter_table}\`.\`${ validador ? valueListSource.target_description_column : filter_column}\` ${filter_type_value} ${filter_elements_value}`;
+
+
+      let resultado = `${['null_or_empty', 'not_null_nor_empty'].includes(filter_type) ? ' (' : ''} \`${ validador ? valueListSource.target_table : filter_table}\`.\`${ validador ? valueListSource.target_description_column : filter_column}\` ${filter_type_value} ${filter_elements_value}`;
 
       // It is located in this position because the table and field must be duplicated in the query (*observation)
       if(filter_type === 'not_null_nor_empty') {
-        resultado = `${resultado} \`${ validador ? valueListSource.target_table : filter_table}\`.\`${ validador ? valueListSource.target_description_column : filter_column}\` != ''`;
+        resultado = `${resultado} \`${ validador ? valueListSource.target_table : filter_table}\`.\`${ validador ? valueListSource.target_description_column : filter_column}\` != '')`;
       }
 
       // It is located in this position because the table and field must be duplicated in the query (*observation)
       if(filter_type === 'null_or_empty') {
-        resultado = `${resultado} \`${ validador ? valueListSource.target_table : filter_table}\`.\`${ validador ? valueListSource.target_description_column : filter_column}\` = ''`;
+        resultado = `${resultado} \`${ validador ? valueListSource.target_table : filter_table}\`.\`${ validador ? valueListSource.target_description_column : filter_column}\` = '')`;
       }
 
       ////////////////////////////////////////////////// Arrays of child items ////////////////////////////////////////////////// 

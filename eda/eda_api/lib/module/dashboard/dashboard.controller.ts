@@ -935,7 +935,8 @@ export class DashboardController {
           if( b.value1){
             if ( b.value1.includes('emptyString')  && b.value1.length  == 1 ){
               // if it is one I turn it into a null or empty
-              a.filter_type = 'null_or_empty'
+              a.filter_type = 'null_or_empty';
+              // The sortedFilters are controlled in the getSortedFilters function of mySql-builder.service.ts
             }if ( b.value1.includes('emptyString')  && b.value1.length  > 1 ){
              // if there are more than one, I remove them to a separate filter.
              const nullFilter = JSON.parse(JSON.stringify(a));
