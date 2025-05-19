@@ -146,11 +146,10 @@ export class MySqlBuilderService extends QueryBuilderService {
       sortedFilters = _.cloneDeep(newSortedFilters);
     }
 
-
     // If we have a global filter with only one empty value selected
     filters.forEach(filter => {
       if(filter.isGlobal && (filter.filter_type === 'null_or_empty')) {
-        const selectedFilter = sortedFilters.find(filter => filter.filter_id === filter.filter_id);
+        const selectedFilter = sortedFilters.find(sf => sf.filter_id === filter.filter_id);
 
         if(selectedFilter) {
           selectedFilter.filter_type = 'null_or_empty';
@@ -279,7 +278,7 @@ export class MySqlBuilderService extends QueryBuilderService {
       // Result of the whole string 
 
 
-      let resultado = `${['null_or_empty', 'not_null_nor_empty'].includes(filter_type) ? ' (' : ''} \`${ validador ? valueListSource.target_table : filter_table}\`.\`${ validador ? valueListSource.target_description_column : filter_column}\` ${filter_type_value} ${filter_elements_value}`;
+      let resultado = `${['null_or_empty', 'not_null_nor_empty'].includes(filter_type) ? ' (' : ''} \`${ validador ? valueListSource.target_table : filter_table}\`.\`${ validador ? valueListSource.target_description_column : filter_column}\` ${filter_type_value}${filter_elements_value}`;
 
       // It is located in this position because the table and field must be duplicated in the query (*observation)
       if(filter_type === 'not_null_nor_empty') {
