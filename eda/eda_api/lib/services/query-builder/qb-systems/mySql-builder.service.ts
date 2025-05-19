@@ -226,7 +226,7 @@ export class MySqlBuilderService extends QueryBuilderService {
           // Numeric type value
           if(filter_column_type === 'numeric'){
             if(filter_type === 'between') {
-              filter_elements_value = filter_elements_value + `${Number(filter_elements[0].value1[0])} and ${Number(filter_elements[1].value2[0])}`;
+              filter_elements_value = filter_elements_value + ` ${Number(filter_elements[0].value1[0])} and ${Number(filter_elements[1].value2[0])}`;
             } else {
               if(filter_type === 'in' || filter_type === 'not_in') {
                 filter_elements_value = filter_elements_value + `(${filter_elements[0].value1[0]})`;
@@ -239,7 +239,7 @@ export class MySqlBuilderService extends QueryBuilderService {
           // Date type value
           if(filter_column_type === 'date'){
             if(filter_type === 'between'){
-              filter_elements_value = filter_elements_value + `STR_TO_DATE(\'${filter_elements[0].value1[0]}\',\'%Y-%m-%d\')` + ' and ' + `STR_TO_DATE(\'${filter_elements[1].value2[0]} 23:59:59\',\'%Y-%m-%d %H:%i:%S\')`;
+              filter_elements_value = filter_elements_value + ` STR_TO_DATE(\'${filter_elements[0].value1[0]}\',\'%Y-%m-%d\')` + ' and ' + `STR_TO_DATE(\'${filter_elements[1].value2[0]} 23:59:59\',\'%Y-%m-%d %H:%i:%S\')`;
             } else {
               if(filter_type==='in' || filter_type==='not_in') {
                 filter_elements_value = filter_elements_value + `(STR_TO_DATE(\'${filter_elements[0].value1[0]}\',\'%Y-%m-%d\'))`;
