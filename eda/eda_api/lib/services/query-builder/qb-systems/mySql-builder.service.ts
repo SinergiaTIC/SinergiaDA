@@ -109,7 +109,7 @@ export class MySqlBuilderService extends QueryBuilderService {
     
     // Adding valueListSource to the filters And/Or
     filters.forEach((filter: any) => {
-      if(filter.valueListSource !== undefined && filter.valueListSource !== null) {
+      if(filter.valueListSource !== undefined && filter.valueListSource !== null && filter.filter_id !== 'is_null') {
         sortedFilters.find((e: any) => e.filter_id === filter.filter_id ).valueListSource = filter.valueListSource;
       }
     })
@@ -125,7 +125,6 @@ export class MySqlBuilderService extends QueryBuilderService {
 
       // Ordering
       nullSortedFilters.sort((a: any, b: any) => a.y - b.y); 
-      // console.log('nullSortedFilters: ', nullSortedFilters);
   
       // Order in the x axis
       nullSortedFilters.forEach( element =>{
@@ -140,7 +139,6 @@ export class MySqlBuilderService extends QueryBuilderService {
   
       // Order in the y axis
       const newSortedFilters = sortedFilters.filter((f: any) => !((f.isGlobal===true) && (f.filter_elements[0].value1.length === 0)));
-      // console.log('newSortedFilters : ',newSortedFilters)
       newSortedFilters.forEach( (f,i) => f.y=i );
 
       sortedFilters = _.cloneDeep(newSortedFilters);
@@ -148,17 +146,32 @@ export class MySqlBuilderService extends QueryBuilderService {
 
     // If we have a global filter with only one empty value selected
     filters.forEach(filter => {
-      if(filter.isGlobal && (filter.filter_type === 'null_or_empty')) {
+      if(filter.isGlobal && (filter.filter_type === 'null_or_empty') && (filter.filter_elements[0].value1[0]==='emptyString')) {
         const selectedFilter = sortedFilters.find(sf => sf.filter_id === filter.filter_id);
 
         if(selectedFilter) {
           selectedFilter.filter_type = 'null_or_empty';
           selectedFilter.filter_elements = [];
         }
+      }
+
+      if(filter.filter_id === 'is_null') {
+        const selectedFilter = sortedFilters.find(sf => sf.filter_id === filter.source_filter_id);
+        selectedFilter.sqlOptional = '';
+        
+        if(selectedFilter){
+          if(filter.valueListSource === undefined) {
+            selectedFilter.sqlOptional += `\`${filter.filter_table}\`.\`${filter.filter_column}\` is null or \`${filter.filter_table}\`.\`${filter.filter_column}\` = '' or`;
+            selectedFilter.filter_elements[0].value1 = selectedFilter.filter_elements[0].value1.filter(e => e !== 'emptyString');
+          } else {
+            selectedFilter.sqlOptional += `\`${filter.valueListSource.target_table}\`.\`${filter.valueListSource.target_description_column}\` is null or \`${filter.valueListSource.target_table}\`.\`${filter.valueListSource.target_description_column}\` = '' or`;
+            selectedFilter.filter_elements[0].value1 = selectedFilter.filter_elements[0].value1.filter(e => e !== 'emptyString');
+          }
+        }
 
       }
-    })
 
+    })
 
     // Variable containing the new string of nested AND/OR filters corresponding to the graphic design of the items.
     let stringQuery = '\nwhere ';
@@ -166,7 +179,7 @@ export class MySqlBuilderService extends QueryBuilderService {
     // Recursive function for the necessary nesting according to the AND/OR filter graph.
     function cadenaRecursiva(item: any) {
       // recursive item
-      const { cols, rows, y, x, filter_table, filter_column, filter_type, filter_column_type, filter_elements, value, valueListSource } = item;
+      const { cols, rows, y, x, filter_table, filter_column, filter_type, filter_column_type, filter_elements, value, valueListSource, sqlOptional } = item;
 
       ////////////////////////////////////////////////// filter_type ////////////////////////////////////////////////// 
       let filter_type_value = '';
@@ -278,7 +291,7 @@ export class MySqlBuilderService extends QueryBuilderService {
       // Result of the whole string 
 
 
-      let resultado = `${['null_or_empty', 'not_null_nor_empty'].includes(filter_type) ? ' (' : ''} \`${ validador ? valueListSource.target_table : filter_table}\`.\`${ validador ? valueListSource.target_description_column : filter_column}\` ${filter_type_value}${filter_elements_value}`;
+      let resultado = `${['null_or_empty', 'not_null_nor_empty'].includes(filter_type) || (filter_type==='in' && sqlOptional !== undefined) ? ' (' : ''} ${sqlOptional !== undefined ? sqlOptional : ''} \`${ validador ? valueListSource.target_table : filter_table}\`.\`${ validador ? valueListSource.target_description_column : filter_column}\` ${filter_type_value}${filter_elements_value}`;
 
       // It is located in this position because the table and field must be duplicated in the query (*observation)
       if(filter_type === 'not_null_nor_empty') {
@@ -288,6 +301,10 @@ export class MySqlBuilderService extends QueryBuilderService {
       // It is located in this position because the table and field must be duplicated in the query (*observation)
       if(filter_type === 'null_or_empty') {
         resultado = `${resultado} \`${ validador ? valueListSource.target_table : filter_table}\`.\`${ validador ? valueListSource.target_description_column : filter_column}\` = '')`;
+      }
+
+      if(filter_type === 'in' && sqlOptional !== undefined) {
+        resultado = `${resultado} )`;
       }
 
       ////////////////////////////////////////////////// Arrays of child items ////////////////////////////////////////////////// 

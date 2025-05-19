@@ -942,6 +942,7 @@ export class DashboardController {
              const nullFilter = JSON.parse(JSON.stringify(a));
              nullFilter.filter_id = 'is_null';
              nullFilter.filter_type = 'null_or_empty';
+             nullFilter.source_filter_id = a.filter_id; // Added filter_id from the source
              nullFilter.filter_elements = [{value1:['null']}];
               b.value1 = b.value1.filter(c => c != 'emptyString')
               filters.push(nullFilter);
