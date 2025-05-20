@@ -817,6 +817,8 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
 
     public async onPanelAction(event: IPanelAction): Promise<void> {
         if (event.code === 'ADDFILTER') {
+
+            /*SDA CUSTOM  THIS FUNCTION IS DISABLED BECAUSE IT WOUDL GENERATE AN INCONSISTENCY IN THE TREE MODE QUERY 
             const data = event?.data;
             const panel = event?.data?.panel;
             if (!_.isNil(data?.inx)) {
@@ -840,6 +842,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
                     this.reloadOnGlobalFilter();
                 }
             }
+                */
         } else if (event.code === 'QUERYMODE') {
             this.setPanelsQueryMode();
         }
