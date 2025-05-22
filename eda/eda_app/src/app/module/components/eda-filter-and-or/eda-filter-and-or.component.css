@@ -1,6 +1,6 @@
 
 .gridster {
-    background-color: transparent; 
+    background-color: transparent;
     border: 1px solid #13d60c00;  /* Líneas de borde alrededor de cada ítem */
     /* position: static; */
     width: 96%;
@@ -50,15 +50,15 @@
 
 .texto-filtro {
     font-style: italic;
-    font-size: 0.8rem;
+    font-size: 1rem;
     color: rgb(73, 80, 87);
     margin: 5px 10px 5px 10px;
 }
 
 /* Clase que alinea el texto a la derecha cuando no hay botón */
-.texto-derecha {
-    margin-left: auto; /* Empuja el texto hacia la derecha */
-}
+/* .texto-derecha {
+    margin-left: auto; Empuja el texto hacia la derecha
+} */
 
 .text-query {
     font-weight: bold;
@@ -66,4 +66,17 @@
 }
 
 
+.gridster-item .d-flex {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    height: 100%;
+}
 
+.global-filter{
+  border: 3px solid #99dd9b;
+}
+
+.panel-filter{
+  border: 3px solid #c5ccc6;
+}
