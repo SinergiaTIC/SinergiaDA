@@ -15,8 +15,15 @@
 
 <div>
     <gridster class="gridster" [options]="options">
-        <gridster-item [item]="item" *ngFor="let item of dashboard" class="gridster-item" [class.global-filter]="item.isGlobal"
-  [class.panel-filter]="!item.isGlobal">
+        <gridster-item 
+          [item]="item" 
+          *ngFor="let item of dashboard" 
+          class="gridster-item" 
+          [class.global-filter]="item.isGlobal"
+          [class.panel-filter]="!item.isGlobal"
+          [pTooltip]="tooltipDescription(item)"
+          [tooltipStyleClass]="'custom-tooltip'"
+          >
 
 
         <div class="d-flex">
@@ -33,9 +40,6 @@
             </div>
             <span class="texto-filtro" [class.texto-derecha]="item.x == 0 && item.y == 0" [innerHTML]="getDisplayFilterStrAndOr(item)" ></span>
 
-            <span>
-                <i class="pi pi-info-circle" style="cursor: pointer; margin-top: -5px;" [pTooltip]="tooltipDescription(item)"></i>
-            </span>
         </div>
         </gridster-item>
     </gridster>

@@ -80,3 +80,9 @@
 .panel-filter{
   border: 3px solid #c5ccc6;
 }
+
+.custom-tooltip {
+  max-width: 400px !important;
+  white-space: normal !important;
+  word-wrap: break-word;
+}
