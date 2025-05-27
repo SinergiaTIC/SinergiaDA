@@ -21,7 +21,7 @@
           class="gridster-item" 
           [class.global-filter]="item.isGlobal"
           [class.panel-filter]="!item.isGlobal"
-          [pTooltip]="tooltipDescription(item)"
+          [pTooltip]="getFilterJoins(item) + tooltipDescription(item)"
           [tooltipStyleClass]="'custom-tooltip'"
           >
 

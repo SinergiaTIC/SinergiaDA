@@ -534,4 +534,34 @@ export class EdaFilterAndOrComponent implements OnInit {
         return str;
   }
 
+  public getFilterJoins(item: any) {
+
+    let filter: any;
+    filter = this.globalFilters.find((gf: any) => gf.filter_id === item.filter_id )
+
+    if(!item.isGlobal) return '';
+
+    let pathStr = '';
+    if (filter.joins?.length > 0) {
+
+        for (const path of filter.joins) {
+            const table = (path[0]||'');
+            let tableName = this.getNiceTableName(table);
+            if (!tableName) tableName = this.getNiceTableName(table.split('.')[0]);
+
+            pathStr += ` ${tableName} > `;
+        }
+    } else if (filter.valueListSource) {
+        const tableName = this.getNiceTableName(filter.valueListSource.target_table);
+        if (tableName) pathStr += ` ${tableName} → `;
+    }
+
+    return pathStr;
+  }
+
+  public getNiceTableName(table: any) {
+    return this.tables.find( t => t.table_name === table)?.display_name?.default;
+  }
+
+
 }
