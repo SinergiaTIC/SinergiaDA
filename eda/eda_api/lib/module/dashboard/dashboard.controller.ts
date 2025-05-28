@@ -879,6 +879,8 @@ export class DashboardController {
           }
           myQuery.filters = req.body.query.filters
         }
+
+        myQuery.sortedFilters = req.body.query.sortedFilters;
       } else {
         // Labels are the technical name...
         myQuery = JSON.parse(JSON.stringify(req.body.query))

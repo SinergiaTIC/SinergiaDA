@@ -99,10 +99,43 @@ export class MySqlBuilderService extends QueryBuilderService {
     return myQuery;
   };
 
+  public getSqlPermissionsExpresion(permissions: any) {
+    let sql = '';
+    if(!permissions.some((p: any) => p.toBeUsed)) return sql;
+    
+    permissions = permissions.filter(p => p.toBeUsed);
+
+    const generarExpresionSQL = (permissions) => {
+      const grupos = {};
+
+      for (const filtro of permissions) {
+        const tabla = filtro.filter_table;
+        const columna = filtro.filter_column;
+        const valor = filtro.filter_elements[0].value1[0];
+
+        if (!grupos[tabla]) {
+          grupos[tabla] = [];
+        }
+
+        grupos[tabla].push(`\`${tabla}\`.\`${columna}\` in (${valor})`);
+      }
+
+      const gruposOR = Object.values(grupos).map((columnas: any) => {
+        return `( ${columnas.join(' OR ')} )`;
+      });
+
+      return gruposOR.join(' AND ');
+    }
+
+    return generarExpresionSQL(permissions);
+  }
+
   public getSortedFilters(sortedFilters: any[], filters: any[]): any {
 
     // console.log('filters: ', filters)
     // console.log('sortedFilters: ', sortedFilters)
+
+    let sqlPermissionsExpresion = this.getSqlPermissionsExpresion(this.permissions);
 
     // If the there is no filters 
     if(filters.length === 0) { return ''; }
@@ -175,6 +208,9 @@ export class MySqlBuilderService extends QueryBuilderService {
 
     // Variable containing the new string of nested AND/OR filters corresponding to the graphic design of the items.
     let stringQuery = '\nwhere ';
+
+    // Adding needed permissions if we have some item in the array of permissions with toBeUsed in true
+    if(sqlPermissionsExpresion !== '') stringQuery += `\n${sqlPermissionsExpresion}\nAND\n`; 
 
     // Recursive function for the necessary nesting according to the AND/OR filter graph.
     function cadenaRecursiva(item: any) {
@@ -569,9 +605,12 @@ export class MySqlBuilderService extends QueryBuilderService {
                   let agregadoPermisos: any;
                   let temporalPermissions: any = [];
         
+                  // here i replace the target table for the join with the permissions
                   this.permissions.forEach( (p: any) => {
                     if(p.filter_table == targetTable) {
-                      temporalPermissions.push(p)
+                      temporalPermissions.push(p);
+                    }else{
+                      p.toBeUsed=true; // Adding toBeUsed of all items that need to generate a SQL expression in getSortedFilters()
                     }
                   })
 
