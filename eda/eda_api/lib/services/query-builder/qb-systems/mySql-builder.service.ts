@@ -133,7 +133,9 @@ export class MySqlBuilderService extends QueryBuilderService {
   public getSortedFilters(sortedFilters: any[], filters: any[]): any {
 
     // console.log('filters: ', filters)
-    // console.log('sortedFilters: ', sortedFilters)
+    console.log('sortedFilters: ', sortedFilters)
+    console.log('this.permissions:; ', this.permissions);
+
 
     let sqlPermissionsExpresion = this.getSqlPermissionsExpresion(this.permissions);
 
@@ -543,6 +545,14 @@ export class MySqlBuilderService extends QueryBuilderService {
     let joinString = [];
     const targetTableJoin = [];
 
+
+    console.log('joinTree', joinTree)
+
+    if(joinTree.length == 0){ // iF NO ONE IS USED IN THE JOIN. ALL MUST GO TO THE WHERE. 
+          this.permissions.forEach( (p: any) => {
+                p.toBeUsed=true; // Adding toBeUsed of all items that need to generate a SQL expression in getSortedFilters()
+          })
+    }
 
     for (const join of joinTree) {
 
