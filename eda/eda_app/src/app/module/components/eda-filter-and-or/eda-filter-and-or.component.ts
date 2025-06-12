@@ -98,7 +98,7 @@ export class EdaFilterAndOrComponent implements OnInit {
       itemChangeCallback: (item: GridsterItem) => this.onItemChange(item),
     };
 
-    // (and & or) => values
+    // (and & or) => values 
     this.selectedButton = [ 
       { label: "AND", value: "and" }, 
       { label: "OR", value: "or" } 
@@ -107,11 +107,6 @@ export class EdaFilterAndOrComponent implements OnInit {
   }
 
   ngOnInit(): void {
-
-    // console.log('selectedFilters: ', this.selectedFilters);
-    // console.log('globalFilters: ', this.globalFilters);
-    // console.log('sortedFilters: ', this.sortedFilters);
-    // console.log('previousDashboard', EdaFilterAndOrComponent.previousDashboard);
 
     const previousDashboard = EdaFilterAndOrComponent.previousDashboard;
 
@@ -125,9 +120,7 @@ export class EdaFilterAndOrComponent implements OnInit {
         this.dashboardClone = _.cloneDeep(this.sortedFilters);
         this.creacionQueryFiltros(this.dashboard);
       } else {
-        if(this.sortedFilters.length !== 0) {
-          // EdaFilterAndOrComponent.previousDashboard = this.sortedFilters;
-  
+        if(this.sortedFilters.length !== 0) {  
           this.dashboard = _.cloneDeep(this.sortedFilters);
           this.dashboardClone = _.cloneDeep(this.sortedFilters);
           this.creacionQueryFiltros(this.sortedFilters);
@@ -137,7 +130,6 @@ export class EdaFilterAndOrComponent implements OnInit {
         }
       }
     }
-
 
   }
 
@@ -198,7 +190,7 @@ export class EdaFilterAndOrComponent implements OnInit {
 
     //---------------------------------------------------------------------------------
     // Verification of item exchange, to avoid duplicate execution
-    // 1. Cuando los items intercambian de posición
+    // 1. When items swap positions
     let contadorIntercambioItems = 0;
     for( let i = 0; i < this.dashboard.length; i++ ) {
       if(item.x === this.dashboard[i].x && item.y === this.dashboard[i].y){
@@ -211,7 +203,7 @@ export class EdaFilterAndOrComponent implements OnInit {
       return;
     };
 
-    // 2. Cuando los items intercambian de posición pero un desplazamiento.
+    // 2. When items exchange position but a displacement
     for( let i = 0; i < this.dashboard.length; i++ ) {
       if(item.y === this.dashboard[i].y){
           if(this.dashboard[i].x-2 === item.x) {
@@ -262,7 +254,7 @@ export class EdaFilterAndOrComponent implements OnInit {
             this.dashboard = _.cloneDeep(this.dashboardClone);
           }
           //*********************************************************************** */
-          this.existeIntercambioItems = false; // Al terminar toda la iteración
+          this.existeIntercambioItems = false; // At the end of the entire iteration
           //*********************************************************************** */
         } else {
           this.dashboard = _.cloneDeep(this.dashboardClone);
@@ -275,7 +267,7 @@ export class EdaFilterAndOrComponent implements OnInit {
       this.dashboard = _.cloneDeep(this.dashboardClone);
     }
 
-    // variable dashboard lista para la creación de la query de filtros and/or
+    // Dashboard variable ready for creating the and/or filter query
     this.creacionQueryFiltros(this.dashboard);
   }
 
@@ -294,7 +286,7 @@ export class EdaFilterAndOrComponent implements OnInit {
 
   correccionIntercambioItems(dashboardClonado: any) {
 
-    // Comenzamos la iteración sobre el segundo elemento
+    // We start the iteration on the second element
     for(let i=1; i<dashboardClonado.length; i++) {
       if(dashboardClonado.find((item: any) => item.y === i).x <= (dashboardClonado.find((item: any) => item.y === (i-1)).x) + 1){
         continue;
@@ -341,7 +333,7 @@ export class EdaFilterAndOrComponent implements OnInit {
       // recursive item
       const { cols, rows, y, x, filter_table, filter_column, filter_type, filter_column_type, filter_elements, filter_id, isGlobal, value } = item;
 
-      // Verificar  (Hay dos filtros por revisar ==> | not_null_nor_empty | null_nor_empty | )
+      // Verify  (There are two filters to check ==> | not_null_nor_empty | null_nor_empty | )
       ////////////////////////////////////////////////// filter_type ////////////////////////////////////////////////// 
       let filter_type_value = '';
       if(filter_type === 'not_in'){
@@ -367,7 +359,7 @@ export class EdaFilterAndOrComponent implements OnInit {
       if(filter_elements.length === 0) {}
       else {
         if(filter_elements[0].value1.length === 1){
-          // Para solo un valor  ==> Agregar mas tipos de valores si fuera necesario
+          // For just one value ==> Add more value types if needed
 
           // Value of type text
           if(filter_column_type === 'text'){
@@ -397,7 +389,7 @@ export class EdaFilterAndOrComponent implements OnInit {
             })
           }
 
-          // Valores que no tengan definido un filter_column_type
+          // Values ​​that do not have a filter_column_type defined
           if(filter_column_type === undefined){
             filter_elements[0].value1.forEach((element: any, index: number) => {
               filter_elements_value += `'${element}'` + `${index===(filter_elements[0].value1.length-1)? ')': ','}`;
@@ -458,7 +450,7 @@ export class EdaFilterAndOrComponent implements OnInit {
 
     this.stringQuery = _.cloneDeep(stringQuery);
 
-    this.dashboardChanged.emit(this.dashboard); // Envio del dashboard - Se puede cambiar el envio. 
+    this.dashboardChanged.emit(this.dashboard); // Dashboard Shipping - Shipping can be changed.
   }
 
   // Function that is executed when the p-selectButton is clicked AND | OR
@@ -478,11 +470,16 @@ export class EdaFilterAndOrComponent implements OnInit {
           const columnName = table.columns.find((c) => c.column_name == item.filter_column)?.display_name?.default;
           
           let checksum = (tableName + columnName).length;
+          const widthScreen = window.innerWidth; // screen width 
 
           if(checksum <= 23) {
             str = `<strong>${tableName}</strong>&nbsp>&nbsp<strong>${columnName}</strong>`;
           } else {
-            str = `<strong>${tableName}</strong>&nbsp>&nbsp<strong>${columnName.substring(0, 13)}...</strong>`;
+            if(widthScreen<1370) {
+              str = `<strong>${tableName.substring(0, 11)} ...</strong>&nbsp>&nbsp<strong>${columnName.substring(0, 11)} ...</strong>`;
+            } else {
+              str = `<strong>${tableName.substring(0, 14)} ...</strong>&nbsp>&nbsp<strong>${columnName.substring(0, 14)} ...</strong>`;
+            }
           }
       }
 
@@ -562,6 +559,5 @@ export class EdaFilterAndOrComponent implements OnInit {
   public getNiceTableName(table: any) {
     return this.tables.find( t => t.table_name === table)?.display_name?.default;
   }
-
 
 }
