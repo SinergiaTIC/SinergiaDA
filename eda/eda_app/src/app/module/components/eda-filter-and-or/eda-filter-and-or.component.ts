@@ -107,7 +107,7 @@ export class EdaFilterAndOrComponent implements OnInit {
   }
 
   ngOnInit(): void {
-
+    
     const previousDashboard = EdaFilterAndOrComponent.previousDashboard;
 
     if(this.sortedFilters === undefined) this.sortedFilters = []; // if it is an old report, we define the report as empty
@@ -305,7 +305,8 @@ export class EdaFilterAndOrComponent implements OnInit {
   }
 
   verificacionHorizontal(item: any, dashboardClonado: any) {
-    let itemX = dashboardClonado.filter((it: any) => item.filter_column === it.filter_column)[0];
+
+    let itemX = dashboardClonado.filter((it: any) => item.filter_id === it.filter_id)[0];
     let itemSuperior = dashboardClonado.filter((it: any) => it.y === item.y-1)[0];
 
     if(item.y === itemX.y) {
