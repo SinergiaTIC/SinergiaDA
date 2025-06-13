@@ -20,8 +20,7 @@ export class MySqlBuilderService extends QueryBuilderService {
       myQuery = `SELECT DISTINCT ${columns} \nFROM ${o}`;
     }
 
-    // Si es EDA no hay alias
-    // Si es EDA2 = Modo Árbol => si existe alias
+    // If it is EDA, there is no alias and if it is EDA2 tree mode, there is an alias.
 
     // JOINS
     let joinString: any[];
@@ -99,6 +98,7 @@ export class MySqlBuilderService extends QueryBuilderService {
     return myQuery;
   };
 
+  // This function generates a SQL expression needed to add the permissions.
   public getSqlPermissionsExpresion(permissions: any) {
     let sql = '';
     if(!permissions.some((p: any) => p.toBeUsed)) return sql;
@@ -131,9 +131,6 @@ export class MySqlBuilderService extends QueryBuilderService {
   }
 
   public getSortedFilters(sortedFilters: any[], filters: any[]): any {
-
-    // console.log('filters: ', filters)
-    // console.log('sortedFilters: ', sortedFilters)
 
     let sqlPermissionsExpresion = this.getSqlPermissionsExpresion(this.permissions);
 
@@ -543,9 +540,10 @@ export class MySqlBuilderService extends QueryBuilderService {
     let joinString = [];
     const targetTableJoin = [];
 
-    if(joinTree.length == 0){ // iF NO ONE IS USED IN THE JOIN. ALL MUST GO TO THE WHERE. 
+    // We add the toBeUsed property to each item to generate the SQL expression in getSortedFilters()
+    if(joinTree.length == 0){
           this.permissions.forEach( (p: any) => {
-                p.toBeUsed=true; // Adding toBeUsed of all items that need to generate a SQL expression in getSortedFilters()
+                p.toBeUsed=true;
           })
     }
 

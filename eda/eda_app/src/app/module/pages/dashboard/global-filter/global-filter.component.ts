@@ -48,7 +48,6 @@ export class GlobalFilterComponent implements OnInit {
         this.setFiltersVisibility();
         this.setFilterButtonVisibilty();
 
-        // console.log('Global-filter ==> globalFilters', this.globalFilters);
         this.globalFilters.forEach(filter => {
             this.setGlobalEmptyFilter(filter);
         })
@@ -484,7 +483,7 @@ export class GlobalFilterComponent implements OnInit {
                         }
                     })
                 } catch (e) {
-                    // console.warn('dropdownFilterStyles' + e);
+                    console.warn('dropdownFilterStyles' + e);
                 }
 
             }

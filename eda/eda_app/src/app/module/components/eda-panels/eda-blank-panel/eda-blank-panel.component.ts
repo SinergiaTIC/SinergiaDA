@@ -987,10 +987,6 @@ export class EdaBlankPanelComponent implements OnInit {
 
     public openEditarConsulta(): void {
 
-        // console.log('openEditarConsulta')
-        // console.log('globalFilters', this.globalFilters)
-        // console.log('variableTemporal', this.variableTemporal)
-
         // Only affected at the start of the dashboard
         if(this.variableTemporal.some(filter => {
             return filter.filter_elements[0].value1.length === 0

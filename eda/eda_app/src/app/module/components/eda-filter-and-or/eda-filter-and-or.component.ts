@@ -197,7 +197,7 @@ export class EdaFilterAndOrComponent implements OnInit {
         contadorIntercambioItems++; 
       }
     }
-    // Termina la iteración del primer item que se intercambia
+    // Ends the iteration of the first item to be exchanged
     if(contadorIntercambioItems===2) {
       this.existeIntercambioItems = true;
       return;
@@ -222,7 +222,7 @@ export class EdaFilterAndOrComponent implements OnInit {
     }
     //---------------------------------------------------------------------------------
 
-    // Verificación del item superior en la posición x=0, y=0
+    // Checking the top item at position x=0, y=0
     let verificacionItemInicial = false;
     for( let i = 0; i < this.dashboard.length; i++ ) {
       if(this.dashboard[i].x === 0 && this.dashboard[i].y === 0){

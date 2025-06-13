@@ -290,10 +290,6 @@ export abstract class QueryBuilderService {
             grouping = separedCols[1];
         }
 
-        // console.log('<<< queryTODO >>>', this.queryTODO);
-        // console.log('sortedFilters -->>', this.queryTODO.sortedFilters);
-
-
         //to WHERE CLAUSE
         const filters = this.queryTODO.filters.filter(f => {
             let column =  this.queryTODO.fields.find(c=> f.filter_table == c.table_id && f.filter_column == c.column_name );

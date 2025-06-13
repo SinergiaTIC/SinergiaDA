@@ -930,7 +930,7 @@ export class DashboardController {
 
 
 
-      // Si tengo un filtro con vario elementos y uno de ellos es nulo. Por ejemplo flitro por 3,5,7,null 
+      // We follow this approach when applying a filter that includes multiple elements, one of which is null. For example: filtering by [3, 5, null, 7].
       filters.forEach(a => {
       // Filter nulls and empty values ​​from the dashboard . If the selector contains empty values, should they be treated as SDA CUSTOM? 
         a.filter_elements.forEach(b => {
