@@ -151,7 +151,6 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
             this.availableRange = true;
         }
 
-        console.log('selectedColum', this.selectedColumn);
     }
 
     private carregarValidacions(): void {
@@ -756,7 +755,6 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
                 // Verificar si el número actual es menor o igual al anterior
                 if (ranges[i] >= ranges[i + 1]) {
                     this.ranges=[];
-                    // console.log('El correcto orden de los límites del rango van de menor a mayor')
                     this.alertService.addError('El correcto orden de los límites del rango van de menor a mayor');
                     return;
                 }
@@ -778,7 +776,6 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
             addAggr.ranges = this.ranges;
         }
         else {
-            // console.log('El último caracter del rango debe ser un número')
             this.alertService.addError('El último caracter del rango debe ser un número');
             return;
         }

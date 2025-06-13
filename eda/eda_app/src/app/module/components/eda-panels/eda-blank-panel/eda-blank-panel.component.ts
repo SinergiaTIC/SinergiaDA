@@ -929,7 +929,6 @@ export class EdaBlankPanelComponent implements OnInit {
             this.globalFilters.push(globalFilter);
         }
 
-        // console.log('globalFilters: ', this.globalFilters);
         this.variableTemporal = _.cloneDeep(this.globalFilters);
     }
 
