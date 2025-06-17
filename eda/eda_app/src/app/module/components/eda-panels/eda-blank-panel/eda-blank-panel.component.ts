@@ -252,7 +252,7 @@ export class EdaBlankPanelComponent implements OnInit {
                     this.rootTable = contentQuery.query.rootTable;
                 }
 
-                this.sortedFilters = contentQuery.query.sortedFilters; // se extrae sortedFilters del servidor 
+                this.sortedFilters = contentQuery.query.sortedFilters; // sortedFilters is extracted from the server 
 
                 if (modeSQL || queryMode=='SQL') {
                     this.currentSQLQuery = contentQuery.query.SQLexpression;
@@ -970,7 +970,7 @@ export class EdaBlankPanelComponent implements OnInit {
 
     }
 
-    /* Funcions generals de la pagina */
+    /* General page functions */
     public disableBtnSave = () => this.display_v.btnSave = true;
 
     public ableBtnSave = () => this.display_v.btnSave = false;
@@ -1310,7 +1310,7 @@ export class EdaBlankPanelComponent implements OnInit {
     */
     public runManualQuery = () => {
         this.hiddenButtonExecuter = true;
-        // isNewAxes --> Verifica si la construcción del axes es nueva.
+        // isNewAxes --> Verify if the axes construction is new.
         QueryUtils.runManualQuery(this);
     };
 

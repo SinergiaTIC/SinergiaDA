@@ -1,10 +1,10 @@
 
 .gridster {
     background-color: transparent;
-    border: 1px solid #13d60c00;  /* Líneas de borde alrededor de cada ítem */
+    border: 1px solid #13d60c00;  /* Border lines around each item  */
     /* position: static; */
     width: 96%;
-    /* Es el valor por el cual dara espacio para escribir la query  */
+    /* It is the value for which it will give space to write the query  */
     /* width: 65%;  */
     height: 50%;
 }
@@ -21,31 +21,31 @@
 }
 
 .gridster-item {
-    background-color: #ffffff; /* Cambia este valor por el color que desees */
-    border: 1.5px solid #b5b2b2c3;  /* Líneas de borde alrededor de cada ítem */
+    background-color: #ffffff; 
+    border: 1.5px solid #b5b2b2c3;  /* Border lines around each item */
     cursor: pointer;
     padding: 0 10px;
     border-radius: 5px;
 }
 
-/* Cambiar el color de la previsualización del item */
+/* Change item preview colorChange item preview color */
 .gridster-preview {
-    background-color: transparent; /* Cambia este valor por el color que desees */
+    background-color: transparent; /* Change this value to the color of your choice */
 }
 
-/* Ajustar el tamaño del botón */
+/* Adjusting the button size */
 .small-button .p-button {
-    padding: 3px 6px !important;  /* Reduce el padding (espaciado interno) */
-    height: 22px !important;      /* Reduce la altura del botón */
-    min-width: 20px !important;   /* Ajusta el ancho mínimo del botón */
-    font-size: 8px !important;   /* Cambia el tamaño de la fuente (si lo deseas) */
+    padding: 3px 6px !important;  /* Reduce padding */
+    height: 22px !important;      /* Reduce button height */
+    min-width: 20px !important;   /* Adjust minimum button width */
+    font-size: 8px !important;   /* Change font size */
     font-style: italic;
     font-weight: 500;
 }
 
-/* Asegurarse de que el contenedor también sea pequeño */
+/* Make sure the container is also small */
 .small-button .p-selectbutton {
-    height: 22px !important;      /* Reduce la altura */
+    height: 22px !important;      /* Reduces height */
 }
 
 .texto-filtro {
@@ -57,7 +57,7 @@
 
 /* Class that aligns text to the right when there is no button */
 /* .texto-derecha {
-    margin-left: auto; Empuja el texto hacia la derecha
+    margin-left: auto; Pushes text to the right
 } */
 
 .text-query {

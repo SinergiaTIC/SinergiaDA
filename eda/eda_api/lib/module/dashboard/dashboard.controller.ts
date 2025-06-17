@@ -996,8 +996,6 @@ export class DashboardController {
       }) 
 
       myQuery.filters = filters;
-      // jj aqui añado mi filterSorted. myQuery.filterSorted = filterSorted;
-
 
       if(uniquesForbiddenTables.length > 0){
         if(   myQuery.filters.filter( f=> uniquesForbiddenTables.includes( f.filter_table.split('.')[0]) ).length > 0 ){

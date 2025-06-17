@@ -336,7 +336,7 @@ export class GlobalFilterComponent implements OnInit {
 
         // Verifying global filters in panels
         filter.panelList.map((id: string) => this.dashboard.edaPanels.toArray().find(p => p.panel.id === id))
-        .forEach((panel: EdaBlankPanelComponent) => { // Aca tengo todo el arreglo de paneles que contienen el filtro global
+        .forEach((panel: EdaBlankPanelComponent) => { // Entire array of panels that contain the global filter
             if (panel) panel.rebootGlobalFilter(formatedFilter);
         });
 
