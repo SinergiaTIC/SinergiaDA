@@ -1,6 +1,6 @@
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { catchError, map } from 'rxjs/internal/operators';
+import { catchError, map } from 'rxjs/operators';
 import { throwError } from 'rxjs';
 import { URL_SERVICES } from '../../config/config';
 import * as _ from 'lodash';
@@ -52,7 +52,7 @@ export class ApiService {
     }
 
     private getSearchParamToken() {
-        const token = sessionStorage.getItem('token');
+        const token = localStorage.getItem('token');
         let params: HttpParams = new HttpParams();
 
         if (token) {

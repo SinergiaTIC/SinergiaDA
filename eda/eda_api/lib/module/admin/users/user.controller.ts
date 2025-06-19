@@ -15,6 +15,9 @@ const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const SEED = require('../../../../config/seed').SEED;
 const crypto = require('crypto');
+const eda_api_config = require('../../../../config/eda_api_config.js');
+
+
 
 
 export class UserController {
@@ -117,24 +120,10 @@ export class UserController {
                 const userEda = await UserController.getUserInfoByEmail(body.email, false);
 
                 if (! await bcrypt.compareSync(body.password, userEda.password)) {
-                    // Introduit arrel de SinergiaCRM
-                    // Comprobem també MD5 i GlassFis
-                    // Busca artxiu de configuracio de Sinergia
-                    const scrm = path.resolve(__dirname, `../../../../config/sinergiacrm.config.js`);
-                    if (fs.existsSync(scrm)) {
-                        const hash = crypto.createHash('md5').update(body.password).digest("hex");
-                        if(hash.toString() !== userEda.password.toString()){
-                                //Si no es un md5 directe 
-                                const hash2 =  userEda.password.toString().replace(/^\$2y(.+)$/i, '$2a$1');
-                                await bcrypt.compare( hash , hash2).then(function(res){
-                                    if( res == false){
-                                        return next(new HttpException(400, 'Incorrect credentials - password'));
-                                     }
-                                });
-                        }
-                    }else{
+
+                    
                             return next(new HttpException(400, 'Incorrect credentials - password'));
-                    }
+      
                             
                     
                 }
@@ -339,7 +328,6 @@ export class UserController {
                         return next(new HttpException(500, 'Error waiting for user groups'));
                     }
                     const isDataSourceCreator = groups.filter(g => g.name === 'EDA_DATASOURCE_CREATOR').length > 0;
-                    //console.log(isDataSourceCrator);
                     return res.status(200).json({ isDataSourceCreator });
                 });
             });

@@ -55,7 +55,7 @@ export const PanelInteractionUtils = {
     // Sort columns by default display name
     ebp.columns = filteredColumns.sort((a, b) => a.display_name.default.localeCompare(b.display_name.default));
 
-    /* SDA CUSTOM */     ebp.columns = filteredColumns.filter(col => ebp.showHiddenColumn ? (col.hidden || !col.hidden) : !col.hidden);
+
 
 
     // Reset input and update table data if the findTable ngModel is not empty
@@ -296,7 +296,9 @@ export const PanelInteractionUtils = {
                 c.column_name === contentColumn.column_name &&
                 c.display_name.default === contentColumn.display_name
             );
+            
             if (column) {
+                column.format = contentColumn.hasOwnProperty("format")?contentColumn.format:null ; // Agregando el Formato
                 column.whatif_column = contentColumn.whatif_column || false;
                 column.whatif = contentColumn.whatif || {};
                 column.joins = contentColumn.joins || [];
@@ -327,6 +329,7 @@ export const PanelInteractionUtils = {
                         duplicatedColumn.display_name.default = contentColumn.display_name;
                         duplicatedColumn.whatif_column = contentColumn.whatif_column || false;
                         duplicatedColumn.whatif = contentColumn.whatif || {};
+                        duplicatedColumn.format = contentColumn.hasOwnProperty("format")?contentColumn.format:null ; // Agregando el Formato
                         PanelInteractionUtils.handleAggregationType4DuplicatedColumns(ebp, duplicatedColumn);
                         // Moc la columna directament perque es una duplicada.... o no....
                         ebp.currentQuery.push(duplicatedColumn);
@@ -553,21 +556,21 @@ export const PanelInteractionUtils = {
     } else if (!column.ordenation_type) {
       if( column.column_type  === 'numeric'){
         ebp.ordenationTypes = [
-          { display_name: 'ASC', value: 'Asc', selected: false },
-          { display_name: 'DESC', value: 'Desc', selected: true },
-          { display_name: 'NO', value: 'No', selected:false  }
+          { display_name: 'Asc', value: 'Asc', selected: false },
+          { display_name: 'Desc', value: 'Desc', selected: true },
+          { display_name: 'No', value: 'No', selected:false  }
         ];
       }else if( column.column_type  === 'date'){
           ebp.ordenationTypes = [
-            { display_name: 'ASC', value: 'Asc', selected: true },
-            { display_name: 'DESC', value: 'Desc', selected: false },
-            { display_name: 'NO', value: 'No', selected:false  }
+            { display_name: 'Asc', value: 'Asc', selected: true },
+            { display_name: 'Desc', value: 'Desc', selected: false },
+            { display_name: 'No', value: 'No', selected:false  }
           ];
         } else{
         ebp.ordenationTypes = [
-          { display_name: 'ASC', value: 'Asc', selected: false },
-          { display_name: 'DESC', value: 'Desc', selected: false },
-          { display_name: 'NO', value: 'No', selected:true  }
+          { display_name: 'Asc', value: 'Asc', selected: false },
+          { display_name: 'Desc', value: 'Desc', selected: false },
+          { display_name: 'No', value: 'No', selected:true  }
         ];
       }
 
@@ -622,7 +625,7 @@ export const PanelInteractionUtils = {
 
     // Torna a carregar les columnes de la taula
     const selectedTable = ebp.getUserSelectedTable();
-    /* SDA CUSTOM*/    PanelInteractionUtils.loadColumns(ebp, selectedTable);
+    PanelInteractionUtils.loadColumns(ebp, selectedTable);
   },
 
   /**

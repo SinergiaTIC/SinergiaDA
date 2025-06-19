@@ -32,7 +32,7 @@
         <panel-chart #PanelChartComponent
             [props]="panelChartConfig"
             (configUpdated)="setChartProperties()"
-            (onChartClick)="onChartClick($event)"
+            (onChartClick)="onChartClick($event)"            
             class="component" style="height: 100%; width: 100%; display:block">
         </panel-chart>
     </div>
@@ -257,17 +257,17 @@
                                     Atributos
                                 </h4>
                                 <h5 *ngIf="userSelectedTable" i18n-title="@@atributsTitle" title="Clique sobre un entidad para ver sus atributos." >
-                                    <span i18n="@@atributosH4">Columnas de:</span>
+                                    <span i18n="@@atributosH4">Atributos de:</span>
                                     <span class="d-block font-weight-bold" i18n="@@atributosH4interpolation" i18n-title="@@atributsTitle">{{getNiceTableName(userSelectedTable)}}</span>
                                 </h5>
+
+
  <!--SDA CUSTOM-->          <div *ngIf="userService.isAdmin && showHiddId">
  <!--SDA CUSTOM-->              <span i18n-title="@@hiddenAttributes" title="Mostrar/ocultar campos ocultos" class="pointer icon-hover" (click)="changeHiddenMode()">
  <!--SDA CUSTOM-->                  <i *ngIf="showHiddenColumn" class="pi pi-eye" style="font-size: 1.5rem"></i>
  <!--SDA CUSTOM-->                  <i *ngIf="!showHiddenColumn" class="pi pi-eye-slash" style="font-size: 1.5rem"></i>
  <!--SDA CUSTOM-->              </span>
- <!--SDA CUSTOM-->          </div>
-
-                            </div>
+ <!--SDA CUSTOM-->          </div>    </div>
                             <div>
                             <eda-input [inject]="inputs.findColumn"></eda-input>
                             </div>
@@ -377,6 +377,7 @@
                                 </div>
                                 <!-- SDA CUSTOM div class="col-4 md:col-12 flex infoJoin" -->
                                 <!-- SDA CUSTOM--><div class="col-6 md:col-12 flex infoJoin" >
+
                                     <span i18n="@@joinTypeH4">
                                         Tipo de intersección: &nbsp;
                                     </span>
@@ -498,22 +499,24 @@
 
             <p-tabPanel i18n-header="@@vistaPrevia" header="VISTA PREVIA" [disabled]="display_v.disablePreview || currentQuery.length === 0">
                 <div class="grid p-0 h-100">
-                    <div class="col-8 p-1 preview-chart-box component" style="background-color: var(--panel-color);">
+                    <div class="col-8 p-1 component" style="background-color: var(--panel-color);">
 
 
                         <div class="container">
-                            <div class="row">
+                            <div class="row panel-chart-style">
                                 <panel-chart #panelChartComponentPreview [props]="panelChartConfig"
                                     style="height: 100%; width: 100%; display:block">
                                 </panel-chart>
                             </div>
+                        </div>
+                        <div class="container">
                             <div class="row">
-                                <drag-drop *ngIf="graphicType==='crosstable' && dragAndDropAvailable" [axes]="axes" (newAxes)="newAxesOrdering($event)"></drag-drop>
+                                <drag-drop *ngIf="graphicType==='crosstable'  && dragAndDropAvailable" [axes]="axes" (newAxes)="newAxesOrdering($event)"></drag-drop>
                             </div>
                         </div>
 
-
                     </div>
+
 
                     <div class="col-4 p-offset-1 p-1 edaChartSelector">
                         <div class="grid p-0">
@@ -522,7 +525,7 @@
                                     <p-dropdown id="chartSelector" [style]="{'width':'100%'}"
                                         [options]="chartTypes"
                                         formControlName="chart"
-                                        (onChange)="changeChartType(chartForm.value.chart.value, chartForm.value.chart.subValue, getChartStyles( chartForm.value.chart.value))
+                                        (onChange)="changeChartTypeCheck(chartForm.value.chart.value, chartForm.value.chart.subValue, getChartStyles(chartForm.value.chart.value))
                                         "optionLabel="label"
                                         [autoDisplayFirst]="false">
         
@@ -602,6 +605,8 @@
 
 <app-mapedit-dialog *ngIf="mapController" [controller]="mapController"></app-mapedit-dialog>
 
+<app-mapcoordedit-dialog *ngIf="mapCoordController" [controller]="mapCoordController"></app-mapcoordedit-dialog>
+
 <app-kpi-dialog *ngIf="kpiController" [controller]="kpiController"></app-kpi-dialog>
 
 <app-dynamicText-dialog *ngIf="dynamicTextController" [controller]="dynamicTextController"></app-dynamicText-dialog>
@@ -617,6 +622,8 @@
 <app-bubblechart-dialog *ngIf="bubblechartController" [controller]="bubblechartController"></app-bubblechart-dialog>
 
 <app-treeMap-dialog *ngIf="treeMapController" [controller]="treeMapController"></app-treeMap-dialog>
+
+<app-tree-table-dialog  *ngIf="treeTableController" [controller]="treeTableController"></app-tree-table-dialog>
 
 <app-funnel-dialog *ngIf="funnelController" [controller]="funnelController"></app-funnel-dialog>
 

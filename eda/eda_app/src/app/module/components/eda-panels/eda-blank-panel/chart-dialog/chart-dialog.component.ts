@@ -91,7 +91,6 @@ export class ChartDialogComponent extends EdaDialogAbstract  {
     }
 
     onShow(): void {
-
         this.panelChartConfig = this.controller.params.config;
         this.addTrend = this.controller.params.config.config.getConfig()['addTrend'] || false;
         this.showLabels = this.controller.params.config.config.getConfig()['showLabels'] || false;
@@ -326,6 +325,7 @@ export class ChartDialogComponent extends EdaDialogAbstract  {
 
     loadChartTypeProperties() {
         switch (this.chart.chartType) {
+
             case 'bar':
                 if (_.startsWith(this.chart.chartType, 'bar')) {
                     this.direction = { label: 'Vertical', value: 'bar' };

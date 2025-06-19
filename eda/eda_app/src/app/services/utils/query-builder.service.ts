@@ -13,6 +13,7 @@ export interface QueryParams {
     queryLimit? : number;
     joinType?:string;
     forSelector?: boolean;
+    connectionProperties?: any;
     rootTable?: string;
 }
 
@@ -49,12 +50,13 @@ export class QueryBuilderService extends ApiService {
             id: '1',
             model_id: params.dataSource,
             user: {
-                user_id: sessionStorage.getItem('id'),
+                user_id: localStorage.getItem('id'),
                 user_roles: ['USER_ROLE']
             },
             dashboard: {
                 dashboard_id: params.dashboard,
                 panel_id: params.panel,
+                connectionProperties: params.connectionProperties
             },
             query: {
                 fields: queryColumns,
@@ -118,12 +120,13 @@ export class QueryBuilderService extends ApiService {
             id: '1',
             model_id: params.dataSource,
             user: {
-                user_id: sessionStorage.getItem('id'),
+                user_id: localStorage.getItem('id'),
                 user_roles: ['USER_ROLE']
             },
             dashboard: {
                 dashboard_id: params.dashboard,
-                panel_id: params.panel
+                panel_id: params.panel,
+                connectionProperties: params.connectionProperties
             },
             query: {
                 fields: queryColumns,

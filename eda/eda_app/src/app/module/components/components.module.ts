@@ -24,6 +24,7 @@ import {
     EdaMapComponent,
     EdaGeoJsonMapComponent,
     MapEditDialogComponent,
+    MapCoordDialogComponent,
     KpiEditDialogComponent,
     dynamicTextDialogComponent,
     EdaD3Component,
@@ -40,12 +41,13 @@ import {
     TableGradientDialogComponent,
     EdaFunnelComponent,
     FunnelDialog,
+    TreeTableDialogComponent,
     EdaBubblechartComponent,
     BubblechartDialog,
     CumSumAlertDialogComponent,
     EdaSunburstComponent,
-    SunburstDialogComponent
-
+    SunburstDialogComponent,
+    WhatIfDialogComponent,
  } from './component.index';
  
 import { SafeUrlPipe } from './eda-panels/eda-title-panel/urlSanitizer.pipe';
@@ -94,11 +96,15 @@ import { DragDropComponent } from './drag-drop/drag-drop.component';
         TableGradientDialogComponent,
         EdaFunnelComponent,
         FunnelDialog,
+        TreeTableDialogComponent,
         EdaBubblechartComponent,
         BubblechartDialog,
         EdaSunburstComponent,
         SunburstDialogComponent,
-        DragDropComponent
+        WhatIfDialogComponent,
+        SunburstDialogComponent,
+        DragDropComponent,
+        MapCoordDialogComponent,
     ],
     exports: [
         EdaBlankPanelComponent,
@@ -125,10 +131,14 @@ import { DragDropComponent } from './drag-drop/drag-drop.component';
         KnobDialogComponent,
         TableGradientDialogComponent,
         FunnelDialog,
+        TreeTableDialogComponent,
         BubblechartDialog,
         EdaSunburstComponent,
         SunburstDialogComponent,
-        DragDropComponent
+        WhatIfDialogComponent,
+        SunburstDialogComponent,
+        DragDropComponent,
+        MapCoordDialogComponent,
     ],
     schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
