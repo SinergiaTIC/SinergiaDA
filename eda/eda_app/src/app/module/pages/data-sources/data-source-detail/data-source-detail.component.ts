@@ -9,6 +9,8 @@ import { EdaDialogController, EdaDialogCloseEvent, EdaContextMenu, EdaContextMen
 import { aggTypes } from 'app/config/aggretation-types';
 import { EdaColumnFunction } from '@eda/components/eda-table/eda-columns/eda-column-function';
 import * as _ from 'lodash';
+import { EdaColumnEditable } from '@eda/components/eda-table/eda-columns/eda-column-editable';
+
 
 @Component({
     selector: 'app-data-source-detail',
