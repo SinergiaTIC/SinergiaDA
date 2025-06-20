@@ -15,6 +15,7 @@ export interface QueryParams {
     forSelector?: boolean;
     connectionProperties?: any;
     rootTable?: string;
+    sortedFilters?: any[];
 }
 
 @Injectable()
@@ -67,7 +68,8 @@ export class QueryBuilderService extends ApiService {
                 SQLexpression : null,
                 queryLimit : null,
                 joinType: 'left', //puede que necesite el joinType
-                rootTable: null
+                rootTable: null,
+                sortedFilters: [],
             },
             output: {
                 labels,
@@ -139,6 +141,7 @@ export class QueryBuilderService extends ApiService {
                 joinType: params.joinType,
                 forSelector: params.forSelector,
                 rootTable: params.rootTable,
+                sortedFilters: params.sortedFilters,
             },
             output: {
                 labels,

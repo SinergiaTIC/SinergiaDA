@@ -838,7 +838,6 @@ export class EdaTable {
     PivotTable() {
 
         let axes = []
-        // console.log('PIVOTtABLE: ',this);
         const colsInfo = this.getColsInfo();
         const oldRows = this.getValues();
 
@@ -906,11 +905,8 @@ export class EdaTable {
     buildPivotSerie(serieIndex: number) {
 
         const params = this.generatePivotParams();
-        // console.log(`params ---> serieIndex ${serieIndex} <---`, params);
         const mapTree = this.buildMainMap(params.mainColValues, params.newCols);
-        // console.log(`mapTree ---> serieIndex ${serieIndex} <---`, mapTree);
         const populatedMap = this.populateMap(mapTree, params.oldRows, params.mainColLabel, params.aggregatedColLabels[serieIndex], params.pivotColsLabels);
-        // console.log(`populatedMap ---> serieIndex ${serieIndex} <---`, populatedMap);
 
         let newRows = this.buildNewRows(populatedMap, params.mainColLabel, params.aggregatedColLabels[serieIndex]);
         let newColNames = this.getNewColumnsNames(newRows[0]).slice(1); //For left column we want user's name, not technical
@@ -931,11 +927,8 @@ export class EdaTable {
     buildCrossSerie(serieIndex: number, axes: any[]) {
 
         const params = this.generateCrossParams(axes);
-        // console.log(`params ===> serieIndex ${serieIndex} <===`, params)
         const mapTree = this.buildMapCrossRecursive(params.newCols);
-        // console.log(`mapTree ===> serieIndex ${serieIndex} <===`, mapTree);
         const populatedMap = this.populateCrossMap(mapTree, params.oldRows, params.mainColsLabels, params.aggregatedColLabels[serieIndex], params.pivotColsLabels);
-        // console.log(`populatedMap ===> serieIndex ${serieIndex} <===`, populatedMap);
 
         let newRows = this.buildNewCrossRows(populatedMap, params.mainColsLabels, params.aggregatedColLabels[serieIndex], params.newCols);
         let newColNames = this.getNewColumnsNames(newRows[0]).slice(params.mainColsLabels.length); //For left column we want user's name, not technical

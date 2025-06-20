@@ -15,6 +15,7 @@ import {
     EdaPageDialogComponent, EdaDialogController, EdaContextMenu, EdaDialogCloseEvent
 } from '@eda/shared/components/shared-components.index';
 import { EdaChartComponent } from '@eda/components/component.index';
+import { EdaFilterAndOrComponent } from '../../eda-filter-and-or/eda-filter-and-or.component';
 import { PanelChart } from './panel-charts/panel-chart';
 import * as _ from 'lodash';
 import { ChartConfig } from './panel-charts/chart-configuration-models/chart-config';
@@ -115,7 +116,8 @@ export class EdaBlankPanelComponent implements OnInit {
         disablePreview: true,
         disableQueryInfo: true,
         notSaved: false,
-        minispinnerSQL: false
+        minispinnerSQL: false,
+        filterAndOr_dialog: false,
     };
 
     public index: number;
@@ -151,6 +153,8 @@ export class EdaBlankPanelComponent implements OnInit {
     public currentSQLQuery: string = '';
     public queryLimit: number = 5000; // by default 5.000
     public joinType: string = 'inner';
+    public sortedFilters: any[] = [];
+    public temporalSortedFilters: any[] = [];
 
     public queryModes: any[] = [
         { label: $localize`:@@PanelModeSelectorEDA:Modo EDA`, value: 'EDA' },
@@ -214,6 +218,8 @@ s    // for the drag-drop component
     // Hide the executing button
     public hiddenButtonExecuter: boolean = false;
 
+    public variableTemporal: any[] = [];
+
     constructor(
         private route: ActivatedRoute,
         public queryBuilder: QueryBuilderService,
@@ -267,6 +273,8 @@ s    // for the drag-drop component
                     this.rootTable = contentQuery.query.rootTable;
                 }
 
+                this.sortedFilters = contentQuery.query.sortedFilters; // sortedFilters is extracted from the server 
+
                 if (modeSQL || queryMode=='SQL') {
                     this.currentSQLQuery = contentQuery.query.SQLexpression;
                     try{
@@ -294,6 +302,8 @@ s    // for the drag-drop component
             header: $localize`:@@panelOptions0:OPCIONES DEL PANEL`,
             contextMenuItems: PanelOptions.generateMenu(this)
         });
+
+        if(this.sortedFilters === undefined) this.sortedFilters = []; // if it is an old report, we define the report as empty
     }
 
     /**
@@ -424,8 +434,8 @@ s    // for the drag-drop component
         return out;
     }
 
-    public setTablesData = () => {
-        const tables = TableUtils.getTablesData(this.inject.dataSource.model.tables, this.inject.applyToAllfilter);
+    public setTablesData = () => {        
+        const tables = TableUtils.getTablesData(this.inject.dataSource.model.tables, this.inject.applyToAllfilter);        
         this.tables = [].concat(_.cloneDeep(tables.allTables), this.assertedTables);
         this.tablesToShow = [].concat(_.cloneDeep(tables.tablesToShow), this.assertedTables);
         this.sqlOriginTables = _.cloneDeep(tables.sqlOriginTables);
@@ -572,6 +582,10 @@ s    // for the drag-drop component
 
         // It remains false after saving
         this.hiddenButtonExecuter = false;
+
+        // The static variable of the AND | OR filters is reset
+        EdaFilterAndOrComponent.reiniciarDashboard();
+
     }
 
     public initObjectQuery() {
@@ -951,6 +965,7 @@ s    // for the drag-drop component
      * @param filter filter so set
      */
     public assertGlobalFilter(_filter: any) {
+
         const globalFilter = _.cloneDeep(_filter);
 
         if (_filter.pathList && _filter.pathList[this.panel.id]) {
@@ -960,11 +975,70 @@ s    // for the drag-drop component
         const filterInx = this.globalFilters.findIndex((gf: any) => gf.filter_id === globalFilter.filter_id)
 
         if (filterInx != -1) {
-            this.globalFilters.splice(filterInx, 1);
+            this.globalFilters.splice(filterInx, 1); // Here is filterInx to update the globalFilters
             this.globalFilters.push(globalFilter);
         } else {
             this.globalFilters.push(globalFilter);
         }
+
+    }
+
+    public assertGlobalEmptyFilter(_filter: any) {
+
+        const globalFilter = _.cloneDeep(_filter);
+
+        if (_filter.pathList && _filter.pathList[this.panel.id]) {
+            globalFilter.joins = _filter.pathList[this.panel.id].path
+            globalFilter.filter_table = _filter.pathList[this.panel.id].table_id;
+        }
+        const filterInx = this.globalFilters.findIndex((gf: any) => gf.filter_id === globalFilter.filter_id)
+
+        if (filterInx != -1) {
+            this.globalFilters.splice(filterInx, 1); // Here is filterInx to update the globalFilters
+            this.globalFilters.push(globalFilter);
+        } else {
+            this.globalFilters.push(globalFilter);
+        }
+
+        this.variableTemporal = _.cloneDeep(this.globalFilters);
+    }
+
+    public addingGlobalFilterEbp(_filter: any) {
+
+        if(this.sortedFilters.length !==0){
+            const lastElement = this.sortedFilters[this.sortedFilters.length-1];
+    
+            const newSortedFilter = {
+                cols: 3,
+                rows: 1,
+                y: lastElement.y+1,
+                x: 0,
+                filter_table: _filter.filter_table,
+                filter_column: _filter.filter_column,
+                filter_type: _filter.filter_type,
+                filter_column_type: _filter.filter_column_type,
+                filter_elements: _filter.filter_elements,
+                filter_id: _filter.filter_id,
+                isGlobal: _filter.isGlobal,
+                value: "and",
+            }
+    
+            this.sortedFilters.push(newSortedFilter);
+            this.savePanel()
+        }
+    }
+
+    public rebootGlobalFilter(_filter: any){
+
+        if(this.sortedFilters.length !==0) {
+            this.alertService.addWarning($localize`:@@globalFilterSettingsReboot:La configuración de filtros del panel involucrado se ha reiniciado`);
+        }
+
+        if(this.sortedFilters.some((sortedFilter: any) => _filter.id === sortedFilter.filter_id)){
+            this.sortedFilters = [];
+            this.savePanel(); // Panel setting saved
+        }
+
     }
 
     /* General page functions */
@@ -982,19 +1056,31 @@ s    // for the drag-drop component
     }
 
     public openEditarConsulta(): void {
+
+        // Only affected at the start of the dashboard
+        if(this.variableTemporal.some(filter => {
+            return filter.filter_elements[0].value1.length === 0
+        }) && this.variableTemporal.length != 0) {
+            this.globalFilters = _.cloneDeep(this.variableTemporal);
+        }
+
+        this.variableTemporal = [];
+
         this.display_v.page_dialog = true;
         this.ableBtnSave();
         PanelInteractionUtils.verifyData(this);
+/* SDA CUSTOM  */       this.showHiddenColumn = false;
+/* SDA CUSTOM  */       this.columns = this.columns.filter (c => !c.hidden);
 
-    	/* SDA CUSTOM  */       this.showHiddenColumn = false;
-		/* SDA CUSTOM  */       this.columns = this.columns.filter (c => !c.hidden) ;
-
+        // Temporarily store the sortedFilters in the temporarySortedFilters
+        this.temporalSortedFilters = _.cloneDeep(this.sortedFilters);
     }
 
     /**
      * Reset state when panel edition is cancelled
      */
     public closeEditarConsulta(): void {
+
         // Reset all the variables
         this.display_v.saved_panel = false;
         this.columns = [];
@@ -1022,6 +1108,12 @@ s    // for the drag-drop component
 
         // After canceling, the value returns to false
         this.hiddenButtonExecuter = false
+
+        // When you cancel the EBP configuration, sortedFilters value returns to what it was from the beginning.
+        this.sortedFilters = _.cloneDeep(this.temporalSortedFilters);
+        // The static variable previousDashboard of the AND | OR filters of the eda-filter-and-or component is reset.
+        EdaFilterAndOrComponent.reiniciarDashboard();
+
     }
 
     /**
@@ -1404,8 +1496,8 @@ s    // for the drag-drop component
     */
     public runManualQuery = () => {
         this.hiddenButtonExecuter = true;
-        // isNewAxes --> Check if the axes construction is new.
-        QueryUtils.runManualQuery(this)
+        // isNewAxes --> Verify if the axes construction is new.
+        QueryUtils.runManualQuery(this);
     };
 
     public moveItem = (column: any) => {
@@ -1420,7 +1512,16 @@ s    // for the drag-drop component
 
     public loadColumns = (table: any) => PanelInteractionUtils.loadColumns(this, table);
 
-    public removeColumn = (c: Column, list?: string, event?: Event) => PanelInteractionUtils.removeColumn(this, c, list);
+    public removeColumn = (c: Column, list?: string, event?: Event) => {
+            // We check if when deleting a field it has a filter at selectedFilters
+        if(this.selectedFilters.some( (sf: any) => sf.filter_column === c.column_name )){
+            if(this.sortedFilters.length !==0) {
+                this.alertService.addWarning($localize`:@@filterSettingsReboot:La configuración de filtros se ha reiniciado`);
+            }
+            this.sortedFilters = []; // resets the values ​​because one or more filters were deleted
+        }    
+        PanelInteractionUtils.removeColumn(this, c, list);
+    }
 
     public getOptionDescription = (value: string): string => EbpUtils.getOptionDescription(value);
 
@@ -1606,7 +1707,7 @@ s    // for the drag-drop component
                 }
             }
 
-            let aggregationLabel = '';
+            let aggregationLabel = 'none';
             if(aggTypes.filter(agg => agg.value === aggregation).length !== 0) aggregationLabel = aggTypes.filter(agg => agg.value === aggregation)[0].label;
 
             // Aggregate of internationalisation of the between
@@ -1636,6 +1737,22 @@ s    // for the drag-drop component
     public onCloseWhatIfDialog(): void {
         this.display_v.whatIf_dialog = false;
     }
+
+    public filterAndOrDialog(): void {
+
+        const numFilters = this.selectedFilters.length + this.globalFilters.length;
+
+        if(numFilters === 0) {
+            this.alertService.addWarning($localize`:@@withoutFilters:Aún no has configurado filtros. Usa el panel de filtros o los filtros globales`);
+            return;
+        } else {
+            this.display_v.filterAndOr_dialog = true;
+        }
+    }
+
+    public onCloseFilterAndOrDialog(): void {
+        this.display_v.filterAndOr_dialog = false;
+    }   
 
     public disableRunQuery(): boolean {
         let disable = false;
@@ -1700,6 +1817,77 @@ s    // for the drag-drop component
         config['ordering'] = [{axes: newAxes}]; // I add the new axes to the config
         this.copyConfigCrossTable = JSON.parse(JSON.stringify(config));;
         QueryUtils.runManualQuery(this) // Running with the new currentQuery configuration
+    }
+
+    public newSortedFiltersFunction(event: any[]) {
+        this.sortedFilters = event; // We save the sortedFilters in the EBP
+        this.display_v.btnSave = true; // The confirm button is disabled
+    }
+
+    public updateSortedFiltersColumnDialogFunction(e: any) {
+        
+        if(e.add){
+
+            if(this.sortedFilters.length !==0){
+                const lastElement = this.sortedFilters[this.sortedFilters.length-1];
+    
+                const newSortedFilter = {
+                    cols: 3,
+                    rows: 1,
+                    y: lastElement.y+1,
+                    x: 0,
+                    filter_table: e.filter.filter_table,
+                    filter_column: e.filter.filter_column,
+                    filter_type: e.filter.filter_type,
+                    filter_column_type: e.filter.filter_column_type,
+                    filter_elements: e.filter.filter_elements,
+                    filter_id: e.filter.filter_id,
+                    value: "and",
+                }
+    
+                this.sortedFilters.push(newSortedFilter);
+            }
+
+        } else {
+
+            if(this.sortedFilters.length !==0) {
+                this.alertService.addWarning($localize`:@@filterSettingsReboot:La configuración de filtros se ha reiniciado`);
+            }
+            this.sortedFilters = [];
+        }
+    }
+
+    public updateSortedFiltersFilterDialogFunction(e: any) {
+
+        if(e.add){
+
+            if(this.sortedFilters.length !==0){
+                const lastElement = this.sortedFilters[this.sortedFilters.length-1];
+    
+                const newSortedFilter = {
+                    cols: 3,
+                    rows: 1,
+                    y: lastElement.y+1,
+                    x: 0,
+                    filter_table: e.filter.filter_table,
+                    filter_column: e.filter.filter_column,
+                    filter_type: e.filter.filter_type,
+                    filter_column_type: e.filter.filter_column_type,
+                    filter_elements: e.filter.filter_elements,
+                    filter_id: e.filter.filter_id,
+                    value: "and",
+                }
+    
+                this.sortedFilters.push(newSortedFilter);
+            }
+
+        } else {
+
+            if(this.sortedFilters.length !==0) {
+                this.alertService.addWarning($localize`:@@filterSettingsReboot:La configuración de filtros se ha reiniciado`);
+            }
+            this.sortedFilters = [];
+        }
     }
 
 }

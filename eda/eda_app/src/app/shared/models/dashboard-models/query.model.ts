@@ -22,7 +22,8 @@ export interface Query {
         queryLimit : number,
         joinType: string,
         forSelector?: boolean,
-        rootTable: string
+        rootTable: string,
+        sortedFilters: any[],
 
     };
     output: {

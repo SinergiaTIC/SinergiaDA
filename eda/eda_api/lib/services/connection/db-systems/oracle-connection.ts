@@ -206,9 +206,7 @@ export class OracleConnection extends AbstractConnection {
                     unparsedResults.push(runparsed);
                     types.push(rowTypes);
                 })
-                //ot això es fa per que oracle te un bug i ho retorna tot com a text. Aixó que s'ha de mirar cada columna si tots els valors son numerics i aleshoraes convertir-ho a numeric 
-                //console.log(types);
-
+                /** Tot això es fa per que oracle te un bug i ho retorna tot com a text. Aixó que s'ha de mirar cada columna si tots els valors son numerics i aleshoraes convertir-ho a numeric */
 
                 for(let p=0; p< types.length; p++){
                     for(let y=0; y< types[p].length; y++){
