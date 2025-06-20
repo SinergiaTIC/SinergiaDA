@@ -4406,7 +4406,7 @@
       <trans-unit id="descriptionFilterSettings">
         <source>Configuración avanzada de los todos los filtros</source>
         <target>Configuración avanzada para todos os filtros</target>
-       </trans-unit>
+      </trans-unit>
       <trans-unit id="filterSettingsReboot">
         <source>La configuración de filtros se ha reiniciado</source>
         <target>Restableceuse a configuración do filtro</target>
