@@ -4365,6 +4365,10 @@
         <source>Entre</source>
         <target>Between</target>
       </trans-unit>
+      <trans-unit id="emptyStringTxt">
+        <source>Vacío</source>
+        <target>(Empty)</target>
+      </trans-unit>
       <trans-unit id="filterSettings">
         <source>Configuración de filtros</source>
         <target>Filter settings</target>
@@ -4372,10 +4376,6 @@
       <trans-unit id="descriptionFilterSettings">
         <source>Configuración avanzada de los todos los filtros</source>
         <target>Advanced settings for all filters</target>
-      <trans-unit id="emptyStringTxt">
-        <source>Vacío</source>
-        <target>(Empty)</target>
-        </trans-unit>
       </trans-unit>
       <trans-unit id="filterSettingsReboot">
         <source>La configuración de filtros se ha reiniciado</source>
