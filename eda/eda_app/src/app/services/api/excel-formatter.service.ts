@@ -28,12 +28,10 @@ export class ExcelFormatterService extends ApiService {
                 const data = event.target.result;
                 const workbook: XLSX.WorkBook = XLSX.read(data, { type: 'binary', cellDates: true });
 
-                console.log('workobook', workbook);
                 const sheetName: string = workbook.SheetNames[0];
                 const sheet: XLSX.WorkSheet = workbook.Sheets[sheetName];
 
                 const jsonData: JSON[] = XLSX.utils.sheet_to_json(sheet, { raw:false, dateNF:'yyyy-mm-dd' });
-                //console.log('jsonData -->', jsonData)
                 resolve(jsonData);
             };
             fileReader.onerror = (error) => {

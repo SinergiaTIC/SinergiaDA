@@ -67,7 +67,6 @@ export class MysqlConnection extends AbstractConnection {
 
     async tryConnection(): Promise<any> {
         try {
-            console.log(this.config)
             return new Promise((resolve, reject) => {
                 let mySqlConn = {}
                 if (this.config.ssl && (this.config.ssl === 'true')) {
@@ -172,7 +171,6 @@ export class MysqlConnection extends AbstractConnection {
         try {
             this.client.query = util.promisify(this.client.query);
             const rows = await this.client.query(query);
-            // console.log(this.client.itsConnected());
             // if (!this.pool && this.client.itsConnected() ) this.client.end();
             return rows;
         } catch (err) {

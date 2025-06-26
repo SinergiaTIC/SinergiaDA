@@ -64,7 +64,6 @@ export class MongoDBConnection extends AbstractConnection {
     }
 
     async execQuery(query: any): Promise<any> {
-        //console.log(query);
         const client = await this.getclient()
 
         try {
@@ -128,7 +127,6 @@ export class MongoDBConnection extends AbstractConnection {
                 query.pipeline.push({ ['$sort']: $sort });
             }
 
-            //console.log("Info de la consulta: ", JSON.stringify(query.pipeline));
             data = await collection.aggregate(query.pipeline).toArray();
 
 
@@ -146,7 +144,6 @@ export class MongoDBConnection extends AbstractConnection {
                 });
             }
 
-        //console.log(formatData);
             return formatData;
         } catch (err) {
             console.error(err);

@@ -43,7 +43,6 @@ export class TreeTableDialogComponent extends EdaDialogAbstract implements OnIni
     this.config = (<TreeTableConfig>this.panelChartConfig.config.getConfig())
     this.sourceProducts = this.config.hierarchyLabels;
     this.targetProducts = this.config.leafLabels;
-    // console.log('this.panelChartConfig: ', this.panelChartConfig);
   }
 
   onClose(event: EdaDialogCloseEvent, response?: any): void {
