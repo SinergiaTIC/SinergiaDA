@@ -262,14 +262,15 @@
                                 </h5>
 
 
- <!--SDA CUSTOM-->          <div *ngIf="userService.isAdmin && showHiddId">
- <!--SDA CUSTOM-->              <span i18n-title="@@hiddenAttributes" title="Mostrar/ocultar campos ocultos" class="pointer icon-hover" (click)="changeHiddenMode()">
- <!--SDA CUSTOM-->                  <i *ngIf="showHiddenColumn" class="pi pi-eye" style="font-size: 1.5rem"></i>
- <!--SDA CUSTOM-->                  <i *ngIf="!showHiddenColumn" class="pi pi-eye-slash" style="font-size: 1.5rem"></i>
- <!--SDA CUSTOM-->              </span>
- <!--SDA CUSTOM-->          </div>    </div>
+ <!--SDA CUSTOM-->              <div *ngIf="userService.isAdmin && showHiddId">
+ <!--SDA CUSTOM-->                  <span i18n-title="@@hiddenAttributes" title="Mostrar/ocultar campos ocultos" class="pointer icon-hover" (click)="changeHiddenMode()">
+ <!--SDA CUSTOM-->                      <i *ngIf="showHiddenColumn" class="pi pi-eye" style="font-size: 1.5rem"></i>
+ <!--SDA CUSTOM-->                      <i *ngIf="!showHiddenColumn" class="pi pi-eye-slash" style="font-size: 1.5rem"></i>
+ <!--SDA CUSTOM-->                  </span>
+ <!--SDA CUSTOM-->              </div>    
+                            </div>
                             <div>
-                            <eda-input [inject]="inputs.findColumn"></eda-input>
+                                <eda-input [inject]="inputs.findColumn"></eda-input>
                             </div>
                             <div class="column-list" cdkDropList #columnsList="cdkDropList" [cdkDropListData]="columns"
                                 [cdkDropListConnectedTo]="[selectList, filterList]" (cdkDropListDropped)="drop($event)"

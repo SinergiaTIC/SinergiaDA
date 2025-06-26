@@ -55,6 +55,7 @@ export const PanelInteractionUtils = {
     // Sort columns by default display name
     ebp.columns = filteredColumns?.sort((a, b) => a.display_name.default.localeCompare(b.display_name.default));
 
+    /* SDA CUSTOM */     ebp.columns = filteredColumns.filter(col => ebp.showHiddenColumn ? (col.hidden || !col.hidden) : !col.hidden);
 
 
 
