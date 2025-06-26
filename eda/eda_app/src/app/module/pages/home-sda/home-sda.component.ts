@@ -198,7 +198,7 @@ export class HomeSdaComponent implements OnInit {
     this.groupService.getGroupsByUser().subscribe(
       res => {
         const user = sessionStorage.getItem("user");
-        const userID = JSON.parse(user)._id;
+        const userID = JSON.parse(user)?._id;
         this.grups = res;
         this.isObserver =
           this.grups.filter(group => group.name === "EDA_RO" && group.users.includes(userID)).length !== 0;
@@ -213,7 +213,7 @@ export class HomeSdaComponent implements OnInit {
    */
   private ifAnonymousGetOut(): void {
     const user = sessionStorage.getItem("user");
-    const userName = JSON.parse(user).name;
+    const userName = JSON.parse(user)?.name;
 
     if (userName === "edaanonim" || userName === "EDA_RO") {
       this.router.navigate(["/login"]);

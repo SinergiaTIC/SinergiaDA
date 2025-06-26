@@ -182,7 +182,6 @@ export class OracleConnection extends AbstractConnection {
             const unparsedResults = [];
             const types = [];
             const FALSEnumericColumns =[];
-            /* SE COMENTA PORQUE CON LA NUEVA VERSIÓN YA NO HACE FALTA HACER ESTO.
             try{
                 result.rows.forEach(row => {
                     const r = {};
@@ -237,10 +236,9 @@ export class OracleConnection extends AbstractConnection {
                 console.log(result);
             }
             return parsedResults;
-            */
-        
-            return result.rows;
 
+
+            
 
 
         } catch (err) {

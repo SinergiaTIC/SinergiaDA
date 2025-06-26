@@ -50,8 +50,6 @@ import {
     SunburstDialogComponent,
     FilterAndOrDialogComponent,
     EdaFilterAndOrComponent,
-
-    WhatIfDialogComponent,
  } from './component.index';
  
 import { SafeUrlPipe } from './eda-panels/eda-title-panel/urlSanitizer.pipe';
@@ -109,7 +107,6 @@ import { DragDropComponent } from './drag-drop/drag-drop.component';
         DragDropComponent,
         FilterAndOrDialogComponent,
         EdaFilterAndOrComponent,
-        WhatIfDialogComponent,
         MapCoordDialogComponent,
     ],
     exports: [
@@ -143,9 +140,8 @@ import { DragDropComponent } from './drag-drop/drag-drop.component';
         SunburstDialogComponent,
         DragDropComponent,
         FilterAndOrDialogComponent,
-        EdaFilterAndOrComponent
-        WhatIfDialogComponent,
-        MapCoordDialogComponent,
+        EdaFilterAndOrComponent,
+        MapCoordDialogComponent
     ],
     schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })

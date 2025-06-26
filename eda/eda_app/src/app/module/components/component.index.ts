@@ -61,6 +61,6 @@ export { TreeTableDialogComponent } from './eda-panels/eda-blank-panel/tree-tabl
 export { BubblechartDialog } from './eda-panels/eda-blank-panel/bubblechart-dialog/bubblechart-dialog.component';
 export { EdaSunburstComponent } from './eda-sunburst/eda-sunburst.component';
 export { SunburstDialogComponent } from './eda-panels/eda-blank-panel/sunbrust-dialog/sunburst-dialog.component';
-export { WhatIfDialogComponent } from './eda-panels/eda-blank-panel/whatif-dialog/whatif-dialog.component';
 export { EdaTreeTable} from './eda-treetable/eda-treetable.component';
+export { FilterAndOrDialogComponent } from './eda-panels/eda-blank-panel/filter-and-or-dialog/filter-and-or-dialog.component';
 

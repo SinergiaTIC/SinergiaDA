@@ -352,7 +352,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
         ];
 
         this.groupService.getGroupsByUser().subscribe(
-            res => {
+            (res) => {
                 this.grups = res.sort((a, b) => {
                     let va = (a.name||'').toLowerCase();
                     let vb = (b.name||'').toLowerCase();
@@ -362,12 +362,6 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
                     this.visibleTypes.splice(1, 1);
                 }
 
-
-
-
-                // pot ser que no estinguin disponibles encara els grups... per això  es crida des de els dos llocs
-                // i es crida també des de aqui.... a mes a mes des de la inicilialització del dashboard
-                // per estar segurn que es tenen disponibles.
                 this.setDashboardGrups();
                 this.setEditMode();
             },
@@ -405,8 +399,15 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
                     me.form.controls['visible'].setValue(config.visible);
                     me.tag = config.tag;
                     me.selectedtag = me.tags.filter(tag => tag.value === me.tag)[0];
+                    me.tags = me.tags.filter(tag => tag.value !== 0); //treiem del seleccionador de tags el valor "sense etiqueta"
+                    me.tags = me.tags.filter(tag => tag.value !== 1); //treiem del seleccionador de tags el valor "tots"
+                    me.selectedTags = me.selectedTagsForDashboard(me.tags, config.tag)
                     me.refreshTime = config.refreshTime;
                     me.onlyIcanEdit = config.onlyIcanEdit;
+                    me.urls = config["urls"];
+                    if (me.urls === undefined) {
+                        me.urls = [];
+                    }
                     if (me.refreshTime) {
                         this.stopRefresh = false;
                         this.startCountdown(me.refreshTime);
@@ -415,9 +416,6 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
                     me.styles = config.styles || this.stylesProviderService.generateDefaultStyles();
                     this.stylesProviderService.setStyles(me.styles);
 
-                    // pot ser que no estinguin disponibles encara els grups... per això de vegades es perd
-                    // i es crida també des de els subscribe del groupcontroller ... a mes a mes des de la inicilialització del dashboard
-                    // per estar segurn que es tenen disponibles.
                     let grp = [];
                     if (config.visible === 'group' && res.dashboard.group) {
                         grp = res.dashboard.group;
@@ -460,9 +458,6 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
                         me.updateFilterDatesInPanels();
                     }
 
-                    // pot ser que no estinguin disponibles encara els grups... per això es crida des de els dos llocs
-                    // i es crida també des de els subscribe del groupcontroller ... a mes a mes des de la inicilialització del dashboard
-                    // per estar segurn que es tenen disponibles.
                     if (config.visible === 'group') {
                         this.setDashboardGrups();
                     }
@@ -578,9 +573,9 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
                 }
                 
                 if (params["cnproperties"]) {
-                this.connectionProperties = JSON.parse(
-                    decodeURIComponent(params["cnproperties"])
-                );
+                    this.connectionProperties = JSON.parse(
+                        decodeURIComponent(params["cnproperties"])
+                    );
                 }
 
             }catch(e){
@@ -592,7 +587,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     // Dashboard Panels
     private initializePanels(): void {
         const user = sessionStorage.getItem('user');
-        const userID = JSON.parse(user)._id;
+        const userID = JSON.parse(user)?._id;
 
         // Buscamos en todos los paneles si existe un con los campos vacios, lo cual indica que no tiene permisos para visualizar la data
         if(this.panels.some(panel => panel.content?.query.query.fields.length===0)){
@@ -661,8 +656,8 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     // Dashboard control
     public async setEditMode() {
         const user = sessionStorage.getItem('user');
-        const userName = JSON.parse(user).name;
-        const userID = JSON.parse(user)._id;
+        const userName = JSON.parse(user)?.name;
+        const userID = JSON.parse(user)?._id;
         this.display_v.edit_mode = (userName !== 'edaanonim') && !(this.grups.filter(group => group.name === 'EDA_RO' && group.users.includes(userID)).length !== 0)
         this.display_v.anonimous_mode = userName == 'edaanonim';
     }
