@@ -10,15 +10,17 @@ export class MySqlBuilderService extends QueryBuilderService {
   }
 
   public normalQuery(columns: string[], origin: string, dest: any[], joinTree: any[], grouping: any[], filters: any[], havingFilters: any[], 
-    tables: Array<any>, limit: number,  joinType: string, valueListJoins: Array<any> ,schema: string, database: string, forSelector: any ) {
+    tables: Array<any>, limit: number,  joinType: string, valueListJoins: Array<any> ,schema: string, database: string, forSelector: any, sortedFilters: any[]) {
+
     let o = tables.filter(table => table.name === origin).map(table => { return table.query ? table.query : table.name })[0];
     let myQuery = `SELECT ${columns.join(', ')} \nFROM ${o}`;
 
-    /** SI ES UN SELECT PARA UN SELECTOR  VOLDRÉ VALORS ÚNICS */
-    if (forSelector === true) {
-      myQuery = `SELECT DISTINCT ${columns.join(', ')} \nFROM ${o}`;
+    /** IF IT IS A SELECT FOR A SELECTOR I WANT UNIQUE VALUES */
+    if (forSelector === true && columns.length == 1 ) {
+      myQuery = `SELECT DISTINCT ${columns} \nFROM ${o}`;
     }
- 
+
+    // If it is EDA, there is no alias and if it is EDA2 tree mode, there is an alias.
 
     // JOINS
     let joinString: any[];
@@ -30,7 +32,7 @@ export class MySqlBuilderService extends QueryBuilderService {
       joinString = responseJoins.joinString;
       alias = responseJoins.aliasTables;
     } else {
-      /*EDA Normal*/
+      /*Normal EDA*/
       joinString = this.getJoins(joinTree, dest, tables, joinType,  valueListJoins, schema, dest.length);
     }
 
@@ -39,7 +41,12 @@ export class MySqlBuilderService extends QueryBuilderService {
     });
 
     // WHERE
-    myQuery += this.getFilters(filters, dest.length, o);
+      // Check if AND | OR filter sort exists
+    if(Array.isArray(sortedFilters) && sortedFilters.length !== 0) {
+      myQuery += this.getSortedFilters(sortedFilters, filters); // sortedFilters has elements
+    } else {
+        myQuery += this.getFilters(filters, dest.length, o); // sortedFilters is empty
+    }
 
     // GroupBy
     if (grouping.length > 0) {
@@ -50,10 +57,9 @@ export class MySqlBuilderService extends QueryBuilderService {
     myQuery += this.getHavingFilters(havingFilters);
 
 
-    /**SDA CUSTOM */ // if (forSelector === true) {
-    /**SDA CUSTOM */ //    myQuery += `\n UNION \n SELECT '' `;
-    /**SDA CUSTOM */ //  }
-
+    /**SDA CUSTOM */  if (forSelector === true) {
+    /**SDA CUSTOM */      myQuery += `\n UNION \n SELECT '' `;
+    /**SDA CUSTOM */   }
 
     // OrderBy
     const orderColumns = this.queryTODO.fields.map(col => {
@@ -88,9 +94,302 @@ export class MySqlBuilderService extends QueryBuilderService {
     }
   
     myQuery = this.queryAddedRange(this.queryTODO.fields, myQuery)
-
+    
     return myQuery;
   };
+
+  // This function generates a SQL expression needed to add the permissions.
+  public getSqlPermissionsExpresion(permissions: any) {
+    let sql = '';
+    if(!permissions.some((p: any) => p.toBeUsed)) return sql;
+    
+    permissions = permissions.filter(p => p.toBeUsed);
+
+    const generarExpresionSQL = (permissions) => {
+      const grupos = {};
+
+      for (const filtro of permissions) {
+        const tabla = filtro.filter_table;
+        const columna = filtro.filter_column;
+        const valor = filtro.filter_elements[0].value1[0];
+
+        if (!grupos[tabla]) {
+          grupos[tabla] = [];
+        }
+
+        grupos[tabla].push(`\`${tabla}\`.\`${columna}\` in (${valor})`);
+      }
+
+      const gruposOR = Object.values(grupos).map((columnas: any) => {
+        return `( ${columnas.join(' OR ')} )`;
+      });
+
+      return gruposOR.join(' AND ');
+    }
+
+    return generarExpresionSQL(permissions);
+  }
+
+  public getSortedFilters(sortedFilters: any[], filters: any[]): any {
+
+    let sqlPermissionsExpresion = this.getSqlPermissionsExpresion(this.permissions);
+
+    // If the there is no filters 
+    if(filters.length === 0) { return ''; }
+    
+    // Adding valueListSource to the filters And/Or
+    filters.forEach((filter: any) => {
+      if(filter.valueListSource !== undefined && filter.valueListSource !== null && filter.filter_id !== 'is_null') {
+        sortedFilters.find((e: any) => e.filter_id === filter.filter_id ).valueListSource = filter.valueListSource;
+      }
+    })
+
+    // Ordering the dashboard on the y-axis from lowest to highest.
+    sortedFilters.sort((a: any, b: any) => a.y - b.y); 
+
+    // Calculating global filters and they are empty.
+    const nullSortedFilters  =  sortedFilters.filter((f: any) => ((f.isGlobal===true) && (f.filter_elements[0].value1.length === 0)));
+
+    // If we have empty values in the filters we define a new sortedFilters
+    if(nullSortedFilters.length !==0){
+
+      // Ordering
+      nullSortedFilters.sort((a: any, b: any) => a.y - b.y); 
+  
+      // Order in the x axis
+      nullSortedFilters.forEach( element =>{
+            for(let i= element.y + 1 ; i < sortedFilters.length; i++ ){
+              if(element.x  < sortedFilters[i].x) {
+                sortedFilters[i].x -= 1;
+              } else {
+                break;
+              }
+            }
+      }  )
+  
+      // Order in the y axis
+      const newSortedFilters = sortedFilters.filter((f: any) => !((f.isGlobal===true) && (f.filter_elements[0].value1.length === 0)));
+      newSortedFilters.forEach( (f,i) => f.y=i );
+
+      sortedFilters = _.cloneDeep(newSortedFilters);
+    }
+
+    // If we have a global filter with only one empty value selected
+    filters.forEach(filter => {
+      if(filter.isGlobal && (filter.filter_type === 'null_or_empty') && (filter.filter_elements[0].value1[0]==='emptyString')) {
+        const selectedFilter = sortedFilters.find(sf => sf.filter_id === filter.filter_id);
+
+        if(selectedFilter) {
+          selectedFilter.filter_type = 'null_or_empty';
+          selectedFilter.filter_elements = [];
+        }
+      }
+
+      if(filter.filter_id === 'is_null') {
+        const selectedFilter = sortedFilters.find(sf => sf.filter_id === filter.source_filter_id);
+        selectedFilter.sqlOptional = '';
+        
+        if(selectedFilter){
+          if(filter.valueListSource === undefined) {
+            selectedFilter.sqlOptional += `\`${filter.filter_table}\`.\`${filter.filter_column}\` is null or \`${filter.filter_table}\`.\`${filter.filter_column}\` = '' or`;
+            selectedFilter.filter_elements[0].value1 = selectedFilter.filter_elements[0].value1.filter(e => e !== 'emptyString');
+          } else {
+            selectedFilter.sqlOptional += `\`${filter.valueListSource.target_table}\`.\`${filter.valueListSource.target_description_column}\` is null or \`${filter.valueListSource.target_table}\`.\`${filter.valueListSource.target_description_column}\` = '' or`;
+            selectedFilter.filter_elements[0].value1 = selectedFilter.filter_elements[0].value1.filter(e => e !== 'emptyString');
+          }
+        }
+
+      }
+
+    })
+
+    // Variable containing the new string of nested AND/OR filters corresponding to the graphic design of the items.
+    let stringQuery = '\nwhere ';
+
+    // Adding needed permissions if we have some item in the array of permissions with toBeUsed in true
+    if(sqlPermissionsExpresion !== '') stringQuery += `\n${sqlPermissionsExpresion}\nAND\n`; 
+
+    // Recursive function for the necessary nesting according to the AND/OR filter graph.
+    function cadenaRecursiva(item: any) {
+      // recursive item
+      const { cols, rows, y, x, filter_table, filter_column, filter_type, filter_column_type, filter_elements, value, valueListSource, sqlOptional } = item;
+
+      ////////////////////////////////////////////////// filter_type ////////////////////////////////////////////////// 
+      let filter_type_value = '';
+      if(filter_type === 'not_in'){
+        filter_type_value = 'not in';
+      } else {
+        if(filter_type === 'not_like') {
+          filter_type_value = 'not like';
+        } else {
+          if(true){
+            filter_type_value = filter_type;
+          }
+        }
+      }
+
+      ////////////////////////////////////////////////// filter_elements ////////////////////////////////////////////////// 
+      let filter_elements_value = '';
+
+      if(filter_elements.length === 0) {
+        if(filter_type === 'not_null') {
+          filter_type_value = 'is not null';
+        }
+        if(filter_type === 'not_null_nor_empty') {
+          filter_type_value = 'is not null and';
+        }
+        if(filter_type === 'null_or_empty') {
+          filter_type_value = 'is null or';
+        }
+      }
+      else {
+        // FOR ONE VALUE
+
+        if(filter_elements[0].value1.length === 1){
+
+          //Value of type text
+          if(filter_column_type === 'text'){
+            if(filter_type === 'in' || filter_type === 'not_in'){
+              filter_elements_value = filter_elements_value + `(\'${filter_elements[0].value1[0]}\')`;
+            } else {
+              filter_elements_value = filter_elements_value + `'${filter_type === 'like' || filter_type === 'not_like'? '%': ''}${filter_elements[0].value1[0]}${filter_type === 'like' || filter_type === 'not_like'? '%': ''}'`;
+            }
+          } 
+
+          // Numeric type value
+          if(filter_column_type === 'numeric'){
+            if(filter_type === 'between') {
+              filter_elements_value = filter_elements_value + ` ${Number(filter_elements[0].value1[0])} and ${Number(filter_elements[1].value2[0])}`;
+            } else {
+              if(filter_type === 'in' || filter_type === 'not_in') {
+                filter_elements_value = filter_elements_value + `(${filter_elements[0].value1[0]})`;
+              } else {
+                filter_elements_value = filter_elements_value + `${filter_elements[0].value1[0]}`;
+              }
+            }
+          } 
+
+          // Date type value
+          if(filter_column_type === 'date'){
+            if(filter_type === 'between'){
+              filter_elements_value = filter_elements_value + ` STR_TO_DATE(\'${filter_elements[0].value1[0]}\',\'%Y-%m-%d\')` + ' and ' + `STR_TO_DATE(\'${filter_elements[1].value2[0]} 23:59:59\',\'%Y-%m-%d %H:%i:%S\')`;
+            } else {
+              if(filter_type==='in' || filter_type==='not_in') {
+                filter_elements_value = filter_elements_value + `(STR_TO_DATE(\'${filter_elements[0].value1[0]}\',\'%Y-%m-%d\'))`;
+              } else {
+                filter_elements_value = filter_elements_value + `STR_TO_DATE(\'${filter_elements[0].value1[0]}\',\'%Y-%m-%d\')`;
+              }
+            }
+          }
+
+        } else {
+          // FOR SEVERAL VALUES
+
+          filter_elements_value = filter_elements_value + '(';
+
+          // Text type values
+          if(filter_column_type === 'text'){
+            filter_elements[0].value1.forEach((element: any, index: number) => {
+              filter_elements_value += `'${element}'` + `${index===(filter_elements[0].value1.length-1)? ')': ','}`;
+            })
+          }
+
+          // Numeric type values
+          if(filter_column_type === 'numeric'){
+            filter_elements[0].value1.forEach((element: any, index: number) => {
+              filter_elements_value += `${element}` + `${index===(filter_elements[0].value1.length-1)? ')': ','}`;
+            })
+          }
+
+          // Date type values
+          if(filter_column_type === 'date'){
+            filter_elements[0].value1.forEach((element: any, index: number) => {
+              filter_elements_value += `STR_TO_DATE(\'${element}\',\'%Y-%m-%d\')` + `${index===(filter_elements[0].value1.length-1)? ')': ','}`;
+            })
+          }
+
+          // Values ​​that do not have a filter_column_type defined
+          if(filter_column_type === undefined){
+            filter_elements[0].value1.forEach((element: any, index: number) => {
+              filter_elements_value += `'${element}'` + `${index===(filter_elements[0].value1.length-1)? ')': ','}`;
+            })
+          }
+        }
+      }
+
+      ////////////////////////////////////////////////// Building the query sequence by item ////////////////////////////////////////////////// 
+
+      // variable to find filters with valueListSource
+      let validador = (valueListSource !== undefined && valueListSource !== null);
+      // Result of the whole string 
+
+
+      let resultado = `${['null_or_empty', 'not_null_nor_empty'].includes(filter_type) || (filter_type==='in' && sqlOptional !== undefined) ? ' (' : ''} ${sqlOptional !== undefined ? sqlOptional : ''} \`${ validador ? valueListSource.target_table : filter_table}\`.\`${ validador ? valueListSource.target_description_column : filter_column}\` ${filter_type_value}${filter_elements_value}`;
+
+      // It is located in this position because the table and field must be duplicated in the query (*observation)
+      if(filter_type === 'not_null_nor_empty') {
+        resultado = `${resultado} \`${ validador ? valueListSource.target_table : filter_table}\`.\`${ validador ? valueListSource.target_description_column : filter_column}\` != '')`;
+      }
+
+      // It is located in this position because the table and field must be duplicated in the query (*observation)
+      if(filter_type === 'null_or_empty') {
+        resultado = `${resultado} \`${ validador ? valueListSource.target_table : filter_table}\`.\`${ validador ? valueListSource.target_description_column : filter_column}\` = '')`;
+      }
+
+      if(filter_type === 'in' && sqlOptional !== undefined) {
+        resultado = `${resultado} )`;
+      }
+
+      ////////////////////////////////////////////////// Arrays of child items ////////////////////////////////////////////////// 
+      let elementosHijos = []; 
+
+      for(let n = y+1; n<sortedFilters.length; n++){
+        if(sortedFilters[n].x === x) break;
+        if(y < sortedFilters[n].y && sortedFilters[n].x === x+1) elementosHijos.push(sortedFilters[n]);
+      }
+
+      // Variable that contains the next item of the item treated by the recursive function.
+      const itemGenerico = sortedFilters.filter((item: any) => item.y === y + 1)[0];
+
+      if(elementosHijos.length>0) {
+        let space = '            '; // Jumps for indentation
+        let variableSpace = space.repeat(x+1);
+
+        let hijoArreglo = elementosHijos.map(itemHijo => {
+          return cadenaRecursiva(itemHijo);
+        })
+
+        let hijosCadena = '';
+        hijoArreglo.forEach((hijo, index) => {
+          hijosCadena = hijosCadena + hijo;
+          if(index<elementosHijos.length-1){
+            hijosCadena = hijosCadena + ` \n ${variableSpace} ${elementosHijos[index+1].value.toUpperCase()} `
+          }
+        })
+
+        resultado = `(${resultado} \n ${variableSpace} ${itemGenerico.value.toUpperCase()} (${hijosCadena}))`;
+      }
+
+      // Final result of the recursive function
+      return resultado;
+    }
+
+    // Iterating the dashboard to get the correct nested string
+    let itemsString = '( '
+    for(let r=0; r<sortedFilters.length; r++){
+      if(sortedFilters[r].x === 0){
+        itemsString = itemsString +  (r === 0 ? '' : ' ' + sortedFilters[r].value.toUpperCase() + ' ' ) + sortedFilters.filter((e: any) => e.y===r).map(cadenaRecursiva)[0] + `\n`;
+      } else {
+        continue;
+      }
+    }
+
+    itemsString = itemsString + ' )';
+    stringQuery = stringQuery + itemsString
+
+    // Final result of the constructed query
+    return stringQuery;
+  }
 
   public queryAddedRange(fields, myQuery) {
 
@@ -110,10 +409,9 @@ export class MySqlBuilderService extends QueryBuilderService {
 
   }
 
-
   public getFilters(filters, destLongitud, pTable): any { 
 
-    /** Si Tenemos Permisos Y No Hay Destino Lo Añado A Los Filtros */
+    /** If We Have permissions And No Destination I Add To Filters */
 
     if ( this.permissions.length > 0 && destLongitud == 0) this.permissions.forEach( permission => { filters.push(permission); });
     else { this.permissions.forEach( permission => { if( permission.filter_table === pTable ) filters.push(permission);})}
@@ -133,10 +431,10 @@ export class MySqlBuilderService extends QueryBuilderService {
         if (f.filter_type === 'not_null' || f.filter_type === 'not_null_nor_empty' || f.filter_type === 'null_or_empty') {
           filtersString += '\nand ' + this.filterToString(f);
         } else {
-          /* Control de nulos... se genera la consutla de forma diferente */
-            if (   f.filter_type == 'is_null' && f.filter_elements[0].value1.length === 1 && filters.length >1 ) {// Si tengo varios filtors es filtro por X o es nulo.
+          /* Null control... query generated in a different way */
+            if (   f.filter_type == 'is_null' && f.filter_elements[0].value1.length === 1 && filters.filter( (f)=>f.filter_column == column.column_name && f.filter_table == column.table_id ).length  >1 ) {// Si tengo varios filtros sobre una misma columna  es filtro por X o es nulo.
                    filtersString += `\nor ${colname}  is null `;
-            } if (   f.filter_type == 'is_null' && f.filter_elements[0].value1.length === 1 && filters.length ==1 ) { // si soolo tengo el filtro de nulo es un and poqque digo 1=1 y es nulo.
+            } if (   f.filter_type == 'is_null' && f.filter_elements[0].value1.length === 1 && filters.filter( (f)=>f.filter_column == column.column_name && f.filter_table == column.table_id ).length  ==1 ) { // si solo tengo el filtro de nulo es un and porque digo 1=1 y es nulo.
               filtersString += `\nand ${colname}  is null `;
             } else {  
                 filtersString += `\nand (${this.filterToString(f)} ) `;
@@ -180,7 +478,7 @@ export class MySqlBuilderService extends QueryBuilderService {
           let t = tables.filter(table => table.name === e[j]).map(table => { return table.query ? table.query : `\`${table.name}\`` })[0];
 
           if( valueListJoins.includes(e[j])   ){
-            myJoin = 'left'; // Si es una tabla que ve del multivaluelist aleshores els joins son left per que la consulta tingui sentit.
+            myJoin = 'left'; //If it is a table that comes from multivaluelist then joins are left for the query to make sense.
           }else{
             myJoin = joinType; 
           }
@@ -236,26 +534,32 @@ export class MySqlBuilderService extends QueryBuilderService {
 
   
   public setJoins(joinTree: any[], joinType: string, schema: string, valueListJoins: string[], destLongitud: any) {
-    // Inicialización de variables
+    // Variables initialisation
     const joinExists = new Set();
     const aliasTables = {};
     let joinString = [];
     const targetTableJoin = [];
 
+    // We add the toBeUsed property to each item to generate the SQL expression in getSortedFilters()
+    if(joinTree.length == 0){
+          this.permissions.forEach( (p: any) => {
+                p.toBeUsed=true;
+          })
+    }
 
     for (const join of joinTree) {
 
-        // División de las partes de la join
+        // Division of the joins parts
         const sourceLastDotInx = join[0].lastIndexOf('.');
         // sourceTableAlias === join relation table_id
         const [sourceTable, sourceColumn] = [join[0].substring(0, sourceLastDotInx), join[0].substring(sourceLastDotInx + 1)];
         const [targetTable, targetColumn] = join[1].split('.');
 
-        // Construcción de las partes de la join
+        // Construction of the join parts
         let sourceJoin = `\`${sourceTable}\`.\`${sourceColumn}\``;
         let targetJoin = `\`${targetTable}\`.\`${targetColumn}\``;
 
-        // Si la join no existe ya, se añade
+        // If the join does not already exist, add
         if (!joinExists.has(`${sourceJoin}=${targetJoin}`)) {
             joinExists.add(`${sourceJoin}=${targetJoin}`);
 
@@ -265,7 +569,7 @@ export class MySqlBuilderService extends QueryBuilderService {
                 aliasSource = `\`${sourceTable}.${sourceColumn}\``;
             }
             
-            // Construcción de los alias
+            // Alias construction
             let alias = `\`${targetTable}.${targetColumn}.${sourceColumn}\``;
 
             if (aliasSource) {
@@ -304,9 +608,12 @@ export class MySqlBuilderService extends QueryBuilderService {
                   let agregadoPermisos: any;
                   let temporalPermissions: any = [];
         
+                  // here i replace the target table for the join with the permissions
                   this.permissions.forEach( (p: any) => {
                     if(p.filter_table == targetTable) {
-                      temporalPermissions.push(p)
+                      temporalPermissions.push(p);
+                    }else{
+                      p.toBeUsed=true; // Adding toBeUsed of all items that need to generate a SQL expression in getSortedFilters()
                     }
                   })
 
@@ -346,9 +653,10 @@ export class MySqlBuilderService extends QueryBuilderService {
       let table_column;
 
       if (el.autorelation && !el.valueListSource && !this.queryTODO.forSelector ) {
-
         table_column = `\`${el.joins[el.joins.length-1][0]}\`.\`${el.column_name}\``;
-      } else {
+      } else if(this.queryTODO.forSelector) {
+        table_column = `IFNULL( \`${el.table_id}\`.\`${el.column_name}\`, '')`;
+      }else{
         table_column = `\`${el.table_id}\`.\`${el.column_name}\``;
       }
 
@@ -358,7 +666,7 @@ export class MySqlBuilderService extends QueryBuilderService {
 
       el = this.getMinFractionDigits(el);
 
-      // Aqui se manejan las columnas calculadas
+      // Calculated columns are managed here
       if (el.computed_column === 'computed') {
         if(el.column_type=='text'){
           columns.push(`  ${el.SQLexpression}  as \`${el.display_name}\``);
@@ -463,7 +771,7 @@ export class MySqlBuilderService extends QueryBuilderService {
               grouping.push(`${table_column}`);
             }
           } else {
-            //  Si es una única columna numérica no se agrega.
+            //  If it is a single numeric column it is not aggregated.
             if(  this.queryTODO.fields.length > 1  ||  el.column_type != 'numeric' ){
               grouping.push(`${table_column}`);
             }
@@ -555,7 +863,7 @@ export class MySqlBuilderService extends QueryBuilderService {
       /**
    * 
    * @param filterObject 
-   * @returns clausula having en un string.  
+   * @returns having clause in a string.  
    */
   public getHavingFilters(filters ): any {
 
@@ -575,11 +883,11 @@ export class MySqlBuilderService extends QueryBuilderService {
         }else if (f.filter_type === 'null_or_empty') {
           filtersString += `\nand ( ${colname}  is null or ${colname} != ''  ) `;
         }  else {
-          /* Control de nulos... se genera la consutla de forma diferente */
+          /* Null control... query is generated in a different way. */
           let nullValueIndex = f.filter_elements[0].value1.indexOf(null);
           if (nullValueIndex != - 1) {
             if (f.filter_elements[0].value1.length === 1) {
-              /* puedo haber escogido un nulo en la igualdad */
+              /* I may have chosen a null on equality. */
               if (f.filter_type == '=') {
                 filtersString += `\nand ${colname}  is null `;
               } else {
@@ -679,7 +987,7 @@ public getHavingColname(column: any){
 
   public processFilter(filter: any, columnType: string) {
     filter = filter.map(elem => {
-      if (elem === null || elem === undefined || elem === 'null') return 'null'; //aqui poner 'null'
+      if (elem === null || elem === undefined || elem === 'null') return 'null'; //here put ‘null’.
       else return elem;
     });
 
@@ -700,7 +1008,7 @@ public getHavingColname(column: any){
         str = str + tail + ','
       });
 
-      // En el cas dels filtres de seguretat si l'usuari no pot veure res....
+      // In the case of security filters if the user can't see anything....
       filter.forEach(f => {
         if(f == '(x => None)'){
           switch (columnType) {
