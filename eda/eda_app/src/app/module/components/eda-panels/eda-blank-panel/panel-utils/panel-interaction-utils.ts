@@ -35,11 +35,11 @@ export const PanelInteractionUtils = {
 
   loadColumns: (ebp: EdaBlankPanelComponent, table: any) => {
     // Set the user-selected table and disable the save button
-    ebp.userSelectedTable = table.table_name;
+    ebp.userSelectedTable = table?.table_name;
     ebp.disableBtnSave();
 
     // Clean columns
-    const filteredColumns = table.columns.filter((tableColumn: Column) => {
+    const filteredColumns = table?.columns.filter((tableColumn: Column) => {
         tableColumn.table_id = table.table_name;
         tableColumn.autorelation = table.autorelation;
 

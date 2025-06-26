@@ -455,11 +455,11 @@ export class GlobalFilterComponent implements OnInit {
             
             let data : any[] ;
             if(res[1].length > 0){
-                data = res[1].filter(item => item[0].toString()  != '').map(item => ({ label: item[0].toString(), value: item[0].toString() }));
+                data = res[1].filter(item => item[0]?.toString()  != '').map(item => ({ label: item[0]?.toString(), value: item[0]?.toString() }));
             }
 
             /** IF I HAVE EMPTY VALUES I REPLACE THEM WITH THE EMPTY STRING TEXT....... THAT IS EQUIVALENT TO IS NULL OR EMPTY */
-            if( res[1].filter(item => item[0].toString() == '').length == 1 ){
+            if( res[1].filter(item => item[0]?.toString() == '').length == 1 ){
                 data.unshift(    { label: $localize`:@@emptyStringTxt:Vacío`  , value:  'emptyString'  }  )
             }
 
