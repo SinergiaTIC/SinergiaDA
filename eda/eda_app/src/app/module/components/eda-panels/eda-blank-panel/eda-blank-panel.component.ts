@@ -511,7 +511,7 @@ s    // for the drag-drop component
                     this.columns = [];
                 } else {
                     PanelInteractionUtils.handleCurrentQuery(this);
-                    this.columns = this.columns.filter((c) => !c.isdeleted);
+                    this.columns = this.columns?.filter((c) => !c.isdeleted);
                 }
 
 

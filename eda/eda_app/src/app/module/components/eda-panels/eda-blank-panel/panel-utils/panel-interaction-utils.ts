@@ -53,7 +53,7 @@ export const PanelInteractionUtils = {
     });
 
     // Sort columns by default display name
-    ebp.columns = filteredColumns.sort((a, b) => a.display_name.default.localeCompare(b.display_name.default));
+    ebp.columns = filteredColumns?.sort((a, b) => a.display_name.default.localeCompare(b.display_name.default));
 
 
 
@@ -291,7 +291,7 @@ export const PanelInteractionUtils = {
         PanelInteractionUtils.loadColumns(ebp, table);
 
         for (const contentColumn of panelContent.query.query.fields) {
-            const column = ebp.columns.find(c =>
+            const column = ebp.columns?.find(c =>
                 c.table_id === contentColumn.table_id &&
                 c.column_name === contentColumn.column_name &&
                 c.display_name.default === contentColumn.display_name
@@ -318,7 +318,7 @@ export const PanelInteractionUtils = {
 
                     if(!duplicatedColumn){
                         duplicatedColumn = _.cloneDeep(
-                          ebp.columns.find(c =>
+                          ebp.columns?.find(c =>
                                 c.table_id === contentColumn.table_id &&
                                 c.column_name === contentColumn.column_name
                             )
