@@ -823,8 +823,8 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
 
     public async onPanelAction(event: IPanelAction): Promise<void> {
         //Check de modo
-        let modeEDA: boolean = !event?.data.panel.content.query.query.modeSQL &&
-        (!event?.data.panel.content.query.query.queryMode || event?.data.panel.content.query.query.queryMode === 'EDA')
+        let modeEDA: boolean = !event?.data.panel.content?.query.query.modeSQL &&
+        (!event?.data.panel.content?.query.query.queryMode || event?.data.panel.content?.query.query.queryMode === 'EDA')
         
         //Si es modo arbol o SQL no aplica filtros
         if (event.code === "ADDFILTER" && modeEDA) {
