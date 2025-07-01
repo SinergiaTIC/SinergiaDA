@@ -5,6 +5,7 @@ import { AggregationTypes } from "../../../module/global/model/aggregation-types
 import { ConnectionOptions, PoolOptions, Pool } from 'mysql2/typings/mysql';
 import { PoolManagerConnectionSingleton } from '../pool-manager-connection';
 const util = require('util');
+/*SDA CUSTOM*/const SCRMConfig=require('../../../../config/sinergiacrm.config.js');
 
 
 export class MysqlConnection extends AbstractConnection {
@@ -170,11 +171,31 @@ export class MysqlConnection extends AbstractConnection {
     async execQuery(query: string): Promise<any> {
         try {
             this.client.query = util.promisify(this.client.query);
-            const rows = await this.client.query(query);
-            // if (!this.pool && this.client.itsConnected() ) this.client.end();
+
+            let maxStatementTime = SCRMConfig.sinergiaConn.maxStatementTime ?? 60;
+            console.log(`SET maxStatementTime=${maxStatementTime}`);
+            
+            // Add timeout constraint to the query
+            const queryWithTimeout = `SET STATEMENT max_statement_time=${maxStatementTime} FOR ${query}`;
+
+            // Create timeout promise that rejects after 60 seconds
+            const timeoutPromise = new Promise((_, reject) => {
+                setTimeout(() => {
+                    reject(new Error(`Query execution timed out after ${maxStatementTime} seconds`));
+                }, (maxStatementTime * 1000));
+            });
+        
+            // Execute query with a race between actual query and timeout
+            const rows = await Promise.race([
+                this.client.query(queryWithTimeout),
+                timeoutPromise
+            ]);
             return rows;
         } catch (err) {
-            console.log(err);
+            if (err.message === 'Query execution timed out after 60 seconds') {
+                // Log specific timeout errors
+                console.error('Query timeout:', query);
+            }
             throw err;
         }
 

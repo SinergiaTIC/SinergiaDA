@@ -235,6 +235,9 @@ export class EdaTable {
         if (this.withColSubTotals) {
             event ? this.colSubTotals(event.first / event.rows + 1) : this.colSubTotals(1);
         } 
+        if (!this.pivot) {
+            this.noRepeatedRows();
+        }
     }
 
     deleteRowTotals() {

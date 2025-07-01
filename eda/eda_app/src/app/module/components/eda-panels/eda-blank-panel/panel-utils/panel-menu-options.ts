@@ -230,7 +230,9 @@ export const PanelOptions = {
             query : panelComponent.currentQuery,
             datasource : panelComponent.inject.dataSource._id,
             charttype : panelComponent.panelChart.props.chartType,
-            modeSQL : panelComponent.panel.content.query.query.modeSQL,
+            queryMode: panelComponent.panel.content.query.query.queryMode,
+            // modeSQL : panelComponent.panel.content.query.query.modeSQL,
+/* SDA CUSTOM */ showHiddenColumn: panelComponent.showHiddenColumn,
             dashboard_id : panelComponent.inject.dashboard_id,
             linkedDashboard : panelComponent.panel.linkedDashboardProps
           },
