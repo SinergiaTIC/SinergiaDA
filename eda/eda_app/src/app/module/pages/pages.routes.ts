@@ -37,6 +37,7 @@ const pagesRoutes: Routes = [
     { path: 'mail-management', component: MailManagementComponent, canActivate:[VerifyTokenGuard]},
     /*SDA CUSTOM*/ { path: 'about', component: AboutComponent, canActivate: [VerifyTokenGuard] },
     /*SDA CUSTOM*/ { path: 'home', component: HomeSdaComponent, canActivate: [VerifyTokenGuard] },
+    { path: 'logs', component: LogsComponent, canActivate:[VerifyTokenGuard]},
     { path: '', redirectTo: 'home', pathMatch: 'full' }
 ];
 
