@@ -1114,6 +1114,8 @@ s    // for the drag-drop component
         // The static variable previousDashboard of the AND | OR filters of the eda-filter-and-or component is reset.
         EdaFilterAndOrComponent.reiniciarDashboard();
 
+        // Setting the rootTable to undefined when panel is canceled.
+        this.rootTable = undefined;
     }
 
     /**
