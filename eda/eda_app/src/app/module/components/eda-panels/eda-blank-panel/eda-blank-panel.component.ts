@@ -207,7 +207,7 @@ export class EdaBlankPanelComponent implements OnInit {
     public connectionProperties: any;
 
 
-s    // for the drag-drop component
+    // for the drag-drop component
     public axes:any[]=[];
     public newAxesChanged: boolean = false;
     public graphicType: string; // We extract the type of graph at the beginning and when executing
