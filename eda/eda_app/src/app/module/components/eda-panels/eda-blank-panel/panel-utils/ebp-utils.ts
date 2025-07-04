@@ -101,50 +101,62 @@ export const EbpUtils = {
 
   /** ICONOS PARA LOS TIPOS DE GRÁCIFOS  ICON ICONS */
   getOptionIcon: (value: string): string => {
+
     let description = '';
+
     switch (value) {
       case 'table':
+      case 'tableanalized':
         description = 'table_chart';
         break
       case 'crosstable':
         description = 'grid_on';
-        break
+        break;
       case 'kpi':
         description = 'attach_money';
-        break
+        break;
+      case 'kpibar':
+        description = 'manage_search';
+        break;
+      case 'kpiarea':
+        description = 'troubleshoot';
+        break;
+      case 'kpiline':
+        description = 'query_stats';
+        break;
       case 'dynamicText':
         description = 'text_rotation_none';
-        break
+        break;
       case 'barline':
         description = 'multiline_chart';
-        break
+        break;
       case 'line':
         description = 'timeline';
-        break
+        break;
       case 'area':
         description = 'area_chart';
-        break
+        break;
       case 'horizontalBar':
         description = 'notes';
-        break
+        break;
       case 'pyramid':
         description = 'details';
-        break
+        break;
       case 'bar':
         description = 'bar_chart';
-        break
+        break;
       case 'stackedbar':
         description = 'stacked_bar_chart';
-        break
+        break;
       case 'stackedbar100':
         description = 'view_column';
-        break
+        break;
       case 'polarArea':
         description = 'star';
-        break
+        break;
       case 'doughnut':
         description = 'pie_chart';
-        break
+        break;
       case 'coordinatesMap':
         description = 'add_location';
         break;
@@ -173,7 +185,14 @@ export const EbpUtils = {
         description = 'equalizer';
         break;
       case 'bubblechart':
-          description = 'spoke';
+          description = 'bubble_chart';
+        break;
+      case 'radar':
+        description = 'radar';
+        break;
+      case 'treetable': 
+        description = 'account_tree';
+        break;
     }
 
     return description;
