@@ -118,13 +118,25 @@ export class UserController {
             } else {
                 // Si no ho troba, login amb mongo
                 const userEda = await UserController.getUserInfoByEmail(body.email, false);
-
                 if (! await bcrypt.compareSync(body.password, userEda.password)) {
-
-                    
-                            return next(new HttpException(400, 'Incorrect credentials - password'));
-      
-                            
+// SDA CUSTOM Introduit arrel de SinergiaCRM
+// SDA CUSTOM Comprobem també MD5 i GlassFis
+// SDA CUSTOM Busca artxiu de configuracio de Sinergia
+/**SDA CUSTOM  */  const scrm = path.resolve(__dirname, `../../../../config/sinergiacrm.config.js`);
+/**SDA CUSTOM  */  if (fs.existsSync(scrm)) {
+/**SDA CUSTOM  */      const hash = crypto.createHash('md5').update(body.password).digest("hex");
+/**SDA CUSTOM  */      if(hash.toString() !== userEda.password.toString()){
+/**SDA CUSTOM  */              //Si no es un md5 directe 
+/**SDA CUSTOM  */              const hash2 =  userEda.password.toString().replace(/^\$2y(.+)$/i, '$2a$1');
+/**SDA CUSTOM  */              await bcrypt.compare( hash , hash2).then(function(res){
+/**SDA CUSTOM  */                  if( res == false){
+/**SDA CUSTOM  */                      return next(new HttpException(400, 'Incorrect credentials - password'));
+/**SDA CUSTOM  */                   }
+/**SDA CUSTOM  */              });
+/**SDA CUSTOM  */      }
+/**SDA CUSTOM  */  }else{
+/**SDA CUSTOM  */          return next(new HttpException(400, 'Incorrect credentials - password'));
+/**SDA CUSTOM  */  }          
                     
                 }
 
