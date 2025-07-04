@@ -1,4 +1,4 @@
-import { createConnection, createPool, Connection as SqlConnection } from 'mysql2';
+import { createConnection, createPool, Connection as SqlConnection } from 'mysql2/promise';
 import { MySqlBuilderService } from "../../query-builder/qb-systems/mySql-builder.service";
 import { AbstractConnection } from "../abstract-connection";
 import { AggregationTypes } from "../../../module/global/model/aggregation-types";
@@ -66,33 +66,32 @@ export class MysqlConnection extends AbstractConnection {
         return createConnection(mySqlConn);
     }
 
+
+        // SDA CUSTOM - Change tryConnection to use mysql2/promise
     async tryConnection(): Promise<any> {
         try {
-            return new Promise((resolve, reject) => {
-                let mySqlConn = {}
-                if (this.config.ssl && (this.config.ssl === 'true')) {
-                    mySqlConn ={ "host": this.config.host,    "port": this.config.port,     "database": this.config.database, "user": this.config.user, "password": this.config.password, "ssl": { rejectUnauthorized: false }};
-                } else {
-                    mySqlConn ={ "host": this.config.host,    "port": this.config.port,     "database": this.config.database, "user": this.config.user, "password": this.config.password };
-                }
-                this.client = createConnection(mySqlConn);
-                console.log('\x1b[32m%s\x1b[0m', 'Connecting to MySQL database...\n');
-                this.client.connect((err:Error , connection: SqlConnection): void => {
-                    if (err) {
-                        return reject(err);
-                    }
-                    if (connection) {
-                        this.itsConnected();
-                        this.client.end();
-                        return resolve(connection);
-                    }
-                });
-            })
+            let mySqlConn = {}
+            if (this.config.ssl && (this.config.ssl === 'true')) {
+                mySqlConn ={ "host": this.config.host,    "port": this.config.port,     "database": this.config.database, "user": this.config.user, "password": this.config.password, "ssl": { rejectUnauthorized: false }};
+            } else {
+                mySqlConn ={ "host": this.config.host,    "port": this.config.port,     "database": this.config.database, "user": this.config.user, "password": this.config.password };
+            }
+            this.client = await createConnection(mySqlConn);
+            console.log('\x1b[32m%s\x1b[0m', 'Connecting to MySQL database...\n');
+            this.itsConnected();
 
+            // Close connection
+            await this.client.end();
+
+            return this.client;
+    
         } catch (err) {
+            console.log('\x1b[31m%s\x1b[0m', 'Error connecting to MySQL database\n');
             throw err;
         }
     }
+    // END SDA CUSTOM
+
 
     async generateDataModel(optimize:number, filter:string): Promise<any> {
         try {
