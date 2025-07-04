@@ -167,6 +167,16 @@ export class MysqlConnection extends AbstractConnection {
         }
     }
 
+    // SDA CUSTOM JCH (add timeout to individual queries)
+    // https://github.com/SinergiaTIC/SinergiaDA/pull/256/files
+    /**
+    * Executes a MySQL query with a timeout constraint
+    * 
+    * @param query - The SQL query string to execute
+    * @returns Promise that resolves to the query results
+    * @throws Error if query execution fails or times out after 60 seconds
+    */
+
     async execQuery(query: string): Promise<any> {
         try {
             this.client.query = util.promisify(this.client.query);
