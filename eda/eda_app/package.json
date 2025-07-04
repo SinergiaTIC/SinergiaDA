@@ -14,7 +14,7 @@
     "custom-lang-prepare": "bash ./scripts/custom-lang-prepare.sh",
     "custom-lang-end": "bash ./scripts/custom-lang-end.sh",
     "e2e": "ng e2e",
-    "int:extract": "ng i18n --output-path locale"
+    "int:extract": "ng xi18n --output-path locale"
   },
   "private": true,
   "dependencies": {
