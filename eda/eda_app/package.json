@@ -63,8 +63,7 @@
     "xliff-simple-merge": "1.2.2",
     "xlsx": "^0.17.1",
     "zone.js": "^0.12.0",
-    "fs-extra": "^3.0.1",
-    "xliff-simple-merge": "1.2.2"
+    "fs-extra": "^3.0.1"
     },
   "devDependencies": {
     "@angular-devkit/build-angular": "^14.2.10",
