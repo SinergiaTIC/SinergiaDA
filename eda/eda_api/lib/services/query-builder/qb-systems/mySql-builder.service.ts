@@ -205,6 +205,11 @@ export class MySqlBuilderService extends QueryBuilderService {
     /** IF IT IS A SELECT FOR A SELECTOR I WANT UNIQUE VALUES */
     if (forSelector === true && columns.length == 1 ) {
       myQuery = `SELECT DISTINCT ${columns} \nFROM ${o}`;
+
+      // If the element is a valueListSource type
+      if(this.queryTODO.fields[0].valueListSource !== undefined) {
+        myQuery = `SELECT DISTINCT ${columns}, \`${this.queryTODO.fields[0].valueListSource.target_table}\`.\`${this.queryTODO.fields[0].valueListSource.target_id_column}\` as \`id\`\nFROM ${o}`;
+      }
     }
 
     // If it is EDA, there is no alias and if it is EDA2 tree mode, there is an alias.
@@ -244,9 +249,13 @@ export class MySqlBuilderService extends QueryBuilderService {
     myQuery += this.getHavingFilters(havingFilters);
 
 
-    /**SDA CUSTOM */  if (forSelector === true) {
+    /**SDA CUSTOM */  if (forSelector === true && this.queryTODO.fields[0].valueListSource && this.queryTODO.fields[0].valueListSource == undefined) {
     /**SDA CUSTOM */      myQuery += `\n UNION \n SELECT '' `;
     /**SDA CUSTOM */   }
+    /**SDA CUSTOM */   if(forSelector === true && columns.length == 1 && this.queryTODO.fields[0].valueListSource !== undefined) {
+    /**SDA CUSTOM */      myQuery += `\n UNION \n SELECT '', '' `;
+    /**SDA CUSTOM */   }
+
 
     // OrderBy
     const orderColumns = this.queryTODO.fields.map(col => {
