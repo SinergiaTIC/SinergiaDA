@@ -263,8 +263,8 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
         try {
             const query = this.queryBuilderService.normalQuery([this.globalFilter.selectedColumn], params);
             const response = await this.dashboardService.executeQuery(query).toPromise();
-            // console.log('response: ', response);
-            // console.log('this.globalFilter: ',this.globalFilter);
+            console.log('response: ', response);
+            console.log('this.globalFilter: ',this.globalFilter);
 
             // only if the value is a ValueListSource
             if(this.globalFilter.selectedColumn.valueListSource !== undefined) {
@@ -296,12 +296,16 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
 
     onSelectedItemsChange(event: any) {
         // console.log('HOLA EVENTO: ', event)  => ['ActivADO', 'Cerrado']
+        console.log('HOLA EVENTO: ', event) 
         if(this.globalFilter.selectedColumn.valueListSource !== undefined) {
             this.globalFilter.selectedIdValues = event.map((e: any) => {
                 const value = this.totalValues.find(tv => e === tv[0]);
                 if(value) return value[1];
             })
         }
+        console.log('onSelectedItemsChange => this.globalFilter: ', this.globalFilter) 
+
+
     }
 
     private loadDatesFromFilter() {
