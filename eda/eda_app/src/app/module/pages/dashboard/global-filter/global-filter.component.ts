@@ -43,6 +43,9 @@ export class GlobalFilterComponent implements OnInit {
     }
 
     public initGlobalFilters(filters: any[]): void {
+        console.log('iniciandooooo')
+        console.log('globalFilters:', this.globalFilters)
+        console.log('filters:', filters)
         this.globalFilters = _.cloneDeep(filters);
         this.isDashboardCreator = this.dashboard.isDashboardCreator;
         this.setFiltersVisibility();
@@ -172,10 +175,16 @@ export class GlobalFilterComponent implements OnInit {
 
     // Global Filter Tree
     public async onCloseGlobalFilter(apply: boolean): Promise<void> {
+
+        // console.log('apply::: ', apply);
+        // console.log('globalFilter: ',this.globalFilter);
+        // console.log('globalFilters: ',this.globalFilters);
+
         if (apply) {
             this.dashboard.edaPanels.forEach(panel => {
                 if (!this.globalFilter.isdeleted) {
                     panel.globalFilters = panel.globalFilters.filter((f: any) => f.filter_id !== this.globalFilter.id);
+                    // console.log('panel.globalFilters: ', panel.globalFilters);
                 }
             });
 
@@ -190,6 +199,7 @@ export class GlobalFilterComponent implements OnInit {
                     filter.selectedTable = this.globalFilter.selectedTable;
                     filter.selectedColumn = this.globalFilter.selectedColumn;
                     filter.selectedItems = this.globalFilter.selectedItems;
+                    filter.selectedIdValues = this.globalFilter.selectedIdValues;
                     filter.selectedRange = this.globalFilter.selectedRange;
                     filter.panelList = this.globalFilter.panelList;
                     filter.pathList = this.globalFilter.pathList;

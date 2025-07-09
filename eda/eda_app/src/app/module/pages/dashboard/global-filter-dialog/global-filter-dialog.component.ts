@@ -263,6 +263,7 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
         try {
             const query = this.queryBuilderService.normalQuery([this.globalFilter.selectedColumn], params);
             const response = await this.dashboardService.executeQuery(query).toPromise();
+            
             console.log('response: ', response);
             console.log('this.globalFilter: ',this.globalFilter);
 
