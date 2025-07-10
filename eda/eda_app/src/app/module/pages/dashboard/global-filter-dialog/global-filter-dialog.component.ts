@@ -266,7 +266,7 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
             
             console.log('response: ', response);
             console.log('this.globalFilter: ',this.globalFilter);
-            // debugger;
+            debugger;
 
             // only if the value is a ValueListSource
             if(this.globalFilter.selectedColumn.valueListSource !== undefined) {
@@ -283,12 +283,12 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
                     this.columnValues.unshift(    { label: $localize`:@@emptyStringTxt:Vacío`  , value:  'emptyString' }  )
                 }
 
-                if(this.globalFilter.selectedIdValues.length !== 0) {
-                    this.globalFilter.selectedItems = this.globalFilter.selectedIdValues.map((e: any) => {
-                        const value = this.totalValues.find(tv => e === tv[1]);
-                        if(value) return value[0];
-                    })
-                }
+                // if(this.globalFilter.selectedIdValues.length !== 0 && this.globalFilter.isnew) {
+                //     this.globalFilter.selectedItems = this.globalFilter.selectedIdValues.map((e: any) => {
+                //         const value = this.totalValues.find(tv => e === tv[1]);
+                //         if(value) {return value[0]}
+                //     })
+                // }
 
             } else {
                 
@@ -301,7 +301,7 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
 
             console.log('this.globalFilter numero 2: ',this.globalFilter);
             console.log('columnValues: ',this.columnValues);
-            // debugger;
+            debugger;
 
         } catch (err) {
             this.alertService.addError(err)
