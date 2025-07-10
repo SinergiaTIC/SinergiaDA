@@ -204,7 +204,7 @@ export class GlobalFilterComponent implements OnInit {
         console.log('apply::: ', apply);
         console.log('globalFilter: ',this.globalFilter);
         console.log('globalFilters: ',this.globalFilters);
-        // debugger;
+        debugger;
 
         if (apply) {
             this.dashboard.edaPanels.forEach(panel => {
@@ -486,9 +486,8 @@ export class GlobalFilterComponent implements OnInit {
             
             const res = await this.dashboardService.executeQuery(query).toPromise();
             console.log('res: ', res);
-            console.log('globalFilters: ', globalFilter);
+            console.log('globalFilter: ', globalFilter);
             console.log('globalFilters: ', this.globalFilters);
-            // debugger;
 
             
             if( res[0][0]=='noDataAllowed' || res[0][0]=='noFilterAllowed'){
@@ -535,7 +534,7 @@ export class GlobalFilterComponent implements OnInit {
 
                 globalFilter.selectedItems = globalFilter.selectedIdValues.map(siv => {
                     const value = data.filter(d => d.id === siv);
-                    return value[0].label;
+                    return value[0].value;
                 })
 
                 console.log('XDDDD');
@@ -544,7 +543,8 @@ export class GlobalFilterComponent implements OnInit {
             
             this.globalFilters.find((gf: any) => gf.id == globalFilter.id).data = data;
             
-            // console.log('globalFilters: ', this.globalFilters);
+            console.log('globalFilter: ', globalFilter);
+            console.log('globalFilters: ', this.globalFilters);
             // debugger;
             
             
