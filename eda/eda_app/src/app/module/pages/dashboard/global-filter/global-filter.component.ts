@@ -46,6 +46,7 @@ export class GlobalFilterComponent implements OnInit {
         console.log('iniciandooooo')
         console.log('globalFilters:', this.globalFilters)
         console.log('filters:', filters)
+        // debugger;
 
         this.globalFilters = _.cloneDeep(filters);
         this.isDashboardCreator = this.dashboard.isDashboardCreator;
@@ -130,8 +131,6 @@ export class GlobalFilterComponent implements OnInit {
     public setGlobalFilterItems(filter: any) {
 
         // console.log('filter: ', filter);
-        // debugger;
-
         if(filter.selectedColumn.valueListSource !== undefined) {
             filter.selectedIdValues = filter.selectedItems.map((e: any) => {
                 const value = filter.data.find(tv => e === tv.label);
@@ -145,25 +144,23 @@ export class GlobalFilterComponent implements OnInit {
 
             // console.log('configurando un filter 2: ', filter);
             // debugger;
-        }  else {
+        } 
             
-            this.dashboard.edaPanels.forEach((panel: EdaBlankPanelComponent) => {
-                if (filter.panelList.includes(panel.panel.id)) {
-                    const filterApplied = panel.globalFilters.find((gf: any) => gf.filter_id === filter.id);
-    
-                    if (filterApplied) {
-                        filterApplied.filter_elements = this.globalFilterService.assertGlobalFilterItems(filter);
-                    } else {
-                        const formatedFilter = this.globalFilterService.formatFilter(filter);
-                        panel.assertGlobalFilter(formatedFilter);
-                    }
+        this.dashboard.edaPanels.forEach((panel: EdaBlankPanelComponent) => {
+            if (filter.panelList.includes(panel.panel.id)) {
+                const filterApplied = panel.globalFilters.find((gf: any) => gf.filter_id === filter.id);
+
+                if (filterApplied) {
+                    filterApplied.filter_elements = this.globalFilterService.assertGlobalFilterItems(filter);
+                } else {
+                    const formatedFilter = this.globalFilterService.formatFilter(filter);
+                    panel.assertGlobalFilter(formatedFilter);
                 }
-            })
+            }
+        })
             
-        }
-
-        console.log('globalFilters: ', this.globalFilters)        
-
+        // console.log('globalFilters: ', this.globalFilters)        
+        // debugger;
     }
 
     public setGlobalEmptyFilter(filter: any) {
@@ -204,7 +201,7 @@ export class GlobalFilterComponent implements OnInit {
         console.log('apply::: ', apply);
         console.log('globalFilter: ',this.globalFilter);
         console.log('globalFilters: ',this.globalFilters);
-        debugger;
+        // debugger;
 
         if (apply) {
             this.dashboard.edaPanels.forEach(panel => {

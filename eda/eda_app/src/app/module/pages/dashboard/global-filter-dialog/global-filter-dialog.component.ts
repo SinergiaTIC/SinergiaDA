@@ -264,9 +264,9 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
             const query = this.queryBuilderService.normalQuery([this.globalFilter.selectedColumn], params);
             const response = await this.dashboardService.executeQuery(query).toPromise();
             
-            console.log('response: ', response);
-            console.log('this.globalFilter: ',this.globalFilter);
-            debugger;
+            // console.log('response: ', response);
+            // console.log('this.globalFilter: ',this.globalFilter);
+            // debugger;
 
             // only if the value is a ValueListSource
             if(this.globalFilter.selectedColumn.valueListSource !== undefined) {
@@ -299,9 +299,9 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
                 
             }
 
-            console.log('this.globalFilter numero 2: ',this.globalFilter);
-            console.log('columnValues: ',this.columnValues);
-            debugger;
+            // console.log('this.globalFilter numero 2: ',this.globalFilter);
+            // console.log('columnValues: ',this.columnValues);
+            // debugger;
 
         } catch (err) {
             this.alertService.addError(err)
