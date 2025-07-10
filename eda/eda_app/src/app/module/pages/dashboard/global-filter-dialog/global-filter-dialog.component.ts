@@ -264,15 +264,24 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
             const query = this.queryBuilderService.normalQuery([this.globalFilter.selectedColumn], params);
             const response = await this.dashboardService.executeQuery(query).toPromise();
             
-            // console.log('response: ', response);
-            // console.log('this.globalFilter: ',this.globalFilter);
-            // debugger;
+            console.log('response: ', response);
+            console.log('this.globalFilter: ',this.globalFilter);
+            debugger;
 
             // only if the value is a ValueListSource
             if(this.globalFilter.selectedColumn.valueListSource !== undefined) {
                 // Generate all the label and id values for the valueListSource filters.
+
                 this.totalValues = response[1];
                 this.columnValues = response[1].filter(item => !!item[0] || item[0] === '').map(item => ({ label: item[0], value: item[0] }));
+                
+                // console.log('EPAAAA: ', response[1].filter(item => item[0]?.toString() == ''))
+                // console.log(response[1]);
+
+                if(response[1].filter(item => item[0]?.toString() == '').length == 1) {
+                    this.columnValues = this.columnValues.filter(item => item.label !== '' && item.value !== '');
+                    this.columnValues.unshift(    { label: $localize`:@@emptyStringTxt:Vacío`  , value:  'emptyString' }  )
+                }
 
                 if(this.globalFilter.selectedIdValues.length !== 0) {
                     this.globalFilter.selectedItems = this.globalFilter.selectedIdValues.map((e: any) => {
@@ -290,6 +299,10 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
                 
             }
 
+            console.log('this.globalFilter numero 2: ',this.globalFilter);
+            console.log('columnValues: ',this.columnValues);
+            debugger;
+
         } catch (err) {
             this.alertService.addError(err)
             throw err;
@@ -299,10 +312,18 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
     onSelectedItemsChange(event: any) {
         // console.log('HOLA EVENTO: ', event)  => ['ActivADO', 'Cerrado']
         console.log('HOLA EVENTO: ', event) 
+        console.log('totalValues: ', this.totalValues)
+        
+        
         if(this.globalFilter.selectedColumn.valueListSource !== undefined) {
             this.globalFilter.selectedIdValues = event.map((e: any) => {
                 const value = this.totalValues.find(tv => e === tv[0]);
-                if(value) return value[1];
+                if(value) {
+                    return value[1]
+                } else {
+                    if(e === 'emptyString') return '';
+                }
+
             })
         }
         console.log('onSelectedItemsChange => this.globalFilter: ', this.globalFilter) 
