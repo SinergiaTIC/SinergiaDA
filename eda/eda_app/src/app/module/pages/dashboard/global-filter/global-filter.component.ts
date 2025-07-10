@@ -128,8 +128,8 @@ export class GlobalFilterComponent implements OnInit {
 
     public setGlobalFilterItems(filter: any) {
 
-        console.log('filter: ', filter);
-        debugger;
+        // console.log('filter: ', filter);
+        // debugger;
 
         if(filter.selectedColumn.valueListSource !== undefined) {
             filter.selectedIdValues = filter.selectedItems.map((e: any) => {
@@ -485,9 +485,9 @@ export class GlobalFilterComponent implements OnInit {
             
             const res = await this.dashboardService.executeQuery(query).toPromise();
             console.log('res: ', res);
-            // console.log('globalFilter: ', globalFilter);
+            // console.log('globalFilters: ', this.globalFilters);
             // debugger;
-            
+
             
             if( res[0][0]=='noDataAllowed' || res[0][0]=='noFilterAllowed'){
                 this.globalFilters.find((gf: any) => gf.id == globalFilter.id).visible = 'hidden';
@@ -520,8 +520,25 @@ export class GlobalFilterComponent implements OnInit {
             // console.log('data 2: ', data);
             // debugger;
 
-            this.globalFilters.find((gf: any) => gf.id == globalFilter.id).data = data;
 
+            // For filters of valueListSource type, we modify the selectedItems depend of the selectedIdValues:
+            if(globalFilter.selectedColumn.valueListSource !== undefined) {
+
+                globalFilter.selectedItems = globalFilter.selectedIdValues.map(siv => {
+                    const value = data.filter(d => d.id === siv)
+                    return value[0].label;
+                })
+
+                console.log('XDDDD')
+
+            }            
+            
+            this.globalFilters.find((gf: any) => gf.id == globalFilter.id).data = data;
+            
+            // console.log('globalFilters: ', this.globalFilters);
+            // debugger;
+            
+            
             // console.log('this.globalFilters :::::: ', this.globalFilters);
             // debugger;
 
