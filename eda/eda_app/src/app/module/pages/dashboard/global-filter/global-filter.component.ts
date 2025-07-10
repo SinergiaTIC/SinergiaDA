@@ -522,14 +522,14 @@ export class GlobalFilterComponent implements OnInit {
             // For filters of valueListSource type, we modify the selectedItems depend of the selectedIdValues:
             if(globalFilter.selectedColumn.valueListSource !== undefined) {
 
-                if(globalFilter.selectedIdValues.some((id: any) => id === null)) {
+                if(globalFilter.selectedIdValues?.some((id: any) => id === null)) {
                     globalFilter.selectedIdValues = globalFilter.selectedItems.map((element: any) => {
                         const value = data.filter(d => d.label === element);
                         return value[0]?.id;
                     })
                 }
 
-                globalFilter.selectedItems = globalFilter.selectedIdValues.map(siv => {
+                globalFilter.selectedItems = globalFilter.selectedIdValues?.map(siv => {
                     const value = data.filter(d => d.id === siv);
                     return value[0].value;
                 })
