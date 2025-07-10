@@ -46,6 +46,7 @@ export class GlobalFilterComponent implements OnInit {
         console.log('iniciandooooo')
         console.log('globalFilters:', this.globalFilters)
         console.log('filters:', filters)
+
         this.globalFilters = _.cloneDeep(filters);
         this.isDashboardCreator = this.dashboard.isDashboardCreator;
         this.setFiltersVisibility();
@@ -203,7 +204,7 @@ export class GlobalFilterComponent implements OnInit {
         console.log('apply::: ', apply);
         console.log('globalFilter: ',this.globalFilter);
         console.log('globalFilters: ',this.globalFilters);
-        debugger;
+        // debugger;
 
         if (apply) {
             this.dashboard.edaPanels.forEach(panel => {
@@ -218,7 +219,7 @@ export class GlobalFilterComponent implements OnInit {
                 this.addingGlobalFilter(this.globalFilter); // Adding a Global filter
                 
                 console.log('globalFilters: ',this.globalFilters);
-                debugger;
+                // debugger;
             }
 
             for (const filter of this.globalFilters) {
@@ -485,7 +486,8 @@ export class GlobalFilterComponent implements OnInit {
             
             const res = await this.dashboardService.executeQuery(query).toPromise();
             console.log('res: ', res);
-            // console.log('globalFilters: ', this.globalFilters);
+            console.log('globalFilters: ', globalFilter);
+            console.log('globalFilters: ', this.globalFilters);
             // debugger;
 
             
@@ -524,12 +526,19 @@ export class GlobalFilterComponent implements OnInit {
             // For filters of valueListSource type, we modify the selectedItems depend of the selectedIdValues:
             if(globalFilter.selectedColumn.valueListSource !== undefined) {
 
+                if(globalFilter.selectedIdValues.some((id: any) => id === null)) {
+                    globalFilter.selectedIdValues = globalFilter.selectedItems.map((element: any) => {
+                        const value = data.filter(d => d.label === element);
+                        return value[0]?.id;
+                    })
+                }
+
                 globalFilter.selectedItems = globalFilter.selectedIdValues.map(siv => {
-                    const value = data.filter(d => d.id === siv)
+                    const value = data.filter(d => d.id === siv);
                     return value[0].label;
                 })
 
-                console.log('XDDDD')
+                console.log('XDDDD');
 
             }            
             
