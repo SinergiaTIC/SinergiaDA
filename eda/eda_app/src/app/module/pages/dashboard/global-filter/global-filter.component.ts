@@ -127,18 +127,42 @@ export class GlobalFilterComponent implements OnInit {
     }
 
     public setGlobalFilterItems(filter: any) {
-        this.dashboard.edaPanels.forEach((panel: EdaBlankPanelComponent) => {
-            if (filter.panelList.includes(panel.panel.id)) {
-                const filterApplied = panel.globalFilters.find((gf: any) => gf.filter_id === filter.id);
 
-                if (filterApplied) {
-                    filterApplied.filter_elements = this.globalFilterService.assertGlobalFilterItems(filter);
+        console.log('filter: ', filter);
+        debugger;
+
+        if(filter.selectedColumn.valueListSource !== undefined) {
+            filter.selectedIdValues = filter.selectedItems.map((e: any) => {
+                const value = filter.data.find(tv => e === tv.label);
+                console.log('value: ', value);
+                if(value) {
+                    return value.id;
                 } else {
-                    const formatedFilter = this.globalFilterService.formatFilter(filter);
-                    panel.assertGlobalFilter(formatedFilter);
+                    if(e === 'emptyString') return '';
                 }
-            }
-        })
+            })
+
+            // console.log('configurando un filter 2: ', filter);
+            // debugger;
+        }  else {
+            
+            this.dashboard.edaPanels.forEach((panel: EdaBlankPanelComponent) => {
+                if (filter.panelList.includes(panel.panel.id)) {
+                    const filterApplied = panel.globalFilters.find((gf: any) => gf.filter_id === filter.id);
+    
+                    if (filterApplied) {
+                        filterApplied.filter_elements = this.globalFilterService.assertGlobalFilterItems(filter);
+                    } else {
+                        const formatedFilter = this.globalFilterService.formatFilter(filter);
+                        panel.assertGlobalFilter(formatedFilter);
+                    }
+                }
+            })
+            
+        }
+
+        console.log('globalFilters: ', this.globalFilters)        
+
     }
 
     public setGlobalEmptyFilter(filter: any) {
@@ -176,9 +200,10 @@ export class GlobalFilterComponent implements OnInit {
     // Global Filter Tree
     public async onCloseGlobalFilter(apply: boolean): Promise<void> {
 
-        // console.log('apply::: ', apply);
-        // console.log('globalFilter: ',this.globalFilter);
-        // console.log('globalFilters: ',this.globalFilters);
+        console.log('apply::: ', apply);
+        console.log('globalFilter: ',this.globalFilter);
+        console.log('globalFilters: ',this.globalFilters);
+        debugger;
 
         if (apply) {
             this.dashboard.edaPanels.forEach(panel => {
@@ -191,6 +216,9 @@ export class GlobalFilterComponent implements OnInit {
             if (this.globalFilter.isnew) {
                 this.globalFilters.push(this.globalFilter);
                 this.addingGlobalFilter(this.globalFilter); // Adding a Global filter
+                
+                console.log('globalFilters: ',this.globalFilters);
+                debugger;
             }
 
             for (const filter of this.globalFilters) {
@@ -456,6 +484,10 @@ export class GlobalFilterComponent implements OnInit {
             query.query.forSelector = true;
             
             const res = await this.dashboardService.executeQuery(query).toPromise();
+            console.log('res: ', res);
+            // console.log('globalFilter: ', globalFilter);
+            // debugger;
+            
             
             if( res[0][0]=='noDataAllowed' || res[0][0]=='noFilterAllowed'){
                 this.globalFilters.find((gf: any) => gf.id == globalFilter.id).visible = 'hidden';
@@ -465,15 +497,34 @@ export class GlobalFilterComponent implements OnInit {
             
             let data : any[] ;
             if(res[1].length > 0){
-                data = res[1].filter(item => item[0]?.toString()  != '').map(item => ({ label: item[0]?.toString(), value: item[0]?.toString() }));
+                if(globalFilter.selectedColumn.valueListSource !== undefined) {
+                    data = res[1].filter(item => item[0]?.toString()  != '').map(item => ({ label: item[0]?.toString(), value: item[0]?.toString(), id: item[1] }));
+
+                } else {
+                    data = res[1].filter(item => item[0]?.toString()  != '').map(item => ({ label: item[0]?.toString(), value: item[0]?.toString() }));
+                }
             }
+
+            // console.log('data 1: ', data);
+            // debugger;
 
             /** IF I HAVE EMPTY VALUES I REPLACE THEM WITH THE EMPTY STRING TEXT....... THAT IS EQUIVALENT TO IS NULL OR EMPTY */
             if( res[1].filter(item => item[0]?.toString() == '').length == 1 ){
-                data.unshift(    { label: $localize`:@@emptyStringTxt:Vacío`  , value:  'emptyString'  }  )
+                if(globalFilter.selectedColumn.valueListSource !== undefined) {
+                    data.unshift(    { label: $localize`:@@emptyStringTxt:Vacío`  , value:  'emptyString' , id: '' }  )
+                } else {
+                    data.unshift(    { label: $localize`:@@emptyStringTxt:Vacío`  , value:  'emptyString' }  )
+                }
             }
 
+            // console.log('data 2: ', data);
+            // debugger;
+
             this.globalFilters.find((gf: any) => gf.id == globalFilter.id).data = data;
+
+            // console.log('this.globalFilters :::::: ', this.globalFilters);
+            // debugger;
+
         } catch (err) {
             this.alertService.addError(err);
             throw err;
