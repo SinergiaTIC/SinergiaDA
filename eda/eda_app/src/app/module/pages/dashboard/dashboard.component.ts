@@ -144,13 +144,13 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
         this.initializeResponsiveSizes();
         this.initializeGridsterOptions();
         this.initializeForm();
-        let tags = JSON.parse(sessionStorage.getItem('tags'));
+        let tags = JSON.parse(localStorage.getItem('tags'));
         if (tags) {
             this.tags = tags.filter(tag => tag.value !== 1);
         } else {
             this.tags = [];
         }
-        this.tags.push({ value: 2, label: this.newTag });
+        this.tags.push({ label: this.newTag, value: '2' });
     }
 
     // ng cycle lives
