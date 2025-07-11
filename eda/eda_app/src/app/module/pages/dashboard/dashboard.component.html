@@ -238,7 +238,7 @@
         </div>
     </div>
 
-    <div  class="right-sidebar-blocks-options block-options-bg pointer mt-1" (click)="openUrlsConfig();">
+    <div  *ngIf="display_v.edit_mode && canIedit()" class="right-sidebar-blocks-options block-options-bg pointer mt-1" (click)="openUrlsConfig();">
         <div>
             <i class="fa fa-link"></i>
             <span i18n="@@opcionUrls" class="ml-2">ACCIÓN PERSONALIZADA</span>
