@@ -106,7 +106,7 @@ export class MySqlBuilderService extends QueryBuilderService {
       );
 
       
-      if (col.column_type == "text") {
+      if ( col?.old_column_type == "text"  || col.column_type == "text") { // the numbers that come from text made counts also come this way.
 
         // COUNT NULLS
         querys[diplayName].push(
