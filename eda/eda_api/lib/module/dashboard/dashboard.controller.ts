@@ -175,27 +175,29 @@ export class DashboardController {
       }
       if( result == false ){
                 const user = req.user;
+
                 ds.ds.metadata.model_granted_roles.forEach(e => {
                 if(e.table == 'fullModel' ){
                     if(e.users?.indexOf( user._id ) >= 0  ){ // el usuario puede ver el modelo
-                         result  = true;
-                        }
-                if(e.type ==  'anyoneCanSee' ){ // Todos pueden ver el modelo.
-                         result  = true;
-                        }
+                      result  = true;
+                    }
+                    if(e.type ==  'anyoneCanSee' ){ // Todos pueden ver el modelo.
+                      result  = true;
+                    }
                     if(  e.role?.length > 0 ) { // si el rol puede verlo lo ve
-                        user.role.forEach( r=> {
-                          if (  e.role.indexOf( r ) >= 0 ){
-                             result  = true;
-                          }
-                        })
+                      user.role.forEach( r=> {
+                        if (  e.role.indexOf( r ) >= 0 ){
+                            result  = true;
+                        }
+                      })
                     } 
                     
-                }else{  // si  veo algo.
+                } else{  // si  veo algo.
                     if(e.permission == true ){
-                        if(e.users?.indexOf( user._id ) >= 0  ){ // el usuario puede ver el algo de alguna tabla
+
+                        if( e.users?.some( element => JSON.stringify(element) === JSON.stringify(user._id) )   ){ // el usuario puede ver el algo de alguna tabla
                             result  = true;
-                            }
+                        }
                         if(  e.role?.length > 0 ) { // si el rol puede ver algo de alguna tabla 
                             user.role.forEach( r=> {
                               if (  e.role.indexOf( r ) >= 0 ){
@@ -203,9 +205,8 @@ export class DashboardController {
                               }
                             })
                         } 
-
                       }     
-                    }
+                }
             });
       }
       return result;
