@@ -14,5 +14,5 @@
 }
 
 :root {
-    --DEFAULT_FONT_FAMILY: "Montserrat";   /* THIS MUST BE SET ALSO IN  eda_app\src\app\config\personalitzacio\customizables.ts */
+    --DEFAULT_FONT_FAMILY: "Questrial";   /* THIS MUST BE SET ALSO IN  eda_app\src\app\config\personalitzacio\customizables.ts */
   }
