@@ -45,6 +45,8 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
     public columnValues: any[] = [];
     public tableNodes: any[] = [];
 
+    public totalValues: any [];    
+
     //valors del dropdown de filtrat de visiblitat
     public publicRoHidden = [
         { label: $localize`:@@public:público`, value: `public` },
@@ -82,6 +84,7 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
                 selectedTable: {},
                 selectedColumn: {},
                 selectedItems: [],
+                selectedIdValues: [],
                 panelList: [],
                 pathList: {},
                 type: '',
@@ -257,15 +260,46 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
             const query = this.queryBuilderService.normalQuery([this.globalFilter.selectedColumn], params);
             const response = await this.dashboardService.executeQuery(query).toPromise();
 
-            if (Array.isArray(response) && response.length > 1) {
-                const data = response[1];
-                this.columnValues = data.filter(item => !!item[0] || item[0] === '').map(item => ({ label: item[0], value: item[0] }));
+            // console.log('response: ', response);
+            // console.log('this.globalFilter: ',this.globalFilter);
+
+            // only if the value is a ValueListSource
+            if(this.globalFilter.selectedColumn.valueListSource !== undefined) {
+                // Generate all the label and id values for the valueListSource filters.
+                this.totalValues = response[1];
+                this.columnValues = response[1].filter(item => !!item[0] || item[0] === '').map(item => ({ label: item[0], value: item[0] }));
+
+                if(this.globalFilter.selectedIdValues.length !== 0) {
+                    this.globalFilter.selectedItems = this.globalFilter.selectedIdValues.map((e: any) => {
+                        const value = this.totalValues.find(tv => e === tv[1]);
+                        if(value) return value[0];
+                    })
+                }
+            } else {
+                
+                if (Array.isArray(response) && response.length > 1) {
+                    const data = response[1];
+                    this.columnValues = data.filter(item => !!item[0] || item[0] === '').map(item => ({ label: item[0], value: item[0] }));
+                }
             }
+
         } catch (err) {
             this.alertService.addError(err)
             throw err;
         }
     }
+
+    onSelectedItemsChange(event: any) {
+        // console.log('HOLA EVENTO: ', event)  => ['ActivADO', 'Cerrado']
+        if(this.globalFilter.selectedColumn.valueListSource !== undefined) {
+            this.globalFilter.selectedIdValues = event.map((e: any) => {
+                const value = this.totalValues.find(tv => e === tv[0]);
+                if(value) return value[1];
+            })
+        }
+    }
+
+
 
     private loadDatesFromFilter() {
         const filter = this.globalFilter;
