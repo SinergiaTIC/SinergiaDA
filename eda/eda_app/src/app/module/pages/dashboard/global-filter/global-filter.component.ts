@@ -43,11 +43,6 @@ export class GlobalFilterComponent implements OnInit {
     }
 
     public initGlobalFilters(filters: any[]): void {
-        console.log('iniciandooooo')
-        console.log('globalFilters:', this.globalFilters)
-        console.log('filters:', filters)
-        // debugger;
-
         this.globalFilters = _.cloneDeep(filters);
         this.isDashboardCreator = this.dashboard.isDashboardCreator;
         this.setFiltersVisibility();
@@ -129,21 +124,15 @@ export class GlobalFilterComponent implements OnInit {
     }
 
     public setGlobalFilterItems(filter: any) {
-
-        // console.log('filter: ', filter);
         if(filter.selectedColumn.valueListSource !== undefined) {
             filter.selectedIdValues = filter.selectedItems.map((e: any) => {
                 const value = filter.data.find(tv => e === tv.label);
-                console.log('value: ', value);
                 if(value) {
                     return value.id;
                 } else {
                     if(e === 'emptyString') return '';
                 }
             })
-
-            // console.log('configurando un filter 2: ', filter);
-            // debugger;
         } 
             
         this.dashboard.edaPanels.forEach((panel: EdaBlankPanelComponent) => {
@@ -158,9 +147,6 @@ export class GlobalFilterComponent implements OnInit {
                 }
             }
         })
-            
-        // console.log('globalFilters: ', this.globalFilters)        
-        // debugger;
     }
 
     public setGlobalEmptyFilter(filter: any) {
@@ -198,25 +184,16 @@ export class GlobalFilterComponent implements OnInit {
     // Global Filter Tree
     public async onCloseGlobalFilter(apply: boolean): Promise<void> {
 
-        console.log('apply::: ', apply);
-        console.log('globalFilter: ',this.globalFilter);
-        console.log('globalFilters: ',this.globalFilters);
-        // debugger;
-
         if (apply) {
             this.dashboard.edaPanels.forEach(panel => {
                 if (!this.globalFilter.isdeleted) {
                     panel.globalFilters = panel.globalFilters.filter((f: any) => f.filter_id !== this.globalFilter.id);
-                    // console.log('panel.globalFilters: ', panel.globalFilters);
                 }
             });
 
             if (this.globalFilter.isnew) {
                 this.globalFilters.push(this.globalFilter);
                 this.addingGlobalFilter(this.globalFilter); // Adding a Global filter
-                
-                console.log('globalFilters: ',this.globalFilters);
-                // debugger;
             }
 
             for (const filter of this.globalFilters) {
@@ -482,10 +459,6 @@ export class GlobalFilterComponent implements OnInit {
             query.query.forSelector = true;
             
             const res = await this.dashboardService.executeQuery(query).toPromise();
-            console.log('res: ', res);
-            console.log('globalFilter: ', globalFilter);
-            console.log('globalFilters: ', this.globalFilters);
-
             
             if( res[0][0]=='noDataAllowed' || res[0][0]=='noFilterAllowed'){
                 this.globalFilters.find((gf: any) => gf.id == globalFilter.id).visible = 'hidden';
@@ -503,9 +476,6 @@ export class GlobalFilterComponent implements OnInit {
                 }
             }
 
-            // console.log('data 1: ', data);
-            // debugger;
-
             /** IF I HAVE EMPTY VALUES I REPLACE THEM WITH THE EMPTY STRING TEXT....... THAT IS EQUIVALENT TO IS NULL OR EMPTY */
             if( res[1].filter(item => item[0]?.toString() == '').length == 1 ){
                 if(globalFilter.selectedColumn.valueListSource !== undefined) {
@@ -514,10 +484,6 @@ export class GlobalFilterComponent implements OnInit {
                     data.unshift(    { label: $localize`:@@emptyStringTxt:Vacío`  , value:  'emptyString' }  )
                 }
             }
-
-            // console.log('data 2: ', data);
-            // debugger;
-
 
             // For filters of valueListSource type, we modify the selectedItems depend of the selectedIdValues:
             if(globalFilter.selectedColumn.valueListSource !== undefined) {
@@ -534,19 +500,9 @@ export class GlobalFilterComponent implements OnInit {
                     return value[0].value;
                 })
 
-                console.log('XDDDD');
-
             }            
             
             this.globalFilters.find((gf: any) => gf.id == globalFilter.id).data = data;
-            
-            console.log('globalFilter: ', globalFilter);
-            console.log('globalFilters: ', this.globalFilters);
-            // debugger;
-            
-            
-            // console.log('this.globalFilters :::::: ', this.globalFilters);
-            // debugger;
 
         } catch (err) {
             this.alertService.addError(err);

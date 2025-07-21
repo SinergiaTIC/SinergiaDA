@@ -263,9 +263,6 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
         try {
             const query = this.queryBuilderService.normalQuery([this.globalFilter.selectedColumn], params);
             const response = await this.dashboardService.executeQuery(query).toPromise();
-            
-            // console.log('response: ', response);
-            // debugger;
 
             // only if the value is a ValueListSource
             if(this.globalFilter.selectedColumn.valueListSource !== undefined) {
@@ -273,9 +270,6 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
 
                 this.totalValues = response[1];
                 this.columnValues = response[1].filter(item => !!item[0] || item[0] === '').map(item => ({ label: item[0], value: item[0] }));
-                
-                // console.log('EPAAAA: ', response[1].filter(item => item[0]?.toString() == ''))
-                // console.log(response[1]);
 
                 if(response[1].filter(item => item[0]?.toString() == '').length == 1) {
                     this.columnValues = this.columnValues.filter(item => item.label !== '' && item.value !== '');
@@ -298,10 +292,6 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
                 
             }
 
-            // console.log('this.globalFilter numero 2: ',this.globalFilter);
-            // console.log('columnValues: ',this.columnValues);
-            // debugger;
-
         } catch (err) {
             this.alertService.addError(err)
             throw err;
@@ -309,10 +299,6 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
     }
 
     onSelectedItemsChange(event: any) {
-        // console.log('HOLA EVENTO: ', event)  => ['ActivADO', 'Cerrado']
-        console.log('HOLA EVENTO: ', event) 
-        console.log('totalValues: ', this.totalValues)
-        
         
         if(this.globalFilter.selectedColumn.valueListSource !== undefined) {
             this.globalFilter.selectedIdValues = event.map((e: any) => {
@@ -325,8 +311,6 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
 
             })
         }
-        console.log('onSelectedItemsChange => this.globalFilter: ', this.globalFilter) 
-
 
     }
 
