@@ -864,6 +864,8 @@ export class EdaBlankPanelComponent implements OnInit {
      */
     public openColumnDialog(column: Column, isFilter?: boolean): void {
 
+        console.log(':::::::::: this.selectedFilters :::::::::: ', this.selectedFilters);
+
         this.disableBtnSave();
 
         if (column.table_id !== this.rootTable?.table_name) {
@@ -951,6 +953,10 @@ export class EdaBlankPanelComponent implements OnInit {
                 }
             });
         }
+
+        console.log('configController - EBP: ', this.configController)
+        console.log('filterController - EBP: ', this.filterController)
+
     }
 
     /**

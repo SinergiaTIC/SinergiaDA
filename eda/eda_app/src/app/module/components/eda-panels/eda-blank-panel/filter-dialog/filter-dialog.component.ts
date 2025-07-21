@@ -88,6 +88,7 @@ export class FilterDialogComponent extends EdaDialogAbstract {
 
         // Inicializando el valor del WHERE / HAVING
         this.filterBeforeAfterSelected = this.filterBeforeAfter.elements[0]
+
     }
 
     onShow(): void {
@@ -95,6 +96,9 @@ export class FilterDialogComponent extends EdaDialogAbstract {
         const title = this.selectedColumn.display_name.default;
         this.dialog.title = `Atributo ${title} de la entidad ${this.controller.params.table}`;
         this.carrega();
+
+        console.log('filter-dialog => this.controller:::::::', this.controller);
+
     }
 
     addFilter() {
