@@ -157,9 +157,6 @@ export class EdaTreeTable implements OnInit {
     let leafLabels = labels.filter(label => isUniqueLabel[label]);
 
 
-    console.log('hierarchyLabels: ', hierarchyLabels);
-    console.log('leafLabels: ', leafLabels);
-
     // Visualization control of the element of the treeTable
     // -----------------------------------------------------
     if(hierarchyLabels.length!==0 && leafLabels.length===0) {
