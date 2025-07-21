@@ -208,7 +208,7 @@ export class MySqlBuilderService extends QueryBuilderService {
 
       // If the element is a valueListSource type
       if(this.queryTODO.fields[0].valueListSource !== undefined) {
-        myQuery = `SELECT DISTINCT ${columns}, \`${this.queryTODO.fields[0].valueListSource.target_table}\`.\`${this.queryTODO.fields[0].valueListSource.target_id_column}\` as \`id\`\nFROM ${o}`;
+        myQuery = `SELECT DISTINCT ${columns},  IFNULL(\`${this.queryTODO.fields[0].valueListSource.target_table}\`.\`${this.queryTODO.fields[0].valueListSource.target_id_column}\`, '') as \`id\`\nFROM ${o}`;
       }
     }
 
