@@ -124,7 +124,6 @@ export class GlobalFilterComponent implements OnInit {
     }
 
     public setGlobalFilterItems(filter: any) {
-        if(filter.selectedColumn.valueListSource !== undefined) {
             filter.selectedIdValues = filter.selectedItems.map((e: any) => {
                 const value = filter.data.find(tv => e === tv.label);
                 if(value) {
@@ -133,7 +132,7 @@ export class GlobalFilterComponent implements OnInit {
                     if(e === 'emptyString') return '';
                 }
             })
-        } 
+
             
         this.dashboard.edaPanels.forEach((panel: EdaBlankPanelComponent) => {
             if (filter.panelList.includes(panel.panel.id)) {
@@ -150,6 +149,7 @@ export class GlobalFilterComponent implements OnInit {
     }
 
     public setGlobalEmptyFilter(filter: any) {
+
 
         setTimeout(() => {
             this.dashboard.edaPanels.forEach((panel: EdaBlankPanelComponent) => {
@@ -468,25 +468,18 @@ export class GlobalFilterComponent implements OnInit {
             
             let data : any[] ;
             if(res[1].length > 0){
-                if(globalFilter.selectedColumn.valueListSource !== undefined) {
+
                     data = res[1].filter(item => item[0]?.toString()  != '').map(item => ({ label: item[0]?.toString(), value: item[0]?.toString(), id: item[1] }));
 
-                } else {
-                    data = res[1].filter(item => item[0]?.toString()  != '').map(item => ({ label: item[0]?.toString(), value: item[0]?.toString() }));
-                }
             }
 
             /** IF I HAVE EMPTY VALUES I REPLACE THEM WITH THE EMPTY STRING TEXT....... THAT IS EQUIVALENT TO IS NULL OR EMPTY */
             if( res[1].filter(item => item[0]?.toString() == '').length == 1 ){
-                if(globalFilter.selectedColumn.valueListSource !== undefined) {
                     data.unshift(    { label: $localize`:@@emptyStringTxt:Vacío`  , value:  'emptyString' , id: '' }  )
-                } else {
-                    data.unshift(    { label: $localize`:@@emptyStringTxt:Vacío`  , value:  'emptyString' }  )
-                }
+
             }
 
-            // For filters of valueListSource type, we modify the selectedItems depend of the selectedIdValues:
-            if(globalFilter.selectedColumn.valueListSource !== undefined) {
+
 
                 if(globalFilter.selectedIdValues?.some((id: any) => id === null)) {
                     globalFilter.selectedIdValues = globalFilter.selectedItems.map((element: any) => {
@@ -499,10 +492,10 @@ export class GlobalFilterComponent implements OnInit {
                     const value = data.filter(d => d.id === siv);
                     return value[0].value;
                 })
-
-            }            
+         
             
             this.globalFilters.find((gf: any) => gf.id == globalFilter.id).data = data;
+
 
         } catch (err) {
             this.alertService.addError(err);

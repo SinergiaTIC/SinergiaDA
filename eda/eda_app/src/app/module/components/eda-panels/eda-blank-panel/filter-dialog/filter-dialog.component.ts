@@ -97,8 +97,6 @@ export class FilterDialogComponent extends EdaDialogAbstract {
         this.dialog.title = `Atributo ${title} de la entidad ${this.controller.params.table}`;
         this.carrega();
 
-        console.log('filter-dialog => this.controller:::::::', this.controller);
-
     }
 
     addFilter() {

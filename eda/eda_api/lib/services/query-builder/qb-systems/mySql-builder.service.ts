@@ -204,7 +204,9 @@ export class MySqlBuilderService extends QueryBuilderService {
 
     /** IF IT IS A SELECT FOR A SELECTOR I WANT UNIQUE VALUES */
     if (forSelector === true && columns.length == 1 ) {
-      myQuery = `SELECT DISTINCT ${columns} \nFROM ${o}`;
+      myQuery = `SELECT DISTINCT  IFNULL(\`${this.queryTODO.fields[0].table_id}\`.\`${this.queryTODO.fields[0].column_name}\`, '') as \`${this.queryTODO.fields[0].display_name}\`,  \n   
+       IFNULL(\`${this.queryTODO.fields[0].table_id}\`.\`${this.queryTODO.fields[0].column_name}\`, '') as \`id\`  \n  
+      FROM ${o}`;
 
       // If the element is a valueListSource type
       if(this.queryTODO.fields[0].valueListSource !== undefined) {
@@ -249,10 +251,7 @@ export class MySqlBuilderService extends QueryBuilderService {
     myQuery += this.getHavingFilters(havingFilters);
 
 
-    /**SDA CUSTOM */  if (forSelector === true && this.queryTODO.fields[0].valueListSource && this.queryTODO.fields[0].valueListSource == undefined) {
-    /**SDA CUSTOM */      myQuery += `\n UNION \n SELECT '' `;
-    /**SDA CUSTOM */   }
-    /**SDA CUSTOM */   if(forSelector === true && columns.length == 1 && this.queryTODO.fields[0].valueListSource !== undefined) {
+    /**SDA CUSTOM */  if (forSelector === true  ) {
     /**SDA CUSTOM */      myQuery += `\n UNION \n SELECT '', '' `;
     /**SDA CUSTOM */   }
 
@@ -623,7 +622,7 @@ export class MySqlBuilderService extends QueryBuilderService {
         column.autorelation = f.autorelation;
         column.joins = f.joins;
         column.valueListSource = f.valueListSource;
-        const colname = this.getFilterColname(column);
+        const colname = this.getFilterColname(column, f.filter_codes !== undefined  ,  f.valueListSource !== undefined );
         if (f.filter_type === 'not_null' || f.filter_type === 'not_null_nor_empty' || f.filter_type === 'null_or_empty') {
           filtersString += '\nand ' + this.filterToString(f);
         } else {
@@ -1002,26 +1001,54 @@ export class MySqlBuilderService extends QueryBuilderService {
       column.autorelation = filterObject.autorelation;
       column.joins = filterObject.joins || [];
       column.valueListSource = filterObject.valueListSource;
-      const colname=this.getFilterColname(column);
+      const colname=this.getFilterColname(column, filterObject.filter_codes.length !== undefined  ,  filterObject.valueListSource !== undefined );
       
       switch (this.setFilterType(filterObject.filter_type)) {
         case 0:
           if (filterObject.filter_type === '!=') { filterObject.filter_type = '<>' }
           if (filterObject.filter_type === 'like') {
-            return `${colname}  ${filterObject.filter_type} '%${filterObject.filter_elements[0].value1}%' `;
+            /** if i have the lovely code i use the code */
+            if( filterObject.filter_codes.length !== undefined  &&  filterObject.valueListSource !== undefined ){
+                return `${colname}  ${filterObject.filter_type} '%${filterObject.filter_codes[0].value1}%' `;
+            }else{
+                return `${colname}  ${filterObject.filter_type} '%${filterObject.filter_elements[0].value1}%' `;
+            }
           }
           if (filterObject.filter_type === 'not_like') { 
             filterObject.filter_type = 'not like'
-            return `${colname}  ${filterObject.filter_type} '%${filterObject.filter_elements[0].value1}%' `;
+            /** if i have the lovely code i use the code */
+            if( filterObject.filter_codes.length !== undefined  &&  filterObject.valueListSource !== undefined ){
+                return `${colname}  ${filterObject.filter_type} '%${filterObject.filter_codes[0].value1}%' `;
+            }else{
+                return `${colname}  ${filterObject.filter_type} '%${filterObject.filter_elements[0].value1}%' `;
+            }
           }   
-          return `${colname}  ${filterObject.filter_type} ${this.processFilter(filterObject.filter_elements[0].value1, colType)} `;
+          /** if i have the lovely code i use the code */
+          if( filterObject.filter_codes.length !== undefined  &&  filterObject.valueListSource !== undefined ){
+              return `${colname}  ${filterObject.filter_type} ${this.processFilter(filterObject.filter_codes[0].value1, colType)} `;
+          }else{
+              return `${colname}  ${filterObject.filter_type} ${this.processFilter(filterObject.filter_elements[0].value1, colType)} `;
+          }
+          
           // in values
         case 1:
           if (filterObject.filter_type === 'not_in') { filterObject.filter_type = 'not in' }
-          return `${colname}  ${filterObject.filter_type} (${this.processFilter(filterObject.filter_elements[0].value1, colType)}) `;
+            /** if i have the lovely code i use the code */
+            if( filterObject.filter_codes.length !== undefined  &&  filterObject.valueListSource !== undefined ){
+                return `${colname}  ${filterObject.filter_type} (${this.processFilter(filterObject.filter_codes[0].value1, colType)}) `;
+            }else{
+                return `${colname}  ${filterObject.filter_type} (${this.processFilter(filterObject.filter_elements[0].value1, colType)}) `;
+            }
+          
         case 2:
-          return `${colname}  ${filterObject.filter_type} 
-                      ${this.processFilter(filterObject.filter_elements[0].value1, colType)} and ${this.processFilterEndRange(filterObject.filter_elements[1].value2, colType)}`;
+            /** if i have the lovely code i use the code */
+            if( filterObject.filter_codes.length !== undefined  &&  filterObject.valueListSource !== undefined ){
+                return `${colname}  ${filterObject.filter_type} 
+                    ${this.processFilter(filterObject.filter_codes[0].value1, colType)} and ${this.processFilterEndRange(filterObject.filter_codes[1].value2, colType)}`;
+            }else{
+                return `${colname}  ${filterObject.filter_type} 
+                    ${this.processFilter(filterObject.filter_elements[0].value1, colType)} and ${this.processFilterEndRange(filterObject.filter_elements[1].value2, colType)}`;
+            }
         case 3:
           return `${colname} is not null`;
         case 4:
@@ -1038,14 +1065,17 @@ export class MySqlBuilderService extends QueryBuilderService {
    * @param column 
    * @returns coumn name in string mode for filtering. 
    */
-  public getFilterColname(column: any){
+  public getFilterColname(column: any, codes: boolean, valuelist: boolean){
     let colname:String ;
     if( column.computed_column == 'no'  || ! column.hasOwnProperty('computed_column') ){
 
       if (column.autorelation && !column.valueListSource) {
         colname = `\`${column.joins[column.joins.length-1][0]}\`.\`${column.column_name}\``;
-      } else {
+      } else if(codes &&valuelist ){
+        colname = `\`${column.table_id}\`.\`${column.valueListSource.target_id_column}\`` ;
+      }else{
         colname = `\`${column.table_id}\`.\`${column.column_name}\`` ;
+      
       }
       
     }else{
