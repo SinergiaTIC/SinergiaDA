@@ -416,7 +416,7 @@ export class GlobalFiltersService {
             applyToAll: globalFilter.applyToAll,
             autorelation: globalFilter.autorelation,
             valueListSource: globalFilter.selectedColumn.valueListSource,
-            filterBeforeGrouping: true, // Para todos los filtros globales es Where
+            filterBeforeGrouping: true, // For all global filters it is Where
         }
 
         return formatedFilter;

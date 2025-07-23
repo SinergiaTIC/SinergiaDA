@@ -139,7 +139,9 @@ export class GlobalFilterComponent implements OnInit {
                 const filterApplied = panel.globalFilters.find((gf: any) => gf.filter_id === filter.id);
 
                 if (filterApplied) {
+                    // Adding the filter_elements and filter_codes for the query
                     filterApplied.filter_elements = this.globalFilterService.assertGlobalFilterItems(filter);
+                    filterApplied.filter_codes = this.globalFilterService.assertGlobalFilterCodes(filter);
                 } else {
                     const formatedFilter = this.globalFilterService.formatFilter(filter);
                     panel.assertGlobalFilter(formatedFilter);
