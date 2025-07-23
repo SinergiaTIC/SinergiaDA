@@ -150,9 +150,6 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
         } else {
             this.availableRange = true;
         }
-
-        console.log('column-dialog => this.controller:::::::', this.controller);
-
     }
 
     private carregarValidacions(): void {
