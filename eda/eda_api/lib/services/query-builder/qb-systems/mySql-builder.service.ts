@@ -1001,14 +1001,14 @@ export class MySqlBuilderService extends QueryBuilderService {
       column.autorelation = filterObject.autorelation;
       column.joins = filterObject.joins || [];
       column.valueListSource = filterObject.valueListSource;
-      const colname=this.getFilterColname(column, filterObject.filter_codes.length !== undefined  ,  filterObject.valueListSource !== undefined );
+      const colname=this.getFilterColname(column, filterObject.filter_codes?.length !== undefined  ,  filterObject.valueListSource !== undefined );
       
       switch (this.setFilterType(filterObject.filter_type)) {
         case 0:
           if (filterObject.filter_type === '!=') { filterObject.filter_type = '<>' }
           if (filterObject.filter_type === 'like') {
             /** if i have the lovely code i use the code */
-            if( filterObject.filter_codes.length !== undefined  &&  filterObject.valueListSource !== undefined ){
+            if( filterObject.filter_codes?.length !== undefined  &&  filterObject.valueListSource !== undefined ){
                 return `${colname}  ${filterObject.filter_type} '%${filterObject.filter_codes[0].value1}%' `;
             }else{
                 return `${colname}  ${filterObject.filter_type} '%${filterObject.filter_elements[0].value1}%' `;
@@ -1024,7 +1024,7 @@ export class MySqlBuilderService extends QueryBuilderService {
             }
           }   
           /** if i have the lovely code i use the code */
-          if( filterObject.filter_codes.length !== undefined  &&  filterObject.valueListSource !== undefined ){
+          if( filterObject.filter_codes?.length !== undefined  &&  filterObject.valueListSource !== undefined ){
               return `${colname}  ${filterObject.filter_type} ${this.processFilter(filterObject.filter_codes[0].value1, colType)} `;
           }else{
               return `${colname}  ${filterObject.filter_type} ${this.processFilter(filterObject.filter_elements[0].value1, colType)} `;
@@ -1034,7 +1034,7 @@ export class MySqlBuilderService extends QueryBuilderService {
         case 1:
           if (filterObject.filter_type === 'not_in') { filterObject.filter_type = 'not in' }
             /** if i have the lovely code i use the code */
-            if( filterObject.filter_codes.length !== undefined  &&  filterObject.valueListSource !== undefined ){
+            if( filterObject.filter_codes?.length !== undefined  &&  filterObject.valueListSource !== undefined ){
                 return `${colname}  ${filterObject.filter_type} (${this.processFilter(filterObject.filter_codes[0].value1, colType)}) `;
             }else{
                 return `${colname}  ${filterObject.filter_type} (${this.processFilter(filterObject.filter_elements[0].value1, colType)}) `;
@@ -1042,7 +1042,7 @@ export class MySqlBuilderService extends QueryBuilderService {
           
         case 2:
             /** if i have the lovely code i use the code */
-            if( filterObject.filter_codes.length !== undefined  &&  filterObject.valueListSource !== undefined ){
+            if( filterObject.filter_codes?.length !== undefined  &&  filterObject.valueListSource !== undefined ){
                 return `${colname}  ${filterObject.filter_type} 
                     ${this.processFilter(filterObject.filter_codes[0].value1, colType)} and ${this.processFilterEndRange(filterObject.filter_codes[1].value2, colType)}`;
             }else{
