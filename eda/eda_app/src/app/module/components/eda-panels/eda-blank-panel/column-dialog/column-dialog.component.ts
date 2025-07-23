@@ -652,7 +652,7 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
                 if (res.length > 1) {
                     for (const item of res[1]) {
                         if (item[0] === '' || item[0] ) {
-                            if(column.valueListSource!==undefined) {
+                            if(column.valueListSource !== undefined) {
                                 this.dropDownFields.push({ label : item[0], value: item[0], id : item[1] });
                             } else {
                                 this.dropDownFields.push({ label : item[0], value: item[0], id : item[0] });
