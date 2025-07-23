@@ -14,6 +14,7 @@ interface FilterOptions {
     joins?: any[];
     filterBeforeGrouping?: boolean;
     aggregation_type?: string;
+    data?: any;
 }
 
 @Injectable()
@@ -22,14 +23,16 @@ export class ColumnUtilsService {
 
     
     public setFilter(options: FilterOptions): object {
-        const { obj, table, column, column_type, type, selectedRange, valueListSource, autorelation, joins, filterBeforeGrouping, aggregation_type } = options;
-
+        const { obj, table, column, column_type, type, selectedRange, valueListSource, autorelation, joins, filterBeforeGrouping, aggregation_type, data } = options;
     
         const values = Object.keys(obj).map((key) => {
             if (!_.isNil(obj[key])) {
                 return { [key]: Array.isArray(obj[key]) ? obj[key] : [obj[key]] };
             }
         }).filter(Boolean);
+        
+        // Adding the values Codes
+        const valuesIds = [{value1: _.cloneDeep(values)[0].value1.map((e: any) => data.find((d: any) => d.value === e).id)}];
     
         const filterObject = {
             isGlobal: false,
@@ -39,6 +42,7 @@ export class ColumnUtilsService {
             filter_column_type: column_type,
             filter_type: type,
             filter_elements: values,
+            filter_codes: valuesIds,
             selectedRange: selectedRange,
             autorelation, 
             joins,
