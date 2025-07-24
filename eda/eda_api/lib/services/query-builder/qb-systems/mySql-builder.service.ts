@@ -389,7 +389,7 @@ export class MySqlBuilderService extends QueryBuilderService {
             selectedFilter.sqlOptional += `\`${filter.filter_table}\`.\`${filter.filter_column}\` is null or \`${filter.filter_table}\`.\`${filter.filter_column}\` = '' or`;
             selectedFilter.filter_elements[0].value1 = selectedFilter.filter_elements[0].value1.filter(e => e !== 'emptyString');
           } else {
-            selectedFilter.sqlOptional += `\`${filter.valueListSource.target_table}\`.\`${filter.valueListSource.target_description_column}\` is null or \`${filter.valueListSource.target_table}\`.\`${filter.valueListSource.target_description_column}\` = '' or`;
+            selectedFilter.sqlOptional += `\`${filter.valueListSource.target_table}\`.\`${filter.valueListSource.target_id_column}\` is null or \`${filter.valueListSource.target_table}\`.\`${filter.valueListSource.target_id_column}\` = '' or`;
             selectedFilter.filter_elements[0].value1 = selectedFilter.filter_elements[0].value1.filter(e => e !== 'emptyString');
           }
         }
@@ -483,6 +483,7 @@ export class MySqlBuilderService extends QueryBuilderService {
           filter_elements_value = filter_elements_value + '(';
 
           // Text type values
+
           if(filter_column_type === 'text'){
             filter_codes[0].value1.forEach((element: any, index: number) => {
               filter_elements_value += `'${element}'` + `${index===(filter_codes[0].value1.length-1)? ')': ','}`;
@@ -518,17 +519,16 @@ export class MySqlBuilderService extends QueryBuilderService {
       let validador = (valueListSource !== undefined && valueListSource !== null);
       // Result of the whole string 
 
-
-      let resultado = `${['null_or_empty', 'not_null_nor_empty'].includes(filter_type) || (filter_type==='in' && sqlOptional !== undefined) ? ' (' : ''} ${sqlOptional !== undefined ? sqlOptional : ''} \`${ validador ? valueListSource.target_table : filter_table}\`.\`${ validador ? valueListSource.target_description_column : filter_column}\` ${filter_type_value}${filter_elements_value}`;
+      let resultado = `${['null_or_empty', 'not_null_nor_empty'].includes(filter_type) || (filter_type==='in' && sqlOptional !== undefined) ? ' (' : ''} ${sqlOptional !== undefined ? sqlOptional : ''} \`${ validador ? valueListSource.target_table : filter_table}\`.\`${ validador ? valueListSource.target_id_column : filter_column}\` ${filter_type_value}${filter_elements_value}`;
 
       // It is located in this position because the table and field must be duplicated in the query (*observation)
       if(filter_type === 'not_null_nor_empty') {
-        resultado = `${resultado} \`${ validador ? valueListSource.target_table : filter_table}\`.\`${ validador ? valueListSource.target_description_column : filter_column}\` != '')`;
+        resultado = `${resultado} \`${ validador ? valueListSource.target_table : filter_table}\`.\`${ validador ? valueListSource.target_id_column : filter_column}\` != '')`;
       }
 
       // It is located in this position because the table and field must be duplicated in the query (*observation)
       if(filter_type === 'null_or_empty') {
-        resultado = `${resultado} \`${ validador ? valueListSource.target_table : filter_table}\`.\`${ validador ? valueListSource.target_description_column : filter_column}\` = '')`;
+        resultado = `${resultado} \`${ validador ? valueListSource.target_table : filter_table}\`.\`${ validador ? valueListSource.target_id_column : filter_column}\` = '')`;
       }
 
       if(filter_type === 'in' && sqlOptional !== undefined) {

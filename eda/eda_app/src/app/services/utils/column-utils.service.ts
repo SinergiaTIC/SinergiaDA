@@ -30,9 +30,14 @@ export class ColumnUtilsService {
                 return { [key]: Array.isArray(obj[key]) ? obj[key] : [obj[key]] };
             }
         }).filter(Boolean);
-        
+
+        let valuesIds
         // Adding the values Codes
-        const valuesIds = [{value1: _.cloneDeep(values)[0].value1.map((e: any) => data.find((d: any) => d.value === e).id)}];
+        if(data.length !== 0) {
+            valuesIds = [{value1: _.cloneDeep(values)[0].value1.map((e: any) => data.find((d: any) => d.value === e).id)}];
+        } else {
+            valuesIds = _.cloneDeep(values);
+        }
     
         const filterObject = {
             isGlobal: false,
