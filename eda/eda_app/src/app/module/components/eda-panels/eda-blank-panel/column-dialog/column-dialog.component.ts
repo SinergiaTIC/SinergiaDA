@@ -212,7 +212,7 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
         };
         
         this.updateSortedFiltersColumnDialog.emit(addToSortedFilters); // Emitting an event to the eda-blank-panel component
-
+        this.dropDownFields = [];
     }
 
     removeFilter(item: any) {
