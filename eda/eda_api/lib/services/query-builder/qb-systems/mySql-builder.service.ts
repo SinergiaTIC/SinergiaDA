@@ -407,7 +407,7 @@ export class MySqlBuilderService extends QueryBuilderService {
     // Recursive function for the necessary nesting according to the AND/OR filter graph.
     function cadenaRecursiva(item: any) {
       // recursive item
-      const { cols, rows, y, x, filter_table, filter_column, filter_type, filter_column_type, filter_elements, value, valueListSource, sqlOptional } = item;
+      const { cols, rows, y, x, filter_table, filter_column, filter_type, filter_column_type, filter_elements, filter_codes, value, valueListSource, sqlOptional } = item;
 
       ////////////////////////////////////////////////// filter_type ////////////////////////////////////////////////// 
       let filter_type_value = '';
@@ -445,21 +445,21 @@ export class MySqlBuilderService extends QueryBuilderService {
           //Value of type text
           if(filter_column_type === 'text'){
             if(filter_type === 'in' || filter_type === 'not_in'){
-              filter_elements_value = filter_elements_value + `(\'${filter_elements[0].value1[0]}\')`;
+              filter_elements_value = filter_elements_value + `(\'${filter_codes[0].value1[0]}\')`;
             } else {
-              filter_elements_value = filter_elements_value + `'${filter_type === 'like' || filter_type === 'not_like'? '%': ''}${filter_elements[0].value1[0]}${filter_type === 'like' || filter_type === 'not_like'? '%': ''}'`;
+              filter_elements_value = filter_elements_value + `'${filter_type === 'like' || filter_type === 'not_like'? '%': ''}${filter_codes[0].value1[0]}${filter_type === 'like' || filter_type === 'not_like'? '%': ''}'`;
             }
           } 
 
           // Numeric type value
           if(filter_column_type === 'numeric'){
             if(filter_type === 'between') {
-              filter_elements_value = filter_elements_value + ` ${Number(filter_elements[0].value1[0])} and ${Number(filter_elements[1].value2[0])}`;
+              filter_elements_value = filter_elements_value + ` ${Number(filter_codes[0].value1[0])} and ${Number(filter_codes[1].value2[0])}`;
             } else {
               if(filter_type === 'in' || filter_type === 'not_in') {
-                filter_elements_value = filter_elements_value + `(${filter_elements[0].value1[0]})`;
+                filter_elements_value = filter_elements_value + `(${filter_codes[0].value1[0]})`;
               } else {
-                filter_elements_value = filter_elements_value + `${filter_elements[0].value1[0]}`;
+                filter_elements_value = filter_elements_value + `${filter_codes[0].value1[0]}`;
               }
             }
           } 
@@ -467,12 +467,12 @@ export class MySqlBuilderService extends QueryBuilderService {
           // Date type value
           if(filter_column_type === 'date'){
             if(filter_type === 'between'){
-              filter_elements_value = filter_elements_value + ` STR_TO_DATE(\'${filter_elements[0].value1[0]}\',\'%Y-%m-%d\')` + ' and ' + `STR_TO_DATE(\'${filter_elements[1].value2[0]} 23:59:59\',\'%Y-%m-%d %H:%i:%S\')`;
+              filter_elements_value = filter_elements_value + ` STR_TO_DATE(\'${filter_codes[0].value1[0]}\',\'%Y-%m-%d\')` + ' and ' + `STR_TO_DATE(\'${filter_codes[1].value2[0]} 23:59:59\',\'%Y-%m-%d %H:%i:%S\')`;
             } else {
               if(filter_type==='in' || filter_type==='not_in') {
-                filter_elements_value = filter_elements_value + `(STR_TO_DATE(\'${filter_elements[0].value1[0]}\',\'%Y-%m-%d\'))`;
+                filter_elements_value = filter_elements_value + `(STR_TO_DATE(\'${filter_codes[0].value1[0]}\',\'%Y-%m-%d\'))`;
               } else {
-                filter_elements_value = filter_elements_value + `STR_TO_DATE(\'${filter_elements[0].value1[0]}\',\'%Y-%m-%d\')`;
+                filter_elements_value = filter_elements_value + `STR_TO_DATE(\'${filter_codes[0].value1[0]}\',\'%Y-%m-%d\')`;
               }
             }
           }
@@ -484,29 +484,29 @@ export class MySqlBuilderService extends QueryBuilderService {
 
           // Text type values
           if(filter_column_type === 'text'){
-            filter_elements[0].value1.forEach((element: any, index: number) => {
-              filter_elements_value += `'${element}'` + `${index===(filter_elements[0].value1.length-1)? ')': ','}`;
+            filter_codes[0].value1.forEach((element: any, index: number) => {
+              filter_elements_value += `'${element}'` + `${index===(filter_codes[0].value1.length-1)? ')': ','}`;
             })
           }
 
           // Numeric type values
           if(filter_column_type === 'numeric'){
-            filter_elements[0].value1.forEach((element: any, index: number) => {
-              filter_elements_value += `${element}` + `${index===(filter_elements[0].value1.length-1)? ')': ','}`;
+            filter_codes[0].value1.forEach((element: any, index: number) => {
+              filter_elements_value += `${element}` + `${index===(filter_codes[0].value1.length-1)? ')': ','}`;
             })
           }
 
           // Date type values
           if(filter_column_type === 'date'){
-            filter_elements[0].value1.forEach((element: any, index: number) => {
-              filter_elements_value += `STR_TO_DATE(\'${element}\',\'%Y-%m-%d\')` + `${index===(filter_elements[0].value1.length-1)? ')': ','}`;
+            filter_codes[0].value1.forEach((element: any, index: number) => {
+              filter_elements_value += `STR_TO_DATE(\'${element}\',\'%Y-%m-%d\')` + `${index===(filter_codes[0].value1.length-1)? ')': ','}`;
             })
           }
 
           // Values ​​that do not have a filter_column_type defined
           if(filter_column_type === undefined){
-            filter_elements[0].value1.forEach((element: any, index: number) => {
-              filter_elements_value += `'${element}'` + `${index===(filter_elements[0].value1.length-1)? ')': ','}`;
+            filter_codes[0].value1.forEach((element: any, index: number) => {
+              filter_elements_value += `'${element}'` + `${index===(filter_codes[0].value1.length-1)? ')': ','}`;
             })
           }
         }
