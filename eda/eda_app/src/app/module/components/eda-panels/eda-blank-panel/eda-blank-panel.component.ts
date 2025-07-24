@@ -1893,6 +1893,7 @@ export class EdaBlankPanelComponent implements OnInit {
                     filter_type: e.filter.filter_type,
                     filter_column_type: e.filter.filter_column_type,
                     filter_elements: e.filter.filter_elements,
+                    filter_codes: e.filter.filter_codes,
                     filter_id: e.filter.filter_id,
                     value: "and",
                 }
@@ -1926,6 +1927,7 @@ export class EdaBlankPanelComponent implements OnInit {
                     filter_type: e.filter.filter_type,
                     filter_column_type: e.filter.filter_column_type,
                     filter_elements: e.filter.filter_elements,
+                    filter_codes: e.filter.filter_codes,
                     filter_id: e.filter.filter_id,
                     value: "and",
                 }
