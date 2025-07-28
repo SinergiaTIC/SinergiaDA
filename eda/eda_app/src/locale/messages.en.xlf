@@ -3676,7 +3676,7 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
   </trans-unit>
 
    <trans-unit id="chartInfoPyramid">
-    <source>Un gráfico de piramide necesita de dos categorías y un valor numérico </source>
+    <source>Un gráfico de piramide necesita de dos categorías y un valor numérico</source>
     <target>A pyramid chart needs two categories and one numeric value</target>
   </trans-unit>
 

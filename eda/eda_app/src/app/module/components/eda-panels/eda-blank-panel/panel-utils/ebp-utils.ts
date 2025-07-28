@@ -3,9 +3,6 @@ export const EbpUtils = {
   getOptionDescription: (value: string): string => {
     let description = $localize`:@@chartInfo1:Los datos seleccionados no permiten utilizar este gráfico.`;
     let str: string; let str2: string;
-
-    console.log('value:::: ', value);
-
     switch (value) {
       case 'kpi':
         str = $localize`:@@chartInfo2:Un KPI necesita un único número`;
@@ -114,6 +111,7 @@ export const EbpUtils = {
         break;
       case 'pyramid': 
         str = $localize`:@@chartInfoPyramid:Un gráfico de piramide necesita de dos categorías y un valor numérico`;
+        description += `\n${str}`;
         break;
       default:
         description = $localize`:@@chartInfo13:Los datos seleccionados no permiten utilizar este gráfico.`;
