@@ -3186,11 +3186,6 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
     <target>No Tag </target>
   </trans-unit>
 
-  <trans-unit id="newTag">
-    <source> Nueva etiqueta   </source>
-    <target>New tag </target>
-  </trans-unit>
-
   <trans-unit id="addTag">
     <source>AÑADIR ETIQUETA</source>
     <target>ADD TAG </target>

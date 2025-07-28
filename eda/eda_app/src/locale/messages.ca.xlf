@@ -3231,12 +3231,6 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
     <target>Vinculat amb   </target>
   </trans-unit>
 
-
-  <trans-unit id="newTag">
-    <source> Nueva etiqueta  </source>
-    <target> Nova etiqueta  </target>
-  </trans-unit>
-
   <trans-unit id="DataModelHeader">
     <source> Configurar nuevo orígen de datos  </source>
     <target> Configurar nou origen de dades  </target>

@@ -119,7 +119,6 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
 
     public filtrar: string = $localize`:@@filterButtonDashboard:Filtrar`;
     public addTagString: string = $localize`:@@addTag:AÑADIR ETIQUETA`;
-    public newTag = $localize`:@@newTag:Nueva etiqueta`;
     public Seconds_to_refresh = $localize`:@@seconds_to_refresh:Intervalo de recarga`;
     public canIeditTooltip = $localize`:@@canIeditTooltip:Si esta opción está seleccionada sólo el propietario del informe y los administradores podrán guardar los cambios`;
     //public globalFilter: any;
@@ -150,7 +149,9 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
         } else {
             this.tags = [];
         }
-        this.tags.push({ label: this.newTag, value: '2' });
+
+        // Sorting tags in alphabetical order
+        this.tags.sort((a, b) => a.label.trim().toLowerCase().localeCompare(b.label.trim().toLowerCase()));
     }
 
     // ng cycle lives

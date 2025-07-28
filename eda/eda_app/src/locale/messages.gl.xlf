@@ -3372,11 +3372,6 @@
         <target> Sin Etiqueta </target>
       </trans-unit>
 
-      <trans-unit id="newTag">
-        <source> Nueva etiqueta </source>
-        <target> Nueva etiqueta </target>
-      </trans-unit>
-
       <trans-unit id="addTag">
         <source>AÑADIR ETIQUETA</source>
         <target>AÑADIR ETIQUETA</target>
