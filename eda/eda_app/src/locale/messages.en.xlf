@@ -4607,6 +4607,10 @@ Once configured you can invoke it whenever you want from the button.</target>
         <source>Un KPI + gráfico de area necesita una o más categorías y una série numérica. Además, si hay mas de una série los datos numéricos deben agregarse.</source>
         <target>A KPI + area chart requires one or more categories and a numerical series. Additionally, if there is more than one series, the numerical data must be aggregated.</target>
       </trans-unit>
+      <trans-unit id="chartInfoRadar">
+        <source>Un radar necesita como mínimo una categoría y al menos un valor numérico.</source>
+        <target>A radar needs at least one category and at least one numerical value.</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>

@@ -108,6 +108,10 @@ export const EbpUtils = {
         str = $localize`:@@chartInfoTreetable:Un Treetable necesita como mínimo una categoría y dos valores numéricos, en caso se inicie la consulta con dos valores numéricos, estos deberán ser ids con una relación hijo y padre, del cual el hijo deberá iniciar con 0.`;
         description += `\n${str}`;
         break;
+      case "radar": 
+        str = $localize`:@@chartInfoRadar:Un radar necesita como mínimo una categoría y al menos un valor numérico.`;
+        description += `\n${str}`;
+        break;
       case 'pyramid': 
         str = $localize`:@@chartInfoPyramid:Un gráfico de piramide necesita de dos categorías y un valor numérico`;
         break;

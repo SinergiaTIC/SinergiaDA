@@ -4434,6 +4434,10 @@
         <source>Un KPI + gráfico de area necesita una o más categorías y una série numérica. Además, si hay mas de una série los datos numéricos deben agregarse.</source>
         <target>Un KPI + gráfico de area necesita una o más categorías y una série numérica. Además, si hay mas de una série los datos numéricos deben agregarse.</target>
       </trans-unit>
+      <trans-unit id="chartInfoRadar">
+        <source>Un radar necesita como mínimo una categoría y al menos un valor numérico.</source>
+        <target>Un radar necesita como mínimo una categoría y al menos un valor numérico.</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>
