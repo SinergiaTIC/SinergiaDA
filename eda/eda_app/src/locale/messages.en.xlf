@@ -4595,6 +4595,10 @@ Once configured you can invoke it whenever you want from the button.</target>
         <source>Un Treetable necesita como mínimo una categoría y dos valores numéricos, en caso se inicie la consulta con dos valores numéricos, estos deberán ser ids con una relación hijo y padre, del cual el hijo deberá iniciar con 0.</source>
         <target>A Treetable needs at least one category and two numeric values. If the query starts with two numeric values, these must be ids with a child and parent relationship, of which the child must start with 0.</target>
       </trans-unit>
+      <trans-unit id="chartInfoKpibar">
+        <source>Un Kpi + gráfico de barras necesita una o más categorías y una serie numérica. Además, si existen más de una serie los datos numéricos deben agregarse.</source>
+        <target>A KPI + bar chart requires one or more categories and a numerical series. Additionally, if there is more than one series, the numerical data must be aggregated.</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>

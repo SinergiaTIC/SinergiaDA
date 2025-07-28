@@ -756,8 +756,6 @@ export class ChartUtilsService {
 
         // Pruebas con hacer dinámico el treeTable
 
-        console.log('dataDescription: ', dataDescription);
-
         if(dataDescription.totalColumns > 2 && dataDescription.otherColumns.length === 1) {
             notAllowed.splice(notAllowed.indexOf('treetable'), 1);
         }

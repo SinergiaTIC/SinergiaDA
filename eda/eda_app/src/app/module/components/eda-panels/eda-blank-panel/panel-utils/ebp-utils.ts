@@ -4,9 +4,15 @@ export const EbpUtils = {
     let description = $localize`:@@chartInfo1:Los datos seleccionados no permiten utilizar este gráfico.`;
     let str: string; let str2: string;
 
+    console.log('value:::: ', value);
+
     switch (value) {
       case 'kpi':
         str = $localize`:@@chartInfo2:Un KPI necesita un único número`;
+        description += `\n${str}`;
+        break;
+      case 'kpibar':
+        str = $localize`:@@chartInfoKpibar:Un Kpi + gráfico de barras necesita una o más categorías y una serie numérica. Además, si existen más de una serie los datos numéricos deben agregarse.`;
         description += `\n${str}`;
         break;
       case 'dynamicText':
