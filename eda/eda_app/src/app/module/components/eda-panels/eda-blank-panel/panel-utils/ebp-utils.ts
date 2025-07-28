@@ -20,7 +20,7 @@ export const EbpUtils = {
         description += `\n${str}`;
         break;
       case 'kpiarea':
-        str = $localize`:@@chartInfoKpiarea:Un Kpi + gráfico de areas necesita una o más categorías y una serie numérica. Además, si existen más de una serie los datos numéricos deben agregarse.`;
+        str = $localize`:@@chartInfoKpiarea:Un KPI + gráfico de area necesita una o más categorías y una série numérica. Además, si hay mas de una série los datos numéricos deben agregarse.`;
         description += `\n${str}`;
         break;
       case 'dynamicText':

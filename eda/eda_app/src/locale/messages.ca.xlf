@@ -4457,8 +4457,8 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
         <target>Un KPI + gràfic de línia necessita una o més categories i una sèrie numèrica. A més, si hi ha més d'una sèrie les dades numèriques s'han d'afegir.</target>
       </trans-unit>
       <trans-unit id="chartInfoKpiarea">
-        <source>Un Kpi + gráfico de areas necesita una o más categorías y una serie numérica. Además, si existen más de una serie los datos numéricos deben agregarse.</source>
-        <target>Un Kpi + gràfic de àrees necessita una o més categories i una sèrie numèrica. A més, si hi ha més d'una sèrie les dades numèriques s'han d'afegir.</target>
+        <source>Un KPI + gráfico de area necesita una o más categorías y una série numérica. Además, si hay mas de una série los datos numéricos deben agregarse.</source>
+        <target>Un KPI + gràfic d'àrea necessita una o més categories i una sèrie numèrica. A més, si hi ha més d'una sèrie les dades numèriques s'han d'afegir.</target>
       </trans-unit>
     </body>
   </file>
