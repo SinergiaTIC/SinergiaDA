@@ -4592,7 +4592,7 @@ Once configured you can invoke it whenever you want from the button.</target>
         <target>You haven't set up filters yet. Use the filter panel or global filters.</target>
       </trans-unit>
       <trans-unit id="chartInfoTreetable">
-        <source>Un Treetable necesita como mínimo una categoria y dos valores númericos, en caso se inicie la consulta con dos valores numéricas, estas deberán ser ids con una relación hijo y padre, del cual hijo deberá iniciar con 0.</source>
+        <source>Un Treetable necesita como mínimo una categoría y dos valores numéricos, en caso se inicie la consulta con dos valores numéricos, estos deberán ser ids con una relación hijo y padre, del cual el hijo deberá iniciar con 0.</source>
         <target>A Treetable needs at least one category and two numeric values. If the query starts with two numeric values, these must be ids with a child and parent relationship, of which the child must start with 0.</target>
       </trans-unit>
     </body>
