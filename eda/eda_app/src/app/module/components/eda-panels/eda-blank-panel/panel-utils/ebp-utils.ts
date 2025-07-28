@@ -16,7 +16,7 @@ export const EbpUtils = {
         description += `\n${str}`;
         break;
       case 'kpiline':
-        str = $localize`:@@chartInfoKpiline:Un Kpi + gráfico de lineas necesita una o más categorías y una serie numérica. Además, si existen más de una serie los datos numéricos deben agregarse.`;
+        str = $localize`:@@chartInfoKpiline:Un KPI + gráfico de línea necesita una o más categorías y una série numérica. Además, si hay mas de una série los datos numéricos deben agregarse.`;
         description += `\n${str}`;
         break;
       case 'kpiarea':

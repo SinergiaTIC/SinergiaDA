@@ -4428,7 +4428,7 @@
         <target>Un KPI + gráfico de barras require unha ou máis categorías e unha serie numérica. Ademais, se hai máis dunha serie, os datos numéricos deben agregarse.</target>
       </trans-unit>
       <trans-unit id="chartInfoKpiline">
-        <source>Un Kpi + gráfico de lineas necesita una o más categorías y una serie numérica. Además, si existen más de una serie los datos numéricos deben agregarse.</source>
+        <source>Un KPI + gráfico de línea necesita una o más categorías y una série numérica. Además, si hay mas de una série los datos numéricos deben agregarse.</source>
         <target>Un KPI + gráfico de liñas require unha ou máis categorías e unha serie numérica. Ademais, se hai máis dunha serie, os datos numéricos deben agregarse.</target>
       </trans-unit>
       <trans-unit id="chartInfoKpiarea">

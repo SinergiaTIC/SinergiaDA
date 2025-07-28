@@ -4600,7 +4600,7 @@ Once configured you can invoke it whenever you want from the button.</target>
         <target>A KPI + bar chart requires one or more categories and a numerical series. Additionally, if there is more than one series, the numerical data must be aggregated.</target>
       </trans-unit>
       <trans-unit id="chartInfoKpiline">
-        <source>Un Kpi + gráfico de lineas necesita una o más categorías y una serie numérica. Además, si existen más de una serie los datos numéricos deben agregarse.</source>
+        <source>Un Kpi + gráfico de linea necesita una o más categorías y una serie numérica. Además, si existen más de una serie los datos numéricos deben agregarse.</source>
         <target>A KPI + line chart requires one or more categories and a numerical series. Additionally, if there is more than one series, the numerical data must be aggregated.</target>
       </trans-unit>
       <trans-unit id="chartInfoKpiarea">
