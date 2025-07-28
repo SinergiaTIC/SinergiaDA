@@ -15,6 +15,10 @@ export const EbpUtils = {
         str = $localize`:@@chartInfoKpibar:Un Kpi + gráfico de barras necesita una o más categorías y una serie numérica. Además, si existen más de una serie los datos numéricos deben agregarse.`;
         description += `\n${str}`;
         break;
+      case 'kpiline':
+        str = $localize`:@@chartInfoKpiline:Un Kpi + gráfico de lineas necesita una o más categorías y una serie numérica. Además, si existen más de una serie los datos numéricos deben agregarse.`;
+        description += `\n${str}`;
+        break;
       case 'dynamicText':
         str = $localize`:@@chartInfoDynamicText:Un texto dinámicos requiere de un único valor NO numérico`;
         description += `\n${str}`;
