@@ -4418,6 +4418,10 @@
         <source>Aún no has configurado filtros. Usa el panel de filtros o los filtros globales</source>
         <target>Aún no has configurado filtros. Usa el panel de filtros o los filtros globales</target>
       </trans-unit>
+      <trans-unit id="chartInfoTreetable">
+        <source>Un Treetable necesita como mínimo dos categorías y un valor númerico si en caso se inicia con dos categorías numéricas, estas deberán ser ids con una relación hijo y padre, del cual hijo deberá iniciar con 0</source>
+        <target>Un Treetable necesita como mínimo dos categorías y un valor númerico si en caso se inicia con dos categorías numéricas, estas deberán ser ids con una relación hijo y padre, del cual hijo deberá iniciar con 0</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>

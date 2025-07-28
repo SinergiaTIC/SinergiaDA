@@ -3,6 +3,7 @@ export const EbpUtils = {
   getOptionDescription: (value: string): string => {
     let description = $localize`:@@chartInfo1:Los datos seleccionados no permiten utilizar este gráfico.`;
     let str: string; let str2: string;
+
     switch (value) {
       case 'kpi':
         str = $localize`:@@chartInfo2:Un KPI necesita un único número`;
@@ -19,6 +20,7 @@ export const EbpUtils = {
       case 'stackedbar':
         str = $localize`:@@chartInfo4:\n Un gráfico combinado necesita una categoría y dos séries numéricas`;
         description += `\n${str}`;
+        break;
       case 'stackedbar100':
         str = $localize`:@@chartInfo4:\n Un gráfico combinado necesita una categoría y dos séries numéricas`;
         description += `\n${str}`;
@@ -43,7 +45,6 @@ export const EbpUtils = {
         str = $localize`:@@chartInfoBubble:Un gráfico de burbujas necesita una categorías y una série numérica.`;
         description += `\n${str}`;
         break;
-
       case 'polarArea':
         str = $localize`:@@chartInfo8:Un gráfico polar necesita una categoría y una série numérica`;
         description += `\n${str}`;
@@ -78,9 +79,9 @@ export const EbpUtils = {
         description += `\n${str}`;
         break;
       case 'knob':
-          str = $localize`:@@chartInfo17:El velocímetro necesita uno o dos valores numéricos, en caso de disponer de dos valores el segundo se interpretará como límite`;
-          description += `\n${str}`;
-          break;
+        str = $localize`:@@chartInfo17:El velocímetro necesita uno o dos valores numéricos, en caso de disponer de dos valores el segundo se interpretará como límite`;
+        description += `\n${str}`;
+        break;
       case 'histogram':
         str = $localize`:@@chartInfoHistogram:Un histograma necesita una única columna de valores numericos de los que se calculará la frecuencia`;
         description += `\n${str}`;
@@ -89,8 +90,13 @@ export const EbpUtils = {
         str = $localize`:@@chartInfoFunnel:Un embudo necesita una categoría y un valor numérico`;
         description += `\n${str}`;
         break;
+      case "treetable": 
+        str = $localize`:@@chartInfoTreetable:Un Treetable necesita como mínimo dos categorías y un valor númerico si en caso se inicia con dos categorías numéricas, estas deberán ser ids con una relación hijo y padre, del cual hijo deberá iniciar con 0`;
+        description += `\n${str}`;
+        break;
       case 'pyramid': 
         str = $localize`:@@chartInfoPyramid:Un gráfico de piramide necesita de dos categorías y un valor numérico`;
+        break;
       default:
         description = $localize`:@@chartInfo13:Los datos seleccionados no permiten utilizar este gráfico.`;
         break;
