@@ -91,7 +91,7 @@ export const EbpUtils = {
         description += `\n${str}`;
         break;
       case "treetable": 
-        str = $localize`:@@chartInfoTreetable:Un Treetable necesita como mínimo dos categorías y un valor númerico si en caso se inicia con dos categorías numéricas, estas deberán ser ids con una relación hijo y padre, del cual hijo deberá iniciar con 0`;
+        str = $localize`:@@chartInfoTreetable:Un Treetable necesita como mínimo una categoria y dos valores númericos, en caso se inicie la consulta con dos valores numéricas, estas deberán ser ids con una relación hijo y padre, del cual hijo deberá iniciar con 0.`;
         description += `\n${str}`;
         break;
       case 'pyramid': 

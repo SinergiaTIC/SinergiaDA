@@ -4420,8 +4420,8 @@
         <target>Aínda non configuraches os filtros. Usar o panel de filtros ou os filtros globais</target>
       </trans-unit>
       <trans-unit id="chartInfoTreetable">
-        <source>Un Treetable necesita como mínimo dos categorías y un valor númerico si en caso se inicia con dos categorías numéricas, estas deberán ser ids con una relación hijo y padre, del cual hijo deberá iniciar con 0</source>
-        <target>Unha táboa de árbores precisa polo menos dúas categorías e un valor numérico. Se comeza con dúas categorías numéricas, estas deben ser identificadores cunha relación fillo e pai, das cales o fillo debe comezar con 0.</target>
+        <source>Un Treetable necesita como mínimo una categoria y dos valores númericos, en caso se inicie la consulta con dos valores numéricas, estas deberán ser ids con una relación hijo y padre, del cual hijo deberá iniciar con 0.</source>
+        <target>Unha táboa de árbores precisa polo menos unha categoría e dous valores numéricos. Se a consulta comeza con dous valores numéricos, estes deben ser identificadores cunha relación fillo e pai, dos cales o fillo debe comezar por 0.</target>
       </trans-unit>
     </body>
   </file>
