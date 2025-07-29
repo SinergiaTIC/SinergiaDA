@@ -15,8 +15,8 @@ export class EditStylesDialogComponent extends EdaDialogAbstract {
 
 	public fonts: Array<any> =
 		[
-			{ label: 'Montserrat', value: 'Montserrat' },
 			{ label: 'Questrial', value: 'Questrial' },
+			{ label: 'Montserrat', value: 'Montserrat' },
 			{ label: 'League Spartan', value: 'League Spartan' },
 			{ label: 'Raleway', value: 'Raleway' },
 			{ label: 'Bangers', value: 'Bangers' },

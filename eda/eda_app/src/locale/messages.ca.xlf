@@ -3231,12 +3231,6 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
     <target>Vinculat amb   </target>
   </trans-unit>
 
-
-  <trans-unit id="newTag">
-    <source> Nueva etiqueta  </source>
-    <target> Nova etiqueta  </target>
-  </trans-unit>
-
   <trans-unit id="DataModelHeader">
     <source> Configurar nuevo orígen de datos  </source>
     <target> Configurar nou origen de dades  </target>
@@ -3721,7 +3715,7 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
   </trans-unit>
 
    <trans-unit id="chartInfoPyramid">
-    <source>Un gráfico de piramide necesita de dos categorías y un valor numérico </source>
+    <source>Un gráfico de piramide necesita de dos categorías y un valor numérico</source>
     <target>Un gràfic de piràmide necessita dues categories i un valor numèric</target>
   </trans-unit>
 
@@ -4443,6 +4437,30 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
       <trans-unit id="withoutFilters">
         <source>Aún no has configurado filtros. Usa el panel de filtros o los filtros globales</source>
         <target>Encara no heu configurat filtres. Fes servir el panell de filtres o els filtres globals</target>
+      </trans-unit>
+      <trans-unit id="chartInfoTreetable">
+        <source>Un Treetable necesita como mínimo una categoría y dos valores numéricos, en caso se inicie la consulta con dos valores numéricos, estos deberán ser ids con una relación hijo y padre, del cual el hijo deberá iniciar con 0.</source>
+        <target>Un Treetable necessita com a mínim una categoria i dos valors numèrics, en cas que s'iniciï la consulta amb dos valors numèrics, aquests hauran de ser ids amb una relació fill i pare, del qual el fill haurà d'iniciar amb 0.</target>
+      </trans-unit>
+      <trans-unit id="chartInfoKpibar">
+        <source>Un Kpi + gráfico de barras necesita una o más categorías y una serie numérica. Además, si existen más de una serie los datos numéricos deben agregarse.</source>
+        <target>Un Kpi + gràfic de barres necessita una o més categories i una sèrie numèrica. A més, si hi ha més d'una sèrie les dades numèriques s'han d'afegir.</target>
+      </trans-unit>
+      <trans-unit id="chartInfoKpiline">
+        <source>Un Kpi + gráfico de linea necesita una o más categorías y una serie numérica. Además, si existen más de una serie los datos numéricos deben agregarse.</source>
+        <target>Un KPI + gràfic de línia necessita una o més categories i una sèrie numèrica. A més, si hi ha més d'una sèrie les dades numèriques s'han d'afegir.</target>
+      </trans-unit>
+      <trans-unit id="chartInfoKpiarea">
+        <source>Un KPI + gráfico de area necesita una o más categorías y una série numérica. Además, si hay mas de una série los datos numéricos deben agregarse.</source>
+        <target>Un KPI + gràfic d'àrea necessita una o més categories i una sèrie numèrica. A més, si hi ha més d'una sèrie les dades numèriques s'han d'afegir.</target>
+      </trans-unit>
+      <trans-unit id="chartInfoRadar">
+        <source>Un radar necesita como mínimo una categoría y al menos un valor numérico.</source>
+        <target>Un radar necessita com a mínim una categoria i almenys un valor numèric.</target>
+      </trans-unit>
+      <trans-unit id="chartInfoTreetableAvailable">
+        <source>Una tabla árbol se puede configurar de dos formas. Mediante campos que se van anidando por medio de agrupaciones o mediante la definición de dos columnas numéricas que definan una relación padre-hijo. Si las dos primeras columnas son numéricas, se asumirá que describen una relación padre hijo.</source>
+        <target>Una taula arbre es pot configurar de dues maneres. Mitjançant camps que es van niant per mitjà d'agrupacions o mitjançant la definició de dues columnes numèriques que defineixin una relació pare-fill. Si les dues primeres columnes són numèriques, cal assumir que descriuen una relació pare fill.</target>
       </trans-unit>
     </body>
   </file>

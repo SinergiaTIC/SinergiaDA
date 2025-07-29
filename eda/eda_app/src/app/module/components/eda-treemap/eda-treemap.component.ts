@@ -164,7 +164,7 @@ export class EdaTreeMap implements AfterViewInit {
         //AQUI SE PONE EL COLOR DEL TREEMAP
         while (d.depth > 1) d = d.parent;
         //Devolvemos SOLO EL COLOR de assignedColors que comparte la data y colors de assignedColors
-        return  colorsTree[valuesTree.findIndex((item) => d.data.name.includes(item))] || color(d.data.name);
+        return valuesTree.findIndex((item) => d.data.name.includes(item)) === -1 ? colorsTree[valuesTree.findIndex((item) => d.data.name.includes(item))] : color(d.data.name);
       })
       .attr("fill-opacity", 0.6)
       .attr("width", (d) => d.x1 - d.x0)

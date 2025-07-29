@@ -3186,11 +3186,6 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
     <target>No Tag </target>
   </trans-unit>
 
-  <trans-unit id="newTag">
-    <source> Nueva etiqueta   </source>
-    <target>New tag </target>
-  </trans-unit>
-
   <trans-unit id="addTag">
     <source>AÑADIR ETIQUETA</source>
     <target>ADD TAG </target>
@@ -3676,7 +3671,7 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
   </trans-unit>
 
    <trans-unit id="chartInfoPyramid">
-    <source>Un gráfico de piramide necesita de dos categorías y un valor numérico </source>
+    <source>Un gráfico de piramide necesita de dos categorías y un valor numérico</source>
     <target>A pyramid chart needs two categories and one numeric value</target>
   </trans-unit>
 
@@ -4590,6 +4585,30 @@ Once configured you can invoke it whenever you want from the button.</target>
       <trans-unit id="withoutFilters">
         <source>Aún no has configurado filtros. Usa el panel de filtros o los filtros globales</source>
         <target>You haven't set up filters yet. Use the filter panel or global filters.</target>
+      </trans-unit>
+      <trans-unit id="chartInfoTreetable">
+        <source>Un Treetable necesita como mínimo una categoría y dos valores numéricos, en caso se inicie la consulta con dos valores numéricos, estos deberán ser ids con una relación hijo y padre, del cual el hijo deberá iniciar con 0.</source>
+        <target>A Treetable needs at least one category and two numeric values. If the query starts with two numeric values, these must be ids with a child and parent relationship, of which the child must start with 0.</target>
+      </trans-unit>
+      <trans-unit id="chartInfoKpibar">
+        <source>Un Kpi + gráfico de barras necesita una o más categorías y una serie numérica. Además, si existen más de una serie los datos numéricos deben agregarse.</source>
+        <target>A KPI + bar chart requires one or more categories and a numerical series. Additionally, if there is more than one series, the numerical data must be aggregated.</target>
+      </trans-unit>
+      <trans-unit id="chartInfoKpiline">
+        <source>Un Kpi + gráfico de linea necesita una o más categorías y una serie numérica. Además, si existen más de una serie los datos numéricos deben agregarse.</source>
+        <target>A KPI + line chart requires one or more categories and a numerical series. Additionally, if there is more than one series, the numerical data must be aggregated.</target>
+      </trans-unit>
+      <trans-unit id="chartInfoKpiarea">
+        <source>Un KPI + gráfico de area necesita una o más categorías y una série numérica. Además, si hay mas de una série los datos numéricos deben agregarse.</source>
+        <target>A KPI + area chart requires one or more categories and a numerical series. Additionally, if there is more than one series, the numerical data must be aggregated.</target>
+      </trans-unit>
+      <trans-unit id="chartInfoRadar">
+        <source>Un radar necesita como mínimo una categoría y al menos un valor numérico.</source>
+        <target>A radar needs at least one category and at least one numerical value.</target>
+      </trans-unit>
+      <trans-unit id="chartInfoTreetableAvailable">
+        <source>Una tabla árbol se puede configurar de dos formas. Mediante campos que se van anidando por medio de agrupaciones o mediante la definición de dos columnas numéricas que definan una relación padre-hijo. Si las dos primeras columnas son numéricas, se asumirá que describen una relación padre hijo.</source>
+        <target>A tree table can be configured in two ways: by nesting fields using groupings, or by defining two numeric columns that define a parent-child relationship. If the first two columns are numeric, they will be assumed to describe a parent-child relationship.</target>
       </trans-unit>
     </body>
   </file>

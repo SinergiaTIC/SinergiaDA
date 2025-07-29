@@ -1577,6 +1577,8 @@ export class EdaBlankPanelComponent implements OnInit {
 
     public getOptionDescription = (value: string): string => EbpUtils.getOptionDescription(value);
 
+    public getOptionDescriptionValid = (value: string): string => EbpUtils.getOptionDescriptionValid(value);
+
     public getOptionIcon = (value: string): string => EbpUtils.getOptionIcon(value);
 
     public chartType = (type: string): number => EbpUtils.chartType(type);
