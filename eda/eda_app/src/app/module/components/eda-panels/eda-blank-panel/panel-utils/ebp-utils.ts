@@ -121,6 +121,26 @@ export const EbpUtils = {
     return description;
   },
 
+  // text for available values
+  getOptionDescriptionValid: (value: string) => {
+    let description = '';
+    let str: string; 
+    // let str2: string;
+    switch (value) {
+      case "treetable": 
+        str = $localize`:@@chartInfoTreetableAvailable:Una tabla árbol se puede configurar de dos formas. Mediante campos que se van anidando por medio de agrupaciones o mediante la definición de dos columnas numéricas que definan una relación padre-hijo. Si las dos primeras columnas son numéricas, se asumirá que describen una relación padre hijo.`;
+        description += `\n${str}`;
+        break;
+      default:
+        description ='';
+        break;
+    }
+
+    return description;
+  },
+
+
+
   /** ICONOS PARA LOS TIPOS DE GRÁCIFOS  ICON ICONS */
   getOptionIcon: (value: string): string => {
 
