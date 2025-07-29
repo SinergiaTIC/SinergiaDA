@@ -548,7 +548,7 @@
         
                                         <ng-template let-chart pTemplate="item">
                                             <div class="d-flex align-items-center" style="position: relative;height: 25px;"
-                                                [attr.title]="chart.tooManyData ? getTooManyDataDescription() : (chart.ngIf) ? getOptionDescription(chart.subValue) : '' ">
+                                                [attr.title]="chart.tooManyData ? getTooManyDataDescription() : (chart.ngIf) ? getOptionDescription(chart.subValue) : getOptionDescriptionValid(chart.subValue) ">
                                                 <span class="material-icons"
                                                     [ngClass]="{'orange-alert': chart.ngIf, 'grey-alert': chart.tooManyData}">
                                                     {{getOptionIcon(chart.subValue)}}
