@@ -520,8 +520,17 @@ export class GlobalFilterComponent implements OnInit {
                             .map(id => this.dashboard.panels.find(p => p.id === id))
                             .forEach((panel) => {
                                 const panelFilter = panel.content.query.query.filters;
-                                const formatedFilter = this.globalFilterService.formatFilter(filter);
-                                panelFilter.splice(_.findIndex(panelFilter, (inx) => inx.filter_column === formatedFilter.filter_column), 1);
+                                let formatedFilter = this.globalFilterService.formatFilter(filter);
+                                let pathList = Object.values(formatedFilter.pathList);
+                                let joins = Object.values(pathList[0])[0];
+
+                                // Adding the joins of the filter that comes from the url
+                                formatedFilter.joins = joins;
+
+                                // Controlling the filters
+                                if( _.findIndex(panelFilter, (inx) => inx.filter_column === formatedFilter.filter_column) >=0 ){
+                                    panelFilter.splice(_.findIndex(panelFilter, (inx) => inx.filter_column === formatedFilter.filter_column), 1);
+                                }
                                 panelFilter.push(formatedFilter);
                             });
 
