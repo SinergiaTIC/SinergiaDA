@@ -63,12 +63,12 @@
             <button pButton type="button" icon="pi pi-plus"
             [label]="addPermission" class="p-button-secondary" (click)="openTablePermissionsDialog()"
             style="margin-bottom: 1px;"> </button>
+            <button *ngIf="selectedTableType !=='view'" pButton type="button" icon="pi pi-plus"
+            [label]="addCalculatedCol" class="p-button-secondary" (click)="openNewColDialog()"
+            style="margin-bottom: 1px;"> </button>
           <span class="hidden">
             <button pButton type="button" icon="pi pi-plus" [label]="addRelation" class="p-button-secondary "
                 (click)="openTableRelationDialog()" style="margin-bottom: 1px;"> </button>
-            <button *ngIf="selectedTableType !=='view'" pButton type="button" icon="pi pi-plus"
-                [label]="addCalculatedCol" class="p-button-secondary" (click)="openNewColDialog()"
-                style="margin-bottom: 1px;"> </button>
             <button pButton type="button" icon="pi pi-eye-slash" [label]="hideColumnsString" class="p-button-secondary"
                 (click)="hideAllColumns(tablePanel)" style="margin-bottom: 1px;"> </button>
           </span>
