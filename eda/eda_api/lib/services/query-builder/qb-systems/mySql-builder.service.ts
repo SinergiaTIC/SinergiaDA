@@ -158,8 +158,13 @@ export class MySqlBuilderService extends QueryBuilderService {
         );
         // MEDIAN
         querys[diplayName].push(
-
-          "SELECT PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY `main`." + `${col.column_name}` + ") OVER () AS `median` FROM " + `${mainQuery}`
+          "SELECT AVG(val) AS `median` FROM (" +
+            "SELECT `main`.`" + col.column_name + "` AS val," +
+            "       ROW_NUMBER() OVER (ORDER BY `main`.`" + col.column_name + "`) AS rn," +
+            "       COUNT(*) OVER() AS cnt " +
+            "FROM " + mainQuery +
+          ") AS ordered " +
+          "WHERE rn IN (FLOOR((cnt + 1)/2), CEIL((cnt + 1)/2));"
         );
       } else if (col.column_type == "date") {
         // CountNulls
@@ -176,10 +181,18 @@ export class MySqlBuilderService extends QueryBuilderService {
         );
         //GROUP BY MONT
         const queryMonth = "WITH monthly_counts AS (SELECT TO_CHAR(`main`." + `${col.column_name}` +
-          ", 'YYYY-MM') AS vmonth, COUNT(*) AS total FROM " + `${ mainQuery }` + "GROUP BY 1)";
+          ", 'YYYY-MM') AS vmonth, COUNT(*) AS total FROM " + `${ mainQuery }` + " GROUP BY 1)";
         // MEDIAN
         querys[diplayName].push(
-          `${queryMonth}` +  "SELECT PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY total) AS median_count_bymonth FROM monthly_counts;"
+          `${queryMonth}` +
+          `SELECT AVG(total) AS median_count_bymonth
+          FROM (
+              SELECT total,
+                      ROW_NUMBER() OVER (ORDER BY total) AS rn,
+                      COUNT(*) OVER() AS cnt
+              FROM monthly_counts
+          ) AS ordered
+          WHERE rn IN (FLOOR((cnt + 1)/2), CEIL((cnt + 1)/2));`
         );
         // MAX
         querys[diplayName].push(
