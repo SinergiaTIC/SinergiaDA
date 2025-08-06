@@ -1450,22 +1450,22 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     public setNewTag(newTag: string) {
         let repeated = false;
         this.tags.forEach((tag) => {
-        if (newTag.toUpperCase() === tag.value.toUpperCase()) repeated = true;
+            if (newTag.toUpperCase() === tag.value?.toUpperCase()) repeated = true;
         });
         if (newTag.length === 0) {
-        this.addTag = !this.addTag;
-        this.alertService.addError("Empty tag");
+            this.addTag = !this.addTag;
+            this.alertService.addError("Empty tag");
         } else if (repeated) {
-        this.addTag = !this.addTag;
-                this.alertService.addError("Tag already existing")
-            } 
-            else {
-                let tag = {label: newTag, value: newTag}
-        this.applyNewTag = newTag;
-        this.selectedTags.push(this.applyNewTag);
-        this.addTag = !this.addTag;
-        this.tags.push(tag);
-        localStorage.setItem("tags", JSON.stringify(this.tags));
+            this.addTag = !this.addTag;
+            this.alertService.addError("Tag already existing")
+        } 
+        else {
+            let tag = {label: newTag, value: newTag}
+            this.applyNewTag = newTag;
+            this.selectedTags.push(this.applyNewTag);
+            this.addTag = !this.addTag;
+            this.tags.push(tag);
+            localStorage.setItem("tags", JSON.stringify(this.tags));
         }
     }
 

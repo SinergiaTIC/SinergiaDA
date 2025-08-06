@@ -276,24 +276,39 @@ export class HomeSdaComponent implements OnInit {
    * Initializes the tags for filtering dashboards.
    */
   private initTags(): void {
-    const uniqueTags = Array.from(new Set(this.allDashboards.map(db => db.config.tag))).sort();
+
+    const uniqueTags = Array.from(new Set(this.allDashboards.map(db => db.config.tag))).filter((item) => (item?.length !==0 && item !== undefined && item !== null)).sort();
+    
     const filteredUniqueTags = uniqueTags.filter(tag => {
       if (tag === 'shared') {
         return this.isAdmin;
       }
       return true;
     });
+
+    const filteredUniqueTagsString = filteredUniqueTags.reduce((acc, item) => {
+      if (Array.isArray(item)) {
+        return acc.concat(item);
+      } else {
+        return acc.concat([item]);
+      }
+    }, []);
+
+    const filteredUniqueTagsStringNew = [...new Set(filteredUniqueTagsString)];
+
     this.tags = [
       {
         value: null,
         label: this.noTagLabel
       },
-      ...filteredUniqueTags.map(tag => ({
+      ...filteredUniqueTagsStringNew.map(tag => ({
         value: tag,
         label: tag
       }))
     ];
+
     this.filteredTags = [...this.tags];
+    localStorage.setItem('tags', JSON.stringify(this.tags));
   }
 
   /**
@@ -435,12 +450,15 @@ public filterGroups() {
    * @param tag The tag to toggle
    */
   public toggleTagSelection(tag: any) {
+
     const index = this.selectedTags.findIndex(t => t.value === tag.value);
+
     if (index > -1) {
       this.selectedTags.splice(index, 1);
     } else {
       this.selectedTags.push(tag);
     }
+
     this.filterDashboards();
   }
 
@@ -488,9 +506,20 @@ public filterGroups() {
 
     // Apply tag filter
     if (this.selectedTags.length > 0) {
-      this.visibleDashboards = this.visibleDashboards.filter(db =>
-        this.selectedTags.some(tag => tag.value === db.config.tag || (tag.value === null && !db.config.tag))
-      );
+      this.visibleDashboards = this.visibleDashboards.filter(db => {
+        const tags = Array.isArray(db.config.tag)
+          ? db.config.tag
+          : typeof db.config.tag === 'string'
+            ? [db.config.tag]
+            : [];
+
+        return this.selectedTags.some(tag => {
+          const tagVal = tag?.value;
+          return tagVal === null
+            ? tags.length === 0
+            : tags.includes(tagVal);
+        });
+      });
     }
 
     // Apply group filter
