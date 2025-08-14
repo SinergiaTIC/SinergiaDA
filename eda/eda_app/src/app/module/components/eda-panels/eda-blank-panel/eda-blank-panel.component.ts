@@ -1019,6 +1019,7 @@ export class EdaBlankPanelComponent implements OnInit {
                 filter_type: _filter.filter_type,
                 filter_column_type: _filter.filter_column_type,
                 filter_elements: _filter.filter_elements,
+                filter_codes: _filter.filter_codes,
                 filter_id: _filter.filter_id,
                 isGlobal: _filter.isGlobal,
                 value: "and",
