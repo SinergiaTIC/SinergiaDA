@@ -177,7 +177,7 @@ export class HomeSdaComponent implements OnInit {
     this.init();
     this.ifAnonymousGetOut();
     this.setIsObserver();
-    this.currentUser = JSON.parse(sessionStorage.getItem("user"));
+    this.currentUser = JSON.parse(localStorage.getItem("user"));
   }
 
   /**
@@ -197,7 +197,7 @@ export class HomeSdaComponent implements OnInit {
   private setIsObserver = async () => {
     this.groupService.getGroupsByUser().subscribe(
       res => {
-        const user = sessionStorage.getItem("user");
+        const user = localStorage.getItem("user");
         const userID = JSON.parse(user)?._id;
         this.grups = res;
         this.isObserver =
@@ -212,7 +212,7 @@ export class HomeSdaComponent implements OnInit {
    * Redirects anonymous users to the login page.
    */
   private ifAnonymousGetOut(): void {
-    const user = sessionStorage.getItem("user");
+    const user = localStorage.getItem("user");
     const userName = JSON.parse(user)?.name;
 
     if (userName === "edaanonim" || userName === "EDA_RO") {
@@ -562,7 +562,7 @@ public filterGroups() {
     result = this.isAdmin;
     if (result == false) {
       if (dashboard.config.onlyIcanEdit === true) {
-        if (sessionStorage.getItem("user") == dashboard.user) {
+        if (localStorage.getItem("user") == dashboard.user) {
           result = true;
         }
       } else {
