@@ -308,6 +308,9 @@ export class HomeSdaComponent implements OnInit {
     ];
 
     this.filteredTags = [...this.tags];
+    
+    // Sorting filteredTags in alphabetical order
+    this.filteredTags.sort((a, b) => a.label.trim().toLowerCase().localeCompare(b.label.trim().toLowerCase()));
     localStorage.setItem('tags', JSON.stringify(this.tags));
   }
 
