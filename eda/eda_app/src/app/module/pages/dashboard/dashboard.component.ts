@@ -551,6 +551,8 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
                 panelFilters.forEach(pFilter => {
 
                     if (pFilter.filter_id === filter.id) {
+                        // Verificar ???
+                        if(pFilter.joins !== undefined) filter.joins = pFilter.joins;
                         const formatedFilter = this.globalFiltersService.formatFilter(filter);
                         panel.content.query.query.filters.push(formatedFilter);
                     } else {
