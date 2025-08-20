@@ -562,11 +562,14 @@ export class GlobalFilterComponent implements OnInit {
                             .forEach((panel) => {
                                 const panelFilter = panel.content.query.query.filters;
                                 let formatedFilter = this.globalFilterService.formatFilter(filter);
-                                let pathList = Object.values(formatedFilter.pathList);
-                                let joins = Object.values(pathList[0])[0];
+
+                                let pathList: any;
+                                Object.entries(formatedFilter.pathList).forEach(([clave, valor]: any) => {
+                                    if(clave === panel.id) pathList = valor.path;
+                                });
 
                                 // Adding the joins of the filter that comes from the url
-                                formatedFilter.joins = joins;
+                                formatedFilter.joins = pathList;
 
                                 // Controlling the filters
                                 if( _.findIndex(panelFilter, (inx) => inx.filter_column === formatedFilter.filter_column) >=0 ){
