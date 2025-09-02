@@ -125,6 +125,16 @@ export const QueryUtils = {
         "min_bymonth": $localize`:@@min_bymonthLabel:Mínimos por mes`,
     };
 
+    // display control for the table DataQuality
+    if( Array.isArray(data)) {
+      if(data[0][0] === 'noDataAllowed') {
+        return {
+          labels: data[0],
+          values: data[1]
+        }
+      }
+    }
+
     for (const key in data) {
 
       for (const valueKey in data[key]) {
