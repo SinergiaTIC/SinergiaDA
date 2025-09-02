@@ -88,7 +88,7 @@
 
 <!-- EDICION DE LAS COLUMNAS -->
 
-<div *ngIf="typePanel==='columna' && columnPanel.technical_name" class="tp-container" [ngClass]="{'sda-disabled':dataModelService.model_id=='111111111111111111111111'}">
+<div *ngIf="typePanel==='columna' && columnPanel.technical_name" class="tp-container" [ngClass]="{'sda-disabled':dataModelService.model_id=='111111111111111111111111' && columnPanel.computed_column === 'no'}">
 
     <p-card i18n-header="@@editModelHeaders" header="Editar {{columnPanel.type ?  columnPanel.name : ''}}">
 
