@@ -612,7 +612,10 @@ export class EdaTable {
         //Es una secuencia similar a la de quitar los valores, pero opuesta.
         if (!this.noRepetitions &&  !this.resultAsPecentage && !this.onlyPercentages) {
             // si no he tocado nada, dejo el valor origintal
-        this.value = _.cloneDeep(this.origValues); 
+            if (this.noRepetitions !== undefined) { 
+                // securityTable check 
+                this.value = _.cloneDeep(this.origValues); 
+            }
         }  else if (!this.noRepetitions && ( this.resultAsPecentage || this.onlyPercentages)) {
             // si  quiero repetidos pero tengo porcentajes....
         //separamos valores de claves

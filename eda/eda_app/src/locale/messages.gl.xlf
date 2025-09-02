@@ -4434,6 +4434,10 @@
         <source>Un radar necesita como mínimo una categoría y al menos un valor numérico.</source>
         <target>Un radar necesita polo menos unha categoría e polo menos un valor numérico.</target>
       </trans-unit>
+      <trans-unit id="chartInfoTreetableAvailable">
+        <source>Una tabla árbol se puede configurar de dos formas. Mediante campos que se van anidando por medio de agrupaciones o mediante la definición de dos columnas numéricas que definan una relación padre-hijo. Si las dos primeras columnas son numéricas, se asumirá que describen una relación padre hijo.</source>
+        <target>Unha táboa de árbore pódese configurar de dúas maneiras: aniñando campos mediante agrupacións ou definindo dúas columnas numéricas que definan unha relación pai-fillo. Se as dúas primeiras columnas son numéricas, asumirase que describen unha relación pai-fillo.</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>
