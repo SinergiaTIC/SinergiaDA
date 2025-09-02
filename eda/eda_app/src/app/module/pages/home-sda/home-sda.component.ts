@@ -237,22 +237,10 @@ export class HomeSdaComponent implements OnInit {
     this.dashboardService.getDashboards().subscribe(
       res => {
         this.allDashboards = [
-          ...res.publics.map(d => ({
-            ...d,
-            type: "public"
-          })),
-          ...res.shared.map(d => ({
-            ...d,
-            type: "shared"
-          })),
-          ...res.group.map(d => ({
-            ...d,
-            type: "group"
-          })),
-          ...res.dashboards.map(d => ({
-            ...d,
-            type: "private"
-          }))
+          ...res.publics.map(d => this.normalizeDashboard(d, "public")),
+          ...res.shared.map(d => this.normalizeDashboard(d, "shared")),
+          ...res.group.map(d => this.normalizeDashboard(d, "group")),
+          ...res.dashboards.map(d => this.normalizeDashboard(d, "private"))
         ].sort((a, b) => (a.config.title > b.config.title ? 1 : b.config.title > a.config.title ? -1 : 0));
 
         this.groups = _.map(_.uniqBy(res.group, "group._id"), "group");
@@ -272,6 +260,23 @@ export class HomeSdaComponent implements OnInit {
     );
   }
 
+  /**
+   * Makes tag an array
+   */
+  private normalizeDashboard(dashboard: any, type: string) {
+    return {
+      ...dashboard,
+      type,
+      config: {
+        ...dashboard.config,
+        tag: Array.isArray(dashboard.config.tag)
+          ? dashboard.config.tag
+          : dashboard.config.tag
+          ? [dashboard.config.tag]
+          : []
+      }
+    };
+  }
   /**
    * Initializes the tags for filtering dashboards.
    */
