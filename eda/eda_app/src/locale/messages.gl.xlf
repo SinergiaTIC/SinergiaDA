@@ -1523,8 +1523,8 @@
         </context-group>
       </trans-unit>
       <trans-unit id="inputDescripcion" datatype="html">
-        <source> Descripción </source>
-        <target> Descripción </target>
+        <source> Descripción *</source>
+        <target> Descripción *</target>
         <context-group purpose="location">
           <context context-type="sourcefile">
             app/module/pages/data-sources/data-source-detail/data-source-detail.component.html</context>
