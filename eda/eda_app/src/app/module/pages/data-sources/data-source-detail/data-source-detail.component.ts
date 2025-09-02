@@ -531,13 +531,14 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
         const table = this.dataModelService.getTable(columnPanel);
         const column = table.columns.filter(col => col.column_name === columnPanel.technical_name)[0];
         const agg = ['sum', 'max', 'min', 'avg', 'count', 'distinct'];
-        let exists = 0;
+         /* SDA CUSTOM   let exists = 0;
         agg.forEach(e => { if (column.SQLexpression.toString().toLowerCase().indexOf(e) >= 0) { exists = 1; } });
 
         if (exists == 0 && column.column_type == 'numeric' ) {
             this.alertService.addError($localize`:@@IncorrectQueryAgg:Debes incluir la agregación (distinct, sum, max, min, etc)`);
             this.spinnerService.off()
         } else {
+            */
             const queryParams: QueryParams = {
                 table: table.table_name,
                 dataSource: this.dataModelService.model_id,
@@ -547,7 +548,7 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
                 res => { this.alertService.addSuccess($localize`:@@CorrectQuery:Consulta correcta`); this.spinnerService.off() },
                 err => { this.alertService.addError($localize`:@@IncorrectQuery:Consulta incorrecta`); this.spinnerService.off() }
             );
-        }
+         /* SDA CUSTOM  } */
     }
     checkConection() {
         this.spinnerService.on();
