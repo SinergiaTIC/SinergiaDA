@@ -276,13 +276,6 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
                     this.columnValues.unshift(    { label: $localize`:@@emptyStringTxt:Vacío`  , value:  'emptyString' }  )
                 }
 
-                // if(this.globalFilter.selectedIdValues.length !== 0 && this.globalFilter.isnew) {
-                //     this.globalFilter.selectedItems = this.globalFilter.selectedIdValues.map((e: any) => {
-                //         const value = this.totalValues.find(tv => e === tv[1]);
-                //         if(value) {return value[0]}
-                //     })
-                // }
-
             } else {
                 
                 if (Array.isArray(response) && response.length > 1) {
