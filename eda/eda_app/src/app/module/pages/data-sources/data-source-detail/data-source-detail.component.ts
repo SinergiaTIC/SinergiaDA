@@ -10,6 +10,7 @@ import { aggTypes } from 'app/config/aggretation-types';
 import { EdaColumnFunction } from '@eda/components/eda-table/eda-columns/eda-column-function';
 import * as _ from 'lodash';
 import { EdaColumnEditable } from '@eda/components/eda-table/eda-columns/eda-column-editable';
+import { AGG_COMPUTED } from './aggregationContants';
 
 
 @Component({
@@ -454,6 +455,16 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
 
     updateColumn() {
         if (this.columnPanel.technical_name) {
+
+            if(this.columnPanel.computed_column === 'computed') {
+                switch (this.columnPanel.column_type) {
+                    case 'text': this.columnPanel.aggregation_type = AGG_COMPUTED.AGG_TEXT; break;
+                    case 'date': this.columnPanel.aggregation_type = AGG_COMPUTED.AGG_DATE; break;
+                    case 'numeric': this.columnPanel.aggregation_type = AGG_COMPUTED.AGG_NUMERIC; break;
+                    default: this.columnPanel.aggregation_type = AGG_COMPUTED.AGG_COORDINATE; break;
+                }
+            }
+            
             this.dataModelService.changeColumnPanel(this.columnPanel);
         }
     }
@@ -579,6 +590,20 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
             params: { table: this.tablePanel },
             close: (event, response) => {
                 if (!_.isEqual(event, EdaDialogCloseEvent.NONE)) {
+
+                    const column = response.column;
+                    const aggregation_type =         [
+                        { "value": "sum", "display_name": "Sum" },
+                        { "value": "avg", "display_name": "Average" },
+                        { "value": "max", "display_name": "Maximum" },
+                        { "value": "min", "display_name": "Minimum"},
+                        { "value": "count", "display_name": "Count Values" },
+                        { "value": "count_distinct", "display_name": "Distinct Values" },
+                        { "value": "none", "display_name": "None" }
+                    ];
+
+                    if(column.computed_column === 'computed') { response.column.aggregation_type = aggregation_type }
+
                     this.dataModelService.addCalculatedColumn(response);
                     this.update();
                     this.typePanel = 'columna';
