@@ -98,9 +98,6 @@ export class FilterDialogComponent extends EdaDialogAbstract {
     }
 
     addFilter() {
-
-        console.log('filter-dialog ===> selectedColumn: ', this.selectedColumn);
-
         const table = this.selectedColumn.table_id;
         const column_type  = this.selectedColumn.column_type;
         const column = this.selectedColumn.column_name;
