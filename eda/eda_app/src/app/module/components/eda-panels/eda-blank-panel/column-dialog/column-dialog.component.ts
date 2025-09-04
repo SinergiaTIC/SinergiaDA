@@ -167,6 +167,9 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
     }
 
     public addFilter(): void {
+
+        console.log('selectedColumn: ', this.selectedColumn);
+
         const table = this.selectedColumn.table_id;
         const column = this.selectedColumn.column_name;
         const column_type = this.selectedColumn.column_type;
@@ -177,6 +180,8 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
         const autorelation = this.selectedColumn.autorelation;
         const filterBeforeGrouping = this.filterBeforeAfter.filterBeforeGrouping;
         const aggregation_type = this.aggregationSelected ? this.aggregationSelected.value : null;
+        const computed_column = this.selectedColumn.computed_column;
+        const SQLexpression = this.selectedColumn.SQLexpression;
         
 
         const filter = this.columnUtils.setFilter({
@@ -191,6 +196,8 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
             joins,
             filterBeforeGrouping,
             aggregation_type,
+            computed_column,
+            SQLexpression
         });
 
         this.filter.selecteds.push(filter);        
