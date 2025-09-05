@@ -1066,7 +1066,6 @@ export class MySqlBuilderService extends QueryBuilderService {
    * @returns having clause in a string.  
    */
   public getHavingFilters(filters ): any {
-
     if (filters.length) {
 
       let filtersString = `\nhaving 1=1 `;
@@ -1118,7 +1117,6 @@ export class MySqlBuilderService extends QueryBuilderService {
    * @returns coumn name in string mode for having. 
    */
 public getHavingColname(column: any){
-
   let colname:String  ;
   if( column.computed_column === 'no'  || !column.hasOwnProperty('computed_column') ){
     let table_id = column.table_id;
@@ -1135,7 +1133,11 @@ public getHavingColname(column: any){
     
   }else{
     if(column.column_type == 'numeric'){
-      colname = `CAST( ${column.SQLexpression} as decimal(32,${column.minimumFractionDigits}))`;
+      if(column.aggregation_type === 'count_distinct') {
+        colname = `CAST( count( distinct (${column.SQLexpression})) as decimal(32,${column.minimumFractionDigits}))`;
+      } else {
+        colname = `CAST( ${column.aggregation_type}(${column.SQLexpression}) as decimal(32,${column.minimumFractionDigits}))`;
+      }
     }else{
       colname = `  ${column.SQLexpression}  `;
     }
@@ -1157,7 +1159,6 @@ public getHavingColname(column: any){
       column.minimumFractionDigits = 0;
     }
     const  colname = this.getHavingColname(column) ;
-
     let colType = column.column_type;
     
     switch (this.setFilterType(filterObject.filter_type)) {
