@@ -138,7 +138,6 @@ export class DashboardController {
 
       } else {
         tags = req.qs.tags.split(',');
-        console.log(tags);
         const groupDashboardsTags = []
         tags.forEach(tag => {
           groupDashboards.forEach(dbs => {
@@ -152,8 +151,6 @@ export class DashboardController {
           }
           )
         })
-        console.log('tags', tags);
-         console.log(groupDashboardsTags);
         return  DashboardController.addGroupInfo(groupDashboardsTags);
       }
 
