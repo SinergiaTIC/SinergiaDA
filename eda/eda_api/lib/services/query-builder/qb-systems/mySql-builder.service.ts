@@ -851,20 +851,28 @@ export class MySqlBuilderService extends QueryBuilderService {
       let whatIfExpression = '';
       if (el.whatif_column) whatIfExpression = `${el.whatif.operator} ${el.whatif.value}`;
 
-
       el = this.getMinFractionDigits(el);
 
       // Calculated columns are managed here
       if (el.computed_column === 'computed') {
         if(el.column_type=='text'){
-          columns.push(`  ${el.SQLexpression}  as \`${el.display_name}\``);
+          if(el.aggregation_type === 'none') { columns.push(` ${el.SQLexpression} as \`${el.display_name}\``);}
+          else if(el.aggregation_type === 'count_distinct') {columns.push(` count( distinct ${el.SQLexpression} ) as \`${el.display_name}\``);}
+          else {columns.push(` ${el.aggregation_type}(${el.SQLexpression}) as \`${el.display_name}\``);}
         }else if(el.column_type=='numeric'){
-          columns.push(`cast( ${el.SQLexpression} ${whatIfExpression} as decimal(32,${el.minimumFractionDigits}))   as \`${el.display_name}\``);
+          if(el.aggregation_type === 'none') { columns.push(` cast( ${el.SQLexpression} ${whatIfExpression} as decimal(32,${el.minimumFractionDigits}))   as \`${el.display_name}\``);}
+          else if(el.aggregation_type === 'count_distinct') { columns.push(` cast( count( distinct( ${el.SQLexpression} ${whatIfExpression})) as decimal(32,${el.minimumFractionDigits}))   as \`${el.display_name}\``);}
+          else {columns.push(` cast( ${el.aggregation_type}(${el.SQLexpression} ${whatIfExpression}) as decimal(32,${el.minimumFractionDigits}))   as \`${el.display_name}\``);}
         }else if(el.column_type=='date'){
-          columns.push(`  ${el.SQLexpression}  as \`${el.display_name}\``);
+          if(el.aggregation_type === 'none') { columns.push(` ${el.SQLexpression} as \`${el.display_name}\``);}
+          else if(el.aggregation_type === 'count_distinct') { columns.push(` count( distinct ${el.SQLexpression}) as \`${el.display_name}\``);}
+          else { columns.push(` ${el.aggregation_type}(${el.SQLexpression}) as \`${el.display_name}\``);}
         }else if(el.column_type=='coordinate'){
-          columns.push(`  ${el.SQLexpression}  as \`${el.display_name}\``);
+          if(el.aggregation_type === 'none') { columns.push(` ${el.SQLexpression} as \`${el.display_name}\``);}
+          else if(el.aggregation_type === 'count_distinct') { columns.push(` count( distinct ${el.SQLexpression}) as \`${el.display_name}\``);}
+          else {columns.push(` ${el.aggregation_type}(${el.SQLexpression}) as \`${el.display_name}\``);}
         }
+
         // GROUP BY
         if (el.format) {
           if (_.isEqual(el.format, 'year')) {
@@ -890,7 +898,9 @@ export class MySqlBuilderService extends QueryBuilderService {
           }
         } else {
           if( el.column_type != 'numeric' ){ // Computed colums require agrregations for numeric
-            grouping.push(` ${el.SQLexpression} `);
+            grouping.push(` (${el.SQLexpression}) `);
+          } else if(el.aggregation_type === 'none') {
+            grouping.push(` (${el.SQLexpression}) `);
           }
         }
       } else {
