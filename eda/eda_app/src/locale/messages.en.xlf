@@ -736,11 +736,11 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 </context-group>
 </trans-unit>
 <trans-unit id="indicaciones1" datatype="html">
-<source> Puedes realizar consultas SQL sobre el esquema definido en tu modelo. 
-                                    Para ello introduce la consulta en el cuadro de texto y selecciona la tabla principal 
+<source> Puedes realizar consultas SQL sobre el esquema definido en tu modelo.
+                                    Para ello introduce la consulta en el cuadro de texto y selecciona la tabla principal
                                     (puede ser cualquiera de las que aparecen en la consulta).
                                     Usaremos esta tabla para vincular la consulta a los filtros del informe. </source>
-<target>  You can perform SQL queries on the schema defined in your model. 
+<target>  You can perform SQL queries on the schema defined in your model.
                                     To do this, enter the query in the text box and select the main table
                                     (It can be any of those that appear in the query).
                                     We will use this table to link the query to the report filters. </target>
@@ -3195,7 +3195,7 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
     <source> Todos  </source>
     <target>All  </target>
   </trans-unit>
-    
+
   <trans-unit id="NoneTags">
     <source> Ninguno  </source>
     <target>None </target>
@@ -3485,7 +3485,7 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
     <source>No ha sido posible eliminar la caché</source>
     <target>Error deleting cache</target>
   </trans-unit>
-  
+
   <trans-unit id="RefreshCacheTitle">
     <source>Actualizar los datos del modelo cada:</source>
     <target>Update model data every:  </target>
@@ -3500,7 +3500,7 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
     <source>Día/s</source>
     <target>Day/s</target>
   </trans-unit>
-  
+
   <trans-unit id="noCache">
     <source>Sin caché</source>
     <target>No caché</target>
@@ -3547,7 +3547,7 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
     <source>Configuración de seguridad</source>
     <target>Security configuration</target>
   </trans-unit>
-  
+
   <trans-unit id="viewsecurity">
     <source>Ver configuración de seguridad</source>
     <target>View security configuration</target>
@@ -3598,7 +3598,7 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
     <target>PERMISSIONS</target>
   </trans-unit>
 
-  
+
   <trans-unit id="visible">
     <source>VISIBLE</source>
     <target>VISIBLE</target>
@@ -3714,16 +3714,16 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
     <source>CREA UN NUEVO INFORME</source>
     <target>YOUR NEW DASHBOARD</target>
   </trans-unit>
-  
+
  <trans-unit id="inputCuenta">
     <source>CUENTA*  </source>
-    <target>ACCOUNT* </target>   
+    <target>ACCOUNT* </target>
   </trans-unit>
 
    <trans-unit id="inputCuentaEdit">
     <source>CUENTA  </source>
     <target>Account </target>
-  </trans-unit> 
+  </trans-unit>
 
   <trans-unit id="entidadesTitle">
     <source>Clique sobre un entidad para ver sus atributos.</source>
@@ -3743,131 +3743,131 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
     <trans-unit id="agregacionh5">
     <source>Agregación   </source>
     <target>Aggregation  </target>
-  </trans-unit> 
+  </trans-unit>
 
     <trans-unit id="inputFormat">
     <source>Número de decimales   </source>
     <target>Decimal places  </target>
-  </trans-unit> 
+  </trans-unit>
 
   <trans-unit id="DashboardMailingTitle">
     <source>Configuración del envío por email  </source>
     <target>Mail sending configuration  </target>
-  </trans-unit> 
+  </trans-unit>
 
     <trans-unit id="opcionMail">
     <source>Enviar por email  </source>
     <target>Send via email  </target>
-  </trans-unit> 
+  </trans-unit>
 
    <trans-unit id="noMail">
     <source>Sin alertas de correo </source>
     <target>No mail alerts  </target>
-  </trans-unit> 
+  </trans-unit>
 
     <trans-unit id="dashbaordsMailingHeader">
     <source>Envio de informes por email </source>
     <target>Dashboards mail sending</target>
-  </trans-unit> 
+  </trans-unit>
 
  <trans-unit id="cumulativeSum">
     <source>Suma acumulativa   </source>
     <target>Cumulative sum </target>
-  </trans-unit> 
+  </trans-unit>
 
     <trans-unit id="ptooltipViewAlerts">
     <source>Configurar alertas</source>
     <target>Alerts configuration</target>
-  </trans-unit> 
+  </trans-unit>
 
 
   <trans-unit id="inputFilter">
     <source>Filtros</source>
     <target>Filters</target>
-  </trans-unit> 
+  </trans-unit>
 
      <trans-unit id="comparativeTooltip">
     <source>La función de comparar sólo se puede activar si se dispone de un campo de fecha agregado por mes y un único campo numèrico agregado</source>
     <target>Compare function is only allowed in queries with one date field monthly or weekly aggregated and one numeric field</target>
-  </trans-unit> 
+  </trans-unit>
 
 
      <trans-unit id="canIeditTooltip">
     <source>Si esta opción está seleccionada, sólo el propietario del informe y los administradores podrán guardar los cambios</source>
     <target>If this option is selected, only the report owner and administrators will be able to save changes</target>
-  </trans-unit> 
+  </trans-unit>
      <trans-unit id="onlyIcanEditTag">
     <source>Edición privada:</source>
     <target>Private edition:  </target>
-  </trans-unit> 
+  </trans-unit>
 
   <trans-unit id="showLablesTooltip">
     <source>Mostrar o ocultar las etiquetas sobre los gráficos</source>
     <target>Show or hide labels on charts</target>
-  </trans-unit> 
+  </trans-unit>
 
   <trans-unit id="showLablesPercentTooltip">
     <source>Mostrar o ocultar las etiquetas sobre los gráficos</source>
     <target>Show or hide labels in percent on charts</target>
-  </trans-unit> 
+  </trans-unit>
 
 
          <trans-unit id="columnsTooltip">
     <source>Elige cuantas columnas quieres mostrar</source>
     <target>Choose how many columns you want to display</target>
-  </trans-unit> 
+  </trans-unit>
 
        <trans-unit id="showLabels">
     <source>Mostrar Etiquetas</source>
     <target>Show Tags</target>
-  </trans-unit> 
+  </trans-unit>
            <trans-unit id="showLabelsPercent">
     <source>Mostrar Etiquetas en Porcentaje</source>
     <target>Show Tags in Percent</target>
-  </trans-unit> 
+  </trans-unit>
 
 
        <trans-unit id="histogramColum">
     <source>Columnas</source>
     <target>Columns</target>
-  </trans-unit> 
+  </trans-unit>
 
      <trans-unit id="trendTooltip">
     <source>La función de añadir tendencia sólo se puede activar en los gràficos de lineas</source>
     <target>Trend function is only allowed in line charts</target>
-  </trans-unit> 
+  </trans-unit>
 
      <trans-unit id="filterTooltip">
     <source>Puedes añadir palabras separadas por comas, que se aplicarán como filtros de tipo LIKE a la hora de recuperar las tablas de tu base de datos</source>
     <target>Could add words separated by commas, which will be applied as LIKE filters when retrieving the tables from your database</target>
-  </trans-unit> 
+  </trans-unit>
 
    <trans-unit id="cumulativeSumTooltip">
-    <source>Si activas ésta función se calculará la suma acumulativa 
+    <source>Si activas ésta función se calculará la suma acumulativa
                                             para los campos numéricos que eligas. Sólo se puede activar si la fecha está agregada por mes o dia.</source>
-    <target>Activating this function the cumulative sum for numeric filelds will be calculated. 
+    <target>Activating this function the cumulative sum for numeric filelds will be calculated.
                                         It can only be activated if date field is aggregated by month, week or day. </target>
-  </trans-unit> 
+  </trans-unit>
 
    <trans-unit id="cumsumAlertMessage1">
     <source> La suma acumulativa sólo se puede aplicar si se dispone de una única serie no numérica.</source>
     <target>Cummulative sum can only be applied in one non-numeric serie.</target>
-  </trans-unit> 
+  </trans-unit>
 
      <trans-unit id="cumsumAlertMessage2">
     <source>Puedes desactivar la función acumulativa en el campo de fecha o quitar una columna no numérica.</source>
     <target>Disable cummulative function in date field or remove one non-numeric field. </target>
-  </trans-unit> 
+  </trans-unit>
 
    <trans-unit id="SaveAs">
     <source>GUARDAR COMO...</source>
     <target>SAVE AS...  </target>
-  </trans-unit> 
+  </trans-unit>
 
      <trans-unit id="opcionGuardarComo">
     <source>GUARDAR COMO</source>
     <target>SAVE AS</target>
-  </trans-unit> 
+  </trans-unit>
 
 
 
@@ -3875,106 +3875,106 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
    <trans-unit id="editStylesTitle">
     <source>EDITAR ESTILOS DEL INFORME</source>
     <target>EDIT DASHBOARD STYLES</target>
-  </trans-unit> 
+  </trans-unit>
 
      <trans-unit id="dashboardTitleEdit">
     <source>Título del informe</source>
     <target>Dashboard title</target>
-  </trans-unit> 
+  </trans-unit>
 
      <trans-unit id="filtersEdit">
     <source>Filtros</source>
     <target>Filters</target>
-  </trans-unit> 
+  </trans-unit>
 
      <trans-unit id="panelTitleEdit">
     <source>Título del panel</source>
     <target>Panel title</target>
-  </trans-unit> 
+  </trans-unit>
 
      <trans-unit id="panelContentEdit">
     <source>Contenido del panel</source>
     <target>Panel content</target>
-  </trans-unit> 
+  </trans-unit>
 
      <trans-unit id="ChangeFontFamily">
     <source>Tipo de fuente</source>
     <target>Font type</target>
-  </trans-unit> 
+  </trans-unit>
 
      <trans-unit id="ChangeFontSize">
     <source>Tamaño de fuente</source>
     <target>Font size</target>
-  </trans-unit> 
+  </trans-unit>
 
      <trans-unit id="ChangeFontColor">
     <source>Color de la fuente</source>
     <target>Font color</target>
-  </trans-unit> 
+  </trans-unit>
 
 
   <trans-unit id="ChangeBackgroundColor">
     <source>Color del fondo</source>
     <target>Background color </target>
-  </trans-unit> 
-  
+  </trans-unit>
+
      <trans-unit id="ChangePaneColor">
     <source>Color del panel</source>
     <target>Panel color</target>
-  </trans-unit> 
+  </trans-unit>
 
   <trans-unit id="opcionEditarEstilos">
     <source>EDITAR ESTILOS</source>
     <target>EDIT STYLES</target>
-  </trans-unit> 
+  </trans-unit>
 
     <trans-unit id="left">
     <source>Izquierda</source>
     <target>Left</target>
-  </trans-unit> 
+  </trans-unit>
   <trans-unit id="center">
     <source>Centro</source>
     <target>Center</target>
-  </trans-unit> 
+  </trans-unit>
   <trans-unit id="right">
     <source>Derecha</source>
     <target>Right</target>
-  </trans-unit> 
+  </trans-unit>
 
   <trans-unit id="resetStylesBtn">
     <source>Volver a los valores por defecto</source>
     <target>Set default values</target>
-  </trans-unit> 
+  </trans-unit>
 
     <trans-unit id="samplePanelTitle">
     <source>Previsualización</source>
     <target>Previsualization</target>
-  </trans-unit> 
+  </trans-unit>
 
    <trans-unit id="samplePanelDBName">
     <source>Título del informe</source>
     <target>Dashboard title</target>
-  </trans-unit> 
+  </trans-unit>
 
    <trans-unit id="samplePanelName">
     <source>Título del panel</source>
     <target>Panel title</target>
-  </trans-unit> 
-  
+  </trans-unit>
+
    <trans-unit id="histoGramRangesTxt">
     <source>Rango</source>
     <target>Range</target>
-  </trans-unit> 
+  </trans-unit>
 
   <trans-unit id="histoGramDescTxt">
     <source>Número de</source>
     <target>Number of</target>
-  </trans-unit> 
+  </trans-unit>
 
     <trans-unit id="histoGramDescTxt2">
     <source>en este rango</source>
     <target>in this range</target>
-  </trans-unit> 
+  </trans-unit>
 
 
 <trans-unit id="sidebarInform" datatype="html">
@@ -4082,12 +4082,12 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 </trans-unit>
 
 <trans-unit id="firstAboutParagraphSpan" datatype="html">
-  <source>  
-                <a class="stronger-paragraph" href="https://eda.jortilles.com">Enterprise Data Analytics (EDA)</a> es una aplicación web de código libre que permite realizar 
+  <source>
+                <a class="stronger-paragraph" href="https://eda.jortilles.com">Enterprise Data Analytics (EDA)</a> es una aplicación web de código libre que permite realizar
                 informes gráficos e interactivos de forma sencilla. EDA es una aplicación que se puede instalar
-                en tus propios servidores o se puede difrutar en su versión SaaS 
-                <a class="stronger-paragraph" href="https://www.edalitics.com">Edalitics</a>. 
-                Edalitics permite disfrutar de toda la potencia de EDA sin tener que preocuparte de instalaciones, 
+                en tus propios servidores o se puede difrutar en su versión SaaS
+                <a class="stronger-paragraph" href="https://www.edalitics.com">Edalitics</a>.
+                Edalitics permite disfrutar de toda la potencia de EDA sin tener que preocuparte de instalaciones,
                 configuraciones, actualizaciones, etc. Conectas tus fuentes de datos y listo.  </source>
   <target>
                 <a class="stronger-paragraph" href="https://eda.jortilles.com">Enterprise Data Analytics (EDA)</a> is an free  web application that allows you to perform
@@ -4105,7 +4105,7 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 
 <trans-unit id="secondAboutParagraph" datatype="html">
   <source>
-                 EDA ha sido desarrollado por <a class="stronger-paragraph" href="https://www.jortilles.com">Jortilles</a>. 
+                 EDA ha sido desarrollado por <a class="stronger-paragraph" href="https://www.jortilles.com">Jortilles</a>.
                 Si necesita soporte empresarial, no dude en contactar con nosotros. Así mismo cómo si quiere solicitar nuevas
                 funcionalidades o carácteristicas. Jortilles financia el desarrollo de EDA mediante las suscripciones a Edalitics
                 y el soporte empresarial que ofrece a sus clientes.  </source>
@@ -4144,7 +4144,7 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 
 <trans-unit id="fifthAboutParagraph" datatype="html">
   <source>
-                  Existe un foro donde puedes compartir tu experiencia con la comunidad en  
+                  Existe un foro donde puedes compartir tu experiencia con la comunidad en
                 <a class="stronger-paragraph" href="https://github.com/jortilles/EDA/discussions">Este Link</a>
   </source>
   <target>
@@ -4157,7 +4157,7 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
   <trans-unit id="eliminarInforme">
     <source>ELIMINAR INFORME</source>
     <target>DELETE REPORT</target>
-  </trans-unit> 
+  </trans-unit>
 
   <trans-unit id="IncorrectFile">
   <source>Archivo incorrecto, verifique que el formato del archivo sea json o geojson.</source>
@@ -4167,7 +4167,7 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
   <trans-unit id="opcionUrls">
     <source>ACCIÓN PERSONALIZADA</source>
     <target>CUSTOM ACTION</target>
-  </trans-unit> 
+  </trans-unit>
 
 
 
@@ -4203,54 +4203,54 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
   <trans-unit id="actionUrl">
     <source>Acción</source>
     <target>Action</target>
-  </trans-unit> 
+  </trans-unit>
   <trans-unit id="descriptionUrl">
     <source>Descripción</source>
     <target>Description</target>
-  </trans-unit> 
+  </trans-unit>
   <trans-unit id="editionUrl">
     <source>Edición</source>
     <target>Edition</target>
-  </trans-unit> 
+  </trans-unit>
   <trans-unit id="urlTextConfiguration">
     <source>Configuración de url y nombre de acción personalizada: </source>
     <target>Custom Action Name and URL Settings:</target>
-  </trans-unit> 
+  </trans-unit>
   <trans-unit id="resumeTextConfiguration">
-    <source>Puedes configurar una acción personalizada que quieras ejecutar.  
-Te permite llamar a una URL que haga una acción que quieras invocar. 
+    <source>Puedes configurar una acción personalizada que quieras ejecutar.
+Te permite llamar a una URL que haga una acción que quieras invocar.
 Puede ser una llamada a una api, a un endpoint de una app
-o incluso invocar procesos de carga desde una llamada http. 
+o incluso invocar procesos de carga desde una llamada http.
 Una vez configurado podrás invocarlo siempre que que quieras desde el botón.</source>
     <target>You can configure a custom action that you want to execute.
 It allows you to call a URL that performs an action you want to invoke.
 It can be a call to an API, an endpoint of an app
 or even invoke loading processes from an http call.
 Once configured you can invoke it whenever you want from the button.</target>
-  </trans-unit> 
+  </trans-unit>
   <trans-unit id="urlString">
     <source>URL: </source>
     <target>URL: </target>
-  </trans-unit> 
+  </trans-unit>
   <trans-unit id="urlName">
     <source>Nombre: </source>
     <target>Name: </target>
-  </trans-unit> 
+  </trans-unit>
   <trans-unit id="urlDescription">
     <source>Descripción: </source>
     <target>Description: </target>
-  </trans-unit> 
+  </trans-unit>
   <trans-unit id="textLabelUrl">
     <source>Agregar url</source>
     <target>Add url</target>
-  </trans-unit> 
+  </trans-unit>
 
 
       <trans-unit id="chartTypesKPIBAR">
         <source>KPI + Gráfico de Barras</source>
         <target>KPI + Bar chart</target>
       </trans-unit>
-      
+
       <trans-unit id="chartTypesKPILINE">
         <source>KPI + Gráfico de Lineas</source>
         <target>KPI + Line chart</target>
@@ -4303,7 +4303,7 @@ Once configured you can invoke it whenever you want from the button.</target>
       </trans-unit>
       <trans-unit id="noBaseLayerH6">
         <source>Activar capa base</source>
-        <target>Activate base layer</target>       
+        <target>Activate base layer</target>
       </trans-unit>
       <trans-unit id="chartTypesTableAnalized" datatype="html">
         <source>Tabla DataQuality</source>
@@ -4383,23 +4383,23 @@ Once configured you can invoke it whenever you want from the button.</target>
       </trans-unit>
       <trans-unit id="chartTypesTreeTable">
         <source>Tabla Árbol</source>
-        <target>Tree Table</target>       
+        <target>Tree Table</target>
       </trans-unit>
       <trans-unit id="NameTablaQuality">
         <source>Tabla DataQuality</source>
-        <target>Table DataQuality</target>       
+        <target>Table DataQuality</target>
       </trans-unit>
       <trans-unit id="SureDataQuality">
         <source>¿Estás seguro de que deseas continuar con la visualización de DataQuality? Esta acción puede tomar un poco de tiempo.</source>
-        <target>Are you sure you want to continue viewing DataQuality? This may take a while.</target>       
+        <target>Are you sure you want to continue viewing DataQuality? This may take a while.</target>
       </trans-unit>
       <trans-unit id="ContinueTablaQuality">
         <source>Continuar</source>
-        <target>Continue</target>       
+        <target>Continue</target>
       </trans-unit>
       <trans-unit id="CancelTablaQuality">
         <source>Cancelar</source>
-        <target>Cancel</target>       
+        <target>Cancel</target>
       </trans-unit>
       <trans-unit id="filteredReportMessage">
         <source>Por favor, espera un momento mientras procesamos la selección.</source>
@@ -4428,7 +4428,7 @@ Once configured you can invoke it whenever you want from the button.</target>
 
 
 
-      
+
       <trans-unit id="DatePickerNull">
         <source>Fecha nula</source>
         <target>Null date</target>
@@ -4572,7 +4572,6 @@ Once configured you can invoke it whenever you want from the button.</target>
       <trans-unit id="emptyStringTxt">
         <source>Vacío</source>
         <target>(Empty)</target>
-        </trans-unit>
       </trans-unit>
       <trans-unit id="filterSettingsReboot">
         <source>La configuración de filtros se ha reiniciado</source>
