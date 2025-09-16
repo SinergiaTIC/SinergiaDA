@@ -482,12 +482,16 @@ export class GlobalFilterComponent implements OnInit {
             }
 
 
-
+                // compatibility with old reports
                 if(globalFilter.selectedIdValues?.some((id: any) => id === null)) {
                     globalFilter.selectedIdValues = globalFilter.selectedItems.map((element: any) => {
                         const value = data.filter(d => d.label === element);
                         return value[0]?.id;
                     })
+                }
+                // compatibility with old reports
+                if( globalFilter.selectedIdValues  === undefined){
+                     globalFilter.selectedIdValues = [];
                 }
 
                 globalFilter.selectedItems = globalFilter.selectedIdValues?.map(siv => {
