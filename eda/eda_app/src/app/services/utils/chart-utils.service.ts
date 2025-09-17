@@ -749,14 +749,8 @@ export class ChartUtilsService {
             notAllowed.splice(notAllowed.indexOf('pyramid'), 1);
         }
 
-        //treetable (Al menos tres columnas y dos numéricas que son id y las relaciones_id)
-        // if(dataDescription.totalColumns > 2 && dataDescription.numericColumns.length > 1) {
-        //     notAllowed.splice(notAllowed.indexOf('treetable'), 1);
-        // }
-
-        // Pruebas con hacer dinámico el treeTable
-
-        if(dataDescription.totalColumns > 2 && dataDescription.otherColumns.length === 1) {
+        //treetable  at least two  text columns or two numeric (parent-child) and one text
+        if(  dataDescription.totalColumns > 2 && dataDescription.otherColumns.length >= 1) {
             notAllowed.splice(notAllowed.indexOf('treetable'), 1);
         }
 
