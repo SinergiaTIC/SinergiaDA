@@ -1,12 +1,12 @@
 
 
 body .preview-chart-box {
-    height: 500px;
+    height: 600px;
 }
 
 @media (max-width: 1500px) {
     body .preview-chart-box {
-        min-height: 450px;
+        height: 400px;
     }
 }
 
@@ -60,14 +60,10 @@ body .preview-chart-box {
     transition: .3s;
   }
 
-.eda-col-class-numeric {
+.eda-col-class-numeric{
   font-weight: bold;
 }
 
-.eda-col-class-whatif {
-  font-weight: bold;
-}
-
-.eda-col-class-text {
+.eda-col-class-text{
   font-style: italic;
 }

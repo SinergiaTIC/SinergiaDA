@@ -52,7 +52,7 @@ export class ApiService {
     }
 
     private getSearchParamToken() {
-        const token = localStorage.getItem('token');
+        const token = sessionStorage.getItem('token');
         let params: HttpParams = new HttpParams();
 
         if (token) {

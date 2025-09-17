@@ -1,6 +1,5 @@
 import * as _ from 'lodash';
  /*SDA CUSTOM*/ import * as custom from  '../custom/custom' ;
-
 class TreeNode {
     public value: string;
     public child: Array<TreeNode>
@@ -8,25 +7,6 @@ class TreeNode {
         this.value = value;
         this.child = [];
     }
-}
-
-export interface EdaQueryParams {
-    tables: any[];
-    columns: any[];
-    fields?: any[];
-    origin: string;
-    dest: any[];
-    joinTree: any[];
-    grouping?: any[];
-    filters?: any[];
-    havingFilters?: any[];
-    limit?: number;
-    joinType?: string;
-    valueListJoins?: any[];
-    queryLimit?: any;
-    schema?: string;
-    database?: string;
-    forSelector?: boolean;
 }
 
 
@@ -62,9 +42,6 @@ export abstract class QueryBuilderService {
     abstract sqlQuery(query: string, filters: any[], filterMarks: string[]): string;
     abstract buildPermissionJoin(origin: string, join: string[], permissions: any[], schema?: string);
     abstract parseSchema(tables: string[], schema?: string, database?: string);
-
-    abstract analizedQuery(params: EdaQueryParams): any[];
-
 
     public builder() {
 
@@ -313,7 +290,6 @@ export abstract class QueryBuilderService {
             grouping = separedCols[1];
         }
 
-
         //to WHERE CLAUSE
         const filters = this.queryTODO.filters.filter(f => {
             let column =  this.queryTODO.fields.find(c=> f.filter_table == c.table_id && f.filter_column == c.column_name );
@@ -347,21 +323,9 @@ export abstract class QueryBuilderService {
             }
         }).filter(f=> ![ 'not_null' , 'not_null_nor_empty' , 'null_or_empty'].includes( f.filter_type));
 
-        const tables = this.dataModel.ds.model.tables.map(table => ({ name: table.table_name, query: table.query }));
-        const joinType = this.queryTODO.joinType;
-        const queryLimit = this.queryTODO.queryLimit;
-        const schema = this.dataModel.ds.connection.schema || 'public'; 
-        const database = this.dataModel.ds.connection.database; 
-        const forSelector = this.queryTODO.forSelector; 
-        const fields = this.queryTODO.fields;
         if (this.queryTODO.simple) {
             this.query = this.simpleQuery(columns, origin);
             return this.query;
-        } else if (this.queryTODO.analized) {
-            return this.analizedQuery({
-                tables, columns, fields, origin, dest, joinTree, grouping, filters, havingFilters,
-                queryLimit, joinType, valueListJoins, schema, database, forSelector
-            })
         } else {
             let tables = this.dataModel.ds.model.tables
                 .map(table => { return { name: table.table_name, query: table.query } });
@@ -898,7 +862,6 @@ export abstract class QueryBuilderService {
 
 
     public sqlBuilder(userQuery: any, filters: any[]): string {
-
 
         const graph = this.buildGraph();
         const schema = this.dataModel.ds.connection.schema;

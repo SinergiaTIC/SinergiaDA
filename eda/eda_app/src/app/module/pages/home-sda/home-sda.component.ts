@@ -81,7 +81,7 @@ export class HomeSdaComponent implements OnInit {
       color: "#ee4e36"
     }
   ];
-
+  
   private defaultDashboardTypes: Array<{
     type: string;
     label: string;
@@ -158,7 +158,7 @@ export class HomeSdaComponent implements OnInit {
     // Set view mode from local storage or default to table view
     this.viewMode = (localStorage.getItem("preferredViewMode") as "table" | "card") || "table";
   }
-
+  
   private initDashboardTypes(): void {
     this.dashboardTypes = this.defaultDashboardTypes.filter(type => {
       if (type.type === 'shared') {
@@ -177,7 +177,7 @@ export class HomeSdaComponent implements OnInit {
     this.init();
     this.ifAnonymousGetOut();
     this.setIsObserver();
-    this.currentUser = JSON.parse(localStorage.getItem("user"));
+    this.currentUser = JSON.parse(sessionStorage.getItem("user"));
   }
 
   /**
@@ -188,7 +188,7 @@ export class HomeSdaComponent implements OnInit {
     this.initDashboards();
     this.initTags();
     this.initGroups();
-    this.initDashboardTypes();
+    this.initDashboardTypes(); 
   }
 
   /**
@@ -197,8 +197,8 @@ export class HomeSdaComponent implements OnInit {
   private setIsObserver = async () => {
     this.groupService.getGroupsByUser().subscribe(
       res => {
-        const user = localStorage.getItem("user");
-        const userID = JSON.parse(user)?._id;
+        const user = sessionStorage.getItem("user");
+        const userID = JSON.parse(user)._id;
         this.grups = res;
         this.isObserver =
           this.grups.filter(group => group.name === "EDA_RO" && group.users.includes(userID)).length !== 0;
@@ -212,8 +212,8 @@ export class HomeSdaComponent implements OnInit {
    * Redirects anonymous users to the login page.
    */
   private ifAnonymousGetOut(): void {
-    const user = localStorage.getItem("user");
-    const userName = JSON.parse(user)?.name;
+    const user = sessionStorage.getItem("user");
+    const userName = JSON.parse(user).name;
 
     if (userName === "edaanonim" || userName === "EDA_RO") {
       this.router.navigate(["/login"]);
@@ -237,10 +237,22 @@ export class HomeSdaComponent implements OnInit {
     this.dashboardService.getDashboards().subscribe(
       res => {
         this.allDashboards = [
-          ...res.publics.map(d => this.normalizeDashboard(d, "public")),
-          ...res.shared.map(d => this.normalizeDashboard(d, "shared")),
-          ...res.group.map(d => this.normalizeDashboard(d, "group")),
-          ...res.dashboards.map(d => this.normalizeDashboard(d, "private"))
+          ...res.publics.map(d => ({
+            ...d,
+            type: "public"
+          })),
+          ...res.shared.map(d => ({
+            ...d,
+            type: "shared"
+          })),
+          ...res.group.map(d => ({
+            ...d,
+            type: "group"
+          })),
+          ...res.dashboards.map(d => ({
+            ...d,
+            type: "private"
+          }))
         ].sort((a, b) => (a.config.title > b.config.title ? 1 : b.config.title > a.config.title ? -1 : 0));
 
         this.groups = _.map(_.uniqBy(res.group, "group._id"), "group");
@@ -261,62 +273,27 @@ export class HomeSdaComponent implements OnInit {
   }
 
   /**
-   * Makes tag an array if it's not already, and trims whitespace.
-   */
-  private normalizeDashboard(dashboard: any, type: string) {
-    return {
-      ...dashboard,
-      type,
-      config: {
-        ...dashboard.config,
-        tag: Array.isArray(dashboard.config.tag)
-          ? dashboard.config.tag.map(tag => tag.trim())
-          : dashboard.config.tag
-          ? [dashboard.config.tag.trim()]
-          : []
-      }
-    };
-  }
-  /**
    * Initializes the tags for filtering dashboards.
    */
   private initTags(): void {
-
-    const uniqueTags = Array.from(new Set(this.allDashboards.map(db => db.config.tag))).filter((item) => (item?.length !==0 && item !== undefined && item !== null)).sort();
-
+    const uniqueTags = Array.from(new Set(this.allDashboards.map(db => db.config.tag))).sort();
     const filteredUniqueTags = uniqueTags.filter(tag => {
       if (tag === 'shared') {
         return this.isAdmin;
       }
       return true;
     });
-
-    const filteredUniqueTagsString = filteredUniqueTags.reduce((acc, item) => {
-      if (Array.isArray(item)) {
-        return acc.concat(item);
-      } else {
-        return acc.concat([item]);
-      }
-    }, []);
-
-    const filteredUniqueTagsStringNew = [...new Set(filteredUniqueTagsString)];
-
     this.tags = [
       {
         value: null,
         label: this.noTagLabel
       },
-      ...filteredUniqueTagsStringNew.map(tag => ({
+      ...filteredUniqueTags.map(tag => ({
         value: tag,
         label: tag
       }))
     ];
-
     this.filteredTags = [...this.tags];
-
-    // Sorting filteredTags in alphabetical order
-    this.filteredTags.sort((a, b) => a.label.trim().toLowerCase().localeCompare(b.label.trim().toLowerCase()));
-    localStorage.setItem('tags', JSON.stringify(this.tags));
   }
 
   /**
@@ -458,15 +435,12 @@ public filterGroups() {
    * @param tag The tag to toggle
    */
   public toggleTagSelection(tag: any) {
-
     const index = this.selectedTags.findIndex(t => t.value === tag.value);
-
     if (index > -1) {
       this.selectedTags.splice(index, 1);
     } else {
       this.selectedTags.push(tag);
     }
-
     this.filterDashboards();
   }
 
@@ -514,20 +488,9 @@ public filterGroups() {
 
     // Apply tag filter
     if (this.selectedTags.length > 0) {
-      this.visibleDashboards = this.visibleDashboards.filter(db => {
-        const tags = Array.isArray(db.config.tag)
-          ? db.config.tag
-          : typeof db.config.tag === 'string'
-            ? [db.config.tag]
-            : [];
-
-        return this.selectedTags.some(tag => {
-          const tagVal = tag?.value;
-          return tagVal === null
-            ? tags.length === 0
-            : tags.includes(tagVal);
-        });
-      });
+      this.visibleDashboards = this.visibleDashboards.filter(db =>
+        this.selectedTags.some(tag => tag.value === db.config.tag || (tag.value === null && !db.config.tag))
+      );
     }
 
     // Apply group filter
@@ -570,7 +533,7 @@ public filterGroups() {
     result = this.isAdmin;
     if (result == false) {
       if (dashboard.config.onlyIcanEdit === true) {
-        if (localStorage.getItem("user") == dashboard.user) {
+        if (sessionStorage.getItem("user") == dashboard.user) {
           result = true;
         }
       } else {

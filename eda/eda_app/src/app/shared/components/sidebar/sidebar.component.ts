@@ -109,7 +109,7 @@ export class SidebarComponent implements OnInit {
     }
 
     setEditMode(): void {
-        const user = localStorage.getItem('user');
+        const user = sessionStorage.getItem('user');
         const userName = JSON.parse(user).name;
         this.edit_mode = (userName !== 'edaanonim');
     }

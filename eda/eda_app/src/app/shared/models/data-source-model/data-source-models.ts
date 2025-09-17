@@ -50,10 +50,10 @@ export class EditColumnPanel {
 export class EditModelPanel {
   type: string;
   connection: {
-    type: string, host: string, database: string, user: string, password: string, schema:string, port:number, warehouse:string, ssl?: Boolean
+    type: string, host: string, database: string, user: string, password: string, schema:string, port:number, warehouse:string
   };
   metadata: {
-    model_name: string, model_granted_roles: any, cache_config, filter:string, tags:any
+    model_name: string, model_granted_roles: any, cache_config, filter:string
   };
 }
 
@@ -62,7 +62,6 @@ export class Relation {
     source_column: Array<any>;
     target_table: string;
     target_column: Array<any>;
-    display_name?: {};
     visible: boolean;
 }
 

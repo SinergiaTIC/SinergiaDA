@@ -3,6 +3,8 @@ import { AbstractConnection } from '../abstract-connection';
 import { AggregationTypes } from '../../../module/global/model/aggregation-types';
 import { OracleBuilderService } from '../../query-builder/qb-systems/oracle-builder.service';
 import oracledb from 'oracledb';
+import { parse } from 'path';
+
 
 /**
  * WARNING !! La resposta de oracledb dóna problemes de format (objecte, array) ?? 
@@ -40,8 +42,7 @@ export class OracleConnection extends AbstractConnection {
             /** Això es per que oracle  no gestiona bé la conversió dels números a javascript
              * https://github.com/oracle/node-oracledb/blob/main/doc/api.md#numberhandling
              */
-            //oracledb.fetchAsString = [ oracledb.NUMBER ];
-            oracledb.outFormat = oracledb.OUT_FORMAT_OBJECT;
+            oracledb.fetchAsString = [ oracledb.NUMBER ];
             const connection  = await oracledb.getConnection({
                 user: this.config.user,
                 password: this.config.password,
@@ -188,10 +189,8 @@ export class OracleConnection extends AbstractConnection {
                     const runparsed = {};
                     const rowTypes = [];
                     for (let j = 0; j < labels.length; j++) {
-                        if( row[j] != undefined  && row[j] !== null ){ 
-                            r[labels[j]] = ( isNaN( row[j].replace(',', '.') ) || 
-                            ( row[j].length>1 && row[j].indexOf('0')==0  ) ) ? 
-                            row[j]:parseFloat(row[j].replace(',', '.') )  ;
+                        if( row[j] !== null ){ 
+                            r[labels[j]] = ( isNaN( row[j].replace(',', '.') ) || ( row[j].length>1 && row[j].indexOf('0')==0  ) ) ? row[j]:parseFloat(row[j].replace(',', '.') )  ;
                             runparsed[labels[j]] =   row[j];
                             rowTypes[j] =   ( isNaN( row[j].replace(',', '.') ) || ( row[j].length>1 && row[j].indexOf('0')==0  ) )  ;
                         }else{
@@ -223,7 +222,7 @@ export class OracleConnection extends AbstractConnection {
                     }
                 }
             
-                // i tinc columnes que aparentment son números pero de cop i volta surt un string el torno a posar com a string 
+                /* si tinc columnes que aparentment son números pero de cop i volta surt un string el torno a posar com a string */
                 if(FALSEnumericColumns.length>0){
                     for(let e=0; e< FALSEnumericColumns.length; e++){
                         for(let q=0; q< parsedResults.length; q++){
@@ -233,12 +232,11 @@ export class OracleConnection extends AbstractConnection {
                 }   
             }catch(e){
                 console.log(e);
+                console.log('The query returned null');
                 console.log(result);
             }
             return parsedResults;
 
-
-            
 
 
         } catch (err) {
@@ -271,7 +269,7 @@ export class OracleConnection extends AbstractConnection {
             const unparsedResults = [];
             const types = [];
             const FALSEnumericColumns =[];
-            /* SE COMENTA PORQUE CON LA NUEVA VERSIÓN YA NO HACE FALTA HACER ESTO.
+            
             try{
                 result.rows.forEach(row => {
                     const r = {};
@@ -293,7 +291,7 @@ export class OracleConnection extends AbstractConnection {
                     unparsedResults.push(runparsed);
                     types.push(rowTypes);
                 })
-                //Tot això es fa per que oracle te un bug i ho retorna tot com a text. Aixó que s'ha de mirar cada columna si tots els valors son numerics i aleshoraes convertir-ho a numeric
+                /** Tot això es fa per que oracle te un bug i ho retorna tot com a text. Aixó que s'ha de mirar cada columna si tots els valors son numerics i aleshoraes convertir-ho a numeric */
                 for(let p=0; p< types.length; p++){
                     for(let y=0; y< types[p].length; y++){
                         if( p  < types.length-1 ){
@@ -310,7 +308,7 @@ export class OracleConnection extends AbstractConnection {
                     }
                 }
             
-                //si tinc columnes que aparentment son números pero de cop i volta surt un string el torno a posar com a string 
+                /* si tinc columnes que aparentment son números pero de cop i volta surt un string el torno a posar com a string */
                 if(FALSEnumericColumns.length>0){
                     for(let e=0; e< FALSEnumericColumns.length; e++){
                         for(let q=0; q< parsedResults.length; q++){
@@ -324,11 +322,7 @@ export class OracleConnection extends AbstractConnection {
                 console.log(result);
             }
 
-    
             return parsedResults;
-            */
-
-            return result.rows;
 
         } catch (err) {
             console.log(err);
@@ -411,12 +405,13 @@ export class OracleConnection extends AbstractConnection {
     }
 
     private setColumns(c: any, tableCount?: number) {
-        let column: any = {};
-        column.column_name = c.COLUMN_NAME;
-        column.display_name = { default: this.normalizeName(c.COLUMN_NAME), localized: [] };
-        column.description = { default: this.normalizeName(c.COLUMN_NAME), localized: [] };
 
-        const dbType = c.DATA_TYPE;
+        let column: any = {};
+        column.column_name = c[0];
+        column.display_name = { default: this.normalizeName(c[0]), localized: [] };
+        column.description = { default: this.normalizeName(c[0]), localized: [] };
+
+        const dbType = c[1];
         column.column_type = this.normalizeType(dbType) || dbType;
         let floatOrInt = this.floatOrInt(dbType);
         column.minimumFractionDigits = floatOrInt === 'int' && column.column_type === 'numeric' ? 0

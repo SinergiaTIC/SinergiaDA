@@ -4,14 +4,12 @@ export class MapConfig {
   logarithmicScale : boolean;
   legendPosition: string;
   color: string;
-  draggable: boolean;
-  constructor(coordinates: Array<number>, zoom:number, logarithmicScale : boolean, legendPosition:string, color:string, draggable: boolean) {
+  constructor(coordinates: Array<number>, zoom:number, logarithmicScale : boolean, legendPosition:string, color:string) {
     this.coordinates = coordinates;
     this.zoom = zoom;
     this.logarithmicScale = logarithmicScale;
     this.legendPosition= legendPosition;
     this.color = color;
-    this.draggable = draggable;
 
   }
 }

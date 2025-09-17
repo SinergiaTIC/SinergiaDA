@@ -68,7 +68,7 @@ export class HomeComponent implements OnInit {
     private setIsObserver = async () => {
         this.groupService.getGroupsByUser().subscribe(
             res => {
-                const user = localStorage.getItem('user');
+                const user = sessionStorage.getItem('user');
                 const userID = JSON.parse(user)._id;
                 this.grups = res;
                 this.isObserver = this.grups.filter(group => group.name === 'EDA_RO' && group.users.includes(userID)).length !== 0
@@ -78,7 +78,7 @@ export class HomeComponent implements OnInit {
     }
 
     private ifAnonymousGetOut(): void {
-        const user = localStorage.getItem('user');
+        const user = sessionStorage.getItem('user');
         const userName = JSON.parse(user).name;
 
         if (userName === 'edaanonim' || userName === 'EDA_RO') {
@@ -94,7 +94,7 @@ export class HomeComponent implements OnInit {
                 grups: [],
                 shared: []
             };
-            
+
             const res = await this.dashboardService.getDashboards().toPromise();
             this.dashboards.privats = res.dashboards.sort((a, b) => (a.config.title > b.config.title) ? 1 : ((b.config.title > a.config.title) ? -1 : 0));
             this.dashboards.publics = res.publics.sort((a, b) => (a.config.title > b.config.title) ? 1 : ((b.config.title > a.config.title) ? -1 : 0));
@@ -104,31 +104,15 @@ export class HomeComponent implements OnInit {
             
             this.isAdmin = res.isAdmin;
             this.IsDataSourceCreator = res.isDataSourceCreator;
+            
             /**Get unique tags */
-            /* normalitzem els diferents tags */
-            const tagsA = Array.from(new Set([].concat.apply([], [...this.dashboards.privats, this.dashboards.publics, this.dashboards.grups, this.dashboards.shared])
+            this.tags = Array.from(new Set([].concat.apply([], [...this.dashboards.privats, this.dashboards.publics, this.dashboards.grups, this.dashboards.shared])
                 .map(db => db.config.tag))).sort();
-            const tagsC = []
-            tagsA.forEach(a => {
-                if (typeof a == 'string') {
-                    tagsC.push(a);
-                } else if (Array.isArray(a)) {
-                    a.forEach(b => tagsC.push(b))
-                }
-            })
-            this.tags = tagsC; 
-            this.tags = this.tags.filter(tag => tag !== null);
-            this.tags = this.tags.filter(tag => tag !== undefined);
-            this.tags.unshift({ label: this.noTagLabel, value: 0 }); //afegim el "sense etiqueta"
-            this.tags.push({ label: this.AllTags, value: 1 }); //afegim el "totes les etiquetes"
+            this.tags = this.tags.map(tag => { return { value: tag, label: tag } })
+            this.tags.unshift({ label: this.noTagLabel, value: 0 });
+            this.tags.push({ label: this.AllTags, value: 1 });
             this.tags = this.tags.filter(tag => tag.value !== null);
-            for (let i=0;i<this.tags.length;i++){ //assegurem si entra un string, que es converteixi en clau valor
-                if (typeof this.tags[i] === 'string') {
-                    this.tags[i] = { label: this.tags[i], value: this.tags[i] }
-                }
-            }
-            this.tags = _.uniqBy(this.tags, 'value'); //treiem repetits
-            localStorage.setItem('tags', JSON.stringify(this.tags)); //IMPORTANT, guardem tags per sessió! Els recuperem a cada dashboard
+            sessionStorage.setItem('tags', JSON.stringify(this.tags));
             this.filterDashboards({ label: this.AllTags, value: 1 });
             this.setIsObserver();
         } catch (err) {
@@ -171,30 +155,14 @@ export class HomeComponent implements OnInit {
     public filterDashboards(tag: any) {
         this.selectedTag = tag.value;
         if (tag.value === 0) tag.value = null;
-        if (tag.value === 1) this.visibleDashboards = _.cloneDeep(this.dashboards); 
+        if (tag.value === 1) this.visibleDashboards = _.cloneDeep(this.dashboards);
         else {
-            const publicsTags = this.tagExtractor(this.dashboards.publics, this.selectedTag)
-            this.visibleDashboards.publics = this.dashboards.publics.filter(db => publicsTags.includes(db))
-            const sharedTags = this.tagExtractor(this.dashboards.shared, this.selectedTag)
-            this.visibleDashboards.shared = this.dashboards.shared.filter((db: any) => sharedTags.includes(db));
-            const grupsTags = this.tagExtractor(this.dashboards.grups, this.selectedTag)
-            this.visibleDashboards.grups = this.dashboards.grups.filter((db: any) =>  grupsTags.includes(db));
-            const privatsTags = this.tagExtractor(this.dashboards.privats, this.selectedTag)
-            this.visibleDashboards.privats = this.dashboards.privats.filter(db =>  privatsTags.includes(db) );
+            this.visibleDashboards.publics = this.dashboards.publics.filter((db: any) => db.config.tag === tag.value);
+            this.visibleDashboards.shared = this.dashboards.shared.filter((db: any) => db.config.tag === tag.value);
+            this.visibleDashboards.grups = this.dashboards.grups.filter((db: any) => db.config.tag === tag.value);
+            this.visibleDashboards.privats = this.dashboards.privats.filter((db: any) => db.config.tag === tag.value);
         }
     }
-    
-    tagExtractor = (dashboardList, tag) => {
-        let dbList = []
-        dashboardList.forEach(a => {
-                if ( tag === a.config.tag) {
-                    dbList.push(a)
-                } else if (Array.isArray(a.config.tag) && a.config.tag.includes(tag)){
-                    dbList.push(a)
-                }
-            })
-            return dbList;
-        }       
 
     public goToDashboard(dashboard): void {
         if (dashboard) {
@@ -227,7 +195,7 @@ export class HomeComponent implements OnInit {
         result = this.isAdmin ;
         if (result == false) {
             if (dashboard.config.onlyIcanEdit === true) {
-                if ( localStorage.getItem('user')  ==  dashboard.user) {
+                if ( sessionStorage.getItem('user')  ==  dashboard.user) {
                     result = true;
                 }
             } else {

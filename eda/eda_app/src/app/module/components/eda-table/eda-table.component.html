@@ -75,9 +75,7 @@
                             </ng-container>
                             <!-- ngSwitch NUMBER -->
                             <ng-container *ngSwitchCase="'EdaColumnNumber'">
-                                <span [ngStyle]="{'color': getColor(lodash.get(rowData, col.field))}">
-                                    {{ lodash.get(rowData, col.field) | number:'1.0-10':'es' }}
-                                </span>
+                                {{ lodash.get(rowData, col.field) | number:'1.0-10':'es' }}
                             </ng-container>
                             <!-- ngSwitch NUMBER -->
                             <ng-container *ngSwitchCase="'EdaColumnDate'">
@@ -99,9 +97,6 @@
                             </ng-container>
                             <ng-container *ngSwitchCase="'EdaColumnFunction'">
                                 <i class="fa fa-trash btn pl-1" (click)="col.click(rowData)"></i>
-                            </ng-container>
-                            <ng-container *ngSwitchCase="'EdaColumnEditable'">
-                                <td><i class="fa fa-pencil btn pl-1" (click)="col.click(rowData)"></i></td>
                             </ng-container>
                             <ng-container *ngSwitchCase="'EdaColumnChart'">
 

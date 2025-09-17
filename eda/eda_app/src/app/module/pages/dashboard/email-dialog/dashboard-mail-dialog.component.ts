@@ -24,7 +24,7 @@ export class DashboardMailDialogComponent extends EdaDialogAbstract {
   public currentAlert = null;
   public users: any;
   public selectedUsers: any = [];
-  public enabled : boolean = true ;
+  public disabled : boolean ;
 
   constructor(private userService: UserService,) {
     super();
@@ -64,7 +64,7 @@ export class DashboardMailDialogComponent extends EdaDialogAbstract {
     this.quantity = config.quantity;
     this.selectedUsers = config.users.map(user => ({ label: user.name, value: user }) );
     this.mailMessage = config.mailMessage;
-    this.enabled = config.enabled;
+    this.disabled = !config.enabled;
   }
 
   save() {
@@ -82,7 +82,7 @@ export class DashboardMailDialogComponent extends EdaDialogAbstract {
       users: this.selectedUsers.map(user => user.value),
       mailMessage: this.mailMessage,
       lastUpdated: new Date().toISOString(),
-      enabled: this.enabled,
+      enabled: !this.disabled,
       dashboard: this.dashboard
     };
     this.onClose(EdaDialogCloseEvent.NEW, response);

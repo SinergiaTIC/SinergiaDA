@@ -5,10 +5,9 @@ export class ChartJsConfig {
   addComparative:boolean;
   showLabels:boolean;
   showLabelsPercent:boolean;
-  numberOfColumns: number;
-  assignedColors: any[];
+  numberOfColumns:number;
 
-  constructor(colors: Array<{}>, chartType:string, addTrend:boolean, addComparative:boolean, showLabels:boolean, showLabelsPercent:boolean, numberOfColumns:number, assignedColors: any[]) {
+  constructor(colors: Array<{}>, chartType:string, addTrend:boolean, addComparative:boolean, showLabels:boolean, showLabelsPercent:boolean, numberOfColumns:number) {
     this.colors = colors;
     this.chartType = chartType;
     this.addTrend = addTrend;
@@ -16,6 +15,6 @@ export class ChartJsConfig {
     this.showLabels = showLabels;
     this.showLabelsPercent = showLabelsPercent;
     this.numberOfColumns = numberOfColumns;
-    this.assignedColors = assignedColors;
+    
   }
 }

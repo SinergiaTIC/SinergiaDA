@@ -435,9 +435,7 @@
           </span>
         </td>
         <td>
-          <div *ngIf="dashboard.config.tag && dashboard.config.tag != ''">
-            <span *ngFor="let oneTag of dashboard.config.tag"class="tag-label">{{ oneTag }}</span>
-          </div>
+          <span *ngIf="dashboard.config.tag" class="tag-label">{{ dashboard.config.tag }}</span>
         </td>
         <td class="text-center">{{ dashboard.user?.name }}</td>
         <td class="text-center">

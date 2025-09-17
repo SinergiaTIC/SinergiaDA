@@ -16,6 +16,7 @@ export class UsersLlistaComponent implements OnInit {
     public table: EdaTable;
     public users: User[] = [];
 
+
     constructor( private userService: UserService,
                  private spinnerService: SpinnerService,
                  private alertService: AlertService) {

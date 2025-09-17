@@ -1,5 +1,3 @@
-
-
 #box_wrapper{
   margin:0.5em;
   margin-left:-0.5em;
@@ -45,5 +43,5 @@ ul li:hover {
   font-size: 1.4em;
   font-weight: bold;
   margin-bottom: .5em;
-  font-family:  var(--DEFAULT_FONT_FAMILY);  /*'Questrial'; */
+  font-family: 'Questrial';
 }

@@ -41,7 +41,6 @@ export class DataSourcesComponent {
             password: [null, Validators.required],
             schema: [ null],
             sid:[{ name: 'SID', value: 1 }],
-            ssl:  [false],
             poolLimit: [null]
         });
 
@@ -62,9 +61,7 @@ export class DataSourcesComponent {
                 password: this.form.value.password,
                 schema: this.form.value.schema,
                 sid: this.form.value.sid.value,
-                optimize : this.optimize ? 1 : 0,
-                ssl: this.form.value.ssl ? true : false,
-
+                optimize : this.optimize ? 1 : 0
             };
 
             this.dataSourceService.testConnection(connection).subscribe(

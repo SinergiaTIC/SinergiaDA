@@ -18,7 +18,6 @@ export class BubblechartDialog extends EdaDialogAbstract implements AfterViewChe
   public dialog: EdaDialog;
   public panelChartConfig: PanelChart = new PanelChart();
   public colors: Array<string> ;
-  public originalColors: string[];
   public labels: Array<number>;
   public display:boolean=false;
 
@@ -35,13 +34,12 @@ export class BubblechartDialog extends EdaDialogAbstract implements AfterViewChe
   }
   ngAfterViewChecked(): void {
     
-    if (!this.colors && this.myPanelChartComponent?.componentRef) {
+    if (!this.colors && this.myPanelChartComponent && this.myPanelChartComponent.componentRef) {
       //To avoid "Expression has changed after it was checked" warning
       setTimeout(() => {
         this.colors = this.myPanelChartComponent.componentRef.instance.colors.map(color => this.rgb2hex(color));
-        this.originalColors = [...this.colors];
         this.labels = this.myPanelChartComponent.componentRef.instance.firstColLabels;
-      }, 0)
+      })
     }
 
   }
@@ -63,14 +61,11 @@ export class BubblechartDialog extends EdaDialogAbstract implements AfterViewChe
     this.onClose(EdaDialogCloseEvent.NONE);
   }
 
-  handleInputColor(): void {
-    this.myPanelChartComponent.props.config.setConfig(new BubblechartConfig(this.colors.map(c => this.hex2rgb(c)), []));
+  handleInputColor() {
+
+    this.myPanelChartComponent.props.config.setConfig(new BubblechartConfig(this.colors.map(color => this.hex2rgb(color))));
     this.myPanelChartComponent.changeChartType();
 
-    // Restaurar configuración original sin modificar this.colors ni UI
-    setTimeout(() => {
-      this.myPanelChartComponent.props.config.setConfig(new BubblechartConfig(this.originalColors.map(c => this.hex2rgb(c)), []));
-    }, 0);
   }
 
   hex2rgb(hex, opacity = 100): string {

@@ -32,7 +32,6 @@ export class CreateDashboardComponent implements OnInit {
 
     public ngOnInit(): void {
         this.display = true;
-        this.sidebarService.getDataSourceNamesForDashboard();
         this.loadGroups();
     }
 
@@ -106,8 +105,7 @@ export class CreateDashboardComponent implements OnInit {
                     refreshTime:null,
                     styles:this.stylesProviderService.generateDefaultStyles(),
                     /*SDA CUSTOM*/ createdAt: new Date(),
-                    /*SDA CUSTOM*/ modifiedAt: new Date(),
-                    external: null
+                    /*SDA CUSTOM*/ modifiedAt: new Date()
                 },
                 group: this.form.value.group
                     ? _.map(this.form.value.group, '_id')

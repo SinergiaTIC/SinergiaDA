@@ -16,9 +16,6 @@
 @import url(../css/spinners.css);
 @import url(../css/animate.css);
 @import url(../eda-styles/index-styles.css);
-/* customizables variables.  */
-@import url(./custom.css);
-
 
 html {
     font-size: 13px;
@@ -35,7 +32,7 @@ html {
 
 .custom .leaflet-popup-content-wrapper, .leaflet-popup-tip {
     background: #010913ce !important;
-    font: 11px ;
+    font: 11px Questrial;
     color: #fbfbfb  !important;;
     cursor: pointer;
     pointer-events: none;
@@ -44,7 +41,7 @@ html {
 
 .leaflet-popup-content-wrapper, .leaflet-popup-tip {
     background: #010913ce !important;
-    font: 12px ;
+    font: 12px Questrial;
     color: #fbfbfb  !important;;
     cursor: pointer;
     pointer-events: none;
@@ -58,7 +55,7 @@ body, html {
 
 body {
     background: #fff;
-    font-family: var(--DEFAULT_FONT_FAMILY) !important;   /*'Questrial'; */
+    font-family: "Questrial"!important;
     margin: 0;
     overflow-y: initial;
     overflow-x: hidden;
@@ -309,10 +306,8 @@ body .ui-tree {
 /* Primeng Components css */
 
 .panel-heading .pi {
-    /* color: var(--header-bg-color)!important; */
-    color: #455A64!important;
-
-    /* font-size: 1.70em; */
+    color: #000!important;
+    font-size: 1.70em!important;
 }
 
 .ui-paginator-bottom .pi {
@@ -396,7 +391,7 @@ h4,
 h5,
 h6 {
     color: #455a64;
-    font-family:   var(--DEFAULT_FONT_FAMILY); /*"Questrial";*/
+    font-family: "Questrial";
     font-weight: 400;
 }
 
@@ -1212,7 +1207,7 @@ pre {
 }
  
 .edaLoginTitle{
-    font-family:  var(--DEFAULT_FONT_FAMILY);
+    font-family: "Scada", Sans-serif;
     letter-spacing: 1em;
     font-weight: 700;
     color: #163c49;	
@@ -1355,10 +1350,10 @@ pre {
     --panel-small:0.9rem;
     --panel--big:1rem;
 
-    --eda-title-font-family:  var(--DEFAULT_FONT_FAMILY);
-    --eda-filters-font-family :  var(--DEFAULT_FONT_FAMILY);
-    --panel-title-font-family:  var(--DEFAULT_FONT_FAMILY);
-    --panel-font-family: var(--DEFAULT_FONT_FAMILY);
+    --eda-title-font-family: "Arial";
+    --eda-filters-font-family : "Times new Roman";
+    --panel-title-font-family: "Papyrus";
+    --panel-font-family: "Monospace";
 
     --eda-title-font-color:"#455a64";
     --eda-filters-font-color:"#455a64";
@@ -1368,7 +1363,7 @@ pre {
 
   
 .eda-title {
-    font-family: var(--eda-title-font-family) !important;
+    font-family: var(--eda-title-font-family);
     font-size: var(--eda-title-big);
     color:var(--eda-title-font-color);
     line-height: 0.7;
@@ -1386,14 +1381,14 @@ pre {
 
 .filters-size{
     font-size: var(--eda-filters-big);
-    font-family: var(--eda-filters-font-family) !important;
+    font-family: var(--eda-filters-font-family);
     color:var(--eda-filters-font-color)!important;
 }
 
 .panel-heading .panel-title {
     text-align:var(--justifyPanelTitle);
     font-size: var(--eda-panel-title-big);
-    font-family: var(--panel-title-font-family) !important;
+    font-family: var(--panel-title-font-family);
     color:var(--panel-title-font-color);
     padding: 10px;
     font-weight: bold;
@@ -1406,7 +1401,7 @@ pre {
 
 .component .p-datatable-wrapper{
     font-size: var(--panel-big);
-    font-family: var(--panel-font-family) !important;
+    font-family: var(--panel-font-family);
 }
 
 .component .p-datatable .p-datatable-thead > tr > th{
@@ -1445,19 +1440,19 @@ pre {
 }
 .component .p-paginator .p-paginator-pages .p-paginator-page {
     font-size: var(--panel-big);
-    font-family: var(--panel-font-family) !important;
+    font-family: var(--panel-font-family);
     color:var(--panel-font-color);
 }
 .component .p-datatable .p-datatable-footer {
     font-size: var(--panel-big);
-    font-family: var(--panel-font-family) !important;
+    font-family: var(--panel-font-family);
     color:var(--panel-font-color);
     background-color: rgba(248, 242, 242, 0.199);
     border: 1px solid #fff;
 }
 .component .p-paginator .p-paginator-pages .p-paginator-page.p-highlight {
     font-size: var(--panel-big);
-    font-family: var(--panel-font-family) !important;
+    font-family: var(--panel-font-family);
     background: #E8F5E9;
     border-color: #E8F5E9;
     color: #495057 !important;
@@ -1473,7 +1468,7 @@ pre {
 
 .map-legend {
     font-size: var(--panel-big);
-    font-family: var(--panel-font-family) !important;
+    font-family: var(--panel-font-family);
     color:var(--panel-font-color);
 }
 
@@ -1481,12 +1476,12 @@ pre {
 
 .map-legend h6{
     font-size: var(--panel-big);
-    font-family: var(--panel-font-family) !important;
+    font-family: var(--panel-font-family);
     color:var(--panel-font-color);
 }
 .tick{
     font-size: var(--panel-big);
-    font-family: var(--panel-font-family) !important;
+    font-family: var(--panel-font-family);
     color:var(--panel-font-color);
 }
 
