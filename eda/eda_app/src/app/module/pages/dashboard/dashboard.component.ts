@@ -551,6 +551,8 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
                 panelFilters.forEach(pFilter => {
 
                     if (pFilter.filter_id === filter.id) {
+                        // Verificar ???
+                        if(pFilter.joins !== undefined) filter.joins = pFilter.joins;
                         const formatedFilter = this.globalFiltersService.formatFilter(filter);
                         panel.content.query.query.filters.push(formatedFilter);
                     } else {
@@ -587,8 +589,8 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
 
     // Dashboard Panels
     private initializePanels(): void {
-        const user = sessionStorage.getItem('user');
-        const userID = JSON.parse(user)?._id;
+        const user = localStorage.getItem('user');
+        const userID = JSON.parse(user)._id;
 
         // Buscamos en todos los paneles si existe un con los campos vacios, lo cual indica que no tiene permisos para visualizar la data
         if(this.panels.some(panel => panel.content?.query.query.fields.length===0)){
@@ -656,9 +658,9 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
 
     // Dashboard control
     public async setEditMode() {
-        const user = sessionStorage.getItem('user');
-        const userName = JSON.parse(user)?.name;
-        const userID = JSON.parse(user)?._id;
+        const user = localStorage.getItem('user');
+        const userName = JSON.parse(user).name;
+        const userID = JSON.parse(user)._id;
         this.display_v.edit_mode = (userName !== 'edaanonim') && !(this.grups.filter(group => group.name === 'EDA_RO' && group.users.includes(userID)).length !== 0)
         this.display_v.anonimous_mode = userName == 'edaanonim';
     }
