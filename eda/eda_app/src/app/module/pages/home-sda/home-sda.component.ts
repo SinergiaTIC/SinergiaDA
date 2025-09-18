@@ -81,7 +81,7 @@ export class HomeSdaComponent implements OnInit {
       color: "#ee4e36"
     }
   ];
-  
+
   private defaultDashboardTypes: Array<{
     type: string;
     label: string;
@@ -158,7 +158,7 @@ export class HomeSdaComponent implements OnInit {
     // Set view mode from local storage or default to table view
     this.viewMode = (localStorage.getItem("preferredViewMode") as "table" | "card") || "table";
   }
-  
+
   private initDashboardTypes(): void {
     this.dashboardTypes = this.defaultDashboardTypes.filter(type => {
       if (type.type === 'shared') {
@@ -188,7 +188,7 @@ export class HomeSdaComponent implements OnInit {
     this.initDashboards();
     this.initTags();
     this.initGroups();
-    this.initDashboardTypes(); 
+    this.initDashboardTypes();
   }
 
   /**
@@ -261,7 +261,7 @@ export class HomeSdaComponent implements OnInit {
   }
 
   /**
-   * Makes tag an array
+   * Makes tag an array if it's not already, and trims whitespace.
    */
   private normalizeDashboard(dashboard: any, type: string) {
     return {
@@ -270,9 +270,9 @@ export class HomeSdaComponent implements OnInit {
       config: {
         ...dashboard.config,
         tag: Array.isArray(dashboard.config.tag)
-          ? dashboard.config.tag
+          ? dashboard.config.tag.map(tag => tag.trim())
           : dashboard.config.tag
-          ? [dashboard.config.tag]
+          ? [dashboard.config.tag.trim()]
           : []
       }
     };
@@ -283,7 +283,7 @@ export class HomeSdaComponent implements OnInit {
   private initTags(): void {
 
     const uniqueTags = Array.from(new Set(this.allDashboards.map(db => db.config.tag))).filter((item) => (item?.length !==0 && item !== undefined && item !== null)).sort();
-    
+
     const filteredUniqueTags = uniqueTags.filter(tag => {
       if (tag === 'shared') {
         return this.isAdmin;
@@ -313,7 +313,7 @@ export class HomeSdaComponent implements OnInit {
     ];
 
     this.filteredTags = [...this.tags];
-    
+
     // Sorting filteredTags in alphabetical order
     this.filteredTags.sort((a, b) => a.label.trim().toLowerCase().localeCompare(b.label.trim().toLowerCase()));
     localStorage.setItem('tags', JSON.stringify(this.tags));

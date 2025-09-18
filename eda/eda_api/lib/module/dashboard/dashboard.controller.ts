@@ -124,10 +124,8 @@ export class DashboardController {
         for (const dashboardGroup of dashboard.group) {
           //dashboard.group = groups.filter(g => JSON.stringify(g._id) === JSON.stringify(group));
           for (const userGroup of userGroups) {
-            if (
-              JSON.stringify(userGroup._id) === JSON.stringify(dashboardGroup)
-            ) {
-              groupDashboards.push(dashboard)
+            if ( JSON.stringify(userGroup._id) === JSON.stringify(dashboardGroup) ) {
+              if( !groupDashboards.some((db) => db._id===dashboard._id) ) groupDashboards.push(dashboard)
             }
           }
         }
