@@ -125,6 +125,16 @@ export const QueryUtils = {
         "min_bymonth": $localize`:@@min_bymonthLabel:Mínimos por mes`,
     };
 
+    // display control for the table DataQuality
+    if( Array.isArray(data)) {
+      if(data[0][0] === 'noDataAllowed') {
+        return {
+          labels: data[0],
+          values: data[1]
+        }
+      }
+    }
+
     for (const key in data) {
 
       for (const valueKey in data[key]) {
@@ -162,6 +172,7 @@ export const QueryUtils = {
     for(let i=0; i<ebp.sortedFilters.length; i++){
       if(ebp.sortedFilters[i].isGlobal) {
         ebp.sortedFilters[i].filter_elements = ebp.globalFilters.find((globalFilter: any) => globalFilter.filter_id === ebp.sortedFilters[i].filter_id).filter_elements;
+        ebp.sortedFilters[i].filter_codes = ebp.globalFilters.find((globalFilter: any) => globalFilter.filter_id === ebp.sortedFilters[i].filter_id).filter_codes;
       }
     }
 

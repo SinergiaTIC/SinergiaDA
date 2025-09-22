@@ -124,10 +124,8 @@ export class DashboardController {
         for (const dashboardGroup of dashboard.group) {
           //dashboard.group = groups.filter(g => JSON.stringify(g._id) === JSON.stringify(group));
           for (const userGroup of userGroups) {
-            if (
-              JSON.stringify(userGroup._id) === JSON.stringify(dashboardGroup)
-            ) {
-              groupDashboards.push(dashboard)
+            if ( JSON.stringify(userGroup._id) === JSON.stringify(dashboardGroup) ) {
+              if( !groupDashboards.some((db) => db._id===dashboard._id) ) groupDashboards.push(dashboard)
             }
           }
         }
@@ -1588,12 +1586,12 @@ export class DashboardController {
             for (var i = 0; i < results.length; i++) {
               var e = results[i]
               for (var j = 0; j < e.length; j++) {
-                if( oracleDataTypes[j][0] && oracleDataTypes[j][0]=='int'  ){
-                  if ( results[i][j] ==  eda_api_config.null_value ) {
+                const t = oracleDataTypes?.[0]?.[j];  // <-- changed
+                if( t === 'int' && results[i][j] === eda_api_config.null_value){
                     results[i][j] = null;
-                  }
-				}
-              }            }
+                }
+              }            
+            }
           }
           const output = [labels, results]
           if (output[1].length < cache_config.MAX_STORED_ROWS && cacheEnabled) {
