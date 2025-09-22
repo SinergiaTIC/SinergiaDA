@@ -403,6 +403,17 @@ export class MySqlBuilderService extends QueryBuilderService {
 
     })
 
+    // Checking the computed fields and SQLexpression added
+    filters.forEach(filter => {
+      if (filter.computed_column === 'computed') {
+        const match = sortedFilters.find(sf => sf.filter_id === filter.filter_id);
+        if (match) {
+          match.computed_column = 'computed';
+          match.SQLexpression = filter.SQLexpression;
+        }
+      }
+    });
+    
     // Variable containing the new string of nested AND/OR filters corresponding to the graphic design of the items.
     let stringQuery = '\nwhere ';
 
@@ -412,7 +423,7 @@ export class MySqlBuilderService extends QueryBuilderService {
     // Recursive function for the necessary nesting according to the AND/OR filter graph.
     function cadenaRecursiva(item: any) {
       // recursive item
-      const { cols, rows, y, x, filter_table, filter_column, filter_type, filter_column_type, filter_elements, value, valueListSource, sqlOptional } = item;
+      const { cols, rows, y, x, filter_table, filter_column, filter_type, filter_column_type, filter_elements, value, valueListSource, sqlOptional, computed_column, SQLexpression } = item;
 
       ////////////////////////////////////////////////// filter_type ////////////////////////////////////////////////// 
       let filter_type_value = '';
@@ -523,17 +534,31 @@ export class MySqlBuilderService extends QueryBuilderService {
       let validador = (valueListSource !== undefined && valueListSource !== null);
       // Result of the whole string 
 
+      let resultado = '';
 
-      let resultado = `${['null_or_empty', 'not_null_nor_empty'].includes(filter_type) || (filter_type==='in' && sqlOptional !== undefined) ? ' (' : ''} ${sqlOptional !== undefined ? sqlOptional : ''} \`${ validador ? valueListSource.target_table : filter_table}\`.\`${ validador ? valueListSource.target_description_column : filter_column}\` ${filter_type_value}${filter_elements_value}`;
+      if(computed_column==='computed') {
+        resultado = `${['null_or_empty', 'not_null_nor_empty'].includes(filter_type) || (filter_type==='in' && sqlOptional !== undefined) ? ' (' : ''} ${sqlOptional !== undefined ? sqlOptional : ''} (${SQLexpression}) ${filter_type_value}${filter_elements_value}`;
+      } else {
+        resultado = `${['null_or_empty', 'not_null_nor_empty'].includes(filter_type) || (filter_type==='in' && sqlOptional !== undefined) ? ' (' : ''} ${sqlOptional !== undefined ? sqlOptional : ''} \`${ validador ? valueListSource.target_table : filter_table}\`.\`${ validador ? valueListSource.target_description_column : filter_column}\` ${filter_type_value}${filter_elements_value}`;
+      }
+
 
       // It is located in this position because the table and field must be duplicated in the query (*observation)
       if(filter_type === 'not_null_nor_empty') {
-        resultado = `${resultado} \`${ validador ? valueListSource.target_table : filter_table}\`.\`${ validador ? valueListSource.target_description_column : filter_column}\` != '')`;
+        if(computed_column==='computed') {
+          resultado = `${resultado} (${SQLexpression}) != '')`;
+        } else {
+          resultado = `${resultado} \`${ validador ? valueListSource.target_table : filter_table}\`.\`${ validador ? valueListSource.target_description_column : filter_column}\` != '')`;
+        }
       }
 
       // It is located in this position because the table and field must be duplicated in the query (*observation)
       if(filter_type === 'null_or_empty') {
-        resultado = `${resultado} \`${ validador ? valueListSource.target_table : filter_table}\`.\`${ validador ? valueListSource.target_description_column : filter_column}\` = '')`;
+        if(computed_column==='computed') {
+          resultado = `${resultado} (${SQLexpression}) = '')`;
+        } else {
+          resultado = `${resultado} \`${ validador ? valueListSource.target_table : filter_table}\`.\`${ validador ? valueListSource.target_description_column : filter_column}\` = '')`;
+        }
       }
 
       if(filter_type === 'in' && sqlOptional !== undefined) {
