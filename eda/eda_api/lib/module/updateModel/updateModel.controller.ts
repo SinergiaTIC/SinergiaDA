@@ -237,7 +237,7 @@ export class updateModel {
   * @returns cache_config_SDA checked if the result is not acceptable cache is disabled.
   */
   static assertCacheConfig(cache_config_SDA:any) {
-    if( cache_config_SDA.find( (v: any) => v.key === 'sda_config_cache_enabled').value  === "1") {
+    if( cache_config_SDA?.find( (v: any) => v.key === 'sda_config_cache_enabled')?.value  === "1") {
       if (  ! [ 'days', 'hours'].includes ( cache_config_SDA.find( (v: any) => v.key === 'sda_config_cache_units').value  )  ){
           // no correct units. Cache = false.
           console.log('Error in cache configuration units : ' + cache_config_SDA.find( (v: any) => v.key === 'sda_config_cache_units').value  );
@@ -267,7 +267,7 @@ export class updateModel {
         }
     }else{
       console.log('Cache disabled : ' + cache_config_SDA['sda_config_cache_enabled']  );
-      cache_config_SDA.find( (v: any) => v.key === 'sda_config_cache_enabled').value  = '0' ;
+      // cache_config_SDA.find( (v: any) => v.key === 'sda_config_cache_enabled').value  = '0' ;
     }
   return cache_config_SDA;
   }
