@@ -2478,8 +2478,8 @@
       </trans-unit>
 
       <trans-unit id="sqlExpColumn" datatype="html">
-        <source>Expresión SQL (Debe incluir la agregación)</source>
-        <target>Expresión SQL (Debe incluir la agregación)</target>
+        <source>Expresión SQL</source>
+        <target>Expresión SQL</target>
         <context-group purpose="location">
           <context context-type="sourcefile">
             app/module/pages/data-sources/data-source-detail/data-source-detail.component.html</context>
