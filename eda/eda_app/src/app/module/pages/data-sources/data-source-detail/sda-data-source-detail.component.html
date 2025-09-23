@@ -120,7 +120,7 @@
         <div *ngIf="columnPanel.computed_column !== 'no'">
             <h5 class="title-datamodel" i18n="@@sqlExpColumn">Expresión SQL (Debe incluir la agregación)</h5>
             <p><textarea pInputTextarea type="text" [(ngModel)]="columnPanel.SQLexpression" (keyup)="update()" rows="5"
-                    cols="100" placeholder="sum(a*b)"> </textarea></p>
+                    cols="100"> </textarea></p>
         </div>
 
         <div  style="margin-bottom: 1em; margin-top: 0.5em;">
