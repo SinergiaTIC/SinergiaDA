@@ -3897,11 +3897,10 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
     <target>Font type</target>
   </trans-unit>
 
-     <trans-unit id="ChangeFontSize">
+  <trans-unit id="ChangeFontSize">
     <source>Tamaño de fuente</source>
     <target>Font size</target>
   </trans-unit> 
-  </trans-unit>
     <source>Color de la fuente</source>
   </trans-unit>
 
@@ -3911,11 +3910,10 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
     <target>Background color </target>
   </trans-unit> 
   
-     <trans-unit id="ChangePaneColor">
+  <trans-unit id="ChangePaneColor">
     <source>Color del panel</source>
     <target>Panel color</target>
   </trans-unit> 
-  </trans-unit>
 
      <trans-unit id="ChangePaneColor">
     <source>Color del panel</source>
@@ -3926,7 +3924,6 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
     <source>EDITAR ESTILOS</source>
     <target>EDIT STYLES</target>
   </trans-unit> 
-  </trans-unit>
 
     <trans-unit id="left">
     <source>Izquierda</source>
@@ -3940,7 +3937,6 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
     <source>Derecha</source>
     <target>Right</target>
   </trans-unit> 
-  </trans-unit>
   <trans-unit id="center">
     <source>Centro</source>
     <target>Center</target>
