@@ -146,8 +146,10 @@ export class FilterDialogComponent extends EdaDialogAbstract {
             filter: filter
         };
 
-        this.updateSortedFiltersFilterDialog.emit(addToSortedFilters); // Emitting an event to the eda-blank-panel component
-
+        // Control of adding just filter in the where section
+        if(filter['filterBeforeGrouping']) {
+            this.updateSortedFiltersFilterDialog.emit(addToSortedFilters); // Emitting an event to the eda-blank-panel component
+        }
     }
 
     carrega() {

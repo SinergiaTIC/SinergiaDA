@@ -214,8 +214,12 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
             add: true,
             filter: filter
         };
+
+        // Control of adding just filter in the where section
+        if(filter['filterBeforeGrouping']) {
+            this.updateSortedFiltersColumnDialog.emit(addToSortedFilters); // Emitting an event to the eda-blank-panel component
+        }
         
-        this.updateSortedFiltersColumnDialog.emit(addToSortedFilters); // Emitting an event to the eda-blank-panel component
 
     }
 
@@ -268,6 +272,44 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
                 value: true,
             })
         }
+
+        // Changing to numeric type
+        if(this.aggregationsTypes.length === 3 && type.value !== 'none') {
+            this.selectedColumn.column_type = 'numeric';
+            const columnType = 'numeric';
+            const allowed = [];
+
+            for (const type of this.chartUtils.filterTypes) {
+                type.typeof.forEach(columnTypeOf => {
+                    if (columnTypeOf === columnType) {
+                        allowed.push(type);
+                    }
+                });
+            }
+
+            if (allowed.length > 0) {
+                this.filter.types = allowed;
+            }
+        } 
+
+        // Changing to text type
+        if(this.aggregationsTypes.length === 3 && type.value === 'none') {
+            this.selectedColumn.column_type = 'text';
+            const columnType = 'text';
+            const allowed = [];
+
+            for (const type of this.chartUtils.filterTypes) {
+                type.typeof.forEach(columnTypeOf => {
+                    if (columnTypeOf === columnType) {
+                        allowed.push(type);
+                    }
+                });
+            }
+
+            if (allowed.length > 0) {
+                this.filter.types = allowed;
+            }
+        } 
 
     }
 
