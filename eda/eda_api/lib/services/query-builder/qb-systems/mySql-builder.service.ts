@@ -1,12 +1,212 @@
-import { QueryBuilderService } from './../query-builder.service';
+import { EdaQueryParams, QueryBuilderService } from './../query-builder.service';
 import * as _ from 'lodash';
-
- /*SDA CUSTOM*/ import * as custom from '../../custom/custom';
+/*SDA CUSTOM*/ import * as custom from '../../custom/custom';
 
 
 export class MySqlBuilderService extends QueryBuilderService {
   parseSchema(tables: string[], schema: string) {
     return tables;
+  }
+
+  public analizedQuery(params: EdaQueryParams) {
+    const {fields,columns,tables,origin,dest,joinTree,grouping,filters,havingFilters,joinType,valueListJoins,schema,}= params;
+    let o = tables.filter(table => table.name === origin).map(table => { return table.query ? table.query : table.name })[0];
+
+    const fromTable = tables
+      .filter((table) => table.name === origin)
+      .map((table) => {
+        return table.query ? this.cleanViewString(table.query) : table.name;
+      })[0];
+    
+    const vista = tables
+    .filter((table) => table.name === origin)
+    .map((table) => {
+      return table.query ? true : false;
+    })[0];
+    
+    const generateQuery = () => {
+      let myQuery: string = "";
+      
+      //REVISAR VISTA
+      if (vista) {
+        myQuery += `FROM ${fromTable}`;
+      } else {
+        myQuery += `FROM ${fromTable}`;
+        //myQuery += `FROM "${schema}"."${fromTable}"`;
+      }
+      
+      // JOINS
+      let joinString: any[];
+      let alias: any;
+    if (this.queryTODO.joined) {
+      /**tree */
+      const responseJoins = this.setJoins(joinTree, joinType, schema, valueListJoins, dest.length);
+      joinString = responseJoins.joinString;
+      alias = responseJoins.aliasTables;
+    } else {
+      /*Normal EDA*/
+      joinString = this.getJoins(joinTree, dest, tables, joinType,  valueListJoins, schema, dest.length);
+    }
+      
+      joinString.forEach((x) => {
+        myQuery = myQuery + "\n" + x;
+      });
+      
+      // WHERE
+      myQuery += this.getFilters(filters, dest.length, o);
+      
+      if (alias) {
+        for (const key in alias) {
+          myQuery = myQuery.split(key).join(`${alias[key]}`);
+        }
+      }
+
+      return myQuery;
+    };
+
+    const countTablesInSQL = (query: string) => {
+      const normalizedQuery = query.toUpperCase();
+
+      // Expresiones regulares para detectar FROM, JOIN
+      const fromRegex = /\bFROM\b/g;
+      const joinRegex = /\bJOIN\b/g;
+
+      // Contar
+      const fromCount = (normalizedQuery.match(fromRegex) || []).length;
+      const joinCount = (normalizedQuery.match(joinRegex) || []).length;
+
+      // Total de tablas implicadas
+      // Cada FROM indica una tabla principal, y cada JOIN indica tablas adicionales
+      const totalTables = fromCount + joinCount;
+      return totalTables;
+    };
+
+    const querys: any = {};
+    const fromQuery = generateQuery();
+
+    querys["general"] = [
+      `SELECT '${countTablesInSQL(fromQuery)}' AS "count_tables"`,
+    ];
+
+    
+    for (const col of fields) {
+      const diplayName = col.display_name;
+      const table_column = `${col.table_id.split('.')[0]}.${col.column_name}`;
+      
+      let mainQuery = `(SELECT ${table_column} ${fromQuery}) AS main`;
+      
+      querys[diplayName] = [];
+      // Source Table
+      querys[diplayName].push(
+        "SELECT \"" + `${col.table_id.split('.')[0]}` +"\" AS source_table  " 
+      );
+      // COUNT ROWS
+      querys[diplayName].push(
+        "SELECT COUNT(  * ) AS `count_rows` FROM " + `${col.table_id.split('.')[0]}`
+      );
+
+      
+      if ( col?.old_column_type == "text"  || col.column_type == "text") { // the numbers that come from text made counts also come this way.
+
+        // COUNT NULLS
+        querys[diplayName].push(
+          "SELECT SUM(CASE WHEN `main`." + `${col.column_name}` + " IS NULL THEN 1 ELSE 0 END) AS `count_nulls` FROM" + `${mainQuery}`
+        );
+        // COUNT EMPTY
+        querys[diplayName].push(
+          "SELECT SUM(CASE WHEN `main`." + `${col.column_name}` + " = '' THEN 1 ELSE 0 END) AS `count_empty` FROM" + `${mainQuery}`
+        );
+        // COUNT DISTINCT
+        querys[diplayName].push(
+          "SELECT COUNT(DISTINCT `main`." + `${col.column_name}` + ") AS `count_distinct` FROM" + `${mainQuery}`
+        );
+        // MostDuplicated
+        querys[diplayName].push(
+          "SELECT CONVERT( GROUP_CONCAT(`label_count`), CHAR) AS `most_duplicated` FROM (SELECT CONCAT(`main`." + `${col.column_name}`
+          + ", ' (', COUNT(`main`." + `${col.column_name}` + ") , ')') AS `label_count` FROM " + 
+          `${mainQuery}` + " GROUP BY `main`." + `${col.column_name}` + " ORDER BY COUNT(`main`." +
+          `${col.column_name}` + ") DESC LIMIT 5 ) sub;"
+        );
+            // LeastDuplicated
+        querys[diplayName].push(
+          "SELECT CONVERT( GROUP_CONCAT(`label_count`), CHAR)  AS `least_duplicated` FROM (SELECT CONCAT(`main`." + `${col.column_name}`
+          + ", ' (', COUNT(`main`." + `${col.column_name}` + ") , ')') AS `label_count` FROM " + 
+          `${mainQuery}` + " GROUP BY `main`." + `${col.column_name}` + " ORDER BY COUNT(`main`." +
+          `${col.column_name}` + ") ASC LIMIT 5 ) sub;"
+        );
+              
+      } else if (col.column_type == "numeric") {
+        // COUNT NULLS
+        querys[diplayName].push(
+          "SELECT SUM(CASE WHEN `main`." + `${col.column_name}` + " IS NULL THEN 1 ELSE 0 END) AS `count_nulls` FROM" + `${mainQuery}`
+        );
+        // MAX
+        querys[diplayName].push(
+          "SELECT MAX(`main`." + `${col.column_name}` + ") AS `max` FROM" + `${mainQuery}`
+        );
+        // MIN
+        querys[diplayName].push(
+          "SELECT MIN(`main`." + `${col.column_name}` + ") AS `min` FROM" + `${mainQuery}`
+        );
+        // MODA
+        querys[diplayName].push(
+          "WITH moda_counts AS (SELECT `main`." + `${col.column_name}` + " AS mode_value, COUNT(*) AS frequency FROM " +
+          `${mainQuery}` + " GROUP BY 1 ORDER BY 2 DESC LIMIT 1) SELECT mode_value || ' (total: '|| frequency ||')' AS 'mode' FROM  moda_counts;");
+        // AVG
+        querys[diplayName].push(
+          "SELECT   TRUNCATE( AVG(`main`." + `${col.column_name}` + ") ,3) AS `avg` FROM " + `${mainQuery}`
+        );
+        // MEDIAN
+        querys[diplayName].push(
+          "SELECT AVG(val) AS `median` FROM (" +
+            "SELECT `main`.`" + col.column_name + "` AS val," +
+            "       ROW_NUMBER() OVER (ORDER BY `main`.`" + col.column_name + "`) AS rn," +
+            "       COUNT(*) OVER() AS cnt " +
+            "FROM " + mainQuery +
+          ") AS ordered " +
+          "WHERE rn IN (FLOOR((cnt + 1)/2), CEIL((cnt + 1)/2));"
+        );
+      } else if (col.column_type == "date") {
+        // CountNulls
+        querys[diplayName].push(
+          "SELECT SUM(CASE WHEN `main`." + `${col.column_name}` + " IS NULL THEN 1 ELSE 0 END) AS `count_nulls` FROM" + `${mainQuery}`
+        );
+        // MAX
+        querys[diplayName].push(
+          "SELECT TO_CHAR(MAX(`main`." + `${col.column_name}` + "),'YYYY-MM-DD') AS `max` FROM" + `${mainQuery}`
+        );
+        // MIN
+        querys[diplayName].push(
+          "SELECT TO_CHAR(MIN(`main`." + `${col.column_name}` + "),'YYYY-MM-DD') AS `min` FROM" + `${mainQuery}`
+        );
+        //GROUP BY MONT
+        const queryMonth = "WITH monthly_counts AS (SELECT TO_CHAR(`main`." + `${col.column_name}` +
+          ", 'YYYY-MM') AS vmonth, COUNT(*) AS total FROM " + `${ mainQuery }` + " GROUP BY 1)";
+        // MEDIAN
+        querys[diplayName].push(
+          `${queryMonth}` +
+          `SELECT AVG(total) AS median_count_bymonth
+          FROM (
+              SELECT total,
+                      ROW_NUMBER() OVER (ORDER BY total) AS rn,
+                      COUNT(*) OVER() AS cnt
+              FROM monthly_counts
+          ) AS ordered
+          WHERE rn IN (FLOOR((cnt + 1)/2), CEIL((cnt + 1)/2));`
+        );
+        // MAX
+        querys[diplayName].push(
+          `${queryMonth}` + "SELECT (vmonth || ' (total: ' || total || ')') `max_bymonth` FROM monthly_counts ORDER BY total DESC LIMIT 1;"
+        );
+        // MIN
+        querys[diplayName].push(
+          `${queryMonth}` + "SELECT (vmonth || ' (total: ' || total || ')') `min_bymonth` FROM monthly_counts ORDER BY total ASC LIMIT 1;"
+        );
+      }
+    }
+
+
+    return querys;
   }
 
   public normalQuery(columns: string[], origin: string, dest: any[], joinTree: any[], grouping: any[], filters: any[], havingFilters: any[], 
@@ -17,7 +217,14 @@ export class MySqlBuilderService extends QueryBuilderService {
 
     /** IF IT IS A SELECT FOR A SELECTOR I WANT UNIQUE VALUES */
     if (forSelector === true && columns.length == 1 ) {
-      myQuery = `SELECT DISTINCT ${columns} \nFROM ${o}`;
+      myQuery = `SELECT DISTINCT  IFNULL(\`${this.queryTODO.fields[0].table_id}\`.\`${this.queryTODO.fields[0].column_name}\`, '') as \`${this.queryTODO.fields[0].display_name}\`,  \n   
+       IFNULL(\`${this.queryTODO.fields[0].table_id}\`.\`${this.queryTODO.fields[0].column_name}\`, '') as \`id\`  \n  
+      FROM ${o}`;
+
+      // If the element is a valueListSource type
+      if(this.queryTODO.fields[0].valueListSource !== undefined) {
+        myQuery = `SELECT DISTINCT ${columns},  IFNULL(\`${this.queryTODO.fields[0].valueListSource.target_table}\`.\`${this.queryTODO.fields[0].valueListSource.target_id_column}\`, '') as \`id\`\nFROM ${o}`;
+      }
     }
 
     // If it is EDA, there is no alias and if it is EDA2 tree mode, there is an alias.
@@ -57,9 +264,10 @@ export class MySqlBuilderService extends QueryBuilderService {
     myQuery += this.getHavingFilters(havingFilters);
 
 
-    /**SDA CUSTOM */  if (forSelector === true) {
-    /**SDA CUSTOM */      myQuery += `\n UNION \n SELECT '' `;
+    /**SDA CUSTOM */  if (forSelector === true  ) {
+    /**SDA CUSTOM */      myQuery += `\n UNION \n SELECT '', '' `;
     /**SDA CUSTOM */   }
+
 
     // OrderBy
     const orderColumns = this.queryTODO.fields.map(col => {
@@ -194,7 +402,7 @@ export class MySqlBuilderService extends QueryBuilderService {
             selectedFilter.sqlOptional += `\`${filter.filter_table}\`.\`${filter.filter_column}\` is null or \`${filter.filter_table}\`.\`${filter.filter_column}\` = '' or`;
             selectedFilter.filter_elements[0].value1 = selectedFilter.filter_elements[0].value1.filter(e => e !== 'emptyString');
           } else {
-            selectedFilter.sqlOptional += `\`${filter.valueListSource.target_table}\`.\`${filter.valueListSource.target_description_column}\` is null or \`${filter.valueListSource.target_table}\`.\`${filter.valueListSource.target_description_column}\` = '' or`;
+            selectedFilter.sqlOptional += `\`${filter.valueListSource.target_table}\`.\`${filter.valueListSource.target_id_column}\` is null or \`${filter.valueListSource.target_table}\`.\`${filter.valueListSource.target_id_column}\` = '' or`;
             selectedFilter.filter_elements[0].value1 = selectedFilter.filter_elements[0].value1.filter(e => e !== 'emptyString');
           }
         }
@@ -212,7 +420,7 @@ export class MySqlBuilderService extends QueryBuilderService {
     // Recursive function for the necessary nesting according to the AND/OR filter graph.
     function cadenaRecursiva(item: any) {
       // recursive item
-      const { cols, rows, y, x, filter_table, filter_column, filter_type, filter_column_type, filter_elements, value, valueListSource, sqlOptional } = item;
+      const { cols, rows, y, x, filter_table, filter_column, filter_type, filter_column_type, filter_elements, filter_codes, value, valueListSource, sqlOptional } = item;
 
       ////////////////////////////////////////////////// filter_type ////////////////////////////////////////////////// 
       let filter_type_value = '';
@@ -250,21 +458,21 @@ export class MySqlBuilderService extends QueryBuilderService {
           //Value of type text
           if(filter_column_type === 'text'){
             if(filter_type === 'in' || filter_type === 'not_in'){
-              filter_elements_value = filter_elements_value + `(\'${filter_elements[0].value1[0]}\')`;
+              filter_elements_value = filter_elements_value + `(\'${filter_codes[0].value1[0]}\')`;
             } else {
-              filter_elements_value = filter_elements_value + `'${filter_type === 'like' || filter_type === 'not_like'? '%': ''}${filter_elements[0].value1[0]}${filter_type === 'like' || filter_type === 'not_like'? '%': ''}'`;
+              filter_elements_value = filter_elements_value + `'${filter_type === 'like' || filter_type === 'not_like'? '%': ''}${filter_codes[0].value1[0]}${filter_type === 'like' || filter_type === 'not_like'? '%': ''}'`;
             }
           } 
 
           // Numeric type value
           if(filter_column_type === 'numeric'){
             if(filter_type === 'between') {
-              filter_elements_value = filter_elements_value + ` ${Number(filter_elements[0].value1[0])} and ${Number(filter_elements[1].value2[0])}`;
+              filter_elements_value = filter_elements_value + ` ${Number(filter_codes[0].value1[0])} and ${Number(filter_codes[1].value2[0])}`;
             } else {
               if(filter_type === 'in' || filter_type === 'not_in') {
-                filter_elements_value = filter_elements_value + `(${filter_elements[0].value1[0]})`;
+                filter_elements_value = filter_elements_value + `(${filter_codes[0].value1[0]})`;
               } else {
-                filter_elements_value = filter_elements_value + `${filter_elements[0].value1[0]}`;
+                filter_elements_value = filter_elements_value + `${filter_codes[0].value1[0]}`;
               }
             }
           } 
@@ -272,12 +480,12 @@ export class MySqlBuilderService extends QueryBuilderService {
           // Date type value
           if(filter_column_type === 'date'){
             if(filter_type === 'between'){
-              filter_elements_value = filter_elements_value + ` STR_TO_DATE(\'${filter_elements[0].value1[0]}\',\'%Y-%m-%d\')` + ' and ' + `STR_TO_DATE(\'${filter_elements[1].value2[0]} 23:59:59\',\'%Y-%m-%d %H:%i:%S\')`;
+              filter_elements_value = filter_elements_value + ` STR_TO_DATE(\'${filter_codes[0].value1[0]}\',\'%Y-%m-%d\')` + ' and ' + `STR_TO_DATE(\'${filter_codes[1].value2[0]} 23:59:59\',\'%Y-%m-%d %H:%i:%S\')`;
             } else {
               if(filter_type==='in' || filter_type==='not_in') {
-                filter_elements_value = filter_elements_value + `(STR_TO_DATE(\'${filter_elements[0].value1[0]}\',\'%Y-%m-%d\'))`;
+                filter_elements_value = filter_elements_value + `(STR_TO_DATE(\'${filter_codes[0].value1[0]}\',\'%Y-%m-%d\'))`;
               } else {
-                filter_elements_value = filter_elements_value + `STR_TO_DATE(\'${filter_elements[0].value1[0]}\',\'%Y-%m-%d\')`;
+                filter_elements_value = filter_elements_value + `STR_TO_DATE(\'${filter_codes[0].value1[0]}\',\'%Y-%m-%d\')`;
               }
             }
           }
@@ -288,30 +496,31 @@ export class MySqlBuilderService extends QueryBuilderService {
           filter_elements_value = filter_elements_value + '(';
 
           // Text type values
+
           if(filter_column_type === 'text'){
-            filter_elements[0].value1.forEach((element: any, index: number) => {
-              filter_elements_value += `'${element}'` + `${index===(filter_elements[0].value1.length-1)? ')': ','}`;
+            filter_codes[0].value1.forEach((element: any, index: number) => {
+              filter_elements_value += `'${element}'` + `${index===(filter_codes[0].value1.length-1)? ')': ','}`;
             })
           }
 
           // Numeric type values
           if(filter_column_type === 'numeric'){
-            filter_elements[0].value1.forEach((element: any, index: number) => {
-              filter_elements_value += `${element}` + `${index===(filter_elements[0].value1.length-1)? ')': ','}`;
+            filter_codes[0].value1.forEach((element: any, index: number) => {
+              filter_elements_value += `${element}` + `${index===(filter_codes[0].value1.length-1)? ')': ','}`;
             })
           }
 
           // Date type values
           if(filter_column_type === 'date'){
-            filter_elements[0].value1.forEach((element: any, index: number) => {
-              filter_elements_value += `STR_TO_DATE(\'${element}\',\'%Y-%m-%d\')` + `${index===(filter_elements[0].value1.length-1)? ')': ','}`;
+            filter_codes[0].value1.forEach((element: any, index: number) => {
+              filter_elements_value += `STR_TO_DATE(\'${element}\',\'%Y-%m-%d\')` + `${index===(filter_codes[0].value1.length-1)? ')': ','}`;
             })
           }
 
           // Values ​​that do not have a filter_column_type defined
           if(filter_column_type === undefined){
-            filter_elements[0].value1.forEach((element: any, index: number) => {
-              filter_elements_value += `'${element}'` + `${index===(filter_elements[0].value1.length-1)? ')': ','}`;
+            filter_codes[0].value1.forEach((element: any, index: number) => {
+              filter_elements_value += `'${element}'` + `${index===(filter_codes[0].value1.length-1)? ')': ','}`;
             })
           }
         }
@@ -323,17 +532,16 @@ export class MySqlBuilderService extends QueryBuilderService {
       let validador = (valueListSource !== undefined && valueListSource !== null);
       // Result of the whole string 
 
-
-      let resultado = `${['null_or_empty', 'not_null_nor_empty'].includes(filter_type) || (filter_type==='in' && sqlOptional !== undefined) ? ' (' : ''} ${sqlOptional !== undefined ? sqlOptional : ''} \`${ validador ? valueListSource.target_table : filter_table}\`.\`${ validador ? valueListSource.target_description_column : filter_column}\` ${filter_type_value}${filter_elements_value}`;
+      let resultado = `${['null_or_empty', 'not_null_nor_empty'].includes(filter_type) || (filter_type==='in' && sqlOptional !== undefined) ? ' (' : ''} ${sqlOptional !== undefined ? sqlOptional : ''} \`${ validador ? valueListSource.target_table : filter_table}\`.\`${ validador ? valueListSource.target_id_column : filter_column}\` ${filter_type_value}${filter_elements_value}`;
 
       // It is located in this position because the table and field must be duplicated in the query (*observation)
       if(filter_type === 'not_null_nor_empty') {
-        resultado = `${resultado} \`${ validador ? valueListSource.target_table : filter_table}\`.\`${ validador ? valueListSource.target_description_column : filter_column}\` != '')`;
+        resultado = `${resultado} \`${ validador ? valueListSource.target_table : filter_table}\`.\`${ validador ? valueListSource.target_id_column : filter_column}\` != '')`;
       }
 
       // It is located in this position because the table and field must be duplicated in the query (*observation)
       if(filter_type === 'null_or_empty') {
-        resultado = `${resultado} \`${ validador ? valueListSource.target_table : filter_table}\`.\`${ validador ? valueListSource.target_description_column : filter_column}\` = '')`;
+        resultado = `${resultado} \`${ validador ? valueListSource.target_table : filter_table}\`.\`${ validador ? valueListSource.target_id_column : filter_column}\` = '')`;
       }
 
       if(filter_type === 'in' && sqlOptional !== undefined) {
@@ -427,7 +635,7 @@ export class MySqlBuilderService extends QueryBuilderService {
         column.autorelation = f.autorelation;
         column.joins = f.joins;
         column.valueListSource = f.valueListSource;
-        const colname = this.getFilterColname(column);
+        const colname = this.getFilterColname(column, f.filter_codes !== undefined  ,  f.valueListSource !== undefined );
         if (f.filter_type === 'not_null' || f.filter_type === 'not_null_nor_empty' || f.filter_type === 'null_or_empty') {
           filtersString += '\nand ' + this.filterToString(f);
         } else {
@@ -634,6 +842,7 @@ export class MySqlBuilderService extends QueryBuilderService {
     };
   }
 
+
   /*SDA CUSTOM*/ @custom.muSqlBuilderServiceCustomGetMinFractionDigits
   public getMinFractionDigits(el:any): any{
     if (!el.hasOwnProperty('minimumFractionDigits')) {
@@ -671,7 +880,7 @@ export class MySqlBuilderService extends QueryBuilderService {
         if(el.column_type=='text'){
           columns.push(`  ${el.SQLexpression}  as \`${el.display_name}\``);
         }else if(el.column_type=='numeric'){
-          columns.push(`cast( ${el.SQLexpression} as decimal(32,${el.minimumFractionDigits})) as \`${el.display_name}\``);
+          columns.push(`cast( ${el.SQLexpression} ${whatIfExpression} as decimal(32,${el.minimumFractionDigits}))   as \`${el.display_name}\``);
         }else if(el.column_type=='date'){
           columns.push(`  ${el.SQLexpression}  as \`${el.display_name}\``);
         }else if(el.column_type=='coordinate'){
@@ -708,13 +917,13 @@ export class MySqlBuilderService extends QueryBuilderService {
       } else {
         if (el.aggregation_type !== 'none') {
           if (el.aggregation_type === 'count_distinct') {
-            columns.push(`cast( count( distinct ${table_column}) as decimal(32,${el.minimumFractionDigits||0}) ) as \`${el.display_name}\``);
+            columns.push(`cast( count( distinct ${table_column}) ${whatIfExpression}  as decimal(32,${el.minimumFractionDigits||0}) )  as \`${el.display_name}\``);
           } else {
-            columns.push(`cast(${el.aggregation_type}(${table_column}) as decimal(32,${el.minimumFractionDigits||0}) ) as \`${el.display_name}\``);
+            columns.push(`cast(${el.aggregation_type}(${table_column})  ${whatIfExpression} as decimal(32,${el.minimumFractionDigits||0}) ) as \`${el.display_name}\``);
           }
         } else {
           if (el.column_type === 'numeric') {
-            columns.push(`cast(${table_column} as decimal(32,${el.minimumFractionDigits})) as \`${el.display_name}\``);
+            columns.push(`cast(${table_column} ${whatIfExpression}  as decimal(32,${el.minimumFractionDigits})) as \`${el.display_name}\``);
           } else if (el.column_type === 'date') {
             if (el.format) {
               if (_.isEqual(el.format, 'year')) {
@@ -743,7 +952,7 @@ export class MySqlBuilderService extends QueryBuilderService {
             }
           } else {
 
-              columns.push(`${table_column} as \`${el.display_name}\``);
+              columns.push(`${table_column}  as \`${el.display_name}\``);
 
           }
 
@@ -772,14 +981,16 @@ export class MySqlBuilderService extends QueryBuilderService {
             }
           } else {
             //  If it is a single numeric column it is not aggregated.
-            if(  this.queryTODO.fields.length > 1  ||  el.column_type != 'numeric' ){
+            if(  this.queryTODO.fields.length > 1  ||  el.column_type != 'numeric' ||  
+               ( el.column_type == 'numeric'  && el.aggregation_type == 'none' ) // only when we explicit say not to aggregate
+            ){
               grouping.push(`${table_column}`);
             }
           }
         }
       }
     });
-    
+
     return [columns, grouping];
   }
 
@@ -803,26 +1014,54 @@ export class MySqlBuilderService extends QueryBuilderService {
       column.autorelation = filterObject.autorelation;
       column.joins = filterObject.joins || [];
       column.valueListSource = filterObject.valueListSource;
-      const colname=this.getFilterColname(column);
+      const colname=this.getFilterColname(column, filterObject.filter_codes?.length !== undefined  ,  filterObject.valueListSource !== undefined );
       
       switch (this.setFilterType(filterObject.filter_type)) {
         case 0:
           if (filterObject.filter_type === '!=') { filterObject.filter_type = '<>' }
           if (filterObject.filter_type === 'like') {
-            return `${colname}  ${filterObject.filter_type} '%${filterObject.filter_elements[0].value1}%' `;
+            /** if i have the lovely code i use the code */
+            if( filterObject.filter_codes?.length !== undefined  &&  filterObject.valueListSource !== undefined ){
+                return `${colname}  ${filterObject.filter_type} '%${filterObject.filter_codes[0].value1}%' `;
+            }else{
+                return `${colname}  ${filterObject.filter_type} '%${filterObject.filter_elements[0].value1}%' `;
+            }
           }
           if (filterObject.filter_type === 'not_like') { 
             filterObject.filter_type = 'not like'
-            return `${colname}  ${filterObject.filter_type} '%${filterObject.filter_elements[0].value1}%' `;
+            /** if i have the lovely code i use the code */
+            if( filterObject.filter_codes.length !== undefined  &&  filterObject.valueListSource !== undefined ){
+                return `${colname}  ${filterObject.filter_type} '%${filterObject.filter_codes[0].value1}%' `;
+            }else{
+                return `${colname}  ${filterObject.filter_type} '%${filterObject.filter_elements[0].value1}%' `;
+            }
           }   
-          return `${colname}  ${filterObject.filter_type} ${this.processFilter(filterObject.filter_elements[0].value1, colType)} `;
+          /** if i have the lovely code i use the code */
+          if( filterObject.filter_codes?.length !== undefined  &&  filterObject.valueListSource !== undefined ){
+              return `${colname}  ${filterObject.filter_type} ${this.processFilter(filterObject.filter_codes[0].value1, colType)} `;
+          }else{
+              return `${colname}  ${filterObject.filter_type} ${this.processFilter(filterObject.filter_elements[0].value1, colType)} `;
+          }
+          
           // in values
         case 1:
           if (filterObject.filter_type === 'not_in') { filterObject.filter_type = 'not in' }
-          return `${colname}  ${filterObject.filter_type} (${this.processFilter(filterObject.filter_elements[0].value1, colType)}) `;
+            /** if i have the lovely code i use the code */
+            if( filterObject.filter_codes?.length !== undefined  &&  filterObject.valueListSource !== undefined ){
+                return `${colname}  ${filterObject.filter_type} (${this.processFilter(filterObject.filter_codes[0].value1, colType)}) `;
+            }else{
+                return `${colname}  ${filterObject.filter_type} (${this.processFilter(filterObject.filter_elements[0].value1, colType)}) `;
+            }
+          
         case 2:
-          return `${colname}  ${filterObject.filter_type} 
-                      ${this.processFilter(filterObject.filter_elements[0].value1, colType)} and ${this.processFilterEndRange(filterObject.filter_elements[1].value2, colType)}`;
+            /** if i have the lovely code i use the code */
+            if( filterObject.filter_codes?.length !== undefined  &&  filterObject.valueListSource !== undefined ){
+                return `${colname}  ${filterObject.filter_type} 
+                    ${this.processFilter(filterObject.filter_codes[0].value1, colType)} and ${this.processFilterEndRange(filterObject.filter_codes[1].value2, colType)}`;
+            }else{
+                return `${colname}  ${filterObject.filter_type} 
+                    ${this.processFilter(filterObject.filter_elements[0].value1, colType)} and ${this.processFilterEndRange(filterObject.filter_elements[1].value2, colType)}`;
+            }
         case 3:
           return `${colname} is not null`;
         case 4:
@@ -839,14 +1078,17 @@ export class MySqlBuilderService extends QueryBuilderService {
    * @param column 
    * @returns coumn name in string mode for filtering. 
    */
-  public getFilterColname(column: any){
+  public getFilterColname(column: any, codes: boolean, valuelist: boolean){
     let colname:String ;
     if( column.computed_column == 'no'  || ! column.hasOwnProperty('computed_column') ){
 
       if (column.autorelation && !column.valueListSource) {
         colname = `\`${column.joins[column.joins.length-1][0]}\`.\`${column.column_name}\``;
-      } else {
+      } else if(codes &&valuelist ){
+        colname = `\`${column.table_id}\`.\`${column.valueListSource.target_id_column}\`` ;
+      }else{
         colname = `\`${column.table_id}\`.\`${column.column_name}\`` ;
+      
       }
       
     }else{
@@ -1004,7 +1246,7 @@ public getHavingColname(column: any){
       filter.forEach(value => {
         const tail = columnType === 'date'
           ? `STR_TO_DATE('${value}','%Y-%m-%d')`
-          : columnType === 'numeric' ? value : `'${value.replace(/'/g, "''")}'`;
+          : columnType === 'numeric' ? value : `'${value.toString().replace(/'/g, "''")}'`;//agregado de toString
         str = str + tail + ','
       });
 
@@ -1161,5 +1403,10 @@ public generateInserts(queryData: any) {
     return t;
   }
 
-
+  /* Se pone el alias entre comillas para revitar errores de sintaxis*/
+  private cleanViewString(query: string) {
+    const index = query.lastIndexOf('as');
+    query = query.slice(0, index) + `as "${query.slice(index + 3)}" `;
+    return query;
+  }
 }
