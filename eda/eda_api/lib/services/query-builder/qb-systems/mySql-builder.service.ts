@@ -225,6 +225,12 @@ export class MySqlBuilderService extends QueryBuilderService {
       if(this.queryTODO.fields[0].valueListSource !== undefined) {
         myQuery = `SELECT DISTINCT ${columns},  IFNULL(\`${this.queryTODO.fields[0].valueListSource.target_table}\`.\`${this.queryTODO.fields[0].valueListSource.target_id_column}\`, '') as \`id\`\nFROM ${o}`;
       }
+
+      // If the element is a SQL Expression type
+      if(this.queryTODO.fields[0].computed_column !== undefined && this.queryTODO.fields[0].computed_column == 'computed' ) {
+        myQuery = `SELECT DISTINCT ${this.queryTODO.fields[0].SQLexpression} as \`${this.queryTODO.fields[0].column_name}\` ,   ${this.queryTODO.fields[0].SQLexpression} as \`id\`\nFROM ${o}`;
+      }
+
     }
 
     // If it is EDA, there is no alias and if it is EDA2 tree mode, there is an alias.
