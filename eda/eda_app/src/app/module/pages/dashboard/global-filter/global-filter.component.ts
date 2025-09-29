@@ -36,12 +36,27 @@ export class GlobalFilterComponent implements OnInit {
         private alertService: AlertService,
         private userService: UserService) { }
 
+
+    /**
+     * Angular lifecycle hook.
+     * Initializes user/admin permissions and filter visibility state when the component loads.
+     */
     public ngOnInit(): void {
         this.isAdmin = this.userService.isAdmin;
         this.isDashboardCreator = this.dashboard.isDashboardCreator;
         this.hideFilters = this.dashboard.display_v.panelMode;
     }
 
+
+    /**
+     * Initializes the list of global filters for the dashboard.
+     * - Deep clones the filters to avoid mutating the input.
+     * - Updates creator permissions.
+     * - Sets visibility for each filter.
+     * - Sets the visibility of filter buttons.
+     * - Initializes each filter as empty for all panels.
+     * @param filters Array of filters to initialize.
+     */
     public initGlobalFilters(filters: any[]): void {
         this.globalFilters = _.cloneDeep(filters);
         this.isDashboardCreator = this.dashboard.isDashboardCreator;
@@ -53,6 +68,10 @@ export class GlobalFilterComponent implements OnInit {
         })
     }
 
+
+    /**
+     * Ensures each filter has a 'visible' property set, defaulting to 'public'.
+     */
     private setFiltersVisibility(): void {
         for (const filter of this.globalFilters) {
             if (!filter.hasOwnProperty("visible")) {
@@ -62,8 +81,11 @@ export class GlobalFilterComponent implements OnInit {
     }
 
     // method to show or hide the filter button on the dashboard
+
+    /**
+     * Sets the visibility of filter buttons based on user role and filter visibility.
+     */
     private setFilterButtonVisibilty(): void {
-        
         let myFilters = _.cloneDeep(this.globalFilters);
         if(!this.isDashboardCreator  || !this.isAdmin){
             myFilters= myFilters.filter((f: any) => {
@@ -81,6 +103,10 @@ export class GlobalFilterComponent implements OnInit {
         });
     }
 
+
+    /**
+     * Loads data for all filters (date or non-date).
+     */
     public fillFiltersData() {
         for (const filter of this.globalFilters) {
             if (this.getFilterType(filter) == 'date') {
@@ -91,11 +117,14 @@ export class GlobalFilterComponent implements OnInit {
         }
     }
 
-    /** Apply filter to panels when filter's selected value changes */
+
+    /**
+     * Apply filter to panels when filter's selected value changes.
+     * @param filter The filter to apply.
+     */
     public applyGlobalFilter(filter: any): void {
         const formatedFilter = this.globalFilterService.formatFilter(filter);
         this.setFilterButtonVisibilty();
-
 
         this.dashboard.edaPanels.forEach((panel: EdaBlankPanelComponent) => {
             // If GlobalFilter is linked to Panel then assertFilter
@@ -112,7 +141,11 @@ export class GlobalFilterComponent implements OnInit {
         });
     }
 
-    // Adding a Global filter 
+
+    /**
+     * Adds a new global filter to all linked panels.
+     * @param filter The filter to add.
+     */
     public addingGlobalFilter(filter: any): void {
         const formatedFilter = this.globalFilterService.formatFilter(filter);
 
@@ -123,13 +156,30 @@ export class GlobalFilterComponent implements OnInit {
             });
     }
 
+
+    /**
+     * Sets filter items for all linked panels.
+     * @param filter The filter whose items to set.
+     */
     public setGlobalFilterItems(filter: any) {
+            filter.selectedIdValues = filter.selectedItems.map((e: any) => {
+                const value = filter.data.find(tv => e === tv.label);
+                if(value) {
+                    return value.id;
+                } else {
+                    if(e === 'emptyString') return '';
+                }
+            })
+
+
         this.dashboard.edaPanels.forEach((panel: EdaBlankPanelComponent) => {
             if (filter.panelList.includes(panel.panel.id)) {
                 const filterApplied = panel.globalFilters.find((gf: any) => gf.filter_id === filter.id);
 
                 if (filterApplied) {
+                    // Adding the filter_elements and filter_codes for the query
                     filterApplied.filter_elements = this.globalFilterService.assertGlobalFilterItems(filter);
+                    filterApplied.filter_codes = this.globalFilterService.assertGlobalFilterCodes(filter);
                 } else {
                     const formatedFilter = this.globalFilterService.formatFilter(filter);
                     panel.assertGlobalFilter(formatedFilter);
@@ -138,8 +188,12 @@ export class GlobalFilterComponent implements OnInit {
         })
     }
 
-    public setGlobalEmptyFilter(filter: any) {
 
+    /**
+     * Sets an empty filter for all linked panels (used for initialization).
+     * @param filter The filter to initialize as empty.
+     */
+    public setGlobalEmptyFilter(filter: any) {
         setTimeout(() => {
             this.dashboard.edaPanels.forEach((panel: EdaBlankPanelComponent) => {
                 if (filter.panelList.includes(panel.panel.id)) {
@@ -148,7 +202,6 @@ export class GlobalFilterComponent implements OnInit {
                 }
             })
         }, 500);
-
     }
 
     // Main Global Filter
@@ -172,6 +225,7 @@ export class GlobalFilterComponent implements OnInit {
 
     // Global Filter Tree
     public async onCloseGlobalFilter(apply: boolean): Promise<void> {
+
         if (apply) {
             this.dashboard.edaPanels.forEach(panel => {
                 if (!this.globalFilter.isdeleted) {
@@ -190,6 +244,7 @@ export class GlobalFilterComponent implements OnInit {
                     filter.selectedTable = this.globalFilter.selectedTable;
                     filter.selectedColumn = this.globalFilter.selectedColumn;
                     filter.selectedItems = this.globalFilter.selectedItems;
+                    filter.selectedIdValues = this.globalFilter.selectedIdValues;
                     filter.selectedRange = this.globalFilter.selectedRange;
                     filter.panelList = this.globalFilter.panelList;
                     filter.pathList = this.globalFilter.pathList;
@@ -284,7 +339,7 @@ export class GlobalFilterComponent implements OnInit {
                     } else {
                         await this.loadGlobalFiltersData(filter);
                     }
-                    
+
                     // Apply globalFilter to linkedPanels
                     this.applyGlobalFilter(filter);
 
@@ -334,11 +389,11 @@ export class GlobalFilterComponent implements OnInit {
             this.dashboard.applyToAllfilter = { present: false, refferenceTable: null, id: null };
             // this.updateApplyToAllFilterInPanels(); TODO
         }
-        
+
         // Update fileterList and clean panels' filters
         this.globalFilters = this.globalFilters.filter((f: any) => f.id !== filter.id);
 
-        
+
         this.dashboard.edaPanels.forEach(panel => {
             panel.globalFilters = panel.globalFilters.filter((f: any) => f.filter_id !== filter.id);
         });
@@ -360,7 +415,7 @@ export class GlobalFilterComponent implements OnInit {
     /**
      * Process data from date picker and apply filter
      * @param event dates and range(week, month, year, all) if any
-     * @param filter 
+     * @param filter
      */
     public processPickerEvent(event: any, filter: any): void {
         if (event.dates) {
@@ -395,7 +450,7 @@ export class GlobalFilterComponent implements OnInit {
 
     /**
      * Set datePicker's configuration
-     * @param filter 
+     * @param filter
      */
     private loadDatesFromFilter(filter) {
         this.datePickerConfigs[filter.id] = new EdaDatePickerConfig();
@@ -444,26 +499,50 @@ export class GlobalFilterComponent implements OnInit {
         try {
             const query = this.queryBuilderService.normalQuery([targetColumn], queryParams);
             query.query.forSelector = true;
-            
+
             const res = await this.dashboardService.executeQuery(query).toPromise();
-            
+
             if( res[0][0]=='noDataAllowed' || res[0][0]=='noFilterAllowed'){
                 this.globalFilters.find((gf: any) => gf.id == globalFilter.id).visible = 'hidden';
                 this.globalFilters.find((gf: any) => gf.id == globalFilter.id).data = false;
                 this.globalFilters;
             }
-            
+
             let data : any[] ;
             if(res[1].length > 0){
-                data = res[1].filter(item => item[0]?.toString()  != '').map(item => ({ label: item[0]?.toString(), value: item[0]?.toString() }));
+
+                    data = res[1].filter(item => item[0]?.toString()  != '').map(item => ({ label: item[0]?.toString(), value: item[0]?.toString(), id: item[1] }));
+
             }
 
             /** IF I HAVE EMPTY VALUES I REPLACE THEM WITH THE EMPTY STRING TEXT....... THAT IS EQUIVALENT TO IS NULL OR EMPTY */
             if( res[1].filter(item => item[0]?.toString() == '').length == 1 ){
-                data.unshift(    { label: $localize`:@@emptyStringTxt:Vacío`  , value:  'emptyString'  }  )
+                    data.unshift(    { label: $localize`:@@emptyStringTxt:Vacío`  , value:  'emptyString' , id: '' }  )
+
             }
 
+
+                // compatibility with old reports
+                if(globalFilter.selectedIdValues?.some((id: any) => id === null)) {
+                    globalFilter.selectedIdValues = globalFilter.selectedItems.map((element: any) => {
+                        const value = data.filter(d => d.label === element);
+                        return value[0]?.id;
+                    })
+                }
+                // compatibility with old reports
+                if( globalFilter.selectedIdValues  === undefined){
+                     globalFilter.selectedIdValues = [];
+                }
+
+                globalFilter.selectedItems = globalFilter.selectedIdValues?.map(siv => {
+                    const value = data.filter(d => d.id === siv);
+                    return value[0].value;
+                })
+
+
             this.globalFilters.find((gf: any) => gf.id == globalFilter.id).data = data;
+
+
         } catch (err) {
             this.alertService.addError(err);
             throw err;
@@ -478,7 +557,7 @@ export class GlobalFilterComponent implements OnInit {
                 if ((item.value || []).length > 60) bol = true;
             }
 
-            // if the filter elements are long wide the multiselect. 
+            // if the filter elements are long wide the multiselect.
             if (bol) {
                 const dropdowns = document.querySelectorAll('p-multiselect');
                 try {
@@ -520,8 +599,20 @@ export class GlobalFilterComponent implements OnInit {
                             .map(id => this.dashboard.panels.find(p => p.id === id))
                             .forEach((panel) => {
                                 const panelFilter = panel.content.query.query.filters;
-                                const formatedFilter = this.globalFilterService.formatFilter(filter);
-                                panelFilter.splice(_.findIndex(panelFilter, (inx) => inx.filter_column === formatedFilter.filter_column), 1);
+                                let formatedFilter = this.globalFilterService.formatFilter(filter);
+
+                                let pathList: any;
+                                Object.entries(formatedFilter.pathList).forEach(([clave, valor]: any) => {
+                                    if(clave === panel.id) pathList = valor.path;
+                                });
+
+                                // Adding the joins of the filter that comes from the url
+                                formatedFilter.joins = pathList;
+
+                                // Controlling the filters
+                                if( _.findIndex(panelFilter, (inx) => inx.filter_column === formatedFilter.filter_column) >=0 ){
+                                    panelFilter.splice(_.findIndex(panelFilter, (inx) => inx.filter_column === formatedFilter.filter_column), 1);
+                                }
                                 panelFilter.push(formatedFilter);
                             });
 

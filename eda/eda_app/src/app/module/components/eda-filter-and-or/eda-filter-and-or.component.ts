@@ -134,7 +134,7 @@ export class EdaFilterAndOrComponent implements OnInit {
   }
 
   initAndOrFilters () {
-
+    
     // Integration:
     this.dashboard = [];
     let k = 0; // y value, start

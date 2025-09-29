@@ -3195,7 +3195,6 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
     <source> Todos  </source>
     <target>All  </target>
   </trans-unit>
-
   <trans-unit id="NoneTags">
     <source> Ninguno  </source>
     <target>None </target>
@@ -3485,7 +3484,6 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
     <source>No ha sido posible eliminar la caché</source>
     <target>Error deleting cache</target>
   </trans-unit>
-
   <trans-unit id="RefreshCacheTitle">
     <source>Actualizar los datos del modelo cada:</source>
     <target>Update model data every:  </target>
@@ -3500,7 +3498,6 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
     <source>Día/s</source>
     <target>Day/s</target>
   </trans-unit>
-
   <trans-unit id="noCache">
     <source>Sin caché</source>
     <target>No caché</target>
@@ -3547,7 +3544,6 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
     <source>Configuración de seguridad</source>
     <target>Security configuration</target>
   </trans-unit>
-
   <trans-unit id="viewsecurity">
     <source>Ver configuración de seguridad</source>
     <target>View security configuration</target>
@@ -3597,7 +3593,6 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
     <source>PERMISOS</source>
     <target>PERMISSIONS</target>
   </trans-unit>
-
 
   <trans-unit id="visible">
     <source>VISIBLE</source>
@@ -3902,12 +3897,11 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
     <target>Font type</target>
   </trans-unit>
 
-     <trans-unit id="ChangeFontSize">
+  <trans-unit id="ChangeFontSize">
     <source>Tamaño de fuente</source>
     <target>Font size</target>
   </trans-unit>
-
-     <trans-unit id="ChangeFontColor">
+  <trans-unit id="ChangeFontColor">
     <source>Color de la fuente</source>
     <target>Font color</target>
   </trans-unit>
@@ -3916,6 +3910,11 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
   <trans-unit id="ChangeBackgroundColor">
     <source>Color del fondo</source>
     <target>Background color </target>
+  </trans-unit>
+
+  <trans-unit id="ChangePaneColor">
+    <source>Color del panel</source>
+    <target>Panel color</target>
   </trans-unit>
 
      <trans-unit id="ChangePaneColor">
@@ -3931,6 +3930,14 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
     <trans-unit id="left">
     <source>Izquierda</source>
     <target>Left</target>
+  </trans-unit>
+  <trans-unit id="center">
+    <source>Centro</source>
+    <target>Center</target>
+  </trans-unit>
+  <trans-unit id="right">
+    <source>Derecha</source>
+    <target>Right</target>
   </trans-unit>
   <trans-unit id="center">
     <source>Centro</source>
@@ -4250,7 +4257,6 @@ Once configured you can invoke it whenever you want from the button.</target>
         <source>KPI + Gráfico de Barras</source>
         <target>KPI + Bar chart</target>
       </trans-unit>
-
       <trans-unit id="chartTypesKPILINE">
         <source>KPI + Gráfico de Lineas</source>
         <target>KPI + Line chart</target>
@@ -4425,6 +4431,30 @@ Once configured you can invoke it whenever you want from the button.</target>
       <source>Sin Informar</source>
       <target>Uninformed</target>
       </trans-unit>
+      <trans-unit id="filteredReportMessage">
+        <source>Por favor, espera un momento mientras procesamos la selección.</source>
+        <target>Please wait a moment while we process your selection.</target>
+      </trans-unit>
+      <trans-unit id="logsManagement">
+        <source>Gestión de logs</source>
+        <target>Logs management</target>
+      </trans-unit>
+      <trans-unit id="logFileBtn">
+        <source>Logs</source>
+        <target>Logs</target>
+      </trans-unit>
+      <trans-unit id="logErrorFileBtn">
+        <source>Logs Error</source>
+        <target>Logs Error</target>
+      </trans-unit>
+      <trans-unit id="filterByTreetable">
+      <source>Filtro: </source>
+      <target>Filter: </target>
+      </trans-unit>
+      <trans-unit id="EmptyValueMessage">
+      <source>Sin Informar</source>
+      <target>Uninformed</target>
+      </trans-unit>
 
 
 
@@ -4557,6 +4587,10 @@ Once configured you can invoke it whenever you want from the button.</target>
         <source>Entre</source>
         <target>Between</target>
       </trans-unit>
+      <trans-unit id="emptyStringTxt">
+        <source>Vacío</source>
+        <target>(Empty)</target>
+      </trans-unit>
       <trans-unit id="filterSettings">
         <source>Configuración de filtros</source>
         <target>Filter settings</target>
@@ -4573,17 +4607,17 @@ Once configured you can invoke it whenever you want from the button.</target>
         <source>Vacío</source>
         <target>(Empty)</target>
       </trans-unit>
-      <trans-unit id="filterSettingsReboot">
+              <trans-unit id="filterSettingsReboot">
         <source>La configuración de filtros se ha reiniciado</source>
         <target>Filter settings have been reset</target>
       </trans-unit>
       <trans-unit id="globalFilterSettingsReboot">
         <source>La configuración de filtros del panel involucrado se ha reiniciado</source>
-        <target>The filter settings for the panel involved have been reset</target>
+        <target>Panel filter settings have been reset</target>
       </trans-unit>
       <trans-unit id="withoutFilters">
         <source>Aún no has configurado filtros. Usa el panel de filtros o los filtros globales</source>
-        <target>You haven't set up filters yet. Use the filter panel or global filters.</target>
+        <target>You haven't set up any filter. Use the filter panel or global filters.</target>
       </trans-unit>
       <trans-unit id="chartInfoTreetable">
         <source>Un Treetable necesita como mínimo una categoría y dos valores numéricos, en caso se inicie la consulta con dos valores numéricos, estos deberán ser ids con una relación hijo y padre, del cual el hijo deberá iniciar con 0.</source>
@@ -4609,6 +4643,6 @@ Once configured you can invoke it whenever you want from the button.</target>
         <source>Una tabla árbol se puede configurar de dos formas. Mediante campos que se van anidando por medio de agrupaciones o mediante la definición de dos columnas numéricas que definan una relación padre-hijo. Si las dos primeras columnas son numéricas, se asumirá que describen una relación padre hijo.</source>
         <target>A tree table can be configured in two ways: by nesting fields using groupings, or by defining two numeric columns that define a parent-child relationship. If the first two columns are numeric, they will be assumed to describe a parent-child relationship.</target>
       </trans-unit>
-    </body>
+        </body>
   </file>
 </xliff>

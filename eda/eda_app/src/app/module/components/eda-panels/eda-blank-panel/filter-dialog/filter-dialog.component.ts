@@ -56,7 +56,7 @@ export class FilterDialogComponent extends EdaDialogAbstract {
     public inputType: string;
     public filterValue: any = {};
     public filterSelected: FilterType;
-    public dropDownFields: SelectItem[] = [];
+    public dropDownFields: any[] = [];
     public limitSelectionFields: number;
     public aggregationsTypes: any[] = [];
     public aggregationType: any = null;
@@ -88,6 +88,7 @@ export class FilterDialogComponent extends EdaDialogAbstract {
 
         // Inicializando el valor del WHERE / HAVING
         this.filterBeforeAfterSelected = this.filterBeforeAfter.elements[0]
+
     }
 
     onShow(): void {
@@ -95,6 +96,7 @@ export class FilterDialogComponent extends EdaDialogAbstract {
         const title = this.selectedColumn.display_name.default;
         this.dialog.title = `Atributo ${title} de la entidad ${this.controller.params.table}`;
         this.carrega();
+
     }
 
     addFilter() {
@@ -108,6 +110,8 @@ export class FilterDialogComponent extends EdaDialogAbstract {
         const autorelation = this.selectedColumn.autorelation;
         const filterBeforeGrouping = this.filterBeforeAfter.filterBeforeGrouping
         const aggregation_type = this.aggregationType ? this.aggregationType.value : null;
+        const data = this.dropDownFields;
+
         const computed_column = this.selectedColumn.computed_column;
         const SQLexpression = this.selectedColumn.SQLexpression;
 
@@ -123,6 +127,7 @@ export class FilterDialogComponent extends EdaDialogAbstract {
             joins,
             filterBeforeGrouping,
             aggregation_type,
+            data,
             computed_column,
             SQLexpression
         });
@@ -328,7 +333,11 @@ export class FilterDialogComponent extends EdaDialogAbstract {
                 if (res.length > 1) {
                     for (const item of res[1]) {
                         if (item[0] === '' || item[0] ) { 
-                            this.dropDownFields.push({ label : item[0], value: item[0] });
+                            if(column.valueListSource !== undefined) {
+                                this.dropDownFields.push({ label : item[0], value: item[0], id: item[1] });
+                            } else {
+                                this.dropDownFields.push({ label : item[0], value: item[0] });
+                            }
                         }
                     }
                 }
