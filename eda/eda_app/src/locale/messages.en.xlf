@@ -4643,6 +4643,10 @@ Once configured you can invoke it whenever you want from the button.</target>
         <source>Una tabla árbol se puede configurar de dos formas. Mediante campos que se van anidando por medio de agrupaciones o mediante la definición de dos columnas numéricas que definan una relación padre-hijo. Si las dos primeras columnas son numéricas, se asumirá que describen una relación padre hijo.</source>
         <target>A tree table can be configured in two ways: by nesting fields using groupings, or by defining two numeric columns that define a parent-child relationship. If the first two columns are numeric, they will be assumed to describe a parent-child relationship.</target>
       </trans-unit>
+      <trans-unit id="mandatoryDiferentName">
+        <source>Este nombre de campo calculado ya existe. Intente con otro.</source>
+        <target>This calculated field name already exists. Please try another one.</target>
+      </trans-unit>
         </body>
   </file>
 </xliff>

@@ -50,6 +50,12 @@ export class CalculatedColumnDialogComponent extends EdaDialogAbstract {
       return this.alertService.addError($localize`:@@mandatoryFields:Recuerde llenar los campos obligatorios`);
     } else {
 
+      // Check if the name is available
+      const tables = this.controller.params.table.columns;
+      if(tables.some((column) => column.column_name === this.form.value.colName)) {
+        return this.alertService.addError($localize`:@@mandatoryDiferentName:Este nombre de campo calculado ya existe. Intente con otro.`);
+      }
+
       const column: any = {
         aggregation_type: [{ value: "none", display_name: "No" }],
         column_granted_roles: [],
