@@ -541,13 +541,13 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
         this.spinnerService.on();
         const table = this.dataModelService.getTable(columnPanel);
         const column = table.columns.filter(col => col.column_name === columnPanel.technical_name)[0];
-        const agg = ['avg', 'bit_and', 'bit_or', 'bit_xor', 'count', 'group_concat', 'json_arrayagg', 'json_objectagg', 'max', 'min', 'std', 'stddev', 'sum', 'var_pop', 'var_samp', 'variance', 'cume_dist', 'dense_rank', 'first_value', 'lag', 'last_value', 'lead', 'nth_value', 'ntile', 'percent_rank', 'rank', 'row_number'];
+        /*SDA CUSTOM */ const agg = ['avg', 'bit_and', 'bit_or', 'bit_xor', 'count', 'group_concat', 'json_arrayagg', 'json_objectagg', 'max', 'min', 'std', 'stddev', 'sum', 'var_pop', 'var_samp', 'variance', 'cume_dist', 'dense_rank', 'first_value', 'lag', 'last_value', 'lead', 'nth_value', 'ntile', 'percent_rank', 'rank', 'row_number'];
         let exists = -1;
         agg.forEach(e => { if (column.SQLexpression.toString().toLowerCase().indexOf(e) == 0) { exists = 1; } });
 
         if (exists == 1) {
-            this.alertService.addError($localize`:@@IncorrectQueryAgg:No se pueden incluir la agregaciones en la consulta (distinct, sum, max, min, etc)`);
-            this.spinnerService.off()
+         /*SDA CUSTOM */    this.alertService.addError($localize`:@@IncorrectQueryAgg:No se pueden incluir la agregaciones en la consulta (distinct, sum, max, min, etc)`);
+         /*SDA CUSTOM */    this.spinnerService.off()
         } else {
           
             const queryParams: QueryParams = {
