@@ -2715,8 +2715,8 @@
       </trans-unit>
 
       <trans-unit id="IncorrectQueryAgg">
-        <source>Debes incluir la agregación (distinct, sum, max, min, etc)</source>
-        <target>Debes incluir la agregación (distinct, sum, max, min, etc)</target>
+        <source>No se pueden incluir la agregaciones en la consulta (distinct, sum, max, min, etc)</source>
+        <target>Non se poden incluír agregacións na consulta (distinct, sum, max, min, etc.)</target>
       </trans-unit>
 
       <trans-unit id="EstablishedConnections">

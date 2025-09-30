@@ -2591,8 +2591,8 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 </trans-unit>
 
 <trans-unit id="IncorrectQueryAgg">
-<source>Debes incluir la agregación (distinct, sum, max, min, etc)</source>
-<target>Has d'incloure l'agregació (distinct, sum, max, min, etc)</target>
+<source>No se pueden incluir la agregaciones en la consulta (distinct, sum, max, min, etc)</source>
+<target>No es poden incloure les agregacions a la consulta (distinct, sum, max, min, etc)</target>
 </trans-unit>
 
 <trans-unit id="EstablishedConnections">
