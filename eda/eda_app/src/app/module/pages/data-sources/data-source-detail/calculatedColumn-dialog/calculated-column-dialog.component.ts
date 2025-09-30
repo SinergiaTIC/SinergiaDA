@@ -52,7 +52,7 @@ export class CalculatedColumnDialogComponent extends EdaDialogAbstract {
 
       // Check if the name is available
       const tables = this.controller.params.table.columns;
-      if(tables.some((column) => column.column_name === this.form.value.colName)) {
+      if(tables.some((column) => column.column_name.trim().toLowerCase() === this.form.value.colName.trim().toLowerCase())) {
         return this.alertService.addError($localize`:@@mandatoryDiferentName:Este nombre de campo calculado ya existe. Intente con otro.`);
       }
 
