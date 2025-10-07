@@ -4647,6 +4647,14 @@ Once configured you can invoke it whenever you want from the button.</target>
         <source>Este nombre de campo calculado ya existe. Intente con otro.</source>
         <target>This calculated field name already exists. Please try another one.</target>
       </trans-unit>
+      <trans-unit id="calculatedFieldSuccess">
+        <source>Cálculo del campo calculado verificado con éxito</source>
+        <target>Calculation of the calculated field successfully verified</target>
+      </trans-unit>
+      <trans-unit id="calculatedFieldError">
+        <source>Error en la creación del campo calculado</source>
+        <target>Error creating the calculated field</target>
+      </trans-unit>
         </body>
   </file>
 </xliff>

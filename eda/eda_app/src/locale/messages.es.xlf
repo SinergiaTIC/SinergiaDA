@@ -4441,6 +4441,14 @@
         <source>Este nombre de campo calculado ya existe. Intente con otro.</source>
         <target>Este nombre de campo calculado ya existe. Intente con otro.</target>
       </trans-unit>
+      <trans-unit id="calculatedFieldSuccess">
+        <source>Cálculo del campo calculado verificado con éxito</source>
+        <target>Cálculo del campo calculado verificado con éxito</target>
+      </trans-unit>
+      <trans-unit id="calculatedFieldError">
+        <source>Error en la creación del campo calculado</source>
+        <target>Error en la creación del campo calculado</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>

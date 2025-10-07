@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { EdaDialogAbstract, EdaDialog, EdaDialogCloseEvent } from '@eda/shared/components/shared-components.index';
-import { AlertService, SpinnerService} from '@eda/services/service.index';
+import { AlertService, DataSourceService, QueryParams, QueryBuilderService, SpinnerService} from '@eda/services/service.index';
 import { UntypedFormGroup, UntypedFormBuilder, Validators } from '@angular/forms';
 import { SelectItem } from 'primeng/api';
 import { EditTablePanel, EditColumnPanel, EditModelPanel, ValueListSource, Relation } from '@eda/models/data-source-model/data-source-models';
@@ -34,7 +34,9 @@ export class CalculatedColumnDialogComponent extends EdaDialogAbstract {
   constructor(
     private formBuilder: UntypedFormBuilder,
     private alertService: AlertService,
-    private spinnerService: SpinnerService
+    private spinnerService: SpinnerService,
+    public dataModelService: DataSourceService,
+    private queryBuilderService: QueryBuilderService,
   ) {
     super();
 
@@ -87,25 +89,33 @@ export class CalculatedColumnDialogComponent extends EdaDialogAbstract {
         SQLexpression: this.sqlExpressionString,
         computed_column : 'computed',
         minimumFractionDigits: this.decimalNumberValue,
+        parent: this.controller.params.table.technical_name,
         visible: true
       };
 
+      this.spinnerService.on();
+      
+      const queryParams: QueryParams = {
+          table: column.parent,
+          dataSource: this.dataModelService.model_id,
+      };
 
-      // console.log('decimalNumberValue ===>>> ', this.decimalNumberValue);
-      // console.log('selectedcolumnType ===>>> ', this.selectedcolumnType);
+      const query = this.queryBuilderService.simpleQuery(column, queryParams);
+      this.dataModelService.executeQuery(query).subscribe(
+          res => { this.alertService.addSuccess($localize`:@@calculatedFieldSuccess:Cálculo del campo calculado verificado con éxito`); 
+                   this.onClose(EdaDialogCloseEvent.NEW, { column: column, table_name: this.controller.params.table.technical_name });
+                   this.spinnerService.off();
+                 },
+          err => { this.alertService.addError($localize`:@@calculatedFieldError:Error en la creación del campo calculado`); this.spinnerService.off() }
+      );
+
       // console.log('column ===>>> ', column);
       // debugger;
 
-      this.onClose(EdaDialogCloseEvent.NEW, { column: column, table_name: this.controller.params.table.technical_name });
+      // this.onClose(EdaDialogCloseEvent.NEW, { column: column, table_name: this.controller.params.table.technical_name });
     }
     
   }
-
-  // checkCalculatedColumn(columnPanel: EditColumnPanel) {
-  //   this.spinnerService.on();
-
-  // }
-
 
   onTypeChange(event: any) {
     const ctrl = this.form.get('decimalNumber');

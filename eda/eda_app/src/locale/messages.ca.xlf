@@ -4466,6 +4466,14 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
         <source>Este nombre de campo calculado ya existe. Intente con otro.</source>
         <target>Aquest nom de camp calculat ja existeix. Intenteu amb un altre.</target>
       </trans-unit>
+      <trans-unit id="calculatedFieldSuccess">
+        <source>Cálculo del campo calculado verificado con éxito</source>
+        <target>Càlcul del camp calculat verificat amb èxit</target>
+      </trans-unit>
+      <trans-unit id="calculatedFieldError">
+        <source>Error en la creación del campo calculado</source>
+        <target>Error en la creació del camp calculat</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>
