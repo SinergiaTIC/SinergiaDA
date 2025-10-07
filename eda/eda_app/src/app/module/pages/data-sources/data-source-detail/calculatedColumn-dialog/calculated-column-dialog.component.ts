@@ -1,8 +1,10 @@
 import { Component } from '@angular/core';
 import { EdaDialogAbstract, EdaDialog, EdaDialogCloseEvent } from '@eda/shared/components/shared-components.index';
-import { AlertService} from '@eda/services/service.index';
+import { AlertService, SpinnerService} from '@eda/services/service.index';
 import { UntypedFormGroup, UntypedFormBuilder, Validators } from '@angular/forms';
 import { SelectItem } from 'primeng/api';
+import { EditTablePanel, EditColumnPanel, EditModelPanel, ValueListSource, Relation } from '@eda/models/data-source-model/data-source-models';
+
 
 
 @Component({
@@ -31,7 +33,8 @@ export class CalculatedColumnDialogComponent extends EdaDialogAbstract {
 
   constructor(
     private formBuilder: UntypedFormBuilder,
-    private alertService: AlertService
+    private alertService: AlertService,
+    private spinnerService: SpinnerService
   ) {
     super();
 
@@ -97,6 +100,12 @@ export class CalculatedColumnDialogComponent extends EdaDialogAbstract {
     }
     
   }
+
+  // checkCalculatedColumn(columnPanel: EditColumnPanel) {
+  //   this.spinnerService.on();
+
+  // }
+
 
   onTypeChange(event: any) {
     const ctrl = this.form.get('decimalNumber');

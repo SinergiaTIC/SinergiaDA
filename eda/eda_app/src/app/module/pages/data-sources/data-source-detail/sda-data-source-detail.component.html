@@ -100,7 +100,7 @@
             <h5 class="title-datamodel" i18n="@@inputNombre">
                 Nombre
             </h5>
-            <p><input pInputText type="text" size="50" [(ngModel)]="columnPanel.name" (keyup)="update()" [disabled]="columnPanel.computed_column === 'computed'"></p>
+            <p><input pInputText type="text" size="50" [(ngModel)]="columnPanel.name" [disabled]="columnPanel.computed_column === 'computed'"></p>
         </div>
 
         <div>
@@ -114,12 +114,12 @@
             <h5 class="title-datamodel" i18n="@@inputDescripcion">
                 Descripción
             </h5>
-            <p><input pInputText type="text" size="50" [(ngModel)]="columnPanel.description" (keyup)="update()" [disabled]="columnPanel.computed_column === 'computed'"></p>
+            <p><input pInputText type="text" size="50" [(ngModel)]="columnPanel.description" [disabled]="columnPanel.computed_column === 'computed'"></p>
         </div>
 
         <div *ngIf="columnPanel.computed_column !== 'no'">
             <h5 class="title-datamodel" i18n="@@sqlExpColumn">Expresión SQL</h5>
-            <p><textarea pInputTextarea type="text" [(ngModel)]="columnPanel.SQLexpression" (keyup)="update()" rows="5"
+            <p><textarea pInputTextarea type="text" [(ngModel)]="columnPanel.SQLexpression" rows="5"
                     cols="100" [disabled]="columnPanel.computed_column === 'computed'"> </textarea></p>
         </div>
 

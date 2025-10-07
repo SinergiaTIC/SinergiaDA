@@ -10,7 +10,7 @@ import { aggTypes } from 'app/config/aggretation-types';
 import { EdaColumnFunction } from '@eda/components/eda-table/eda-columns/eda-column-function';
 import * as _ from 'lodash';
 import { EdaColumnEditable } from '@eda/components/eda-table/eda-columns/eda-column-editable';
-import { AGG_COMPUTED } from './aggregationContants';
+import { AGG_COMPUTED } from './aggregationConstants';
 
 
 @Component({
@@ -538,6 +538,10 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
 
 
     checkCalculatedColumn(columnPanel: EditColumnPanel) {
+
+        // console.log('columnPanelcolumnPanel: ', columnPanel);
+        // debugger;
+
         this.spinnerService.on();
         const table = this.dataModelService.getTable(columnPanel);
         const column = table.columns.filter(col => col.column_name === columnPanel.technical_name)[0];
@@ -592,15 +596,14 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
                 if (!_.isEqual(event, EdaDialogCloseEvent.NONE)) {
 
                     const column = response.column;
-                    const aggregation_type =         [
-                        { "value": "sum", "display_name": "Sum" },
-                        { "value": "avg", "display_name": "Average" },
-                        { "value": "max", "display_name": "Maximum" },
-                        { "value": "min", "display_name": "Minimum"},
-                        { "value": "count", "display_name": "Count Values" },
-                        { "value": "count_distinct", "display_name": "Distinct Values" },
-                        { "value": "none", "display_name": "None" }
-                    ];
+                    
+                    let aggregation_type = [];
+                    switch (column.column_type) {
+                        case 'text': aggregation_type = AGG_COMPUTED.AGG_TEXT_VALUE_DISPLAY; break;
+                        case 'date': aggregation_type = AGG_COMPUTED.AGG_DATE_VALUE_DISPLAY; break;
+                        case 'numeric': aggregation_type = AGG_COMPUTED.AGG_NUMERIC_VALUE_DISPLAY; break;
+                        default: aggregation_type = AGG_COMPUTED.AGG_COORDINATE_VALUE_DISPLAY; break;
+                    }
 
                     if(column.computed_column === 'computed') { response.column.aggregation_type = aggregation_type }
 
