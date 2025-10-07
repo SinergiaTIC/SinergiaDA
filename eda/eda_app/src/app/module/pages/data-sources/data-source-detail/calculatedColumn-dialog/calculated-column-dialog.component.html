@@ -16,6 +16,23 @@
         <h6 i18n="@@inputDescripcion">Descripción *</h6>
         <p><input pInputText type="text" size="50" formControlName="description" id="eda_descripcion"></p>
       </div>
+
+      <div style="margin: 10px">
+        <h6 class="title-datamodel" i18n="@@sqlExpColumn">Expresión SQL</h6>
+        <p><textarea pInputTextarea type="text" [(ngModel)]="sqlExpressionString" rows="5" cols="100" formControlName="sqlExpression" id="eda_sqlExpression"></textarea></p>
+      </div>
+
+      <div style="margin: 10px">
+        <h6 class="title-datamodel" i18n="@@inputTipoColumna">Tipo de columna</h6>
+        <p-selectButton [options]="columnTypes" [(ngModel)]="selectedcolumnType" formControlName="typeSelector" (onChange)="onTypeChange($event)">
+        </p-selectButton>
+      </div>      
+
+      <div *ngIf="selectedcolumnType==='numeric'" style="margin: 10px">
+        <h6 class="title-datamodel" i18n="@@inputFormat">Número de decimales</h6>
+          <p><input pInputText type="number" [(ngModel)]="decimalNumberValue" size="50" formControlName="decimalNumber"></p>
+      </div>      
+
     </form>
 
   </div>

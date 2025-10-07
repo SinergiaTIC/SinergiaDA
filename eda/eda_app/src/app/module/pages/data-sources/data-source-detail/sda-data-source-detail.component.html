@@ -100,7 +100,7 @@
             <h5 class="title-datamodel" i18n="@@inputNombre">
                 Nombre
             </h5>
-            <p><input pInputText type="text" size="50" [(ngModel)]="columnPanel.name" (keyup)="update()"></p>
+            <p><input pInputText type="text" size="50" [(ngModel)]="columnPanel.name" (keyup)="update()" [disabled]="columnPanel.computed_column === 'computed'"></p>
         </div>
 
         <div>
@@ -114,13 +114,13 @@
             <h5 class="title-datamodel" i18n="@@inputDescripcion">
                 Descripción
             </h5>
-            <p><input pInputText type="text" size="50" [(ngModel)]="columnPanel.description" (keyup)="update()"></p>
+            <p><input pInputText type="text" size="50" [(ngModel)]="columnPanel.description" (keyup)="update()" [disabled]="columnPanel.computed_column === 'computed'"></p>
         </div>
 
         <div *ngIf="columnPanel.computed_column !== 'no'">
             <h5 class="title-datamodel" i18n="@@sqlExpColumn">Expresión SQL</h5>
             <p><textarea pInputTextarea type="text" [(ngModel)]="columnPanel.SQLexpression" (keyup)="update()" rows="5"
-                    cols="100"> </textarea></p>
+                    cols="100" [disabled]="columnPanel.computed_column === 'computed'"> </textarea></p>
         </div>
 
         <div  style="margin-bottom: 1em; margin-top: 0.5em;">
@@ -128,7 +128,7 @@
                 Tipo de columna
             </h5>
             <div>
-                <p-selectButton [options]="columnTypes" [(ngModel)]="selectedcolumnType" (onChange)=updateColumnType()>
+                <p-selectButton [options]="columnTypes" [(ngModel)]="selectedcolumnType" (onChange)=updateColumnType() [disabled]="columnPanel.computed_column === 'computed'">
                 </p-selectButton>
             </div>
         </div>
@@ -149,7 +149,7 @@
                 Número de decimales
             </h5>
             <div>
-                <p><input pInputText type="number" size="50" [(ngModel)]="columnPanel.minimumFractionDigits" (keyup)="update()"></p>
+                <p><input pInputText type="number" size="50" [(ngModel)]="columnPanel.minimumFractionDigits" (keyup)="update()" [disabled]="columnPanel.computed_column === 'computed'"></p>
             </div>
         </div>
 
