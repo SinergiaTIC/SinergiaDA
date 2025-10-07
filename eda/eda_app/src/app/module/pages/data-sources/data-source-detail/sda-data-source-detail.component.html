@@ -192,8 +192,10 @@
         </div>
 
         <div>
-            <button *ngIf="columnPanel.SQLexpression" type="button" pButton (click)="checkCalculatedColumn(columnPanel)"
-                class="ui-button-success ml-2" label="Comprobar expresión" style="margin-right: 5px;"></button>
+            <!-- <button *ngIf="columnPanel.SQLexpression" type="button" pButton (click)="checkCalculatedColumn(columnPanel)"
+                class="ui-button-success ml-2" label="Comprobar expresión" style="margin-right: 5px;"></button> -->
+            <button *ngIf="columnPanel.computed_column !== 'no'" type="button" pButton (click)="editCalculatedField(columnPanel)"
+                class="ui-button-success" label="Edición de campo calculado" style="margin-right: 5px;"></button>
             <button *ngIf="columnPanel.computed_column !== 'no'" type="button" pButton
                 (click)="deleteCalculatedCol(columnPanel)" class="p-button-raised p-button-danger" i18n-label="@@borrar"
                 label="Borrar"></button>
@@ -389,4 +391,4 @@
 <app-add-csv-dialog *ngIf="csvPanelController" [controller]="csvPanelController"></app-add-csv-dialog>
 <eda-cache-dialog *ngIf="cacheController" [controller]="cacheController"></eda-cache-dialog>
 <eda-security-dialog *ngIf="securityController" [controller]="securityController"></eda-security-dialog>
-
+<app-calculated-column-edit-dialog *ngIf="calculatedColumnEditController" [column]="columnPanel" (close)="onCloseCalculatedColumnEdit()"></app-calculated-column-edit-dialog>

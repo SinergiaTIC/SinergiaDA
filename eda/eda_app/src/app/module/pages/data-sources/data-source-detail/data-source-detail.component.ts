@@ -46,6 +46,7 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
     public csvPanelController: EdaDialogController;
     public cacheController : EdaDialogController;
     public securityController : EdaDialogController;
+    public calculatedColumnEditController = false;
     public items: MenuItem[];
     // public hideAllTablesBool : boolean = false;
     // public hideAllRelationsBool : boolean = false;
@@ -539,8 +540,8 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
 
     checkCalculatedColumn(columnPanel: EditColumnPanel) {
 
-        // console.log('columnPanelcolumnPanel: ', columnPanel);
-        // debugger;
+        console.log('columnPanelcolumnPanel: ', columnPanel);
+        debugger;
 
         this.spinnerService.on();
         const table = this.dataModelService.getTable(columnPanel);
@@ -565,6 +566,18 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
             );
         }   
     }
+
+    editCalculatedField(columnPanel) {
+        this.calculatedColumnEditController = true;
+        console.log('iniciando la edición');
+        console.log('columnPanel =====>>>>>', columnPanel);
+    }
+
+    onCloseCalculatedColumnEdit() {
+        console.log('holaaaaaaaaaa')
+        this.calculatedColumnEditController = false;
+    }
+
     checkConection() {
         this.spinnerService.on();
         let connection = this.modelPanel.connection;
