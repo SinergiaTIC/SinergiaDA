@@ -4449,6 +4449,10 @@
         <source>Error en la creación del campo calculado</source>
         <target>Error en la creación del campo calculado</target>
       </trans-unit>
+      <trans-unit id="formDialogCalculatedColumn">
+        <source>Recuerde rellenar todos los campos</source>
+        <target>Recuerde rellenar todos los campos</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>

@@ -4655,6 +4655,10 @@ Once configured you can invoke it whenever you want from the button.</target>
         <source>Error en la creación del campo calculado</source>
         <target>Error creating the calculated field</target>
       </trans-unit>
+      <trans-unit id="formDialogCalculatedColumn">
+        <source>Recuerde rellenar todos los campos</source>
+        <target>Please remember to fill in all the fields</target>
+      </trans-unit>
         </body>
   </file>
 </xliff>

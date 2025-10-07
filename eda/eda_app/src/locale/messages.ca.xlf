@@ -4474,6 +4474,10 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
         <source>Error en la creación del campo calculado</source>
         <target>Error en la creació del camp calculat</target>
       </trans-unit>
+      <trans-unit id="formDialogCalculatedColumn">
+        <source>Recuerde rellenar todos los campos</source>
+        <target>Recordi omplir tots els camps</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>
