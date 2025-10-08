@@ -5,7 +5,6 @@ import { AlertService, DataSourceService, QueryParams, QueryBuilderService, Spin
 import { EdaDialogAbstract, EdaDialog, EdaDialogCloseEvent } from '@eda/shared/components/shared-components.index';
 import * as _ from 'lodash';
 
-
 @Component({
   selector: 'app-calculated-column-edit-dialog',
   templateUrl: './calculated-column-edit-dialog.component.html',
@@ -58,30 +57,21 @@ export class CalculatedColumnEditDialogComponent implements OnInit {
   }
 
   ngOnInit(): void {
-
     const column = _.cloneDeep(this.column);
     this.temporalColumn = _.cloneDeep(this.column);
 
-    // Temporal value
+    // Temporal column value
     this.constantName = this.column.technical_name;
     this.initForm(column);
-    
-    console.log('INICIO column: ', column);
   }
 
+  // init for the Form Value
   initForm(column) {
-
     this.name = column.name;
     this.description = column.description;
     this.sqlExpressionString = column.SQLexpression;  
     this.selectedcolumnType = column.column_type;
     this.decimalNumberValue = column.minimumFractionDigits;
-
-    console.log('name: ', this.name)
-    console.log('description: ', this.description)
-    console.log('sqlExpressionString: ', this.sqlExpressionString)
-    console.log('selectedcolumnType: ', this.selectedcolumnType)
-    console.log('decimalNumberValue: ', this.decimalNumberValue)
 
     if(this.selectedcolumnType !== 'numeric') {
       this.decimalNumberValue = null;
@@ -89,8 +79,7 @@ export class CalculatedColumnEditDialogComponent implements OnInit {
       ctrl.reset();
       ctrl.disable();    
     }
-    
-}
+  }
 
   onApplyCalculatedColumn(){
     if(this.form.invalid) {
@@ -113,6 +102,7 @@ export class CalculatedColumnEditDialogComponent implements OnInit {
         this.temp = 1;
       }
 
+      // All this aggregation are prohibited
       const agg = ['avg', 'bit_and', 'bit_or', 'bit_xor', 'count', 'group_concat', 'json_arrayagg', 'json_objectagg', 'max', 'min', 'std', 'stddev', 'sum', 'var_pop', 'var_samp', 'variance', 'cume_dist', 'dense_rank', 'first_value', 'lag', 'last_value', 'lead', 'nth_value', 'ntile', 'percent_rank', 'rank', 'row_number'];
       let exists = -1;
       agg.forEach(e => { if (this.sqlExpressionString.toString().toLowerCase().indexOf(e) == 0) { exists = 1; } });
@@ -121,9 +111,7 @@ export class CalculatedColumnEditDialogComponent implements OnInit {
         this.alertService.addError($localize`:@@IncorrectQueryAgg:No se puede incluir las siguientes agregaciones: (avg, bit_and, bit_or, bit_xor, count, group_concat, json_arrayagg, json_objectagg, max, min, std, stddev, sum, var_pop, var_samp, variance, cume_dist, dense_rank, first_value, lag, last_value, lead, nth_value, ntile, percent_rank, rank, row_number)`);
         this.spinnerService.off()
       } else {
-        
-        console.log('COLUMNNNNNN: ', this.columnConstant);
-  
+          
         this.columnConstant.display_name.default = this.temporalColumn.name;
         this.columnConstant.column_name = this.temporalColumn.name;
         this.columnConstant.description.default = this.temporalColumn.description;
@@ -160,7 +148,6 @@ export class CalculatedColumnEditDialogComponent implements OnInit {
     this.close.emit();
   }
 
-
   onTypeChange(event: any) {
     this.temporalColumn.column_type = event.value;
     if(this.temporalColumn.column_type !== 'numeric') this.temporalColumn.minimumFractionDigits = null;
@@ -176,15 +163,11 @@ export class CalculatedColumnEditDialogComponent implements OnInit {
   }
 
   update() {
-    console.log('column: ', this.temporalColumn);
-    console.log('name: ', this.name);
-
     this.temporalColumn.name = this.name;
     this.temporalColumn.technical_name = this.name;
     this.temporalColumn.description = this.description;
     this.temporalColumn.SQLexpression = this.sqlExpressionString;
     this.temporalColumn.minimumFractionDigits = this.decimalNumberValue;
-
   }
 
 }

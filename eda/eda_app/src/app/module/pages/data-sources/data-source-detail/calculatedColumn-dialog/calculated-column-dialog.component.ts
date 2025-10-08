@@ -78,6 +78,7 @@ export class CalculatedColumnDialogComponent extends EdaDialogAbstract {
         return this.alertService.addError($localize`:@@mandatoryDiferentName:Este nombre de campo calculado ya existe. Intente con otro.`);
       }
 
+      // All this aggregation are prohibited
       const agg = ['avg', 'bit_and', 'bit_or', 'bit_xor', 'count', 'group_concat', 'json_arrayagg', 'json_objectagg', 'max', 'min', 'std', 'stddev', 'sum', 'var_pop', 'var_samp', 'variance', 'cume_dist', 'dense_rank', 'first_value', 'lag', 'last_value', 'lead', 'nth_value', 'ntile', 'percent_rank', 'rank', 'row_number'];
       let exists = -1;
       agg.forEach(e => { if (this.sqlExpressionString.toString().toLowerCase().indexOf(e) == 0) { exists = 1; } });
@@ -117,17 +118,8 @@ export class CalculatedColumnDialogComponent extends EdaDialogAbstract {
                    },
             err => { this.alertService.addError($localize`:@@calculatedFieldError:Error en la creación del campo calculado`); this.spinnerService.off() }
         );
-
       }
-
-      
-
-      // console.log('column ===>>> ', column);
-      // debugger;
-
-      // this.onClose(EdaDialogCloseEvent.NEW, { column: column, table_name: this.controller.params.table.technical_name });
     }
-    
   }
 
   onTypeChange(event: any) {
@@ -140,7 +132,7 @@ export class CalculatedColumnDialogComponent extends EdaDialogAbstract {
       ctrl.reset();
       ctrl.disable();
     }
-}
+  }
 
 
 }
