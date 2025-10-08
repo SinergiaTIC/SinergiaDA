@@ -569,13 +569,21 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
 
     editCalculatedField(columnPanel) {
         this.calculatedColumnEditController = true;
-        console.log('iniciando la edición');
-        console.log('columnPanel =====>>>>>', columnPanel);
+        // console.log('Columna enviada:::: ', columnPanel);
     }
 
     onCloseCalculatedColumnEdit() {
-        console.log('holaaaaaaaaaa')
         this.calculatedColumnEditController = false;
+    }
+
+    newColumnEdited(colum: any) {
+        console.log('ANTERIOR : ', this.columnPanel)
+        console.log('ACTUAL: ', colum);
+        this.columnPanel = _.cloneDeep(colum);
+
+        // Updating the columnPanel
+        this.dataModelService.changeColumnPanel(this.columnPanel);
+
     }
 
     checkConection() {

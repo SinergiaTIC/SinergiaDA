@@ -391,4 +391,4 @@
 <app-add-csv-dialog *ngIf="csvPanelController" [controller]="csvPanelController"></app-add-csv-dialog>
 <eda-cache-dialog *ngIf="cacheController" [controller]="cacheController"></eda-cache-dialog>
 <eda-security-dialog *ngIf="securityController" [controller]="securityController"></eda-security-dialog>
-<app-calculated-column-edit-dialog *ngIf="calculatedColumnEditController" [column]="columnPanel" (close)="onCloseCalculatedColumnEdit()"></app-calculated-column-edit-dialog>
+<app-calculated-column-edit-dialog *ngIf="calculatedColumnEditController" [column]="columnPanel" (close)="onCloseCalculatedColumnEdit()" (newColum)="newColumnEdited($event)"></app-calculated-column-edit-dialog>

@@ -1,7 +1,10 @@
 import { Component, EventEmitter, OnInit, Output, Input } from '@angular/core';
 import { UntypedFormGroup, UntypedFormBuilder, Validators } from '@angular/forms';
 import { SelectItem } from 'primeng/api';
-import { AlertService } from '@eda/services/service.index';
+import { AlertService, DataSourceService, QueryParams, QueryBuilderService, SpinnerService } from '@eda/services/service.index';
+import { EdaDialogAbstract, EdaDialog, EdaDialogCloseEvent } from '@eda/shared/components/shared-components.index';
+import * as _ from 'lodash';
+
 
 @Component({
   selector: 'app-calculated-column-edit-dialog',
@@ -12,6 +15,7 @@ export class CalculatedColumnEditDialogComponent implements OnInit {
 
   @Input() column: any;
   @Output() close: EventEmitter<any> = new EventEmitter<any>();
+  @Output() newColum: EventEmitter<any> = new EventEmitter<any>();
   
   public display: boolean = false;
   public form: UntypedFormGroup;
@@ -30,10 +34,17 @@ export class CalculatedColumnEditDialogComponent implements OnInit {
   public sqlExpressionString = '';  
   public selectedcolumnType = '';
   public decimalNumberValue;
+  public temporalColumn: any;
+  public temp = 0;
+  public columnConstant: any;
+  public constantName: any;
 
   constructor(
     private formBuilder: UntypedFormBuilder,
       private alertService: AlertService,
+      private spinnerService: SpinnerService,
+      public dataModelService: DataSourceService,
+      private queryBuilderService: QueryBuilderService,
 ) {
 
     this.form = this.formBuilder.group({
@@ -48,22 +59,23 @@ export class CalculatedColumnEditDialogComponent implements OnInit {
 
   ngOnInit(): void {
 
-    const column = this.column;
-    this.initForm(column);
+    const column = _.cloneDeep(this.column);
+    this.temporalColumn = _.cloneDeep(this.column);
 
-    // this.selectedcolumnType = this.column.
+    // Temporal value
+    this.constantName = this.column.technical_name;
+    this.initForm(column);
+    
+    console.log('INICIO column: ', column);
   }
 
   initForm(column) {
-
-    console.log('column:', column);
 
     this.name = column.name;
     this.description = column.description;
     this.sqlExpressionString = column.SQLexpression;  
     this.selectedcolumnType = column.column_type;
     this.decimalNumberValue = column.minimumFractionDigits;
-
 
     console.log('name: ', this.name)
     console.log('description: ', this.description)
@@ -81,19 +93,45 @@ export class CalculatedColumnEditDialogComponent implements OnInit {
 }
 
   onApplyCalculatedColumn(){
-    console.log('Aplicando los cambios aqui::::::::::::::::  ');
-
     if(this.form.invalid) {
       return this.alertService.addError($localize`:@@formDialogCalculatedColumn:Recuerde rellenar todos los campos`);
     } else {
-      console.log('FORMULARIO CORRECTO....')
-    }
+      this.spinnerService.on();
+      const table = this.dataModelService.getTable(this.temporalColumn);
 
-    // console.log('name: ', this.name)
-    // console.log('description: ', this.description)
-    // console.log('sqlExpressionString: ', this.sqlExpressionString)
-    // console.log('selectedcolumnType: ', this.selectedcolumnType)
-    // console.log('decimalNumberValue: ', this.decimalNumberValue)
+      if(this.temp === 0) {
+        this.columnConstant = table.columns.filter(col => col.column_name === this.constantName)[0];
+        this.temp = 1;
+      }
+
+      console.log('COLUMNNNNNN: ', this.columnConstant);
+
+      this.columnConstant.display_name.default = this.temporalColumn.name;
+      this.columnConstant.column_name = this.temporalColumn.name;
+      this.columnConstant.description.default = this.temporalColumn.description;
+      this.columnConstant.SQLexpression = this.temporalColumn.SQLexpression;
+      this.columnConstant.column_type = this.temporalColumn.column_type;
+      this.columnConstant.minimumFractionDigits = this.temporalColumn.minimumFractionDigits;
+
+      const queryParams: QueryParams = {
+          table: table.table_name,
+          dataSource: this.dataModelService.model_id,
+      };
+
+      const query = this.queryBuilderService.simpleQuery(this.columnConstant, queryParams);
+      this.dataModelService.executeQuery(query).subscribe(
+          res => { 
+                  this.alertService.addSuccess($localize`:@@CorrectQuery:Consulta correcta`); 
+                  this.newColum.emit(this.temporalColumn);
+                  this.spinnerService.off() 
+                  this.close.emit();
+                },
+          err => { 
+                  this.alertService.addError($localize`:@@IncorrectQuery:Consulta incorrecta`); 
+                  this.spinnerService.off() 
+                }
+      );      
+    }
 
   }
 
@@ -103,6 +141,8 @@ export class CalculatedColumnEditDialogComponent implements OnInit {
 
 
   onTypeChange(event: any) {
+    this.temporalColumn.column_type = event.value;
+    if(this.temporalColumn.column_type !== 'numeric') this.temporalColumn.minimumFractionDigits = null;
 
     const ctrl = this.form.get('decimalNumber');
     if (!ctrl) return;
@@ -112,6 +152,18 @@ export class CalculatedColumnEditDialogComponent implements OnInit {
       ctrl.reset();
       ctrl.disable();
     }
+  }
+
+  update() {
+    console.log('column: ', this.temporalColumn);
+    console.log('name: ', this.name);
+
+    this.temporalColumn.name = this.name;
+    this.temporalColumn.technical_name = this.name;
+    this.temporalColumn.description = this.description;
+    this.temporalColumn.SQLexpression = this.sqlExpressionString;
+    this.temporalColumn.minimumFractionDigits = this.decimalNumberValue;
+
   }
 
 }
