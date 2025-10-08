@@ -78,36 +78,49 @@ export class CalculatedColumnDialogComponent extends EdaDialogAbstract {
         return this.alertService.addError($localize`:@@mandatoryDiferentName:Este nombre de campo calculado ya existe. Intente con otro.`);
       }
 
-      const column: any = {
-        aggregation_type: [{ value: "none", display_name: "No" }],
-        column_granted_roles: [],
-        column_name: this.form.value.colName,
-        column_type: this.selectedcolumnType,
-        description: { default: this.form.value.description, localized: Array(0) },
-        display_name: { default: this.form.value.colName, localized: Array(0) },
-        row_granted_roles: [],
-        SQLexpression: this.sqlExpressionString,
-        computed_column : 'computed',
-        minimumFractionDigits: this.decimalNumberValue,
-        parent: this.controller.params.table.technical_name,
-        visible: true
-      };
+      const agg = ['avg', 'bit_and', 'bit_or', 'bit_xor', 'count', 'group_concat', 'json_arrayagg', 'json_objectagg', 'max', 'min', 'std', 'stddev', 'sum', 'var_pop', 'var_samp', 'variance', 'cume_dist', 'dense_rank', 'first_value', 'lag', 'last_value', 'lead', 'nth_value', 'ntile', 'percent_rank', 'rank', 'row_number'];
+      let exists = -1;
+      agg.forEach(e => { if (this.sqlExpressionString.toString().toLowerCase().indexOf(e) == 0) { exists = 1; } });
 
-      this.spinnerService.on();
+      if(exists == 1){
+         this.alertService.addError($localize`:@@IncorrectQueryAgg:No se puede incluir las siguientes agregaciones: (avg, bit_and, bit_or, bit_xor, count, group_concat, json_arrayagg, json_objectagg, max, min, std, stddev, sum, var_pop, var_samp, variance, cume_dist, dense_rank, first_value, lag, last_value, lead, nth_value, ntile, percent_rank, rank, row_number)`);
+         this.spinnerService.off()
+      } else {
+
+        const column: any = {
+          aggregation_type: [{ value: "none", display_name: "No" }],
+          column_granted_roles: [],
+          column_name: this.form.value.colName,
+          column_type: this.selectedcolumnType,
+          description: { default: this.form.value.description, localized: Array(0) },
+          display_name: { default: this.form.value.colName, localized: Array(0) },
+          row_granted_roles: [],
+          SQLexpression: this.sqlExpressionString,
+          computed_column : 'computed',
+          minimumFractionDigits: this.decimalNumberValue,
+          parent: this.controller.params.table.technical_name,
+          visible: true
+        };
+  
+        this.spinnerService.on();
+        
+        const queryParams: QueryParams = {
+            table: column.parent,
+            dataSource: this.dataModelService.model_id,
+        };
+  
+        const query = this.queryBuilderService.simpleQuery(column, queryParams);
+        this.dataModelService.executeQuery(query).subscribe(
+            res => { this.alertService.addSuccess($localize`:@@calculatedFieldSuccess:Cálculo del campo calculado verificado con éxito`); 
+                     this.onClose(EdaDialogCloseEvent.NEW, { column: column, table_name: this.controller.params.table.technical_name });
+                     this.spinnerService.off();
+                   },
+            err => { this.alertService.addError($localize`:@@calculatedFieldError:Error en la creación del campo calculado`); this.spinnerService.off() }
+        );
+
+      }
+
       
-      const queryParams: QueryParams = {
-          table: column.parent,
-          dataSource: this.dataModelService.model_id,
-      };
-
-      const query = this.queryBuilderService.simpleQuery(column, queryParams);
-      this.dataModelService.executeQuery(query).subscribe(
-          res => { this.alertService.addSuccess($localize`:@@calculatedFieldSuccess:Cálculo del campo calculado verificado con éxito`); 
-                   this.onClose(EdaDialogCloseEvent.NEW, { column: column, table_name: this.controller.params.table.technical_name });
-                   this.spinnerService.off();
-                 },
-          err => { this.alertService.addError($localize`:@@calculatedFieldError:Error en la creación del campo calculado`); this.spinnerService.off() }
-      );
 
       // console.log('column ===>>> ', column);
       // debugger;

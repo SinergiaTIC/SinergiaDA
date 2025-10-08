@@ -113,33 +113,45 @@ export class CalculatedColumnEditDialogComponent implements OnInit {
         this.temp = 1;
       }
 
-      console.log('COLUMNNNNNN: ', this.columnConstant);
+      const agg = ['avg', 'bit_and', 'bit_or', 'bit_xor', 'count', 'group_concat', 'json_arrayagg', 'json_objectagg', 'max', 'min', 'std', 'stddev', 'sum', 'var_pop', 'var_samp', 'variance', 'cume_dist', 'dense_rank', 'first_value', 'lag', 'last_value', 'lead', 'nth_value', 'ntile', 'percent_rank', 'rank', 'row_number'];
+      let exists = -1;
+      agg.forEach(e => { if (this.sqlExpressionString.toString().toLowerCase().indexOf(e) == 0) { exists = 1; } });
 
-      this.columnConstant.display_name.default = this.temporalColumn.name;
-      this.columnConstant.column_name = this.temporalColumn.name;
-      this.columnConstant.description.default = this.temporalColumn.description;
-      this.columnConstant.SQLexpression = this.temporalColumn.SQLexpression;
-      this.columnConstant.column_type = this.temporalColumn.column_type;
-      this.columnConstant.minimumFractionDigits = this.temporalColumn.minimumFractionDigits;
+      if(exists == 1) {
+        this.alertService.addError($localize`:@@IncorrectQueryAgg:No se puede incluir las siguientes agregaciones: (avg, bit_and, bit_or, bit_xor, count, group_concat, json_arrayagg, json_objectagg, max, min, std, stddev, sum, var_pop, var_samp, variance, cume_dist, dense_rank, first_value, lag, last_value, lead, nth_value, ntile, percent_rank, rank, row_number)`);
+        this.spinnerService.off()
+      } else {
+        
+        console.log('COLUMNNNNNN: ', this.columnConstant);
+  
+        this.columnConstant.display_name.default = this.temporalColumn.name;
+        this.columnConstant.column_name = this.temporalColumn.name;
+        this.columnConstant.description.default = this.temporalColumn.description;
+        this.columnConstant.SQLexpression = this.temporalColumn.SQLexpression;
+        this.columnConstant.column_type = this.temporalColumn.column_type;
+        this.columnConstant.minimumFractionDigits = this.temporalColumn.minimumFractionDigits;
+  
+        const queryParams: QueryParams = {
+            table: table.table_name,
+            dataSource: this.dataModelService.model_id,
+        };
+  
+        const query = this.queryBuilderService.simpleQuery(this.columnConstant, queryParams);
+        this.dataModelService.executeQuery(query).subscribe(
+            res => { 
+                    this.alertService.addSuccess($localize`:@@CorrectQuery:Consulta correcta`); 
+                    this.newColum.emit(this.temporalColumn);
+                    this.spinnerService.off() 
+                    this.close.emit();
+                  },
+            err => { 
+                    this.alertService.addError($localize`:@@IncorrectQuery:Consulta incorrecta`); 
+                    this.spinnerService.off() 
+                  }
+        );      
 
-      const queryParams: QueryParams = {
-          table: table.table_name,
-          dataSource: this.dataModelService.model_id,
-      };
+      }
 
-      const query = this.queryBuilderService.simpleQuery(this.columnConstant, queryParams);
-      this.dataModelService.executeQuery(query).subscribe(
-          res => { 
-                  this.alertService.addSuccess($localize`:@@CorrectQuery:Consulta correcta`); 
-                  this.newColum.emit(this.temporalColumn);
-                  this.spinnerService.off() 
-                  this.close.emit();
-                },
-          err => { 
-                  this.alertService.addError($localize`:@@IncorrectQuery:Consulta incorrecta`); 
-                  this.spinnerService.off() 
-                }
-      );      
     }
 
   }

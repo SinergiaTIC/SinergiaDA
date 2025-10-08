@@ -2591,8 +2591,8 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 </trans-unit>
 
 <trans-unit id="IncorrectQueryAgg">
-<source>No se pueden incluir la agregaciones en la consulta (distinct, sum, max, min, etc)</source>
-<target>No es poden incloure les agregacions a la consulta (distinct, sum, max, min, etc)</target>
+<source>No se puede incluir las siguientes agregaciones: (avg, bit_and, bit_or, bit_xor, count, group_concat, json_arrayagg, json_objectagg, max, min, std, stddev, sum, var_pop, var_samp, variance, cume_dist, dense_rank, first_value, lag, last_value, lead, nth_value, ntile, percent_rank, rank, row_number)</source>
+<target>Les següents agregacions no es poden incloure: (avg, bit_and, bit_or, bit_xor, count, group_concat, json_arrayagg, json_objectagg, max, min, std, stddev, sum, var_pop, var_samp, variance, cume_dist, dense_rank, first_value, lag, last_value, lead, nth_value, ntile, percent_rank, rank, row_number)</target>
 </trans-unit>
 
 <trans-unit id="EstablishedConnections">
