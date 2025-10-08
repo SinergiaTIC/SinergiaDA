@@ -99,6 +99,15 @@ export class CalculatedColumnEditDialogComponent implements OnInit {
       this.spinnerService.on();
       const table = this.dataModelService.getTable(this.temporalColumn);
 
+      let columns = _.cloneDeep(table.columns); // Filter the calculated column
+      columns = columns.filter(col => col.column_name !== this.constantName)
+      
+      // Verify if the are other column with the same name.
+      if(columns.some((column) => column.column_name.trim().toLowerCase() === this.form.value.colName.trim().toLowerCase())) {
+        this.spinnerService.off() 
+        return this.alertService.addError($localize`:@@mandatoryDiferentName:Este nombre de campo calculado ya existe. Intente con otro.`);
+      }
+
       if(this.temp === 0) {
         this.columnConstant = table.columns.filter(col => col.column_name === this.constantName)[0];
         this.temp = 1;
