@@ -4471,8 +4471,8 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
         <target>Càlcul del camp calculat verificat amb èxit</target>
       </trans-unit>
       <trans-unit id="calculatedFieldError">
-        <source>Error en la creación del campo calculado</source>
-        <target>Error en la creació del camp calculat</target>
+        <source>Error en la creación del campo calculado. Expresión SQL incorrecta</source>
+        <target>Error en la creació del camp calculat. Expresió SQL incorrecta</target>
       </trans-unit>
       <trans-unit id="formDialogCalculatedColumn">
         <source>Recuerde rellenar todos los campos</source>

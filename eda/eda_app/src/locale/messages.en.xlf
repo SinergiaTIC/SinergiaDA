@@ -4652,8 +4652,8 @@ Once configured you can invoke it whenever you want from the button.</target>
         <target>Calculation of the calculated field successfully verified</target>
       </trans-unit>
       <trans-unit id="calculatedFieldError">
-        <source>Error en la creación del campo calculado</source>
-        <target>Error creating the calculated field</target>
+        <source>Error en la creación del campo calculado. Expresión SQL incorrecta</source>
+        <target>Error creating the calculated field. Incorrect SQL Expression </target>
       </trans-unit>
       <trans-unit id="formDialogCalculatedColumn">
         <source>Recuerde rellenar todos los campos</source>

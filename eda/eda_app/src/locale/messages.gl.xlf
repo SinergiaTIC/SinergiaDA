@@ -4447,8 +4447,8 @@
         <target>Cálculo do campo calculado verificado con éxito</target>
       </trans-unit>
       <trans-unit id="calculatedFieldError">
-        <source>Error en la creación del campo calculado</source>
-        <target>Erro na creación do campo calculado</target>
+        <source>Error en la creación del campo calculado. Expresión SQL incorrecta</source>
+        <target>Erro na creación do campo calculado. Expresión SQL incorrecta</target>
       </trans-unit>
       <trans-unit id="formDialogCalculatedColumn">
         <source>Recuerde rellenar todos los campos</source>

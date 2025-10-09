@@ -116,7 +116,7 @@ export class CalculatedColumnDialogComponent extends EdaDialogAbstract {
                      this.onClose(EdaDialogCloseEvent.NEW, { column: column, table_name: this.controller.params.table.technical_name });
                      this.spinnerService.off();
                    },
-            err => { this.alertService.addError($localize`:@@calculatedFieldError:Error en la creación del campo calculado`); this.spinnerService.off() }
+            err => { this.alertService.addError($localize`:@@calculatedFieldError:Error en la creación del campo calculado. Expresión SQL incorrecta`); this.spinnerService.off() }
         );
       }
     }
