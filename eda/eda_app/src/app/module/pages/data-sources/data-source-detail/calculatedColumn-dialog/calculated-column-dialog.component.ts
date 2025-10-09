@@ -68,6 +68,11 @@ export class CalculatedColumnDialogComponent extends EdaDialogAbstract {
   }
 
   saveColumn() {
+
+    if(this.selectedcolumnType !== 'numeric') {
+      this.decimalNumberValue = 0;
+    }
+
     if (this.form.invalid) {
       return this.alertService.addError($localize`:@@mandatoryFields:Recuerde llenar los campos obligatorios`);
     } else {
