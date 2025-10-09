@@ -74,7 +74,7 @@ export class CalculatedColumnEditDialogComponent implements OnInit {
     this.decimalNumberValue = column.minimumFractionDigits;
 
     if(this.selectedcolumnType !== 'numeric') {
-      this.decimalNumberValue = null;
+      this.decimalNumberValue = 0;
       const ctrl = this.form.get('decimalNumber');
       ctrl.reset();
       ctrl.disable();    
