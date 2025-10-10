@@ -3,7 +3,7 @@ import { Component, OnInit, OnDestroy, EventEmitter, Output } from '@angular/cor
 import { Router, NavigationEnd } from '@angular/router';
 import { UntypedFormGroup } from '@angular/forms';
 import { MenuItem, SelectItem, TreeNode } from 'primeng/api';
-import { AlertService, DataSourceService, QueryParams, QueryBuilderService, SpinnerService } from '@eda/services/service.index';
+import { AlertService, DataSourceService, QueryParams, QueryBuilderService, SpinnerService, DashboardService } from '@eda/services/service.index';
 import { EditTablePanel, EditColumnPanel, EditModelPanel, ValueListSource, Relation } from '@eda/models/data-source-model/data-source-models';
 import { EdaDialogController, EdaDialogCloseEvent, EdaContextMenu, EdaContextMenuItem } from '@eda/shared/components/shared-components.index';
 import { aggTypes } from 'app/config/aggretation-types';
@@ -11,6 +11,8 @@ import { EdaColumnFunction } from '@eda/components/eda-table/eda-columns/eda-col
 import * as _ from 'lodash';
 import { EdaColumnEditable } from '@eda/components/eda-table/eda-columns/eda-column-editable';
 import { AGG_COMPUTED } from './aggregationConstants';
+import Swal from 'sweetalert2';
+
 
 
 @Component({
@@ -123,6 +125,7 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
         private alertService: AlertService,
         private queryBuilderService: QueryBuilderService,
         private spinnerService: SpinnerService,
+        private dashboardService: DashboardService,
         private router: Router) {
         //
         const _me = this;
@@ -519,9 +522,28 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
         this.dataModelService.deleteRelation(relation);
     }
     deleteCalculatedCol(columnPanel: EditColumnPanel) {
-        this.dataModelService.deleteCalculatedCol(columnPanel);
-        this.typePanel = 'tabla';
-        this.update();
+        Swal.fire({
+            title: $localize`:@@Sure:¿Estás seguro?`,
+            text: $localize`:@@deleteCalculatedColumn:Si, Eliminar el campo calculado!`,
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: $localize`:@@ConfirmDeleteModel:Si, ¡Eliminalo!`,
+            cancelButtonText: $localize`:@@DeleteGroupCancel:Cancelar`
+        }).then(async (borrado) => {
+            if (borrado.value) {
+                try {
+                    this.dataModelService.deleteCalculatedCol(columnPanel);
+                    this.typePanel = 'tabla';
+                    this.update();
+                    Swal.fire($localize`:@@Deleted:¡Eliminado!`, $localize`:@@deleteCalculatedColumnConfirmation:Campo calculado eliminado correctamente. Debera guardar cambios en el modelo de datos para que la eliminación sea permanente`, 'success');
+                } catch (err) {
+                    this.alertService.addError(err);
+                    throw err;
+                }
+            }
+        });
     }
     deleteView(tableName: string) {
         this.dataModelService.deleteView(tableName);

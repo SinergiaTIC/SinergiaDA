@@ -4478,6 +4478,22 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
         <source>Recuerde rellenar todos los campos</source>
         <target>Recordi omplir tots els camps</target>
       </trans-unit>
+      <trans-unit id="deleteCalculatedColumn">
+        <source>Si, Eliminar el campo calculado!</source>
+        <target>Sí, Elimina el camp calculat!</target>
+      </trans-unit>
+      <trans-unit id="deleteCalculatedColumnConfirmation">
+        <source>Campo calculado eliminado correctamente. Debera guardar cambios en el modelo de datos para que la eliminación sea permanente</source>
+        <target>Camp calculat eliminat correctament. Haurà de desar els canvis al model de dades perquè l'eliminació sigui permanent</target>
+      </trans-unit>
+      <trans-unit id="titleCalculatedColumnEditMessage">
+        <source>Campo calculado actualizado correctamente</source>
+        <target>Camp calculat actualitzat correctament</target>
+      </trans-unit>
+      <trans-unit id="textCalculatedColumnEditMessage">
+        <source>IMPORTANTE: para que los cambios se propaguen a los informes existentes deberá ejecutar los paneles en los que se usa y guardar los cambios</source>
+        <target>IMPORTANT: perquè els canvis es propaguin als informes existents, haurà d'executar els panells on s'utilitza i desar els canvis</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>

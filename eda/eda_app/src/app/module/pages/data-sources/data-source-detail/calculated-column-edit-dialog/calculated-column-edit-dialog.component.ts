@@ -4,6 +4,8 @@ import { SelectItem } from 'primeng/api';
 import { AlertService, DataSourceService, QueryParams, QueryBuilderService, SpinnerService } from '@eda/services/service.index';
 import { EdaDialogAbstract, EdaDialog, EdaDialogCloseEvent } from '@eda/shared/components/shared-components.index';
 import * as _ from 'lodash';
+import Swal from 'sweetalert2';
+
 
 @Component({
   selector: 'app-calculated-column-edit-dialog',
@@ -131,6 +133,15 @@ export class CalculatedColumnEditDialogComponent implements OnInit {
                     this.newColum.emit(this.temporalColumn);
                     this.spinnerService.off() 
                     this.close.emit();
+
+                    Swal.fire({
+                      title: $localize`:@@titleCalculatedColumnEditMessage:Campo calculado actualizado correctamente`,
+                      text: $localize`:@@textCalculatedColumnEditMessage:IMPORTANTE: para que los cambios se propaguen a los informes existentes deberá ejecutar los paneles en los que se usa y guardar los cambios`,
+                      icon: 'success',
+                      confirmButtonColor: '#3085d6',
+                      confirmButtonText: `ok`,
+                    });
+                    
                   },
             err => { 
                     this.alertService.addError($localize`:@@IncorrectQuery:Consulta incorrecta`); 

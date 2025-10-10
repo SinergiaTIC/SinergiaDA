@@ -4659,6 +4659,22 @@ Once configured you can invoke it whenever you want from the button.</target>
         <source>Recuerde rellenar todos los campos</source>
         <target>Please remember to fill in all the fields</target>
       </trans-unit>
+      <trans-unit id="deleteCalculatedColumn">
+        <source>Si, Eliminar el campo calculado!</source>
+        <target>Yes, Delete the calculated field!</target>
+      </trans-unit>
+      <trans-unit id="deleteCalculatedColumnConfirmation">
+        <source>Campo calculado eliminado correctamente. Debera guardar cambios en el modelo de datos para que la eliminación sea permanente</source>
+        <target>Calculated field deleted successfully. You will need to save the changes in the data model for the deletion to be permanent</target>
+      </trans-unit>
+      <trans-unit id="titleCalculatedColumnEditMessage">
+        <source>Campo calculado actualizado correctamente</source>
+        <target>Calculated field updated successfully</target>
+      </trans-unit>
+      <trans-unit id="textCalculatedColumnEditMessage">
+        <source>IMPORTANTE: para que los cambios se propaguen a los informes existentes deberá ejecutar los paneles en los que se usa y guardar los cambios</source>
+        <target>IMPORTANT: for the changes to propagate to existing reports, you must run the panels where it is used and save the changes</target>
+      </trans-unit>
         </body>
   </file>
 </xliff>
