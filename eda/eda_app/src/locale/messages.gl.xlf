@@ -4467,7 +4467,7 @@
         <target>Campo calculado actualizado correctamente</target>
       </trans-unit>
       <trans-unit id="textCalculatedColumnEditMessage">
-        <source>IMPORTANTE: para que los cambios se propaguen a los informes existentes deberá ejecutar los paneles en los que se usa y guardar los cambios</source>
+        <source>IMPORTANTE: Al modificar un campo calculado ya existente los paneles que lo utilizan no se actualizan automáticamente, es necesario entra en la configuración de cada uno de ellos, pulsar en Ejecutar y guardar el informe</source>
         <target>IMPORTANTE: para que os cambios se propaguen aos informes existentes, deberá executar os paneis nos que se usa e gardar os cambios</target>
       </trans-unit>
     </body>

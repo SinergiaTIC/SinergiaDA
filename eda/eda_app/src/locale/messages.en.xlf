@@ -4672,8 +4672,8 @@ Once configured you can invoke it whenever you want from the button.</target>
         <target>Calculated field updated successfully</target>
       </trans-unit>
       <trans-unit id="textCalculatedColumnEditMessage">
-        <source>IMPORTANTE: para que los cambios se propaguen a los informes existentes deberá ejecutar los paneles en los que se usa y guardar los cambios</source>
-        <target>IMPORTANT: for the changes to propagate to existing reports, you must run the panels where it is used and save the changes</target>
+        <source>IMPORTANTE: Al modificar un campo calculado ya existente los paneles que lo utilizan no se actualizan automáticamente, es necesario entra en la configuración de cada uno de ellos, pulsar en Ejecutar y guardar el informe</source>
+        <target>IMPORTANT: When modifying an existing calculated field, the panels that use it are not automatically updated. You must enter the configuration of each of them, click on Run and save the report.</target>
       </trans-unit>
         </body>
   </file>

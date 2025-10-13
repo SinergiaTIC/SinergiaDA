@@ -136,7 +136,7 @@ export class CalculatedColumnEditDialogComponent implements OnInit {
 
                     Swal.fire({
                       title: $localize`:@@titleCalculatedColumnEditMessage:Campo calculado actualizado correctamente`,
-                      text: $localize`:@@textCalculatedColumnEditMessage:IMPORTANTE: para que los cambios se propaguen a los informes existentes deberá ejecutar los paneles en los que se usa y guardar los cambios`,
+                      text: $localize`:@@textCalculatedColumnEditMessage:IMPORTANTE: Al modificar un campo calculado ya existente los paneles que lo utilizan no se actualizan automáticamente, es necesario entra en la configuración de cada uno de ellos, pulsar en Ejecutar y guardar el informe`,
                       icon: 'success',
                       confirmButtonColor: '#3085d6',
                       confirmButtonText: `ok`,

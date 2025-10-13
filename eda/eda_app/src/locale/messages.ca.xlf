@@ -4491,8 +4491,8 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
         <target>Camp calculat actualitzat correctament</target>
       </trans-unit>
       <trans-unit id="textCalculatedColumnEditMessage">
-        <source>IMPORTANTE: para que los cambios se propaguen a los informes existentes deberá ejecutar los paneles en los que se usa y guardar los cambios</source>
-        <target>IMPORTANT: perquè els canvis es propaguin als informes existents, haurà d'executar els panells on s'utilitza i desar els canvis</target>
+        <source>IMPORTANTE: Al modificar un campo calculado ya existente los paneles que lo utilizan no se actualizan automáticamente, es necesario entra en la configuración de cada uno de ellos, pulsar en Ejecutar y guardar el informe</source>
+        <target>IMPORTANT: En modificar un camp calculat ja existent els panells que l'utilitzen no s'actualitzen automàticament, cal entrar a la configuració de cadascun d'ells, fer clic a Executar i desar l'informe</target>
       </trans-unit>
     </body>
   </file>
