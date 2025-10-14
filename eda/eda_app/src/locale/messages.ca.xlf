@@ -740,10 +740,10 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
                                     Para ello introduce la consulta en el cuadro de texto y selecciona la tabla principal
                                     (puede ser cualquiera de las que aparecen en la consulta).
                                     Usaremos esta tabla para vincular la consulta a los filtros del informe. </source>
-<target> Pots realitzar consultes SQL sobre l'esquema definit en el teu model.
-                                    Per fer-ho introdueix la consulta en el quadre de text i selecciona la taula principal
-                                    (pot ser qualsevol de les que aparèixen en la consulta).
-                                    Farem servir aquesta taula per vincular la consulta amb els filtres de l'informe. </target>
+<target> Podeu fer consultes SQL sobre l'esquema definit en el vostre model.
+                                    Per fer-ho introduïu la consulta en el quadre de text i seleccioneu la taula principal
+                                    (pot ser qualsevol de les que apareixen a la consulta).
+                                    Es farà servir aquesta taula per vincular la consulta amb els filtres de l'informe. </target>
 <context-group purpose="location">
 <context context-type="sourcefile">app/module/components/eda-panels/eda-blank-panel/eda-blank-panel.component.html</context>
 <context context-type="linenumber">202</context>
@@ -797,7 +797,7 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/>
  en la cláusula &apos;WHERE&apos; de la consulta donde quieras inyectar el filtro
 </source>
-<target> Per fer-ho només has d'afegir:
+<target> Per fer-ho només heu d'afegir:
 <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span&gt;"/>
  AND
 <x id="INTERPOLATION" equiv-text="{{&apos; ${alias_taula.columna_filtrada} &apos;}}"/>
@@ -832,9 +832,9 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
                                         añadir las cláusulas JOIN necesarias
                                         para poder vicular la tabla del filtro con tu consulta
 </source>
-<target>Si la taula per la que filtrem no és a la consulta, recorda que has
+<target>Si la taula per la qual es filtra no apareix a la consulta haureu
                                       d'afegir les clàusules JOIN necessàries per poder vincular
-                                      la taula del filtre amb la teva consulta
+                                      la taula del filtre amb la consulta.
 </target>
 <context-group purpose="location">
 <context context-type="sourcefile">app/module/components/eda-panels/eda-blank-panel/eda-blank-panel.component.html</context>
@@ -3792,17 +3792,17 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 
      <trans-unit id="inputFormat">
     <source>Número de decimales *</source>
-    <target>Número de decimals *</target>
+    <target>Nombre de decimals *</target>
   </trans-unit>
 
      <trans-unit id="DashboardMailingTitle">
     <source>Configuración del envío por email  </source>
-    <target>Configuració dels enviaments per email  </target>
+    <target>Configuració dels enviaments per correu electrònic  </target>
   </trans-unit>
 
     <trans-unit id="opcionMail">
     <source>Enviar por email  </source>
-    <target>Enviar per email  </target>
+    <target>Envia per correu electrònic  </target>
   </trans-unit>
 
   <trans-unit id="noMail">
@@ -3812,7 +3812,7 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 
   <trans-unit id="dashbaordsMailingHeader">
     <source>Envio de informes por email  </source>
-    <target>Enviament d'informes per email</target>
+    <target>Enviament d'informes per correu electrònic</target>
   </trans-unit>
 
     <trans-unit id="cumulativeSum">
@@ -3822,7 +3822,7 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 
    <trans-unit id="ptooltipViewAlerts">
     <source>Configurar alertas</source>
-    <target>Configurar alertes</target>
+    <target>Configura les alertes</target>
   </trans-unit>
 
      <trans-unit id="inputFilter">
@@ -3848,11 +3848,11 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 
        <trans-unit id="showLabels">
     <source>Mostrar Etiquetas</source>
-    <target>Mostra Etiquetes</target>
+    <target>Mostra les etiquetes</target>
   </trans-unit>
          <trans-unit id="showLabelsPercent">
     <source>Mostrar Etiquetas</source>
-    <target>Mostra Etiquetes en Percentatges</target>
+    <target>Mostra les etiquetes en percentatges</target>
   </trans-unit>
 
        <trans-unit id="histogramColum">
@@ -3862,33 +3862,33 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 
      <trans-unit id="showLablesTooltip">
     <source>Mostrar o ocultar las etiquetas sobre los gráficos</source>
-    <target>Mostrar o amagar les etiquetes sobre els gràfics</target>
+    <target>Mostra o amaga les etiquetes sobre els gràfics</target>
   </trans-unit>
 
   <trans-unit id="showLablesPercentTooltip">
     <source>Mostrar o ocultar las etiquetas en porcentaje sobre los gráficos</source>
-    <target>Mostrar o amagar les etiquetes en percentatge sobre els gràfics</target>
+    <target>Mostra o amaga les etiquetes en percentatge sobre els gràfics</target>
   </trans-unit>
 
        <trans-unit id="columnsTooltip">
     <source>Elige cuantas columnas quieres mostrar</source>
-    <target>Tria quantes columnes vols mostrar</target>
+    <target>Trieu quantes columnes voleu mostrar</target>
   </trans-unit>
 
      <trans-unit id="trendTooltip">
     <source>La función de añadir tendencia sólo se puede activar en los gràficos de lineas</source>
-    <target>La funció d'afegir una tendència només es pot activar en els gràfics de línies</target>
+    <target>La funció d'afegir una tendència només es pot activar als gràfics de línies</target>
   </trans-unit>
 
      <trans-unit id="filterTooltip">
     <source>Puedes añadir palabras separadas por comas, que se aplicarán como filtros de tipo LIKE a la hora de recuperar las tablas de tu base de datos</source>
-    <target>Pots afegir paraules separades per comes, que s'aplicaràn com a filtres de tipus LIKE a l'hora de recuperar les taules de la teva base de dades</target>
+    <target>Podeu afegir paraules separades per comes, que s'aplicaran com a filtres de tipus LIKE a l'hora de recuperar les taules de la vostra base de dades.</target>
   </trans-unit>
 
    <trans-unit id="cumulativeSumTooltip">
     <source>Si activas ésta función se calculará la suma acumulativa
                                             para los campos numéricos que eligas. Sólo se puede activar si la fecha está agregada por mes o dia.</source>
-    <target>Si actives questa funció es calcularà la suma acumulativa per els camps numèrics que escullis.
+    <target>Si activeu aquesta funció es calcularà la suma acumulativa pels camps numèrics que escolliu.
     Només es pot activar si la data està agregada per mes, setmana o dia.</target>
   </trans-unit>
 
@@ -3900,22 +3900,22 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 
      <trans-unit id="cumsumAlertMessage2">
     <source>Puedes desactivar la función acumulativa en el campo de fecha o quitar una columna no numérica.</source>
-    <target>Pots desactivar la funció acumulativa en el camp de data o treure una columna no numèrica. </target>
+    <target>Podeu desactivar la funció acumulativa al camp de data o treure una columna no numèrica. </target>
   </trans-unit>
 
        <trans-unit id="SaveAs">
     <source>GUARDAR COMO...</source>
-    <target>GUARDAR COM...  </target>
+    <target>DESA COM...  </target>
   </trans-unit>
 
    <trans-unit id="opcionGuardarComo">
     <source>GUARDAR COMO</source>
-    <target>GUARDAR COM</target>
+    <target>DESA COM</target>
   </trans-unit>
 
   <trans-unit id="editStylesTitle">
     <source>EDITAR ESTILOS DEL INFORME</source>
-    <target>EDITAR ESTILS DE L'INFORME</target>
+    <target>EDITA ELS ESTILS DE L'INFORME</target>
   </trans-unit>
 
      <trans-unit id="dashboardTitleEdit">
@@ -3956,7 +3956,7 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 
   <trans-unit id="ChangeBackgroundColor">
     <source>Color del fondo</source>
-    <target>Color del fons </target>
+    <target>Color del fons</target>
   </trans-unit>
 
      <trans-unit id="ChangePaneColor">
@@ -3966,7 +3966,7 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 
   <trans-unit id="opcionEditarEstilos">
     <source>EDITAR ESTILOS</source>
-    <target>EDITAR ESTILS</target>
+    <target>EDITA ELS ESTILS</target>
   </trans-unit>
 
   <trans-unit id="left">
@@ -3984,7 +3984,7 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 
    <trans-unit id="resetStylesBtn">
     <source>Volver a los valores por defecto</source>
-    <target>Tornar als valors per defecte</target>
+    <target>Torna als valors per defecte</target>
   </trans-unit>
 
   <trans-unit id="samplePanelTitle">
@@ -4009,7 +4009,7 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 
   <trans-unit id="histoGramDescTxt">
     <source>Número de</source>
-    <target>Numero de</target>
+    <target>Nombre de</target>
   </trans-unit>
 
     <trans-unit id="histoGramDescTxt2">
@@ -4029,7 +4029,7 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 
 <trans-unit id="si">
 <source>Si</source>
-<target>Si</target>
+<target>Sí</target>
 </trans-unit>
 
 <trans-unit id="no">
@@ -4044,7 +4044,7 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 
 <trans-unit id="addBtn">
 <source>Añadir</source>
-<target>Afegir</target>
+<target>Afegeix</target>
 </trans-unit>
 
 <trans-unit id="measureLabel">
@@ -4089,16 +4089,16 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 
 <trans-unit id="allowSSL">
 <source>Conexión mediante SSL</source>
-<target>Conexió mijanjant SSL</target>
+<target>Connexió mitjançant SSL</target>
 </trans-unit>
 <trans-unit id="filterVisibleScope">
 <source>Definir la visibilidad del filtro.  Público: todos pueden usarlo.  Deshabilitado: El resto de usuarios pueden ver el filtro pero no pueden modificarlo.  Oculto: El resto de usuario no pueden ver el filtro. pero se les aplica</source>
-<target>Definir la visibilitat del filtre.  Públic: tots poden utilitzar-lo.  Deshabilitat: La resta d'usuaris poden veure el filtre però no el poden modificar.  Ocult: La resta d'usuaris no poden veure el filtre, però se'ls aplica</target>
+<target>Defineix la visibilitat del filtre.  Públic: tothom pot utilitzar-lo.  Deshabilitat: La resta d'usuaris poden veure el filtre però no el poden modificar.  Ocult: La resta d'usuaris no poden veure el filtre, però els és d'aplicació.</target>
 </trans-unit>
 
 <trans-unit id="visitYouTubeLink" datatype="html">
 <source>Consulta nuestros videotutoriales en youtube</source>
-<target>Consulta els nostres videotutorials a youtube</target>
+<target>Consulteu els videotutorials a YouTube</target>
 <context-group purpose="location">
 <context context-type="sourcefile">app/module/pages/about/about.component.html</context>
 <context context-type="linenumber">33</context>
@@ -4135,10 +4135,10 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
   <target>
                 <a class="stronger-paragraph" href="https://eda.jortilles.com">Enterprise Data Analytics (EDA)</a> és una aplicació web de codi lliure que permet realitzar
                  informes gràfics i interactius de forma senzilla. EDA és una aplicació que es pot instal·lar
-                 als teus propis servidors o es pot gaudir en la seva versió SaaS
+                 al vostre propi servidor o que es pot gaudir en la seva versió SaaS
                  <a class="stronger-paragraph" href="https://www.edalitics.com">Edalitics</a>.
-                 Edalitics permet gaudir de tota la potència d'EDA sense haver de preocupar-te d'instal·lacions,
-                 configuracions, actualitzacions, etc. Connectes les teves fonts de dades i llest. </target>
+                 Edalitics permet gaudir de tota la potència d'EDA sense haver de preocupar-vos d'instal·lacions,
+                 configuracions, actualitzacions, etc. Hi connecteu les vostres fonts de dades i llestos. </target>
   <context-group purpose="location">
     <context context-type="sourcefile">app/module/pages/about/about.component.html</context>
     <context context-type="linenumber">7</context>
@@ -4154,7 +4154,7 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
                 y el soporte empresarial que ofrece a sus clientes.  </source>
   <target>
                 EDA ha estat desenvolupat per <a class="stronger-paragraph" href="https://www.jortilles.com">Jortilles</a>.
-                 Si necessiteu suport empresarial, no dubteu a contactar amb nosaltres. Així mateix com si voleu sol·licitar-ne de noves
+                 Si necessiteu suport empresarial, no dubteu a contactar amb nosaltres. Igualment si voleu sol·licitar noves
                  funcionalitats o característiques. Jortilles finança el desenvolupament d'EDA mitjançant les subscripcions a Edalitics
                  i el suport empresarial que ofereix als clients. </target>
   <context-group purpose="location">
@@ -4168,7 +4168,7 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
    El código fuente de EDA está disponible en <a class="stronger-paragraph" href="https://github.com/jortilles/EDA">Github</a>
   </source>
   <target>
-   El codi font d'EDA està disponible a <a class="stronger-paragraph" href="https://github.com/jortilles/EDA">Github</a>
+   El codi font d'EDA està disponible a <a class="stronger-paragraph" href="https://github.com/jortilles/EDA">Github</a>.
   </target>
   <context-group purpose="location">
     <context context-type="sourcefile">app/module/pages/about/about.component.html</context>
@@ -4181,7 +4181,7 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
    La documentación de EDA está disponible en <a class="stronger-paragraph" href="https://edadoc.jortilles.com/#/">Este Link</a>
   </source>
   <target>
-  La documentació d'EDA està disponible a <a class="stronger-paragraph" href="https://edadoc.jortilles.com/#/">Aquest Link</a>
+  La documentació d'EDA està disponible <a class="stronger-paragraph" href="https://edadoc.jortilles.com/#/">aquí</a>.
   </target>
 </trans-unit>
 
@@ -4191,14 +4191,14 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
                 <a class="stronger-paragraph" href="https://github.com/jortilles/EDA/discussions">Este Link</a>
   </source>
   <target>
-                 Hi ha un fòrum on pots compartir la teva experiència amb la comunitat a
-                 <a class="stronger-paragraph" href="https://github.com/jortilles/EDA/discussions">Aquest Link</a>
+                 <a class="stronger-paragraph" href="https://github.com/jortilles/EDA/discussions">Fòrum</a>
+                 on podeu compartir la vostra experiència amb la comunitat.
   </target>
 </trans-unit>
 
   <trans-unit id="eliminarInforme">
     <source>ELIMINAR INFORME</source>
-    <target>ELIMINAR INFORME</target>
+    <target>ELIMINA L'INFORME</target>
   </trans-unit>
 
   <trans-unit id="IncorrectFile">
@@ -4213,7 +4213,7 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 
   <trans-unit id="urlEditSave">
     <source>URL editado correctamente</source>
-    <target>URL editat correctament</target>
+    <target>URL editada correctament</target>
   </trans-unit>
 
         <trans-unit id="chartTypesKPIBAR">
@@ -4233,22 +4233,22 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 
   <trans-unit id="urlEditSaveError">
     <source>Formulario incompleto, rellene todos los campos</source>
-    <target>FORMULARI INCORRECTE, COMPLETAR ELS CAMPS</target>
+    <target>Formulari incompleto, empleneu tots els camps</target>
   </trans-unit>
 
   <trans-unit id="addUrlDashboardUndefined">
     <source>Faltan rellenar algunos campos</source>
-    <target>VALORS NO DEFINITS O FALTA COMPLETAR CAMPS</target>
+    <target>Hi ha camps pendents d'emplenar</target>
   </trans-unit>
 
   <trans-unit id="urlAddedSuccessfully">
     <source>URL agregado correctamente</source>
-    <target>URL AGREGAT CORRECTAMENT</target>
+    <target>URL agregada correctament</target>
   </trans-unit>
 
   <trans-unit id="urlAddedIncomplete">
     <source>Formulario incompleto</source>
-    <target>FORMULARI D'AGREGAT URL INCOMPLET</target>
+    <target>Formulari incomplet</target>
   </trans-unit>
 
   <trans-unit id="urlSuccessfulConnection">
@@ -4278,7 +4278,7 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 
   <trans-unit id="urlTextConfiguration">
     <source>Configuración de url y nombre de acción personalizada: </source>
-    <target>Configuració d'url i nom d'acció personalitzada: </target>
+    <target>Configuració d'URL i nom d'acció personalitzada: </target>
   </trans-unit>
 
   <trans-unit id="resumeTextConfiguration">
@@ -4288,10 +4288,10 @@ Puede ser una llamada a una api, a un endpoint de una app
 o incluso invocar procesos de carga desde una llamada http.
 Una vez configurado podrás invocarlo siempre que que quieras desde el botón.</source>
     <target>Podeu configurar una acció personalitzada que voleu executar.
-Et permet trucar a un URL que faci una acció que vulguis invocar.
-Pot ser una trucada a una api, a un endpoint d'una app
-o fins i tot invocar processos de càrrega des d'una trucada http.
-Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
+Us permet cridar una URL que faci una acció determinada.
+Pot ser una crida a una API, a un endpoint d'una app
+o fins i tot invocar processos de càrrega des d'una crida HTTP.
+Un cop configurada podreu invocar-la des del botó sempre que calgui.</target>
   </trans-unit>
 
   <trans-unit id="urlString">
@@ -4311,7 +4311,7 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
 
   <trans-unit id="textLabelUrl">
     <source>Agregar url</source>
-    <target>Afegir url</target>
+    <target>Afegeix URL</target>
   </trans-unit>
 
       <trans-unit id="filters13">
@@ -4324,7 +4324,7 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
       </trans-unit>
       <trans-unit id="aliasValuePh">
         <source>Alias del filtro (opcional)</source>
-        <target>Alias del filtre (opcional)</target>
+        <target>Àlies del filtre (opcional)</target>
       </trans-unit>
       <trans-unit id="noDataAllowed">
         <source>Este panel no está disponible por falta de permisos</source>
@@ -4460,43 +4460,43 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
       </trans-unit>
       <trans-unit id="chartInfoTreetableAvailable">
         <source>Una tabla árbol se puede configurar de dos formas. Mediante campos que se van anidando por medio de agrupaciones o mediante la definición de dos columnas numéricas que definan una relación padre-hijo. Si las dos primeras columnas son numéricas, se asumirá que describen una relación padre hijo.</source>
-        <target>Una taula arbre es pot configurar de dues maneres. Mitjançant camps que es van niant per mitjà d'agrupacions o mitjançant la definició de dues columnes numèriques que defineixin una relació pare-fill. Si les dues primeres columnes són numèriques, cal assumir que descriuen una relació pare fill.</target>
+        <target>Una taula arbre es pot configurar de dues maneres. Mitjançant camps que es van niant per mitjà d'agrupacions o mitjançant la definició de dues columnes numèriques que defineixin una relació pare-fill. Si les dues primeres columnes són numèriques, cal assumir que descriuen una relació pare-fill.</target>
       </trans-unit>
       <trans-unit id="mandatoryDiferentName">
         <source>Este nombre de campo calculado ya existe. Intente con otro.</source>
-        <target>Aquest nom de camp calculat ja existeix. Intenteu amb un altre.</target>
+        <target>Aquest nom de camp calculat ja existeix. Indiqueu-ne un altre.</target>
       </trans-unit>
       <trans-unit id="calculatedFieldSuccess">
         <source>Cálculo del campo calculado verificado con éxito</source>
-        <target>Càlcul del camp calculat verificat amb èxit</target>
+        <target>Càlcul del camp calculat verificat amb èxit.</target>
       </trans-unit>
       <trans-unit id="calculatedFieldError">
         <source>Error en la creación del campo calculado. Expresión SQL incorrecta</source>
-        <target>Error en la creació del camp calculat. Expresió SQL incorrecta</target>
+        <target>Error en la creació del camp calculat. Expressió SQL incorrecta.</target>
       </trans-unit>
       <trans-unit id="formDialogCalculatedColumn">
         <source>Recuerde rellenar todos los campos</source>
-        <target>Recordi omplir tots els camps</target>
+        <target>Recordeu que cal omplir tots els camps.</target>
       </trans-unit>
       <trans-unit id="deleteCalculatedColumn">
         <source>Si, Eliminar el campo calculado!</source>
-        <target>Sí, Elimina el camp calculat!</target>
+        <target>Sí, elimineu el camp calculat.</target>
       </trans-unit>
       <trans-unit id="deleteCalculatedColumnConfirmation">
         <source>Campo calculado eliminado correctamente. Debera guardar cambios en el modelo de datos para que la eliminación sea permanente</source>
-        <target>Camp calculat eliminat correctament. Haurà de desar els canvis al model de dades perquè l'eliminació sigui permanent</target>
+        <target>Camp calculat eliminat correctament. Haureu de desar els canvis al model de dades perquè l'eliminació sigui permanent.</target>
       </trans-unit>
       <trans-unit id="titleCalculatedColumnEditMessage">
         <source>Campo calculado actualizado correctamente</source>
-        <target>Camp calculat actualitzat correctament</target>
+        <target>Camp calculat actualitzat correctament.</target>
       </trans-unit>
       <trans-unit id="textCalculatedColumnEditMessage">
         <source>IMPORTANTE: Al modificar un campo calculado ya existente los paneles que lo utilizan no se actualizan automáticamente, es necesario entra en la configuración de cada uno de ellos, pulsar en Ejecutar y guardar el informe</source>
-        <target>IMPORTANT: En modificar un camp calculat ja existent els panells que l'utilitzen no s'actualitzen automàticament, cal entrar a la configuració de cadascun d'ells, fer clic a Executar i desar l'informe</target>
+        <target>IMPORTANT: En modificar un camp calculat ja existent els panells que l'utilitzen no s'actualitzen automàticament, cal entrar a la configuració de cadascun d'ells, fer clic a Executar i desar l'informe.</target>
       </trans-unit>
             <trans-unit id="noFormatsAvailable">
         <source>Esta es una columna calculada y no tiene formatos disponibles</source>
-        <target>Aquesta és una columna calculada i no té formats disponibles</target>
+        <target>Aquesta és una columna calculada i no té formats disponibles.</target>
       </trans-unit>
     </body>
   </file>
