@@ -4437,6 +4437,10 @@
         <source>Una tabla árbol se puede configurar de dos formas. Mediante campos que se van anidando por medio de agrupaciones o mediante la definición de dos columnas numéricas que definan una relación padre-hijo. Si las dos primeras columnas son numéricas, se asumirá que describen una relación padre hijo.</source>
         <target>Una tabla árbol se puede configurar de dos formas. Mediante campos que se van anidando por medio de agrupaciones o mediante la definición de dos columnas numéricas que definan una relación padre-hijo. Si las dos primeras columnas son numéricas, se asumirá que describen una relación padre hijo.</target>
       </trans-unit>
+      <trans-unit id="errorSavingDashboardPannels">
+        <source>Error al guardar el informe. Error en el panel: </source>
+        <target>Error al guardar el informe. Error en el panel: </target>
+      </trans-unit>
     </body>
   </file>
 </xliff>

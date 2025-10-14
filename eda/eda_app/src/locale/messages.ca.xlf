@@ -4462,6 +4462,10 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
         <source>Una tabla árbol se puede configurar de dos formas. Mediante campos que se van anidando por medio de agrupaciones o mediante la definición de dos columnas numéricas que definan una relación padre-hijo. Si las dos primeras columnas son numéricas, se asumirá que describen una relación padre hijo.</source>
         <target>Una taula arbre es pot configurar de dues maneres. Mitjançant camps que es van niant per mitjà d'agrupacions o mitjançant la definició de dues columnes numèriques que defineixin una relació pare-fill. Si les dues primeres columnes són numèriques, cal assumir que descriuen una relació pare fill.</target>
       </trans-unit>
+      <trans-unit id="errorSavingDashboardPannels">
+        <source>Error al guardar el informe. Error en el panel: </source>
+        <target>Error en desar l'informe. Error al panell:</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>
