@@ -4470,6 +4470,10 @@
         <source>IMPORTANTE: Al modificar un campo calculado ya existente los paneles que lo utilizan no se actualizan automáticamente, es necesario entra en la configuración de cada uno de ellos, pulsar en Ejecutar y guardar el informe</source>
         <target>IMPORTANTE: para que os cambios se propaguen aos informes existentes, deberá executar os paneis nos que se usa e gardar os cambios</target>
       </trans-unit>
+      <trans-unit id="noFormatsAvailable">
+        <source>Esta es una columna calculada y no tiene formatos disponibles</source>
+        <target>Esta é unha columna calculada e non ten formatos dispoñibles</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>

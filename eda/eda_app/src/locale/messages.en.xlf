@@ -4675,6 +4675,10 @@ Once configured you can invoke it whenever you want from the button.</target>
         <source>IMPORTANTE: Al modificar un campo calculado ya existente los paneles que lo utilizan no se actualizan automáticamente, es necesario entra en la configuración de cada uno de ellos, pulsar en Ejecutar y guardar el informe</source>
         <target>IMPORTANT: When modifying an existing calculated field, the panels that use it are not automatically updated. You must enter the configuration of each of them, click on Run and save the report.</target>
       </trans-unit>
+            <trans-unit id="noFormatsAvailable">
+        <source>Esta es una columna calculada y no tiene formatos disponibles</source>
+        <target>This is a calculated column and has no available formats</target>
+      </trans-unit>
         </body>
   </file>
 </xliff>
