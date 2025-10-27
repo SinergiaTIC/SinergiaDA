@@ -4439,7 +4439,7 @@
       </trans-unit>
       <trans-unit id="errorSavingDashboardPannels">
         <source>Error al guardar el informe. Error en el panel: </source>
-        <target>Error al guardar el informe. Error en el panel: </target>
+        <target>Se ha producido un error al guardar el informe. El error está en el panel </target>
       </trans-unit>
     </body>
   </file>
