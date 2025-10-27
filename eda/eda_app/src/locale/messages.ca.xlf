@@ -4464,7 +4464,7 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
       </trans-unit>
       <trans-unit id="errorSavingDashboardPannels">
         <source>Error al guardar el informe. Error en el panel: </source>
-        <target>Error en desar l'informe. Error al panell:</target>
+        <target>S'ha produït un error al desar l'informe. L'error és al panell </target>
       </trans-unit>
     </body>
   </file>
