@@ -553,14 +553,14 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         dimensions.height = !dimensions.width ? 255 : dimensions.height;
         dimensions.width = !dimensions.width ? 1300 : dimensions.width;
 
-        const dataLabelsCount = chartData[0] ? chartData[0].length : 0;
+        /*SDA CUSTOM*/  const dataLabelsCount = chartData[0] ? chartData[0].length : 0;
         const ticksOptions = {
-            xTicksLimit: dataLabelsCount,
+          /*SDA CUSTOM*/  xTicksLimit: dataLabelsCount,
             yTicksLimit: 0,
-            maxRotation: 30,
+            maxRotation: 1,
             minRotation: 1,
-            labelOffset: 0,
-            padding: 0
+          /*SDA CUSTOM*/ labelOffset: 0,
+          /*SDA CUSTOM*/  padding: 0
         };
         const chartOptions = this.chartUtils.initChartOptions(
             chartType, dataDescription.numericColumns[0]?.name,
@@ -568,74 +568,44 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
             minMax, styles, cfg.showLabels, cfg.showLabelsPercent, cfg.numberOfColumns, chartSubType, ticksOptions, false
         );
 
-        // Configuración mejorada para centrado de etiquetas
-        if (!chartOptions.chartOptions.scales) {
-            chartOptions.chartOptions.scales = {};
-        }
+  /*SDA CUSTOM*/
 
-        // Configuración del eje X para centrado de etiquetas
-        chartOptions.chartOptions.scales.x = {
-            ...chartOptions.chartOptions.scales.x,
-            type: 'category',
-            position: 'bottom',
-            border: {
-                dashOffset: 30,
-            },
-            grid: {
-                offset: 10,  // Las etiquetas se alinean con el centro de las barras
-                display: false,
-                clip: false
+  /*SDA CUSTOM*/      // Setting custom options for kpi charts
+  /*SDA CUSTOM*/      if (!chartOptions.chartOptions.scales) {
+  /*SDA CUSTOM*/          chartOptions.chartOptions.scales = {};
+  /*SDA CUSTOM*/      }
 
-            },
-            ticks: {
-                ...chartOptions.chartOptions.scales.x?.ticks,
-                align: 'center',
-                crossAlign: 'near',
-                maxRotation: 90,
-                minRotation: 0,
-                font: {
-                    size: this.fontSize || 12,
-                    family: this.fontFamily || 'Arial',
-                    weight: 'normal'
-                },
-                color: this.fontColor || '#666'
-            },
+  /*SDA CUSTOM*/      // Setting X axis options
+  /*SDA CUSTOM*/      chartOptions.chartOptions.scales.x = {
+  /*SDA CUSTOM*/          ...chartOptions.chartOptions.scales.x,
 
+  /*SDA CUSTOM*/          grid: {
+  /*SDA CUSTOM*/              offset: 10,  // align grid with bars
+  /*SDA CUSTOM*/              display: false,
+  /*SDA CUSTOM*/              clip: false
 
+  /*SDA CUSTOM*/          },
+  /*SDA CUSTOM*/          ticks: {
+  /*SDA CUSTOM*/              ...chartOptions.chartOptions.scales.x?.ticks,
+  /*SDA CUSTOM*/              align: 'center',
+  /*SDA CUSTOM*/              crossAlign: 'near',
+  /*SDA CUSTOM*/              maxRotation: 90,
+  /*SDA CUSTOM*/              minRotation: 0,
+  /*SDA CUSTOM*/          },
+  /*SDA CUSTOM*/      };
 
-        };
+  /*SDA CUSTOM*/      // setting Y axis options
+  /*SDA CUSTOM*/      if (!chartOptions.chartOptions.layout) {
+  /*SDA CUSTOM*/          chartOptions.chartOptions.layout = {};
+  /*SDA CUSTOM*/      }
 
-        // Configuración de layout con padding optimizado
-        if (!chartOptions.chartOptions.layout) {
-            chartOptions.chartOptions.layout = {};
-        }
-
-        chartOptions.chartOptions.layout.padding = {
-            top: 15,
-            right: 15,
-            bottom: 25,  // Más espacio abajo para las etiquetas
-            left: 20
-        };
-
-        // Configuración adicional para asegurar el renderizado correcto
-        chartOptions.chartOptions.responsive = true;
-        chartOptions.chartOptions.maintainAspectRatio = false;
-
-        // Configuración de plugins para mejor control de etiquetas
-        if (!chartOptions.chartOptions.plugins) {
-            chartOptions.chartOptions.plugins = {};
-        }
-
-        chartOptions.chartOptions.plugins.legend = {
-            ...chartOptions.chartOptions.plugins.legend,
-            labels: {
-                font: {
-                    size: this.fontSize || 12,
-                    family: this.fontFamily || 'Arial'
-                },
-                color: this.fontColor || '#666'
-            }
-        };
+  /*SDA CUSTOM*/      chartOptions.chartOptions.layout.padding = {
+  /*SDA CUSTOM*/          top: 15,
+  /*SDA CUSTOM*/          right: 15,
+  /*SDA CUSTOM*/          bottom: 25,
+  /*SDA CUSTOM*/          left: 20
+  /*SDA CUSTOM*/      };
+  /*SDA CUSTOM*/
 
         // let chartConfig: any = {};
         chartConfig.edaChart = {}
