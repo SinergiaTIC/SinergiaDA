@@ -555,11 +555,11 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
 
         const dataLabelsCount = chartData[0] ? chartData[0].length : 0;
         const ticksOptions = {
-            xTicksLimit: dataLabelsCount,  // 0 significa sin límite
+            xTicksLimit: dataLabelsCount,
             yTicksLimit: 0,
             maxRotation: 30,
             minRotation: 1,
-            labelOffset: 5,
+            labelOffset: 0,
             padding: 0
         };
         const chartOptions = this.chartUtils.initChartOptions(
@@ -568,38 +568,73 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
             minMax, styles, cfg.showLabels, cfg.showLabelsPercent, cfg.numberOfColumns, chartSubType, ticksOptions, false
         );
 
-        // Configuración adicional para centrado de etiquetas
+        // Configuración mejorada para centrado de etiquetas
         if (!chartOptions.chartOptions.scales) {
             chartOptions.chartOptions.scales = {};
         }
 
-        if (!chartOptions.chartOptions.scales.x) {
-            chartOptions.chartOptions.scales.x = {};
-        }
+        // Configuración del eje X para centrado de etiquetas
+        chartOptions.chartOptions.scales.x = {
+            ...chartOptions.chartOptions.scales.x,
+            type: 'category',
+            position: 'bottom',
+            border: {
+                dashOffset: 30,
+            },
+            grid: {
+                offset: 10,  // Las etiquetas se alinean con el centro de las barras
+                display: false,
+                clip: false
 
-        // Asegurar que las etiquetas estén centradas respecto a las barras
-        chartOptions.chartOptions.scales.x.ticks = {
-            ...chartOptions.chartOptions.scales.x.ticks,
-            align: 'center',  // Alineación centrada para las etiquetas
-            crossAlign: 'center'    // Centrado cruzado para mejor alineación
+            },
+            ticks: {
+                ...chartOptions.chartOptions.scales.x?.ticks,
+                align: 'center',
+                crossAlign: 'near',
+                maxRotation: 90,
+                minRotation: 0,
+                font: {
+                    size: this.fontSize || 12,
+                    family: this.fontFamily || 'Arial',
+                    weight: 'normal'
+                },
+                color: this.fontColor || '#666'
+            },
+
+
+
         };
 
-        // Si necesitas control adicional sobre la posición de las etiquetas
-        chartOptions.chartOptions.scales.x.grid = {
-            ...chartOptions.chartOptions.scales.x.grid,
-            offset: true  // Evita que las etiquetas se desplacen respecto a las barras
-        };
-
-        // Añadir padding de 20px a todos los lados
+        // Configuración de layout con padding optimizado
         if (!chartOptions.chartOptions.layout) {
             chartOptions.chartOptions.layout = {};
         }
 
         chartOptions.chartOptions.layout.padding = {
-            top: 20,
-            right: 20,
-            bottom: 20,
+            top: 15,
+            right: 15,
+            bottom: 25,  // Más espacio abajo para las etiquetas
             left: 20
+        };
+
+        // Configuración adicional para asegurar el renderizado correcto
+        chartOptions.chartOptions.responsive = true;
+        chartOptions.chartOptions.maintainAspectRatio = false;
+
+        // Configuración de plugins para mejor control de etiquetas
+        if (!chartOptions.chartOptions.plugins) {
+            chartOptions.chartOptions.plugins = {};
+        }
+
+        chartOptions.chartOptions.plugins.legend = {
+            ...chartOptions.chartOptions.plugins.legend,
+            labels: {
+                font: {
+                    size: this.fontSize || 12,
+                    family: this.fontFamily || 'Arial'
+                },
+                color: this.fontColor || '#666'
+            }
         };
 
         // let chartConfig: any = {};
