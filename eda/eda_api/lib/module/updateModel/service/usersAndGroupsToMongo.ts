@@ -67,6 +67,9 @@ export class userAndGroupsToMongo {
     // Update groups list
     mongoGroups = await Group.find()
     
+    const edaROGroup = mongoGroups.find(g => g.name === 'EDA_RO');
+    const edaROGroupId = edaROGroup ? edaROGroup._id : null;
+
     // Create/update users with their roles
     for (let i = 0; i < users.length; i++) {
       const userRoles = roles
@@ -76,6 +79,10 @@ export class userAndGroupsToMongo {
           return group ? group._id : null
         })
         .filter(id => id !== null)
+
+      if (users[i].readonly == 1 && edaROGroupId) {
+        userRoles.push(edaROGroupId);
+      }
   
       let existe = mongoUsers.find(e => e.email == users[i].email)
       if (!existe) {
@@ -108,6 +115,23 @@ export class userAndGroupsToMongo {
           { _id: { $in: userRoles } },
           { $addToSet: { users: existe._id } }
         )
+        if (users[i].readonly == 1 && edaROGroupId) {
+          await Group.updateOne(
+            { _id: edaROGroupId },
+            { $addToSet: { users: existe._id } }
+          );
+        } else if (users[i].readonly == 0 && edaROGroupId) {
+          // Remove user from EDA_RO group
+          await Group.updateOne(
+              { _id: edaROGroupId },
+              { $pull: { users: existe._id } }
+          );
+          // Also remove role from user
+          await User.updateOne(
+              { _id: existe._id },
+              { $pull: { role: edaROGroupId } }
+          );
+        }
       }
     }
   
