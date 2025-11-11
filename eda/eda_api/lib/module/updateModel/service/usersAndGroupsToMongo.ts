@@ -69,6 +69,7 @@ export class userAndGroupsToMongo {
     
     const edaROGroup = mongoGroups.find(g => g.name === 'EDA_RO');
     const edaROGroupId = edaROGroup ? edaROGroup._id : null;
+    const edaAdminGroupId = '135792467811111111111110';
 
     // Create/update users with their roles
     for (let i = 0; i < users.length; i++) {
@@ -80,7 +81,9 @@ export class userAndGroupsToMongo {
         })
         .filter(id => id !== null)
 
-      if (users[i].readonly == 1 && edaROGroupId) {
+      // Add EDA_RO role only if readonly=1 AND user is not an admin
+      const isAdmin = userRoles.some(roleId => roleId && roleId.toString() === edaAdminGroupId);
+      if (users[i].readonly == 1 && edaROGroupId && !isAdmin) {
         userRoles.push(edaROGroupId);
       }
   
@@ -115,13 +118,17 @@ export class userAndGroupsToMongo {
           { _id: { $in: userRoles } },
           { $addToSet: { users: existe._id } }
         )
-        if (users[i].readonly == 1 && edaROGroupId) {
+        
+        // Check if user is admin
+        const isExistingUserAdmin = userRoles.some(roleId => roleId && roleId.toString() === edaAdminGroupId);
+        
+        if (users[i].readonly == 1 && edaROGroupId && !isExistingUserAdmin) {
           await Group.updateOne(
             { _id: edaROGroupId },
             { $addToSet: { users: existe._id } }
           );
-        } else if (users[i].readonly == 0 && edaROGroupId) {
-          // Remove user from EDA_RO group
+        } else if ((users[i].readonly == 0 || isExistingUserAdmin) && edaROGroupId) {
+          // Remove user from EDA_RO group if readonly=0 OR if user is admin
           await Group.updateOne(
               { _id: edaROGroupId },
               { $pull: { users: existe._id } }
@@ -228,6 +235,8 @@ export class userAndGroupsToMongo {
     // Update user roles
     await mongoUsers.forEach(async (user) => {
       if( userExistsInCRM( user, crmUsers)) { 
+        const crmUser = crmUsers.find(cu => cu.email === user.email);
+        
         // Update CRM users, maintain non-SCRM_ roles
         const nonCRMRoles = user.role.filter(roleId => {
           const group = mongoGroups.find(g => g._id.toString() === roleId.toString() && !g.name.startsWith('SCRM_')  );
@@ -242,6 +251,22 @@ export class userAndGroupsToMongo {
           .map(group => group._id);
         
         user.role = [...new Set([...nonCRMRoles, ...crmRolesForUser])];
+        
+        // Ensure EDA_RO is correctly assigned based on readonly flag (but never for admins)
+        const edaROGroup = mongoGroups.find(g => g.name === 'EDA_RO');
+        const edaAdminGroupId = '135792467811111111111110';
+        if (edaROGroup && crmUser) {
+          const hasEDARORole = user.role.some(r => r.toString() === edaROGroup._id.toString());
+          const isUserAdmin = user.role.some(r => r.toString() === edaAdminGroupId);
+          
+          if (crmUser.readonly == 1 && !hasEDARORole && !isUserAdmin) {
+            // User should have EDA_RO role but doesn't (and is not admin)
+            user.role.push(edaROGroup._id);
+          } else if ((crmUser.readonly == 0 || isUserAdmin) && hasEDARORole) {
+            // User shouldn't have EDA_RO role but does (readonly=0 OR is admin)
+            user.role = user.role.filter(r => r.toString() !== edaROGroup._id.toString());
+          }
+        }
       }
     });
 
@@ -249,6 +274,22 @@ export class userAndGroupsToMongo {
     let admins = await mongoUsers.filter(i => i.role.includes('135792467811111111111110'));
     const edaAdminGroup = mongoGroups.find(i => i.name === 'EDA_ADMIN');
     edaAdminGroup.users = admins.map(admin => admin._id);
+
+    // Ensure EDA_RO group contains all readonly users from CRM (excluding admins)
+    const edaROGroup = mongoGroups.find(i => i.name === 'EDA_RO');
+    const edaAdminGroupId = '135792467811111111111110';
+    if (edaROGroup) {
+      const readonlyUserIds = mongoUsers
+        .filter(user => {
+          const crmUser = crmUsers.find(cu => cu.email === user.email);
+          const isAdmin = user.role.some(r => r.toString() === edaAdminGroupId);
+          // Include only if readonly=1 AND not admin
+          return crmUser && crmUser.readonly == 1 && !isAdmin;
+        })
+        .map(user => user._id);
+      
+      edaROGroup.users = readonlyUserIds;
+    }
 
     // Save changes to database
     await mongoGroups.forEach(async r => {
