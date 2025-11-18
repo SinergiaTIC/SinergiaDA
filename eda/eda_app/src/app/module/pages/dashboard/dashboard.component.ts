@@ -175,19 +175,20 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
         for (const panel of this.edaPanels) {
             if (treeQueryMode) {
                 panel.queryModes = [
+                /* SDA CUSTOM */  { label: $localize`:@@PanelModeSelectorEDA:Modo EDA`, value: 'EDA', disabled: true },
                     { label: $localize`:@@PanelModeSelectorTree:Modo Árbol`, value: 'EDA2' },
                     { label: $localize`:@@PanelModeSelectorSQL:Modo SQL`, value: 'SQL' },
                 ];
             } else if (standardQueryMode) {
                 panel.queryModes = [
-                    // SDA CUSTOM  { label: $localize`:@@PanelModeSelectorEDA:Modo EDA`, value: 'EDA' },
+                /* SDA CUSTOM */  { label: $localize`:@@PanelModeSelectorEDA:Modo EDA`, value: 'EDA' , disabled: true},
                     { label: $localize`:@@PanelModeSelectorSQL:Modo SQL`, value: 'SQL' },
                 ];
             }
 
             if ((!standardQueryMode && !treeQueryMode) || this.edaPanels.length === 1) {
                 panel.queryModes = [
-                    // SDA CUSTOM  { label: $localize`:@@PanelModeSelectorEDA:Modo EDA`, value: 'EDA' },
+                    /* SDA CUSTOM */ { label: $localize`:@@PanelModeSelectorEDA:Modo EDA`, value: 'EDA' , disabled: true},
                     { label: $localize`:@@PanelModeSelectorSQL:Modo SQL`, value: 'SQL' },
                     { label: $localize`:@@PanelModeSelectorTree:Modo Árbol`, value: 'EDA2' }
                 ];

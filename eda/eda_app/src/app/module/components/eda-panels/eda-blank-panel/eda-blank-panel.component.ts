@@ -157,7 +157,7 @@ export class EdaBlankPanelComponent implements OnInit {
     public temporalSortedFilters: any[] = [];
 
     public queryModes: any[] = [
-      //SDA CUSTOM  { label: $localize`:@@PanelModeSelectorEDA:Modo EDA`, value: 'EDA' },
+        /* SDA CUSTOM */ { label: $localize`:@@PanelModeSelectorEDA:Modo EDA`, value: 'EDA', disabled: true},
         { label: $localize`:@@PanelModeSelectorSQL:Modo SQL`, value: 'SQL' },
         { label: $localize`:@@PanelModeSelectorTree:Modo Árbol`, value: 'EDA2' }
     ];
@@ -1649,6 +1649,7 @@ export class EdaBlankPanelComponent implements OnInit {
     }
 
     public changeQueryMode(): void {
+        console.log(this.selectedQueryMode);
         this.index = 0;
         this.currentSQLQuery = '';
         this.currentQuery = [];
