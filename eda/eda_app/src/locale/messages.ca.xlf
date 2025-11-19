@@ -2844,6 +2844,10 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <source>Todas</source>
 <target>Totes</target>
 </trans-unit>
+<trans-unit id="DatePickerToday">
+<source>Hoy</source>
+<target>Avui</target>
+</trans-unit>
 <trans-unit id="DatePickerYesterday">
 <source>Ayer</source>
 <target>Ahir</target>
@@ -2853,11 +2857,11 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <target>Abans d'ahir</target>
 </trans-unit>
 <trans-unit id="DatePickerWeek">
-<source>Ésta semana</source>
-<target>Aquesta setmana</target>
+<source>Esta semana (hasta hoy)</source>
+<target>Aquesta setmana (fins avui)</target>
 </trans-unit>
 <trans-unit id="DatePickerWeekFull">
-<source>Ésta semana al completo</source>
+<source>Esta semana al completo</source>
 <target>Tota aquesta setmana</target>
 </trans-unit>
 <trans-unit id="DatePickerLastWeek">
@@ -2869,8 +2873,12 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <target>Tota la setmana passada</target>
 </trans-unit>
 <trans-unit id="DatePickerMonth">
-<source>Éste mes</source>
-<target>Aquest mes</target>
+<source>Este mes (hasta hoy)</source>
+<target>Aquest mes (fins avui)</target>
+</trans-unit>
+<trans-unit id="DatePickerMonthFull">
+<source>Este mes al completo</source>
+<target>Tot aquest mes</target>
 </trans-unit>
 <trans-unit id="DatePickerLastMonth">
 <source>El mes pasado</source>
@@ -2889,8 +2897,12 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <target>Aquest mes, complert, de l'any passat</target>
 </trans-unit>
 <trans-unit id="DatePickerYear">
-<source>Éste año</source>
-<target>Aquest any</target>
+<source>Este año (hasta hoy)</source>
+<target>Aquest any (fins avui)</target>
+</trans-unit>
+<trans-unit id="DatePickerYearFull">
+<source>Este año al completo</source>
+<target>Tot aquest any</target>
 </trans-unit>
 <trans-unit id="DatePickerYearPreviousYear">
 <source>El año pasado</source>

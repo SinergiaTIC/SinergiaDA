@@ -15,6 +15,7 @@ export class DateUtils {
     public getRange(range: any) {
         switch (range) {
             case 'all': return this.allDates();
+            case 'today': return this.setToday();
             case 'yesterday': return this.setYesterday();
             case 'beforeYesterday': return this.setBeforeYesterday();
             case 'weekStart': return this.setWeekStart();
@@ -22,11 +23,13 @@ export class DateUtils {
             case 'pastWeek': return this.setPastWeek();
             case 'pastWeekFull': return this.setPastWeekFull();
             case 'monthStart': return this.setMonthStart();
+            case 'monthStartFull': return this.setMonthStartFull();
             case 'pastMonth': return this.setPastMonth();
             case 'pastMonthFull': return this.setPastMonthFull();
             case 'monthStartPreviousYear': return this.setMonthStartPreviousYear();
             case 'monthFullPreviousYear': return this.setMonthFullPreviousYear();
             case 'yearStart': return this.setYearStart();
+            case 'yearStartFull': return this.setYearStartFull();
             case 'yearStartPreviousYear': return this.setYearStartPreviousYear();
             case 'yearStartPreviousYearFull': return this.setYearStartPreviousYearFull();
             case 'last3': return this.setLast3();
@@ -45,6 +48,11 @@ export class DateUtils {
         return [mostOldDate, today];
     }
 
+    public setToday(): Array<Date> {
+        const today = moment().toDate();
+        return [today, today];
+    }
+    
     public setYesterday(): Array<Date> {
         const yesterday = moment().subtract(1,'days').toDate()
         return [yesterday,yesterday];
@@ -109,6 +117,12 @@ export class DateUtils {
         return [monthStart, today];
     }
 
+    public setMonthStartFull(): Array<Date> { 
+        const monthStart = moment().startOf('month').toDate();
+        const monthStartEnd = moment().endOf('month').toDate();
+        return [monthStart, monthStartEnd];
+    }
+
     public setPastMonth(): Array<Date> {
         const monthStart = moment().subtract(1,'months').startOf('month').toDate();
         const pastMonthDay = moment().subtract(1,'months').toDate();
@@ -144,10 +158,15 @@ export class DateUtils {
     }
 
     public setYearStart(): Array<Date> {
-       
         const yearStart = moment().startOf('year').toDate();
         const today = moment().toDate();
         return [yearStart, today];
+    }
+
+    public setYearStartFull(): Array<Date> {
+        const yearStart = moment().startOf('year').toDate();
+        const yearEnd = moment().endOf('year').toDate();
+        return [yearStart, yearEnd];
     }
 
     public setYearStartPreviousYear(): Array<Date> {

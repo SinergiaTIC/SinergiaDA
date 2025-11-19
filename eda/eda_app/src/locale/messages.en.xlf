@@ -2821,6 +2821,10 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <source>Todas</source>
 <target>All</target>
 </trans-unit>
+<trans-unit id="DatePickerToday">
+<source>Hoy</source>
+<target>Today</target>
+</trans-unit>
 <trans-unit id="DatePickerYesterday">
 <source>Ayer</source>
 <target>Yesterday</target>
@@ -2830,8 +2834,8 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <target>Before Yesterday</target>
 </trans-unit>
 <trans-unit id="DatePickerWeek">
-<source>Ésta semana</source>
-<target>This week</target>
+<source>Esta semana (hasta hoy)</source>
+<target>This week (so far)</target>
 </trans-unit>
 <trans-unit id="DatePickerWeekFull">
 <source>Ésta semana al completo</source>
@@ -2846,8 +2850,12 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <target>All last week</target>
 </trans-unit>
 <trans-unit id="DatePickerMonth">
-<source>Éste mes</source>
-<target>This month</target>
+<source>Este mes (hasta hoy)</source>
+<target>This month (so far)</target>
+</trans-unit>
+<trans-unit id="DatePickerMonthFull">
+<source>Este mes al completo</source>
+<target>All this month</target>
 </trans-unit>
 <trans-unit id="DatePickerLastMonth">
 <source>El mes pasado</source>
@@ -2866,8 +2874,12 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <target>This whole month of last year</target>
 </trans-unit>
 <trans-unit id="DatePickerYear">
-<source>Éste año</source>
-<target>This year</target>
+<source>Este año (hasta hoy)</source>
+<target>This year (so far)</target>
+</trans-unit>
+<trans-unit id="DatePickerYearFull">
+<source>Este año al completo</source>
+<target>All this year</target>
 </trans-unit>
 <trans-unit id="DatePickerYearPreviousYear">
 <source>El año pasado</source>

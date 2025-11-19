@@ -2968,6 +2968,10 @@
         <source>Todas</source>
         <target>Todas</target>
       </trans-unit>
+    <trans-unit id="DatePickerToday">
+      <source>Hoy</source>
+      <target>Hoy</target>
+    </trans-unit>
       <trans-unit id="DatePickerYesterday">
         <source>Ayer</source>
         <target>Ayer</target>
@@ -2977,12 +2981,12 @@
         <target>Antes de ayer</target>
       </trans-unit>
       <trans-unit id="DatePickerWeek">
-        <source>Ésta semana</source>
-        <target>Ésta semana</target>
+        <source>Esta semana (hasta hoy)</source>
+        <target>Esta semana (hasta hoy)</target>
       </trans-unit>
       <trans-unit id="DatePickerWeekFull">
-        <source>Ésta semana al completo</source>
-        <target>Ésta semana al completo</target>
+        <source>Esta semana al completo</source>
+        <target>Esta semana al completo</target>
       </trans-unit>
       <trans-unit id="DatePickerLastWeek">
         <source>La semana pasada</source>
@@ -2993,8 +2997,12 @@
         <target>La semana pasada completa</target>
       </trans-unit>
       <trans-unit id="DatePickerMonth">
-        <source>Éste mes</source>
-        <target>Éste mes</target>
+        <source>Este mes (hasta hoy)</source>
+        <target>Este mes (hasta hoy)</target>
+      </trans-unit>
+      <trans-unit id="DatePickerMonthFull">
+        <source>Este mes al completo</source>
+        <source>Este mes al completo</source>
       </trans-unit>
       <trans-unit id="DatePickerLastMonth">
         <source>El mes pasado</source>
@@ -3015,8 +3023,13 @@
       </trans-unit>
 
       <trans-unit id="DatePickerYear">
-        <source>Éste año</source>
-        <target>Éste año</target>
+        <source>Este año (hasta hoy)</source>
+        <target>Este año (hasta hoy)</target>
+      </trans-unit>
+
+      <trans-unit id="DatePickerYearFull">
+        <source>Este año al completo</source>
+        <target>Este año al completo</target>
       </trans-unit>
 
       <trans-unit id="DatePickerYearPreviousYear">
