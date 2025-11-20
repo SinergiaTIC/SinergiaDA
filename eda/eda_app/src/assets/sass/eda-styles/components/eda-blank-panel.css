@@ -532,6 +532,22 @@ eda-blank-panel h4 {
     overflow-x: hidden;
 }
 
+.overflow-x-hidden {
+    overflow-x: hidden;
+}
+
+.grid-item {
+    display: block;
+    width: 100%;
+}
+
+.table-name {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    white-space: normal;
+}
+
 .edaChartSelector .p-dropdown-panel .p-dropdown-items-wrapper {
     overflow: auto;
     max-height: 54vh !important;
