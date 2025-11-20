@@ -1566,15 +1566,28 @@ export class EdaBlankPanelComponent implements OnInit {
 
     public loadColumns = (table: any) => PanelInteractionUtils.loadColumns(this, table);
 
-    public removeColumn = (c: Column, list?: string, event?: Event) => {
+    public removeColumn = (c: Column, list?: string) => {
+        // Conditions to check if we can delete the column
+        const isNotRootColumn = c?.joins.length !== 0;
+        const rootColumnElements = this.currentQuery.filter(col => col?.joins.length === 0).length;
+        const currentQueryLength = this.currentQuery.length;
+
+        // We just proceed if it is not the last column of the root table
+        if (isNotRootColumn || rootColumnElements > 1 || currentQueryLength === 1) {
             // We check if when deleting a field it has a filter at selectedFilters
-        if(this.selectedFilters.some( (sf: any) => sf.filter_column === c.column_name )){
-            if(this.sortedFilters.length !==0) {
-                this.alertService.addWarning($localize`:@@filterSettingsReboot:La configuración de filtros se ha reiniciado`);
+            if (this.selectedFilters.some((sf: any) => sf.filter_column === c.column_name)) {
+                if (this.sortedFilters.length !== 0) {
+                    this.alertService.addWarning($localize`:@@filterSettingsReboot:La configuración de filtros se ha reiniciado`);
+                }
+                this.sortedFilters = []; // resets the values ​​because one or more filters were deleted
             }
-            this.sortedFilters = []; // resets the values ​​because one or more filters were deleted
-        }    
-        PanelInteractionUtils.removeColumn(this, c, list);
+            PanelInteractionUtils.removeColumn(this, c, list);
+        }
+        else {
+            // We stop the event propagation to not open the attribute panel
+            event.stopPropagation();
+            this.alertService.addError($localize`:@@cannotRemoveLastColumn:No se puede eliminar la última columna de la tabla raíz, si esta no es la última de la consulta.`);
+        }
     }
 
     public getOptionDescription = (value: string): string => EbpUtils.getOptionDescription(value);
