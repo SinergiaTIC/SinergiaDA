@@ -536,16 +536,26 @@ eda-blank-panel h4 {
     overflow-x: hidden;
 }
 
-.grid-item {
-    display: block;
-    width: 100%;
+.filter-joins i.pi {
+    vertical-align: middle;
+    margin-left: 1.5rem;
+}
+
+.filter-text {
+    padding-left: 1.5rem;
+    text-indent: -1.5rem;
 }
 
 .table-name {
     display: inline-flex;
     align-items: center;
     gap: 0.25rem;
-    white-space: normal;
+}
+
+.table-name i.pi {
+    display: inline-block;
+    vertical-align: middle;
+    margin-left: 1.5rem;
 }
 
 .edaChartSelector .p-dropdown-panel .p-dropdown-items-wrapper {
