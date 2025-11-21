@@ -2842,8 +2842,8 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <target>All this week</target>
 </trans-unit>
 <trans-unit id="DatePickerLastWeek">
-<source>La semana pasada</source>
-<target>Last week</target>
+<source>La semana pasada (hasta equivalente a hoy)</source>
+<target>Last week (so far)</target>
 </trans-unit>
 <trans-unit id="DatePickerLastWeekFull">
 <source>La semana pasada completa</source>
@@ -2858,8 +2858,8 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <target>All this month</target>
 </trans-unit>
 <trans-unit id="DatePickerLastMonth">
-<source>El mes pasado</source>
-<target>Last month</target>
+<source>El mes pasado (hasta equivalente a hoy)</source>
+<target>Last month "so far"</target>
 </trans-unit>
 <trans-unit id="DatePickerLastMonthFull">
 <source>El mes pasado completo</source>

@@ -2989,8 +2989,8 @@
         <target>Esta semana al completo</target>
       </trans-unit>
       <trans-unit id="DatePickerLastWeek">
-        <source>La semana pasada</source>
-        <target>La semana pasada</target>
+        <source>La semana pasada (hasta equivalente a hoy)</source>
+        <target>La semana pasada (hasta equivalente a hoy)</target>
       </trans-unit>
       <trans-unit id="DatePickerLastWeekFull">
         <source>La semana pasada completa</source>
@@ -3005,8 +3005,8 @@
         <source>Este mes al completo</source>
       </trans-unit>
       <trans-unit id="DatePickerLastMonth">
-        <source>El mes pasado</source>
-        <target>El mes pasado</target>
+        <source>El mes pasado (hasta equivalente a hoy)</source>
+        <target>El mes pasado (hasta equivalente a hoy)</target>
       </trans-unit>
       <trans-unit id="DatePickerLastMonthFull">
         <source>El mes pasado completo</source>

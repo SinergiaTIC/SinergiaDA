@@ -2865,8 +2865,8 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <target>Tota aquesta setmana</target>
 </trans-unit>
 <trans-unit id="DatePickerLastWeek">
-<source>La semana pasada</source>
-<target>La setmana passada</target>
+<source>La semana pasada (hasta equivalente a hoy)</source>
+<target>La setmana passada (fins equvalent a avui) </target>
 </trans-unit>
 <trans-unit id="DatePickerLastWeekFull">
 <source>La semana pasada completa</source>
@@ -2881,8 +2881,8 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <target>Tot aquest mes</target>
 </trans-unit>
 <trans-unit id="DatePickerLastMonth">
-<source>El mes pasado</source>
-<target>El mes passat</target>
+<source>El mes pasado (hasta equivalente a hoy)</source>
+<target>El mes passat (fins equvalent a avui) </target>
 </trans-unit>
 <trans-unit id="DatePickerLastMonthFull">
 <source>El mes pasado completo</source>
