@@ -484,12 +484,19 @@
                                             <h5 i18n="@@resumenFiltrosInformeH6">
                                                 Resumen de filtros del informe
                                             </h5>
+                                            <div *ngFor="let filter of globalFilters; let index = index">
+                                                <div class="filter-text">
+                                                    <span class="filter-joins" [innerHTML]="getFilterJoins(filter)"></span>
 
-                                            <div *ngFor="let filter of globalFilters" class="d-flex align-items-center">
-                                                <strong class="d-flex align-items-center" [innerHTML]="getFilterJoins(filter)"></strong>
+                                                    <span class="table-name" style="margin-left: 1.5rem;">
+                                                        {{ getNiceTableName(currentQuery[index + 1]?.table_id) }}
+                                                        <i class="pi pi-angle-right"></i>
+                                                    </span>
 
-                                                <span class="d-flex align-items-center" [innerHTML]="getDisplayFilterStr(filter)"></span>
+                                                    <span [innerHTML]="getDisplayFilterStr(filter)"></span>
+                                                </div>
                                             </div>
+
                                         </div>
                                     </div>
                                     
