@@ -1586,7 +1586,7 @@ export class EdaBlankPanelComponent implements OnInit {
         else {
             // We stop the event propagation to not open the attribute panel
             event.stopPropagation();
-            this.alertService.addError($localize`:@@cannotRemoveLastColumn:No se puede eliminar la última columna de la tabla raíz, si esta no es la última de la consulta.`);
+            this.alertService.addError($localize`:@@cannotRemoveLastColumn:No se puede eliminar todas las columnas de la tabla raíz sin eliminar las columnas dependientes.`);
         }
     }
 
