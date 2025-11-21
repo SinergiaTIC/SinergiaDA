@@ -541,7 +541,7 @@ export class EdaTable {
                     this.totalsRow.push({ data: `${this.Totals} `, border: " ", class: 'total-row-header', type: col.type });
                     firstNonNumericRow = false;
                 } else {
-                    // total percentatge added just if we have the totals row
+                    // total percentatge added just if we have totals row
                     if(this.withRowTotals){
                         //  - to match we need to delete the % and add a space at the beginning
                         const baseField = ' ' + col.field.replace('%', '').trim();
@@ -550,10 +550,8 @@ export class EdaTable {
                         const value = Number(row[baseField]); // Actual value
                         const total = Number(row[' N']); // total value
     
-                        // Calculate percentage 
-                        const percentage = (!isNaN(value) && !isNaN(total) && total !== 0)
-                            ? ((value / total) * 100).toFixed(2)
-                            : '0';
+                        // Calculate percentage (check if total is not zero to avoid division by zero ==> Infinity or NaN)
+                        const percentage = (!Number.isNaN(value) && !Number.isNaN(total) && total !== 0) ? ((value / total) * 100).toFixed(2) : '0';
     
                         // Push the total row value with % sign
                         this.totalsRow.push({
@@ -562,7 +560,7 @@ export class EdaTable {
                     } else{
                         // otherwise, just add a blank space
                         this.totalsRow.push({
-                            data: '', border: ' ', class: 'total-row-header text-right', type: col.type
+                            data: '', border: ' ', class: 'total-row-header', type: col.type
                         });
                     }
                 }
