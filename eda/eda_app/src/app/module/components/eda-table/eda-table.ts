@@ -487,6 +487,7 @@ export class EdaTable {
 
 
         let row = this.buildTotalRow();
+        console.log(row)
         const values = this._value;
         const keys = this.cols.map(col => col.field);
 
@@ -540,7 +541,30 @@ export class EdaTable {
                     this.totalsRow.push({ data: `${this.Totals} `, border: " ", class: 'total-row-header', type: col.type });
                     firstNonNumericRow = false;
                 } else {
-                    this.totalsRow.push({ data: " ", border: " ", class: 'total-row', type: col.type });
+                    // total percentatge added just if we have the totals row
+                    if(this.withRowTotals){
+                        //  - to match we need to delete the % and add a space at the beginning
+                        const baseField = ' ' + col.field.replace('%', '').trim();
+    
+                        // Get the value and total from the row
+                        const value = Number(row[baseField]); // Actual value
+                        const total = Number(row[' N']); // total value
+    
+                        // Calculate percentage 
+                        const percentage = (!isNaN(value) && !isNaN(total) && total !== 0)
+                            ? ((value / total) * 100).toFixed(2)
+                            : '0';
+    
+                        // Push the total row value with % sign
+                        this.totalsRow.push({
+                            data: percentage + '%', border: ' ', class: 'total-row-header text-right', type: col.type
+                        });
+                    } else{
+                        // otherwise, just add a blank space
+                        this.totalsRow.push({
+                            data: '', border: ' ', class: 'total-row-header text-right', type: col.type
+                        });
+                    }
                 }
             }
         });
@@ -553,7 +577,6 @@ export class EdaTable {
         for (let i = 0; i < keys.length; i++) {
             row[keys[i]] = 0;
         }
-
         return row;
 
     }
