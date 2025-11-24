@@ -474,7 +474,22 @@ export class EdaTable {
                     this.partialTotalsRow.push({ data: `${this.SubTotals} `, border: " ", class: 'sub-total-row-header', type: col.type });
                     firstNonNumericRow = false;
                 } else {
-                    this.partialTotalsRow.push({ data: " ", border: " ", class: 'sub-total-row', type: col.type });
+                    // total percentatge added just if we have subtotals
+                    //  - to match we need to delete the % and add a space at the beginning
+                    const baseField = ' ' + col.field.replace('%', '').trim();
+                    
+                    const value: number = Number(partialRow[baseField]); // Actual row value
+                    const total: number = Object.keys(partialRow)
+                            .filter(key => key.endsWith('~ N') || key === ' N') 
+                            .reduce((sum, key) => sum + Number(partialRow[key] || 0), 0); // Get total row value
+
+                    // Calculate percentage (check if total is not zero to avoid division by zero ==> Infinity or NaN)
+                    const percentage = (!Number.isNaN(value) && !Number.isNaN(total) && total !== 0) ? ((value / total) * 100).toFixed(2) : '0';
+
+                    // Push the total row value with % sign
+                    this.partialTotalsRow.push({
+                        data: percentage + '%', border: ' ', class: 'total-row-header text-right', type: col.type
+                    });
                 }
             }
         });
@@ -487,7 +502,6 @@ export class EdaTable {
 
 
         let row = this.buildTotalRow();
-        console.log(row)
         const values = this._value;
         const keys = this.cols.map(col => col.field);
 
@@ -538,31 +552,35 @@ export class EdaTable {
             }
             else {
                 if (firstNonNumericRow) {
+                    // add header
                     this.totalsRow.push({ data: `${this.Totals} `, border: " ", class: 'total-row-header', type: col.type });
                     firstNonNumericRow = false;
                 } else {
-                    // total percentatge added just if we have totals row
-                    if(this.withRowTotals){
-                        //  - to match we need to delete the % and add a space at the beginning
-                        const baseField = ' ' + col.field.replace('%', '').trim();
-    
-                        // Get the value and total from the row
-                        const value = Number(row[baseField]); // Actual value
-                        const total = Number(row[' N']); // total value
-    
-                        // Calculate percentage (check if total is not zero to avoid division by zero ==> Infinity or NaN)
-                        const percentage = (!Number.isNaN(value) && !Number.isNaN(total) && total !== 0) ? ((value / total) * 100).toFixed(2) : '0';
-    
-                        // Push the total row value with % sign
-                        this.totalsRow.push({
-                            data: percentage + '%', border: ' ', class: 'total-row-header text-right', type: col.type
-                        });
-                    } else{
-                        // otherwise, just add a blank space
-                        this.totalsRow.push({
-                            data: '', border: ' ', class: 'total-row-header', type: col.type
-                        });
+                    // total percentatge added just if we have totals row/col
+                    const showPercentage: boolean = this.withRowTotals ||this.withColTotals
+                    //  - to match we need to delete the % and add a space at the beginning
+                    const baseField = ' ' + col.field.replace('%', '').trim();
+                    
+                    const value: number = Number(row[baseField]); // Actual row value
+                    let total: number; // Get total row value
+
+                    if (this.withRowTotals) {
+                        // case when nRow exists 
+                        total = Number(row[' N']);
+                    } else {
+                        // Case where N(total rows) does not exist ==> sum all fields that are N values 
+                        total = Object.keys(row)
+                            .filter(key => key.endsWith('~ N') || key === ' N') // N fields
+                            .reduce((sum, key) => sum + Number(row[key] || 0), 0);
                     }
+
+                    // Calculate percentage (check if total is not zero to avoid division by zero ==> Infinity or NaN)
+                    const percentage = (!Number.isNaN(value) && !Number.isNaN(total) && total !== 0) ? ((value / total) * 100).toFixed(2) : '0';
+
+                    // Push the total row value with % sign
+                    this.totalsRow.push({
+                        data: percentage + '%', border: ' ', class: 'total-row-header text-right', type: col.type
+                    });
                 }
             }
         });
