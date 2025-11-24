@@ -474,13 +474,15 @@ export class EdaTable {
                     this.partialTotalsRow.push({ data: `${this.SubTotals} `, border: " ", class: 'sub-total-row-header', type: col.type });
                     firstNonNumericRow = false;
                 } else {
-                    //  To match we need to delete the % and add a space at the beginning
-                    const baseField = ' ' + col.field.replace('%', '').trim();
-                    
+                    // WE ADD THE PERCENTAGE COLUMNS HERE
+                    //  To match we need to delete the % and add one or two space at the beginning
+                    // If the field starts with ~( no field name ) we add two spaces otherwise just one
+                    const baseField = (col.field.trimStart().startsWith('~') ? '  ' : ' ') + col.field.replace('%', '').trim();
+
                     const value: number = Number(partialRow[baseField]); // Actual row value
-                    const total: number = Object.keys(partialRow)
-                            .filter(key => key.endsWith('~ N') || key === ' N') 
-                            .reduce((sum, key) => sum + Number(partialRow[key] || 0), 0); // Get total row value
+                    const total: number = Object.keys(partialRow)// Get total row value
+                        .filter(key => !key.endsWith('%') && key.includes('~')) // N fields always contains ~ and ends with %
+                        .reduce((sum, key) => sum + Number(partialRow[key] || 0), 0); 
 
                     // Calculate percentage (check if total is not zero to avoid division by zero ==> Infinity or NaN)
                     const percentage = (!Number.isNaN(value) && !Number.isNaN(total) && total !== 0) ? ((value / total) * 100).toFixed(2) : '0';
@@ -495,7 +497,6 @@ export class EdaTable {
     }
 
     coltotals() {
-
         this.withColTotals = true;
         this.totalsRow = [];
 
@@ -555,22 +556,16 @@ export class EdaTable {
                     this.totalsRow.push({ data: `${this.Totals} `, border: " ", class: 'total-row-header', type: col.type });
                     firstNonNumericRow = false;
                 } else {
-                    //  To match we need to delete the % and add a space at the beginning
-                    const baseField = ' ' + col.field.replace('%', '').trim();
+                    //  WE ADD THE PERCENTAGE COLUMNS HERE
+                    //  To match we need to delete the % and add one or two space at the beginning
+                    // If the field starts with ~( no field name ) we add two spaces otherwise just one
+                    const baseField = (col.field.trimStart().startsWith('~') ? '  ' : ' ') + col.field.replace('%', '').trim();
                     
                     const value: number = Number(row[baseField]); // Actual row value
-                    let total: number; // Get total row value
-
-                    if (this.withRowTotals) {
-                        // case when N(total rows) exists 
-                        total = Number(row[' N']);
-                    } else {
-                        // Case where N(total rows) does not exist ==> sum all fields that are N values 
-                        total = Object.keys(row)
-                            .filter(key => key.endsWith('~ N') || key === ' N') // N fields
-                            .reduce((sum, key) => sum + Number(row[key] || 0), 0);
-                    }
-
+                    const total: number = Object.keys(row)// Get total row value
+                        .filter(key => !key.endsWith('%') && key.includes('~')) // N fields always contains ~ and ends with %
+                        .reduce((sum, key) => sum + Number(row[key] || 0), 0); 
+                    
                     // Calculate percentage (check if total is not zero to avoid division by zero ==> Infinity or NaN)
                     const percentage = (!Number.isNaN(value) && !Number.isNaN(total) && total !== 0) ? ((value / total) * 100).toFixed(2) : '0';
 
