@@ -474,8 +474,7 @@ export class EdaTable {
                     this.partialTotalsRow.push({ data: `${this.SubTotals} `, border: " ", class: 'sub-total-row-header', type: col.type });
                     firstNonNumericRow = false;
                 } else {
-                    // total percentatge added just if we have subtotals
-                    //  - to match we need to delete the % and add a space at the beginning
+                    //  To match we need to delete the % and add a space at the beginning
                     const baseField = ' ' + col.field.replace('%', '').trim();
                     
                     const value: number = Number(partialRow[baseField]); // Actual row value
@@ -556,16 +555,14 @@ export class EdaTable {
                     this.totalsRow.push({ data: `${this.Totals} `, border: " ", class: 'total-row-header', type: col.type });
                     firstNonNumericRow = false;
                 } else {
-                    // total percentatge added just if we have totals row/col
-                    const showPercentage: boolean = this.withRowTotals ||this.withColTotals
-                    //  - to match we need to delete the % and add a space at the beginning
+                    //  To match we need to delete the % and add a space at the beginning
                     const baseField = ' ' + col.field.replace('%', '').trim();
                     
                     const value: number = Number(row[baseField]); // Actual row value
                     let total: number; // Get total row value
 
                     if (this.withRowTotals) {
-                        // case when nRow exists 
+                        // case when N(total rows) exists 
                         total = Number(row[' N']);
                     } else {
                         // Case where N(total rows) does not exist ==> sum all fields that are N values 
