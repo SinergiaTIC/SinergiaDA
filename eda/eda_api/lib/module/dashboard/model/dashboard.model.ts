@@ -21,6 +21,10 @@ interface IDashboardConfig {
     tag: any; //  EDA's tags
     external?: any; // external tags  to filter the dashboard
     urls:any; // urls to call from the dashboard.  url actions
+/* SDA CUSTOM */    cache_config?: {
+/* SDA CUSTOM */        mode: 'inherit' | 'enabled' | 'disabled';
+/* SDA CUSTOM */        ttl?: number;
+/* SDA CUSTOM */    };
 }
 
 const DashboardSchema = new mongoose.Schema({

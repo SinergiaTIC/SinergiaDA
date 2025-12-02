@@ -355,6 +355,26 @@
     <source>Buscar tipo</source>
     <target>Cerca un tipus</target>
   </trans-unit>
+  <trans-unit id="cacheModeActive" datatype="html">
+    <source>Modo Caché Activo</source>
+    <target>Mode Memòria Cau Actiu</target>
+  </trans-unit>
+  <trans-unit id="cacheMode" datatype="html">
+    <source>MODO CACHÉ</source>
+    <target>MODE MEMÒRIA CAU</target>
+  </trans-unit>
+  <trans-unit id="cacheInherit" datatype="html">
+    <source>Heredar</source>
+    <target>Heretar</target>
+  </trans-unit>
+  <trans-unit id="cacheEnabled" datatype="html">
+    <source>Activado</source>
+    <target>Activat</target>
+  </trans-unit>
+  <trans-unit id="cacheDisabled" datatype="html">
+    <source>Desactivado</source>
+    <target>Desactivat</target>
+  </trans-unit>
 </body>
 </file>
 </xliff>
