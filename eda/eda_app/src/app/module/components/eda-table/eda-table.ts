@@ -474,23 +474,23 @@ export class EdaTable {
                     this.partialTotalsRow.push({ data: `${this.SubTotals} `, border: " ", class: 'sub-total-row-header', type: col.type });
                     firstNonNumericRow = false;
                 } else {
-                    // WE ADD THE PERCENTAGE COLUMNS HERE
-                    //  To match we need to delete the % and add one or two space at the beginning
-                    // If the field starts with ~( no field name ) we add two spaces otherwise just one
-                    const baseField = (col.field.trimStart().startsWith('~') ? '  ' : ' ') + col.field.replace('%', '').trim();
-
-                    const value: number = Number(partialRow[baseField]); // Actual row value
-                    const total: number = Object.keys(partialRow)// Get total row value
-                        .filter(key => !key.endsWith('%') && key.includes('~')) // N fields always contains ~ and ends with %
-                        .reduce((sum, key) => sum + Number(partialRow[key] || 0), 0); 
-
-                    // Calculate percentage (check if total is not zero to avoid division by zero ==> Infinity or NaN)
-                    const percentage = (!Number.isNaN(value) && !Number.isNaN(total) && total !== 0) ? ((value / total) * 100).toFixed(2) : '0';
-
-                    // Push the total row value with % sign
-                    this.partialTotalsRow.push({
-                        data: percentage + '%', border: ' ', class: 'total-row-header text-right', type: col.type
-                    });
+/**SDA CUSTOM  */   // WE ADD THE PERCENTAGE COLUMNS HERE
+/**SDA CUSTOM  */   //  To match we need to delete the % and add one or two space at the beginning
+/**SDA CUSTOM  */   // If the field starts with ~( no field name ) we add two spaces otherwise just one
+/**SDA CUSTOM  */   const baseField = (col.field.trimStart().startsWith('~') ? '  ' : ' ') + col.field.replace('%', '').trim();
+/**SDA CUSTOM  */
+/**SDA CUSTOM  */   const value: number = Number(partialRow[baseField]); // Actual row value
+/**SDA CUSTOM  */   const total: number = Object.keys(partialRow)// Get total row value
+/**SDA CUSTOM  */       .filter(key => !key.endsWith('%') && key.includes('~')) // N fields always contains ~ and ends with %
+/**SDA CUSTOM  */       .reduce((sum, key) => sum + Number(partialRow[key] || 0), 0); 
+/**SDA CUSTOM  */
+/**SDA CUSTOM  */   // Calculate percentage (check if total is not zero to avoid division by zero ==> Infinity or NaN)
+/**SDA CUSTOM  */   const percentage = (!Number.isNaN(value) && !Number.isNaN(total) && total !== 0) ? ((value / total) * 100).toFixed(2) : '0';
+/**SDA CUSTOM  */
+/**SDA CUSTOM  */   // Push the total row value with % sign
+/**SDA CUSTOM  */   this.partialTotalsRow.push({
+/**SDA CUSTOM  */       data: percentage + '%', border: ' ', class: 'total-row-header text-right', type: col.type
+/**SDA CUSTOM  */   });
                 }
             }
         });
@@ -552,28 +552,28 @@ export class EdaTable {
             }
             else {
                 if (firstNonNumericRow) {
-                    // add header
+/**SDA CUSTOM  */   // add header
                     this.totalsRow.push({ data: `${this.Totals} `, border: " ", class: 'total-row-header', type: col.type });
                     firstNonNumericRow = false;
                 } else {
-                    //  WE ADD THE PERCENTAGE COLUMNS HERE
-                    //  To match we need to delete the % and add one or two space at the beginning
-                    // If the field starts with ~( no field name ) we add two spaces otherwise just one
-                    const baseField = (col.field.trimStart().startsWith('~') ? '  ' : ' ') + col.field.replace('%', '').trim();
-                    
-                    const value: number = Number(row[baseField]); // Actual row value
-                    const total: number = Object.keys(row)// Get total row value
-                        .filter(key => !key.endsWith('%') && key.includes('~')) // N fields always contains ~ and ends with %
-                        .reduce((sum, key) => sum + Number(row[key] || 0), 0); 
-                    
-                    // Calculate percentage (check if total is not zero to avoid division by zero ==> Infinity or NaN)
-                    const percentage = (!Number.isNaN(value) && !Number.isNaN(total) && total !== 0) ? ((value / total) * 100).toFixed(2) : '0';
-
-                    // Push the total row value with % sign
-                    this.totalsRow.push({
-                        data: percentage + '%', border: ' ', class: 'total-row-header text-right', type: col.type
-                    });
-                }
+/**SDA CUSTOM  */   //  WE ADD THE PERCENTAGE COLUMNS HERE
+/**SDA CUSTOM  */   //  To match we need to delete the % and add one or two space at the beginning
+/**SDA CUSTOM  */   // If the field starts with ~( no field name ) we add two spaces otherwise just one
+/**SDA CUSTOM  */   const baseField = (col.field.trimStart().startsWith('~') ? '  ' : ' ') + col.field.replace('%', '').trim();
+/**SDA CUSTOM  */                    
+/**SDA CUSTOM  */   const value: number = Number(row[baseField]); // Actual row value
+/**SDA CUSTOM  */   const total: number = Object.keys(row)// Get total row value
+/**SDA CUSTOM  */       .filter(key => !key.endsWith('%') && key.includes('~')) // N fields always contains ~ and ends with %
+/**SDA CUSTOM  */       .reduce((sum, key) => sum + Number(row[key] || 0), 0); 
+/**SDA CUSTOM  */                    
+/**SDA CUSTOM  */   // Calculate percentage (check if total is not zero to avoid division by zero ==> Infinity or NaN)
+/**SDA CUSTOM  */   const percentage = (!Number.isNaN(value) && !Number.isNaN(total) && total !== 0) ? ((value / total) * 100).toFixed(2) : '0';
+/**SDA CUSTOM  */
+/**SDA CUSTOM  */   // Push the total row value with % sign
+/**SDA CUSTOM  */   this.totalsRow.push({
+/**SDA CUSTOM  */       data: percentage + '%', border: ' ', class: 'total-row-header text-right', type: col.type
+/**SDA CUSTOM  */   });
+/**SDA CUSTOM  */}
             }
         });
     }
