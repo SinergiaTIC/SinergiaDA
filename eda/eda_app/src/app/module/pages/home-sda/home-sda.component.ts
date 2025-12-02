@@ -739,7 +739,7 @@ public filterGroups() {
       const href = location.href;
       const baseURL = href.slice(0, href.indexOf('#'));
 
-      const url = `${baseURL}#/public/${dashboard._id}`
+      const url = `${baseURL}#/public/${dashboard._id}?panelMode=true`
 
       navigator.clipboard.writeText(url).then(
         () => {
