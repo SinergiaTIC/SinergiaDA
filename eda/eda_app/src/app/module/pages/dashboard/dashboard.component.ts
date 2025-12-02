@@ -117,13 +117,13 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
 
     public styles : DashboardStyles;
 
-    public cacheConfig: { mode: string } = { mode: 'inherit' };
-    public cacheOptions: SelectItem[] = [
-        { label: 'Heredar', value: 'inherit' },
-        { label: 'Activado', value: 'enabled' },
-        { label: 'Desactivado', value: 'disabled' }
-    ];
-    public isCacheActive: boolean = false;
+/* SDA CUSTOM */    public cacheConfig: { mode: string } = { mode: 'inherit' };
+/* SDA CUSTOM */    public cacheOptions: SelectItem[] = [
+/* SDA CUSTOM */        { label: $localize`:@@cacheInherit:Heredar`, value: 'inherit' },
+/* SDA CUSTOM */        { label: $localize`:@@cacheEnabled:Activado`, value: 'enabled' },
+/* SDA CUSTOM */        { label: $localize`:@@cacheDisabled:Desactivado`, value: 'disabled' }
+/* SDA CUSTOM */    ];
+/* SDA CUSTOM */    public isCacheActive: boolean = false;
 
     public filtrar: string = $localize`:@@filterButtonDashboard:Filtrar`;
     public addTagString: string = $localize`:@@addTag:AÑADIR ETIQUETA`;
@@ -425,8 +425,8 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
                     me.styles = config.styles || this.stylesProviderService.generateDefaultStyles();
                     this.stylesProviderService.setStyles(me.styles);
 
-                    me.cacheConfig = config.cache_config || { mode: 'inherit' };
-                    me.calculateCacheStatus();
+/* SDA CUSTOM */                    me.cacheConfig = config.cache_config || { mode: 'inherit' };
+/* SDA CUSTOM */                    me.calculateCacheStatus();
 
                     let grp = [];
                     if (config.visible === 'group' && res.dashboard.group) {
@@ -1239,7 +1239,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
                     onlyIcanEdit: this.onlyIcanEdit,
                     styles : this.styles,
                     urls: this.urls,
-                    cache_config: this.cacheConfig
+/* SDA CUSTOM */                    cache_config: this.cacheConfig
 
                 },
                 group: this.form.value.group ? _.map(this.form.value.group, '_id') : undefined
@@ -1643,16 +1643,16 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
 
   }
 
-    public calculateCacheStatus() {
-        if (this.cacheConfig.mode === 'enabled') {
-            this.isCacheActive = true;
-        } else if (this.cacheConfig.mode === 'disabled') {
-            this.isCacheActive = false;
-        } else {
-            // Inherit
-            // El backend ahora devuelve cache_config en el objeto datasource
-            this.isCacheActive = this.dataSource?.cache_config?.enabled || false;
-        }
-    }
+/* SDA CUSTOM */    public calculateCacheStatus() {
+/* SDA CUSTOM */        if (this.cacheConfig.mode === 'enabled') {
+/* SDA CUSTOM */            this.isCacheActive = true;
+/* SDA CUSTOM */        } else if (this.cacheConfig.mode === 'disabled') {
+/* SDA CUSTOM */            this.isCacheActive = false;
+/* SDA CUSTOM */        } else {
+/* SDA CUSTOM */            // Inherit
+/* SDA CUSTOM */            // El backend ahora devuelve cache_config en el objeto datasource
+/* SDA CUSTOM */            this.isCacheActive = this.dataSource?.cache_config?.enabled || false;
+/* SDA CUSTOM */        }
+/* SDA CUSTOM */    }
 
     }
