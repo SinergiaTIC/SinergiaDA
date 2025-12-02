@@ -2882,15 +2882,15 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 </trans-unit>
 <trans-unit id="DatePickerLastMonth">
 <source>El mes pasado (hasta equivalente a hoy)</source>
-<target>El mes passat (fins equvalent a avui) </target>
+<target>El mes passat (fins equivalent a avui) </target>
 </trans-unit>
 <trans-unit id="DatePickerLastMonthFull">
 <source>El mes pasado completo</source>
 <target>Tot el mes passat</target>
 </trans-unit>
 <trans-unit id="DatePickerMonthPreviousYear">
-<source>Éste mes del año pasado</source>
-<target>Aquest mes de l'any passat</target>
+<source>Este mes del año pasado (hasta equivalente a hoy)</source>
+<target>Aquest mes de l'any passat (fins equivalent a avui)</target>
 </trans-unit>
 <trans-unit id="DatePickerMonthPreviousYearFull">
 <source>Éste mes al completo del año pasado</source>
@@ -2905,8 +2905,8 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <target>Tot aquest any</target>
 </trans-unit>
 <trans-unit id="DatePickerYearPreviousYear">
-<source>El año pasado</source>
-<target>L'any passat</target>
+<source>El año pasado (hasta equivalente a hoy)</source>
+<target>L'any passat (fins equivalent a avui)</target>
 </trans-unit>
 <trans-unit id="DatePickerYearPreviousYearFull">
 <source>El año pasado, completo</source>

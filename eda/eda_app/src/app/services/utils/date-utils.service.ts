@@ -62,11 +62,11 @@ export class DateUtils {
         return [beforeYesterday,beforeYesterday];
     }
 
-    public setWeekStart(): Array<Date> {
-        const startOnMonday = moment().startOf('isoWeek').toDate();
-        const endOnFriday = moment().startOf('isoWeek').add(4,'days').toDate();
-        return [startOnMonday,endOnFriday];
-    }
+/**SDA CUSTOM  */   public setWeekStart(): Array<Date> {
+/**SDA CUSTOM  */       const startOnMonday = moment().startOf('isoWeek').toDate();
+/**SDA CUSTOM  */       let today = new Date();
+/**SDA CUSTOM  */       return [startOnMonday,today];
+/**SDA CUSTOM  */   }
 
     /**
      * Establece el inicio y fin de la semana basado en la fecha actual de acuerdo al ISO 8601 que en todos

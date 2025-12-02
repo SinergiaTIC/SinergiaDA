@@ -2866,8 +2866,8 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <target>All last month</target>
 </trans-unit>
 <trans-unit id="DatePickerMonthPreviousYear">
-<source>Éste mes del año pasado</source>
-<target>This month from previous year</target>
+<source>Este mes del año pasado (hasta equivalente a hoy)</source>
+<target>This month from previous year (up to the equivalent of today)</target>
 </trans-unit>
 <trans-unit id="DatePickerMonthPreviousYearFull">
 <source>Éste mes al completo del año pasado</source>
@@ -2882,8 +2882,8 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <target>All this year</target>
 </trans-unit>
 <trans-unit id="DatePickerYearPreviousYear">
-<source>El año pasado</source>
-<target>Last year</target>
+<source>El año pasado (hasta equivalente a hoy)</source>
+<target>Last year (up to the equivalent of today)</target>
 </trans-unit>
 <trans-unit id="DatePickerYearPreviousYearFull">
 <source>El año pasado, completo</source>

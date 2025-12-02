@@ -3013,8 +3013,8 @@
         <target>El mes pasado completo</target>
       </trans-unit>
       <trans-unit id="DatePickerMonthPreviousYear">
-        <source>Éste mes del año pasado</source>
-        <target>Éste mes del año pasado</target>
+        <source>Este mes del año pasado (hasta equivalente a hoy)</source>
+        <target>Este mes do ano pasado (ata o equivalente de hoxe)</target>
       </trans-unit>
 
       <trans-unit id="DatePickerMonthPreviousYearFull">
@@ -3033,8 +3033,8 @@
       </trans-unit>
 
       <trans-unit id="DatePickerYearPreviousYear">
-        <source>El año pasado</source>
-        <target>El año pasado</target>
+        <source>El año pasado (hasta equivalente a hoy)</source>
+        <target>O ano pasado (ata o equivalente a hoxe)</target>
       </trans-unit>
 
       <trans-unit id="DatePickerLast7">
