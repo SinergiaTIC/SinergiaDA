@@ -4617,7 +4617,7 @@ Once configured you can invoke it whenever you want from the button.</target>
       </trans-unit>
       <trans-unit id="cannotRemoveLastColumn">
         <source>No se puede eliminar la última columna de la tabla raíz, si esta no es la última de la consulta.</source>
-        <target>You cannot delete the last column of the root table if it is not the last column in the query.</target>
+        <target>The column cannot be deleted. As long as the panel has columns from related tables, it must retain at least one column from the main table.</target>
       </trans-unit>
       <trans-unit id="withoutFilters">
         <source>Aún no has configurado filtros. Usa el panel de filtros o los filtros globales</source>
