@@ -4411,7 +4411,7 @@
       </trans-unit>
       <trans-unit id="cannotRemoveLastColumn">
         <source>No se puede eliminar la última columna de la tabla raíz, si esta no es la última de la consulta.</source>
-        <target>No se puede eliminar la última columna del módulo principal, si esta no es la última que queda en el panel.</target>
+        <target>La columna no se puede eliminar. En tanto el panel contenga columnas de tablas relacionadas deberá conservar al menos una columna de la tabla principal.</target>
       </trans-unit>
       <trans-unit id="withoutFilters">
         <source>Aún no has configurado filtros. Usa el panel de filtros o los filtros globales</source>
