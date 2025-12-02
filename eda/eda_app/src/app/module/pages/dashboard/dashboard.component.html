@@ -5,7 +5,10 @@
     <div class="col-12" style="padding:2px"  *ngIf="!display_v.panelMode">
         <eda-dashboard-panel class="pointer" (click)="setTitle()">
             <div class="d-flex justify-title-content">
-                <h3 *ngIf="!titleClick" class="eda-title"> {{title}} </h3>
+                <h3 *ngIf="!titleClick" class="eda-title"> 
+                    {{title}} 
+                    <i *ngIf="isCacheActive" class="fa fa-bolt ml-2" style="color: #fbc02d; font-size: 0.8em;" title="Modo Caché Activo"></i>
+                </h3>
                 <input *ngIf="!!titleClick" (focusout)="setTitle()" (keydown.enter)="setTitle()" type="text" class="w-100" [(ngModel)]="title" pInputText autofocusOnShow>
             </div>
         </eda-dashboard-panel>
@@ -150,6 +153,13 @@
         <div>
             <span class="ml-2">LIVE DASHBOARD</span>
             <input style="width: 100%; margin-top: 0.2rem;" [placeholder]="Seconds_to_refresh" type="number" pInputText [(ngModel)]="refreshTime">
+        </div>
+    </div>
+
+    <div *ngIf="display_v.edit_mode" class="right-sidebar-blocks-options block-options-bg pointer mt-1">
+        <div>
+            <span class="ml-2">MODO CACHÉ</span>
+            <p-dropdown [options]="cacheOptions" [(ngModel)]="cacheConfig.mode" (onChange)="calculateCacheStatus()" [style]="{'width':'100%', 'margin-top':'0.2rem'}"></p-dropdown>
         </div>
     </div>
 

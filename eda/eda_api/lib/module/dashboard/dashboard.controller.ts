@@ -610,7 +610,8 @@ export class DashboardController {
               _id: datasource._id,
               model: toJson.ds.model,
               name: toJson.ds.metadata.model_name,
-              is_filtered: is_filtered
+              is_filtered: is_filtered,
+              cache_config: toJson.ds.metadata.cache_config
             }
 
             insertServerLog(
@@ -1308,10 +1309,30 @@ export class DashboardController {
       console.log(query)
       console.log('\n-------------------------------------------------------------------------------\n');
 
+      // Recuperar configuración de caché del dashboard
+      let dashboardConfigCacheMode = 'inherit';
+      if (req.body.dashboard && req.body.dashboard.dashboard_id) {
+          try {
+              const dashboardDoc = await Dashboard.findById(req.body.dashboard.dashboard_id, 'config.cache_config').exec();
+              if (dashboardDoc && dashboardDoc.config && dashboardDoc.config.cache_config) {
+                  dashboardConfigCacheMode = dashboardDoc.config.cache_config.mode || 'inherit';
+              }
+          } catch (e) {
+              console.log('Error loading dashboard config for cache check', e);
+          }
+      }
+
       /**cached query */
+      let dsCacheEnabled = dataModelObject.ds.metadata.cache_config && dataModelObject.ds.metadata.cache_config.enabled === true;
+      
       let cacheEnabled = false;
-      dataModelObject.ds.metadata.cache_config &&
-      dataModelObject.ds.metadata.cache_config.enabled === true;
+      if (dashboardConfigCacheMode === 'enabled') {
+          cacheEnabled = true;
+      } else if (dashboardConfigCacheMode === 'disabled') {
+          cacheEnabled = false;
+      } else {
+          cacheEnabled = dsCacheEnabled;
+      }
 
       const cachedQuery = cacheEnabled
         ? await CachedQueryService.checkQuery(req.body.model_id, query)
@@ -1494,10 +1515,31 @@ export class DashboardController {
         console.log(query)
         console.log('\n-------------------------------------------------------------------------------\n');
 
+        // Recuperar configuración de caché del dashboard
+        let dashboardConfigCacheMode = 'inherit';
+        if (req.body.dashboard && req.body.dashboard.dashboard_id) {
+            try {
+                const dashboardDoc = await Dashboard.findById(req.body.dashboard.dashboard_id, 'config.cache_config').exec();
+                if (dashboardDoc && dashboardDoc.config && dashboardDoc.config.cache_config) {
+                    dashboardConfigCacheMode = dashboardDoc.config.cache_config.mode || 'inherit';
+                }
+            } catch (e) {
+                console.log('Error loading dashboard config for cache check', e);
+            }
+        }
+
         /**cached query */
-        let cacheEnabled =
-          dataModelObject.ds.metadata.cache_config &&
-          dataModelObject.ds.metadata.cache_config.enabled
+        let dsCacheEnabled = dataModelObject.ds.metadata.cache_config && dataModelObject.ds.metadata.cache_config.enabled;
+        
+        let cacheEnabled = false;
+        if (dashboardConfigCacheMode === 'enabled') {
+            cacheEnabled = true;
+        } else if (dashboardConfigCacheMode === 'disabled') {
+            cacheEnabled = false;
+        } else {
+            cacheEnabled = dsCacheEnabled;
+        }
+
         const cachedQuery = cacheEnabled
           ? await CachedQueryService.checkQuery(req.body.model_id, query)
           : null
@@ -1874,7 +1916,31 @@ export class DashboardController {
     const connection = await ManagerConnectionService.getConnection(req.body.model_id, connectionProps);
     const dataModel = await connection.getDataSource(req.body.model_id)
 
-    if (dataModel.ds.metadata.cache_config.enabled) {
+    // Recuperar configuración de caché del dashboard
+    let dashboardConfigCacheMode = 'inherit';
+    if (req.body.dashboard && req.body.dashboard.dashboard_id) {
+        try {
+            const dashboardDoc = await Dashboard.findById(req.body.dashboard.dashboard_id, 'config.cache_config').exec();
+            if (dashboardDoc && dashboardDoc.config && dashboardDoc.config.cache_config) {
+                dashboardConfigCacheMode = dashboardDoc.config.cache_config.mode || 'inherit';
+            }
+        } catch (e) {
+            console.log('Error loading dashboard config for cache clean', e);
+        }
+    }
+
+    let dsCacheEnabled = dataModel.ds.metadata.cache_config && dataModel.ds.metadata.cache_config.enabled;
+    
+    let cacheEnabled = false;
+    if (dashboardConfigCacheMode === 'enabled') {
+        cacheEnabled = true;
+    } else if (dashboardConfigCacheMode === 'disabled') {
+        cacheEnabled = false;
+    } else {
+        cacheEnabled = dsCacheEnabled;
+    }
+
+    if (cacheEnabled) {
       /**Security check */
       const allowed = DashboardController.securityCheck(dataModel, req.user)
       if (!allowed) {
