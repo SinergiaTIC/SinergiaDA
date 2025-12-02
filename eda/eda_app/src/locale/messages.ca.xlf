@@ -4436,7 +4436,7 @@ Un cop configurada podreu invocar-la des del botó sempre que calgui.</target>
       </trans-unit>
       <trans-unit id="cannotRemoveLastColumn">
         <source>No se puede eliminar la última columna de la tabla raíz, si esta no es la última de la consulta.</source>
-        <target>No es pot eliminar la darrera columna de la taula arrel, si aquesta no és la darrera de la consulta.</target>
+        <target>La columna no es pot eliminar. Mentre el panell tingui columnes de taules relacionades cal que conservi almenys una columna de la taula principal.</target>
       </trans-unit>
       <trans-unit id="withoutFilters">
         <source>Aún no has configurado filtros. Usa el panel de filtros o los filtros globales</source>
