@@ -392,7 +392,13 @@ export abstract class QueryBuilderService {
                     fieldsColumn.column_type = 'text';
         
                     let columna = `${fieldsColumn.table_id}.${fieldsColumn.column_name}`
-        
+
+                    if(fieldsColumn.joins.length !== 0) {
+                        let partes = columna.split('.');
+                        let nuevaColumna = partes[0] + '.' + partes[partes.length - 1];
+                        columna = nuevaColumna;
+                    }
+
                     let SQLexpression = "CASE\n";
                 
                     // First case: less than the first value of the range
