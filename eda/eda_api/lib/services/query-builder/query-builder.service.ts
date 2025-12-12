@@ -393,6 +393,12 @@ export abstract class QueryBuilderService {
         
                     let columna = `${fieldsColumn.table_id}.${fieldsColumn.column_name}`
         
+                    if(fieldsColumn.joins.length !== 0) { /** fields have uniquer identifier with dots if they come form a joined table tabe.column.table.column. */
+                        let partes = columna.split('.');  /** we keep the first and the last one wich are the good ones.                                          */
+                        let nuevaColumna = partes[0] + '.' + partes[partes.length - 1];
+                        columna = nuevaColumna;
+                    }
+
                     let SQLexpression = "CASE\n";
                 
                     // First case: less than the first value of the range
