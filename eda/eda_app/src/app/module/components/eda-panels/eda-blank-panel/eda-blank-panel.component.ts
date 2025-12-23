@@ -1568,8 +1568,8 @@ export class EdaBlankPanelComponent implements OnInit {
 
 /**SDA CUSTOM  */   public removeColumn = (c: Column, list?: string) => {
 /**SDA CUSTOM  */       // Conditions to check if we can delete the column
-/**SDA CUSTOM  */       const isNotRootColumn = c?.joins.length !== 0;
-/**SDA CUSTOM  */       const rootColumnElements = this.currentQuery.filter(col => col?.joins.length === 0).length;
+/**SDA CUSTOM  */       const isNotRootColumn = !!c?.joins?.length;
+/**SDA CUSTOM  */       const rootColumnElements = this.currentQuery.filter(col => !col?.joins?.length).length;
 /**SDA CUSTOM  */       const currentQueryLength = this.currentQuery.length;
 /**SDA CUSTOM  */
 /**SDA CUSTOM  */       // We just proceed if it is not the last column of the root table
