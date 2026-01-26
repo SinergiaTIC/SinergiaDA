@@ -298,7 +298,7 @@ export class GlobalFiltersService {
                 /** Checks if the current child_node is included before.
                  * This prevents duplicated paths.*/
                 if ((!rootTree.includes(relation.target_table) || relation.autorelation) && !childrenId.includes(child_id)) {
-                    // Label to show on the treeComponent 
+                    // Label to show on the treeComponent
                     let childLabel = relation.display_name?.default
                         ? `${relation.display_name.default}`
                         : ` ${relation.source_column[0]} - ${relation.target_table} `;
@@ -336,7 +336,7 @@ export class GlobalFiltersService {
                             (source.relations || []).some((rel: any) => rel.target_table != table_id);
                     });
 
-                    // If it's expandable, we add properties to expand the node. 
+                    // If it's expandable, we add properties to expand the node.
                     if (isexpandible && !relation.autorelation) {
                         childNode.expandedIcon = "pi pi-folder-open";
                         childNode.collapsedIcon = "pi pi-folder";
@@ -471,7 +471,7 @@ export class GlobalFiltersService {
     /**
      * Returns the selected values (labels) for a global filter, formatted according to the column type.
      * If the filter is of type 'date' and only one value is selected, adjusts the range to cover the entire year or month.
-     * 
+     *
      * @param globalFilter Object containing the global filter information and the selected items.
      * @returns An array of objects with the selected values, structured depending on whether it is a date filter or not.
      */
