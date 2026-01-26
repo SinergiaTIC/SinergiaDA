@@ -97,12 +97,9 @@ export class GlobalFiltersService {
         const tableRelations = table.relations.filter((rel: any) => rel.visible);
 
         for (const rel of tableRelations) {
-            const newTable = modelTables.find((t: any) =>
-                t.table_name === rel.target_table ||
-                t.table_name === `${rel.target_table}.${rel.target_column[0]}`
-            );
+        /*SDA CUSTOM*/    const newTable = modelTables.find((t: any) => t.table_name === rel.target_table || t.table_name === `${rel.target_table}.${rel.target_column[0]}`);
 
-            if (newTable?.table_name && !vMap.has(newTable.table_name)) {
+        /*SDA CUSTOM*/    if (newTable?.table_name && !vMap.has(newTable.table_name)) {
                 this.findRelations(modelTables, newTable, vMap);
             }
         }
