@@ -4494,6 +4494,34 @@
         <source>Error al guardar el informe. Error en el panel: </source>
         <target>Se ha producido un error al guardar el informe. El error está en el panel </target>
       </trans-unit>
+      <trans-unit id="DatePickerNextMonth">
+        <source>Próximo mes</source>
+        <target>Próximo mes</target>
+      </trans-unit>
+      <trans-unit id="DatePickerNextWeek">
+        <source>Próxima semana</source>
+        <target>Próxima semana</target>
+      </trans-unit>
+      <trans-unit id="DatePickerNext30">
+        <source>Próximos 30 días</source>
+        <target>Próximos 30 días</target>
+      </trans-unit>
+      <trans-unit id="DatePickerNext60">
+        <source>Próximos 60 días</source>
+        <target>Próximos 60 días</target>
+      </trans-unit>
+      <trans-unit id="DatePickerNext90">
+        <source>Próximos 90 días</source>
+        <target>Próximos 90 días</target>
+      </trans-unit>
+      <trans-unit id="DatePickerNextQuarter">
+        <source>Próximo trimestre</source>
+        <target>Próximo trimestre</target>
+      </trans-unit>
+      <trans-unit id="DatePickerNextYear">
+        <source>Próximo año</source>
+        <target>Próximo año</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>

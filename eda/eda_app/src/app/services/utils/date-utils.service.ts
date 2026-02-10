@@ -38,6 +38,13 @@ export class DateUtils {
                     case 'last30': return this.setLast30();
                     case 'last60': return this.setLast60();
                     case 'last120': return this.setLast120();
+                    case 'nextMonth': return this.setNextMonth();
+                    case 'nextWeek': return this.setNextWeek();
+                    case 'next30': return this.setNext30();
+                    case 'next60': return this.setNext60();
+                    case 'next90': return this.setNext90();
+                    case 'nextQuarter': return this.setNextQuarter();
+                    case 'nextYear': return this.setNextYear();
                 }
             }
 
@@ -215,6 +222,52 @@ export class DateUtils {
         const today = moment().toDate();
         const lastOneHudredNineteen = moment().subtract(119,'days').toDate();
         return [lastOneHudredNineteen, today];
+    }
+
+    public setNextMonth(): Array<Date> {
+        const base = moment().add(1, 'month');
+        const monthStart = base.clone().startOf('month').toDate();
+        const lastDayOfTheMonth = base.clone().endOf('month').toDate();
+        return [monthStart, lastDayOfTheMonth];
+    }
+
+    public setNextWeek(): Array<Date> {
+        const base = moment().add(1, 'week');
+        const weekStart = base.clone().startOf('isoWeek').toDate();
+        const weekEnd   = base.clone().endOf('isoWeek').toDate();
+        return [weekStart, weekEnd];
+    }
+
+    public setNext30(): Array<Date> {
+        const start = moment().add(1, 'day').startOf('day').toDate();
+        const end   = moment().add(30, 'day').endOf('day').toDate();
+        return [start, end];
+    }
+
+    public setNext60(): Array<Date> {
+        const start = moment().add(1, 'day').startOf('day').toDate();
+        const end   = moment().add(60, 'day').endOf('day').toDate();
+        return [start, end];
+    }
+
+    public setNext90(): Array<Date> {
+        const start = moment().add(1, 'day').startOf('day').toDate();
+        const end   = moment().add(90, 'day').endOf('day').toDate();
+        return [start, end];
+    }
+
+    public setNextQuarter(): Array<Date> {
+        const base = moment().add(1, 'quarter');
+        const quarterStart = base.clone().startOf('quarter').toDate();
+        const quarterEnd   = base.clone().endOf('quarter').toDate();
+        return [quarterStart, quarterEnd];
+    }
+
+    public setNextYear(): Array<Date> {
+        const base = moment().add(1, 'year');
+        const yearStart = base.clone().startOf('year').toDate();
+        const yearEnd   = base.clone().endOf('year').toDate();
+        return [yearStart, yearEnd];
     }
 
     public rangeToString(range: Array<Date>): Array<string> {
