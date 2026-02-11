@@ -1,4 +1,3 @@
-
 <!-- Panel Header -->
 <div class="panel-heading d-flex justify-content-between align-items-center">
     <div>
@@ -13,15 +12,23 @@
             <div *ngFor="let column of getWhatIfColumns()">
                 <span style="font-weight: bold;">{{column.display_name.default}}</span>
                 <input type="number" pInputText [(ngModel)]="column.whatif.value"
-                    (keydown.enter)="runWhatIfQuery(column)"
-                    style="margin-left: 5px; width: 50px; padding: 0;">
-                <button type="button" pButton pRipple icon="pi pi-refresh" class="p-button-outlined" style="width: 20px; padding: 0; border: 0;" (click)="runWhatIfQuery(column)"></button>
+                    (keydown.enter)="runWhatIfQuery(column)" style="margin-left: 5px; width: 50px; padding: 0;">
+                <button type="button" pButton pRipple icon="pi pi-refresh" class="p-button-outlined"
+                    style="width: 20px; padding: 0; border: 0;" (click)="runWhatIfQuery(column)"></button>
             </div>
         </ng-container>
 
 
-        <div id="edit" [ngClass]="{'edit-blink': lodash.isEmpty(panel.content) }" style="width: 25px;">
-            <i class="fa fa-ellipsis-v btn" (click)="contextMenu.showContextMenu($event)"></i>
+        <div *ngIf="getEditMode()" class="d-flex align-items-center">
+            <div class="mr-2 pointer" (click)="toggleLock()"
+                [attr.title]="panel.locked ? unlockPanelTooltip : lockPanelTooltip">
+                <i [className]="panel.locked ? 'fa fa-lock' : 'fa fa-unlock'"
+                    [style.color]="panel.locked ? 'red' : 'green'"></i>
+            </div>
+
+            <div id="edit" [ngClass]="{'edit-blink': lodash.isEmpty(panel.content) }" style="width: 25px;">
+                <i class="fa fa-ellipsis-v btn" (click)="contextMenu.showContextMenu($event)"></i>
+            </div>
         </div>
     </div>
 </div>
@@ -29,39 +36,47 @@
 <!-- Body of Panel -->
 <div class="panel-body" [ngClass]="{'spinner-panel': display_v.minispinner}">
     <div *ngIf="display_v.saved_panel && !display_v.minispinner" class="p-1" style="height: 100%">
-        <panel-chart #PanelChartComponent
-            [props]="panelChartConfig"
-            (configUpdated)="setChartProperties()"
-            (onChartClick)="onChartClick($event)"
-            class="component" style="height: 100%; width: 100%; display:block">
+        <panel-chart #PanelChartComponent [props]="panelChartConfig" (configUpdated)="setChartProperties()"
+            (onChartClick)="onChartClick($event)" class="component" style="height: 100%; width: 100%; display:block">
         </panel-chart>
     </div>
 
     <div class="grid" *ngIf="display_v.minispinner">
         <div class="col-12">
-            <p-progressSpinner [style]="{width: '5vw', height: '5vh'}" strokeWidth="8" class="" fill="#EEEEEE" animationDuration=".5s">
+            <p-progressSpinner [style]="{width: '5vw', height: '5vh'}" strokeWidth="8" class="" fill="#EEEEEE"
+                animationDuration=".5s">
             </p-progressSpinner>
         </div>
     </div>
 </div>
 
 <!-- Page Dialog -->
-<eda-page-dialog  #pdialog [inject]="{display: this.display_v.page_dialog, title:  this.panel.title.trim().length  > 0  ? panel.title : '\uD83D\uDD89'  }">
+<eda-page-dialog #pdialog
+    [inject]="{display: this.display_v.page_dialog, title:  this.panel.title.trim().length  > 0  ? panel.title : '\uD83D\uDD89'  }">
     <div (window:resize)="onResize($event)" class="grid">
-      <!-- SDA CUSTOM --> <div class="mt-3 col-md-12">
-      <!-- SDA CUSTOM -->   <div class="alert alert-danger" *ngIf="selectedQueryMode=='EDA'">
-      <!-- SDA CUSTOM -->     <span i18n="@modoEDAAlert">Este panel utiliza el modo EDA, que está obsoleto y dejará de funcionar futuras versiones de SinergiaDA. Por esa misma razón no se pueden hacer cambios sobre este informe. Para garantizar su funcionamiento se recomienda rehacerlo usando el <b>Modo Árbol</b>.</span>
-      <!-- SDA CUSTOM -->   </div>
-      <!-- SDA CUSTOM --> </div>
+        <!-- SDA CUSTOM -->
+        <div class="mt-3 col-md-12">
+            <!-- SDA CUSTOM -->
+            <div class="alert alert-danger" *ngIf="selectedQueryMode=='EDA'">
+                <!-- SDA CUSTOM --> <span i18n="@modoEDAAlert">Este panel utiliza el modo EDA, que está obsoleto y
+                    dejará de funcionar futuras versiones de SinergiaDA. Por esa misma razón no se pueden hacer cambios
+                    sobre este informe. Para garantizar su funcionamiento se recomienda rehacerlo usando el <b>Modo
+                        Árbol</b>.</span>
+                <!-- SDA CUSTOM -->
+            </div>
+            <!-- SDA CUSTOM -->
+        </div>
 
         <div id="queryModelSelector" class="col-12">
-          <!-- SDA CUSTOM --><p-dropdown  class="float-right" [(ngModel)]="selectedQueryMode" [options]="queryModes" optionLabel="label" optionValue="value" optionDisabled="disabled" (ngModelChange)="changeQueryMode()">
-            </p-dropdown >
+            <!-- SDA CUSTOM --><p-dropdown class="float-right" [(ngModel)]="selectedQueryMode" [options]="queryModes"
+                optionLabel="label" optionValue="value" optionDisabled="disabled" (ngModelChange)="changeQueryMode()">
+            </p-dropdown>
         </div>
 
         <p-tabView [activeIndex]="index" (onChange)="handleTabChange($event)" class="col-12 ">
 
-            <p-tabPanel i18n-header="@@vistaSeleccionador" header="{{ selectedQueryMode != 'SQL' ? editQuery : editSQLQuery}}">
+            <p-tabPanel i18n-header="@@vistaSeleccionador"
+                header="{{ selectedQueryMode != 'SQL' ? editQuery : editSQLQuery}}">
 
                 <div class="grid">
                     <!-- SQL MODE -->
@@ -69,7 +84,8 @@
                         <div class="col-7">
                             <h6 i18n="@@sqlExpresionH6">Expresión SQL</h6>
                             <hr>
-                            <textarea id="query-area" class="sqlInput" rows="12" cols="100" pInputTextarea autoResize="autoResize" [(ngModel)]="currentSQLQuery">
+                            <textarea id="query-area" class="sqlInput" rows="12" cols="100" pInputTextarea
+                                autoResize="autoResize" [(ngModel)]="currentSQLQuery">
                             </textarea>
                             <div class="col-6">
                                 <h6 i18n="@@originTable">Tabla origen</h6>
@@ -89,12 +105,14 @@
                                 (onClose)="accopen($event)">
                                 <p-accordionTab i18n-header="@@informacionGeneral" header="Información general">
                                     <ng-template pTemplate="content">
-                                        <p i18n="@@indicaciones1"> Puedes realizar consultas SQL sobre el esquema definido
+                                        <p i18n="@@indicaciones1"> Puedes realizar consultas SQL sobre el esquema
+                                            definido
                                             en tu modelo.
                                             Para ello introduce la consulta en el cuadro de texto y selecciona la tabla
                                             principal
                                             (puede ser cualquiera de las que aparecen en la consulta).
-                                            Usaremos esta tabla para vincular la consulta a los filtros del informe. </p>
+                                            Usaremos esta tabla para vincular la consulta a los filtros del informe.
+                                        </p>
                                         <p i18n="@@indicaciones2"> Limitaciones: </p>
 
                                         <ul>
@@ -103,7 +121,8 @@
                                                 hay)
                                             </li>
                                             <li i18n="@@indicaciones4">
-                                                Debes utilizar alias para todas las tablas de la consulta ( select a,b from
+                                                Debes utilizar alias para todas las tablas de la consulta ( select a,b
+                                                from
                                                 tabla t where c )
                                             </li>
                                         </ul>
@@ -112,7 +131,8 @@
                                 <p-accordionTab i18n-header="@@linkFilters"
                                     header="Vincular consulta con los filtros del panel">
                                     <ng-template pTemplate="content">
-                                        <p i18n="@@indicaciones5"> Puedes vincular los filtros del informe con la consulta
+                                        <p i18n="@@indicaciones5"> Puedes vincular los filtros del informe con la
+                                            consulta
                                         </p>
                                         <ul>
                                             <li i18n="@@indicaciones6">
@@ -149,12 +169,14 @@
                                         <p i18n="@@indicaciones10">Consulta con los filtros del informe vinculados</p>
                                         <ul>
                                             <p i18n="@@indicaciones11">
-                                                Tenemos un filtro en el informe para el campo 'city' de la tabla CUSTOMERS
+                                                Tenemos un filtro en el informe para el campo 'city' de la tabla
+                                                CUSTOMERS
                                             </p>
                                             <li i18n="@@indicaciones12"> Consulta sin filtros vinculados</li>
                                             <ul>
                                                 <li style="font-weight: bold;">
-                                                    SELECT c.customername FROM CUSTOMERS c WHERE c.customername IN ('Julia', 'John')
+                                                    SELECT c.customername FROM CUSTOMERS c WHERE c.customername IN
+                                                    ('Julia', 'John')
                                                 </li>
                                             </ul>
                                             <li i18n="@@indicaciones13"> Consulta con filtros vinculados</li>
@@ -168,7 +190,8 @@
                                         </ul>
                                         <ul>
                                             <p i18n="@@indicaciones14">
-                                                Tenemos un filtro en el informe para el campo 'office_id' de la tabla OFFICES
+                                                Tenemos un filtro en el informe para el campo 'office_id' de la tabla
+                                                OFFICES
                                             </p>
                                             <li i18n="@@indicaciones15"> Consulta sin filtros vinculados</li>
                                             <ul>
@@ -183,7 +206,8 @@
                                                 <li style="font-weight: bold">
                                                     <p>SELECT e.employee_name FROM EMPLOYEE e</p>
                                                     <p> INNER JOIN OFFICES o ON o.office_id = e.office_id</p>
-                                                    <p> WHERE e.employee_name IN ('Julia', 'John') AND {{' ${o.office_id}'}}</p>
+                                                    <p> WHERE e.employee_name IN ('Julia', 'John') AND {{'
+                                                        ${o.office_id}'}}</p>
                                                 </li>
                                             </ul>
                                         </ul>
@@ -197,9 +221,10 @@
 
                     <!-- NO SQL MODE -->
                     <ng-container *ngIf="selectedQueryMode!='SQL'">
-                        <div class="col-6 md:col-2 pl-2 pr-2" >
-                            <div class="d-flex justify-content-between"  style="min-height: 45px;">
-                                <h4 i18n="@@entidadesH4"  i18n-title="@@entidadesTitle" title="Clique sobre un entidad para ver sus atributos.">
+                        <div class="col-6 md:col-2 pl-2 pr-2">
+                            <div class="d-flex justify-content-between" style="min-height: 45px;">
+                                <h4 i18n="@@entidadesH4" i18n-title="@@entidadesTitle"
+                                    title="Clique sobre un entidad para ver sus atributos.">
                                     Entidades
                                 </h4>
                             </div>
@@ -208,7 +233,8 @@
                             <ng-container *ngIf="selectedQueryMode=='EDA'">
                                 <eda-input [inject]="inputs.findTable"></eda-input>
                                 <div class="column-list">
-                                    <div class="our-table-box" *ngFor="let table of tablesToShow" (click)="loadColumns(table)"
+                                    <div class="our-table-box" *ngFor="let table of tablesToShow"
+                                        (click)="loadColumns(table)"
                                         [className]="table.table_name === userSelectedTable ? 'selected-table-class' : 'our-table-box'"
                                         (mouseover)="showDescription(table)" (mouseout)="description = ''">
                                         <span class="text-left" title="{{table.description.default}}">
@@ -222,14 +248,13 @@
                             <!-- EDA JOINS TREE MODE -->
                             <ng-container *ngIf="selectedQueryMode=='EDA2'">
                                 <ng-container *ngIf="currentQuery.length > 0">
-                                    <p-tree selectionMode="single"
-                                        [value]="tableNodes"
-                                        [loading]="loadingNodes"
+                                    <p-tree selectionMode="single" [value]="tableNodes" [loading]="loadingNodes"
                                         (onNodeExpand)="tableNodeExpand($event)"
                                         (onNodeSelect)="tableNodeSelect($event)">
 
                                         <ng-template let-node pTemplate="child">
-                                            <span [ngClass]="checkNodeSelected(node) ? 'font-weight-bold' : ''"> {{node.label}} </span>
+                                            <span [ngClass]="checkNodeSelected(node) ? 'font-weight-bold' : ''">
+                                                {{node.label}} </span>
                                             <!-- <span *ngIf="!checkNodeSelected(node)"> {{node.label}} </span> -->
                                             <!-- <ng-container *ngIf="checkNodeSelected(node)"></ng-container> -->
                                         </ng-template>
@@ -243,7 +268,8 @@
                                 <ng-container *ngIf="currentQuery.length === 0">
                                     <eda-input [inject]="inputs.findTable"></eda-input>
                                     <div class="column-list">
-                                        <div class="our-table-box" *ngFor="let table of tablesToShow" (click)="loadColumns(table)"
+                                        <div class="our-table-box" *ngFor="let table of tablesToShow"
+                                            (click)="loadColumns(table)"
                                             [className]="table.table_name === userSelectedTable ? 'selected-table-class' : 'our-table-box'"
                                             (mouseover)="showDescription(table)" (mouseout)="description = ''">
                                             <span class="text-left" title="{{table.description.default}}">
@@ -257,57 +283,68 @@
                         </div>
 
                         <div class="col-6 md:col-2 pl-2">
-                            <div class="d-flex justify-content-between"  style="min-height: 45px;">
-                                <h4 *ngIf="!userSelectedTable" i18n="@@atributosH4"  i18n-title="@@atributsTitle" title="Atributos de una entidad. Arrastre los atrubutos a la selección o los filtros para consultarlos. Haciendo click sobre el atributo se accede a sus propiedaes">
+                            <div class="d-flex justify-content-between" style="min-height: 45px;">
+                                <h4 *ngIf="!userSelectedTable" i18n="@@atributosH4" i18n-title="@@atributsTitle"
+                                    title="Atributos de una entidad. Arrastre los atrubutos a la selección o los filtros para consultarlos. Haciendo click sobre el atributo se accede a sus propiedaes">
                                     Atributos
                                 </h4>
-                                <h5 *ngIf="userSelectedTable" i18n-title="@@atributsTitle" title="Clique sobre un entidad para ver sus atributos." >
+                                <h5 *ngIf="userSelectedTable" i18n-title="@@atributsTitle"
+                                    title="Clique sobre un entidad para ver sus atributos.">
                                     <span i18n="@@atributosH4">Atributos de:</span>
-                                    <span class="d-block font-weight-bold" i18n="@@atributosH4interpolation" i18n-title="@@atributsTitle">{{getNiceTableName(userSelectedTable)}}</span>
+                                    <span class="d-block font-weight-bold" i18n="@@atributosH4interpolation"
+                                        i18n-title="@@atributsTitle">{{getNiceTableName(userSelectedTable)}}</span>
                                 </h5>
- <!--SDA CUSTOM-->              <div *ngIf="userService.isAdmin && showHiddId">
- <!--SDA CUSTOM-->                  <span i18n-title="@@hiddenAttributes" title="Mostrar/ocultar campos ocultos" class="pointer icon-hover" (click)="changeHiddenMode()">
- <!--SDA CUSTOM-->                      <i *ngIf="showHiddenColumn" class="pi pi-eye" style="font-size: 1.5rem"></i>
- <!--SDA CUSTOM-->                      <i *ngIf="!showHiddenColumn" class="pi pi-eye-slash" style="font-size: 1.5rem"></i>
- <!--SDA CUSTOM-->                  </span>
- <!--SDA CUSTOM-->              </div>
+                                <!--SDA CUSTOM-->
+                                <div *ngIf="userService.isAdmin && showHiddId">
+                                    <!--SDA CUSTOM--> <span i18n-title="@@hiddenAttributes"
+                                        title="Mostrar/ocultar campos ocultos" class="pointer icon-hover"
+                                        (click)="changeHiddenMode()">
+                                        <!--SDA CUSTOM--> <i *ngIf="showHiddenColumn" class="pi pi-eye"
+                                            style="font-size: 1.5rem"></i>
+                                        <!--SDA CUSTOM--> <i *ngIf="!showHiddenColumn" class="pi pi-eye-slash"
+                                            style="font-size: 1.5rem"></i>
+                                        <!--SDA CUSTOM--> </span>
+                                    <!--SDA CUSTOM-->
+                                </div>
                             </div>
                             <div>
                                 <eda-input [inject]="inputs.findColumn"></eda-input>
                             </div>
                             <div class="column-list" cdkDropList #columnsList="cdkDropList" [cdkDropListData]="columns"
                                 [cdkDropListConnectedTo]="[selectList, filterList]" (cdkDropListDropped)="drop($event)"
-                                [cdkDropListEnterPredicate]="isAllowed" >
+                                [cdkDropListEnterPredicate]="isAllowed">
                                 <div *ngFor="let column of columns">
-                                 <div class="column-box"
-                                    *ngIf="['numeric', 'date'].includes(column.column_type)"
-                                    (click)="moveItem(column)"
-                                    (mouseover)="showDescription(column)"
-                                    (mouseout)="description=''"
-                                    cdkDrag [cdkDragData]="column"
-                                    (cdkDragDropped)="searchRelations(column, $event)"
-                                    [ngStyle]="column.hidden && column.hidden == 1 && {'opacity': '0.5'}">
-                                        <span *ngIf='column.column_type == "text" ' class="mdi  mdi-alphabetical" style="margin-right:4px;"></span>
-                                        <span *ngIf='column.column_type == "date" ' class="mdi mdi-calendar-text" style="margin-right:4px;"></span>
-                                        <span *ngIf='column.column_type == "numeric" ' class="mdi mdi-numeric" style="margin-right:4px;"></span>
-                                        <span class="text-left" title="{{column.description.default}}" class="eda-col-class-{{column.column_type}}">
+                                    <div class="column-box" *ngIf="['numeric', 'date'].includes(column.column_type)"
+                                        (click)="moveItem(column)" (mouseover)="showDescription(column)"
+                                        (mouseout)="description=''" cdkDrag [cdkDragData]="column"
+                                        (cdkDragDropped)="searchRelations(column, $event)"
+                                        [ngStyle]="column.hidden && column.hidden == 1 && {'opacity': '0.5'}">
+                                        <span *ngIf='column.column_type == "text" ' class="mdi  mdi-alphabetical"
+                                            style="margin-right:4px;"></span>
+                                        <span *ngIf='column.column_type == "date" ' class="mdi mdi-calendar-text"
+                                            style="margin-right:4px;"></span>
+                                        <span *ngIf='column.column_type == "numeric" ' class="mdi mdi-numeric"
+                                            style="margin-right:4px;"></span>
+                                        <span class="text-left" title="{{column.description.default}}"
+                                            class="eda-col-class-{{column.column_type}}">
                                             {{column.display_name.default}}
                                         </span>
                                     </div>
 
-                                    <div class="column-box"
-                                        *ngIf="!['numeric', 'date'].includes(column.column_type)"
-                                        (click)="moveItem(column)"
-                                        (mouseover)="showDescription(column)"
-                                        (mouseout)="description=''"
-                                        cdkDrag
+                                    <div class="column-box" *ngIf="!['numeric', 'date'].includes(column.column_type)"
+                                        (click)="moveItem(column)" (mouseover)="showDescription(column)"
+                                        (mouseout)="description=''" cdkDrag
                                         (cdkDragDropped)="searchRelations(column, $event)"
-                                        [ngStyle]="column.hidden && column.hidden == 1  && {'opacity': '0.5'} " >
+                                        [ngStyle]="column.hidden && column.hidden == 1  && {'opacity': '0.5'} ">
 
-                                        <span *ngIf='column.column_type == "text" ' class="mdi  mdi-alphabetical" style="margin-right:4px;"></span>
-                                        <span *ngIf='column.column_type == "date" ' class="mdi mdi-calendar-text" style="margin-right:4px;"></span>
-                                        <span *ngIf='column.column_type == "numeric" ' class="mdi mdi-numeric" style="margin-right:4px;"></span>
-                                        <span class="text-left" title="{{column.description.default}}" class="eda-col-class-{{column.column_type}}">
+                                        <span *ngIf='column.column_type == "text" ' class="mdi  mdi-alphabetical"
+                                            style="margin-right:4px;"></span>
+                                        <span *ngIf='column.column_type == "date" ' class="mdi mdi-calendar-text"
+                                            style="margin-right:4px;"></span>
+                                        <span *ngIf='column.column_type == "numeric" ' class="mdi mdi-numeric"
+                                            style="margin-right:4px;"></span>
+                                        <span class="text-left" title="{{column.description.default}}"
+                                            class="eda-col-class-{{column.column_type}}">
                                             {{column.display_name.default}}
                                         </span>
                                     </div>
@@ -316,35 +353,38 @@
                         </div>
 
                         <div class="col-12 md:col-8 pl-2">
-                            <h4 i18n="@@seleccionH4" i18n-title="@@seleccionTitle" title="Para lanzar una consulta. Seleccione los atributos que desea ver, Clique sobre ellos para configurarlos y ejecute la consulta. Siempre podrá volver a esta vista.">
+                            <h4 i18n="@@seleccionH4" i18n-title="@@seleccionTitle"
+                                title="Para lanzar una consulta. Seleccione los atributos que desea ver, Clique sobre ellos para configurarlos y ejecute la consulta. Siempre podrá volver a esta vista.">
                                 Mostrar los siguientes atributos:
                             </h4>
                             <hr class="mb-0">
                             <div class="select-list" cdkDropList cdkDropListOrientation="horizontal"
                                 #selectList="cdkDropList" [cdkDropListData]="currentQuery"
-                                [cdkDropListConnectedTo]="[columnsList, filterList]" (cdkDropListDropped)="drop($event)" >
+                                [cdkDropListConnectedTo]="[columnsList, filterList]"
+                                (cdkDropListDropped)="drop($event)">
                                 <p *ngIf="currentQuery.length < 1" class="fieldsInfo">{{draggFields}}</p>
-                                <div *ngFor="let item of currentQuery"
-                                class="p-2 select-box text-center"
-                                (click)="openColumnDialog(item)"
-                                (mouseover)="showDescription(item)"
-                                (mouseout)="description = ''"
-                                cdkDrag
-                                [cdkDragData]="column">
-                                <div class="col">
+                                <div *ngFor="let item of currentQuery" class="p-2 select-box text-center"
+                                    (click)="openColumnDialog(item)" (mouseover)="showDescription(item)"
+                                    (mouseout)="description = ''" cdkDrag [cdkDragData]="column">
+                                    <div class="col">
 
-                                  <span class="fa fa-close pull-right" style="z-index: 9999;" (click)="removeColumn( item, 'select' )"></span>
-                                  <span *ngIf='item.column_type == "text" ' class="mdi mdi-alphabetical" style="margin-right:4px;"></span>
-                                  <span *ngIf='item.column_type == "date" ' class="mdi mdi-calendar-text" style="margin-right:4px;"></span>
-                                  <span *ngIf='item.column_type == "numeric" ' class="mdi mdi-numeric" style="margin-right:4px;"></span>
+                                        <span class="fa fa-close pull-right" style="z-index: 9999;"
+                                            (click)="removeColumn( item, 'select' )"></span>
+                                        <span *ngIf='item.column_type == "text" ' class="mdi mdi-alphabetical"
+                                            style="margin-right:4px;"></span>
+                                        <span *ngIf='item.column_type == "date" ' class="mdi mdi-calendar-text"
+                                            style="margin-right:4px;"></span>
+                                        <span *ngIf='item.column_type == "numeric" ' class="mdi mdi-numeric"
+                                            style="margin-right:4px;"></span>
 
 
-                                  <span class="text-center eda-col-class-{{item.column_type}}" title="{{item.description.default}}"  >
-                                    {{item.display_name.default}}
-                                  </span>
+                                        <span class="text-center eda-col-class-{{item.column_type}}"
+                                            title="{{item.description.default}}">
+                                            {{item.display_name.default}}
+                                        </span>
+                                    </div>
+
                                 </div>
-
-                            </div>
                             </div>
 
                             <h4 class="mt-4" i18n="@@filtrosH4">
@@ -353,18 +393,23 @@
                             <hr class="mb-0">
                             <div class="filter-list" cdkDropList cdkDropListOrientation="horizontal"
                                 #filterList="cdkDropList" [cdkDropListData]="filtredColumns"
-                                [cdkDropListConnectedTo]="[columnsList, selectList]" (cdkDropListDropped)="drop($event)"
-                                >
+                                [cdkDropListConnectedTo]="[columnsList, selectList]"
+                                (cdkDropListDropped)="drop($event)">
                                 <p *ngIf="filtredColumns.length < 1" class="fieldsInfo">{{draggFilters}}</p>
                                 <div class="p-2 select-box text-center" *ngFor="let item of filtredColumns"
                                     (click)="openColumnDialog(item, true)" (mouseover)="showDescription(item)"
-                                    (mouseout)="description = ''" cdkDrag [cdkDragData]="column" >
+                                    (mouseout)="description = ''" cdkDrag [cdkDragData]="column">
                                     <div class="col">
-                                        <span class="close-thin pointer" (click)="removeColumn( item, 'filter' )"></span>
-                                        <span *ngIf='item.column_type == "text" ' class="mdi  mdi-alphabetical" style="margin-right:4px;"></span>
-                                        <span *ngIf='item.column_type == "date" ' class="mdi mdi-calendar-text" style="margin-right:4px;"></span>
-                                        <span *ngIf='item.column_type == "numeric" ' class="mdi mdi-numeric" style="margin-right:4px;"></span>
-                                        <span  class=" text-center eda-col-class-{{item.column_type}}" title="{{item.description.default}}"  >
+                                        <span class="close-thin pointer"
+                                            (click)="removeColumn( item, 'filter' )"></span>
+                                        <span *ngIf='item.column_type == "text" ' class="mdi  mdi-alphabetical"
+                                            style="margin-right:4px;"></span>
+                                        <span *ngIf='item.column_type == "date" ' class="mdi mdi-calendar-text"
+                                            style="margin-right:4px;"></span>
+                                        <span *ngIf='item.column_type == "numeric" ' class="mdi mdi-numeric"
+                                            style="margin-right:4px;"></span>
+                                        <span class=" text-center eda-col-class-{{item.column_type}}"
+                                            title="{{item.description.default}}">
                                             {{item.display_name.default}}
                                         </span>
                                     </div>
@@ -376,17 +421,19 @@
                                 <div class="col-3 md:col-12 infoFiltres">
                                     <span i18n="@@topQueryH4">
                                         Mostrar Top: &nbsp;
-                                        <p-inputNumber [(ngModel)]="queryLimit" (onInput)="onTopChange()"></p-inputNumber>
+                                        <p-inputNumber [(ngModel)]="queryLimit"
+                                            (onInput)="onTopChange()"></p-inputNumber>
                                     </span>
                                 </div>
                                 <!-- SDA CUSTOM div class="col-4 md:col-12 flex infoJoin" -->
                                 <!-- SDA CUSTOM-->
-                                 <div class="col-6 md:col-12 flex infoJoin" >
+                                <div class="col-6 md:col-12 flex infoJoin">
 
                                     <span i18n="@@joinTypeH4">
                                         Tipo de intersección: &nbsp;
                                     </span>
-                                    <p-selectButton [options]="joinTypeOptions" [(ngModel)]="joinType"  (onChange)="onJoinTypeChange()"  optionLabel="icon" optionValue="joinType">
+                                    <p-selectButton [options]="joinTypeOptions" [(ngModel)]="joinType"
+                                        (onChange)="onJoinTypeChange()" optionLabel="icon" optionValue="joinType">
                                         <ng-template let-item>
                                             <i [class]="item.icon" [pTooltip]="item.description"></i>
                                         </ng-template>
@@ -398,7 +445,9 @@
                                 </div-->
 
                                 <div class="col-3 md:col-12 buttonAndOr d-flex justify-content-end">
-                                    <button pButton (click)="filterAndOrDialog()" icon="pi pi-filter" class="p-button-outlined ml-2" i18n-label="@@filterSettings" label="Configuración de filtros"></button>
+                                    <button pButton (click)="filterAndOrDialog()" icon="pi pi-filter"
+                                        class="p-button-outlined ml-2" i18n-label="@@filterSettings"
+                                        label="Configuración de filtros"></button>
                                 </div>
 
                                 <div class="col-12 md:col-12 info-query" *ngIf="currentQuery.length !== 0">
@@ -430,9 +479,9 @@
 
                                                 </div>
 
-                                                <textarea *ngIf="!display_v.minispinnerSQL" id="query-area" class="sqlInput"
-                                                    rows="10" cols="100" pInputTextarea autoResize="autoResize"
-                                                    [(ngModel)]="queryFromServer"></textarea>
+                                                <textarea *ngIf="!display_v.minispinnerSQL" id="query-area"
+                                                    class="sqlInput" rows="10" cols="100" pInputTextarea
+                                                    autoResize="autoResize" [(ngModel)]="queryFromServer"></textarea>
                                             </div>
                                             <button type="button" pButton icon="fa fa-database" (click)="migrateQuery()"
                                                 class="p-button-success ml-2" i18n-label="@@openSqlMode"
@@ -442,25 +491,34 @@
                                     </p-overlayPanel>
 
 
-<!-- /**SDA CUSTOM  */ -->                   <div class="grid overflow-x-hidden">
+                                    <!-- /**SDA CUSTOM  */ -->
+                                    <div class="grid overflow-x-hidden">
 
                                         <div class="col-12 md:col-6 pl-2">
                                             <h5 i18n="@@resumenAtrH6">
                                                 Resumen de atributos
                                             </h5>
 
-<!-- /**SDA CUSTOM  */ -->                       <div *ngFor="let column of currentQuery" class="grid-item">
+                                            <!-- /**SDA CUSTOM  */ -->
+                                            <div *ngFor="let column of currentQuery" class="grid-item">
 
-<!-- /**SDA CUSTOM  */ -->                            <strong [innerHTML]="getColumnJoins(column)"></strong>
+                                                <!-- /**SDA CUSTOM  */ --> <strong
+                                                    [innerHTML]="getColumnJoins(column)"></strong>
 
-<!-- /**SDA CUSTOM  */ -->                               <div class="table-name">
+                                                <!-- /**SDA CUSTOM  */ -->
+                                                <div class="table-name">
                                                     <strong> {{ getNiceTableName(column.table_id) }} </strong>
                                                     <i class="pi pi-angle-right"></i>
-<!-- /**SDA CUSTOM  */ -->                                   <span>{{ column.display_name.default }}</span>
+                                                    <!-- /**SDA CUSTOM  */ --> <span>{{ column.display_name.default
+                                                        }}</span>
                                                     <ng-container *ngFor="let aggregation of column.aggregation_type">
-                                                        <span *ngIf="aggregation.selected && aggregation.display_name !== 'no'" class="d-flex align-items-center" [innerHTML]="getDisplayAggregation(aggregation)"></span>
+                                                        <span
+                                                            *ngIf="aggregation.selected && aggregation.display_name !== 'no'"
+                                                            class="d-flex align-items-center"
+                                                            [innerHTML]="getDisplayAggregation(aggregation)"></span>
                                                     </ng-container>
-<!-- /**SDA CUSTOM  */ -->                               </div>
+                                                    <!-- /**SDA CUSTOM  */ -->
+                                                </div>
 
 
                                             </div>
@@ -471,16 +529,22 @@
                                             <h5 i18n="@@resumenFiltrosPanelH6">
                                                 Resumen de filtros del panel
                                             </h5>
-<!-- /**SDA CUSTOM  */ -->                           <div *ngFor="let filter of selectedFilters; let index = index">
-<!-- /**SDA CUSTOM  */ -->                               <div class="filter-text">
-<!-- /**SDA CUSTOM  */ -->                                   <span class="filter-joins" [innerHTML]="getFilterJoins(filter)"></span>
-<!-- /**SDA CUSTOM  */ -->
-<!-- /**SDA CUSTOM  */ -->                                   <span class="table-name" style="margin-left: 1.5rem;">
-<!-- /**SDA CUSTOM  */ -->                                       {{ getNiceTableName(currentQuery[index + 1]?.table_id) }}
-<!-- /**SDA CUSTOM  */ -->                                       <i class="pi pi-angle-right"></i>
-<!-- /**SDA CUSTOM  */ -->                                   </span>
-<!-- /**SDA CUSTOM  */ -->
-<!-- /**SDA CUSTOM  */ -->                                   <span [innerHTML]="getDisplayFilterStr(filter)"></span>
+                                            <!-- /**SDA CUSTOM  */ -->
+                                            <div *ngFor="let filter of selectedFilters; let index = index">
+                                                <!-- /**SDA CUSTOM  */ -->
+                                                <div class="filter-text">
+                                                    <!-- /**SDA CUSTOM  */ --> <span class="filter-joins"
+                                                        [innerHTML]="getFilterJoins(filter)"></span>
+                                                    <!-- /**SDA CUSTOM  */ -->
+                                                    <!-- /**SDA CUSTOM  */ --> <span class="table-name"
+                                                        style="margin-left: 1.5rem;">
+                                                        <!-- /**SDA CUSTOM  */ --> {{
+                                                        getNiceTableName(currentQuery[index + 1]?.table_id) }}
+                                                        <!-- /**SDA CUSTOM  */ --> <i class="pi pi-angle-right"></i>
+                                                        <!-- /**SDA CUSTOM  */ --> </span>
+                                                    <!-- /**SDA CUSTOM  */ -->
+                                                    <!-- /**SDA CUSTOM  */ --> <span
+                                                        [innerHTML]="getDisplayFilterStr(filter)"></span>
                                                 </div>
                                             </div>
                                         </div>
@@ -489,18 +553,26 @@
                                             <h5 i18n="@@resumenFiltrosInformeH6">
                                                 Resumen de filtros del informe
                                             </h5>
-<!-- /**SDA CUSTOM  */ -->                           <div *ngFor="let filter of globalFilters; let index = index">
-<!-- /**SDA CUSTOM  */ -->                               <div class="filter-text">
-<!-- /**SDA CUSTOM  */ -->                                   <span class="filter-joins" [innerHTML]="getFilterJoins(filter)"></span>
-<!-- /**SDA CUSTOM  */ -->
-<!-- /**SDA CUSTOM  */ -->                                   <span class="table-name" style="margin-left: 1.5rem;">
-<!-- /**SDA CUSTOM  */ -->                                       {{ getNiceTableName(currentQuery[index + 1]?.table_id) }}
-<!-- /**SDA CUSTOM  */ -->                                       <i class="pi pi-angle-right"></i>
-<!-- /**SDA CUSTOM  */ -->                                   </span>
-<!-- /**SDA CUSTOM  */ -->
-<!-- /**SDA CUSTOM  */ -->                                   <span [innerHTML]="getDisplayFilterStr(filter)"></span>
-<!-- /**SDA CUSTOM  */ -->                               </div>
-<!-- /**SDA CUSTOM  */ -->                           </div>
+                                            <!-- /**SDA CUSTOM  */ -->
+                                            <div *ngFor="let filter of globalFilters; let index = index">
+                                                <!-- /**SDA CUSTOM  */ -->
+                                                <div class="filter-text">
+                                                    <!-- /**SDA CUSTOM  */ --> <span class="filter-joins"
+                                                        [innerHTML]="getFilterJoins(filter)"></span>
+                                                    <!-- /**SDA CUSTOM  */ -->
+                                                    <!-- /**SDA CUSTOM  */ --> <span class="table-name"
+                                                        style="margin-left: 1.5rem;">
+                                                        <!-- /**SDA CUSTOM  */ --> {{
+                                                        getNiceTableName(currentQuery[index + 1]?.table_id) }}
+                                                        <!-- /**SDA CUSTOM  */ --> <i class="pi pi-angle-right"></i>
+                                                        <!-- /**SDA CUSTOM  */ --> </span>
+                                                    <!-- /**SDA CUSTOM  */ -->
+                                                    <!-- /**SDA CUSTOM  */ --> <span
+                                                        [innerHTML]="getDisplayFilterStr(filter)"></span>
+                                                    <!-- /**SDA CUSTOM  */ -->
+                                                </div>
+                                                <!-- /**SDA CUSTOM  */ -->
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -517,7 +589,8 @@
 
 
 
-            <p-tabPanel i18n-header="@@vistaPrevia" header="VISTA PREVIA" [disabled]="display_v.disablePreview || currentQuery.length === 0">
+            <p-tabPanel i18n-header="@@vistaPrevia" header="VISTA PREVIA"
+                [disabled]="display_v.disablePreview || currentQuery.length === 0">
                 <div class="grid p-0 h-100">
                     <div class="col-8 p-1 component" style="background-color: var(--panel-color);">
 
@@ -531,7 +604,8 @@
                         </div>
                         <div class="container">
                             <div class="row">
-                                <drag-drop *ngIf="graphicType==='crosstable'  && dragAndDropAvailable" [axes]="axes" (newAxes)="newAxesOrdering($event)"></drag-drop>
+                                <drag-drop *ngIf="graphicType==='crosstable'  && dragAndDropAvailable" [axes]="axes"
+                                    (newAxes)="newAxesOrdering($event)"></drag-drop>
                             </div>
                         </div>
 
@@ -542,12 +616,9 @@
                         <div class="grid p-0">
                             <div class="col-12">
                                 <form [formGroup]="chartForm">
-                                    <p-dropdown id="chartSelector" [style]="{'width':'100%'}"
-                                        [options]="chartTypes"
-                                        formControlName="chart"
-                                        (onChange)="changeChartTypeCheck(chartForm.value.chart.value, chartForm.value.chart.subValue, getChartStyles(chartForm.value.chart.value))
-                                        "optionLabel="label"
-                                        [autoDisplayFirst]="false">
+                                    <p-dropdown id="chartSelector" [style]="{'width':'100%'}" [options]="chartTypes"
+                                        formControlName="chart" (onChange)="changeChartTypeCheck(chartForm.value.chart.value, chartForm.value.chart.subValue, getChartStyles(chartForm.value.chart.value))
+                                        " optionLabel="label" [autoDisplayFirst]="false">
 
                                         <ng-template pTemplate="selectedItem">
                                             <div class="chart-item chart-item-value" *ngIf="chartForm.value.chart">
@@ -563,7 +634,8 @@
                                         </ng-template>
 
                                         <ng-template let-chart pTemplate="item">
-                                            <div class="d-flex align-items-center" style="position: relative;height: 25px;"
+                                            <div class="d-flex align-items-center"
+                                                style="position: relative;height: 25px;"
                                                 [attr.title]="chart.tooManyData ? getTooManyDataDescription() : (chart.ngIf) ? getOptionDescription(chart.subValue) : getOptionDescriptionValid(chart.subValue) ">
                                                 <span class="material-icons"
                                                     [ngClass]="{'orange-alert': chart.ngIf, 'grey-alert': chart.tooManyData}">
@@ -576,10 +648,12 @@
                                                     {{chart.label}}
                                                 </span>
 
-                                                <span i18n="@@tooManyValues" *ngIf='chart.tooManyData' class="edaTooManyData"> -
+                                                <span i18n="@@tooManyValues" *ngIf='chart.tooManyData'
+                                                    class="edaTooManyData"> -
                                                     Demasiados valores</span>
 
-                                                <span i18n="@@notAvaliable" *ngIf='chart.ngIf' class="edaTooManyData"> - No
+                                                <span i18n="@@notAvaliable" *ngIf='chart.ngIf' class="edaTooManyData"> -
+                                                    No
                                                     Disponible</span>
                                             </div>
                                         </ng-template>
@@ -600,13 +674,15 @@
     </div>
 
     <p-footer class="footer" appendTo="body" style="z-index: 10000;">
-      <div class="p-dialog-buttonpanel p-widget-content p-helper-clearfix text-right" >
-            <!--SDA CUSTOM --><button *ngIf="!hiddenButtonExecuter && selectedQueryMode!='EDA'" type="button" pButton (click)="runManualQuery()" [disabled]="disableRunQuery()"
-                icon="fa fa-flask" class="p-button-success ml-2" i18n-label="@@ejecutarBtn" label="Ejecutar">
+        <div class="p-dialog-buttonpanel p-widget-content p-helper-clearfix text-right">
+            <!--SDA CUSTOM --><button *ngIf="!hiddenButtonExecuter && selectedQueryMode!='EDA'" type="button" pButton
+                (click)="runManualQuery()" [disabled]="disableRunQuery()" icon="fa fa-flask"
+                class="p-button-success ml-2" i18n-label="@@ejecutarBtn" label="Ejecutar">
             </button>
 
-            <!--SDA CUSTOM --><button *ngIf="selectedQueryMode!='EDA'" type="submit" pButton (click)="savePanel()" [disabled]="display_v.btnSave" icon="fa fa-check"
-                class="p-button ml-2" i18n-label="@@guardarBtn" label="Confirmar" id="eda_blak_panel_confirmar">
+            <!--SDA CUSTOM --><button *ngIf="selectedQueryMode!='EDA'" type="submit" pButton (click)="savePanel()"
+                [disabled]="display_v.btnSave" icon="fa fa-check" class="p-button ml-2" i18n-label="@@guardarBtn"
+                label="Confirmar" id="eda_blak_panel_confirmar">
             </button>
 
             <button type="button" pButton (click)="closeEditarConsulta()" icon="fa fa-times"
@@ -617,9 +693,11 @@
 
 </eda-page-dialog>
 
-<app-column-dialog *ngIf="configController" [controller]="configController" (updateSortedFiltersColumnDialog)="updateSortedFiltersColumnDialogFunction($event)"></app-column-dialog>
+<app-column-dialog *ngIf="configController" [controller]="configController"
+    (updateSortedFiltersColumnDialog)="updateSortedFiltersColumnDialogFunction($event)"></app-column-dialog>
 
-<app-filter-dialog *ngIf="filterController" [controller]="filterController" (updateSortedFiltersFilterDialog)="updateSortedFiltersFilterDialogFunction($event)"></app-filter-dialog>
+<app-filter-dialog *ngIf="filterController" [controller]="filterController"
+    (updateSortedFiltersFilterDialog)="updateSortedFiltersFilterDialogFunction($event)"></app-filter-dialog>
 
 <app-chart-dialog *ngIf="chartController" [controller]="chartController"></app-chart-dialog>
 
@@ -643,7 +721,7 @@
 
 <app-treeMap-dialog *ngIf="treeMapController" [controller]="treeMapController"></app-treeMap-dialog>
 
-<app-tree-table-dialog  *ngIf="treeTableController" [controller]="treeTableController"></app-tree-table-dialog>
+<app-tree-table-dialog *ngIf="treeTableController" [controller]="treeTableController"></app-tree-table-dialog>
 
 <app-funnel-dialog *ngIf="funnelController" [controller]="funnelController"></app-funnel-dialog>
 
@@ -657,4 +735,6 @@
 
 <eda-context-menu [inject]="contextMenu"></eda-context-menu>
 
-<filter-and-or-dialog *ngIf="display_v.filterAndOr_dialog" [(selectedFilters)]="selectedFilters" [(globalFilters)] ="globalFilters" [tables]="tables" (close)="onCloseFilterAndOrDialog()" (newSortedFilters)="newSortedFiltersFunction($event)" [sortedFilters]="sortedFilters"></filter-and-or-dialog>
+<filter-and-or-dialog *ngIf="display_v.filterAndOr_dialog" [(selectedFilters)]="selectedFilters"
+    [(globalFilters)]="globalFilters" [tables]="tables" (close)="onCloseFilterAndOrDialog()"
+    (newSortedFilters)="newSortedFiltersFunction($event)" [sortedFilters]="sortedFilters"></filter-and-or-dialog>

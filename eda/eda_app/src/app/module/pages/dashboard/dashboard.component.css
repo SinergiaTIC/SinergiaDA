@@ -252,9 +252,7 @@ app-dashboard {
     height:0px !important;
     visibility: hidden !important;
 }
-.noSidebar{
-    ;
-}
+
 .filterDialogTitles{
     font-size: medium;
     font-weight: bold;
@@ -266,6 +264,14 @@ app-dashboard {
 }
 
 
+
+.panel-locked {
+    cursor: not-allowed !important;
+}
+
+.panel-locked ::ng-deep .gridster-item-resizable-handler {
+    cursor: not-allowed !important;
+}
 
 .disabled-div {
     position: absolute;

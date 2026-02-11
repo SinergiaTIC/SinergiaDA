@@ -3,8 +3,8 @@ import { Component, OnInit, Input, Output, EventEmitter, ViewEncapsulation } fro
 import { InjectEdaPanel, EdaTitlePanel } from '@eda/models/model.index';
 import { EdaContextMenu, EdaContextMenuItem, EdaDialogCloseEvent, EdaDialogController } from '@eda/shared/components/shared-components.index';
 import { DomSanitizer } from '@angular/platform-browser'
-import {SafeHtmlPipe} from './htmlSanitizer.pipe'
-import {SafeUrlPipe} from './urlSanitizer.pipe'
+import { SafeHtmlPipe } from './htmlSanitizer.pipe'
+import { SafeUrlPipe } from './urlSanitizer.pipe'
 import * as _ from 'lodash';
 import { environment } from 'environments/environment';
 
@@ -27,25 +27,23 @@ export class EdaTitlePanelComponent implements OnInit {
     display: any = {
         editMode: true
     }
-    public htmlPipe : SafeHtmlPipe
-    public urlPipe : SafeUrlPipe
+    public htmlPipe: SafeHtmlPipe
+    public urlPipe: SafeUrlPipe
+    public lockPanelTooltip: string = $localize`:@@lockPanel:Bloquear panel`;
+    public unlockPanelTooltip: string = $localize`:@@unlockPanel:Desbloquear panel`;
 
 
-    constructor(public sanitized: DomSanitizer, public dashboardService : DashboardService){}
-    
+    constructor(public sanitized: DomSanitizer, public dashboardService: DashboardService) { }
+
 
     ngOnInit(): void {
         this.initContextMenu()
         this.setEditMode();
     }
 
-    public setTitle(): void {
-        this.titleClick = !this.titleClick;
-
+    public toggleLock(): void {
+        this.panel.locked = !this.panel.locked;
         this.dashboardService._notSaved.next(true);
-        if (this.titleClick) {
-
-        }
     }
 
     public setEditMode(): void {
@@ -68,15 +66,15 @@ export class EdaTitlePanelComponent implements OnInit {
                 }),
                 new EdaContextMenuItem({
                     label: $localize`:@@panelOptions2:Editar opciones del gráfico`,
-                    icon: 'mdi mdi-wrench', 
+                    icon: 'mdi mdi-wrench',
                     command: () => {
-                        
+
                         this.contextMenu.hideContextMenu();
 
                         this.editTittleController = new EdaDialogController({
                             params: { title: this.panel.title },
                             close: (event, response) => {
-                                if(!_.isEqual(event, EdaDialogCloseEvent.NONE)){
+                                if (!_.isEqual(event, EdaDialogCloseEvent.NONE)) {
                                     this.panel.title = response.title;
                                     this.setPanelSize()
                                     this.dashboardService._notSaved.next(true);
@@ -84,14 +82,14 @@ export class EdaTitlePanelComponent implements OnInit {
                                 this.editTittleController = null;
                                 // this.setPanelSize()
                             }
-                          });
+                        });
                     }
                 })
             ]
         });
 
     }
-    
+
     public removePanel(): void {
         this.remove.emit(this.panel.id);
     }
@@ -99,18 +97,18 @@ export class EdaTitlePanelComponent implements OnInit {
     public setPanelSize(): void {
         let element: any;
         if (environment.production) {
-            element = document.querySelector(`[id^="${this.panel.id.substring(0,30)}"]`);
+            element = document.querySelector(`[id^="${this.panel.id.substring(0, 30)}"]`);
         } else {
-            element = document.querySelector(`[ng-reflect-id^="${this.panel.id.substring(0,30)}"]`);
+            element = document.querySelector(`[ng-reflect-id^="${this.panel.id.substring(0, 30)}"]`);
         }
 
         let parentElement: any = element?.parentNode;
-        
+
         if (parentElement) {
             let parentWidth = parentElement.offsetWidth - 20;
             let parentHeight = parentElement.offsetHeight - 20;
-            
-            
+
+
             if (this.panel.title.includes('img')) {
                 this.panel.title = this.panel.title.replace('<img', `<img style="max-height: ${parentHeight}px; max-width: ${parentWidth}px;"`);
             }

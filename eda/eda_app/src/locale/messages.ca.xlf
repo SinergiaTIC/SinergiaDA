@@ -4518,6 +4518,14 @@ Un cop configurada podreu invocar-la des del botó sempre que calgui.</target>
         <source>Error al guardar el informe. Error en el panel: </source>
         <target>S'ha produït un error al desar l'informe. L'error és al panell </target>
       </trans-unit>
+      <trans-unit id="lockPanel">
+        <source>Bloquear panel</source>
+        <target>Blocar panell</target>
+      </trans-unit>
+      <trans-unit id="unlockPanel">
+        <source>Desbloquear panel</source>
+        <target>Desblocar panell</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>

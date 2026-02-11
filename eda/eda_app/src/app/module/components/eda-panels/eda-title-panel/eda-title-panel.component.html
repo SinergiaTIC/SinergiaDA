@@ -4,8 +4,16 @@
         <div class="mb-0 pointer w-90 eda-title-panel" [innerHTML]="panel.title | sanitizeHtml"></div>
     </div>
 
-    <div *ngIf="display.editMode" id="edit" style="text-align: right; max-height: 2rem; ">
-        <i class="fa fa-ellipsis-v btn" (click)="contextMenu.showContextMenu($event)"></i>
+    <div *ngIf="display.editMode" class="d-flex align-items-center">
+        <div class="mr-2 pointer" (click)="toggleLock()"
+            [attr.title]="panel.locked ? unlockPanelTooltip : lockPanelTooltip">
+            <i [className]="panel.locked ? 'fa fa-lock' : 'fa fa-unlock'"
+                [style.color]="panel.locked ? 'red' : 'green'"></i>
+        </div>
+
+        <div id="edit" style="text-align: right; max-height: 2rem; ">
+            <i class="fa fa-ellipsis-v btn" (click)="contextMenu.showContextMenu($event)"></i>
+        </div>
     </div>
 
 </div>
