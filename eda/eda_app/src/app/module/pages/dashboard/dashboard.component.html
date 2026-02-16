@@ -137,6 +137,48 @@
         </div>
     </div>
 
+    <hr>
+
+    <!-- ZOOM CONTROLS -->
+    <div class="right-sidebar-blocks-title mt-1">
+        <span class="ml-2">ZOOM</span>
+    </div>
+
+    <div class="zoom-controls mt-2 ml-2 mr-2">
+        <div class="zoom-buttons-row">
+            <button pButton pRipple type="button" class="p-button-sm p-button-outlined zoom-btn" (click)="zoomOut()"
+                [disabled]="zoomLevel <= 25">
+                <i class="fa fa-search-minus"></i>
+            </button>
+            <span class="zoom-level-display">{{zoomLevel}}%</span>
+            <button pButton pRipple type="button" class="p-button-sm p-button-outlined zoom-btn" (click)="zoomIn()"
+                [disabled]="zoomLevel >= 100">
+                <i class="fa fa-search-plus"></i>
+            </button>
+        </div>
+
+        <div class="zoom-slider-container mt-2">
+            <p-slider [(ngModel)]="zoomLevel" [min]="25" [max]="100" [step]="5"
+                (onChange)="setZoom(zoomLevel)"></p-slider>
+        </div>
+
+        <div class="zoom-preset-buttons mt-2">
+            <button pButton pRipple type="button" *ngFor="let level of zoomLevels"
+                class="p-button-sm p-button-text zoom-preset-btn" [class.active-zoom]="zoomLevel === level"
+                (click)="setZoom(level)">
+                {{level}}%
+            </button>
+        </div>
+
+        <div class="zoom-reset-container mt-2">
+            <button pButton pRipple type="button" class="p-button-sm p-button-outlined w-100" (click)="resetZoom()"
+                [disabled]="zoomLevel === 100">
+                <i class="fa fa-undo"></i>
+                <span i18n="@@resetZoom" class="ml-1">Restablecer</span>
+            </button>
+        </div>
+    </div>
+
     <div *ngIf="display_v.edit_mode" class="right-sidebar-blocks-options block-options-bg pointer mt-1">
         <div>
             <div>
@@ -169,7 +211,6 @@
                 [(ngModel)]="refreshTime">
         </div>
     </div>
-
 
     <hr>
     <div *ngIf="display_v.edit_mode && canIedit()" class="right-sidebar-blocks-options block-options-bg pointer mt-1"

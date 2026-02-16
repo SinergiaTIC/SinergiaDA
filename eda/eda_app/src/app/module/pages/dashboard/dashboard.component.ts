@@ -55,10 +55,10 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     public isDashboardCreator: boolean = false;
 
 
-  public filterButtonVisibility = {
+    public filterButtonVisibility = {
         public : false,
         readOnly : false
-        }
+    }
     // Grid Global Variables
     public inject: InjectEdaPanel;
     public panels: EdaPanel[] = [];
@@ -75,13 +75,13 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
         minHeight: 1,
         resizeHandles: { s: false, e: false, n: false, w: false, se: false, ne: false, sw: false, nw: false },
     };
-  public tag: any;
-  public tags: Array<any>;
-  public selectedTags: any[];
-  public selectedtag: any;
-  public applyNewTag: string;
-  public addTag: boolean = false;
-  public sendViaMailConfig: any = { enabled: false };
+    public tag: any;
+    public tags: Array<any>;
+    public selectedTags: any[];
+    public selectedtag: any;
+    public applyNewTag: string;
+    public addTag: boolean = false;
+    public sendViaMailConfig: any = { enabled: false };
 
     public urls: any[] = [];
 
@@ -100,6 +100,10 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
         panelMode:false, // en mode panel es mostra nomel el panell
         globalFilter: false
     };
+
+    // Zoom control (solo reducción, máximo 100%)
+    public zoomLevel: number = 100;
+    public zoomLevels: number[] = [25, 50, 75, 100];
 
     //Date filter ranges Dropdown
     public datePickerConfigs: {} = {};
@@ -287,7 +291,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
         });
 
         this.stylesProviderService.customCss.subscribe((css) => {
-           this.stylesProviderService.setCustomCss(css);
+            this.stylesProviderService.setCustomCss(css);
         });
 
 
@@ -497,15 +501,15 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     private selectedTagsForDashboard(tags, dbTags) {
         let selectedTagsForDashboard = [];
         tags.forEach((tag) => {
-        if (dbTags != null && Array.isArray(dbTags)) {
-            dbTags.forEach((t) => {
-            if (t == tag.value) {
-                selectedTagsForDashboard.push(t);
+            if (dbTags != null && Array.isArray(dbTags)) {
+                dbTags.forEach((t) => {
+                    if (t == tag.value) {
+                        selectedTagsForDashboard.push(t);
+                    }
+                });
+            } else if (typeof dbTags === "string") {
+                selectedTagsForDashboard.push(dbTags);
             }
-            });
-        } else if (typeof dbTags === "string") {
-            selectedTagsForDashboard.push(dbTags);
-        }
         });
         return selectedTagsForDashboard;
     }
@@ -605,8 +609,8 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
             dashboard_id: this.dashboard.id,
             applyToAllfilter: this.applyToAllfilter,
             isObserver: (this.grups.filter(group => group.name === 'EDA_RO' && group.users.includes(userID)).length !== 0)
-                        || userID == '135792467811111111111112' // If user is edaanonim
-                        || this.notDataAllowed,
+                || userID == '135792467811111111111112' // If user is edaanonim
+                || this.notDataAllowed,
         }
         // No permite la visibilidad al sidebar, depende de la variable notDataAllowed
         this.display_v.edit_mode = !this.notDataAllowed && !this.display_v.anonimous_mode;
@@ -697,12 +701,12 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
 
 
 
-/**
- * Comprueba la configuración de seguridad de los filtros y pone la columna a invisible si el filtro no es visible para el usuario por motivos de filtro de seguridad
- * @param filters - recibe el array de filtros del informe
- * @param tables - recibe el array de tablas del modelo.
- * @returns  - el array de filtros del informe informando cual es oculto por la seguridad
- */
+    /**
+     * Comprueba la configuración de seguridad de los filtros y pone la columna a invisible si el filtro no es visible para el usuario por motivos de filtro de seguridad
+     * @param filters - recibe el array de filtros del informe
+     * @param tables - recibe el array de tablas del modelo.
+     * @returns  - el array de filtros del informe informando cual es oculto por la seguridad
+     */
     private checkFiltersVisibility( filters, tables){
         if(filters && filters.length >0 ){
             filters.forEach(  (f) => {
@@ -711,11 +715,11 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
                 f.selectedColumn.visible =  (
                     ( tables.filter((t)=> t.table_name == f.selectedTable.table_name)[0]?.visible  == true )    &&
                     ( tables.filter((t)=> t.table_name == f.selectedTable.table_name)[0]?.columns.filter( (c)=>c.column_name == f.selectedColumn.column_name )[0]?.visible  == true )
-                                            )
-          /*SDA CUSTOM*/ // Check if the column is not visible and is not admin then limit hide side bar functionality
-          if (f.selectedColumn.visible == false && !this.userService.isAdmin) {
-            this.notDataAllowed = true;
-          }
+                    )
+                    /*SDA CUSTOM*/ // Check if the column is not visible and is not admin then limit hide side bar functionality
+                    if (f.selectedColumn.visible == false && !this.userService.isAdmin) {
+                        this.notDataAllowed = true;
+                    }
         /*SDA CUSTOM*/ }
         /*SDA CUSTOM*/ // if selectedColumn is not defined, the filter is designed in EDA mode
         /*SDA CUSTOM*/ else {
@@ -728,10 +732,10 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
         /*SDA CUSTOM*/     this.notDataAllowed = true;
         /*SDA CUSTOM*/   }
         /*SDA CUSTOM*/ }
-      })
-    }
+            })
+        }
         return filters;
-  }
+    }
 
     /**
      * Checks the visibility of the given dashboard and performs actions based on its configuration.
@@ -816,6 +820,136 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
         }
     }
 
+    // Zoom control methods
+    public setZoom(level: number): void {
+        this.zoomLevel = Math.max(25, Math.min(100, level));
+        this.applyZoom();
+    }
+
+    public zoomIn(): void {
+        const currentIndex = this.zoomLevels.indexOf(this.zoomLevel);
+        if (currentIndex < this.zoomLevels.length - 1) {
+            this.zoomLevel = this.zoomLevels[currentIndex + 1];
+        } else {
+            this.zoomLevel = Math.min(100, this.zoomLevel + 10);
+        }
+        this.applyZoom();
+    }
+
+    public zoomOut(): void {
+        const currentIndex = this.zoomLevels.indexOf(this.zoomLevel);
+        if (currentIndex > 0) {
+            this.zoomLevel = this.zoomLevels[currentIndex - 1];
+        } else {
+            this.zoomLevel = Math.max(25, this.zoomLevel - 10);
+        }
+        this.applyZoom();
+    }
+
+    public resetZoom(): void {
+        this.zoomLevel = 100;
+        this.applyZoom();
+    }
+
+    private applyZoom(): void {
+        const dashboardGrid = document.querySelector('.dashboard-grid') as HTMLElement;
+        const mainContent = document.querySelector('.main-content') as HTMLElement;
+
+        if (dashboardGrid) {
+            const scale = this.zoomLevel / 100;
+
+            // Aplicamos escala real. Esto reducirá tanto paneles como contenido.
+            dashboardGrid.style.transform = `scale(${scale})`;
+            dashboardGrid.style.transformOrigin = 'top left';
+            (dashboardGrid.style as any).zoom = ''; // Limpiamos zoom anterior
+
+            // Ajustar el contenedor principal para permitir scroll
+            if (mainContent) {
+                if (this.zoomLevel < 100) {
+                    mainContent.style.overflow = 'auto';
+                    dashboardGrid.classList.add('zoomed-out');
+                    // IMPORTANTE: Mantenemos el ancho/alto original para que los paneles se reduzcan visualmente
+                    dashboardGrid.style.width = '';
+                    dashboardGrid.style.height = '';
+                } else {
+                    mainContent.style.overflow = '';
+                    dashboardGrid.classList.remove('zoomed-out');
+                    dashboardGrid.style.transform = '';
+                }
+            }
+        }
+
+        // Asegurar que drag and drop esté habilitado
+        if (this.gridster) {
+            const enableDragDrop = window.innerWidth > 1000;
+            this.gridster.setOption('dragAndDrop', enableDragDrop);
+            this.gridster.setOption('resizable', enableDragDrop);
+
+            const showGridLines = this.zoomLevel < 100;
+            this.gridster.setOption('lines', {
+                visible: showGridLines,
+                color: showGridLines ? '#007bff' : '#dbdbdb',
+                width: showGridLines ? 2 : 1
+            }).reload();
+        }
+
+        // Activamos el fix global de coordenadas
+        this.setupZoomDragFix();
+    }
+
+    private setupZoomDragFix(): void {
+        const windowProxy = window as any;
+
+        // Limpiar interceptor previo
+        if (windowProxy._zoomFixHandler) {
+            window.removeEventListener('mousedown', windowProxy._zoomFixHandler, true);
+            window.removeEventListener('mousemove', windowProxy._zoomFixHandler, true);
+            window.removeEventListener('mouseup', windowProxy._zoomFixHandler, true);
+        }
+
+        if (this.zoomLevel === 100) return;
+
+        const scale = this.zoomLevel / 100;
+        const dashboardGrid = document.querySelector('.dashboard-grid') as HTMLElement;
+        if (!dashboardGrid) return;
+
+        const handler = (e: MouseEvent) => {
+            if ((e as any)._zoomed) return;
+
+            // Solo interceptamos eventos que afectan al movimiento de paneles
+            const isMoving = document.querySelector('.gridster-item-moving, .gridster-item-resizing');
+            const isOverGrid = (e.target as HTMLElement).closest('.dashboard-grid');
+
+            if (!isMoving && !isOverGrid) return;
+
+            const rect = dashboardGrid.getBoundingClientRect();
+
+            // Calculamos la posición real dentro del sistema de coordenadas de la librería
+            const adjustedX = rect.left + (e.clientX - rect.left) / scale;
+            const adjustedY = rect.top + (e.clientY - rect.top) / scale;
+
+            // Creamos un evento "fake" que Gridster aceptará como real
+            const newEvent = new MouseEvent(e.type, e);
+
+            // Sobreescribimos clientX/Y y pageX/Y usando defineProperty para que no den error de readonly
+            Object.defineProperty(newEvent, 'clientX', { value: adjustedX });
+            Object.defineProperty(newEvent, 'clientY', { value: adjustedY });
+            Object.defineProperty(newEvent, 'pageX', { value: adjustedX + window.pageXOffset });
+            Object.defineProperty(newEvent, 'pageY', { value: adjustedY + window.pageYOffset });
+            (newEvent as any)._zoomed = true;
+
+            // Detenemos el evento original y disparamos el corregido en el mismo target
+            e.stopImmediatePropagation();
+            e.target.dispatchEvent(newEvent);
+        };
+
+        windowProxy._zoomFixHandler = handler;
+        // Usamos addEventListener con 'true' (fase de captura) para interceptar antes que nadie
+        window.addEventListener('mousedown', handler, true);
+        window.addEventListener('mousemove', handler, true);
+        window.addEventListener('mouseup', handler, true);
+    }
+
     public reloadOnGlobalFilter(): void {
 
         //not saved alert message
@@ -833,96 +967,96 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     public async onPanelAction(event: IPanelAction): Promise<void> {
         //Check de modo
         let modeEDA: boolean = !event?.data.panel.content?.query.query.modeSQL &&
-        (!event?.data.panel.content?.query.query.queryMode || event?.data.panel.content?.query.query.queryMode === 'EDA')
+            (!event?.data.panel.content?.query.query.queryMode || event?.data.panel.content?.query.query.queryMode === 'EDA')
 
         //Si es modo arbol o SQL no aplica filtros
         if (event.code === "ADDFILTER" && modeEDA) {
-        const data = event?.data;
-        const panel = event?.data?.panel;
-        let column: any;
-        column = this.getCorrectColumnFiltered(event)
-        const table = this.dataSource.model.tables.find((table: any) => table.table_name === column?.table_id);
-        if (column && table) {
-            let config = this.setPanelsToFilter(panel);
-            //TENEMOS ALGUN FILTRO APLICADO EN LOS FILTROS GLOBALES DEL DASHBOARD
-            if (this.gFilter.globalFilters.length > 0) {
-            //Buscamos si hay un filtro que existe igual al que acabamos de clicar, y de la misma tabla, si lo hay, hay que borrarlo
-            let chartToRemove = this.gFilter.globalFilters.find(
-                (f) => f.table.value === table.table_name && f.column.value.column_name === column.column_name &&
-                f.selectedItems.includes(event?.data.label) && f.selectedItems.length === 1 && f.hasOwnProperty("fromChart")
-            );
-            if (chartToRemove) {
-                let filterToAddIndx = this.lastFilters.findIndex(element => element.filterName === chartToRemove.column.label &&
-                element.filter.table.label === chartToRemove.table.label)
-                // Borramos del global filter el filtro a borrar fromChart
-                this.gFilter.removeGlobalFilter(chartToRemove, true);
-                // Recuperamos el filtro correspondiente y lo eliminamos de los filtros guardados
+            const data = event?.data;
+            const panel = event?.data?.panel;
+            let column: any;
+            column = this.getCorrectColumnFiltered(event)
+            const table = this.dataSource.model.tables.find((table: any) => table.table_name === column?.table_id);
+            if (column && table) {
+                let config = this.setPanelsToFilter(panel);
+                //TENEMOS ALGUN FILTRO APLICADO EN LOS FILTROS GLOBALES DEL DASHBOARD
+                if (this.gFilter.globalFilters.length > 0) {
+                    //Buscamos si hay un filtro que existe igual al que acabamos de clicar, y de la misma tabla, si lo hay, hay que borrarlo
+                    let chartToRemove = this.gFilter.globalFilters.find(
+                        (f) => f.table.value === table.table_name && f.column.value.column_name === column.column_name &&
+                            f.selectedItems.includes(event?.data.label) && f.selectedItems.length === 1 && f.hasOwnProperty("fromChart")
+                    );
+                    if (chartToRemove) {
+                        let filterToAddIndx = this.lastFilters.findIndex(element => element.filterName === chartToRemove.column.label &&
+                            element.filter.table.label === chartToRemove.table.label)
+                        // Borramos del global filter el filtro a borrar fromChart
+                        this.gFilter.removeGlobalFilter(chartToRemove, true);
+                        // Recuperamos el filtro correspondiente y lo eliminamos de los filtros guardados
                 if (filterToAddIndx !== -1 ) {
-                await this.gFilter.onGlobalFilter(this.lastFilters[filterToAddIndx].filter, table.table_name)
-                this.lastFilters.splice(filterToAddIndx, 1);
-                }
+                            await this.gFilter.onGlobalFilter(this.lastFilters[filterToAddIndx].filter, table.table_name)
+                            this.lastFilters.splice(filterToAddIndx, 1);
+                        }
 
-                // Actualizamos global filter
-                this.reloadOnGlobalFilter();
-            } else {
-                //CREAMOS NUEVO FILTRO EN CHART
-                //Recuperamos filtros activos del global filter
-                let actualFilter = this.gFilter.globalFilters.filter(
+                        // Actualizamos global filter
+                        this.reloadOnGlobalFilter();
+                    } else {
+                        //CREAMOS NUEVO FILTRO EN CHART
+                        //Recuperamos filtros activos del global filter
+                        let actualFilter = this.gFilter.globalFilters.filter(
                 (f) =>f.table.value === table.table_name && f.column.value.column_name === column.column_name
-                )[0];
-                if (actualFilter) {
-                //Si last filters no tiene uno con la misma label lo guardamos
-                if (!this.lastFilters.includes(actualFilter)) {
+                        )[0];
+                        if (actualFilter) {
+                            //Si last filters no tiene uno con la misma label lo guardamos
+                            if (!this.lastFilters.includes(actualFilter)) {
                     this.lastFilters.push({filterName: actualFilter.column.label, filter: actualFilter});
-                } else {
-                    //Si label es igual lo remplazamos
-                    if (this.lastFilters.includes(actualFilter.column.label)) {
-                    let filterToRemoveIndx = this.lastFilters.findIndex(element => element.filterName === actualFilter.column.label)
-                    this.lastFilters.splice(filterToRemoveIndx, 1);
-                    this.lastFilters.push(({ filterName: actualFilter.column.label, filter: actualFilter }));
-                    }
-                }
-                }
+                            } else {
+                                //Si label es igual lo remplazamos
+                                if (this.lastFilters.includes(actualFilter.column.label)) {
+                                    let filterToRemoveIndx = this.lastFilters.findIndex(element => element.filterName === actualFilter.column.label)
+                                    this.lastFilters.splice(filterToRemoveIndx, 1);
+                                    this.lastFilters.push(({ filterName: actualFilter.column.label, filter: actualFilter }));
+                                }
+                            }
+                        }
 
-                // Creamos un filtro nuevo con from chart true
-                this.chartFilter = {
-                id: `${table.table_name}_${column.column_name}`, //this.fileUtils.generateUUID(),
-                isGlobal: true,
-                applyToAll: config.applyToAll,
-                panelList: config.panelList.map((p) => p.id),
+                        // Creamos un filtro nuevo con from chart true
+                        this.chartFilter = {
+                            id: `${table.table_name}_${column.column_name}`, //this.fileUtils.generateUUID(),
+                            isGlobal: true,
+                            applyToAll: config.applyToAll,
+                            panelList: config.panelList.map((p) => p.id),
                 table: {label: table.display_name.default,value: table.table_name,},
                 column: {label: column.display_name.default,value: column,},
-                selectedItems: [data.label], // valor del chart que hemos clicado
-                fromChart: true, //fromChart = true indica que se ha creado mediante un click
-                };
-                //Borramos filtros activos del global filter, pero los mantenemos guardados
+                            selectedItems: [data.label], // valor del chart que hemos clicado
+                            fromChart: true, //fromChart = true indica que se ha creado mediante un click
+                        };
+                        //Borramos filtros activos del global filter, pero los mantenemos guardados
                 this.lastFilters.forEach((element) => { this.gFilter.removeGlobalFilter(element.filter, true);});
-                //Añadimos filtros nuevos
-                try { await this.gFilter.onGlobalFilter(this.chartFilter, table.table_name); this.reloadOnGlobalFilter(); }
-                catch (error) { console.log(error) }
-            }
-            }
+                        //Añadimos filtros nuevos
+                        try { await this.gFilter.onGlobalFilter(this.chartFilter, table.table_name); this.reloadOnGlobalFilter(); }
+                        catch (error) { console.log(error) }
+                    }
+                }
 
-            // NO TENEMOS NINGUN FILTRO APLICADO EN LOS FILTROS GLOBALES DEL DASHBOARD
-            else {
-                // Creamos un filtro nuevo con from chart true
-                this.chartFilter = {
-                id: `${table.table_name}_${column.column_name}`, //this.fileUtils.generateUUID(),
-                isGlobal: true,
-                applyToAll: config.applyToAll,
-                panelList: config.panelList.map((p) => p.id),
+                // NO TENEMOS NINGUN FILTRO APLICADO EN LOS FILTROS GLOBALES DEL DASHBOARD
+                else {
+                    // Creamos un filtro nuevo con from chart true
+                    this.chartFilter = {
+                        id: `${table.table_name}_${column.column_name}`, //this.fileUtils.generateUUID(),
+                        isGlobal: true,
+                        applyToAll: config.applyToAll,
+                        panelList: config.panelList.map((p) => p.id),
                 table: { label: table.display_name.default, value: table.table_name,},
-                column: { label: column.display_name.default, value: column },
-                selectedItems: [data.label], // valor del chart que hemos clicado
-                fromChart: true, //fromChart = true indica que se ha creado mediante un click
-            };
-            // Esperamos a que se apliquen los filtros, para luego recargar el global filter
+                        column: { label: column.display_name.default, value: column },
+                        selectedItems: [data.label], // valor del chart que hemos clicado
+                        fromChart: true, //fromChart = true indica que se ha creado mediante un click
+                    };
+                    // Esperamos a que se apliquen los filtros, para luego recargar el global filter
             await this.gFilter.onGlobalFilter(this.chartFilter,table.table_name);
-            this.reloadOnGlobalFilter();
+                    this.reloadOnGlobalFilter();
+                }
             }
-        }
         } else if (event.code === "QUERYMODE") {
-        this.setPanelsQueryMode();
+            this.setPanelsQueryMode();
         }
     }
 
@@ -1017,49 +1151,49 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
             }
         });
     }
-  public deleteReport() {
-    this.display_v.rightSidebar = false;
+    public deleteReport() {
+        this.display_v.rightSidebar = false;
 
-    // Referencia al componente dashboard
-    const me = this;
+        // Referencia al componente dashboard
+        const me = this;
 
-    me.route.paramMap.subscribe(
-      (params) => {
-        me.id = params.get("id");
-      },
-      (err) => me.alertService.addError(err)
-    );
+        me.route.paramMap.subscribe(
+            (params) => {
+                me.id = params.get("id");
+            },
+            (err) => me.alertService.addError(err)
+        );
 
-    // id del presente dashboard
-    const dashboardId = me.id;
+        // id del presente dashboard
+        const dashboardId = me.id;
 
-    let text = $localize`:@@deleteDashboardWarning: Estás a punto de borrar el informe`;
-    Swal.fire({
-      title: $localize`:@@Sure:¿Estás seguro?`,
-      text: `${text}`,
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonColor: "#3085d6",
-      cancelButtonColor: "#d33",
-      confirmButtonText: $localize`:@@ConfirmDeleteModel:Si, ¡Eliminalo!`,
-      cancelButtonText: $localize`:@@DeleteGroupCancel:Cancelar`,
-    }).then(async (borrado) => {
-      if (borrado.value) {
-        try {
-          await this.dashboardService.deleteDashboard(dashboardId).toPromise();
+        let text = $localize`:@@deleteDashboardWarning: Estás a punto de borrar el informe`;
+        Swal.fire({
+            title: $localize`:@@Sure:¿Estás seguro?`,
+            text: `${text}`,
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: $localize`:@@ConfirmDeleteModel:Si, ¡Eliminalo!`,
+            cancelButtonText: $localize`:@@DeleteGroupCancel:Cancelar`,
+        }).then(async (borrado) => {
+            if (borrado.value) {
+                try {
+                    await this.dashboardService.deleteDashboard(dashboardId).toPromise();
 
-          // La app se direcciona al home EDA
-          this.router.navigate(["/home/"]).then(() => {
-            window.location.reload();
-          });
-        } catch (err) {
-          this.alertService.addError(err);
-          throw err;
-        }
-      }
-    });
-  }
-/** SDA CUSTOM  DELETED FUNCTION...    public deleteReport()  */
+                    // La app se direcciona al home EDA
+                    this.router.navigate(["/home/"]).then(() => {
+                        window.location.reload();
+                    });
+                } catch (err) {
+                    this.alertService.addError(err);
+                    throw err;
+                }
+            }
+        });
+    }
+    /** SDA CUSTOM  DELETED FUNCTION...    public deleteReport()  */
     public editStyles() {
         this.display_v.rightSidebar = false;
         const params = this.styles;
@@ -1158,13 +1292,13 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     public onResetWidgets(): void {
-            // Get the queries in the dashboard for delete it from cache
+        // Get the queries in the dashboard for delete it from cache
         const queries = [];
         this.panels.forEach( p=> {
                 if(p.content  !== undefined && p.content.query  !== undefined && p.content.query.query  !== undefined){
                     queries.push( p.content.query.query );
-                }
-            });
+            }
+        });
         let body =
         {
             model_id: this.dataSource._id,
@@ -1265,14 +1399,14 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
      * @returns  the text true if everithing is fine or the name of the pannel with worng configuration
      */
     private checkPannels(dashboard): string {
-            let correct = 'true';
-            dashboard.config.panel.forEach(p => {
+        let correct = 'true';
+        dashboard.config.panel.forEach(p => {
                 if(  p.content && p.content?.query?.query.fields.length < 1  ) {
-                    console.log('NO SE PUEDEN GAURDAR PANELES SIN DATOS');
-                    correct = p.title;
-                }
-            })
-            return correct;
+                console.log('NO SE PUEDEN GAURDAR PANELES SIN DATOS');
+                correct = p.title;
+            }
+        })
+        return correct;
     }
 
 
@@ -1289,8 +1423,8 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
                         };
                     });
                 }catch(e){
-                        console.log('error getting mailing alerts.... setting it to false');
-                        mailingenabled = false;
+                    console.log('error getting mailing alerts.... setting it to false');
+                    mailingenabled = false;
                 }
             }
         });
@@ -1298,19 +1432,19 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
         return mailingenabled;
     }
 
-        /**
-         * get tags for dashboard
-         * @returns tags array
-         */
-      public saveTag() {
+    /**
+     * get tags for dashboard
+     * @returns tags array
+     */
+    public saveTag() {
         const dbTags = [];
         try {
-        this.selectedTags.forEach((a) => {
-            dbTags.push(a);
-        });
-        return dbTags;
+            this.selectedTags.forEach((a) => {
+                dbTags.push(a);
+            });
+            return dbTags;
         } catch (e) {
-        return null;
+            return null;
         }
     }
 
@@ -1329,48 +1463,48 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
             height: element.scrollHeight * 2,
             width: element.scrollWidth * 2,
             style: {
-            transform: 'scale(2)',
-            transformOrigin: 'top left'
+                transform: 'scale(2)',
+                transformOrigin: 'top left'
             }
         }).then((dataUrl) => {
             let img = new Image();
             img.src = dataUrl;
 
             img.onload = () => {
-            const pdf = new jspdf('p', 'pt', 'a4');
-            const pageWidth = pdf.internal.pageSize.getWidth();
-            const pageHeight = pdf.internal.pageSize.getHeight();
+                const pdf = new jspdf('p', 'pt', 'a4');
+                const pageWidth = pdf.internal.pageSize.getWidth();
+                const pageHeight = pdf.internal.pageSize.getHeight();
 
-            const imgWidth = img.width;
-            const imgHeight = img.height;
-            const ratio = pageWidth / imgWidth;
-            const scaledWidth = pageWidth;
-            let position = 0;
+                const imgWidth = img.width;
+                const imgHeight = img.height;
+                const ratio = pageWidth / imgWidth;
+                const scaledWidth = pageWidth;
+                let position = 0;
 
-            // Se crea un canvas para cortar la imagen en partes iguales para cada página
-            const canvas = document.createElement('canvas');
-            const ctx = canvas.getContext('2d')!;
-            canvas.width = imgWidth;
-            canvas.height = pageHeight / ratio;
+                // Se crea un canvas para cortar la imagen en partes iguales para cada página
+                const canvas = document.createElement('canvas');
+                const ctx = canvas.getContext('2d')!;
+                canvas.width = imgWidth;
+                canvas.height = pageHeight / ratio;
 
-            while (position < imgHeight) {
-                ctx.fillStyle = '#FFFFFF'; // Se establece todo el fondo de blanco
-                ctx.fillRect(0, 0, canvas.width, canvas.height);  // Se pinta todo el fondo
+                while (position < imgHeight) {
+                    ctx.fillStyle = '#FFFFFF'; // Se establece todo el fondo de blanco
+                    ctx.fillRect(0, 0, canvas.width, canvas.height);  // Se pinta todo el fondo
 
-                ctx.drawImage(img, 0, -position, imgWidth, imgHeight);
+                    ctx.drawImage(img, 0, -position, imgWidth, imgHeight);
 
-                const pageData = canvas.toDataURL('image/jpeg', 1.0);
-                pdf.addImage(pageData, 'JPEG', 0, 0, scaledWidth, pageHeight);
+                    const pageData = canvas.toDataURL('image/jpeg', 1.0);
+                    pdf.addImage(pageData, 'JPEG', 0, 0, scaledWidth, pageHeight);
 
-                position += canvas.height;
+                    position += canvas.height;
 
-                if (position < imgHeight) {
-                pdf.addPage();
+                    if (position < imgHeight) {
+                        pdf.addPage();
+                    }
                 }
-            }
 
-            pdf.save(`${title}.pdf`);
-            this.spinnerService.off();
+                pdf.save(`${title}.pdf`);
+                this.spinnerService.off();
             };
         });
     }
@@ -1414,14 +1548,14 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
 
         this.display_v.rightSidebar = false;
         this.urlsController = new EdaDialogController({
-        params,
-        close: (event, response) => {
-            if (!_.isEqual(event, EdaDialogCloseEvent.NONE)) {
-            this.urls = response.urls;
-            this.dashboardService._notSaved.next(true);
-            }
-            this.urlsController = undefined;
-        },
+            params,
+            close: (event, response) => {
+                if (!_.isEqual(event, EdaDialogCloseEvent.NONE)) {
+                    this.urls = response.urls;
+                    this.dashboardService._notSaved.next(true);
+                }
+                this.urlsController = undefined;
+            },
         });
     }
 
@@ -1615,12 +1749,12 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     /*SDA CUSTOM*/    : this.visibleTypes.filter(type => type.value !== 'shared');
     /*SDA CUSTOM*/}
 
-  public getCorrectColumnFiltered(event): string {
+    public getCorrectColumnFiltered(event): string {
         if (['doughnut', 'polarArea', 'bar', 'line', 'radar',''].includes(event.data.panel.content.chart)) {  //Si el evento es de un chart de la libreria ng2Chart
-          if (event.data.query.length > 2) // Si la query tiene más de dos valores en barras, necesitamos redefinir el filterBy
-             return event.data.query.find((query: any) => query?.display_name?.default === event.data.query[0].display_name.default);
-          else
-            return event.data.query.find((query: any) => query?.display_name?.default === event.data.filterBy);
+            if (event.data.query.length > 2) // Si la query tiene más de dos valores en barras, necesitamos redefinir el filterBy
+                return event.data.query.find((query: any) => query?.display_name?.default === event.data.query[0].display_name.default);
+            else
+                return event.data.query.find((query: any) => query?.display_name?.default === event.data.filterBy);
         }
         else if (['table','crosstable','treetable'].includes(event.data.panel.content.chart)) {
             return event.data.query.find((query: any) => query?.column_name === event.data.filterBy);
@@ -1628,9 +1762,9 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
         else {
             //Si el evento es de un chart de la libreria D3Chart o Leaflet
             return event.data.query.find((query: any) => query?.display_name?.default.localeCompare(event.data.filterBy, undefined, { sensitivity: 'base' }) === 0);
-          }
+        }
 
-
-  }
 
     }
+
+}
