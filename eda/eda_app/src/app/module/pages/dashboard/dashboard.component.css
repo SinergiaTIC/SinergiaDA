@@ -5,7 +5,7 @@
 app-dashboard {
     position: absolute;
     height: 100%;
-    width: 80%;
+    width: 100%;
     display: flex;
     flex-direction: column;
     overflow-y: auto;
@@ -263,8 +263,6 @@ app-dashboard {
     font-weight: bolder;
 }
 
-
-
 .panel-locked {
     cursor: not-allowed !important;
 }
@@ -284,116 +282,63 @@ app-dashboard {
     z-index: 99999;
 }
 
-/* Zoom Controls Styles */
-.zoom-controls {
-    padding: 10px 0;
+/* --- ZOOM CONTROLS --- */
+.filters-zoom-container {
+    position: relative;
+    width: 100%;
+    display: block;
+    margin-bottom: 5px;
 }
 
-.zoom-buttons-row {
+.zoom-controls-simple {
+    position: absolute;
+    top: 50%;
+    right: 15px;
+    transform: translateY(-50%);
+    z-index: 100;
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    gap: 10px;
+    background-color: #f8f9fa;
+    border-radius: 20px;
+    padding: 2px 10px;
+    border: 1px solid #dee2e6;
+    height: 32px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
 }
 
-.zoom-btn {
-    flex: 0 0 auto;
-    min-width: 40px;
-}
-
-.zoom-level-display {
-    flex: 1;
+.zoom-value {
+    font-weight: bold;
+    min-width: 45px;
     text-align: center;
-    font-weight: bold;
-    font-size: 16px;
-    color: var(--header-font-color);
+    font-size: 13px;
+    color: #495057;
 }
 
-.zoom-slider-container {
-    width: 100%;
+.zoom-btn-simple {
+    width: 26px !important;
+    height: 26px !important;
+    padding: 0 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
 }
 
-.zoom-slider-container ::ng-deep .p-slider {
-    background: #414344;
+.zoom-btn-simple i {
+    font-size: 10px;
 }
 
-.zoom-slider-container ::ng-deep .p-slider .p-slider-range {
-    background: #20914b;
-}
-
-.zoom-slider-container ::ng-deep .p-slider .p-slider-handle {
-    border-color: #20914b;
-    background: #20914b;
-}
-
-.zoom-preset-buttons {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 5px;
-    justify-content: space-between;
-}
-
-.zoom-preset-btn {
-    flex: 0 0 calc(25% - 4px);
-    font-size: 11px;
-    padding: 4px 2px;
-    min-width: auto;
-}
-
-.zoom-preset-btn.active-zoom {
-    background-color: #20914b !important;
-    color: white !important;
-    border-color: #20914b !important;
-}
-
-.zoom-reset-container {
-    width: 100%;
-}
-
-.zoom-info-message {
-    background-color: rgba(0, 123, 255, 0.1);
-    border-left: 3px solid #007bff;
-    padding: 8px;
-    border-radius: 4px;
-}
-
-.zoom-info-message small {
-    display: block;
-    line-height: 1.4;
-}
-
-.zoom-info-message i {
-    margin-right: 5px;
-    color: #007bff;
-}
-
-.right-sidebar-blocks-title {
-    font-weight: bold;
-    color: var(--header-font-color);
-    padding: 5px 0;
-}
-
-/* Dashboard grid zoom container */
 .dashboard-grid {
+    width: 100%;
     transition: transform 0.3s ease;
     transform-origin: top left;
 }
 
-/* Contenedor para visualización mejorada con zoom reducido */
-.main-content {
-    position: relative;
-    width: 100%;
-    height: 100%;
-}
-
-/* Estilos para la cuadrícula cuando está en zoom reducido */
 .dashboard-grid.zoomed-out {
     box-shadow: 0 0 20px rgba(0, 123, 255, 0.2);
     border: 1px solid rgba(0, 123, 255, 0.3);
     display: inline-block;
 }
 
-/* Mejorar visibilidad de las líneas de la cuadrícula */
 ::ng-deep .gridster .gridster-item-moving {
     z-index: 999 !important;
 }
@@ -403,12 +348,10 @@ app-dashboard {
     transition: none;
 }
 
-/* Asegurar que los paneles se escalen correctamente */
 ::ng-deep .dashboard-grid ngx-gridster-item {
     transform-origin: top left;
 }
 
-/* Contenedor del gridster */
 ::ng-deep ngx-gridster {
     display: block;
 }

@@ -56,8 +56,8 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
 
 
     public filterButtonVisibility = {
-        public : false,
-        readOnly : false
+        public: false,
+        readOnly: false
     }
     // Grid Global Variables
     public inject: InjectEdaPanel;
@@ -97,13 +97,12 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
         anonimous_mode: false,
         notSaved: false,
         hideWheel: false, // dashboard config options (mostrar la rodeta o no)
-        panelMode:false, // en mode panel es mostra nomel el panell
+        panelMode: false, // en mode panel es mostra nomel el panell
         globalFilter: false
     };
 
-    // Zoom control (solo reducción, máximo 100%)
+    // Zoom control
     public zoomLevel: number = 100;
-    public zoomLevels: number[] = [25, 50, 75, 100];
 
     //Date filter ranges Dropdown
     public datePickerConfigs: {} = {};
@@ -119,7 +118,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     public lastFilters: any[] = [];
     public chartFilter: any;
 
-    public styles : DashboardStyles;
+    public styles: DashboardStyles;
 
     public filtrar: string = $localize`:@@filterButtonDashboard:Filtrar`;
     public addTagString: string = $localize`:@@addTag:AÑADIR ETIQUETA`;
@@ -185,14 +184,14 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
                 ];
             } else if (standardQueryMode) {
                 panel.queryModes = [
-                /* SDA CUSTOM */  { label: $localize`:@@PanelModeSelectorEDA:Modo EDA`, value: 'EDA' , disabled: true},
+                /* SDA CUSTOM */  { label: $localize`:@@PanelModeSelectorEDA:Modo EDA`, value: 'EDA', disabled: true },
                     { label: $localize`:@@PanelModeSelectorSQL:Modo SQL`, value: 'SQL' },
                 ];
             }
 
             if ((!standardQueryMode && !treeQueryMode) || this.edaPanels.length === 1) {
                 panel.queryModes = [
-                    /* SDA CUSTOM */ { label: $localize`:@@PanelModeSelectorEDA:Modo EDA`, value: 'EDA' , disabled: true},
+                    /* SDA CUSTOM */ { label: $localize`:@@PanelModeSelectorEDA:Modo EDA`, value: 'EDA', disabled: true },
                     { label: $localize`:@@PanelModeSelectorSQL:Modo SQL`, value: 'SQL' },
                     { label: $localize`:@@PanelModeSelectorTree:Modo Árbol`, value: 'EDA2' }
                 ];
@@ -233,7 +232,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
         }
     }
 
-    private initStyles(): void{
+    private initStyles(): void {
 
         /**Global */
         this.stylesProviderService.panelColor.subscribe(panelColor => {
@@ -360,9 +359,9 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
         this.groupService.getGroupsByUser().subscribe(
             (res) => {
                 this.grups = res.sort((a, b) => {
-                    let va = (a.name||'').toLowerCase();
-                    let vb = (b.name||'').toLowerCase();
-                    return va < vb ?  -1 : va > vb ? 1 : 0
+                    let va = (a.name || '').toLowerCase();
+                    let vb = (b.name || '').toLowerCase();
+                    return va < vb ? -1 : va > vb ? 1 : 0
                 });
                 if (this.grups.length === 0) {
                     this.visibleTypes.splice(1, 1);
@@ -380,7 +379,18 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
         const me = this;
 
         me.route.paramMap.subscribe(
-            params => me.id = params.get('id'),
+            params => {
+                me.id = params.get('id');
+                // Load zoom from session storage
+                if (me.id) {
+                    const savedZoom = sessionStorage.getItem(`dashboard_zoom_${me.id}`);
+                    if (savedZoom) {
+                        this.zoomLevel = parseInt(savedZoom, 10);
+                        // Aplicamos el zoom tras un breve delay para asegurar que el DOM esté listo
+                        setTimeout(() => this.applyZoom(), 100);
+                    }
+                }
+            },
             err => me.alertService.addError(err)
         );
 
@@ -398,7 +408,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
                     this.checkVisibility(res.dashboard);
                     me.setDashboardCreator(res.dashboard);
                     me.title = config.title; // Titul del dashboard, utilitzat per visualització
-                    me.gFilter.initGlobalFilters(   this.checkFiltersVisibility( config.filters , res.datasource.model.tables ) ||[]); // Filtres del dashboard
+                    me.gFilter.initGlobalFilters(this.checkFiltersVisibility(config.filters, res.datasource.model.tables) || []); // Filtres del dashboard
                     me.dataSource = res.datasource; // DataSource del dashboard
                     me.datasourceName = res.datasource.name;
                     me.applyToAllfilter = config.applyToAllfilter || { present: false, refferenceTable: null, id: null };
@@ -556,7 +566,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
 
                     if (pFilter.filter_id === filter.id) {
                         // Verificar ???
-                        if(pFilter.joins !== undefined) filter.joins = pFilter.joins;
+                        if (pFilter.joins !== undefined) filter.joins = pFilter.joins;
                         const formatedFilter = this.globalFiltersService.formatFilter(filter);
                         formatedFilter.joins = pFilter.joins; // the joins are added here.
                         panel.content.query.query.filters.push(formatedFilter);
@@ -573,13 +583,13 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     private getUrlParams(): void {
         this.route.queryParams.subscribe(params => {
             this.queryParams = params;
-            try{
-                if(params['hideWheel'] == 'true'){
-                    this.display_v.hideWheel =true;
+            try {
+                if (params['hideWheel'] == 'true') {
+                    this.display_v.hideWheel = true;
                 }
-                if(params['panelMode'] == 'true'){
-                    this.display_v.panelMode =true;
-                    this.display_v.hideWheel =true;
+                if (params['panelMode'] == 'true') {
+                    this.display_v.panelMode = true;
+                    this.display_v.hideWheel = true;
                 }
 
                 if (params["cnproperties"]) {
@@ -588,7 +598,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
                     );
                 }
 
-            }catch(e){
+            } catch (e) {
                 console.warn('getUrlParams: ' + e)
             }
         });
@@ -600,8 +610,8 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
         const userID = JSON.parse(user)._id;
 
         // Buscamos en todos los paneles si existe un con los campos vacios, lo cual indica que no tiene permisos para visualizar la data
-        if(this.panels.some(panel => panel.content?.query.query.fields.length===0)){
-            this.notDataAllowed=true;
+        if (this.panels.some(panel => panel.content?.query.query.fields.length === 0)) {
+            this.notDataAllowed = true;
         }
 
         this.inject = {
@@ -615,12 +625,12 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
         // No permite la visibilidad al sidebar, depende de la variable notDataAllowed
         this.display_v.edit_mode = !this.notDataAllowed && !this.display_v.anonimous_mode;
         // Verifica que el si el dashboard si esta filtrado o no.
-        if(this.dashboard.datasSource.is_filtered) {
+        if (this.dashboard.datasSource.is_filtered) {
             this.display_v.edit_mode = false;
         }
 
 
-        if( (this.grups.filter(group => group.name === 'EDA_ADMIN' ).length > 0) )  this.display_v.edit_mode = true; // Admin always can edit
+        if ((this.grups.filter(group => group.name === 'EDA_ADMIN').length > 0)) this.display_v.edit_mode = true; // Admin always can edit
     }
 
     private setPanelSizes(panel) {
@@ -647,7 +657,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
 
         const globalFilters = this.gFilter?.globalFilters;
 
-        if(globalFilters.length !== 0) {
+        if (globalFilters.length !== 0) {
             globalFilters.forEach(filter => {
                 this.gFilter.setGlobalEmptyFilter(filter);
             })
@@ -677,11 +687,11 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
 
 
 
-    private setDashboardGrups( ): void {
+    private setDashboardGrups(): void {
         const me = this;
-        try{// debo recibir por un lado el dashboard y por otro el listado de roles. Mientras no tenga los dos esto fallará.
+        try {// debo recibir por un lado el dashboard y por otro el listado de roles. Mientras no tenga los dos esto fallará.
             // Lo puedo hacer cuando tengo los dos.
-            if(me.grups.length > 0 && me.dashboard.group.length > 0 ){
+            if (me.grups.length > 0 && me.dashboard.group.length > 0) {
                 me.display_v.groups = true;
                 const selectedGroups = [];
                 for (let i = 0, n = me.grups.length; i < n; i += 1) {
@@ -694,7 +704,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
                 }
                 me.form.controls['group'].setValue(selectedGroups);
             }
-        }catch(e){
+        } catch (e) {
             // todavia no se han seteado me.grups o me.dashboard.goup.
         }
     }
@@ -707,31 +717,34 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
      * @param tables - recibe el array de tablas del modelo.
      * @returns  - el array de filtros del informe informando cual es oculto por la seguridad
      */
-    private checkFiltersVisibility( filters, tables){
-        if(filters && filters.length >0 ){
-            filters.forEach(  (f) => {
+    private checkFiltersVisibility(filters, tables) {
+        if (filters && filters.length > 0) {
+            filters.forEach((f) => {
         /*SDA CUSTOM*/ // Check if filter is designed in EDA2 mode (tree mode)
         /*SDA CUSTOM*/ if (f.selectedColumn && f.selectedTable) {
-                f.selectedColumn.visible =  (
-                    ( tables.filter((t)=> t.table_name == f.selectedTable.table_name)[0]?.visible  == true )    &&
-                    ( tables.filter((t)=> t.table_name == f.selectedTable.table_name)[0]?.columns.filter( (c)=>c.column_name == f.selectedColumn.column_name )[0]?.visible  == true )
+                    f.selectedColumn.visible = (
+                        (tables.filter((t) => t.table_name == f.selectedTable.table_name)[0]?.visible == true) &&
+                        (tables.filter((t) => t.table_name == f.selectedTable.table_name)[0]?.columns.filter((c) => c.column_name == f.selectedColumn.column_name)[0]?.visible == true)
                     )
                     /*SDA CUSTOM*/ // Check if the column is not visible and is not admin then limit hide side bar functionality
                     if (f.selectedColumn.visible == false && !this.userService.isAdmin) {
                         this.notDataAllowed = true;
                     }
-        /*SDA CUSTOM*/ }
+                    /*SDA CUSTOM*/
+                }
         /*SDA CUSTOM*/ // if selectedColumn is not defined, the filter is designed in EDA mode
         /*SDA CUSTOM*/ else {
         /*SDA CUSTOM*/   f.column.value.visible = (
         /*SDA CUSTOM*/     (tables.filter((t) => t.table_name == f.table.value)[0]?.visible == true) &&
         /*SDA CUSTOM*/     (tables.filter((t) => t.table_name == f.table.value)[0]?.columns.filter((c) => c.column_name == f.column.value.column_name)[0]?.visible == true)
-        /*SDA CUSTOM*/   )
+        /*SDA CUSTOM*/)
         /*SDA CUSTOM*/   // Check if the column is not visible and is not admin then limit hide side bar functionality
         /*SDA CUSTOM*/   if (f.column.value.visible == false && !this.userService.isAdmin) {
         /*SDA CUSTOM*/     this.notDataAllowed = true;
-        /*SDA CUSTOM*/   }
-        /*SDA CUSTOM*/ }
+                        /*SDA CUSTOM*/
+                    }
+                    /*SDA CUSTOM*/
+                }
             })
         }
         return filters;
@@ -827,22 +840,12 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     public zoomIn(): void {
-        const currentIndex = this.zoomLevels.indexOf(this.zoomLevel);
-        if (currentIndex < this.zoomLevels.length - 1) {
-            this.zoomLevel = this.zoomLevels[currentIndex + 1];
-        } else {
-            this.zoomLevel = Math.min(100, this.zoomLevel + 10);
-        }
+        this.zoomLevel = Math.min(100, this.zoomLevel + 5);
         this.applyZoom();
     }
 
     public zoomOut(): void {
-        const currentIndex = this.zoomLevels.indexOf(this.zoomLevel);
-        if (currentIndex > 0) {
-            this.zoomLevel = this.zoomLevels[currentIndex - 1];
-        } else {
-            this.zoomLevel = Math.max(25, this.zoomLevel - 10);
-        }
+        this.zoomLevel = Math.max(25, this.zoomLevel - 5);
         this.applyZoom();
     }
 
@@ -854,6 +857,10 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     private applyZoom(): void {
         const dashboardGrid = document.querySelector('.dashboard-grid') as HTMLElement;
         const mainContent = document.querySelector('.main-content') as HTMLElement;
+
+        if (this.id) {
+            sessionStorage.setItem(`dashboard_zoom_${this.id}`, this.zoomLevel.toString());
+        }
 
         if (dashboardGrid) {
             const scale = this.zoomLevel / 100;
@@ -868,13 +875,15 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
                 if (this.zoomLevel < 100) {
                     mainContent.style.overflow = 'auto';
                     dashboardGrid.classList.add('zoomed-out');
-                    // IMPORTANTE: Mantenemos el ancho/alto original para que los paneles se reduzcan visualmente
+                    // No forzamos ancho/alto para que la escala reduzca el tamaño visual real de los paneles
                     dashboardGrid.style.width = '';
                     dashboardGrid.style.height = '';
                 } else {
                     mainContent.style.overflow = '';
                     dashboardGrid.classList.remove('zoomed-out');
                     dashboardGrid.style.transform = '';
+                    dashboardGrid.style.width = '';
+                    dashboardGrid.style.height = '';
                 }
             }
         }
@@ -991,7 +1000,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
                         // Borramos del global filter el filtro a borrar fromChart
                         this.gFilter.removeGlobalFilter(chartToRemove, true);
                         // Recuperamos el filtro correspondiente y lo eliminamos de los filtros guardados
-                if (filterToAddIndx !== -1 ) {
+                        if (filterToAddIndx !== -1) {
                             await this.gFilter.onGlobalFilter(this.lastFilters[filterToAddIndx].filter, table.table_name)
                             this.lastFilters.splice(filterToAddIndx, 1);
                         }
@@ -1002,12 +1011,12 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
                         //CREAMOS NUEVO FILTRO EN CHART
                         //Recuperamos filtros activos del global filter
                         let actualFilter = this.gFilter.globalFilters.filter(
-                (f) =>f.table.value === table.table_name && f.column.value.column_name === column.column_name
+                            (f) => f.table.value === table.table_name && f.column.value.column_name === column.column_name
                         )[0];
                         if (actualFilter) {
                             //Si last filters no tiene uno con la misma label lo guardamos
                             if (!this.lastFilters.includes(actualFilter)) {
-                    this.lastFilters.push({filterName: actualFilter.column.label, filter: actualFilter});
+                                this.lastFilters.push({ filterName: actualFilter.column.label, filter: actualFilter });
                             } else {
                                 //Si label es igual lo remplazamos
                                 if (this.lastFilters.includes(actualFilter.column.label)) {
@@ -1024,13 +1033,13 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
                             isGlobal: true,
                             applyToAll: config.applyToAll,
                             panelList: config.panelList.map((p) => p.id),
-                table: {label: table.display_name.default,value: table.table_name,},
-                column: {label: column.display_name.default,value: column,},
+                            table: { label: table.display_name.default, value: table.table_name, },
+                            column: { label: column.display_name.default, value: column, },
                             selectedItems: [data.label], // valor del chart que hemos clicado
                             fromChart: true, //fromChart = true indica que se ha creado mediante un click
                         };
                         //Borramos filtros activos del global filter, pero los mantenemos guardados
-                this.lastFilters.forEach((element) => { this.gFilter.removeGlobalFilter(element.filter, true);});
+                        this.lastFilters.forEach((element) => { this.gFilter.removeGlobalFilter(element.filter, true); });
                         //Añadimos filtros nuevos
                         try { await this.gFilter.onGlobalFilter(this.chartFilter, table.table_name); this.reloadOnGlobalFilter(); }
                         catch (error) { console.log(error) }
@@ -1045,13 +1054,13 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
                         isGlobal: true,
                         applyToAll: config.applyToAll,
                         panelList: config.panelList.map((p) => p.id),
-                table: { label: table.display_name.default, value: table.table_name,},
+                        table: { label: table.display_name.default, value: table.table_name, },
                         column: { label: column.display_name.default, value: column },
                         selectedItems: [data.label], // valor del chart que hemos clicado
                         fromChart: true, //fromChart = true indica que se ha creado mediante un click
                     };
                     // Esperamos a que se apliquen los filtros, para luego recargar el global filter
-            await this.gFilter.onGlobalFilter(this.chartFilter,table.table_name);
+                    await this.gFilter.onGlobalFilter(this.chartFilter, table.table_name);
                     this.reloadOnGlobalFilter();
                 }
             }
@@ -1106,7 +1115,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
                                     mailingAlertsEnabled: this.getMailingAlertsEnabled(),
                                     sendViaMailConfig: this.sendViaMailConfig,
                                     onlyIcanEdit: this.onlyIcanEdit,
-                                    styles:this.styles
+                                    styles: this.styles
 
                                 },
                                 group: response.group ? _.map(response.group, '_id') : undefined
@@ -1118,7 +1127,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
 
 
 
-                            if(  this.checkPannels(body) === 'true'){
+                            if (this.checkPannels(body) === 'true') {
                                 this.dashboardService.updateDashboard(r.dashboard._id, body).subscribe(
                                     () => {
                                         this.dashboardService._notSaved.next(false);
@@ -1135,9 +1144,9 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
                                         this.alertService.addError(err);
                                     }
                                 );
-                            }else{
+                            } else {
 
-                               this.alertService.addError($localize`:@@errorSavingDashboardPannels:Error al guardar el informe. Error en el panel: ` + this.checkPannels(body) );
+                                this.alertService.addError($localize`:@@errorSavingDashboardPannels:Error al guardar el informe. Error en el panel: ` + this.checkPannels(body));
 
                             }
 
@@ -1294,9 +1303,9 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     public onResetWidgets(): void {
         // Get the queries in the dashboard for delete it from cache
         const queries = [];
-        this.panels.forEach( p=> {
-                if(p.content  !== undefined && p.content.query  !== undefined && p.content.query.query  !== undefined){
-                    queries.push( p.content.query.query );
+        this.panels.forEach(p => {
+            if (p.content !== undefined && p.content.query !== undefined && p.content.query.query !== undefined) {
+                queries.push(p.content.query.query);
             }
         });
         let body =
@@ -1362,7 +1371,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
                     mailingAlertsEnabled: this.getMailingAlertsEnabled(),
                     sendViaMailConfig: this.sendViaMailConfig,
                     onlyIcanEdit: this.onlyIcanEdit,
-                    styles : this.styles,
+                    styles: this.styles,
                     urls: this.urls
 
                 },
@@ -1372,7 +1381,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
             body.config.panel = this.dashboard.panel;
 
 
-            if( this.checkPannels(body) === 'true'){
+            if (this.checkPannels(body) === 'true') {
                 this.dashboardService.updateDashboard(this.id, body).subscribe(
                     () => {
                         this.display_v.rightSidebar = false;
@@ -1385,9 +1394,9 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
                 );
                 //not saved alert message
                 this.dashboardService._notSaved.next(false);
-            }else{
+            } else {
                 this.display_v.rightSidebar = false;
-                this.alertService.addError($localize`:@@errorSavingDashboardPannels:Error al guardar el informe. Error en el panel: ` + this.checkPannels(body) );
+                this.alertService.addError($localize`:@@errorSavingDashboardPannels:Error al guardar el informe. Error en el panel: ` + this.checkPannels(body));
             }
         }
     }
@@ -1401,7 +1410,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     private checkPannels(dashboard): string {
         let correct = 'true';
         dashboard.config.panel.forEach(p => {
-                if(  p.content && p.content?.query?.query.fields.length < 1  ) {
+            if (p.content && p.content?.query?.query.fields.length < 1) {
                 console.log('NO SE PUEDEN GAURDAR PANELES SIN DATOS');
                 correct = p.title;
             }
@@ -1416,13 +1425,13 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
 
         this.dashboard.panel.forEach(panel => {
             if (panel.content && panel.content.chart === 'kpi') {
-                try{
+                try {
                     panel.content.query.output.config.alertLimits.forEach(alert => {
                         if (alert.mailing.enabled === true) {
                             mailingenabled = true
                         };
                     });
-                }catch(e){
+                } catch (e) {
                     console.log('error getting mailing alerts.... setting it to false');
                     mailingenabled = false;
                 }
@@ -1589,7 +1598,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
             found
             && panel.content
             && !found.panelChart.NO_DATA
-            && (['parallelSets', 'kpi',  'dynamicText', 'treeMap', 'scatterPlot', 'knob', 'funnel','bubblechart', 'sunburst'].includes(panel.content.chart))
+            && (['parallelSets', 'kpi', 'dynamicText', 'treeMap', 'scatterPlot', 'knob', 'funnel', 'bubblechart', 'sunburst'].includes(panel.content.chart))
             && !$event.isNew) {
             found.savePanel();
         }
@@ -1637,7 +1646,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
             this.alertService.addError("Tag already existing")
         }
         else {
-            let tag = {label: newTag, value: newTag}
+            let tag = { label: newTag, value: newTag }
             this.applyNewTag = newTag;
             this.selectedTags.push(this.applyNewTag);
             this.addTag = !this.addTag;
@@ -1698,8 +1707,8 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
         return result;
     }
 
-    public setDashboardCreator(dashboard : any) : void {
-        if (this.userService.user._id === dashboard.user)  {
+    public setDashboardCreator(dashboard: any): void {
+        if (this.userService.user._id === dashboard.user) {
             this.isDashboardCreator = true;
         }
     }
@@ -1745,18 +1754,19 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     */
     /*SDA CUSTOM*/public getFilteredVisibleTypes(): SelectItem[] {
     /*SDA CUSTOM*/  return this.userService.isAdmin
-    /*SDA CUSTOM*/    ? this.visibleTypes
-    /*SDA CUSTOM*/    : this.visibleTypes.filter(type => type.value !== 'shared');
-    /*SDA CUSTOM*/}
+    /*SDA CUSTOM*/ ? this.visibleTypes
+    /*SDA CUSTOM*/ : this.visibleTypes.filter(type => type.value !== 'shared');
+        /*SDA CUSTOM*/
+    }
 
     public getCorrectColumnFiltered(event): string {
-        if (['doughnut', 'polarArea', 'bar', 'line', 'radar',''].includes(event.data.panel.content.chart)) {  //Si el evento es de un chart de la libreria ng2Chart
+        if (['doughnut', 'polarArea', 'bar', 'line', 'radar', ''].includes(event.data.panel.content.chart)) {  //Si el evento es de un chart de la libreria ng2Chart
             if (event.data.query.length > 2) // Si la query tiene más de dos valores en barras, necesitamos redefinir el filterBy
                 return event.data.query.find((query: any) => query?.display_name?.default === event.data.query[0].display_name.default);
             else
                 return event.data.query.find((query: any) => query?.display_name?.default === event.data.filterBy);
         }
-        else if (['table','crosstable','treetable'].includes(event.data.panel.content.chart)) {
+        else if (['table', 'crosstable', 'treetable'].includes(event.data.panel.content.chart)) {
             return event.data.query.find((query: any) => query?.column_name === event.data.filterBy);
         }
         else {
