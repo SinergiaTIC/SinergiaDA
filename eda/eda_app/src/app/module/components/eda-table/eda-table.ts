@@ -969,7 +969,7 @@ export class EdaTable {
 
         const tableColumns = [];
         params.mainCols.forEach(element => {
-            tableColumns.push(new EdaColumnText({ header: element['header'], field: element['field'] }))
+            tableColumns.push(new EdaColumnText({ header: element['header'], field: element['field'], rangeOption: element['rangeOption'] }))
         })
         newColNames.forEach(col => {
             tableColumns.push(new EdaColumnNumber({ header: col, field: col }));
