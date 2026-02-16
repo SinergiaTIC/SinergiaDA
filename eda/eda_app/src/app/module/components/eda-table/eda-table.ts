@@ -470,7 +470,7 @@ export class EdaTable {
                     });
             } else if(col.type === "EdaColumnPercentage") { // Subtotal of the percentages
 
-                const value = parseFloat(partialRow[col.field]);
+                const value = Math.round(parseFloat(partialRow[col.field]));
 
                 this.partialTotalsRow.push(
                     {
