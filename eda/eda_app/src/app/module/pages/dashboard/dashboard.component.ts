@@ -103,6 +103,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
 
     // Zoom control
     public zoomLevel: number = 100;
+    private zoomInterval: any;
 
     //Date filter ranges Dropdown
     public datePickerConfigs: {} = {};
@@ -227,6 +228,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
 
     public ngOnDestroy() {
         this.stopRefresh = true;
+        this.stopContinuousZoom();
         if (this.edaPanelsSubscription) {
             this.edaPanelsSubscription.unsubscribe();
         }
@@ -337,7 +339,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
         };
 
         this.gridsterDraggableOptions = {
-            handlerClass: 'panel-heading'
+            // Se elimina restriction de handlerClass para permitir arrastrar desde cualquier parte del panel
         };
 
 
@@ -847,6 +849,31 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     public zoomOut(): void {
         this.zoomLevel = Math.max(25, this.zoomLevel - 5);
         this.applyZoom();
+    }
+
+    public startContinuousZoom(direction: 'in' | 'out'): void {
+        this.stopContinuousZoom();
+        // Ejecutamos la primera vez inmediatamente
+        if (direction === 'in') this.zoomIn();
+        else this.zoomOut();
+
+        // Establecemos el intervalo para las siguientes
+        this.zoomInterval = setInterval(() => {
+            if (direction === 'in') {
+                if (this.zoomLevel >= 100) this.stopContinuousZoom();
+                else this.zoomIn();
+            } else {
+                if (this.zoomLevel <= 25) this.stopContinuousZoom();
+                else this.zoomOut();
+            }
+        }, 150); // Velocidad del zoom continuo
+    }
+
+    public stopContinuousZoom(): void {
+        if (this.zoomInterval) {
+            clearInterval(this.zoomInterval);
+            this.zoomInterval = null;
+        }
     }
 
     public resetZoom(): void {

@@ -18,13 +18,21 @@
         <app-global-filter #gFilter [dashboard]="this"></app-global-filter>
         <div class="zoom-controls-simple">
             <button pButton pRipple type="button" class="p-button-rounded p-button-text p-button-plain zoom-btn-simple"
-                (click)="zoomOut()" [disabled]="zoomLevel <= 25">
+                (mousedown)="startContinuousZoom('out')" (mouseup)="stopContinuousZoom()"
+                (mouseleave)="stopContinuousZoom()" (click)="zoomOut()" [disabled]="zoomLevel <= 25">
                 <i class="fa fa-minus"></i>
             </button>
             <span class="zoom-value">{{zoomLevel}}%</span>
             <button pButton pRipple type="button" class="p-button-rounded p-button-text p-button-plain zoom-btn-simple"
-                (click)="zoomIn()" [disabled]="zoomLevel >= 100">
+                (mousedown)="startContinuousZoom('in')" (mouseup)="stopContinuousZoom()"
+                (mouseleave)="stopContinuousZoom()" (click)="zoomIn()" [disabled]="zoomLevel >= 100">
                 <i class="fa fa-plus"></i>
+            </button>
+            <div class="zoom-divider"></div>
+            <button pButton pRipple type="button"
+                class="p-button-rounded p-button-text p-button-plain zoom-btn-simple reset-btn" (click)="resetZoom()"
+                [disabled]="zoomLevel === 100" pTooltip="Restablecer (100%)" tooltipPosition="bottom">
+                <i class="fa fa-refresh"></i>
             </button>
         </div>
     </div>

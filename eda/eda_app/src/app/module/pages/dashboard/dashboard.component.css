@@ -327,6 +327,22 @@ app-dashboard {
     font-size: 10px;
 }
 
+.zoom-divider {
+    width: 1px;
+    height: 16px;
+    background-color: #dee2e6;
+    margin: 0 4px;
+}
+
+.reset-btn i {
+    color: #6c757d;
+    font-size: 11px !important;
+}
+
+.reset-btn:hover:not(:disabled) i {
+    color: #007bff;
+}
+
 .dashboard-grid {
     width: 100%;
     transition: transform 0.3s ease;
@@ -350,6 +366,14 @@ app-dashboard {
 
 ::ng-deep .dashboard-grid ngx-gridster-item {
     transform-origin: top left;
+}
+
+::ng-deep .dashboard-grid ngx-gridster-item:not(.panel-locked) {
+    cursor: grab;
+}
+
+::ng-deep .dashboard-grid ngx-gridster-item:not(.panel-locked):active {
+    cursor: grabbing;
 }
 
 ::ng-deep ngx-gridster {
