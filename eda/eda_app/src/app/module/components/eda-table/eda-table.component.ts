@@ -345,7 +345,7 @@ export class EdaTableComponent implements OnInit {
         return null; // Si no hay coincidencia
     }
 
-    customSort(event, cols) {
+    customSort(event: any, cols: any) {
         
         const actualField = event.field;
         const actualCol = cols.find(col => col.field === actualField)
@@ -377,11 +377,13 @@ export class EdaTableComponent implements OnInit {
 
             return (event.order * result);
         });
+
+        // maintains the order of the crosstable
+        this.inject.sortedColumn = { field: event.field, order: event.order };
     }
+
     public getColor(valor: number) { 
-
-        // modificar el true por una variable que se modifica en la edición de valores negativos. 
-
+        // modify true with a variable that is modified when editing negative values. 
         if(valor<0 && this.inject.negativeNumbers) {
             return '#FF0000' 
         }
