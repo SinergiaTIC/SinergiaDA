@@ -263,13 +263,13 @@ app-dashboard {
     font-weight: bolder;
 }
 
-.panel-locked {
-    cursor: not-allowed !important;
-}
+/* SDA CUSTOM */ .panel-locked {
+/* SDA CUSTOM */     cursor: not-allowed !important;
+/* SDA CUSTOM */ }
 
-.panel-locked ::ng-deep .gridster-item-resizable-handler {
-    cursor: not-allowed !important;
-}
+/* SDA CUSTOM */ .panel-locked ::ng-deep .gridster-item-resizable-handler {
+/* SDA CUSTOM */     cursor: not-allowed !important;
+/* SDA CUSTOM */ }
 
 .disabled-div {
     position: absolute;
@@ -282,100 +282,100 @@ app-dashboard {
     z-index: 99999;
 }
 
-/* --- ZOOM CONTROLS --- */
-.filters-zoom-container {
-    position: relative;
-    width: 100%;
-    display: block;
-    margin-bottom: 5px;
-}
-
-.zoom-controls-simple {
-    position: absolute;
-    top: 50%;
-    right: 15px;
-    transform: translateY(-50%);
-    z-index: 100;
-    display: flex;
-    align-items: center;
-    background-color: #f8f9fa;
-    border-radius: 20px;
-    padding: 2px 10px;
-    border: 1px solid #dee2e6;
-    height: 32px;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-}
-
-.zoom-value {
-    font-weight: bold;
-    min-width: 45px;
-    text-align: center;
-    font-size: 13px;
-    color: #495057;
-}
-
-.zoom-btn-simple {
-    width: 26px !important;
-    height: 26px !important;
-    padding: 0 !important;
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-}
-
-.zoom-btn-simple i {
-    font-size: 10px;
-}
-
-.zoom-divider {
-    width: 1px;
-    height: 16px;
-    background-color: #dee2e6;
-    margin: 0 4px;
-}
-
-.reset-btn i {
-    color: #6c757d;
-    font-size: 11px !important;
-}
-
-.reset-btn:hover:not(:disabled) i {
-    color: #007bff;
-}
-
-.dashboard-grid {
-    width: 100%;
-    transition: transform 0.3s ease;
-    transform-origin: top left;
-}
-
-.dashboard-grid.zoomed-out {
-    box-shadow: 0 0 20px rgba(0, 123, 255, 0.2);
-    border: 1px solid rgba(0, 123, 255, 0.3);
-    display: inline-block;
-}
-
-::ng-deep .gridster .gridster-item-moving {
-    z-index: 999 !important;
-}
-
-::ng-deep .gridster .gridster-column,
-::ng-deep .gridster .gridster-row {
-    transition: none;
-}
-
-::ng-deep .dashboard-grid ngx-gridster-item {
-    transform-origin: top left;
-}
-
-::ng-deep .dashboard-grid ngx-gridster-item:not(.panel-locked) {
-    cursor: grab;
-}
-
-::ng-deep .dashboard-grid ngx-gridster-item:not(.panel-locked):active {
-    cursor: grabbing;
-}
-
-::ng-deep ngx-gridster {
-    display: block;
-}
+/* SDA CUSTOM */ /* --- ZOOM CONTROLS --- */
+/* SDA CUSTOM */ .filters-zoom-container {
+/* SDA CUSTOM */     position: relative;
+/* SDA CUSTOM */     width: 100%;
+/* SDA CUSTOM */     display: block;
+/* SDA CUSTOM */     margin-bottom: 5px;
+/* SDA CUSTOM */ }
+/* SDA CUSTOM */ 
+/* SDA CUSTOM */ .zoom-controls-simple {
+/* SDA CUSTOM */     position: absolute;
+/* SDA CUSTOM */     top: 50%;
+/* SDA CUSTOM */     right: 15px;
+/* SDA CUSTOM */     transform: translateY(-50%);
+/* SDA CUSTOM */     z-index: 100;
+/* SDA CUSTOM */     display: flex;
+/* SDA CUSTOM */     align-items: center;
+/* SDA CUSTOM */     background-color: #f8f9fa;
+/* SDA CUSTOM */     border-radius: 20px;
+/* SDA CUSTOM */     padding: 2px 10px;
+/* SDA CUSTOM */     border: 1px solid #dee2e6;
+/* SDA CUSTOM */     height: 32px;
+/* SDA CUSTOM */     box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+/* SDA CUSTOM */ }
+/* SDA CUSTOM */ 
+/* SDA CUSTOM */ .zoom-value {
+/* SDA CUSTOM */     font-weight: bold;
+/* SDA CUSTOM */     min-width: 45px;
+/* SDA CUSTOM */     text-align: center;
+/* SDA CUSTOM */     font-size: 13px;
+/* SDA CUSTOM */     color: #495057;
+/* SDA CUSTOM */ }
+/* SDA CUSTOM */ 
+/* SDA CUSTOM */ .zoom-btn-simple {
+/* SDA CUSTOM */     width: 26px !important;
+/* SDA CUSTOM */     height: 26px !important;
+/* SDA CUSTOM */     padding: 0 !important;
+/* SDA CUSTOM */     display: flex !important;
+/* SDA CUSTOM */     align-items: center !important;
+/* SDA CUSTOM */     justify-content: center !important;
+/* SDA CUSTOM */ }
+/* SDA CUSTOM */ 
+/* SDA CUSTOM */ .zoom-btn-simple i {
+/* SDA CUSTOM */     font-size: 10px;
+/* SDA CUSTOM */ }
+/* SDA CUSTOM */ 
+/* SDA CUSTOM */ .zoom-divider {
+/* SDA CUSTOM */     width: 1px;
+/* SDA CUSTOM */     height: 16px;
+/* SDA CUSTOM */     background-color: #dee2e6;
+/* SDA CUSTOM */     margin: 0 4px;
+/* SDA CUSTOM */ }
+/* SDA CUSTOM */ 
+/* SDA CUSTOM */ .reset-btn i {
+/* SDA CUSTOM */     color: #6c757d;
+/* SDA CUSTOM */     font-size: 11px !important;
+/* SDA CUSTOM */ }
+/* SDA CUSTOM */ 
+/* SDA CUSTOM */ .reset-btn:hover:not(:disabled) i {
+/* SDA CUSTOM */     color: #007bff;
+/* SDA CUSTOM */ }
+/* SDA CUSTOM */ 
+/* SDA CUSTOM */ .dashboard-grid {
+/* SDA CUSTOM */     width: 100%;
+/* SDA CUSTOM */     transition: transform 0.3s ease;
+/* SDA CUSTOM */     transform-origin: top left;
+/* SDA CUSTOM */ }
+/* SDA CUSTOM */ 
+/* SDA CUSTOM */ .dashboard-grid.zoomed-out {
+/* SDA CUSTOM */     box-shadow: 0 0 20px rgba(0, 123, 255, 0.2);
+/* SDA CUSTOM */     border: 1px solid rgba(0, 123, 255, 0.3);
+/* SDA CUSTOM */     display: inline-block;
+/* SDA CUSTOM */ }
+/* SDA CUSTOM */ 
+/* SDA CUSTOM */ ::ng-deep .gridster .gridster-item-moving {
+/* SDA CUSTOM */     z-index: 999 !important;
+/* SDA CUSTOM */ }
+/* SDA CUSTOM */ 
+/* SDA CUSTOM */ ::ng-deep .gridster .gridster-column,
+/* SDA CUSTOM */ ::ng-deep .gridster .gridster-row {
+/* SDA CUSTOM */     transition: none;
+/* SDA CUSTOM */ }
+/* SDA CUSTOM */ 
+/* SDA CUSTOM */ ::ng-deep .dashboard-grid ngx-gridster-item {
+/* SDA CUSTOM */     transform-origin: top left;
+/* SDA CUSTOM */ }
+/* SDA CUSTOM */ 
+/* SDA CUSTOM */ ::ng-deep .dashboard-grid ngx-gridster-item:not(.panel-locked) {
+/* SDA CUSTOM */     cursor: grab;
+/* SDA CUSTOM */ }
+/* SDA CUSTOM */ 
+/* SDA CUSTOM */ ::ng-deep .dashboard-grid ngx-gridster-item:not(.panel-locked):active {
+/* SDA CUSTOM */     cursor: grabbing;
+/* SDA CUSTOM */ }
+/* SDA CUSTOM */ 
+/* SDA CUSTOM */ ::ng-deep ngx-gridster {
+/* SDA CUSTOM */     display: block;
+/* SDA CUSTOM */ }

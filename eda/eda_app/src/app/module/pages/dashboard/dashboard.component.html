@@ -1,88 +1,69 @@
-<div class="main-content" (window:resize)="onResize($event)" id='myDashboard'
-    [ngClass]="{'noSidebar': display_v.panelMode }">
+<div class="main-content" (window:resize)="onResize($event)" id='myDashboard' [ngClass]="{'noSidebar': display_v.panelMode }">
     <!-- ============================================================== -->
     <!-- TITLE  -->
     <!-- ============================================================== -->
-    <div class="col-12" style="padding:2px" *ngIf="!display_v.panelMode">
+    <div class="col-12" style="padding:2px"  *ngIf="!display_v.panelMode">
         <eda-dashboard-panel class="pointer" (click)="setTitle()">
             <div class="d-flex justify-title-content">
                 <h3 *ngIf="!titleClick" class="eda-title"> {{title}} </h3>
-                <input *ngIf="!!titleClick" (focusout)="setTitle()" (keydown.enter)="setTitle()" type="text"
-                    class="w-100" [(ngModel)]="title" pInputText autofocusOnShow>
+                <input *ngIf="!!titleClick" (focusout)="setTitle()" (keydown.enter)="setTitle()" type="text" class="w-100" [(ngModel)]="title" pInputText autofocusOnShow>
             </div>
         </eda-dashboard-panel>
     </div>
 
-
-    <div class="filters-zoom-container" *ngIf="!display_v.panelMode">
+    <!-- ============================================================== -->
+    <!-- GLOBAL FILTERS  -->
+    <!-- ============================================================== -->
+<!-- SDA CUSTOM --> <div class="filters-zoom-container" *ngIf="!display_v.panelMode">
         <app-global-filter #gFilter [dashboard]="this"></app-global-filter>
-        <div class="zoom-controls-simple">
-            <button pButton pRipple type="button" class="p-button-rounded p-button-text p-button-plain zoom-btn-simple"
-                (mousedown)="startContinuousZoom('out')" (mouseup)="stopContinuousZoom()"
-                (mouseleave)="stopContinuousZoom()" (click)="zoomOut()" [disabled]="zoomLevel <= 25">
-                <i class="fa fa-minus"></i>
-            </button>
-            <span class="zoom-value">{{zoomLevel}}%</span>
-            <button pButton pRipple type="button" class="p-button-rounded p-button-text p-button-plain zoom-btn-simple"
-                (mousedown)="startContinuousZoom('in')" (mouseup)="stopContinuousZoom()"
-                (mouseleave)="stopContinuousZoom()" (click)="zoomIn()" [disabled]="zoomLevel >= 100">
-                <i class="fa fa-plus"></i>
-            </button>
-            <div class="zoom-divider"></div>
-            <button pButton pRipple type="button"
-                class="p-button-rounded p-button-text p-button-plain zoom-btn-simple reset-btn" (click)="resetZoom()"
-                [disabled]="zoomLevel === 100" pTooltip="Restablecer (100%)" tooltipPosition="bottom">
-                <i class="fa fa-refresh"></i>
-            </button>
-        </div>
-    </div>
-
-    <div class="col-12" style="padding:2px">
+<!-- SDA CUSTOM -->         <div class="zoom-controls-simple">
+<!-- SDA CUSTOM -->             <button pButton pRipple type="button" class="p-button-rounded p-button-text p-button-plain zoom-btn-simple" (mousedown)="startContinuousZoom('out')" (mouseup)="stopContinuousZoom()" (mouseleave)="stopContinuousZoom()" (click)="zoomOut()" [disabled]="zoomLevel <= 25">
+<!-- SDA CUSTOM -->                 <i class="fa fa-minus"></i>
+<!-- SDA CUSTOM -->             </button>
+<!-- SDA CUSTOM -->             <span class="zoom-value">{{zoomLevel}}%</span>
+<!-- SDA CUSTOM -->             <button pButton pRipple type="button" class="p-button-rounded p-button-text p-button-plain zoom-btn-simple" (mousedown)="startContinuousZoom('in')" (mouseup)="stopContinuousZoom()" (mouseleave)="stopContinuousZoom()" (click)="zoomIn()" [disabled]="zoomLevel >= 100">
+<!-- SDA CUSTOM -->                 <i class="fa fa-plus"></i>
+<!-- SDA CUSTOM -->             </button>
+<!-- SDA CUSTOM -->             <div class="zoom-divider"></div>
+<!-- SDA CUSTOM -->             <button pButton pRipple type="button" class="p-button-rounded p-button-text p-button-plain zoom-btn-simple reset-btn" (click)="resetZoom()" [disabled]="zoomLevel === 100" pTooltip="Restablecer (100%)" tooltipPosition="bottom">
+<!-- SDA CUSTOM -->                 <i class="fa fa-refresh"></i>
+<!-- SDA CUSTOM -->             </button>
+<!-- SDA CUSTOM -->         </div>
+<!-- SDA CUSTOM -->     </div>
+<!-- SDA CUSTOM -->     <div class="col-12" style="padding:2px">
         <ngx-gridster class="dashboard-grid" [options]="gridsterOptions" [draggableOptions]="gridsterDraggableOptions"
             #gridster1>
             <!-- Normal Size -->
-            <ng-container *ngIf="!toLitle && !toMedium">
-                <ngx-gridster-item *ngFor="let panel of panels" [options]="itemOptions" [dragAndDrop]="!panel.locked"
-                    [resizable]="!panel.locked && panel.resizable" [(w)]="panel.w" [(h)]="panel.h" [(x)]="panel.x"
-                    [(y)]="panel.y" (change)="itemChange($event, panel)" [class.panel-locked]="panel.locked">
+            <ng-container *ngIf="!toLitle && !toMedium" >
+<!-- SDA CUSTOM --> <ngx-gridster-item *ngFor="let panel of panels"  [options]="itemOptions" [dragAndDrop]="!panel.locked" [resizable]="!panel.locked && panel.resizable" [(w)]="panel.w" [(h)]="panel.h" [(x)]="panel.x" [(y)]="panel.y" (change)="itemChange($event, panel)" [class.panel-locked]="panel.locked">
                     <ng-container *ngTemplateOutlet="panelTemplate; context: {$implicit: panel}"></ng-container>
                 </ngx-gridster-item>
             </ng-container>
 
             <!-- Mid  Size -->
             <ng-container *ngIf="toMedium">
-                <ngx-gridster-item *ngFor="let panel of panels" [options]="itemOptions"
-                    [dragAndDrop]="!panel.locked && panel.dragAndDrop" [resizable]="!panel.locked && panel.resizable"
-                    [(w)]="panel.tamanyMig.w" [(h)]="panel.tamanyMig.h" [(x)]="panel.tamanyMig.x"
-                    [(y)]="panel.tamanyMig.y" (change)="itemChange($event, panel)" [class.panel-locked]="panel.locked">
+<!-- SDA CUSTOM --> <ngx-gridster-item *ngFor="let panel of panels" [options]="itemOptions" [dragAndDrop]="!panel.locked && panel.dragAndDrop" [resizable]="!panel.locked && panel.resizable" [(w)]="panel.tamanyMig.w" [(h)]="panel.tamanyMig.h" [(x)]="panel.tamanyMig.x" [(y)]="panel.tamanyMig.y" (change)="itemChange($event, panel)" [class.panel-locked]="panel.locked">
                     <ng-container *ngTemplateOutlet="panelTemplate; context: {$implicit: panel}"></ng-container>
                 </ngx-gridster-item>
             </ng-container>
 
             <!-- Mobile Size -->
             <ng-container *ngIf="toLitle">
-                <ngx-gridster-item *ngFor="let panel of panels" [options]="itemOptions"
-                    [dragAndDrop]="!panel.locked && panel.dragAndDrop" [resizable]="!panel.locked && panel.resizable"
-                    [(w)]="panel.tamanyMobil.w" [(h)]="panel.tamanyMobil.h" [(x)]="panel.tamanyMobil.x"
-                    [(y)]="panel.tamanyMobil.y" (change)="itemChange($event, panel)"
-                    [class.panel-locked]="panel.locked">
+<!-- SDA CUSTOM --> <ngx-gridster-item *ngFor="let panel of panels" [options]="itemOptions" [dragAndDrop]="!panel.locked && panel.dragAndDrop" [resizable]="!panel.locked && panel.resizable" [(w)]="panel.tamanyMobil.w" [(h)]="panel.tamanyMobil.h" [(x)]="panel.tamanyMobil.x" [(y)]="panel.tamanyMobil.y" (change)="itemChange($event, panel)" [class.panel-locked]="panel.locked">
                     <ng-container *ngTemplateOutlet="panelTemplate; context: {$implicit: panel}"></ng-container>
                 </ngx-gridster-item>
             </ng-container>
 
         </ngx-gridster>
-    </div>
+<!-- SDA CUSTOM --> </div>
 
     <ng-template #panelTemplate let-panel>
         <ng-container [ngSwitch]="panel.type">
 
-            <eda-blank-panel *ngSwitchCase="0" #edaPanel [panel]="panel" [inject]="inject"
-                (remove)="onRemovePanel($event)" (action)="onPanelAction($event)"
-                (duplicate)="onDuplicatePanel($event)">
+<!-- SDA CUSTOM --> <eda-blank-panel *ngSwitchCase="0" #edaPanel [panel]="panel" [inject]="inject" (remove)="onRemovePanel($event)" (action)="onPanelAction($event)" (duplicate)="onDuplicatePanel($event)">
             </eda-blank-panel>
 
-            <eda-title-panel *ngSwitchCase="1" #edaPanel [id]="panel.id" [panel]="panel" [inject]="inject"
-                (remove)="onRemovePanel($event)" (duplicate)="onDuplicatePanel($event)" class="eda-text-panel">
+<!-- SDA CUSTOM --> <eda-title-panel *ngSwitchCase="1" #edaPanel [id]="panel.id" [panel]="panel" [inject]="inject" (remove)="onRemovePanel($event)" (duplicate)="onDuplicatePanel($event)" class="eda-text-panel">
             </eda-title-panel>
 
         </ng-container>
@@ -115,8 +96,12 @@
 <!-- ============================================================== -->
 <!-- Right sidebar -->
 <!-- ============================================================== -->
-<p-sidebar [(visible)]="display_v.rightSidebar" position="right" [baseZIndex]="10000" blockScroll="true"
-    [showCloseIcon]="false" [style]="{width:'25em', overflow: 'auto'}">
+<p-sidebar [(visible)]="display_v.rightSidebar"
+            position="right"
+            [baseZIndex]="10000"
+            blockScroll="true"
+            [showCloseIcon]="false"
+            [style]="{width:'25em', overflow: 'auto'}"  >
 
     <div>
         <div class="right-sidebar-blocks-title  mt-1">
@@ -125,24 +110,21 @@
     </div>
     <hr>
 
-    <div *ngIf="display_v.edit_mode" class="right-sidebar-blocks-options block-options-bg pointer mt-1"
-        (click)="onAddWidget()">
+    <div *ngIf="display_v.edit_mode" class="right-sidebar-blocks-options block-options-bg pointer mt-1" (click)="onAddWidget()">
         <div>
             <i id="newPanel" class="fa fa-columns"></i>
             <span i18n="@@opcionPanel" class="ml-2">NUEVO PANEL</span>
         </div>
     </div>
 
-    <div *ngIf="display_v.edit_mode" class="right-sidebar-blocks-options block-options-bg pointer mt-1"
-        (click)="onAddTitle()">
+    <div *ngIf="display_v.edit_mode" class="right-sidebar-blocks-options block-options-bg pointer mt-1" (click)="onAddTitle()">
         <div>
             <i class="fa fa-columns"></i>
             <span i18n="@@opcionTitulo" class="ml-2">NUEVO TEXTO</span>
         </div>
     </div>
 
-    <div *ngIf="display_v.edit_mode" class="right-sidebar-blocks-options block-options-bg pointer mt-1"
-        (click)="gFilter?.onShowGlobalFilter(true)">
+    <div *ngIf="display_v.edit_mode" class="right-sidebar-blocks-options block-options-bg pointer mt-1" (click)="gFilter?.onShowGlobalFilter(true)">
         <div>
             <i id="newFilter" class="fa fa-filter"></i>
             <span i18n="@@opcionFiltro" class="ml-2">NUEVO FILTRO</span>
@@ -158,27 +140,23 @@
         </div>
     </div>
 
-    <hr>
     <div *ngIf="display_v.edit_mode" class="right-sidebar-blocks-options block-options-bg pointer mt-1">
         <div>
             <div>
-                <i class="fa fa-tag"></i>
+                <i class="fa fa-tag" ></i>
                 <span class="ml-2"> {{addTagString}} </span>
             </div>
             <div>
-                <p-multiSelect class="ml-2" [options]="tags" [(ngModel)]="selectedTags" [placeholder]="addTagString"
-                    showHeader="false" maxSelectedLabels="0" selectedItemsLabel="Show tags"></p-multiSelect>
+                <p-multiSelect class="ml-2" [options]="tags"  [(ngModel)]="selectedTags" [placeholder]="addTagString" showHeader="false" maxSelectedLabels="0" selectedItemsLabel="Show tags"></p-multiSelect>
             </div>
             <br>
             <div>
-                <button pButton pRipple type="button" *ngIf="!addTag" class="p-button-raised p-button-success ml-2"
-                    (click)="addNewTag()" style="background-color: #4CAF50">
+                 <button pButton pRipple type="button" *ngIf="!addTag" class="p-button-raised p-button-success ml-2" (click)="addNewTag()" style="background-color: #4CAF50">
                     <span i18n="@@newTag"> Nueva etiqueta </span>
-                </button>
+                 </button>
             </div>
             <input class="ml-2" *ngIf="addTag" type="text" pInputText [(ngModel)]="applyNewTag">
-            <button pButton pRipple type="button" *ngIf="addTag" class="p-button-raised p-button-success ml-2"
-                style="background-color: #4CAF50" (click)="setNewTag(applyNewTag)">
+            <button pButton pRipple type="button" *ngIf="addTag" class="p-button-raised p-button-success ml-2" style="background-color: #4CAF50" (click)="setNewTag(applyNewTag)">
                 <span> Confirmar </span>
             </button>
         </div>
@@ -187,28 +165,25 @@
     <div *ngIf="display_v.edit_mode" class="right-sidebar-blocks-options block-options-bg pointer mt-1">
         <div>
             <span class="ml-2">LIVE DASHBOARD</span>
-            <input style="width: 100%; margin-top: 0.2rem;" [placeholder]="Seconds_to_refresh" type="number" pInputText
-                [(ngModel)]="refreshTime">
+            <input style="width: 100%; margin-top: 0.2rem;" [placeholder]="Seconds_to_refresh" type="number" pInputText [(ngModel)]="refreshTime">
         </div>
     </div>
 
+
     <hr>
-    <div *ngIf="display_v.edit_mode && canIedit()" class="right-sidebar-blocks-options block-options-bg pointer mt-1"
-        (click)="saveDashboard()">
+    <div *ngIf="display_v.edit_mode && canIedit()" class="right-sidebar-blocks-options block-options-bg pointer mt-1" (click)="saveDashboard()">
         <div>
             <i id="saveDashboard" class="fa fa-save"></i>
             <span i18n="@@opcionGuardar" class="ml-2">GUARDAR</span>
         </div>
     </div>
-    <div *ngIf="display_v.edit_mode" class="right-sidebar-blocks-options block-options-bg pointer mt-1"
-        (click)="saveAs()">
+    <div *ngIf="display_v.edit_mode" class="right-sidebar-blocks-options block-options-bg pointer mt-1" (click)="saveAs()">
         <div>
             <i id="saveDashboard" class="fa fa-save"></i>
             <span i18n="@@opcionGuardarComo" class="ml-2">GUARDAR COMO</span>
         </div>
     </div>
-    <div *ngIf="display_v.edit_mode && canIedit()" class="right-sidebar-blocks-options block-options-bg pointer mt-1"
-        (click)="deleteReport()">
+    <div *ngIf="display_v.edit_mode && canIedit()" class="right-sidebar-blocks-options block-options-bg pointer mt-1" (click)="deleteReport()">
         <div>
             <i class="fa fa-trash"></i>
             <span i18n="@@eliminarInforme" class="ml-2">ELIMINAR INFORME</span>
@@ -216,19 +191,18 @@
     </div>
 
     <div *ngIf="display_v.edit_mode">
-        <form [formGroup]="form" *ngIf="canIedit()">
-            <div>
-                <!-- SDA CUSTOM --> <p-selectButton [options]="getFilteredVisibleTypes()" formControlName="visible"
-                    (onChange)="handleSelectedBtn($event)">
+        <form [formGroup]="form" *ngIf="canIedit()" >
+            <div >
+                <!-- SDA CUSTOM --> <p-selectButton [options]="getFilteredVisibleTypes()" formControlName="visible" (onChange)="handleSelectedBtn($event)">
                 </p-selectButton>
 
 
             </div>
-            <div *ngIf="display_v.groups" class="ml-3">
+            <div  *ngIf="display_v.groups" class="ml-3">
                 <br>
                 <p-multiSelect id="float-grups" formControlName="group" [options]="grups" [filter]="true"
-                    optionLabel="name" defaultLabel="Elige grupos *" [style]="{ width: '100%' }" itemSize="30"
-                    overflow="visible">
+                 optionLabel="name" defaultLabel="Elige grupos *" [style]="{ width: '100%' }" itemSize="30" overflow="visible"
+                 >
                 </p-multiSelect>
             </div>
         </form>
@@ -240,20 +214,19 @@
         </button>
     </div>
 
-    <div *ngIf="display_v.edit_mode && canIedit()" [pTooltip]="canIeditTooltip" tooltipPosition="above"
-        class="canIeditClass ml-3">
-        <div i18n="@@onlyIcanEditTag" class="canIeditClassLabel">
+    <div *ngIf="display_v.edit_mode && canIedit()"  [pTooltip]="canIeditTooltip" tooltipPosition="above" class="canIeditClass ml-3">
+        <div i18n="@@onlyIcanEditTag" class="canIeditClassLabel"  >
             Edición privada:
         </div>
-        <div class="canIeditClassLabel" [pTooltip]="canIeditTooltip" tooltipPosition="above">
-            <p-inputSwitch id="onlyIcanEdit" class="col-1 sql-switch" [(ngModel)]="onlyIcanEdit" tooltipPosition="top">
+        <div class="canIeditClassLabel"  [pTooltip]="canIeditTooltip" tooltipPosition="above"  >
+            <p-inputSwitch id="onlyIcanEdit" class="col-1 sql-switch" [(ngModel)]="onlyIcanEdit"
+            tooltipPosition="top"   >
             </p-inputSwitch>
         </div>
     </div>
 
     <hr>
-    <div *ngIf="display_v.edit_mode" class="right-sidebar-blocks-options block-options-bg pointer mt-1"
-        (click)="editStyles()">
+    <div *ngIf="display_v.edit_mode" class="right-sidebar-blocks-options block-options-bg pointer mt-1" (click)="editStyles()">
         <div>
             <i class="fa fa-paint-brush"></i>
             <span i18n="@@opcionEditarEstilos" class="ml-2">EDITAR ESTILOS</span>
@@ -274,8 +247,7 @@
         </div>
     </div>
 
-    <div *ngIf="display_v.edit_mode && canIedit()" class="right-sidebar-blocks-options block-options-bg pointer mt-1"
-        (click)="openMailConfig();">
+    <div  *ngIf="display_v.edit_mode && canIedit()" class="right-sidebar-blocks-options block-options-bg pointer mt-1" (click)="openMailConfig();">
         <div>
             <i class="fa fa-envelope-o"></i>
             <span i18n="@@opcionMail" class="ml-2">ENVIAR POR EMAIL</span>
@@ -296,18 +268,16 @@
 </p-sidebar>
 
 <div>
-    <span i18n="@@notSavedChanges" class="div-cambios " *ngIf="display_v.notSaved"
-        style="color: var(--panel-font-color);"> Hay cambios sin guardar... </span>
+    <span i18n="@@notSavedChanges" class="div-cambios " *ngIf="display_v.notSaved" style="color: var(--panel-font-color);"> Hay cambios sin guardar... </span>
 
-    <button *ngIf="!display_v.hideWheel" (click)="display_v.rightSidebar = true"
-        class="right-side-toggle waves-effect waves-light btn-inverse btn btn-circle btn-sm pull-right m-l-10">
+    <button *ngIf="!display_v.hideWheel" (click)="display_v.rightSidebar = true" class="right-side-toggle waves-effect waves-light btn-inverse btn btn-circle btn-sm pull-right m-l-10">
         <i id="gearButton" class="fa fa-cog text-white" style="font-size: 14px;"></i>
     </button>
 
 </div>
 
 
-<div *ngIf="display_v.panelMode">
-    <!-- SDA CUSTOM    <a href="https://eda.jortilles.com/">Enterprise Data Analytics</a> -->
-    <!-- SDA CUSTOM--> <a href="https://sinergiacrm.org/es/sinergia-data-analytics/">Sinergia Data Analytics</a>
+<div  *ngIf="display_v.panelMode" >
+<!-- SDA CUSTOM    <a href="https://eda.jortilles.com/">Enterprise Data Analytics</a> -->
+<!-- SDA CUSTOM--> <a href="https://sinergiacrm.org/es/sinergia-data-analytics/">Sinergia Data Analytics</a>
 </div>

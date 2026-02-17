@@ -4699,14 +4699,6 @@ Once configured you can invoke it whenever you want from the button.</target>
         <source>Esta es una columna calculada y no tiene formatos disponibles</source>
         <target>This is a calculated column and has no available formats.</target>
       </trans-unit>
-          <trans-unit id="lockPanel">
-        <source>Bloquear panel</source>
-        <target>Lock panel</target>
-      </trans-unit>
-      <trans-unit id="unlockPanel">
-        <source>Desbloquear panel</source>
-        <target>Unlock panel</target>
-      </trans-unit>
     </body>
   </file>
 </xliff>

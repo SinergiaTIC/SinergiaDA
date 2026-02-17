@@ -4494,14 +4494,6 @@
         <source>Error al guardar el informe. Error en el panel: </source>
         <target>Se ha producido un error al guardar el informe. El error está en el panel </target>
       </trans-unit>
-      <trans-unit id="lockPanel">
-        <source>Bloquear panel</source>
-        <target>Bloquear panel</target>
-      </trans-unit>
-      <trans-unit id="unlockPanel">
-        <source>Desbloquear panel</source>
-        <target>Desbloquear panel</target>
-      </trans-unit>
     </body>
   </file>
 </xliff>

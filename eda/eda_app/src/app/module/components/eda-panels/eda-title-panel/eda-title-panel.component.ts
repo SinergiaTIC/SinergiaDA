@@ -3,8 +3,8 @@ import { Component, OnInit, Input, Output, EventEmitter, ViewEncapsulation } fro
 import { InjectEdaPanel, EdaTitlePanel } from '@eda/models/model.index';
 import { EdaContextMenu, EdaContextMenuItem, EdaDialogCloseEvent, EdaDialogController } from '@eda/shared/components/shared-components.index';
 import { DomSanitizer } from '@angular/platform-browser'
-import { SafeHtmlPipe } from './htmlSanitizer.pipe'
-import { SafeUrlPipe } from './urlSanitizer.pipe'
+import {SafeHtmlPipe} from './htmlSanitizer.pipe'
+import {SafeUrlPipe} from './urlSanitizer.pipe'
 import * as _ from 'lodash';
 import { environment } from 'environments/environment';
 
@@ -27,13 +27,13 @@ export class EdaTitlePanelComponent implements OnInit {
     display: any = {
         editMode: true
     }
-    public htmlPipe: SafeHtmlPipe
-    public urlPipe: SafeUrlPipe
-    public lockPanelTooltip: string = $localize`:@@lockPanel:Bloquear panel`;
-    public unlockPanelTooltip: string = $localize`:@@unlockPanel:Desbloquear panel`;
+    public htmlPipe : SafeHtmlPipe
+    public urlPipe : SafeUrlPipe
+/* SDA CUSTOM */    public lockPanelTooltip: string = $localize`:@@lockPanel:Bloquear panel`;
+/* SDA CUSTOM */    public unlockPanelTooltip: string = $localize`:@@unlockPanel:Desbloquear panel`;
 
 
-    constructor(public sanitized: DomSanitizer, public dashboardService: DashboardService) { }
+    constructor(public sanitized: DomSanitizer, public dashboardService : DashboardService){}
 
 
     ngOnInit(): void {
@@ -41,10 +41,10 @@ export class EdaTitlePanelComponent implements OnInit {
         this.setEditMode();
     }
 
-    public toggleLock(): void {
-        this.panel.locked = !this.panel.locked;
-        this.dashboardService._notSaved.next(true);
-    }
+/* SDA CUSTOM */   public toggleLock(): void {
+/* SDA CUSTOM */       this.panel.locked = !this.panel.locked;
+/* SDA CUSTOM */       this.dashboardService._notSaved.next(true);
+/* SDA CUSTOM */   }
 
     public setEditMode(): void {
         const user = localStorage.getItem('user');
@@ -74,7 +74,7 @@ export class EdaTitlePanelComponent implements OnInit {
                         this.editTittleController = new EdaDialogController({
                             params: { title: this.panel.title },
                             close: (event, response) => {
-                                if (!_.isEqual(event, EdaDialogCloseEvent.NONE)) {
+                                if(!_.isEqual(event, EdaDialogCloseEvent.NONE)){
                                     this.panel.title = response.title;
                                     this.setPanelSize()
                                     this.dashboardService._notSaved.next(true);
@@ -97,9 +97,9 @@ export class EdaTitlePanelComponent implements OnInit {
     public setPanelSize(): void {
         let element: any;
         if (environment.production) {
-            element = document.querySelector(`[id^="${this.panel.id.substring(0, 30)}"]`);
+            element = document.querySelector(`[id^="${this.panel.id.substring(0,30)}"]`);
         } else {
-            element = document.querySelector(`[ng-reflect-id^="${this.panel.id.substring(0, 30)}"]`);
+            element = document.querySelector(`[ng-reflect-id^="${this.panel.id.substring(0,30)}"]`);
         }
 
         let parentElement: any = element?.parentNode;

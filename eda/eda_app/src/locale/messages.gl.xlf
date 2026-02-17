@@ -4500,14 +4500,6 @@
         <source>Esta es una columna calculada y no tiene formatos disponibles</source>
         <target>Esta é unha columna calculada e non ten formatos dispoñibles</target>
       </trans-unit>
-      <trans-unit id="lockPanel">
-        <source>Bloquear panel</source>
-        <target>Bloquear panel</target>
-      </trans-unit>
-      <trans-unit id="unlockPanel">
-        <source>Desbloquear panel</source>
-        <target>Desbloquear panel</target>
-      </trans-unit>
     </body>
   </file>
 </xliff>
