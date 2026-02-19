@@ -4,15 +4,15 @@
 
         <!-- SDA CUSTOM Nombre de la columna -->
         <div class="col-12 mt-2" *ngIf="selectedColumn">
-        
+
             <div class="d-flex align-items-center flex-wrap" style="gap: 15px;">
-        
+
                 <h4 style="margin: 0; white-space: nowrap;">
          <span i18n="@@nombreColumnaH4">Etiqueta para el campo</span> [{{tableLabel}} -
                     {{sourceFieldName}}]:
-                   
+
                 </h4>
-                
+
                 <div style="flex-grow: 1; min-width: 250px; max-width: 500px;">
                     <input id="columnName" type="text" pInputText
                         [(ngModel)]="selectedColumn.display_name.default"
@@ -21,7 +21,7 @@
                 </div>
             </div>
             <hr>
-           
+
         </div>
         <!-- END SDA CUSTOM -->
 
@@ -74,7 +74,8 @@
 
             <div class="grid mt-2">
 
-                <div [ngClass]="{
+                <div
+                    [ngClass]="{
                         'md:col-4': (!display.between && !display.calendar ) || (!!display.calendar ),
                         'md:col-8': !(!display.between && !display.calendar) || (!!display.calendar)
                     }">
@@ -99,7 +100,7 @@
 
                         <ng-container *ngIf="!!display.calendar && !filter.switch">
 
-                            <div>
+                            <div >
 
                                 <!-- <label i18n="@@fechaLabel" class="p-float-label" for="datepicker">
                                     Fecha
@@ -153,15 +154,14 @@
                 </ng-container>
 
 
-                <ng-container
-                    *ngIf="filterSelected!=undefined && selectedColumn.column_type ==='numeric'  && !display.switchButton && (aggregationSelected.display_name !== 'No')">
+                <ng-container *ngIf="filterSelected!=undefined && selectedColumn.column_type ==='numeric'  && !display.switchButton && (aggregationSelected.display_name !== 'No')">
 
                     <div class="col-12 md:col-4">
 
                         <span class="p-float-label">
-                            <p-dropdown id="types" [options]="filterBeforeAfter.elements"
-                                [(ngModel)]="filterBeforeAfterSelected" optionLabel="label" [autoDisplayFirst]="true"
-                                [style]="{'width': '100%'}" (onChange)="whereHavingSwitch(filterBeforeAfterSelected)">
+                            <p-dropdown id="types" [options]="filterBeforeAfter.elements" [(ngModel)]="filterBeforeAfterSelected" optionLabel="label"
+                                [autoDisplayFirst]="true" [style]="{'width': '100%'}"
+                                (onChange)="whereHavingSwitch(filterBeforeAfterSelected)">
                             </p-dropdown>
 
                             <!-- <label i18n="@@tiposFiltrosLabel" for="types">
@@ -257,8 +257,8 @@
                                     </label> -->
 
                                     <p-multiSelect [options]="dropDownFields" [(ngModel)]="filterValue.value1"
-                                        [virtualScroll]="true" [itemSize]="34" [filter]="false"
-                                        [style]="{width: '100%'}" [panelStyle]="{minWidth:'100%'}"
+                                        [virtualScroll]="true" [itemSize]="34" [filter]="false" [style]="{width: '100%'}"
+                                        [panelStyle]="{minWidth:'100%'}"
                                         (onChange)="handleValidForm({value1: filterValue.value1})"
                                         defaultLabel="Selecciona Valor 1" [selectionLimit]="limitSelectionFields"
                                         id="float-input1">
@@ -277,8 +277,8 @@
                                     </label> -->
 
                                     <p-multiSelect [options]="dropDownFields" [(ngModel)]="filterValue.value2"
-                                        [virtualScroll]="true" [itemSize]="34" [filter]="false"
-                                        [style]="{width: '100%'}" [panelStyle]="{minWidth:'100%'}"
+                                        [virtualScroll]="true" [itemSize]="34" [filter]="false" [style]="{width: '100%'}"
+                                        [panelStyle]="{minWidth:'100%'}"
                                         (onChange)="handleValidForm({value2: filterValue.value2})"
                                         defaultLabel="Selecciona Valor 2" [selectionLimit]="limitSelectionFields"
                                         id="float-input2">
@@ -342,22 +342,22 @@
                             <h4 i18n="@@dateFormatH4"> Formato </h4>
 
                             <hr>
-                            <!--SDA CUSTOM-->
-                            <div *ngIf="selectedColumn.computed_column == 'computed'" class="p-message p-message-info"
-                                style="margin-bottom: 1em; padding: 0.5em;">
-                                <!--SDA CUSTOM--> <i class="pi pi-exclamation-triangle"
-                                    style="margin-right: 0.5em;"></i>
-                                <!--SDA CUSTOM--> <span i18n="@@noFormatsAvailable"> Esta es una columna calculada y no
-                                    tiene opciones de formato disponibles</span>
-                                <!--SDA CUSTOM-->
-                            </div>
-                            <!--SDA CUSTOM-->
-                            <div *ngIf="selectedColumn.computed_column != 'computed'">
+                           <!--SDA CUSTOM--> <div *ngIf="selectedColumn.computed_column == 'computed'" class="p-message p-message-info" style="margin-bottom: 1em; padding: 0.5em;">
+                           <!--SDA CUSTOM-->     <i class="pi pi-exclamation-triangle" style="margin-right: 0.5em;"></i>
+                           <!--SDA CUSTOM-->     <span i18n="@@noFormatsAvailable"> Esta es una columna calculada y no tiene opciones de formato disponibles</span>
+                           <!--SDA CUSTOM--> </div>
+                           <!--SDA CUSTOM--> <div *ngIf="selectedColumn.computed_column != 'computed'">
 
 
-                                <p-dropdown [(ngModel)]="formatDate" [options]="formatDates"
-                                    [optionLabel]="'display_name'" [autoDisplayFirst]="false" [showClear]="true"
-                                    [style]="{'min-width': '100%'}" (onChange)="addFormatDate(format)" class="w-100"
+                                <p-dropdown
+                                    [(ngModel)]="formatDate"
+                                    [options]="formatDates"
+                                    [optionLabel]="'display_name'"
+                                    [autoDisplayFirst]="false"
+                                    [showClear]="true"
+                                    [style]="{'min-width': '100%'}"
+                                    (onChange)="addFormatDate(format)"
+                                    class="w-100"
                                     appendTo="body">
                                 </p-dropdown>
 
@@ -370,15 +370,12 @@
 
 
 
-                                <div style="margin-top: 1.5em; margin-left: 1em;" [pTooltip]="cumulativeSumTooltip"
-                                    tooltipPosition="left">
+                                <div  style="margin-top: 1.5em; margin-left: 1em;" [pTooltip]="cumulativeSumTooltip" tooltipPosition="left">
                                     <h6 i18n="@@cumulativeSum">Suma acumulativa</h6>
                                     <p-inputSwitch id="cumulativeSum" [(ngModel)]="cumulativeSum"
-                                        (onChange)="handleCumulativeSum()"
-                                        [disabled]="!cumulativeSumAllowed()"></p-inputSwitch>
+                                  (onChange)="handleCumulativeSum()" [disabled]="!cumulativeSumAllowed()"></p-inputSwitch >
                                 </div>
-                                <!-- SDA CUSTOM -->
-                            </div>
+                        <!--SDA CUSTOM-->      </div>
                         </ng-container>
 
                         <ng-container *ngIf="selectedColumn.aggregation_type.length===7">
@@ -386,21 +383,14 @@
                             <h4 i18n="@@dateFormatH4"> Formato </h4>
 
                             <hr>
-                            <!--SDA CUSTOM-->
-                            <div *ngIf="selectedColumn.computed_column == 'computed'" class="p-message p-message-info"
-                                style="margin-bottom: 1em; padding: 0.5em;">
-                                <!--SDA CUSTOM--> <i class="pi pi-exclamation-triangle"
-                                    style="margin-right: 0.5em;"></i>
-                                <!--SDA CUSTOM--> <span i18n="@@noFormatsAvailable"> Esta es una columna calculada y no
-                                    tiene opciones de formato disponibles</span>
-                                <!--SDA CUSTOM-->
-                            </div>
-                            <!--SDA CUSTOM-->
-                            <div *ngIf="selectedColumn.computed_column != 'computed'" style="margin: 10px 0;">
+                           <!--SDA CUSTOM--><div *ngIf="selectedColumn.computed_column == 'computed'" class="p-message p-message-info" style="margin-bottom: 1em; padding: 0.5em;">
+                           <!--SDA CUSTOM-->    <i class="pi pi-exclamation-triangle" style="margin-right: 0.5em;"></i>
+                           <!--SDA CUSTOM-->    <span i18n="@@noFormatsAvailable"> Esta es una columna calculada y no tiene opciones de formato disponibles</span>
+                           <!--SDA CUSTOM--></div>
+                           <!--SDA CUSTOM--><div *ngIf="selectedColumn.computed_column != 'computed'" style="margin: 10px 0;">
 
                                 <div>
-                                    <h5 i18n="@@rangesExpresionH5"
-                                        style="margin-top: 5px; font-size: 1.2rem; display: inline;">Rangos: </h5>
+                                    <h5 i18n="@@rangesExpresionH5" style="margin-top: 5px; font-size: 1.2rem; display: inline;">Rangos: </h5>
                                     <span *ngIf="availableRange">
                                         <i class="pi pi-info-circle"
                                             style="cursor: pointer; margin-top: -5px; font-size: 1.2rem;"
@@ -420,31 +410,33 @@
 
                                 <div *ngIf="availableRange">
 
-                                    <input type="text" style="font-size: 1rem; margin-bottom: 10px;"
-                                        [(ngModel)]="rangeString" [disabled]="showRange"
+                                <input
+                                type="text"
+                                style="font-size: 1rem; margin-bottom: 10px;"
+                                [(ngModel)]="rangeString"
+                                [disabled]="showRange"
                                         (input)="validateInput($event)">
 
-                                    <p-button (onClick)="addRange(rangeString)" label="Añadir Rango"
+                                <p-button
+                                    (onClick)="addRange(rangeString)"
+                                    label="Añadir Rango"
                                         [disabled]="((!rangeString || rangeString.length === 0)) || showRange"
-                                        i18n-label="@@addRange">
+                                    i18n-label="@@addRange"
+                                    >
                                     </p-button>
 
                                     <div *ngIf="showRange" class="col-12 foot-card" style="margin-top: 5px;">
 
-                                        <p-scrollPanel [style]="{width: '100%', height: '160px'}"
-                                            styleClass="custombar1">
+                                    <p-scrollPanel [style]="{width: '100%', height: '160px'}" styleClass="custombar1">
 
                                             <ng-container *ngIf="showRange">
 
                                                 <b i18n="@@rangeDescriptionB" class="mr-2 pull-left">
                                                     • Rango:
                                                 </b>
-                                                <i class="pull-right ui-dropdown-clear-icon pi pi-times pointer md-3"
-                                                    (click)="removeRange()"></i>
+                                              <i class="pull-right ui-dropdown-clear-icon pi pi-times pointer md-3"(click)="removeRange()"></i>
 
-                                                <div *ngIf="showRange" class="d-flex align-items-center"
-                                                    [innerHTML]="selectedRange"
-                                                    style="font-size: 1rem; padding: 10px 40px 5px 30px;"></div>
+                                              <div *ngIf="showRange" class="d-flex align-items-center" [innerHTML]="selectedRange" style="font-size: 1rem; padding: 10px 40px 5px 30px;"></div>
 
                                             </ng-container>
 
@@ -454,8 +446,7 @@
 
                                 </div>
 
-                                <!-- SDA CUSTOM -->
-                            </div>
+                          <!--SDA CUSTOM--> </div>
                         </ng-container>
 
                     </ng-container>
@@ -477,10 +468,7 @@
                                     <b class="mr-2" style="margin: 2px;">
                                         * {{ selectedColumn.display_name.default }} is
                                         {{ filtre.filter_type }}
-                                    </b> <span [pTooltip]="filtre.filterBeforeGrouping ? whereMessage : havingMessage"
-                                        tooltipPosition="left"><b>[ {{filtre.filterBeforeGrouping ? whereMessage :
-                                            havingMessage}} ] - <span i18n="@@AggregationText">Agregación</span>:
-                                            {{getAggregationText(filtre)}} &nbsp;</b></span>
+                                    </b> <span [pTooltip]="filtre.filterBeforeGrouping ? whereMessage : havingMessage"  tooltipPosition="left"><b>[ {{filtre.filterBeforeGrouping ? whereMessage : havingMessage}} ] - <span i18n="@@AggregationText">Agregación</span>: {{getAggregationText(filtre)}}  &nbsp;</b></span>
 
                                     <i class="ui-dropdown-clear-icon pi pi-times pointer"
                                         (click)="removeFilter(filtre)"></i>
@@ -491,10 +479,7 @@
                                         * {{ selectedColumn.display_name.default }}
                                         {{ filtre.filter_type }}
                                         "{{ filtre.filter_elements[0].value1 }}"
-                                    </b> <span [pTooltip]="filtre.filterBeforeGrouping ? whereMessage : havingMessage"
-                                        tooltipPosition="left"><b>[ {{filtre.filterBeforeGrouping ? whereMessage :
-                                            havingMessage}} ] - <span i18n="@@AggregationText">Agregación</span>:
-                                            {{getAggregationText(filtre)}} &nbsp;</b></span>
+                                    </b> <span [pTooltip]="filtre.filterBeforeGrouping ? whereMessage : havingMessage"  tooltipPosition="left"><b>[ {{filtre.filterBeforeGrouping ? whereMessage : havingMessage}} ] - <span i18n="@@AggregationText">Agregación</span>: {{getAggregationText(filtre)}} &nbsp;</b></span>
 
                                     <i class="ui-dropdown-clear-icon pi pi-times pointer"
                                         (click)="removeFilter(filtre)"></i>
@@ -506,13 +491,9 @@
                                         {{ getFilterText(filtre) }}
                                         "{{ filtre.filter_elements[0].value1}}" - "{{ filtre.filter_elements[1].value2
                                         }}"
-                                    </b> <span [pTooltip]="filtre.filterBeforeGrouping ? whereMessage : havingMessage"
-                                        tooltipPosition="left"><b>[ {{filtre.filterBeforeGrouping ? whereMessage :
-                                            havingMessage}} ] - <span i18n="@@AggregationText">Agregación</span>:
-                                            {{getAggregationText(filtre)}} &nbsp;</b></span>
+                                    </b> <span [pTooltip]="filtre.filterBeforeGrouping ? whereMessage : havingMessage"  tooltipPosition="left"><b>[ {{filtre.filterBeforeGrouping ? whereMessage : havingMessage}} ] - <span i18n="@@AggregationText">Agregación</span>: {{getAggregationText(filtre)}} &nbsp;</b></span>
 
-                                    <i class="ui-dropdown-clear-icon pi pi-times pointer"
-                                        (click)="removeFilter(filtre)"></i>
+                                    <i class="ui-dropdown-clear-icon pi pi-times pointer" (click)="removeFilter(filtre)"></i>
                                 </p>
 
                             </ng-container>
@@ -530,8 +511,7 @@
         <!-- Duplicar columna -->
         <div class="col-12" style="position: absolute; bottom: 0; right:1.9rem" class="text-right">
             <button type="button" pButton (click)="duplicateColumn()" icon="fa fa-check"
-                class="p-button p-button-raised ml-2" i18n-label="@@duplicateColumnButton" label="Duplicar columna"
-                id="eda_column_dialog_confirmar">
+                class="p-button p-button-raised ml-2" i18n-label="@@duplicateColumnButton" label="Duplicar columna" id="eda_column_dialog_confirmar">
             </button>
         </div>
 
@@ -541,11 +521,11 @@
         <!-- por defecto está habilitado.  Si el botón "añadir filtro" está habilitado este se desactiva.-->
         <div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix text-right">
             <button type="button" pButton (click)="closeDialog()" class="p-button-raised p-button-success"
-                i18n-label="@@guardarButton" icon="fa fa-check" label="Confirmar" id="eda_column_dialog_confirmar"
-                [disabled]="!display.filterButton">
+                i18n-label="@@guardarButton" icon="fa fa-check" label="Confirmar"
+                id="eda_column_dialog_confirmar" [disabled]="!display.filterButton">
             </button>
 
-<!-- SDA CUSTOM -->
+<!-- SDA CUSTOM CANCEL BUTTON-->
              <button type="button" pButton (click)="cancelDialog()" class="p-button-raised p-button-danger"
                 i18n-label="@@cancelButton" icon="fa fa-times" label="Cancelar" id="eda_column_dialog_cancel">
             </button>
@@ -556,17 +536,15 @@
 
 </eda-dialog>
 
-<eda-dialog2 *ngIf="display.duplicateColumn" [display]="display.duplicateColumn" header="Duplicar columna" width="60vw"
-    height="auto" (close)="onCancelDuplicateColumn()" (apply)="saveDuplicatedColumn()">
+<eda-dialog2 *ngIf="display.duplicateColumn" [display]="display.duplicateColumn" header="Duplicar columna" width="60vw" height= "auto" (close)="onCancelDuplicateColumn()" (apply)="saveDuplicatedColumn()">
     <div content>
         <!-- Duplicar columna -->
         <div class="col-12">
             <span>
-                <label i18n="@@duplicatedColumnNameLabel" for="duplicatedColumnName"
-                    style="font-size: 18px;margin-right: 1.5rem;">
+                <label i18n="@@duplicatedColumnNameLabel" for="duplicatedColumnName" style="font-size: 18px;margin-right: 1.5rem;">
                     Nombre columna duplicada
                 </label>
-                <input pInputText id="duplicatedColumnName" [(ngModel)]="duplicatedColumnName" type="text" />
+                <input pInputText id="duplicatedColumnName" [(ngModel)]="duplicatedColumnName" type="text"  />
             </span>
         </div>
     </div>
