@@ -16,6 +16,7 @@ import { LogsComponent } from './logs/logs.component';
 
 // Guard
 import { VerifyTokenGuard } from '../../services/guards/verify-token.guard';
+import { UnsavedChangesGuard } from '../../services/guards/unsaved-changes.guard';
 import { GroupListComponent } from './groups-management/group-list/group-list.component';
 import { AlertsManagementComponent } from './alerts-management/alerts-management.component';
 import { MailManagementComponent } from './mail-management/mail-management.component';
@@ -24,21 +25,21 @@ import { MailManagementComponent } from './mail-management/mail-management.compo
 const pagesRoutes: Routes = [
 
     /*SDA CUSTOM*/ { path: 'old-home', component: HomeComponent, canActivate: [VerifyTokenGuard] },
-    { path: 'dashboard/:id', component: DashboardComponent, canActivate: [VerifyTokenGuard] },
+    { path: 'dashboard/:id', component: DashboardComponent, canActivate: [VerifyTokenGuard], canDeactivate: [UnsavedChangesGuard] },
     { path: 'account-settings', component: AccountSettingsComponent, canActivate: [VerifyTokenGuard] },
     { path: 'profile', component: ProfileComponent, canActivate: [VerifyTokenGuard] },
     { path: 'data-source', component: DsConfigWrapperComponent, canActivate: [VerifyTokenGuard] },
-    { path: 'data-source/:id', component: DataSourceListComponent, canActivate: [VerifyTokenGuard], runGuardsAndResolvers: 'paramsChange' },
+    { path: 'data-source/:id', component: DataSourceListComponent, canActivate: [VerifyTokenGuard], canDeactivate: [UnsavedChangesGuard], runGuardsAndResolvers: 'paramsChange' },
 
     { path: 'groups-management', component: GroupListComponent, canActivate: [VerifyTokenGuard] },
-    { path: 'users-management', component: UsersLlistaComponent, canActivate: [VerifyTokenGuard]},
-    { path: 'models-management', component: ModelSettingsComponent, canActivate:[VerifyTokenGuard]},
-    { path: 'alerts-management', component: AlertsManagementComponent, canActivate:[VerifyTokenGuard]},
-    { path: 'mail-management', component: MailManagementComponent, canActivate:[VerifyTokenGuard]},
+    { path: 'users-management', component: UsersLlistaComponent, canActivate: [VerifyTokenGuard] },
+    { path: 'models-management', component: ModelSettingsComponent, canActivate: [VerifyTokenGuard] },
+    { path: 'alerts-management', component: AlertsManagementComponent, canActivate: [VerifyTokenGuard] },
+    { path: 'mail-management', component: MailManagementComponent, canActivate: [VerifyTokenGuard] },
     /*SDA CUSTOM*/ { path: 'about', component: AboutComponent, canActivate: [VerifyTokenGuard] },
     /*SDA CUSTOM*/ { path: 'home', component: HomeSdaComponent, canActivate: [VerifyTokenGuard] },
-    { path: 'logs', component: LogsComponent, canActivate:[VerifyTokenGuard]},
+    { path: 'logs', component: LogsComponent, canActivate: [VerifyTokenGuard] },
     { path: '', redirectTo: 'home', pathMatch: 'full' }
 ];
 
-export const PAGES_ROUTES = RouterModule.forChild( pagesRoutes );
+export const PAGES_ROUTES = RouterModule.forChild(pagesRoutes);

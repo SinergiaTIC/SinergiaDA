@@ -18,7 +18,7 @@ export class DataSourceService extends ApiService implements OnDestroy {
         name: '',
         technical_name: '',
         description: '',
-        query : '',
+        query: '',
         relations: [{
             source_table: '',
             source_column: [],
@@ -48,10 +48,10 @@ export class DataSourceService extends ApiService implements OnDestroy {
         {
             type: '',
             connection: {
-                type: '', host: '', database: ' ', user: ' ', password: ' ', schema : '', port:null, warehouse:''
+                type: '', host: '', database: ' ', user: ' ', password: ' ', schema: '', port: null, warehouse: ''
             },
             metadata: {
-                model_name: ' ', model_granted_roles: [], cache_config:{}, filter:'', tags:[]
+                model_name: ' ', model_granted_roles: [], cache_config: {}, filter: '', tags: []
             }
         }
     );
@@ -99,21 +99,21 @@ export class DataSourceService extends ApiService implements OnDestroy {
         this._unsaved.next(false)
     }
 
-    expandNode(node){
-        this._treeData.getValue()[0].children.forEach( n => {
-            if(node.parent.label === n.label){
+    expandNode(node) {
+        this._treeData.getValue()[0].children.forEach(n => {
+            if (node.parent.label === n.label) {
                 const child = n.children.filter(c => c.label === node.label)[0];
                 this._treeData.getValue()[0].expanded = true;
                 n.expanded = true;
                 child.expanded = true;
             }
-        } );
+        });
         //this._treeData.next( this._treeData.getValue())
     }
 
 
     /** Generates tree from DataModel */
-    generateTree(model_name?: string, table_name?: string, element?:any): Array<TreeNode> {
+    generateTree(model_name?: string, table_name?: string, element?: any): Array<TreeNode> {
         // Root node --> Model name
         const root: TreeNode = {
             label: this._modelMetadata.getValue().model_name,
@@ -127,7 +127,7 @@ export class DataSourceService extends ApiService implements OnDestroy {
         // table nodes
         const tables: Array<TreeNode> = [];
         this._databaseModel.getValue()
-            .forEach((table:any) => {
+            .forEach((table: any) => {
                 const currTable: TreeNode = {};
                 currTable.label = table.display_name.default;
                 currTable.data = 'tabla';
@@ -135,7 +135,7 @@ export class DataSourceService extends ApiService implements OnDestroy {
                 currTable.collapsedIcon = 'fa fa-table';
                 currTable.expandedIcon = 'fa fa-table';
                 currTable.expanded = table_name === table.display_name.default;
-                currTable.type = element &&  element.name === table.display_name.default ? 'selected' : 'unselected'
+                currTable.type = element && element.name === table.display_name.default ? 'selected' : 'unselected'
                 tables.push(currTable);
 
                 // Column nodes
@@ -197,7 +197,7 @@ export class DataSourceService extends ApiService implements OnDestroy {
         return this._maps.getValue();
     }
 
-    getTreeColumn(tableLabel: string, col: any, ) {
+    getTreeColumn(tableLabel: string, col: any,) {
         const tree = this._treeData.getValue();
         const node: TreeNode = tree[0].children
             .filter(child => child.label === tableLabel)[0]
@@ -222,7 +222,7 @@ export class DataSourceService extends ApiService implements OnDestroy {
         tablePanel.type = node.data;
         tablePanel.description = table.description.default;
         tablePanel.query = table.query,
-        tablePanel.relations = table.relations;
+            tablePanel.relations = table.relations;
         tablePanel.table_granted_roles = table.table_granted_roles;
         tablePanel.technical_name = table.table_name;
         tablePanel.table_type = table.table_type;
@@ -251,8 +251,8 @@ export class DataSourceService extends ApiService implements OnDestroy {
         columnPanel.minimumFractionDigits = parseInt(column.minimumFractionDigits);
         columnPanel.visible = column.visible;
         columnPanel.parent = node.parent.label;
-        if(column.valueListSource){
-            columnPanel.valueListSource =column.valueListSource;
+        if (column.valueListSource) {
+            columnPanel.valueListSource = column.valueListSource;
         }
         this._columnPanel.next(columnPanel);
         this._typePanel.next('columna');
@@ -378,10 +378,10 @@ export class DataSourceService extends ApiService implements OnDestroy {
 
     /** add a value list as the source of a column */
     addValueListSource(ValueListSource: any) {
-       const tmp_panel = this._columnPanel.getValue();
-       tmp_panel.valueListSource = ValueListSource;
-       this._columnPanel.next(tmp_panel);
-       this.updateDataModel(tmp_panel);
+        const tmp_panel = this._columnPanel.getValue();
+        tmp_panel.valueListSource = ValueListSource;
+        this._columnPanel.next(tmp_panel);
+        this.updateDataModel(tmp_panel);
     }
 
     addPermission(permission: any) {
@@ -390,41 +390,41 @@ export class DataSourceService extends ApiService implements OnDestroy {
         this._modelMetadata.next(tmpMetadata);
     }
 
-    addCacheConfig(config:any){
+    addCacheConfig(config: any) {
         let tmpMetadata = this._modelMetadata.getValue();
         tmpMetadata.cache_config = config;
         this._modelMetadata.next(tmpMetadata);
     }
     //Añadir los tags al modelMetadata
-    addTags(tags:any){
+    addTags(tags: any) {
         let tmpMetadata = this._modelMetadata.getValue();
-        if(tmpMetadata.tags){
+        if (tmpMetadata.tags) {
             let uniqueTags = [...new Set([...tags])];
             tmpMetadata.tags = uniqueTags;
         }
-        if(!tmpMetadata.tags) tmpMetadata.tags = [];
+        if (!tmpMetadata.tags) tmpMetadata.tags = [];
         this._modelMetadata.next(tmpMetadata);
     }
     //Obtener todos los tags de todos los dataSources, sin distinción
     getTags(): void {
-         this.get(this.globalDSRoute)
-             .subscribe((data: any) => {
+        this.get(this.globalDSRoute)
+            .subscribe((data: any) => {
                 let tagArray = []
                 let dsObject = data.ds;
-                dsObject.map((datasource) =>{
-                  if(datasource.ds.metadata.tags){
-                    tagArray = [...tagArray,...datasource.ds.metadata.tags]
-                }
+                dsObject.map((datasource) => {
+                    if (datasource.ds.metadata.tags) {
+                        tagArray = [...tagArray, ...datasource.ds.metadata.tags]
+                    }
                 });
                 this._tags.next(tagArray)
-             }, err => console.log(err));
-     }
+            }, err => console.log(err));
+    }
 
     getRelationIndex(rel: Relation, tableIndex: string | number) {
         return this._databaseModel.getValue()[tableIndex].relations
             .findIndex((r: { source_table: any; source_column: any; target_table: any; target_column: any; }) => {
                 return r.source_table === rel.source_table && JSON.stringify(r.source_column) === JSON.stringify(rel.source_column)
-                && r.target_table === rel.target_table && JSON.stringify(r.target_column) === JSON.stringify(rel.target_column);
+                    && r.target_table === rel.target_table && JSON.stringify(r.target_column) === JSON.stringify(rel.target_column);
             });
     }
 
@@ -432,8 +432,9 @@ export class DataSourceService extends ApiService implements OnDestroy {
         return this._databaseModel.getValue()[tableIndex].relations
             .find((r: { source_table: any; source_column: any; target_table: any; target_column: any; }) => {
                 return r.source_table === rel.source_table && JSON.stringify(r.source_column) === JSON.stringify(rel.source_column)
-                && r.target_table === rel.target_table && JSON.stringify(r.target_column) === JSON.stringify(rel.target_column);
-            });    }
+                    && r.target_table === rel.target_table && JSON.stringify(r.target_column) === JSON.stringify(rel.target_column);
+            });
+    }
 
     updateDataModel(panel: any) {
         if (panel.type === 'tabla') {
@@ -472,7 +473,7 @@ export class DataSourceService extends ApiService implements OnDestroy {
             tmp_model[tableIndex].columns[columnindex].row_granted_roles = panel.row_granted_roles;
             tmp_model[tableIndex].columns[columnindex].visible = panel.visible;
 
-            if( panel.valueListSource  ){
+            if (panel.valueListSource) {
                 tmp_model[tableIndex].columns[columnindex].valueListSource = panel.valueListSource;
             }
 
@@ -495,7 +496,7 @@ export class DataSourceService extends ApiService implements OnDestroy {
 
     }
 
-    addView(table:any){
+    addView(table: any) {
 
         const tmp_model = this._databaseModel.getValue();
         tmp_model.push(table);
@@ -503,24 +504,24 @@ export class DataSourceService extends ApiService implements OnDestroy {
         this._treeData.next(this.generateTree(this._modelPanel.getValue().metadata.model_name));
     }
 
-    updateMaps(mapList:Array<any>){
+    updateMaps(mapList: Array<any>) {
         //get map list and model
         this._maps.next(mapList);
         let tmp_model = this.getModel();
 
         //Map tables to get his index and the array of columns with map link
         let tables = this.getModel()
-            .map((table, i) => ({i:i, cols: table.columns.filter(col => col.hasOwnProperty('linkedMap'))}))
-            .filter(x=>x.cols.length>0);
+            .map((table, i) => ({ i: i, cols: table.columns.filter(col => col.hasOwnProperty('linkedMap')) }))
+            .filter(x => x.cols.length > 0);
 
         //Get maps ID's
         let maps = mapList.map(map => map.mapID);
 
         //If column's linkedMap not in id's list delete property
-        for (let i = 0; i < tables.length; i++){
-            for(let j = 0; j < tables[i].cols.length; j++){
+        for (let i = 0; i < tables.length; i++) {
+            for (let j = 0; j < tables[i].cols.length; j++) {
                 let col = tmp_model[tables[i].i].columns.filter(col => col.column_name === tables[i].cols[j].column_name)[0];
-                if(!maps.includes(col.linkedMap)){
+                if (!maps.includes(col.linkedMap)) {
                     delete col.linkedMap;
                 }
             }
@@ -531,16 +532,16 @@ export class DataSourceService extends ApiService implements OnDestroy {
 
     }
 
-    addLinkedToMapColumns(columns:Array<any>, linkedMap: string){
+    addLinkedToMapColumns(columns: Array<any>, linkedMap: string) {
         let tmp_model = this.getModel();
         columns.forEach(column => {
             let table = tmp_model.filter(table => table.table_name === column.table)[0];
             table.columns.filter(col => col.column_name === column.col.column_name)[0].linkedMap = linkedMap;
         });
-       this._databaseModel.next(tmp_model);
+        this._databaseModel.next(tmp_model);
     }
 
-    hideAllTables(){
+    hideAllTables() {
         let tmp_model = this.getModel();
         tmp_model.forEach(table => table.visible = false);
         this._databaseModel.next(tmp_model);
@@ -548,11 +549,11 @@ export class DataSourceService extends ApiService implements OnDestroy {
     }
 
 
-    hideAllColumns(tablePanel:any){
+    hideAllColumns(tablePanel: any) {
         let tmp_model = this.getModel();
         tmp_model.forEach(table => {
 
-            if(table.table_name === tablePanel.technical_name){
+            if (table.table_name === tablePanel.technical_name) {
                 table.columns.forEach(col => col.visible = false);
             }
         });
@@ -560,7 +561,7 @@ export class DataSourceService extends ApiService implements OnDestroy {
 
     }
 
-    hideAllRelations(){
+    hideAllRelations() {
         let tmp_model = this.getModel();
         tmp_model.forEach(table => {
             table.relations.forEach(relation => {
@@ -584,14 +585,14 @@ export class DataSourceService extends ApiService implements OnDestroy {
     deleteValuesList(columnPanel: EditColumnPanel) {
         const tmp_model = this._databaseModel.getValue();
         const tableIndex = this._databaseModel.getValue().findIndex((table: any) => table.display_name.default === columnPanel.parent);
-        const colIndex  =  tmp_model[tableIndex].columns.findIndex((column: any) => column.column_name === columnPanel.technical_name);
+        const colIndex = tmp_model[tableIndex].columns.findIndex((column: any) => column.column_name === columnPanel.technical_name);
         tmp_model[tableIndex].columns[colIndex].valueListSource = null;
         this._databaseModel.next(tmp_model);
         this._treeData.next(this.generateTree(this._modelPanel.getValue().metadata.model_name, columnPanel.parent));
 
     }
 
-    deleteView(tableName : string){
+    deleteView(tableName: string) {
         const tmp_model = this._databaseModel.getValue().filter((table: any) => table.table_name !== tableName);
         this._databaseModel.next(tmp_model);
         this._treeData.next(this.generateTree(this._modelPanel.getValue().metadata.model_name));
@@ -605,11 +606,11 @@ export class DataSourceService extends ApiService implements OnDestroy {
         const tableIndex = this._databaseModel.getValue().findIndex((table: any) => table.display_name.default === columnPanel.parent);
         return model[tableIndex];
     }
-    sendModel() {
+    sendModel(): Observable<boolean> {
 
         const connection = this._modelConnection.getValue();
         const metadata = this._modelMetadata.getValue();
-        const model = { tables: this._databaseModel.getValue(), maps:this._maps.getValue()};
+        const model = { tables: this._databaseModel.getValue(), maps: this._maps.getValue() };
 
         const body = {
             ds: {
@@ -618,11 +619,17 @@ export class DataSourceService extends ApiService implements OnDestroy {
                 model: model
             }
         };
-        this.updateModelInServer(this.model_id, body).subscribe(
-            (r) => this.alertService.addSuccess($localize`:@@ModelSaved:Modelo guardado correctamente`),
-            (err) => this.alertService.addError(err)
+        return this.updateModelInServer(this.model_id, body).pipe(
+            map((r) => {
+                this.alertService.addSuccess($localize`:@@ModelSaved:Modelo guardado correctamente`);
+                this._unsaved.next(false);
+                return true;
+            }),
+            catchError((err) => {
+                this.alertService.addError(err);
+                return of(false);
+            })
         );
-        this._unsaved.next(false)
     }
 
 
@@ -667,13 +674,13 @@ export class DataSourceService extends ApiService implements OnDestroy {
         return this.post(`${this.globalDSRoute}/query`, body);
     }
 
-    getViewResults(body): Observable<any>{
+    getViewResults(body): Observable<any> {
         return this.post(`${this.globalDSRoute}/get-view-results`, body);
     }
 
 
-    removeCache(id:string): Observable<any> {
-        return this.post(`${this.globalDSRoute}/remove-cache`, {id:id});
+    removeCache(id: string): Observable<any> {
+        return this.post(`${this.globalDSRoute}/remove-cache`, { id: id });
     }
 
 

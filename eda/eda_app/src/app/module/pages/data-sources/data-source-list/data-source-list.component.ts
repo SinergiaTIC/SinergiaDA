@@ -1,8 +1,9 @@
 import { SpinnerService } from '../../../../services/shared/spinner.service';
 import { TreeNode } from 'primeng/api';
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, HostListener } from '@angular/core';
+import { Observable, of } from 'rxjs';
 import { ActivatedRoute, Router, NavigationEnd } from '@angular/router';
-import { AlertService, DataSourceService } from '@eda/services/service.index';
+import { AlertService, DataSourceService, CanComponentDeactivate } from '@eda/services/service.index';
 import Swal, { SweetAlertOptions } from 'sweetalert2';
 import * as _ from 'lodash';
 
@@ -13,27 +14,75 @@ import * as _ from 'lodash';
     /*SDA CUSTOM*/ templateUrl: './sda-data-source-list.component.html',
     styleUrls: ['./data-source-list.component.css']
 })
-export class DataSourceListComponent implements OnInit, OnDestroy {
+export class DataSourceListComponent implements OnInit, OnDestroy, CanComponentDeactivate {
     public treeData: any[] = [];
     public selectedFile: TreeNode;
     public id: string;
     public navigationSubscription: any;
-    public selectedNode : TreeNode;
+    public selectedNode: TreeNode;
 
     //Strings
     public refreshSTR = $localize`:@@Refresh:Volver a cargar el modelo de datos almacenado`;
     public saveModelSTR = $localize`:@@saveModel:Guardar modelo de datos`;
     public updateModelSTR = $localize`:@@updateModel:Actualizar modelo de datos desde la base de datos origen para buscar nuevas tablas y columnas`;
     public deleteModelSTR = $localize`:@@deleteModel:Borrar modelo de datos`;
-    public unsaved : string;
-    /*SDA CUSTOM*/ public isSda : Boolean ;
+    public isUnsaved: boolean = false;
+    public unsaved: string;
+    /*SDA CUSTOM*/ public isSda: Boolean;
 
+
+    @HostListener('window:beforeunload', ['$event'])
+    public beforeUnload($event: any): void {
+        if (this.dataModelService._unsaved.value) {
+            $event.returnValue = true;
+        }
+    }
+
+    public canDeactivate(): Observable<boolean> | Promise<boolean> | boolean {
+        if (!this.dataModelService._unsaved.value) {
+            return true;
+        }
+
+        return Swal.fire({
+            text: $localize`:@@NotSavedWarningDialog:Hay cambios sin guardar. ¿Qué desea hacer?`,
+            icon: 'warning',
+            showCancelButton: true,
+            showDenyButton: true,
+            confirmButtonText: $localize`:@@guardarYSalir:Guardar y salir`,
+            denyButtonText: $localize`:@@salirSinGuardar:Salir sin guardar`,
+            cancelButtonText: $localize`:@@cancelarButton:Cancelar`,
+            confirmButtonColor: '#28a745', // Green
+            denyButtonColor: '#dc3545',    // Red
+            cancelButtonColor: '#6c757d',  // Neutral/Grey
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // Guardar y salir
+                return new Promise<boolean>((resolve) => {
+                    this.dataModelService.sendModel().subscribe(
+                        (success) => resolve(success),
+                        () => resolve(false)
+                    );
+                });
+            } else if (result.isDenied) {
+                // Salir sin guardar
+                this.dataModelService._unsaved.next(false);
+                return true;
+            } else {
+                // Cancelar
+                return false;
+            }
+        });
+    }
+
+    public sendModel(): void {
+        this.dataModelService.sendModel().subscribe();
+    }
 
     constructor(public dataModelService: DataSourceService,
-                private alertService: AlertService,
-                private route: ActivatedRoute,
-                private spinnerService: SpinnerService,
-                private router: Router) {
+        private alertService: AlertService,
+        private route: ActivatedRoute,
+        private spinnerService: SpinnerService,
+        private router: Router) {
 
         this.navigationSubscription = this.router.events.subscribe(
             (e: any) => {
@@ -47,13 +96,14 @@ export class DataSourceListComponent implements OnInit, OnDestroy {
 
     ngOnInit(): void {
       /*SDA CUSTOM*/ this.isSda = (this.id == '111111111111111111111111');
-      this.getDataSourceId();
+        this.getDataSourceId();
         this.dataModelService.currentTreeData.subscribe(
             (data) => this.treeData = data,
             (err) => this.alertService.addError(err)
         );
         this.dataModelService.unsaved.subscribe(
             (data) => {
+                this.isUnsaved = !!data;
                 this.unsaved = data ? $localize`:@@notSavedChanges:Hay cambios sin guardar...` : ''
             },
             (err) => this.alertService.addError(err)
@@ -78,15 +128,15 @@ export class DataSourceListComponent implements OnInit, OnDestroy {
     deleteDatasource() {
 
         const options =
-        {
-            title: $localize`:@@Sure:¿Estás seguro?`,
-            text: $localize`:@@SureInfo:Estás a punto de borrar el modelo de datos y todos los dashboards asociados, el cambio es irreversible`,
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#3085d6',
-            cancelButtonColor: '#d33',
-            confirmButtonText: $localize`:@@ConfirmDeleteModel:Si, ¡Eliminalo!`
-        } as SweetAlertOptions
+            {
+                title: $localize`:@@Sure:¿Estás seguro?`,
+                text: $localize`:@@SureInfo:Estás a punto de borrar el modelo de datos y todos los dashboards asociados, el cambio es irreversible`,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: $localize`:@@ConfirmDeleteModel:Si, ¡Eliminalo!`
+            } as SweetAlertOptions
         Swal.fire(options).then(borrado => {
             if (borrado.value) {
                 this.spinnerService.on();
@@ -113,18 +163,16 @@ export class DataSourceListComponent implements OnInit, OnDestroy {
             event.node.data === 'columna' ? this.dataModelService.editColumn(event.node) : this.dataModelService.editModel(event.node);
     }
 
-    removehiglight(node){
-        if(node.children.length === 0)
-        {
+    removehiglight(node) {
+        if (node.children.length === 0) {
             node.type = 'unselected';
             return;
         }
-        else
-        {
+        else {
             node.type = 'unselected';
-            node.children.forEach(node =>{
+            node.children.forEach(node => {
                 this.removehiglight(node)
-            } )
+            })
         }
     }
 
@@ -138,16 +186,18 @@ export class DataSourceListComponent implements OnInit, OnDestroy {
         this.ngOnInit();
     }
 
-    reLoadModelFromDb(){
+    reLoadModelFromDb() {
         this.spinnerService.on();
         this.dataModelService.realoadModelFromDb(this.id).subscribe(
             () => {
                 this.refreshModel();
                 this.alertService.addSuccess($localize`:@@UpdateModelSucess:Modelo actualizado correctamente`);
-                this.spinnerService.off()},
+                this.spinnerService.off()
+            },
             err => {
                 this.alertService.addError(err);
-                this.spinnerService.off()},
+                this.spinnerService.off()
+            },
         );
     }
 

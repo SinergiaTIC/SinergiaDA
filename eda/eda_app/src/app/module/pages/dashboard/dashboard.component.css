@@ -252,9 +252,6 @@ app-dashboard {
     height:0px !important;
     visibility: hidden !important;
 }
-.noSidebar{
-    ;
-}
 .filterDialogTitles{
     font-size: medium;
     font-weight: bold;
@@ -276,4 +273,30 @@ app-dashboard {
     border-radius: 8px;
     background-color: rgba(0, 0, 0, 0.2);
     z-index: 99999;
+}
+
+@keyframes pulse-warning {
+    0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255, 193, 7, 0.7); }
+    70% { transform: scale(1.1); box-shadow: 0 0 0 10px rgba(255, 193, 7, 0); }
+    100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255, 193, 7, 0); }
+}
+
+.alert-save-btn {
+    animation: pulse-warning 2s infinite;
+    background-color: #ffc107 !important;
+    border-color: #ffc107 !important;
+    color: #212529 !important;
+    border-radius: 50% !important;
+    width: 45px;
+    height: 45px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    border: none;
+    position: fixed;
+    bottom: 20px;
+    right: 80px;
+    z-index: 10;
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.2), 0 1px 1px 0 rgba(0, 0, 0, 0.14), 0 2px 1px -1px rgba(0, 0, 0, 0.12);
 }

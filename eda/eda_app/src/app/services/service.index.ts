@@ -38,5 +38,6 @@ export * from './api/log.service';
 // Guards
 export { LoginGuardGuard } from './guards/login-guard.guard';
 export { VerifyTokenGuard } from './guards/verify-token.guard';
+export { UnsavedChangesGuard, CanComponentDeactivate } from './guards/unsaved-changes.guard';
 
 

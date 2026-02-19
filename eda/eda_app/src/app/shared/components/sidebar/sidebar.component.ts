@@ -32,8 +32,8 @@ export class SidebarComponent implements OnInit {
         public sidebarService: SidebarService,
         private alertService: AlertService,
         private dashboardService: DashboardService,
-        public dataSourceService : DataSourceService,
-        public styleProviderService : StyleProviderService
+        public dataSourceService: DataSourceService,
+        public styleProviderService: StyleProviderService
     ) {
         this.logoSidebar = LogoSidebar;
 
@@ -56,28 +56,29 @@ export class SidebarComponent implements OnInit {
         );
         /* SDA CUSTOM*/ this.sidebarService.isObserver$.subscribe(value => {
         /* SDA CUSTOM*/     this.isObserver = value;
-        /* SDA CUSTOM*/  });
+            /* SDA CUSTOM*/
+});
 
-        
+
     }
 
-    
+
     private getPanelMode(): void {
-        
+
         this.route.queryParams.subscribe(params => {
-            try{
-                    if(params['panelMode'] == 'true'){
-                        this.panelMode =true; // en mode panel es mostra nomel els panells
-                        this.sidebarService.toggleSideNav = true;
-                
-                    }
-            }catch(e){
+            try {
+                if (params['panelMode'] == 'true') {
+                    this.panelMode = true; // en mode panel es mostra nomel els panells
+                    this.sidebarService.toggleSideNav = true;
+
+                }
+            } catch (e) {
             }
         });
     }
 
     getMobileSize(event?): void {
-        if(!this.panelMode){
+        if (!this.panelMode) {
             if (!event) {
                 if (window.innerWidth <= 767) {
                     this.mobileSize = true;
@@ -85,9 +86,9 @@ export class SidebarComponent implements OnInit {
                     this.sidebarService.toggleSideNav = true;
                 } else if (window.innerWidth > 767) {
                     this.mobileSize = false;
-                    
-                        this.sidebarService.setManualHideSideNav(false);
-                    
+
+                    this.sidebarService.setManualHideSideNav(false);
+
                 }
             } else {
                 if (event.target.innerWidth <= 767) {
@@ -97,11 +98,11 @@ export class SidebarComponent implements OnInit {
                 } else if (event.target.innerWidth > 767) {
                     this.mobileSize = false;
                     this.sidebarService.toggleSideNav = false;
-                        this.sidebarService.setManualHideSideNav(false);
-                    
+                    this.sidebarService.setManualHideSideNav(false);
+
                 }
             }
-    }
+        }
     }
 
     toggleClassSide(): void {
@@ -125,32 +126,14 @@ export class SidebarComponent implements OnInit {
     goToDataSource(datasource): void {
         if (datasource) {
             this.styleProviderService.setDefaultBackgroundColor();
-            if (this.dashboardService._notSaved.value === false) {
-                this.router.navigate(['/data-source/', datasource._id]);
-            } else {
-                this.dashboardService._notSaved.next(false);
-                Swal.fire(
-                    {
-                        text: $localize`:@@NotSavedWarning:Hay cambios sin guardar. ¿Seguro que quieres salir?`,
-                        icon: 'warning',
-                        showDenyButton: true,
-                        denyButtonText: $localize`:@@cancelarButton:Cancelar`,
-                    }
-                ).then((result) => {
-                    if (result.isConfirmed) {
-                        this.router.navigate(['/data-source/', datasource._id]);
-                    }
-                })
-            }
-
+            this.router.navigate(['/data-source/', datasource._id]);
         } else {
             this.alertService.addError('Ha ocurrido un error');
         }
     }
 
-    ignoreNotSaved(){
+    ignoreNotSaved() {
         this.styleProviderService.setDefaultBackgroundColor();
-        this.dashboardService._notSaved.next(false);
     }
 
 
@@ -161,76 +144,20 @@ export class SidebarComponent implements OnInit {
             baseUrl.slice(-4) == '/ca/' ||
             baseUrl.slice(-4) == '/pl/' ||
             baseUrl.slice(-4) == '/en/' ||
-/* SDA CUSTOM */baseUrl.slice(-4) == '/gl/' ) 
-            {
+/* SDA CUSTOM */baseUrl.slice(-4) == '/gl/') {
             baseUrl = baseUrl.slice(0, baseUrl.length - 3)
         }
         switch (lan) {
             case 'EN': window.location.href = baseUrl + 'en/#/home'; break;
             case 'CAT': window.location.href = baseUrl + 'ca/#/home'; break;
             case 'ES': window.location.href = baseUrl + 'es/#/home'; break;
-            case 'PL'  : window.location.href = baseUrl + 'pl/#/home'; break;
-/* SDA CUSTOM */case 'GL'  : window.location.href = baseUrl + 'gl/#/home'; break;
+            case 'PL': window.location.href = baseUrl + 'pl/#/home'; break;
+/* SDA CUSTOM */case 'GL': window.location.href = baseUrl + 'gl/#/home'; break;
         }
     }
-    public checkNotSaved(){
-
+    public checkNotSaved() {
         this.styleProviderService.setDefaultBackgroundColor();
-        let url = window.location.href;
-
-        if(url.includes('data-source')) {
-            this.checkNotSavedDatasource(); 
-        } else if(url.includes('dashboard')) {
-            this.checkNotSavedHome()
-        } else {
-            this.router.navigate(['/home/']);
-        }
-        
-    }
-    public checkNotSavedHome() {
-
-        const options =
-            {
-                text: $localize`:@@NotSavedWarning:Hay cambios sin guardar. ¿Seguro que quieres salir?`,
-                icon: 'warning',
-                showDenyButton: true,
-                denyButtonText: $localize`:@@cancelarButton:Cancelar`,
-            } as SweetAlertOptions
-
-        if (this.dashboardService._notSaved.value === false) {
-            this.router.navigate(['/home/']);
-        } else {
-            
-            Swal.fire(options).then((result) => {
-                if (result.isConfirmed) {
-                    this.dashboardService._notSaved.next(false);
-                    this.router.navigate(['/home/']);
-                }
-            })
-        }
-    }
-
-    public checkNotSavedDatasource() {
-
-        const options =
-            {
-                text: $localize`:@@NotSavedWarning:Hay cambios sin guardar. ¿Seguro que quieres salir?`,
-                icon: 'warning',
-                showDenyButton: true,
-                denyButtonText: $localize`:@@cancelarButton:Cancelar`,
-            } as SweetAlertOptions
-
-        if (this.dataSourceService._unsaved.value === false) {
-            this.router.navigate(['/home/']);
-        } else {
-            
-            Swal.fire(options).then((result) => {
-                if (result.isConfirmed) {
-                    this.dataSourceService._unsaved.next(false);
-                    this.router.navigate(['/home/']);
-                }
-            })
-        }
+        this.router.navigate(['/home/']);
     }
 
     public onCloseCreateDashboard(event?: any): void {
