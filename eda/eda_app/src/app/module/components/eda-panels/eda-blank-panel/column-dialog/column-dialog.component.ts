@@ -30,6 +30,7 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
     public selectedColumn: Column;
     public duplicatedColumnName: string;
 /* SDA CUSTOM */    public originalName: string;
+/* SDA CUSTOM */    public backupName: string;
 /* SDA CUSTOM */    public sourceFieldName: string;
 /* SDA CUSTOM */    public tableLabel: string;
 
@@ -116,14 +117,15 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
 
     onShow(): void {
         this.selectedColumn = this.controller.params.selectedColumn;
-/*SDA CUSTOM*/        this.originalName = this.selectedColumn.display_name.default;
+/* SDA CUSTOM */        this.originalName = this.selectedColumn.display_name.default;
+/* SDA CUSTOM */        this.backupName = this.selectedColumn.display_name.default;
 
-/*SDA CUSTOM*/        const table_id = this.selectedColumn.table_id.split('.')[0];
-/*SDA CUSTOM*/       const modelTable = this.controller.params.inject.dataSource.model.tables.find(t => t.table_name === table_id);
-/*SDA CUSTOM*/        const modelColumn = modelTable?.columns.find(c => c.column_name === this.selectedColumn.column_name);
-/*SDA CUSTOM*/        this.sourceFieldName = modelColumn?.display_name?.default || this.selectedColumn.column_name;
+/* SDA CUSTOM */        const table_id = this.selectedColumn.table_id.split('.')[0];
+/* SDA CUSTOM */        const modelTable = this.controller.params.inject.dataSource.model.tables.find(t => t.table_name === table_id);
+/* SDA CUSTOM */        const modelColumn = modelTable?.columns.find(c => c.column_name === this.selectedColumn.column_name);
+/* SDA CUSTOM */        this.sourceFieldName = modelColumn?.display_name?.default || this.selectedColumn.column_name;
 
-/*SDA CUSTOM*/        this.tableLabel = this.controller.params.table;
+/* SDA CUSTOM */        this.tableLabel = this.controller.params.table;
         const allowed = [];
         const title = this.selectedColumn.display_name.default;
         const col = $localize`:@@col:Atributo`, from = $localize`:@@table:de la entidad`;
@@ -147,13 +149,13 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
         }
 
         // Buscando el valor inicial de agregacion de la columna seleccionada
-        for(let agg of this.selectedColumn.aggregation_type) {
-            if(agg.selected){
+        for (let agg of this.selectedColumn.aggregation_type) {
+            if (agg.selected) {
                 this.aggregationSelected = _.cloneDeep(agg);
             }
         }
-        if(this.controller.params.currentQuery.find( elemento => elemento.hasOwnProperty('ranges') &&  elemento.ranges.length!==0)) {
-            if(this.selectedColumn.hasOwnProperty('ranges') && this.selectedColumn.ranges.length!==0) {
+        if (this.controller.params.currentQuery.find(elemento => elemento.hasOwnProperty('ranges') && elemento.ranges.length !== 0)) {
+            if (this.selectedColumn.hasOwnProperty('ranges') && this.selectedColumn.ranges.length !== 0) {
                 this.availableRange = true;
             } else {
                 this.availableRange = false;
@@ -228,7 +230,7 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
         };
 
         // Control of adding just filter in the where section
-        if(filter['filterBeforeGrouping']) {
+        if (filter['filterBeforeGrouping']) {
             this.updateSortedFiltersColumnDialog.emit(addToSortedFilters); // Emitting an event to the eda-blank-panel component
         }
 
@@ -258,7 +260,7 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
 
         this.aggregationsTypes.find((ag: any) => ag.value === type.value).selected = true;
 
-        for (let ag of this.aggregationsTypes) {
+        for (const ag of this.aggregationsTypes) {
             if (ag.selected === true && type.value !== ag.value) {
                 ag.selected = false;
             }
@@ -278,7 +280,7 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
         this.aggregationSelected = _.cloneDeep(type);
 
         // En caso no tengamos agregación el selected Where/Having se establece en Where
-        if(this.aggregationSelected.value==='none') {
+        if (this.aggregationSelected.value === 'none') {
             this.whereHavingSwitch({
                 label: 'WHERE',
                 value: true,
@@ -286,7 +288,7 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
         }
 
         // Changing to numeric type
-        if(this.aggregationsTypes.length === 3 && type.value !== 'none') {
+        if (this.aggregationsTypes.length === 3 && type.value !== 'none') {
             this.selectedColumn.column_type = 'numeric';
             const columnType = 'numeric';
             const allowed = [];
@@ -305,7 +307,7 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
         }
 
         // Changing to text type
-        if(this.aggregationsTypes.length === 3 && type.value === 'none') {
+        if (this.aggregationsTypes.length === 3 && type.value === 'none') {
             this.selectedColumn.column_type = 'text';
             const columnType = 'text';
             const allowed = [];
@@ -410,7 +412,7 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
             this.display.filterValue = !_.isEqual(this.selectedColumn.column_type, 'date') ? handler.value : false;
             this.display.calendar = _.isEqual(this.selectedColumn.column_type, 'date') ? handler.value : false;
             this.display.switchButton = _.isEqual(filter.value, 'not_null') || _.isEqual(filter.value, 'not_null_nor_empty') || _.isEqual(filter.value, 'null_or_empty'); // se usa para deshabilitar el boton que da las opciones en el selector.
-            this.display.filterButton = filter.value == 'not_null' || filter.value == 'not_null_nor_empty' || filter.value == 'null_or_empty' ? false : true ;
+            this.display.filterButton = filter.value == 'not_null' || filter.value == 'not_null_nor_empty' || filter.value == 'null_or_empty' ? false : true;
             this.limitSelectionFields = handler.limitFields === 1 ? 1 : 50;
             this.filter.switch = handler.switchBtn;
 
@@ -469,7 +471,7 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
                 }
 
                 return;
-            } else{
+            } else {
                 this.aggregationsTypes = JSON.parse(JSON.stringify(this.controller.params.selectedColumn.aggregation_type));
             }
 
@@ -549,13 +551,13 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
         if (this.controller.params.panel.content) {
 
             const queryFromServer = this.controller.params.panel.content.query.query.fields;
-            const found = this.controller.params.currentQuery.find(c => c.column_name === column.column_name && c.table_id === column.table_id  && c.display_name.default === column.display_name.default)?.ordenation_type;
+            const found = this.controller.params.currentQuery.find(c => c.column_name === column.column_name && c.table_id === column.table_id && c.display_name.default === column.display_name.default)?.ordenation_type;
             if (found) {
                 this.ordenationTypes.forEach(o => {
                     o.value !== column.ordenation_type ? o.selected = false : o.selected = true;
                 });
 
-                this.controller.params.currentQuery.find(c => c.column_name === column.column_name && c.table_id === column.table_id  && c.display_name.default === column.display_name.default).ordenation_type = column.ordenation_type;
+                this.controller.params.currentQuery.find(c => c.column_name === column.column_name && c.table_id === column.table_id && c.display_name.default === column.display_name.default).ordenation_type = column.ordenation_type;
                 return;
             }
 
@@ -563,7 +565,7 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
                 column.ordenation_type = 'No';
             }
 
-            let ordenation = queryFromServer.filter(c => c.column_name === column.column_name && c.table_id === column.table_id  && c.display_name.default === column.display_name.default)[0];
+            let ordenation = queryFromServer.filter(c => c.column_name === column.column_name && c.table_id === column.table_id && c.display_name.default === column.display_name.default)[0];
             ordenation = ordenation ? ordenation.ordenation_type : column.ordenation_type;
             const d = this.ordenationTypes.find(ag => ag.selected === true && ordenation !== ag.value);
             if (!_.isNil(d)) {
@@ -587,7 +589,7 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
             });
         }
 
-        addOrd = this.controller.params.currentQuery.find(c => c.column_name === column.column_name && c.table_id === column.table_id  && c.display_name.default === column.display_name.default);
+        addOrd = this.controller.params.currentQuery.find(c => c.column_name === column.column_name && c.table_id === column.table_id && c.display_name.default === column.display_name.default);
 
         if (addOrd) {
             addOrd.ordenation_type = this.ordenationTypes.filter(ord => ord.selected === true)[0].value;
@@ -709,11 +711,11 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
 
                 if (res.length > 1) {
                     for (const item of res[1]) {
-                        if (item[0] === '' || item[0] ) {
-                            if(column.valueListSource !== undefined) {
-                                this.dropDownFields.push({ label : item[0], value: item[0], id : item[1] });
+                        if (item[0] === '' || item[0]) {
+                            if (column.valueListSource !== undefined) {
+                                this.dropDownFields.push({ label: item[0], value: item[0], id: item[1] });
                             } else {
-                                this.dropDownFields.push({ label : item[0], value: item[0], id : item[0] });
+                                this.dropDownFields.push({ label: item[0], value: item[0], id: item[0] });
                             }
                         }
                     }
@@ -730,7 +732,7 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
     }
 
     getAggregationText(value: any) {
-        if(!value.aggregation_type){
+        if (!value.aggregation_type) {
             return 'none'; // if there isn`t aggregation, none is added
         } else {
             const label = aggTypes.filter(agg => {
@@ -741,7 +743,7 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
     }
 
     getFilterText(value) {
-        if(value.filter_type === 'between') return this.textBetween;
+        if (value.filter_type === 'between') return this.textBetween;
         return value.filter_type;
     }
 
@@ -752,9 +754,9 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
                 event.dates[1] = event.dates[0];
             }
 
-            let stringRange = [event.dates[0], event.dates[1]]
+            const stringRange = [event.dates[0], event.dates[1]]
                 .map(date => {
-                    let [{ value: mo }, , { value: da }, , { value: ye }] = dtf.formatToParts(date);
+                    const [{ value: mo }, , { value: da }, , { value: ye }] = dtf.formatToParts(date);
                     return `${ye}-${mo}-${da}`
                 });
 
@@ -765,23 +767,25 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
         }
     }
 
-/*SDA COLUMN */    public renameColumn(newName: string) {
-/*SDA COLUMN */        if (_.isNil(newName) || _.isEmpty(newName)) return;
-
-/*SDA COLUMN */        const colInQuery = this.controller.params.currentQuery.find((c: any) =>
-/*SDA COLUMN */            this.selectedColumn.table_id === c.table_id &&
-/*SDA COLUMN */            this.selectedColumn.column_name === c.column_name &&
-/*SDA COLUMN */            this.originalName === c.display_name.default
-/*SDA COLUMN */        );
-
-/*SDA COLUMN */        if (colInQuery) {
-/*SDA COLUMN */            colInQuery.display_name.default = newName;
-/*SDA COLUMN */            this.originalName = newName;
-/*SDA COLUMN */        }
-
-/*SDA COLUMN */        const col = $localize`:@@col:Atributo`, from = $localize`:@@table:de la entidad`;
-/*SDA COLUMN */        this.dialog.title = `${col} ${newName} ${from} ${this.controller.params.table}`;
-/*SDA COLUMN */    }
+/* SDA CUSTOM */    public renameColumn(newName: string) {
+/* SDA CUSTOM */        if (_.isNil(newName) || _.isEmpty(newName)) return;
+/* SDA CUSTOM */
+/* SDA CUSTOM */        const colInQuery = this.controller.params.currentQuery.find((c: any) =>
+/* SDA CUSTOM */            this.selectedColumn.table_id === c.table_id &&
+/* SDA CUSTOM */            this.selectedColumn.column_name === c.column_name &&
+/* SDA CUSTOM */            this.originalName === c.display_name.default
+/* SDA CUSTOM */);
+/* SDA CUSTOM */
+/* SDA CUSTOM */        if (colInQuery) {
+/* SDA CUSTOM */            colInQuery.display_name.default = newName;
+/* SDA CUSTOM */            this.originalName = newName;
+            /* SDA CUSTOM */
+        }
+/* SDA CUSTOM */
+/* SDA CUSTOM */        const col = $localize`:@@col:Atributo`, from = $localize`:@@table:de la entidad`;
+/* SDA CUSTOM */        this.dialog.title = `${col} ${newName} ${from} ${this.controller.params.table}`;
+        /* SDA CUSTOM */
+    }
 
     public onCancelDuplicateColumn(): void {
         this.display.duplicateColumn = false;
@@ -798,10 +802,30 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
         this.display.duplicateColumn = false;
         const newColumn = _.cloneDeep(this.selectedColumn);
         newColumn.display_name.default = this.duplicatedColumnName;
-        this.onClose(EdaDialogCloseEvent.NEW, { duplicated: true, column: newColumn});
+        this.onClose(EdaDialogCloseEvent.NEW, { duplicated: true, column: newColumn });
     }
 
     /* Close functions */
+/* SDA CUSTOM */    cancelDialog() {
+/* SDA CUSTOM */        const colInQuery = this.controller.params.currentQuery.find((c: any) =>
+/* SDA CUSTOM */            this.selectedColumn.table_id === c.table_id &&
+/* SDA CUSTOM */            this.selectedColumn.column_name === c.column_name &&
+/* SDA CUSTOM */            this.originalName === c.display_name.default
+/* SDA CUSTOM */);
+/* SDA CUSTOM */
+/* SDA CUSTOM */        if (colInQuery) {
+/* SDA CUSTOM */            colInQuery.display_name.default = this.backupName;
+/* SDA CUSTOM */            this.selectedColumn.display_name.default = this.backupName;
+            /* SDA CUSTOM */
+}
+/* SDA CUSTOM */
+/* SDA CUSTOM */        this.filter.switch = false;
+/* SDA CUSTOM */        this.filterSelected = undefined;
+/* SDA CUSTOM */        this.filterValue = {};
+/* SDA CUSTOM */        this.onClose(EdaDialogCloseEvent.NONE, []);
+        /* SDA CUSTOM */
+}
+
     closeDialog() {
         this.filter.switch = false;
         this.filterSelected = undefined;
@@ -815,7 +839,7 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
 
     whereHavingSwitch(selected) {
 
-        if(selected.value) {
+        if (selected.value) {
             this.filterBeforeAfter.filterBeforeGrouping = true;
             return true
         } else {
@@ -829,15 +853,15 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
 
         const regexNumber = /^[0-9]/;
 
-        if(regexNumber.test(rangeString[rangeString.length-1])){
+        if (regexNumber.test(rangeString[rangeString.length - 1])) {
 
             const ranges = rangeString.split(":")
                 .map(item => parseFloat(item.replace(",", ".")));
 
-            for (let i = 0; i < ranges.length-1; i++) {
+            for (let i = 0; i < ranges.length - 1; i++) {
                 // Verificar si el número actual es menor o igual al anterior
                 if (ranges[i] >= ranges[i + 1]) {
-                    this.ranges=[];
+                    this.ranges = [];
                     this.alertService.addError('El correcto orden de los límites del rango van de menor a mayor');
                     return;
                 }
@@ -866,8 +890,8 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
     }
 
     removeRange() {
-        this.selectedRange='';
-        this.showRange=false;
+        this.selectedRange = '';
+        this.showRange = false;
         this.allowedAggregations = true;
         const addAggr = this.findColumn(this.selectedColumn, this.controller.params.currentQuery);
         addAggr.column_type = 'numeric';
@@ -895,9 +919,9 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
 
     verifyRange() {
 
-        if(this.selectedColumn.ranges !== undefined){
+        if (this.selectedColumn.ranges !== undefined) {
 
-            if(this.selectedColumn.ranges.length !==0){
+            if (this.selectedColumn.ranges.length !== 0) {
                 this.allowedAggregations = false;
                 this.showRange = true;
                 this.ranges = this.selectedColumn.ranges;
@@ -911,7 +935,7 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
         const validCharacters = /[1234567890.,:-]*/g;
         inputElement.value = inputElement.value.match(validCharacters)?.join('') || '';
         // Si el input inicia con (. , :) no se habilitara el botón del rango ni se agregará el signo en el input. Se debe empezar con un número o con un signo (-) y un número para los negativos.
-        if(inputElement.value=== '.' || inputElement.value===',' || inputElement.value===':') inputElement.value = '';
+        if (inputElement.value === '.' || inputElement.value === ',' || inputElement.value === ':') inputElement.value = '';
         this.rangeString = inputElement.value; // Se actualiza ngModel
     }
 

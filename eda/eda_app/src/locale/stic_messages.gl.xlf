@@ -371,6 +371,10 @@
     <source>Etiqueta para el campo</source>
     <target>Etiqueta para o campo</target>
   </trans-unit>
+  <trans-unit id="cancelButton" datatype="html">
+    <source>Cancelar</source>
+    <target>Cancelar</target>
+  </trans-unit>
 </body>
 </file>
 </xliff>
