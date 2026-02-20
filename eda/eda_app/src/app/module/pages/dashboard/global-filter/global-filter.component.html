@@ -50,17 +50,20 @@
                     <!-- SDA CUSTOM --> <p-multiSelect *ngIf="filter.data && ( isAdmin || isDashboardCreator || (['public', 'readOnly'].includes(filter.visible)   &&  (filter.selectedColumn?.visible || filter.column?.value.visible)) )"
                         [options]="filter.data"
                         [(ngModel)]="filter.selectedItems"
-                        [maxSelectedLabels]="3"
+                        [maxSelectedLabels]="3" 
+                        i18n-selectedItemsLabel="@@globalFilterSelectedItemsLabel" selectedItemsLabel="{0} items seleccionados"
                         [virtualScroll]="true"
                         [defaultLabel]="getFilterLabel(filter)"
                         [disabled]="disableGlobalFilter(filter)"
                         itemSize="30"
-                        display="chip"
+                        [display]="filter.selectedItems?.length > 3 ? 'comma' : 'chip'"
                         class="customMultiselect filters-size"
                         [style]="{'max-width': '250px', 'min-width':'200px', 'font-family':'var(--eda-filters-font-family)'}"
                         [Show]="dropdownFiltersSize(filter)"
-                        (onChange)="setGlobalFilterItems(filter)">
-        
+                        (onChange)="setGlobalFilterItems(filter)"
+                        (mouseenter)="showFilterTooltip($event, op, filter)"
+                        (mouseleave)="hideFilterTooltip(op)"
+                        (onClick)="hideFilterTooltip(op)">
                         <p-footer>
                             <button *ngIf="dashboard.canIedit()" id="dashFilterConf"
                                 pButton pRipple type="button"
@@ -70,6 +73,21 @@
                             </button>
                         </p-footer>
                     </p-multiSelect>
+<!--SDA CUSTOM-->      <p-overlayPanel #op appendTo="body">
+<!--SDA CUSTOM-->          <ng-template pTemplate>
+<!--SDA CUSTOM-->              <div (mouseenter)="showFilterTooltip($event, op, filter)" (mouseleave)="hideFilterTooltip(op)" >
+<!--SDA CUSTOM-->                  <span>{{ resumen }}</span>
+<!--SDA CUSTOM-->                  <div *ngFor="let item of filter.selectedIdValues" class="filter-tooltip-container">
+<!--SDA CUSTOM-->                      <span class="customMultiselect filters-size filter-tooltip-text">
+<!--SDA CUSTOM-->                          {{ item }}
+<!--SDA CUSTOM-->                              <button type="button" class=" pi pi-times-circle filter-tooltip-button"
+                                                  (click)="removeFilterItem(filter, item)">
+<!--SDA CUSTOM-->                              </button>
+<!--SDA CUSTOM-->                      </span>
+<!--SDA CUSTOM-->                  </div>
+<!--SDA CUSTOM-->              </div>
+<!--SDA CUSTOM-->          </ng-template>
+<!--SDA CUSTOM-->      </p-overlayPanel>
                 </div>
             </ng-container>
         </div>

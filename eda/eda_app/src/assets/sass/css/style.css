@@ -1178,6 +1178,32 @@ pre {
     width: inherit;
 }
 
+/*SDA CUSTOM*/ .filter-tooltip-button{
+/*SDA CUSTOM*/ color: black;
+/*SDA CUSTOM*/     background: transparent;
+/*SDA CUSTOM*/     border: none;
+/*SDA CUSTOM*/     height: 1.5rem;
+/*SDA CUSTOM*/     width: 1.5rem;
+/*SDA CUSTOM*/     float: right;
+/*SDA CUSTOM*/     cursor: pointer;
+/*SDA CUSTOM*/ }
+
+/*SDA CUSTOM*/ .filter-tooltip-text{
+/*SDA CUSTOM*/     padding: 2px 6px; 
+/*SDA CUSTOM*/     overflow: hidden; 
+/*SDA CUSTOM*/     text-overflow: ellipsis; 
+/*SDA CUSTOM*/     white-space: nowrap;
+/*SDA CUSTOM*/ }
+
+/*SDA CUSTOM*/ .filter-tooltip-container{
+/*SDA CUSTOM*/     display: grid; 
+/*SDA CUSTOM*/     grid-template-columns: 100% 10%; 
+/*SDA CUSTOM*/     align-items: center; 
+/*SDA CUSTOM*/     padding: 0.25rem; 
+/*SDA CUSTOM*/     gap: 4px;
+                    border: 1px solid black;
+/*SDA CUSTOM*/ }
+
 /* JJ Puesto para quitar el overlay que no se borra*/
 /*.p-component-overlay-enter {
     animation: p-component-overlay-enter-animation 150ms forwards;
