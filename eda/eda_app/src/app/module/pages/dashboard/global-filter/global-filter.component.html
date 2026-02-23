@@ -73,19 +73,21 @@
                             </button>
                         </p-footer>
                     </p-multiSelect>
-<!--SDA CUSTOM-->      <p-overlayPanel #op appendTo="body">
+<!--SDA CUSTOM-->      <p-overlayPanel #op appendTo="body" [style]="{'margin-top': '2.25vh'}">
 <!--SDA CUSTOM-->          <ng-template pTemplate>
-<!--SDA CUSTOM-->              <div (mouseenter)="showFilterTooltip($event, op, filter)" (mouseleave)="hideFilterTooltip(op)" >
-<!--SDA CUSTOM-->                  <span>{{ resumen }}</span>
-<!--SDA CUSTOM-->                  <div *ngFor="let item of filter.selectedIdValues" class="filter-tooltip-container">
-<!--SDA CUSTOM-->                      <span class="customMultiselect filters-size filter-tooltip-text">
-<!--SDA CUSTOM-->                          {{ item }}
-<!--SDA CUSTOM-->                              <button type="button" class=" pi pi-times-circle filter-tooltip-button"
-                                                  (click)="removeFilterItem(filter, item)">
-<!--SDA CUSTOM-->                              </button>
-<!--SDA CUSTOM-->                      </span>
-<!--SDA CUSTOM-->                  </div>
-<!--SDA CUSTOM-->              </div>
+<!--SDA CUSTOM-->               <div style="max-height: 30vh; overflow: auto; min-width: 20vw; max-width: 30vw;">
+<!--SDA CUSTOM-->                   <div (mouseenter)="showFilterTooltip($event, op, filter)" (mouseleave)="hideFilterTooltip(op)" >
+<!--SDA CUSTOM-->                   <span>{{ resumen }}</span>
+<!--SDA CUSTOM-->                       <div *ngFor="let item of filter.selectedItems" class="filter-tooltip-container">
+<!--SDA CUSTOM-->                           <span class="customMultiselect filters-size filter-tooltip-text">
+<!--SDA CUSTOM-->                               {{ item }}
+<!--SDA CUSTOM-->                                   <button type="button" class=" pi pi-times-circle filter-tooltip-button"
+                                                        (click)="removeFilterItem(filter, item)">
+<!--SDA CUSTOM-->                                   </button>
+<!--SDA CUSTOM-->                           </span>
+<!--SDA CUSTOM-->                       </div>
+<!--SDA CUSTOM-->                   </div>
+<!--SDA CUSTOM-->               </div>
 <!--SDA CUSTOM-->          </ng-template>
 <!--SDA CUSTOM-->      </p-overlayPanel>
                 </div>
