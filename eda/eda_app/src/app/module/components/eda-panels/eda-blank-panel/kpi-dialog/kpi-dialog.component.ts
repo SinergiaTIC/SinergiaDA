@@ -27,6 +27,8 @@ export class KpiEditDialogComponent extends EdaDialogAbstract {
     public alertInfo: string = $localize`:@@alertsInfo: Cuando el valor del kpi sea (=, <,>) que el valor definido cambiará el color del texto`;
     public ptooltipViewAlerts: string = $localize`:@@ptooltipViewAlerts:Configurar alertas`;
 
+    public variablePx: number = 0;
+
     public units: string;
     public quantity: number;
     public hours: any;
@@ -69,7 +71,8 @@ export class KpiEditDialogComponent extends EdaDialogAbstract {
                 sufix: this.panelChartComponent.componentRef.instance.inject.sufix,
                 edaChart: this.edaChart,
                 chartType: this.panelChartConfig.chartType,
-                chartSubType: this.panelChartConfig.edaChart
+                chartSubType: this.panelChartConfig.edaChart,
+                variablePx: this.variablePx
             });
     }
 
@@ -85,6 +88,7 @@ export class KpiEditDialogComponent extends EdaDialogAbstract {
 
         this.loadChartColors();
         this.alerts = config.alertLimits || []; //deepcopy
+        this.variablePx = config.variablePx || 0;
         this.display = true;
     }
 

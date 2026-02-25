@@ -111,6 +111,7 @@ export class EdaKpiComponent implements OnInit {
             resultSize = resultSize / 1.8;
         }
       
+        resultSize += (this.inject.variablePX || 0);
         return resultSize.toFixed().toString() + 'px';
     }
 

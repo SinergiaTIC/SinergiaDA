@@ -495,9 +495,11 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
             chartConfig.sufix = (<KpiConfig>config.getConfig())?.sufix || '';
             chartConfig.alertLimits = alertLimits;
             chartConfig.edaChart =  (<KpiConfig>config.getConfig())?.edaChart;
+            chartConfig.variablePx = (<KpiConfig>config.getConfig())?.variablePx || 0;
         } else {
             chartConfig.sufix = '';
             chartConfig.alertLimits = [];
+            chartConfig.variablePx = 0;
         }
 
         this.createEdaKpiComponent(chartConfig);
@@ -513,7 +515,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         this.componentRef = this.entry.createComponent(factory);
         this.componentRef.instance.inject = inject;
         this.componentRef.instance.onNotify.subscribe(data => {
-            const kpiConfig = new KpiConfig({ sufix: data.sufix, alertLimits: inject.alertLimits });
+            const kpiConfig = new KpiConfig({ sufix: data.sufix, alertLimits: inject.alertLimits, variablePx: inject.variablePx || 0 });
             (<KpiConfig><unknown>this.props.config.setConfig(kpiConfig));
         })
     }
@@ -656,9 +658,11 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         if (propsConfig) {
             chartConfig.sufix = (<KpiConfig>propsConfig.getConfig())?.sufix || '';
             chartConfig.alertLimits = alertLimits;
+            chartConfig.variablePx = (<KpiConfig>propsConfig.getConfig())?.variablePx || 0;
         } else {
             chartConfig.sufix = '';
             chartConfig.alertLimits = [];
+            chartConfig.variablePx = 0;
         }
 
         this.createEdaKpiChartComponent(chartConfig);
@@ -683,7 +687,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         this.componentRef.instance.inject = inject;
 
         this.componentRef.instance.onNotify.subscribe(data => {
-            const kpiConfig = new KpiConfig({ sufix: data.sufix, alertLimits: inject.alertLimits||[], edaChart: inject.edaChart });
+            const kpiConfig = new KpiConfig({ sufix: data.sufix, alertLimits: inject.alertLimits||[], edaChart: inject.edaChart, variablePx: inject.variablePx || 0 });
             (<KpiConfig><unknown>this.props.config.setConfig(kpiConfig));
         })
         this.configUpdated.emit();

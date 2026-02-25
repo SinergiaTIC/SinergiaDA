@@ -9,6 +9,22 @@
     <div class="col-4 col-offset-1">
 
         <div class="col-12">
+            <h6 class="custom-border-b1">Tamaño</h6>
+            <div class="grid align-items-center">
+                <div class="col-12">
+                    <label i18n="@@kpiExtraPxLabel">Ajuste de tamaño (px)</label>
+                    <div class="p-inputgroup mt-1">
+                        <button pButton type="button" icon="fa fa-minus" class="p-button-secondary"
+                            (click)="extraPx = extraPx - 1"></button>
+                        <input type="number" pInputText [(ngModel)]="extraPx" style="width: 60px; text-align: center;" />
+                        <button pButton type="button" icon="fa fa-plus" class="p-button-secondary"
+                            (click)="extraPx = extraPx + 1"></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12">
             <h6 i18n="@@colorsChartH6" class="custom-border-b1">
                 Colores
             </h6>
