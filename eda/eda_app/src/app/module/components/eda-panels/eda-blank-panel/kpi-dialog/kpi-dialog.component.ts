@@ -27,7 +27,8 @@ export class KpiEditDialogComponent extends EdaDialogAbstract {
     public alertInfo: string = $localize`:@@alertsInfo: Cuando el valor del kpi sea (=, <,>) que el valor definido cambiará el color del texto`;
     public ptooltipViewAlerts: string = $localize`:@@ptooltipViewAlerts:Configurar alertas`;
 
-    public modifiedFontPoints: number = 0;
+/*SDA CUSTOM*/public modifiedFontPoints: number = 0;
+/*SDA CUSTOM*/public panelBaseResultSize: number = 0;
 
     public units: string;
     public quantity: number;
@@ -72,7 +73,7 @@ export class KpiEditDialogComponent extends EdaDialogAbstract {
                 edaChart: this.edaChart,
                 chartType: this.panelChartConfig.chartType,
                 chartSubType: this.panelChartConfig.edaChart,
-                modifiedFontPoints: this.modifiedFontPoints
+/*SDA CUSTOM*/  modifiedFontPoints: this.modifiedFontPoints
             });
     }
 
@@ -83,14 +84,24 @@ export class KpiEditDialogComponent extends EdaDialogAbstract {
     onShow(): void {
         this.panelChartConfig = this.controller.params.panelChart;
         this.edaChart = this.controller.params.edaChart;
+/*SDA CUSTOM*/this.panelBaseResultSize = this.controller.params.panelBaseResultSize || 0;
 
         const config: any = this.panelChartConfig.config.getConfig();
 
         this.loadChartColors();
         this.alerts = config.alertLimits || []; //deepcopy
-        this.modifiedFontPoints = config.modifiedFontPoints || 0;
+/*SDA CUSTOM*/this.modifiedFontPoints = config.modifiedFontPoints || 0;
         this.display = true;
-    }
+/*SDA CUSTOM*/if (this.panelBaseResultSize > 0) {
+/*SDA CUSTOM*/  setTimeout(() => {
+/*SDA CUSTOM*/      const kpiInstance = this.panelChartComponent?.componentRef?.instance;
+/*SDA CUSTOM*/          if (kpiInstance) {
+/*SDA CUSTOM*/              kpiInstance.baseResultSize = this.panelBaseResultSize;
+/*SDA CUSTOM*/              this.panelChartComponent.componentRef.changeDetectorRef.detectChanges();
+/*SDA CUSTOM*/          }
+/*SDA CUSTOM*/      }, 100);
+/*SDA CUSTOM*/  }
+/*SDA CUSTOM*/}
 
     loadChartColors() {
         if (this.edaChart) {
@@ -259,16 +270,16 @@ export class KpiEditDialogComponent extends EdaDialogAbstract {
         return (!this.quantity || !this.units || !(this.selectedUsers.length > 0) || !this.mailMessage)
     }
 
-    modifyKpiSize(numberToAdd: number) {
-        const step = 5;
-        const min = -90;
-        const max = 200;
-        if (numberToAdd !== 0) {
-            this.modifiedFontPoints = Math.min(max, Math.max(min, this.modifiedFontPoints + numberToAdd * step));
-        } else {
-            this.modifiedFontPoints = Math.min(max, Math.max(min, this.modifiedFontPoints));
-        }
-        this.panelChartComponent.componentRef.instance.inject.modifiedFontPoints = this.modifiedFontPoints;
-        this.panelChartComponent.componentRef.instance.updateChart();
-    }
+/*SDA CUSTOM*/modifyKpiSize(newValue?: number) {
+/*SDA CUSTOM*/    const min = -90;
+/*SDA CUSTOM*/    const max = 300;
+/*SDA CUSTOM*/    if (newValue !== undefined) {
+/*SDA CUSTOM*/        this.modifiedFontPoints = Math.min(max, Math.max(min, newValue || 0));
+/*SDA CUSTOM*/    } else {
+/*SDA CUSTOM*/        this.modifiedFontPoints = Math.min(max, Math.max(min, this.modifiedFontPoints));
+/*SDA CUSTOM*/    }
+/*SDA CUSTOM*/    const instance = this.panelChartComponent.componentRef.instance;
+/*SDA CUSTOM*/    instance.inject.modifiedFontPoints = this.modifiedFontPoints;
+/*SDA CUSTOM*/    this.panelChartComponent.componentRef.changeDetectorRef.detectChanges();
+/*SDA CUSTOM*/}
 }

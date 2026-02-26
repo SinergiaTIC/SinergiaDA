@@ -28,8 +28,8 @@
 <!--SDA CUSTOM-->             <div class="col-12">
 <!--SDA CUSTOM-->                 <label i18n="@@kpiExtraPxLabel">Ajuste de tamaño (%)</label>
 <!--SDA CUSTOM-->                 <div class="p-inputgroup mt-1">
-<!--SDA CUSTOM-->                     <input type="number" pInputText [(ngModel)]="modifiedFontPoints" style="width: 60px; text-align: center;" 
-                                          min="-90" max="200" (input)="modifyKpiSize(0)"/>
+<!--SDA CUSTOM-->                     <input type="number" pInputText [ngModel]="modifiedFontPoints" style="width: 60px; text-align: center;"
+                                          min="-90" max="300" (ngModelChange)="modifyKpiSize($event)"/>
 <!--SDA CUSTOM-->                 </div>
 <!--SDA CUSTOM-->             </div>
 <!--SDA CUSTOM-->           </div>

@@ -495,11 +495,11 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
             chartConfig.sufix = (<KpiConfig>config.getConfig())?.sufix || '';
             chartConfig.alertLimits = alertLimits;
             chartConfig.edaChart =  (<KpiConfig>config.getConfig())?.edaChart;
-            chartConfig.modifiedFontPoints = (<KpiConfig>config.getConfig())?.modifiedFontPoints || 0;
+/*SDA CUSTOM*/chartConfig.modifiedFontPoints = (<KpiConfig>config.getConfig())?.modifiedFontPoints || 0;
         } else {
             chartConfig.sufix = '';
             chartConfig.alertLimits = [];
-            chartConfig.modifiedFontPoints = 0;
+/*SDA CUSTOM*/chartConfig.modifiedFontPoints = 0;
         }
 
         this.createEdaKpiComponent(chartConfig);
@@ -515,7 +515,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         this.componentRef = this.entry.createComponent(factory);
         this.componentRef.instance.inject = inject;
         this.componentRef.instance.onNotify.subscribe(data => {
-            const kpiConfig = new KpiConfig({ sufix: data.sufix, alertLimits: inject.alertLimits, modifiedFontPoints: inject.modifiedFontPoints || 0 });
+/*SDA CUSTOM*/const kpiConfig = new KpiConfig({ sufix: data.sufix, alertLimits: inject.alertLimits, modifiedFontPoints: inject.modifiedFontPoints || 0 });
             (<KpiConfig><unknown>this.props.config.setConfig(kpiConfig));
         })
     }
@@ -658,11 +658,11 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         if (propsConfig) {
             chartConfig.sufix = (<KpiConfig>propsConfig.getConfig())?.sufix || '';
             chartConfig.alertLimits = alertLimits;
-            chartConfig.modifiedFontPoints = (<KpiConfig>propsConfig.getConfig())?.modifiedFontPoints || 0;
+/*SDA CUSTOM*/chartConfig.modifiedFontPoints = (<KpiConfig>propsConfig.getConfig())?.modifiedFontPoints || 0;
         } else {
             chartConfig.sufix = '';
             chartConfig.alertLimits = [];
-            chartConfig.modifiedFontPoints = 0;
+/*SDA CUSTOM*/chartConfig.modifiedFontPoints = 0;
         }
 
         this.createEdaKpiChartComponent(chartConfig);
@@ -687,7 +687,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         this.componentRef.instance.inject = inject;
 
         this.componentRef.instance.onNotify.subscribe(data => {
-            const kpiConfig = new KpiConfig({ sufix: data.sufix, alertLimits: inject.alertLimits||[], edaChart: inject.edaChart, modifiedFontPoints: inject.modifiedFontPoints || 0 });
+/*SDA CUSTOM*/const kpiConfig = new KpiConfig({ sufix: data.sufix, alertLimits: inject.alertLimits||[], edaChart: inject.edaChart, modifiedFontPoints: inject.modifiedFontPoints || 0 });
             (<KpiConfig><unknown>this.props.config.setConfig(kpiConfig));
         })
         this.configUpdated.emit();

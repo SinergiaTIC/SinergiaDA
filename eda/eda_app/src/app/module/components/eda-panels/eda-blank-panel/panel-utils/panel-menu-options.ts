@@ -97,7 +97,8 @@ export const PanelOptions = {
                 panelID: _.get(panelComponent.panel, 'id'),
                 panelChart: panelComponent.panelChartConfig,
                 alertLimits: panelComponent.panelChart.componentRef.instance.alertLimits || [],
-                edaChart: panelComponent.panelChart.componentRef.instance.edaChartComponent?.inject
+                edaChart: panelComponent.panelChart.componentRef.instance.edaChartComponent?.inject,
+                panelBaseResultSize: panelComponent.panelChart.componentRef.instance.baseResultSize || 0
               },
               close: (event, response) => { panelComponent.onCloseKpiProperties(event, response) }
             });

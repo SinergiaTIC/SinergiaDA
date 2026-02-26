@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, EventEmitter, Output, ViewChild, ElementRef, AfterViewInit, ChangeDetectorRef } from '@angular/core';
+/*SDA CUSTOM*/import { Component, OnInit, Input, EventEmitter, Output, ViewChild, ElementRef, AfterViewInit, ChangeDetectorRef } from '@angular/core';
 import { registerLocaleData } from '@angular/common';
 import { EdaKpi } from './eda-kpi';
 import es from '@angular/common/locales/es';
@@ -9,7 +9,7 @@ import { EdaChartComponent } from '../component.index';
     templateUrl: './eda-kpi.component.html'
 })
 
-export class EdaKpiComponent implements OnInit, AfterViewInit {
+/*SDA CUSTOM*/export class EdaKpiComponent implements OnInit, AfterViewInit {
     @Input() inject: EdaKpi;
     @Output() onNotify: EventEmitter<any> = new EventEmitter();
     @ViewChild('kpiContainer') kpiContainer: ElementRef;
@@ -21,14 +21,16 @@ export class EdaKpiComponent implements OnInit, AfterViewInit {
     warningColor = '#ff8100';
     containerHeight: number = 20;
     containerWidth: number = 20;
+/*SDA CUSTOM*/baseResultSize: number = 0;
 
     showChart: boolean = true;
 
-    constructor(private cdr: ChangeDetectorRef) { }
+/*SDA CUSTOM*/constructor(private cdr: ChangeDetectorRef) { }
 
     ngAfterViewInit() {
         this.initDimensions();
-        this.cdr.detectChanges();
+/*SDA CUSTOM*/this.baseResultSize = this.computeBaseSize();
+/*SDA CUSTOM*/this.cdr.detectChanges();
     }
 
     ngOnInit() {
@@ -80,39 +82,34 @@ export class EdaKpiComponent implements OnInit, AfterViewInit {
         return { 'font-weight': 'bold', 'font-size': this.getFontSize(), display: 'flex', 'justify-content': 'center', color: this.color }
     }
 
-    /**
-     * This function returns a string with the given font size (in px) based on the panel width and height 
-     * @returns {string}
-    */
-    getFontSize(): string {
-        this.initDimensions();
-
+/*SDA CUSTOM*/    private computeBaseSize(): number {
         let resultSize: number = this.containerHeight / 2;
-        let textLongitude = (this.inject.value + this.inject.sufix).length;
-        const ratio = (  this.containerHeight / this.containerWidth ) ;
-
         const sufix = this.inject.sufix || '';
-
-        textLongitude = this.inject.value.toString().length
-
-        // Comprobaciones
+/*SDA CUSTOM*/const ratio = (this.containerHeight / this.containerWidth);
+/*SDA CUSTOM*/const textLongitude = this.inject.value.toString().length;
         let textWidth = textLongitude * resultSize;
-        // Redimensiono en funcion del ancho
-        if ( ( textWidth > this.containerWidth )  && ( sufix.length < 4 ) ) resultSize = (this.containerWidth / textLongitude) * 1.4;
-        // Redimensiono en función del alto
-        if (resultSize > this.containerHeight   && ratio < 0.4  ) resultSize = this.containerHeight;
-        // Última comprobación
-        if (textLongitude * resultSize > this.containerWidth * 1.2   && ratio < 0.4  )  resultSize = resultSize / 1.5;
-        // Si tengo un sufijo y es muy grande compruebo que no me pase
+/*SDA CUSTOM*/if ((textWidth > this.containerWidth) && (sufix.length < 4)) resultSize = (this.containerWidth / textLongitude) * 1.4;
+/*SDA CUSTOM*/if (resultSize > this.containerHeight && ratio < 0.4) resultSize = this.containerHeight;
+/*SDA CUSTOM*/if (textLongitude * resultSize > this.containerWidth * 1.2 && ratio < 0.4) resultSize = resultSize / 1.5;
         if (sufix.length > 4 && this.containerHeight < (resultSize * 4) && this.containerWidth < textWidth) {
             resultSize = resultSize / 1.8;
         }
-        // Si tengo ung gráfico lo hago más pequeño
         if (this.showChart) {
             resultSize = resultSize / 1.8;
         }
-      
-        resultSize = resultSize * (1 + (this.inject.modifiedFontPoints || 0) / 100);
+/*SDA CUSTOM*/return resultSize;
+    }
+
+    /**
+     * This function returns a string with the given font size (in px) based on the panel width and height
+     * @returns {string}
+    */
+/*SDA CUSTOM*/    getFontSize(): string {
+/*SDA CUSTOM*/if (this.baseResultSize === 0) {
+/*SDA CUSTOM*/    this.initDimensions();
+/*SDA CUSTOM*/    this.baseResultSize = this.computeBaseSize();
+/*SDA CUSTOM*/}
+/*SDA CUSTOM*/const resultSize = this.baseResultSize * (1 + (this.inject.modifiedFontPoints || 0) / 100);
         return resultSize.toFixed().toString() + 'px';
     }
 

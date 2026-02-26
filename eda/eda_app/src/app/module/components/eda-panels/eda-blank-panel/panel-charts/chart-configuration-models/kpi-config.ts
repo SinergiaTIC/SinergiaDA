@@ -4,7 +4,7 @@ export class KpiConfig {
     sufix: string = '';
     alertLimits: any[] = [];
     edaChart: ChartJsConfig;
-    modifiedFontPoints: number = 0;
+/*SDA CUSTOM*/modifiedFontPoints: number = 0;
     constructor(init?: Partial<KpiConfig>) {
         this.edaChart = new ChartJsConfig(
           init?.edaChart?.colors || [],
