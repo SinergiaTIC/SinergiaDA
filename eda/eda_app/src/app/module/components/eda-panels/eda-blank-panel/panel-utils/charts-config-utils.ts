@@ -46,10 +46,11 @@ export const ChartsConfigUtils = {
       config = {
         sufix: ebp.panelChart.componentRef.instance.inject.sufix,
         alertLimits: ebp.panelChart.componentRef.instance.inject.alertLimits,
+        modifiedFontPoints: ebp.panelChart.componentRef.instance.inject.modifiedFontPoints || 0,
         edaChart: {}
       }
 
-      if (kpiChart.edaChart) {
+      if (kpiChart?.edaChart) {
         config.edaChart.colors = kpiChart.chartColors;
         config.edaChart.chartType = ebp.panelChart.props.chartType;
 

@@ -27,7 +27,7 @@ export class KpiEditDialogComponent extends EdaDialogAbstract {
     public alertInfo: string = $localize`:@@alertsInfo: Cuando el valor del kpi sea (=, <,>) que el valor definido cambiará el color del texto`;
     public ptooltipViewAlerts: string = $localize`:@@ptooltipViewAlerts:Configurar alertas`;
 
-    public variablePx: number = 0;
+    public modifiedFontPoints: number = 0;
 
     public units: string;
     public quantity: number;
@@ -72,7 +72,7 @@ export class KpiEditDialogComponent extends EdaDialogAbstract {
                 edaChart: this.edaChart,
                 chartType: this.panelChartConfig.chartType,
                 chartSubType: this.panelChartConfig.edaChart,
-                variablePx: this.variablePx
+                modifiedFontPoints: this.modifiedFontPoints
             });
     }
 
@@ -88,7 +88,7 @@ export class KpiEditDialogComponent extends EdaDialogAbstract {
 
         this.loadChartColors();
         this.alerts = config.alertLimits || []; //deepcopy
-        this.variablePx = config.variablePx || 0;
+        this.modifiedFontPoints = config.modifiedFontPoints || 0;
         this.display = true;
     }
 
@@ -259,4 +259,16 @@ export class KpiEditDialogComponent extends EdaDialogAbstract {
         return (!this.quantity || !this.units || !(this.selectedUsers.length > 0) || !this.mailMessage)
     }
 
+    modifyKpiSize(numberToAdd: number) {
+        const step = 5;
+        const min = -90;
+        const max = 200;
+        if (numberToAdd !== 0) {
+            this.modifiedFontPoints = Math.min(max, Math.max(min, this.modifiedFontPoints + numberToAdd * step));
+        } else {
+            this.modifiedFontPoints = Math.min(max, Math.max(min, this.modifiedFontPoints));
+        }
+        this.panelChartComponent.componentRef.instance.inject.modifiedFontPoints = this.modifiedFontPoints;
+        this.panelChartComponent.componentRef.instance.updateChart();
+    }
 }

@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, EventEmitter, Output, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
+import { Component, OnInit, Input, EventEmitter, Output, ViewChild, ElementRef, AfterViewInit, ChangeDetectorRef } from '@angular/core';
 import { registerLocaleData } from '@angular/common';
 import { EdaKpi } from './eda-kpi';
 import es from '@angular/common/locales/es';
@@ -9,7 +9,7 @@ import { EdaChartComponent } from '../component.index';
     templateUrl: './eda-kpi.component.html'
 })
 
-export class EdaKpiComponent implements OnInit {
+export class EdaKpiComponent implements OnInit, AfterViewInit {
     @Input() inject: EdaKpi;
     @Output() onNotify: EventEmitter<any> = new EventEmitter();
     @ViewChild('kpiContainer') kpiContainer: ElementRef;
@@ -24,13 +24,14 @@ export class EdaKpiComponent implements OnInit {
 
     showChart: boolean = true;
 
-    constructor() { }
+    constructor(private cdr: ChangeDetectorRef) { }
 
     ngAfterViewInit() {
         this.initDimensions();
+        this.cdr.detectChanges();
     }
 
-    ngOnInit() {;
+    ngOnInit() {
         try {
             registerLocaleData(es);
 
@@ -111,7 +112,7 @@ export class EdaKpiComponent implements OnInit {
             resultSize = resultSize / 1.8;
         }
       
-        resultSize += (this.inject.variablePX || 0);
+        resultSize = resultSize * (1 + (this.inject.modifiedFontPoints || 0) / 100);
         return resultSize.toFixed().toString() + 'px';
     }
 

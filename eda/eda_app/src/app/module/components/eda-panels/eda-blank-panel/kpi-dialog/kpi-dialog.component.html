@@ -2,29 +2,12 @@
   
   <div body class="grid h-100 p-5">
 
-    <div class="col-7" style="background-color: var(--panel-color); width: 90%; height: 15vh;">
+    <div class="col-7" style="background-color: var(--panel-color); width: 90%; height: auto;">
       <panel-chart *ngIf="display" #PanelChartComponent [props]="panelChartConfig" class="component"></panel-chart>
     </div>
 
     <div class="col-4 col-offset-1">
-
-        <div class="col-12">
-            <h6 class="custom-border-b1">Tamaño</h6>
-            <div class="grid align-items-center">
-                <div class="col-12">
-                    <label i18n="@@kpiExtraPxLabel">Ajuste de tamaño (px)</label>
-                    <div class="p-inputgroup mt-1">
-                        <button pButton type="button" icon="fa fa-minus" class="p-button-secondary"
-                            (click)="extraPx = extraPx - 1"></button>
-                        <input type="number" pInputText [(ngModel)]="extraPx" style="width: 60px; text-align: center;" />
-                        <button pButton type="button" icon="fa fa-plus" class="p-button-secondary"
-                            (click)="extraPx = extraPx + 1"></button>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-12">
+<!--SDA CUSTOM--> <div *ngIf="edaChart" class="col-12">
             <h6 i18n="@@colorsChartH6" class="custom-border-b1">
                 Colores
             </h6>
@@ -39,6 +22,18 @@
             </div>
         </div>
 
+<!--SDA CUSTOM-->       <div class="col-12">
+<!--SDA CUSTOM-->         <h6 class="custom-border-b1">Tamaño</h6>
+<!--SDA CUSTOM-->         <div class="grid align-items-center">
+<!--SDA CUSTOM-->             <div class="col-12">
+<!--SDA CUSTOM-->                 <label i18n="@@kpiExtraPxLabel">Ajuste de tamaño (%)</label>
+<!--SDA CUSTOM-->                 <div class="p-inputgroup mt-1">
+<!--SDA CUSTOM-->                     <input type="number" pInputText [(ngModel)]="modifiedFontPoints" style="width: 60px; text-align: center;" 
+                                          min="-90" max="200" (input)="modifyKpiSize(0)"/>
+<!--SDA CUSTOM-->                 </div>
+<!--SDA CUSTOM-->             </div>
+<!--SDA CUSTOM-->           </div>
+<!--SDA CUSTOM-->       </div>
     </div>
 
     <div class="col-12 mt-5">

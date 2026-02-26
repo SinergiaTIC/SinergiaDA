@@ -9,5 +9,5 @@ export class EdaKpi {
     alertLimits : Array<{value:number, operand:string, color:string}>;
     edaChart: EdaChart;
     showChart: boolean;
-    variablePX: number;
+    modifiedFontPoints: number;
 }

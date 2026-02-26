@@ -1422,7 +1422,7 @@ export class EdaBlankPanelComponent implements OnInit {
         if (!_.isEqual(event, EdaDialogCloseEvent.NONE)) {
             this.panel.content.query.output.config.alertLimits = response.alerts;
             this.panel.content.query.output.config.sufix = response.sufix;
-            this.panel.content.query.output.config.variablePx = response.variablePx || 0;
+            this.panel.content.query.output.config.modifiedFontPoints = response.modifiedFontPoints || 0;
 
             let layout: any;
             if (response.edaChart) {
@@ -1441,7 +1441,7 @@ export class EdaBlankPanelComponent implements OnInit {
                 );
             }
 
-            const config = new ChartConfig(new KpiConfig({ sufix: response.sufix, alertLimits: response.alerts, edaChart: layout, extraPx: response.extraPx || 0 }));
+            const config = new ChartConfig(new KpiConfig({ sufix: response.sufix, alertLimits: response.alerts, edaChart: layout, modifiedFontPoints: response.modifiedFontPoints || 0 }));
             this.renderChart(this.currentQuery, this.chartLabels, this.chartData, response.chartType, response.chartSubType, config);
             this.dashboardService._notSaved.next(true);
         }
