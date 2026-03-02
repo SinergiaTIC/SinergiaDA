@@ -633,6 +633,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
 
 
         if( (this.grups.filter(group => group.name === 'EDA_ADMIN' ).length > 0) )  this.display_v.edit_mode = true; // Admin always can edit
+/* SDA CUSTOM */        this.inject.canSave = this.display_v.edit_mode && this.canIedit();
     }
 
     private setPanelSizes(panel) {

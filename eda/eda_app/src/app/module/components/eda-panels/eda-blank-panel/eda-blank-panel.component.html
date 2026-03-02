@@ -20,7 +20,7 @@
         </ng-container>
 
 <!-- SDA CUSTOM -->    <div *ngIf="getEditMode()" class="d-flex align-items-center">
-<!-- SDA CUSTOM -->      <div class="mr-2 pointer" (click)="toggleLock()" [attr.title]="panel.locked ? unlockPanelTooltip : lockPanelTooltip">
+<!-- SDA CUSTOM -->      <div *ngIf="inject.canSave" class="mr-2 pointer" (click)="toggleLock()" [attr.title]="panel.locked ? unlockPanelTooltip : lockPanelTooltip">
 <!-- SDA CUSTOM -->        <i [className]="panel.locked ? 'fa fa-lock' : 'fa fa-unlock'" [style.color]="panel.locked ? 'red' : 'green'"></i>
 <!-- SDA CUSTOM -->      </div>
 
