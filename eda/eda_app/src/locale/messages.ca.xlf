@@ -4520,31 +4520,31 @@ Un cop configurada podreu invocar-la des del botó sempre que calgui.</target>
       </trans-unit>
       <trans-unit id="DatePickerNextMonth">
         <source>Próximo mes</source>
-        <target>Proper mes, complet</target>
+        <target>El mes que ve</target>
       </trans-unit>
       <trans-unit id="DatePickerNextWeek">
         <source>Próxima semana</source>
-        <target>Proper setmana, completa</target>
+        <target>La setmana que ve</target>
       </trans-unit>
       <trans-unit id="DatePickerNext30">
         <source>Próximos 30 días</source>
-        <target>Properes 30 dies</target>
+        <target>Els propers 30 dies</target>
       </trans-unit>
       <trans-unit id="DatePickerNext60">
         <source>Próximos 60 días</source>
-        <target>Properes 60 dies</target>
+        <target>Els propers 60 dies</target>
       </trans-unit>
       <trans-unit id="DatePickerNext90">
         <source>Próximos 90 días</source>
-        <target>Properes 90 dies</target>
+        <target>Els propers 90 dies</target>
       </trans-unit>
       <trans-unit id="DatePickerNextQuarter">
         <source>Próximo trimestre</source>
-        <target>Proper trimestre, complet</target>
+        <target>El trimestre que ve</target>
       </trans-unit>
       <trans-unit id="DatePickerNextYear">
         <source>Próximo año</source>
-        <target>Proper any, complet</target>
+        <target>L'any que ve</target>
       </trans-unit>
       <trans-unit id="DatePickerTomorrow">
         <source>Mañana</source>
