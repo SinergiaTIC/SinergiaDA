@@ -14,22 +14,22 @@
     <!-- ============================================================== -->
     <!-- GLOBAL FILTERS  -->
     <!-- ============================================================== -->
-    <app-global-filter #gFilter [dashboard]="this"></app-global-filter>
 <!-- SDA CUSTOM --> <div class="filters-zoom-container" *ngIf="!display_v.panelMode">
-<!-- SDA CUSTOM -->         <div class="zoom-controls-simple" *ngIf="display_v.edit_mode && canIedit()">
-<!-- SDA CUSTOM -->             <button pButton pRipple type="button" class="p-button-rounded p-button-text p-button-plain zoom-btn-simple" (mousedown)="startContinuousZoom('out')" (mouseup)="stopContinuousZoom()" (mouseleave)="stopContinuousZoom()" (click)="zoomOut()" [disabled]="zoomLevel <= 25">
-<!-- SDA CUSTOM -->                 <i class="fa fa-minus"></i>
-<!-- SDA CUSTOM -->             </button>
-<!-- SDA CUSTOM -->             <span class="zoom-value">{{zoomLevel}}%</span>
-<!-- SDA CUSTOM -->             <button pButton pRipple type="button" class="p-button-rounded p-button-text p-button-plain zoom-btn-simple" (mousedown)="startContinuousZoom('in')" (mouseup)="stopContinuousZoom()" (mouseleave)="stopContinuousZoom()" (click)="zoomIn()" [disabled]="zoomLevel >= 100">
-<!-- SDA CUSTOM -->                 <i class="fa fa-plus"></i>
-<!-- SDA CUSTOM -->             </button>
-<!-- SDA CUSTOM -->             <div class="zoom-divider"></div>
-<!-- SDA CUSTOM -->             <button pButton pRipple type="button" class="p-button-rounded p-button-text p-button-plain zoom-btn-simple reset-btn" (click)="resetZoom()" [disabled]="zoomLevel === 100" pTooltip="Restablecer (100%)" tooltipPosition="bottom">
-<!-- SDA CUSTOM -->                 <i class="fa fa-refresh"></i>
-<!-- SDA CUSTOM -->             </button>
-<!-- SDA CUSTOM -->         </div>
+<!-- SDA CUSTOM -->     <app-global-filter #gFilter [dashboard]="this"></app-global-filter>
+<!-- SDA CUSTOM -->     <div class="zoom-controls-simple" *ngIf="display_v.edit_mode && canIedit()">
+<!-- SDA CUSTOM -->         <button pButton pRipple type="button" class="p-button-rounded p-button-text p-button-plain zoom-btn-simple" (mousedown)="startContinuousZoom('out')" (mouseup)="stopContinuousZoom()" (mouseleave)="stopContinuousZoom()" (click)="zoomOut()" [disabled]="zoomLevel <= 25">
+<!-- SDA CUSTOM -->             <i class="fa fa-minus"></i>
+<!-- SDA CUSTOM -->         </button>
+<!-- SDA CUSTOM -->         <span class="zoom-value">{{zoomLevel}}%</span>
+<!-- SDA CUSTOM -->         <button pButton pRipple type="button" class="p-button-rounded p-button-text p-button-plain zoom-btn-simple" (mousedown)="startContinuousZoom('in')" (mouseup)="stopContinuousZoom()" (mouseleave)="stopContinuousZoom()" (click)="zoomIn()" [disabled]="zoomLevel >= 100">
+<!-- SDA CUSTOM -->             <i class="fa fa-plus"></i>
+<!-- SDA CUSTOM -->         </button>
+<!-- SDA CUSTOM -->         <div class="zoom-divider"></div>
+<!-- SDA CUSTOM -->         <button pButton pRipple type="button" class="p-button-rounded p-button-text p-button-plain zoom-btn-simple reset-btn" (click)="resetZoom()" [disabled]="zoomLevel === 100" pTooltip="Restablecer (100%)" tooltipPosition="bottom">
+<!-- SDA CUSTOM -->             <i class="fa fa-refresh"></i>
+<!-- SDA CUSTOM -->         </button>
 <!-- SDA CUSTOM -->     </div>
+<!-- SDA CUSTOM --> </div>
 <!-- SDA CUSTOM -->     <div class="col-12" style="padding:2px">
         <ngx-gridster class="dashboard-grid" [options]="gridsterOptions" [draggableOptions]="gridsterDraggableOptions"
             #gridster1>
