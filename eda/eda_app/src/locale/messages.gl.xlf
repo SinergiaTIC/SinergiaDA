@@ -4505,7 +4505,7 @@
         <target>Resumo do filtro</target>
       </trans-unit>
       <trans-unit id="globalFilterSelectedItemsLabel">
-        <source>{0} items seleccionados</source>
+        <source>{0} elementos seleccionados</source>
         <target>{0} elementos seleccionados</target>
       </trans-unit>
     </body>
