@@ -16,7 +16,7 @@
     <!-- ============================================================== -->
     <app-global-filter #gFilter [dashboard]="this"></app-global-filter>
 <!-- SDA CUSTOM --> <div class="filters-zoom-container" *ngIf="!display_v.panelMode">
-<!-- SDA CUSTOM -->         <div class="zoom-controls-simple">
+<!-- SDA CUSTOM -->         <div class="zoom-controls-simple" *ngIf="!display_v.anonimous_mode">
 <!-- SDA CUSTOM -->             <button pButton pRipple type="button" class="p-button-rounded p-button-text p-button-plain zoom-btn-simple" (mousedown)="startContinuousZoom('out')" (mouseup)="stopContinuousZoom()" (mouseleave)="stopContinuousZoom()" (click)="zoomOut()" [disabled]="zoomLevel <= 25">
 <!-- SDA CUSTOM -->                 <i class="fa fa-minus"></i>
 <!-- SDA CUSTOM -->             </button>
