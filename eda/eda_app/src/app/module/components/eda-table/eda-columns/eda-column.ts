@@ -17,7 +17,7 @@ export abstract class EdaColumn {
     rowspan: number = 4;
     rowTotal : boolean = false;
     visible : boolean = true;
-    rangeOption : boolean;
+/* SDA CUSTOM */    rangeOption : boolean;
     click : (row:any) => void  = () => {};
 
     cellStyle: (value: any, row: any) => any = () => {};
