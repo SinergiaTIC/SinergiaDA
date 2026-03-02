@@ -4727,6 +4727,14 @@ Once configured you can invoke it whenever you want from the button.</target>
         <source>Próximo año</source>
         <target>Next year</target>
       </trans-unit>
+      <trans-unit id="DatePickerTomorrow">
+        <source>Mañana</source>
+        <target>Tomorrow</target>
+      </trans-unit>
+      <trans-unit id="DatePickerPastTomorrow">
+        <source>Pasado mañana</source>
+        <target>Day after tomorrow</target>
+      </trans-unit>
         </body>
   </file>
 </xliff>

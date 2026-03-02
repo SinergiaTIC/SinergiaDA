@@ -5,7 +5,7 @@ import moment from 'moment';
 
 @Injectable()
 export class DateUtils {
-    
+
     getDateFormatApp(date: any, ignoreTimeZone = true) {
 
     }
@@ -38,13 +38,15 @@ export class DateUtils {
                     case 'last30': return this.setLast30();
                     case 'last60': return this.setLast60();
                     case 'last120': return this.setLast120();
-                    case 'nextMonth': return this.setNextMonth();
-                    case 'nextWeek': return this.setNextWeek();
-                    case 'next30': return this.setNext30();
-                    case 'next60': return this.setNext60();
-                    case 'next90': return this.setNext90();
-                    case 'nextQuarter': return this.setNextQuarter();
-                    case 'nextYear': return this.setNextYear();
+/* SDA CUSTOM */    case 'nextMonth': return this.setNextMonth();
+/* SDA CUSTOM */    case 'nextWeek': return this.setNextWeek();
+/* SDA CUSTOM */    case 'next30': return this.setNext30();
+/* SDA CUSTOM */    case 'next60': return this.setNext60();
+/* SDA CUSTOM */    case 'next90': return this.setNext90();
+/* SDA CUSTOM */    case 'nextQuarter': return this.setNextQuarter();
+/* SDA CUSTOM */    case 'nextYear': return this.setNextYear();
+/* SDA CUSTOM */    case 'tomorrow': return this.setTomorrow();
+/* SDA CUSTOM */    case 'pastTomorrow': return this.setPastTomorrow();
                 }
             }
 
@@ -58,7 +60,7 @@ export class DateUtils {
 /**SDA CUSTOM  */        const today = moment().toDate();
 /**SDA CUSTOM  */        return [today, today];
 /**SDA CUSTOM  */    }
-    
+
     public setYesterday(): Array<Date> {
         const yesterday = moment().subtract(1,'days').toDate()
         return [yesterday,yesterday];
@@ -117,13 +119,13 @@ export class DateUtils {
         return [monday, today];
     }
 
-    public setMonthStart(): Array<Date> { 
+    public setMonthStart(): Array<Date> {
         const today = moment().toDate();
         const monthStart = moment().startOf('month').toDate();
         return [monthStart, today];
     }
 
-    public setMonthStartFull(): Array<Date> { 
+    public setMonthStartFull(): Array<Date> {
         const monthStart = moment().startOf('month').toDate();
         const monthStartEnd = moment().endOf('month').toDate();
         return [monthStart, monthStartEnd];
@@ -134,7 +136,7 @@ export class DateUtils {
         const pastMonthDay = moment().subtract(1,'months').toDate();
         return [monthStart, pastMonthDay];
     }
-    
+
     public setPastMonthFull(): Array<Date> {
         const t = new Date();
         var d = new Date();
@@ -270,6 +272,15 @@ export class DateUtils {
         return [yearStart, yearEnd];
     }
 
+    public setTomorrow(): Array<Date> {
+        const tomorrow = moment().add(1,'days').toDate()
+        return [tomorrow,tomorrow];
+    }
+
+    public setPastTomorrow(): Array<Date> {
+        const pastTomorrow = moment().add(2,'days').toDate()
+        return [pastTomorrow,pastTomorrow];
+    }
     public rangeToString(range: Array<Date>): Array<string> {
         const dtf = new Intl.DateTimeFormat('en', { year: 'numeric', month: '2-digit', day: '2-digit' });
         if (!range[1]) {
