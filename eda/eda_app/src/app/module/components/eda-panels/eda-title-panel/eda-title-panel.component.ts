@@ -34,7 +34,7 @@ export class EdaTitlePanelComponent implements OnInit {
 
 
     constructor(public sanitized: DomSanitizer, public dashboardService : DashboardService){}
-
+    
 
     ngOnInit(): void {
         this.initContextMenu()
@@ -66,9 +66,9 @@ export class EdaTitlePanelComponent implements OnInit {
                 }),
                 new EdaContextMenuItem({
                     label: $localize`:@@panelOptions2:Editar opciones del gráfico`,
-                    icon: 'mdi mdi-wrench',
+                    icon: 'mdi mdi-wrench', 
                     command: () => {
-
+                        
                         this.contextMenu.hideContextMenu();
 
                         this.editTittleController = new EdaDialogController({
@@ -82,14 +82,14 @@ export class EdaTitlePanelComponent implements OnInit {
                                 this.editTittleController = null;
                                 // this.setPanelSize()
                             }
-                        });
+                          });
                     }
                 })
             ]
         });
 
     }
-
+    
     public removePanel(): void {
         this.remove.emit(this.panel.id);
     }
@@ -103,12 +103,12 @@ export class EdaTitlePanelComponent implements OnInit {
         }
 
         let parentElement: any = element?.parentNode;
-
+        
         if (parentElement) {
             let parentWidth = parentElement.offsetWidth - 20;
             let parentHeight = parentElement.offsetHeight - 20;
-
-
+            
+            
             if (this.panel.title.includes('img')) {
                 this.panel.title = this.panel.title.replace('<img', `<img style="max-height: ${parentHeight}px; max-width: ${parentWidth}px;"`);
             }

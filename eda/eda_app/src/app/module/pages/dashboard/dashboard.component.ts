@@ -385,10 +385,11 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
 /* SDA CUSTOM */     me.id = params.get('id');
 /* SDA CUSTOM */     // Load zoom from session storage
 /* SDA CUSTOM */     if (me.id) {
-/* SDA CUSTOM */         const savedZoom = sessionStorage.getItem(`dashboard_zoom_${me.id}`);
+/* SDA CUSTOM */         const _zoomUserId = this.userService.user?._id || 'anonymous';
+/* SDA CUSTOM */         const savedZoom = sessionStorage.getItem(`dashboard_zoom_${_zoomUserId}_${me.id}`);
 /* SDA CUSTOM */         if (savedZoom) {
 /* SDA CUSTOM */             this.zoomLevel = parseInt(savedZoom, 10);
-/* SDA CUSTOM */             // Aplicamos el zoom tras un breve delay para asegurar que el DOM esté listo
+/* SDA CUSTOM */             // Apply the zoom level after a short delay to ensure the dashboard is rendered
 /* SDA CUSTOM */             setTimeout(() => this.applyZoom(), 100);
 /* SDA CUSTOM */         }
 /* SDA CUSTOM */     }
@@ -884,7 +885,8 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
 /* SDA CUSTOM */        const mainContent = document.querySelector('.main-content') as HTMLElement;
 /* SDA CUSTOM */
 /* SDA CUSTOM */        if (this.id) {
-/* SDA CUSTOM */            sessionStorage.setItem(`dashboard_zoom_${this.id}`, this.zoomLevel.toString());
+/* SDA CUSTOM */            const _zoomUserId = this.userService.user?._id || 'anonymous';
+/* SDA CUSTOM */            sessionStorage.setItem(`dashboard_zoom_${_zoomUserId}_${this.id}`, this.zoomLevel.toString());
 /* SDA CUSTOM */        }
 /* SDA CUSTOM */
 /* SDA CUSTOM */        if (dashboardGrid) {

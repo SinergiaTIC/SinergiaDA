@@ -11,10 +11,11 @@
         </eda-dashboard-panel>
     </div>
 
+
     <!-- ============================================================== -->
     <!-- GLOBAL FILTERS  -->
     <!-- ============================================================== -->
-<!-- SDA CUSTOM --> <div class="filters-zoom-container" *ngIf="!display_v.panelMode">
+<!-- SDA CUSTOM --> <div class="filters-zoom-container" >
 <!-- SDA CUSTOM -->     <app-global-filter #gFilter [dashboard]="this"></app-global-filter>
 <!-- SDA CUSTOM -->     <div class="zoom-controls-simple" *ngIf="display_v.edit_mode && canIedit()">
 <!-- SDA CUSTOM -->         <button pButton pRipple type="button" class="p-button-rounded p-button-text p-button-plain zoom-btn-simple" (mousedown)="startContinuousZoom('out')" (mouseup)="stopContinuousZoom()" (mouseleave)="stopContinuousZoom()" (click)="zoomOut()" [disabled]="zoomLevel <= 25">
@@ -60,10 +61,10 @@
     <ng-template #panelTemplate let-panel>
         <ng-container [ngSwitch]="panel.type">
 
-<!-- SDA CUSTOM --> <eda-blank-panel *ngSwitchCase="0" #edaPanel [panel]="panel" [inject]="inject" (remove)="onRemovePanel($event)" (action)="onPanelAction($event)" (duplicate)="onDuplicatePanel($event)">
+            <eda-blank-panel *ngSwitchCase="0" #edaPanel [panel]="panel" [inject]="inject" (remove)="onRemovePanel($event)" (action)="onPanelAction($event)"  (duplicate)="onDuplicatePanel($event)" >
             </eda-blank-panel>
 
-<!-- SDA CUSTOM --> <eda-title-panel *ngSwitchCase="1" #edaPanel [id]="panel.id" [panel]="panel" [inject]="inject" (remove)="onRemovePanel($event)" (duplicate)="onDuplicatePanel($event)" class="eda-text-panel">
+            <eda-title-panel *ngSwitchCase="1" #edaPanel [id]="panel.id" [panel]="panel" [inject]="inject" (remove)="onRemovePanel($event)" (duplicate)="onDuplicatePanel($event)" class="eda-text-panel">
             </eda-title-panel>
 
         </ng-container>
