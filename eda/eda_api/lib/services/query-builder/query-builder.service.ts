@@ -830,8 +830,8 @@ export abstract class QueryBuilderService {
 
     // not needed to filter relations. They are stored in a different array
         public findRelationsRecursive(tables, table, vMap) {
-
-/* SDA CUSTOM */ // SDA CUSTOM - Added safety check for table and relations to avoid TypeError
+// SDA CUSTOM - Added safety check for table and relations to avoid TypeError
+/* SDA CUSTOM */ 
 /* SDA CUSTOM */         if (!table) return vMap;
 /* SDA CUSTOM */         vMap.set(table.table_name, table);
 /* SDA CUSTOM */         if (table.relations) {
@@ -845,6 +845,7 @@ export abstract class QueryBuilderService {
 /* SDA CUSTOM */                }
 /* SDA CUSTOM */        return vMap;
 /* SDA CUSTOM */    }
+// END SDA CUSTOM
 
     public findJoinColumns(tableA: string, tableB: string) {
 
