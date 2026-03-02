@@ -632,6 +632,12 @@ export class GlobalFilterComponent implements OnInit {
 /*SDA CUSTOM*/     this.setGlobalFilterItems(filter);
 /*SDA CUSTOM*/ }
 
+/*SDA CUSTOM*/ // Removes all selected items from a filter
+/*SDA CUSTOM*/ public removeAllFilterItems(filter: any): void {
+/*SDA CUSTOM*/     filter.selectedItems = [];
+/*SDA CUSTOM*/     this.setGlobalFilterItems(filter);
+/*SDA CUSTOM*/ }
+
     public disableGlobalFilter(filter: any): boolean {
         let disabled = false;
 
