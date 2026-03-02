@@ -4301,7 +4301,7 @@ Once configured you can invoke it whenever you want from the button.</target>
       </trans-unit>
       <trans-unit id="DatePickerYearPreviousYearFull">
         <source>El año pasado, completo</source>
-        <target>Last year, complete</target>
+        <target>Last year</target>
       </trans-unit>
       <trans-unit id="aplicarBtn">
         <source>Aplicar</source>
@@ -4521,7 +4521,7 @@ Once configured you can invoke it whenever you want from the button.</target>
       </trans-unit>
       <trans-unit id="DatePickerYearPreviousYearFull">
         <source>El año pasado, completo</source>
-        <target>Last year, complete</target>
+        <target>Last year</target>
       </trans-unit>
       <trans-unit id="whereMessage">
         <source>Filtro sobre todos los registros</source>
