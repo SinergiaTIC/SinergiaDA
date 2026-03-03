@@ -4,9 +4,9 @@ import { Observable, BehaviorSubject } from 'rxjs';
 
 
 @Injectable({
-  providedIn: 'root'
+    providedIn: 'root'
 })
-export class LogService extends ApiService{
+export class LogService extends ApiService {
 
     private route = '/admin/log';
 
@@ -17,6 +17,12 @@ export class LogService extends ApiService{
     getLogErrorFile(): Observable<any> {
         return this.get(`${this.route}/log-error-file`);
     }
+
+    // AI START
+    getAppLogs(params?: any): Observable<any> {
+        return this.getParams(`${this.route}/app-logs`, params);
+    }
+    // AI END
 
 
 }
