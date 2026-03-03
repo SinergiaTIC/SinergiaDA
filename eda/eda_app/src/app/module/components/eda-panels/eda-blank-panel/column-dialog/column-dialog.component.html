@@ -2,7 +2,7 @@
 
     <div body class="grid mb-0 pb-0">
 
-        <!-- SDA CUSTOM Nombre de la columna -->
+        <!-- SDA CUSTOM Column name -->
         <div class="col-12 mt-2" *ngIf="selectedColumn">
 
             <div class="d-flex align-items-center flex-wrap" style="gap: 15px;">
@@ -371,8 +371,8 @@
 
 
                                 <div  style="margin-top: 1.5em; margin-left: 1em;" [pTooltip]="cumulativeSumTooltip" tooltipPosition="left">
-                                    <h6 i18n="@@cumulativeSum">Suma acumulativa</h6>
-                                    <p-inputSwitch id="cumulativeSum" [(ngModel)]="cumulativeSum"
+                                  <h6 i18n="@@cumulativeSum">Suma acumulativa</h6>
+                                  <p-inputSwitch id="cumulativeSum" [(ngModel)]="cumulativeSum"
                                   (onChange)="handleCumulativeSum()" [disabled]="!cumulativeSumAllowed()"></p-inputSwitch >
                                 </div>
                         <!--SDA CUSTOM-->      </div>
@@ -389,62 +389,62 @@
                            <!--SDA CUSTOM--></div>
                            <!--SDA CUSTOM--><div *ngIf="selectedColumn.computed_column != 'computed'" style="margin: 10px 0;">
 
-                                <div>
+                                 <div>
                                     <h5 i18n="@@rangesExpresionH5" style="margin-top: 5px; font-size: 1.2rem; display: inline;">Rangos: </h5>
-                                    <span *ngIf="availableRange">
+                                     <span *ngIf="availableRange">
                                         <i class="pi pi-info-circle"
-                                            style="cursor: pointer; margin-top: -5px; font-size: 1.2rem;"
-                                            [pTooltip]="ptooltipViewTextRanges">
+                                           style="cursor: pointer; margin-top: -5px; font-size: 1.2rem;"
+                                           [pTooltip]="ptooltipViewTextRanges">
                                         </i>
-                                    </span>
-                                    <span *ngIf="!availableRange">
+                                     </span>
+                                     <span *ngIf="!availableRange">
                                         <i class="pi pi-info-circle"
-                                            style="cursor: pointer; margin-top: -5px; font-size: 1.2rem;"
-                                            [pTooltip]="ptooltipNotAvailableRanges">
+                                           style="cursor: pointer; margin-top: -5px; font-size: 1.2rem;"
+                                           [pTooltip]="ptooltipNotAvailableRanges">
                                         </i>
-                                    </span>
-                                </div>
+                                     </span>
+                                 </div>
 
 
 
 
-                                <div *ngIf="availableRange">
+                            <div *ngIf="availableRange">
 
                                 <input
                                 type="text"
                                 style="font-size: 1rem; margin-bottom: 10px;"
                                 [(ngModel)]="rangeString"
                                 [disabled]="showRange"
-                                        (input)="validateInput($event)">
+                                (input)="validateInput($event)">
 
                                 <p-button
                                     (onClick)="addRange(rangeString)"
                                     label="Añadir Rango"
-                                        [disabled]="((!rangeString || rangeString.length === 0)) || showRange"
+                                    [disabled]="((!rangeString || rangeString.length === 0)) || showRange"
                                     i18n-label="@@addRange"
                                     >
-                                    </p-button>
+                                </p-button>
 
-                                    <div *ngIf="showRange" class="col-12 foot-card" style="margin-top: 5px;">
+                                <div *ngIf="showRange" class="col-12 foot-card" style="margin-top: 5px;">
 
                                     <p-scrollPanel [style]="{width: '100%', height: '160px'}" styleClass="custombar1">
 
-                                            <ng-container *ngIf="showRange">
+                                        <ng-container *ngIf="showRange">
 
-                                                <b i18n="@@rangeDescriptionB" class="mr-2 pull-left">
-                                                    • Rango:
-                                                </b>
+                                            <b i18n="@@rangeDescriptionB" class="mr-2 pull-left">
+                                                • Rango:
+                                              </b>
                                               <i class="pull-right ui-dropdown-clear-icon pi pi-times pointer md-3"(click)="removeRange()"></i>
 
                                               <div *ngIf="showRange" class="d-flex align-items-center" [innerHTML]="selectedRange" style="font-size: 1rem; padding: 10px 40px 5px 30px;"></div>
 
-                                            </ng-container>
+                                        </ng-container>
 
-                                        </p-scrollPanel>
-
-                                    </div>
+                                    </p-scrollPanel>
 
                                 </div>
+
+                            </div>
 
                           <!--SDA CUSTOM--> </div>
                         </ng-container>

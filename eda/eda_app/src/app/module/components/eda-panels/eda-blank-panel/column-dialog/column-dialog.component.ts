@@ -766,7 +766,7 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
             this.display.filterButton = false;
         }
     }
-
+                    // Function to rename the column in the query when the user changes the name in the dialog, also updates the title of the dialog
 /* SDA CUSTOM */    public renameColumn(newName: string) {
 /* SDA CUSTOM */        if (_.isNil(newName) || _.isEmpty(newName)) return;
 /* SDA CUSTOM */
