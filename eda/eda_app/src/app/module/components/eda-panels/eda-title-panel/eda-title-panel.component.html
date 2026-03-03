@@ -8,11 +8,10 @@
 <!-- SDA CUSTOM -->        <div *ngIf="inject.canSave" class="mr-2 pointer" (click)="toggleLock()" [attr.title]="panel.locked ? unlockPanelTooltip : lockPanelTooltip">
 <!-- SDA CUSTOM -->            <i [className]="panel.locked ? 'fa fa-lock' : 'fa fa-unlock'" [style.color]="panel.locked ? 'red' : 'green'"></i>
 <!-- SDA CUSTOM -->        </div>
-
-<!-- SDA CUSTOM -->        <div id="edit" style="text-align: right; max-height: 2rem; ">
-            <i class="fa fa-ellipsis-v btn" (click)="contextMenu.showContextMenu($event)"></i>
-<!-- SDA CUSTOM -->        </div>
-    </div>
+<!-- SDA CUSTOM -->       <div id="edit" style="text-align: right; max-height: 2rem; ">
+                              <i class="fa fa-ellipsis-v btn" (click)="contextMenu.showContextMenu($event)"></i>
+<!-- SDA CUSTOM -->       </div>
+<!-- SDA CUSTOM -->    </div>
 
 </div>
 

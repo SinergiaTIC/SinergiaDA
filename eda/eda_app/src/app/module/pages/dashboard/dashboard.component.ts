@@ -880,6 +880,9 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
 /* SDA CUSTOM */        this.applyZoom();
 /* SDA CUSTOM */    }
 /* SDA CUSTOM */
+/* SDA CUSTOM */
+/* SDA CUSTOM */    // Applies the current zoom level to the dashboard by scaling the dashboard grid and adjusting related settings.
+/* SDA CUSTOM */    // It also saves the zoom level in session storage for persistence across sessions and sets up a global fix for drag-and-drop functionality when zoomed.
 /* SDA CUSTOM */    private applyZoom(): void {
 /* SDA CUSTOM */        const dashboardGrid = document.querySelector('.dashboard-grid') as HTMLElement;
 /* SDA CUSTOM */        const mainContent = document.querySelector('.main-content') as HTMLElement;
@@ -892,17 +895,17 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
 /* SDA CUSTOM */        if (dashboardGrid) {
 /* SDA CUSTOM */            const scale = this.zoomLevel / 100;
 /* SDA CUSTOM */
-/* SDA CUSTOM */            // Aplicamos escala real. Esto reducirá tanto paneles como contenido.
+/* SDA CUSTOM */            // Apply CSS transform for zooming the dashboard grid
 /* SDA CUSTOM */            dashboardGrid.style.transform = `scale(${scale})`;
 /* SDA CUSTOM */            dashboardGrid.style.transformOrigin = 'top left';
-/* SDA CUSTOM */            (dashboardGrid.style as any).zoom = ''; // Limpiamos zoom anterior
+/* SDA CUSTOM */            (dashboardGrid.style as any).zoom = ''; // Clear previous zoom
 /* SDA CUSTOM */
-/* SDA CUSTOM */            // Ajustar el contenedor principal para permitir scroll
+/* SDA CUSTOM */            // Adjust the main container to allow scrolling
 /* SDA CUSTOM */            if (mainContent) {
 /* SDA CUSTOM */                if (this.zoomLevel < 100) {
 /* SDA CUSTOM */                    mainContent.style.overflow = 'auto';
 /* SDA CUSTOM */                    dashboardGrid.classList.add('zoomed-out');
-/* SDA CUSTOM */                    // No forzamos ancho/alto para que la escala reduzca el tamaño visual real de los paneles
+/* SDA CUSTOM */                    // Do not force width/height so that the scale reduces the actual visual size of the panels
 /* SDA CUSTOM */                    dashboardGrid.style.width = '';
 /* SDA CUSTOM */                    dashboardGrid.style.height = '';
 /* SDA CUSTOM */                } else {
@@ -915,7 +918,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
 /* SDA CUSTOM */            }
 /* SDA CUSTOM */        }
 /* SDA CUSTOM */
-/* SDA CUSTOM */        // Asegurar que drag and drop esté habilitado
+/* SDA CUSTOM */        // Ensure drag and drop is enabled
 /* SDA CUSTOM */        if (this.gridster) {
 /* SDA CUSTOM */            const enableDragDrop = window.innerWidth > 1000;
 /* SDA CUSTOM */            this.gridster.setOption('dragAndDrop', enableDragDrop);
@@ -924,19 +927,19 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
 /* SDA CUSTOM */            const showGridLines = this.zoomLevel < 100;
 /* SDA CUSTOM */            this.gridster.setOption('lines', {
 /* SDA CUSTOM */                visible: showGridLines,
-/* SDA CUSTOM */                color: showGridLines ? '#007bff' : '#dbdbdb',
+/* SDA CUSTOM */                color: showGridLines ? '#929599' : '#dbdbdb',
 /* SDA CUSTOM */                width: showGridLines ? 2 : 1
 /* SDA CUSTOM */            }).reload();
 /* SDA CUSTOM */        }
 /* SDA CUSTOM */
-/* SDA CUSTOM */        // Activamos el fix global de coordenadas
+/* SDA CUSTOM */        // Activate the global coordinate fix
 /* SDA CUSTOM */        this.setupZoomDragFix();
 /* SDA CUSTOM */    }
 /* SDA CUSTOM */
 /* SDA CUSTOM */    private setupZoomDragFix(): void {
 /* SDA CUSTOM */        const windowProxy = window as any;
 /* SDA CUSTOM */
-/* SDA CUSTOM */        // Limpiar interceptor previo
+/* SDA CUSTOM */        // Clear previous interceptor
 /* SDA CUSTOM */        if (windowProxy._zoomFixHandler) {
 /* SDA CUSTOM */            window.removeEventListener('mousedown', windowProxy._zoomFixHandler, true);
 /* SDA CUSTOM */            window.removeEventListener('mousemove', windowProxy._zoomFixHandler, true);
@@ -952,7 +955,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
 /* SDA CUSTOM */        const handler = (e: MouseEvent) => {
 /* SDA CUSTOM */            if ((e as any)._zoomed) return;
 /* SDA CUSTOM */
-/* SDA CUSTOM */            // Solo interceptamos eventos que afectan al movimiento de paneles
+/* SDA CUSTOM */            // Only intercept events that affect panel movement
 /* SDA CUSTOM */            const isMoving = document.querySelector('.gridster-item-moving, .gridster-item-resizing');
 /* SDA CUSTOM */            const isOverGrid = (e.target as HTMLElement).closest('.dashboard-grid');
 /* SDA CUSTOM */
@@ -960,27 +963,27 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
 /* SDA CUSTOM */
 /* SDA CUSTOM */            const rect = dashboardGrid.getBoundingClientRect();
 /* SDA CUSTOM */
-/* SDA CUSTOM */            // Calculamos la posición real dentro del sistema de coordenadas de la librería
+/* SDA CUSTOM */            // Calculate the real position within the library's coordinate system
 /* SDA CUSTOM */            const adjustedX = rect.left + (e.clientX - rect.left) / scale;
 /* SDA CUSTOM */            const adjustedY = rect.top + (e.clientY - rect.top) / scale;
 /* SDA CUSTOM */
-/* SDA CUSTOM */            // Creamos un evento "fake" que Gridster aceptará como real
+/* SDA CUSTOM */            // Create a "fake" event that Gridster will accept as real
 /* SDA CUSTOM */            const newEvent = new MouseEvent(e.type, e);
 /* SDA CUSTOM */
-/* SDA CUSTOM */            // Sobreescribimos clientX/Y y pageX/Y usando defineProperty para que no den error de readonly
+/* SDA CUSTOM */            // Overwrite clientX/Y and pageX/Y using defineProperty to avoid readonly errors
 /* SDA CUSTOM */            Object.defineProperty(newEvent, 'clientX', { value: adjustedX });
 /* SDA CUSTOM */            Object.defineProperty(newEvent, 'clientY', { value: adjustedY });
 /* SDA CUSTOM */            Object.defineProperty(newEvent, 'pageX', { value: adjustedX + window.pageXOffset });
 /* SDA CUSTOM */            Object.defineProperty(newEvent, 'pageY', { value: adjustedY + window.pageYOffset });
 /* SDA CUSTOM */            (newEvent as any)._zoomed = true;
 /* SDA CUSTOM */
-/* SDA CUSTOM */            // Detenemos el evento original y disparamos el corregido en el mismo target
+/* SDA CUSTOM */            // Stop the original event and dispatch the corrected one on the same target
 /* SDA CUSTOM */            e.stopImmediatePropagation();
 /* SDA CUSTOM */            e.target.dispatchEvent(newEvent);
 /* SDA CUSTOM */        };
 /* SDA CUSTOM */
 /* SDA CUSTOM */        windowProxy._zoomFixHandler = handler;
-/* SDA CUSTOM */        // Usamos addEventListener con 'true' (fase de captura) para interceptar antes que nadie
+/* SDA CUSTOM */        // Use addEventListener with 'true' (capture phase) to intercept before anyone else
 /* SDA CUSTOM */        window.addEventListener('mousedown', handler, true);
 /* SDA CUSTOM */        window.addEventListener('mousemove', handler, true);
 /* SDA CUSTOM */        window.addEventListener('mouseup', handler, true);
