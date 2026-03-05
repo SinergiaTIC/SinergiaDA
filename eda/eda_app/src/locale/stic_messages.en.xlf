@@ -367,6 +367,46 @@
     <source>Eliminar filtros</source>
     <target>Clear filters</target>
   </trans-unit>
-</body>
+      <trans-unit id="status" datatype="html">
+        <source>Estado</source>
+        <target>Status</target>
+      </trans-unit>
+      <trans-unit id="active" datatype="html">
+        <source>Activos</source>
+        <target>Active</target>
+      </trans-unit>
+      <trans-unit id="inactive" datatype="html">
+        <source>Inactivos</source>
+        <target>Inactive</target>
+      </trans-unit>
+      <trans-unit id="activeLabel" datatype="html">
+        <source>Activo</source>
+        <target>Active</target>
+      </trans-unit>
+      <trans-unit id="inactiveLabel" datatype="html">
+        <source>Inactivo</source>
+        <target>Inactive</target>
+      </trans-unit>
+      <trans-unit id="activateReport" datatype="html">
+        <source>Activar informe</source>
+        <target>Activate report</target>
+      </trans-unit>
+      <trans-unit id="deactivateReport" datatype="html">
+        <source>Desactivar informe</source>
+        <target>Deactivate report</target>
+      </trans-unit>
+      <trans-unit id="DashboardActivated" datatype="html">
+        <source>Informe activado correctamente.</source>
+        <target>Report successfully activated.</target>
+      </trans-unit>
+      <trans-unit id="DashboardDeactivated" datatype="html">
+        <source>Informe desactivado correctamente.</source>
+        <target>Report successfully deactivated.</target>
+      </trans-unit>
+      <trans-unit id="ErrorUpdatingDashboardStatus" datatype="html">
+        <source>Error al actualizar el estado del informe.</source>
+        <target>Error updating report status.</target>
+      </trans-unit>
+    </body>
 </file>
 </xliff>

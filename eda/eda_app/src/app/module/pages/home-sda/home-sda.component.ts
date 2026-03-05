@@ -33,6 +33,8 @@ export class HomeSdaComponent implements OnInit {
     direction: "asc" | "desc";
   };
   public selectedStatuses: string[] = ["active", "inactive"];
+  public titleActive: string = $localize`:@@activateReport:Activar informe`;
+  public titleInactive: string = $localize`:@@deactivateReport:Desactivar informe`;
 
   // User and Group Management
   public groups: IGroup[] = [];
@@ -1054,9 +1056,7 @@ public filterGroups() {
       try {
         const filterState = JSON.parse(savedFilters);
         this.searchTerm = filterState.searchTerm || "";
-        // SDA CUSTOM - Load selectedStatuses
         this.selectedStatuses = filterState.selectedStatuses || ["active", "inactive"];
-        // END SDA CUSTOM
         this.sortColumn = filterState.sortColumn || "config.title";
         this.sortDirection = filterState.sortDirection || "asc";
         // Note: selectedTags, selectedGroups, and selectedTypes will be restored after tags/groups are initialized

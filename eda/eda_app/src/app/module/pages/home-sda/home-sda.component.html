@@ -533,7 +533,7 @@
             [checked]="dashboard.active"
             (change)="toggleDashboardActive(dashboard)"
             [disabled]="!canIEdit(dashboard)"
-            [title]="dashboard.active ? 'Desactivar informe' : 'Activar informe'"
+            [title]="dashboard.active ? titleInactive : titleActive"
           />
         </td>
 
@@ -699,14 +699,15 @@
                 [title]="
                   canIEdit(dashboard)
                     ? dashboard.active
-                      ? 'Desactivar informe'
-                      : 'Activar informe'
+                      ? titleInactive
+                      : titleActive
                     : ''
                 "
               />
-              <small class="ml-1" style="vertical-align: middle">{{
-                dashboard.active ? "Activo" : "Inactivo"
-              }}</small>
+              <small class="ml-1" style="vertical-align: middle">
+                <ng-container *ngIf="dashboard.active" i18n="@@activeLabel">Activo</ng-container>
+                <ng-container *ngIf="!dashboard.active" i18n="@@inactiveLabel">Inactivo</ng-container>
+              </small>
             </div>
           </div>
           <div class="mt-auto">
