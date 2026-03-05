@@ -67,7 +67,8 @@ export class DashboardController {
   static async getPrivateDashboards(req: Request) {
     try {
       const dashboards = await Dashboard.find(
-        { user: req.user._id },
+        /* SDA CUSTOM - Only active dashboards for non-admins */
+        /* SDA CUSTOM */{ user: req.user._id, "config.active": true },
         /* SDA CUSTOM */ 'config.title config.visible config.tag config.onlyIcanEdit config.description config.createdAt config.modifiedAt config.ds config.active user'
       ).populate('user','name').exec()
       const privates = []
@@ -115,7 +116,8 @@ export class DashboardController {
         users: { $in: req.user._id }
       }).exec();
       const dashboards = await Dashboard.find(
-        { group: { $in: userGroups.map(g => g._id) } },
+        /* SDA CUSTOM - Only active dashboards for non-admins */
+        /* SDA CUSTOM */ { group: { $in: userGroups.map(g => g._id) }, "config.active": true },
         /* SDA CUSTOM */'config.title config.visible group config.tag config.onlyIcanEdit config.description config.createdAt config.ds config.active user'
       ).populate('user','name').exec()
       const groupDashboards = []
@@ -215,7 +217,8 @@ export class DashboardController {
   static async getPublicsDashboards(req: Request, dss: any[]) {
     try {
       const dashboards = await Dashboard.find(
-        {},
+        /* SDA CUSTOM - Only active dashboards for non-admins */
+        /* SDA CUSTOM */{ "config.active": true },
         /* SDA CUSTOM */'config.title config.visible config.tag config.onlyIcanEdit config.description config.createdAt config.modifiedAt config.ds config.active user'
       ).populate('user','name').exec()
       const publics = []
@@ -264,7 +267,8 @@ export class DashboardController {
   static async getSharedDashboards(req: Request) {
     try {
       const dashboards = await Dashboard.find(
-        {},
+        /* SDA CUSTOM - Only active dashboards for non-admins */
+        /* SDA CUSTOM */ { "config.active": true },
         /* SDA CUSTOM */ 'config.title config.visible config.tag config.onlyIcanEdit config.description config.createdAt config.modifiedAt config.ds config.active user'
       ).populate('user','name').exec()
       const shared = []
