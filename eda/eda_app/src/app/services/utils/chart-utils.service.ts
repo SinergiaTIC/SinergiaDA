@@ -147,6 +147,11 @@ export class ChartUtilsService {
         numberOfColumns es el numero de columnes que farem servidr en el histograma
     */
     public transformDataQuery(type: string, subType: string,  values: any[], dataTypes: string[], dataDescription: any, isBarline: boolean, numberOfColumns: number) {
+        
+        console.log('forzando');
+        console.log(dataTypes);
+        dataTypes = [ 'text', 'numeric', 'numeric'] ;
+        console.log(dataTypes);
 
         dataTypes.forEach( (e,indice)=>{            
             if(e=='text'){

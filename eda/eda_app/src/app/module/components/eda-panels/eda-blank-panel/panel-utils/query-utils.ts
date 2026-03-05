@@ -206,11 +206,7 @@ export const QueryUtils = {
       }
 
 
-      // Execute query
-/* SDA CUSTOM */ // If there is more than 1 column and all are numeric, convert the first one to text*/
-/* SDA CUSTOM */ if (ebp.currentQuery.length > 1 && ebp.currentQuery.every((field: any) => field.column_type === 'numeric')) {
-/* SDA CUSTOM */ ebp.currentQuery[0].column_type = 'text';
-/* SDA CUSTOM */ }
+
       const response = await QueryUtils.switchAndRun(ebp, query);
       ebp.chartLabels = ebp.chartUtils.uniqueLabels(response[0]);   // Chart labels
       ebp.chartData = response[1].map(item => item.map(a => {
