@@ -643,7 +643,7 @@ export class ChartUtilsService {
                 'table', 'crosstable', 'kpi','dynamicText', 'geoJsonMap', 'coordinatesMap',
                 'doughnut', 'polarArea', 'line', 'kpiline', 'area', 'kpiarea', 'bar', 'kpibar', 'histogram',  'funnel', 'bubblechart',
                 'horizontalBar', 'barline', 'stackedbar', 'parallelSets', 'treeMap', 'scatterPlot', 'knob' ,
-                'pyramid', 'radar', 'stackedbar100', 'treetable'
+                'pyramid', 'radar', 'stackedbar100', 'treetable', 'sunburst'
             ];
 
         //table (at least one column)
@@ -761,6 +761,13 @@ export class ChartUtilsService {
         if(  dataDescription.totalColumns > 2 && dataDescription.otherColumns.length >= 1) {
             notAllowed.splice(notAllowed.indexOf('treetable'), 1);
         }
+
+
+        // sunbrust two or more value columns and one numeric
+        if(  dataDescription.totalColumns > 2 && dataDescription.otherColumns.length >= 1 && dataDescription.numericColumns.length === 1  ) {
+            notAllowed.splice(notAllowed.indexOf('sunburst'), 1);
+        }
+
 
         return notAllowed;
 
