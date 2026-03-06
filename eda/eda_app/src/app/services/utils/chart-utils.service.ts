@@ -148,10 +148,13 @@ export class ChartUtilsService {
     */
     public transformDataQuery(type: string, subType: string,  values: any[], dataTypes: string[], dataDescription: any, isBarline: boolean, numberOfColumns: number) {
         
-        console.log('forzando');
-        console.log(dataTypes);
-        dataTypes = [ 'text', 'numeric', 'numeric'] ;
-        console.log(dataTypes);
+        /* SDA CUSTOM */ // If there is more than 1 column and all are numeric, convert the first one to text
+        /* SDA CUSTOM */ const allNumeric = dataTypes.length > 1 && !dataTypes.find(t => t !== 'numeric');
+        /* SDA CUSTOM */ if (allNumeric) {
+        /* SDA CUSTOM */     dataTypes[0] = "text";
+        /* SDA CUSTOM */     const columnaNumerica = dataDescription.numericColumns.shift();
+        /* SDA CUSTOM */     dataDescription.otherColumns.unshift(columnaNumerica);
+        /* SDA CUSTOM */ }
 
         dataTypes.forEach( (e,indice)=>{            
             if(e=='text'){
