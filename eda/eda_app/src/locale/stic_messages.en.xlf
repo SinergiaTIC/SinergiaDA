@@ -405,7 +405,7 @@
       </trans-unit>
       <trans-unit id="ErrorUpdatingDashboardStatus" datatype="html">
         <source>Error al actualizar el estado del informe.</source>
-        <target>Error updating report status.</target>
+        <target>Error while updating report status.</target>
       </trans-unit>
     </body>
 </file>
