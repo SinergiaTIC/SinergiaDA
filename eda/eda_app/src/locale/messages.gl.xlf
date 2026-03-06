@@ -3444,6 +3444,11 @@
         <target> Paneles no relacionados </target>
       </trans-unit>
 
+      <trans-unit id="sqlPanelFilterInfo">
+        <source>Filtrado por marca SQL en la query:</source>
+        <target>Filtrado por marca SQL na consulta:</target>
+      </trans-unit>
+
       <trans-unit id="unselecteddot">
         <source> Paneles no filtrados </source>
         <target> Paneles no filtrados </target>

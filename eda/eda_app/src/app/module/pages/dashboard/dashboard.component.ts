@@ -1574,7 +1574,10 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
         let isvalid = true;
 
         if (action == 'GLOBALFILTER') {
-            const emptyQuery = this.edaPanels.some((panel) => panel.currentQuery.length === 0);
+            // A panel is considered unconfigured only if it has neither EDA fields nor a raw SQL expression.
+            const emptyQuery = this.edaPanels.some((panel) =>
+                panel.currentQuery.length === 0 && !panel.currentSQLQuery
+            );
             if (emptyQuery) isvalid = false;
 
             if (!isvalid) {

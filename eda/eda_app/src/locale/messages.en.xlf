@@ -3252,6 +3252,11 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
     <target> Non related panels </target>
   </trans-unit>
 
+  <trans-unit id="sqlPanelFilterInfo">
+    <source>Filtrado por marca SQL en la query:</source>
+    <target>Filtered by SQL mark in the query:</target>
+  </trans-unit>
+
   <trans-unit id="unselecteddot">
     <source> Paneles no filtrados  </source>
     <target> Non filtered panels </target>

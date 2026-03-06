@@ -132,16 +132,14 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
 
         if (this.globalFilter.isnew) {
             for (const panel of this.allPanels) {
-
-                // Desactivando el panel en caso de que sea de modo SQL.
-                if(panel.content.query.query.queryMode === 'SQL') {
-                    panel.active = false;
-                }
-
                 this.globalFilter.pathList[panel.id] = {
                     selectedTableNodes: {},
                     path: []
                 };
+
+                if (panel.isSQLPanel && !this.globalFilter.panelList.includes(panel.id)) {
+                    this.globalFilter.panelList.push(panel.id);
+                }
             }
         } else {
             for (const panel of this.allPanels) {
@@ -160,55 +158,67 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
     }
 
     public initTablesForFilter() {
-                
-        const queryTables = []; // si aparece
-        const excludedTables = this.modelTables.filter((t: any) => t.visible === false).map((t: any) => t.table_name); // Si aparece
+        // Reset to avoid duplicates when called multiple times (e.g. on panel toggle).
+        this.tables = [];
+        const queryTables = [];
+        const excludedTables = this.modelTables.filter((t: any) => t.visible === false).map((t: any) => t.table_name);
 
-       // filteredPanels list is empty because all panels are disabled. 
-        if(this.filteredPanels.length===0){
-            for (const panel of this.allPanels) {
-                const panelQuery = panel.content.query.query;
-    
-                for (const field of panelQuery.fields) {
-                    const table_id = field.table_id.split('.')[0];
-                    if (!queryTables.includes(table_id)) queryTables.push(table_id);
-                }
-            }
-        } else {
-            for (const panel of this.filteredPanels) {
-                const panelQuery = panel.content.query.query;
-    
-                for (const field of panelQuery.fields) {
-                    const table_id = field.table_id.split('.')[0];
-                    if (!queryTables.includes(table_id)) queryTables.push(table_id);
-                }
+        const panelsToScan = this.filteredPanels.length === 0 ? this.allPanels : this.filteredPanels;
+
+        for (const panel of panelsToScan) {
+            // SQL panels expose no structured fields; their filter is driven by marks in the SQL expression.
+            if (panel.isSQLPanel) continue;
+
+            const panelQuery = panel.content.query.query;
+            for (const field of panelQuery.fields) {
+                const table_id = field.table_id.split('.')[0];
+                if (!queryTables.includes(table_id)) queryTables.push(table_id);
             }
         }
 
-        const relatedMap = this.globalFilterService.relatedTables(queryTables, this.modelTables);
-        relatedMap.forEach((value: any, key: string) => {
-            if (!excludedTables.includes(key)) {
-                this.tables.push(value);
-            }
-        });
+        if (queryTables.length === 0) {
+            // Dashboard contains only SQL panels: fall back to showing all visible model tables
+            // so the user can still pick the filter dimension.
+            this.modelTables.forEach((t: any) => {
+                if (!excludedTables.includes(t.table_name)) {
+                    this.tables.push(t);
+                }
+            });
+        } else {
+            const relatedMap = this.globalFilterService.relatedTables(queryTables, this.modelTables);
+            relatedMap.forEach((value: any, key: string) => {
+                if (!excludedTables.includes(key)) {
+                    this.tables.push(value);
+                }
+            });
+        }
 
-        // this.tables = this.tables.slice();
         this.tables.sort((a, b) => a.display_name.default.localeCompare(b.display_name.default));
     }
 
     public onAddPanelForFilter(panel: any) {
 
         if (panel.avaliable) {
-            if(panel.content.query.query.queryMode != 'SQL') { // los paneles SQL no se pueden activar
-                panel.active = !panel.active;
-            }
+            panel.active = !panel.active;
             this.filteredPanels = this.allPanels.filter((p: any) => p.avaliable && p.active);
 
             if (panel.active) {
-                this.initTablesForFilter();
-                this.findPanelPathTables();
-            } 
-            else this.clearFilterPaths(panel);
+                if (panel.isSQLPanel) {
+                    // SQL panels don't need join-path resolution. Just record the filter table
+                    // so the backend can match it against ${table.column} marks in the SQL expression.
+                    if (this.globalFilter.selectedTable?.table_name) {
+                        this.globalFilter.pathList[panel.id].table_id = this.globalFilter.selectedTable.table_name;
+                    }
+                    if (!this.globalFilter.panelList.includes(panel.id)) {
+                        this.globalFilter.panelList.push(panel.id);
+                    }
+                } else {
+                    this.initTablesForFilter();
+                    this.findPanelPathTables();
+                }
+            } else {
+                this.clearFilterPaths(panel);
+            }
         }
 
         if (!panel.avaliable) {
@@ -345,6 +355,18 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
 
     public findPanelPathTables() {
         for (const panel of this.filteredPanels) {
+            if (panel.isSQLPanel) {
+                // SQL panels use ${table.column} marks instead of relational join paths.
+                // Just store the filter table so assertGlobalFilter can set filter_table correctly at runtime.
+                if (this.globalFilter.selectedTable?.table_name) {
+                    this.globalFilter.pathList[panel.id].table_id = this.globalFilter.selectedTable.table_name;
+                }
+                if (!this.globalFilter.panelList.includes(panel.id)) {
+                    this.globalFilter.panelList.push(panel.id);
+                }
+                continue;
+            }
+
             panel.content.globalFilterPaths = this.globalFilterService.loadTablePaths(this.modelTables, panel);
 
             if (this.globalFilter.pathList[panel.id] && this.isEmpty(this.globalFilter.pathList[panel.id].selectedTableNodes)) {
@@ -438,7 +460,11 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
 
         if (!this.globalFilter.isdeleted) {
             for (const key in this.globalFilter.pathList) {
-                if (availablePanels.includes(key) && _.isEmpty(this.globalFilter.pathList[key].selectedTableNodes)) {
+                if (!availablePanels.includes(key)) continue;
+                const panel = this.allPanels.find((p: any) => p.id === key);
+                // SQL panels have no join-path tree, so they never populate selectedTableNodes — skip them.
+                if (panel?.isSQLPanel) continue;
+                if (_.isEmpty(this.globalFilter.pathList[key].selectedTableNodes)) {
                     valid = false;
                 }
             }
@@ -465,20 +491,30 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
                 selectedTableNodes: {},
                 path: []
             };
-            clearPanel.content.globalFilterPaths = [];
+            if (!clearPanel.isSQLPanel) {
+                clearPanel.content.globalFilterPaths = [];
+            }
         } else {
             this.globalFilter.panelList = [];
             this.globalFilter.pathList = {};
 
             for (const panel of this.allPanels) {
-                panel.content.globalFilterPaths = [];
-
+                if (!panel.isSQLPanel) {
+                    panel.content.globalFilterPaths = [];
+                }
                 this.globalFilter.pathList[panel.id] = {
                     selectedTableNodes: {},
                     path: []
                 };
             }
         }
+    }
+
+    /** Returns the SQL filter mark placeholder the user must embed in their SQL expression, e.g. ${accounts.created_date}. */
+    public getSQLFilterMark(): string {
+        const table = this.globalFilter.selectedTable?.table_name || '';
+        const col = this.globalFilter.selectedColumn?.column_name || '';
+        return table && col ? `\${${table}.${col}}` : '';
     }
 
     public checkNodeSelected(selectedPath: any, node: any) {

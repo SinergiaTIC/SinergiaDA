@@ -3278,6 +3278,11 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
     <target> Panells no relacionats </target>
   </trans-unit>
 
+  <trans-unit id="sqlPanelFilterInfo">
+    <source>Filtrado por marca SQL en la query:</source>
+    <target>Filtrat per marca SQL a la query:</target>
+  </trans-unit>
+
   <trans-unit id="unselecteddot">
     <source> Paneles no filtrados  </source>
     <target> Panells no filtrats </target>

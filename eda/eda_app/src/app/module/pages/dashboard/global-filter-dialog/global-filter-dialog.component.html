@@ -85,25 +85,33 @@
                                     </button>
                                 </td>
                                 <td style="width: 60%;">
-                                    <p-treeSelect *ngIf="globalFilter.pathList[panel.id]" 
-                                        [(ngModel)]="globalFilter.pathList[panel.id].selectedTableNodes"
-                                        [options]="panel.content.globalFilterPaths"
-                                        (onNodeExpand)="onNodeExpand(panel, $event)"
-                                        (onNodeSelect)="onNodeSelect(panel, $event)" appendTo="body"
-                                        [disabled]="!panel.active || !panel.avaliable">
+                                    <ng-container *ngIf="panel.isSQLPanel; else edaPath">
+                                        <span *ngIf="panel.active" style="display:flex; align-items:center; gap:0.4rem; color:#555; font-size:0.9rem;">
+                                            <i class="pi pi-code" style="color:#6366f1;"></i>
+                                            <span i18n="@@sqlPanelFilterInfo">Filtrado por marca SQL en la query:</span>
+                                            <code style="background:#f0f0f0; padding:2px 6px; border-radius:3px; font-size:0.85rem;">{{getSQLFilterMark()}}</code>
+                                        </span>
+                                    </ng-container>
+                                    <ng-template #edaPath>
+                                        <p-treeSelect *ngIf="globalFilter.pathList[panel.id]"
+                                            [(ngModel)]="globalFilter.pathList[panel.id].selectedTableNodes"
+                                            [options]="panel.content.globalFilterPaths"
+                                            (onNodeExpand)="onNodeExpand(panel, $event)"
+                                            (onNodeSelect)="onNodeSelect(panel, $event)" appendTo="body">
 
-                                        <ng-template pTemplate="value">
-                                            <span class="d-flex align-items-center" [innerHTML]="getDisplayPathStr(globalFilter.pathList[panel.id].selectedTableNodes)"></span>
-                                        </ng-template>
+                                            <ng-template pTemplate="value">
+                                                <span class="d-flex align-items-center" [innerHTML]="getDisplayPathStr(globalFilter.pathList[panel.id].selectedTableNodes)"></span>
+                                            </ng-template>
 
-                                        <ng-template let-node pTemplate="child">
-                                            <span [ngClass]="checkNodeSelected(globalFilter.pathList[panel.id].selectedTableNodes, node) ? 'font-weight-bold' : ''"> {{node.label}} </span>
-                                        </ng-template>
+                                            <ng-template let-node pTemplate="child">
+                                                <span [ngClass]="checkNodeSelected(globalFilter.pathList[panel.id].selectedTableNodes, node) ? 'font-weight-bold' : ''"> {{node.label}} </span>
+                                            </ng-template>
 
-                                        <ng-template let-node pTemplate="default">
-                                            <b>{{node.label}}</b>
-                                        </ng-template>
-                                    </p-treeSelect>
+                                            <ng-template let-node pTemplate="default">
+                                                <b>{{node.label}}</b>
+                                            </ng-template>
+                                        </p-treeSelect>
+                                    </ng-template>
                                 </td>
                             </tr>
                         </ng-template>

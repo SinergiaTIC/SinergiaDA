@@ -194,30 +194,17 @@ export class GlobalFiltersService {
             this.assertTable(rootTable, queryTables, tables);
         }
 
-        if (!rootPanel) rootPanel = filteredPanels[0];
-
+        // Use the first non-SQL panel as root reference to compute related tables.
+        // SQL panels have no structured fields, so they cannot serve as a meaningful root.
+        if (!rootPanel) rootPanel = filteredPanels.find((p: any) => p.content.query.query.queryMode !== 'SQL') || filteredPanels[0];
 
         if (rootPanel) {
-            const firstPanelRelatedTables = this.findRelatedTables(tables, rootPanel);
-
             filteredPanels.forEach((panel: any) => {
-                let panelIncluded = true;
                 panel.active = panel.active || true;
                 panel.avaliable = panel.avaliable || true;
                 panel.visible = panel.visible || true;
-
-
-                const fields = panel.content.query.query.fields;
-
-                for (const field of fields) {
-                    const table_id = field.table_id.split('.')[0];
-                    if (!firstPanelRelatedTables.has(table_id)) panelIncluded = false;
-                }
-
-                if (!panelIncluded) {
-                    panel.active = false;
-                    panel.avaliable = false;
-                }
+                // Flag SQL panels so downstream logic can skip path/join resolution for them.
+                panel.isSQLPanel = panel.content.query.query.queryMode === 'SQL';
             });
         }
 
