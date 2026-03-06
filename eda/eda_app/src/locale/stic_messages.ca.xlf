@@ -389,11 +389,11 @@
       </trans-unit>
       <trans-unit id="activateReport" datatype="html">
         <source>Activar informe</source>
-        <target>Activar informe</target>
+        <target>Activa l'informe</target>
       </trans-unit>
       <trans-unit id="deactivateReport" datatype="html">
         <source>Desactivar informe</source>
-        <target>Desactivar informe</target>
+        <target>Desactiva l'informe</target>
       </trans-unit>
       <trans-unit id="DashboardActivated" datatype="html">
         <source>Informe activado correctamente.</source>
@@ -405,7 +405,7 @@
       </trans-unit>
       <trans-unit id="ErrorUpdatingDashboardStatus" datatype="html">
         <source>Error al actualizar el estado del informe.</source>
-        <target>S'ha produït un error en actualitzar l'estat de l'informe.</target>
+        <target>S'ha produït un error a l'actualitzar l'estat de l'informe.</target>
       </trans-unit>
     </body>
 </file>
