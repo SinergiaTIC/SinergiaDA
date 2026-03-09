@@ -409,15 +409,15 @@
       </trans-unit>
       <trans-unit id="deactivatePublicDashboardWarning" datatype="html">
         <source>Si desactiva este informe público, la URL pública dejará de estar disponible y el informe ya no podrá visualizarse.</source>
-        <target>Si desactiva aquest informe públic, l’URL pública deixarà de ser disponible i l’informe ja no es podrà visualitzar.</target>
+        <target>Si desactiveu aquest informe públic, la URL pública deixarà d'estar disponible i l'informe ja no es podrà visualitzar.</target>
       </trans-unit>
       <trans-unit id="ConfirmDeactivate" datatype="html">
         <source>Sí, desactivarlo</source>
-        <target>Sí, desactivar-lo</target>
+        <target>Sí, desactiva'l</target>
       </trans-unit>
       <trans-unit id="Cancel" datatype="html">
         <source>Cancelar</source>
-        <target>Cancel·lar</target>
+        <target>Cancel·la</target>
       </trans-unit>
     </body>
 </file>
