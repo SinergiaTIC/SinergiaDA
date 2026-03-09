@@ -407,6 +407,18 @@
         <source>Error al actualizar el estado del informe.</source>
         <target>Erro ao actualizar o estado do informe.</target>
       </trans-unit>
+      <trans-unit id="deactivatePublicDashboardWarning" datatype="html">
+        <source>Si desactiva este informe público, la URL pública dejará de estar disponible y el informe ya no podrá visualizarse.</source>
+        <target>Se desactiva este informe público, a URL pública deixará de estar dispoñible e o informe xa non se poderá visualizar.</target>
+      </trans-unit>
+      <trans-unit id="ConfirmDeactivate" datatype="html">
+        <source>Sí, desactivarlo</source>
+        <target>Si, desactivalo</target>
+      </trans-unit>
+      <trans-unit id="Cancel" datatype="html">
+        <source>Cancelar</source>
+        <target>Cancelar</target>
+      </trans-unit>
     </body>
 </file>
 </xliff>

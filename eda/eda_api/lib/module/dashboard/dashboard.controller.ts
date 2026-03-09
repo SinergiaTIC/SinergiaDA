@@ -497,6 +497,14 @@ export class DashboardController {
           userGroupDashboards.length === 0 &&
           dashboard.user.toString() !== user
 
+        /* SDA CUSTOM*/// Check if dashboard is active. 
+        /* SDA CUSTOM*/// If inactive, only admins can access it.
+        /* SDA CUSTOM*/const isActive = dashboard.config.active !== false;
+        /* SDA CUSTOM*/const isAdmin = userRoles.includes('EDA_ADMIN') || req.user.role.includes("135792467811111111111110");
+        /* SDA CUSTOM*/if (!isActive && !isAdmin) {
+        /* SDA CUSTOM*/  console.log(`Dashboard ${req.params.id} is inactive and user is not admin`);
+        /* SDA CUSTOM*/  return next(new HttpException(403, "DashboardInactive"));
+        /* SDA CUSTOM*/}
         if (visibilityCheck && roleCheck) {
           console.log(
             "You don't have permission " +

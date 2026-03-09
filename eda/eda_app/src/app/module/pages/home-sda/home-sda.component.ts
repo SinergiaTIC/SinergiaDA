@@ -1,5 +1,5 @@
 import { GroupService } from "../../../services/api/group.service";
-import { Component, OnInit } from "@angular/core";
+import { Component, OnInit, ChangeDetectorRef, NgZone } from "@angular/core";
 import { Router } from "@angular/router";
 import { AlertService, DashboardService, SidebarService, StyleProviderService } from "@eda/services/service.index";
 import { EdaDialogController, EdaDialogCloseEvent } from "@eda/shared/components/shared-components.index";
@@ -149,7 +149,9 @@ export class HomeSdaComponent implements OnInit {
     private router: Router,
     private alertService: AlertService,
     // Service for group management
-    private groupService: GroupService
+    private groupService: GroupService,
+    private cdr: ChangeDetectorRef,
+    private ngZone: NgZone
   ) {
     // Initialize data sources
     this.sidebarService.getDataSourceNames();
@@ -938,6 +940,38 @@ public filterGroups() {
    */
   public toggleDashboardActive(dashboard: any): void {
     const newStatus = !dashboard.active;
+    /* Confirm deactivation of shared reports */
+    if (!newStatus && (dashboard.config.visible === "shared")) {
+      Swal.fire({
+        title: $localize`:@@Sure:Are you sure?`,
+        text: $localize`:@@deactivatePublicDashboardWarning:Si desactiva este informe público, la URL pública dejará de estar disponible y el informe ya no podrá visualizarse.`,
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: $localize`:@@ConfirmDeactivate:Yes, deactivate it!`,
+        cancelButtonText: $localize`:@@Cancel:Cancelar`
+      }).then(result => {
+        if (result.value) {
+          this.executeToggleDashboardActive(dashboard, newStatus);
+        } else {
+          this.ngZone.run(() => {
+            dashboard.active = !newStatus;
+            if (dashboard.config) dashboard.config.active = !newStatus;
+            this.cdr.detectChanges();
+            window.location.reload();
+          });
+        }
+      });
+    } else {
+      this.executeToggleDashboardActive(dashboard, newStatus);
+    }
+  }
+
+  /**
+   * Internal function to execute the dashboard status toggle
+   */
+  private executeToggleDashboardActive(dashboard: any, newStatus: boolean): void {
     dashboard.active = newStatus;
     if (!dashboard.config) dashboard.config = {};
     dashboard.config.active = newStatus;
