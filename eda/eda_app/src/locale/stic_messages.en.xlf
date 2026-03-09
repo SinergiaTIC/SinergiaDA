@@ -409,7 +409,7 @@
       </trans-unit>
       <trans-unit id="deactivatePublicDashboardWarning" datatype="html">
         <source>Si desactiva este informe público, la URL pública dejará de estar disponible y el informe ya no podrá visualizarse.</source>
-        <target>If you deactivate this public report, the public URL will no longer be available and the report will no longer be viewable.</target>
+        <target>If this public report is deactivated, the public URL will no longer be available and the report will no longer be viewable.</target>
       </trans-unit>
       <trans-unit id="ConfirmDeactivate" datatype="html">
         <source>Sí, desactivarlo</source>
