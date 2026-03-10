@@ -569,7 +569,7 @@ export class EdaBlankPanelComponent implements OnInit {
             this.panel.content = { query, chart, edaChart };
 
             /**This is to repaint on panel redimension */
-            if (['parallelSets', 'kpi','dynamicText', 'treeMap', 'scatterPlot', 'knob', 'funnel','bubblechart', 'sunburst'].includes(chart)) {
+            if (['parallelSets', 'kpi', 'kpibar', 'kpiline', 'kpiarea', 'dynamicText', 'treeMap', 'scatterPlot', 'knob', 'funnel','bubblechart', 'sunburst'].includes(chart)) {
                 this.renderChart(this.currentQuery, this.chartLabels, this.chartData, chart, edaChart, this.panelChartConfig.config);
             }
         } else {
