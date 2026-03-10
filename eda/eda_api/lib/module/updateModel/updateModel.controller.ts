@@ -12,10 +12,13 @@ import { CleanModel } from "./service/cleanModel";
 
 const sinergiaDatabase = require("../../../config/sinergiacrm.config");
 let mariadbModule: any;
+const dynamicImport = new Function("modulePath", "return import(modulePath);") as (
+  modulePath: string
+) => Promise<any>;
 
 const getMariaDb = async () => {
   if (!mariadbModule) {
-    const mod = await import("mariadb");
+    const mod = await dynamicImport("mariadb");
     mariadbModule = mod.default || mod;
   }
   return mariadbModule;
