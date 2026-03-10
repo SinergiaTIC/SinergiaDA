@@ -2889,13 +2889,13 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <source>El año pasado, completo</source>
 <target>Last year</target>
 </trans-unit>
-<trans-unit id="DatePickerLast7">
-<source> Últimos 7 días </source>
-<target>Last 7 days</target>
-</trans-unit>
 <trans-unit id="DatePickerLast3">
 <source> Últimos 3 días </source>
 <target>Last 3 days</target>
+</trans-unit>
+<trans-unit id="DatePickerLast7">
+<source> Últimos 7 días </source>
+<target>Last 7 days</target>
 </trans-unit>
 <trans-unit id="DatePickerLast15">
 <source> Últimos 15 días </source>
@@ -2916,6 +2916,54 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <trans-unit id="DatePickerLast120">
 <source> Últimos 120 días </source>
 <target>Last 120 days</target>
+</trans-unit>
+<trans-unit id="DatePickerTomorrow">
+  <source>Mañana</source>
+  <target>Tomorrow</target>
+</trans-unit>
+<trans-unit id="DatePickerPastTomorrow">
+  <source>Pasado mañana</source>
+  <target>Day after tomorrow</target>
+</trans-unit>
+<trans-unit id="DatePickerNextWeek">
+  <source>Próxima semana</source>
+  <target>Next week</target>
+</trans-unit>
+<trans-unit id="DatePickerNextMonth">
+  <source>Próximo mes</source>
+  <target>Next month</target>
+</trans-unit>
+<trans-unit id="DatePickerNext3">
+  <source>Próximos 3 días</source>
+  <target>Next 3 days</target>
+</trans-unit>
+<trans-unit id="DatePickerNext15">
+  <source>Próximos 15 días</source>
+  <target>Next 15 days</target>
+</trans-unit>
+<trans-unit id="DatePickerNext30">
+  <source>Próximos 30 días</source>
+  <target>Next 30 days</target>
+</trans-unit>
+<trans-unit id="DatePickerNext60">
+  <source>Próximos 60 días</source>
+  <target>Next 60 days</target>
+</trans-unit>
+<trans-unit id="DatePickerNext90">
+  <source>Próximos 90 días</source>
+  <target>Next 90 days</target>
+</trans-unit>
+<trans-unit id="DatePickerNext120">
+  <source>Próximos 120 días</source>
+  <target>Next 120 days</target>
+</trans-unit>
+<trans-unit id="DatePickerNextQuarter">
+  <source>Próximo trimestre</source>
+  <target>Next quarter</target>
+</trans-unit>
+<trans-unit id="DatePickerNextYear">
+  <source>Próximo año</source>
+  <target>Next year</target>
 </trans-unit>
 <trans-unit id="DateSelectRange">
 <source>Selecciona un rango</source>
@@ -4622,54 +4670,6 @@ Once configured you can invoke it whenever you want from the button.</target>
       <trans-unit id="noFormatsAvailable">
         <source>Esta es una columna calculada y no tiene formatos disponibles</source>
         <target>This is a calculated column and has no available formats.</target>
-      </trans-unit>
-      <trans-unit id="DatePickerNextMonth">
-        <source>Próximo mes</source>
-        <target>Next month</target>
-      </trans-unit>
-      <trans-unit id="DatePickerNextWeek">
-        <source>Próxima semana</source>
-        <target>Next week</target>
-      </trans-unit>
-      <trans-unit id="DatePickerNext3">
-        <source>Próximos 3 días</source>
-        <target>Next 3 days</target>
-      </trans-unit>
-      <trans-unit id="DatePickerNext15">
-        <source>Próximos 15 días</source>
-        <target>Next 15 days</target>
-      </trans-unit>
-      <trans-unit id="DatePickerNext30">
-        <source>Próximos 30 días</source>
-        <target>Next 30 days</target>
-      </trans-unit>
-      <trans-unit id="DatePickerNext60">
-        <source>Próximos 60 días</source>
-        <target>Next 60 days</target>
-      </trans-unit>
-      <trans-unit id="DatePickerNext90">
-        <source>Próximos 90 días</source>
-        <target>Next 90 days</target>
-      </trans-unit>
-      <trans-unit id="DatePickerNext120">
-        <source>Próximos 120 días</source>
-        <target>Next 120 days</target>
-      </trans-unit>
-      <trans-unit id="DatePickerNextQuarter">
-        <source>Próximo trimestre</source>
-        <target>Next quarter</target>
-      </trans-unit>
-      <trans-unit id="DatePickerNextYear">
-        <source>Próximo año</source>
-        <target>Next year</target>
-      </trans-unit>
-      <trans-unit id="DatePickerTomorrow">
-        <source>Mañana</source>
-        <target>Tomorrow</target>
-      </trans-unit>
-      <trans-unit id="DatePickerPastTomorrow">
-        <source>Pasado mañana</source>
-        <target>Day after tomorrow</target>
       </trans-unit>
         </body>
   </file>

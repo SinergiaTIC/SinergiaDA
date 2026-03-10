@@ -3037,14 +3037,19 @@
         <target>El año pasado (hasta el mismo día que hoy)</target>
       </trans-unit>
 
-      <trans-unit id="DatePickerLast7">
-        <source> Últimos 7 días </source>
-        <target>Últimos 7 días</target>
+      <trans-unit id="DatePickerYearPreviousYearFull">
+        <source>El año pasado, completo</source>
+        <target>El año pasado, completo</target>
       </trans-unit>
-
+      
       <trans-unit id="DatePickerLast3">
         <source> Últimos 3 días </source>
         <target>Últimos 3 días</target>
+      </trans-unit>
+
+      <trans-unit id="DatePickerLast7">
+        <source> Últimos 7 días </source>
+        <target>Últimos 7 días</target>
       </trans-unit>
 
       <trans-unit id="DatePickerLast15">
@@ -3072,6 +3077,65 @@
         <target>Últimos 120 días</target>
       </trans-unit>
 
+      <trans-unit id="DatePickerTomorrow">
+        <source>Mañana</source>
+        <target>Mañana</target>
+      </trans-unit>
+      
+      <trans-unit id="DatePickerPastTomorrow">
+        <source>Pasado mañana</source>
+        <target>Pasado mañana</target>
+      </trans-unit>
+
+      <trans-unit id="DatePickerNextWeek">
+        <source>Próxima semana</source>
+        <target>Próxima semana, completa</target>
+      </trans-unit>
+
+      <trans-unit id="DatePickerNextMonth">
+        <source>Próximo mes</source>
+        <target>Próximo mes, completo</target>
+      </trans-unit>
+
+      <trans-unit id="DatePickerNext3">
+        <source>Próximos 3 días</source>
+        <target>Próximos 3 días</target>
+      </trans-unit>
+
+      <trans-unit id="DatePickerNext15">
+        <source>Próximos 15 días</source>
+        <target>Próximos 15 días</target>
+      </trans-unit>
+
+      <trans-unit id="DatePickerNext30">
+        <source>Próximos 30 días</source>
+        <target>Próximos 30 días</target>
+      </trans-unit>
+
+      <trans-unit id="DatePickerNext60">
+        <source>Próximos 60 días</source>
+        <target>Próximos 60 días</target>
+      </trans-unit>
+
+      <trans-unit id="DatePickerNext90">
+        <source>Próximos 90 días</source>
+        <target>Próximos 90 días</target>
+      </trans-unit>
+
+      <trans-unit id="DatePickerNext120">
+        <source>Próximos 120 días</source>
+        <target>Próximos 120 días</target>
+      </trans-unit>
+
+      <trans-unit id="DatePickerNextQuarter">
+        <source>Próximo trimestre</source>
+        <target>Próximo trimestre, completo</target>
+      </trans-unit>
+
+      <trans-unit id="DatePickerNextYear">
+        <source>Próximo año</source>
+        <target>Próximo ano, completo</target>
+      </trans-unit>
       <trans-unit id="DatePickerNull">
        <source>Fecha nula</source>
         <target>Fecha nula</target>
@@ -4329,10 +4393,6 @@
         <source>Este panel no está disponible por falta de permisos en un filtro</source>
         <target>Este panel non está dispoñible debido á falta de permisos nun filtro, o informe ábrese en modo de só lectura.</target>
       </trans-unit>
-      <trans-unit id="DatePickerYearPreviousYearFull">
-        <source>El año pasado, completo</source>
-        <target>El año pasado, completo</target>
-      </trans-unit>
       <trans-unit id="whereMessage">
         <source>Filtro sobre todos los registros</source>
         <target>Filtra todos os rexistros</target>
@@ -4500,54 +4560,6 @@
       <trans-unit id="noFormatsAvailable">
         <source>Esta es una columna calculada y no tiene formatos disponibles</source>
         <target>Esta é unha columna calculada e non ten formatos dispoñibles</target>
-      </trans-unit>
-      <trans-unit id="DatePickerNextMonth">
-        <source>Próximo mes</source>
-        <target>Próximo mes, completo</target>
-      </trans-unit>
-      <trans-unit id="DatePickerNextWeek">
-        <source>Próxima semana</source>
-        <target>Próxima semana, completa</target>
-      </trans-unit>
-      <trans-unit id="DatePickerNext3">
-        <source>Próximos 3 días</source>
-        <target>Próximos 3 días</target>
-      </trans-unit>
-      <trans-unit id="DatePickerNext15">
-        <source>Próximos 15 días</source>
-        <target>Próximos 15 días</target>
-      </trans-unit>
-      <trans-unit id="DatePickerNext30">
-        <source>Próximos 30 días</source>
-        <target>Próximos 30 días</target>
-      </trans-unit>
-      <trans-unit id="DatePickerNext60">
-        <source>Próximos 60 días</source>
-        <target>Próximos 60 días</target>
-      </trans-unit>
-      <trans-unit id="DatePickerNext90">
-        <source>Próximos 90 días</source>
-        <target>Próximos 90 días</target>
-      </trans-unit>
-      <trans-unit id="DatePickerNext120">
-        <source>Próximos 120 días</source>
-        <target>Próximos 120 días</target>
-      </trans-unit>
-      <trans-unit id="DatePickerNextQuarter">
-        <source>Próximo trimestre</source>
-        <target>Próximo trimestre, completo</target>
-      </trans-unit>
-      <trans-unit id="DatePickerNextYear">
-        <source>Próximo año</source>
-        <target>Próximo ano, completo</target>
-      </trans-unit>
-      <trans-unit id="DatePickerTomorrow">
-        <source>Mañana</source>
-        <target>Mañana</target>
-      </trans-unit>
-      <trans-unit id="DatePickerPastTomorrow">
-        <source>Pasado mañana</source>
-        <target>Pasado mañana</target>
       </trans-unit>
     </body>
   </file>
