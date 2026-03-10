@@ -7,6 +7,20 @@
     </div>
 
     <div class="col-4 col-offset-1">
+
+<!--SDA CUSTOM-->       <div class="col-12">
+<!--SDA CUSTOM-->         <h6 class="custom-border-b1">Tamaño</h6>
+<!--SDA CUSTOM-->         <div class="grid align-items-center">
+<!--SDA CUSTOM-->             <div class="col-12">
+<!--SDA CUSTOM-->                 <label i18n="@@kpiExtraPxLabel">Ajuste de tamaño (%)</label>
+<!--SDA CUSTOM-->                 <div class="p-inputgroup mt-1">
+<!--SDA CUSTOM-->                     <input type="number" pInputText [ngModel]="modifiedFontPoints" style="width: 60px; text-align: center;"
+                                          min="-90" max="300" (ngModelChange)="modifyKpiSize($event)"/>
+<!--SDA CUSTOM-->                 </div>
+<!--SDA CUSTOM-->             </div>
+<!--SDA CUSTOM-->           </div>
+<!--SDA CUSTOM-->       </div>
+
 <!--SDA CUSTOM--> <div *ngIf="edaChart" class="col-12">
             <h6 i18n="@@colorsChartH6" class="custom-border-b1">
                 Colores
@@ -22,18 +36,7 @@
             </div>
         </div>
 
-<!--SDA CUSTOM-->       <div class="col-12">
-<!--SDA CUSTOM-->         <h6 class="custom-border-b1">Tamaño</h6>
-<!--SDA CUSTOM-->         <div class="grid align-items-center">
-<!--SDA CUSTOM-->             <div class="col-12">
-<!--SDA CUSTOM-->                 <label i18n="@@kpiExtraPxLabel">Ajuste de tamaño (%)</label>
-<!--SDA CUSTOM-->                 <div class="p-inputgroup mt-1">
-<!--SDA CUSTOM-->                     <input type="number" pInputText [ngModel]="modifiedFontPoints" style="width: 60px; text-align: center;"
-                                          min="-90" max="300" (ngModelChange)="modifyKpiSize($event)"/>
-<!--SDA CUSTOM-->                 </div>
-<!--SDA CUSTOM-->             </div>
-<!--SDA CUSTOM-->           </div>
-<!--SDA CUSTOM-->       </div>
+
     </div>
 
     <div class="col-12 mt-5">
