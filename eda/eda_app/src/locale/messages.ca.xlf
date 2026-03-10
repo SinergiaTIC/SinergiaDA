@@ -4346,10 +4346,6 @@ Un cop configurada podreu invocar-la des del botó sempre que calgui.</target>
         <source>Este panel no está disponible por falta de permisos en un filtro</source>
         <target>Aquest panell no està disponible per manca de permisos en un filtre, l'informe s'obre en mode de només lectura.</target>
       </trans-unit>
-      <trans-unit id="DatePickerYearPreviousYearFull">
-        <source>El año pasado, completo</source>
-        <target>L'any passat</target>
-      </trans-unit>
       <trans-unit id="aplicarBtn">
         <source>Aplicar</source>
         <target>Aplicar</target>

@@ -4269,10 +4269,6 @@
           <x id="INTERPOLATION" equiv-text="{{getDisplayName(userSelectedTable)}" />
         </target>
       </trans-unit>
-      <trans-unit id="DatePickerNull">
-       <source>Fecha nula</source>
-        <target>Data nula</target>
-      </trans-unit>
 
       <trans-unit id="positionFilterInReport">
         <source>Posición del filtro en el informe</source>
