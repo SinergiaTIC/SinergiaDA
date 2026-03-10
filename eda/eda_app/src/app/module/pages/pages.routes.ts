@@ -16,7 +16,6 @@ import { LogsComponent } from './logs/logs.component';
 
 // Guard
 import { VerifyTokenGuard } from '../../services/guards/verify-token.guard';
-/*SDA CUSTOM*/ import { LoginGuardGuard } from '../../services/guards/login-guard.guard';
 import { GroupListComponent } from './groups-management/group-list/group-list.component';
 import { AlertsManagementComponent } from './alerts-management/alerts-management.component';
 import { MailManagementComponent } from './mail-management/mail-management.component';
@@ -25,7 +24,7 @@ import { MailManagementComponent } from './mail-management/mail-management.compo
 const pagesRoutes: Routes = [
 
     /*SDA CUSTOM*/ { path: 'old-home', component: HomeComponent, canActivate: [VerifyTokenGuard] },
-    /*SDA CUSTOM*/ { path: 'dashboard/:id', component: DashboardComponent, canActivate: [LoginGuardGuard, VerifyTokenGuard] },
+    { path: 'dashboard/:id', component: DashboardComponent, canActivate: [VerifyTokenGuard] },
     { path: 'account-settings', component: AccountSettingsComponent, canActivate: [VerifyTokenGuard] },
     { path: 'profile', component: ProfileComponent, canActivate: [VerifyTokenGuard] },
     { path: 'data-source', component: DsConfigWrapperComponent, canActivate: [VerifyTokenGuard] },
