@@ -3049,7 +3049,7 @@
 
       <trans-unit id="DatePickerLast7">
         <source> Últimos 7 días </source>
-        <target>Últimos 7 días</target>
+        <target>Los últimos 7 días</target>
       </trans-unit>
 
       <trans-unit id="DatePickerLast15">
