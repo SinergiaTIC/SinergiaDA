@@ -37,12 +37,16 @@ export class DateUtils {
                     case 'last15': return this.setLast15();
                     case 'last30': return this.setLast30();
                     case 'last60': return this.setLast60();
+                    case 'last90': return this.setLast90();
                     case 'last120': return this.setLast120();
 /* SDA CUSTOM */    case 'nextMonth': return this.setNextMonth();
 /* SDA CUSTOM */    case 'nextWeek': return this.setNextWeek();
+/* SDA CUSTOM */    case 'next3': return this.setNext3();
+/* SDA CUSTOM */    case 'next15': return this.setNext15();
 /* SDA CUSTOM */    case 'next30': return this.setNext30();
 /* SDA CUSTOM */    case 'next60': return this.setNext60();
 /* SDA CUSTOM */    case 'next90': return this.setNext90();
+/* SDA CUSTOM */    case 'next120': return this.setNext120();
 /* SDA CUSTOM */    case 'nextQuarter': return this.setNextQuarter();
 /* SDA CUSTOM */    case 'nextYear': return this.setNextYear();
 /* SDA CUSTOM */    case 'tomorrow': return this.setTomorrow();
@@ -220,6 +224,12 @@ export class DateUtils {
         return [lastFiftyNine, today];
     }
 
+    public setLast90(): Array<Date> {
+        const today = moment().toDate();
+        const lastFiftyNine = moment().subtract(89,'days').toDate();
+        return [lastFiftyNine, today];
+    }
+
     public setLast120(): Array<Date> {
         const today = moment().toDate();
         const lastOneHudredNineteen = moment().subtract(119,'days').toDate();
@@ -240,6 +250,18 @@ export class DateUtils {
         return [weekStart, weekEnd];
     }
 
+    public setNext3(): Array<Date> {
+        const start = moment().add(1, 'day').startOf('day').toDate();
+        const end   = moment().add(3, 'day').endOf('day').toDate();
+        return [start, end];
+    }
+
+    public setNext15(): Array<Date> {
+        const start = moment().add(1, 'day').startOf('day').toDate();
+        const end   = moment().add(15, 'day').endOf('day').toDate();
+        return [start, end];
+    }
+
     public setNext30(): Array<Date> {
         const start = moment().add(1, 'day').startOf('day').toDate();
         const end   = moment().add(30, 'day').endOf('day').toDate();
@@ -253,6 +275,12 @@ export class DateUtils {
     }
 
     public setNext90(): Array<Date> {
+        const start = moment().add(1, 'day').startOf('day').toDate();
+        const end   = moment().add(90, 'day').endOf('day').toDate();
+        return [start, end];
+    }
+
+    public setNext120(): Array<Date> {
         const start = moment().add(1, 'day').startOf('day').toDate();
         const end   = moment().add(90, 'day').endOf('day').toDate();
         return [start, end];

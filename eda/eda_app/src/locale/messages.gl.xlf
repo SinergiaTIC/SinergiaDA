@@ -3062,6 +3062,11 @@
         <target>Últimos 60 días</target>
       </trans-unit>
 
+      <trans-unit id="DatePickerLast90">
+        <source> Últimos 90 días </source>
+        <target>Últimos 90 días</target>
+      </trans-unit>
+
       <trans-unit id="DatePickerLast120">
         <source> Últimos 120 días </source>
         <target>Últimos 120 días</target>
@@ -4504,6 +4509,14 @@
         <source>Próxima semana</source>
         <target>Próxima semana, completa</target>
       </trans-unit>
+      <trans-unit id="DatePickerNext3">
+        <source>Próximos 3 días</source>
+        <target>Próximos 3 días</target>
+      </trans-unit>
+      <trans-unit id="DatePickerNext15">
+        <source>Próximos 15 días</source>
+        <target>Próximos 15 días</target>
+      </trans-unit>
       <trans-unit id="DatePickerNext30">
         <source>Próximos 30 días</source>
         <target>Próximos 30 días</target>
@@ -4515,6 +4528,10 @@
       <trans-unit id="DatePickerNext90">
         <source>Próximos 90 días</source>
         <target>Próximos 90 días</target>
+      </trans-unit>
+      <trans-unit id="DatePickerNext120">
+        <source>Próximos 120 días</source>
+        <target>Próximos 120 días</target>
       </trans-unit>
       <trans-unit id="DatePickerNextQuarter">
         <source>Próximo trimestre</source>
