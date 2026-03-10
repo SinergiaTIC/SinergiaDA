@@ -18,6 +18,10 @@ export class DashboardService extends ApiService {
     getDashboard( id ): Observable<any> {
         return this.get( `${this.route}${id}` );
     }
+/*SDA CUSTOM*/
+/*SDA CUSTOM*/   getDashboardVisibility( id ): Observable<any> {
+/*SDA CUSTOM*/       return this.get( `${this.route}${id}/visibility` );
+/*SDA CUSTOM*/   }
 
     addNewDashboard( dashboard ): Observable<any> {
         return this.post( this.route,  dashboard);
