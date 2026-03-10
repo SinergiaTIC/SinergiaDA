@@ -2937,6 +2937,10 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
   <source>Próximos 3 días</source>
   <target>Next 3 days</target>
 </trans-unit>
+<trans-unit id="DatePickerNext7">
+  <source>Próximos 7 días</source>
+  <target>Next 7 days</target>
+</trans-unit>
 <trans-unit id="DatePickerNext15">
   <source>Próximos 15 días</source>
   <target>Next 15 days</target>

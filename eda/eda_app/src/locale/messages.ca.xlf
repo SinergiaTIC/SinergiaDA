@@ -2960,6 +2960,10 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
   <source>Próximos 3 días</source>
   <target>Els propers 3 dies</target>
 </trans-unit>
+<trans-unit id="DatePickerNext7">
+  <source>Próximos 7 días</source>
+  <target>Els propers 7 dies</target>
+</trans-unit>
 <trans-unit id="DatePickerNext15">
   <source>Próximos 15 días</source>
   <target>Els propers 15 dies</target>

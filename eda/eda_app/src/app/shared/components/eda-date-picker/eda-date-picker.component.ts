@@ -61,6 +61,7 @@ export class EdaDatePickerComponent implements OnChanges {
 /* SDA CUSTOM */ 	{ label: $localize`:@@DatePickerNextWeek:Próxima semana`, value: 'nextWeek' },
 /* SDA CUSTOM */ 	{ label: $localize`:@@DatePickerNextMonth:Próximo mes`, value: 'nextMonth' },
 /* SDA CUSTOM */ 	{ label: $localize`:@@DatePickerNext3:Próximos 3 días`, value: 'next3' },
+/* SDA CUSTOM */	{ label: $localize`:@@DatePickerNext7:Próximos 7 días`, value: 'next7' },
 /* SDA CUSTOM */ 	{ label: $localize`:@@DatePickerNext15:Próximos 15 días`, value: 'next15' },
 /* SDA CUSTOM */ 	{ label: $localize`:@@DatePickerNext30:Próximos 30 días`, value: 'next30' },
 /* SDA CUSTOM */ 	{ label: $localize`:@@DatePickerNext60:Próximos 60 días`, value: 'next60' },

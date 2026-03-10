@@ -42,6 +42,7 @@ export class DateUtils {
 /* SDA CUSTOM */    case 'nextMonth': return this.setNextMonth();
 /* SDA CUSTOM */    case 'nextWeek': return this.setNextWeek();
 /* SDA CUSTOM */    case 'next3': return this.setNext3();
+/* SDA CUSTOM */    case 'next7': return this.setNext7();
 /* SDA CUSTOM */    case 'next15': return this.setNext15();
 /* SDA CUSTOM */    case 'next30': return this.setNext30();
 /* SDA CUSTOM */    case 'next60': return this.setNext60();
@@ -253,6 +254,12 @@ export class DateUtils {
     public setNext3(): Array<Date> {
         const start = moment().add(1, 'day').startOf('day').toDate();
         const end   = moment().add(3, 'day').endOf('day').toDate();
+        return [start, end];
+    }
+
+    public setNext7(): Array<Date> {
+        const start = moment().add(1, 'day').startOf('day').toDate();
+        const end   = moment().add(7, 'day').endOf('day').toDate();
         return [start, end];
     }
 

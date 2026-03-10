@@ -3102,6 +3102,11 @@
         <target>Los próximos 3 días</target>
       </trans-unit>
 
+      <trans-unit id="DatePickerNext7">
+        <source>Próximos 7 días</source>
+        <target>Los próximos 7 días</target>
+      </trans-unit>
+
       <trans-unit id="DatePickerNext15">
         <source>Próximos 15 días</source>
         <target>Los próximos 15 días</target>
