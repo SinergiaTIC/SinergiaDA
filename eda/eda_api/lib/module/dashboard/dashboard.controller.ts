@@ -628,7 +628,10 @@ export class DashboardController {
       next(err)
     }
   }
-/*SDA CUSTOM*/
+
+/*SDA CUSTOM   This function is used to check if a dashboard is public (shared) or not. 
+               It is used in the login guard to allow anonymous users to access public dashboards without needing to log in.
+               It returns a boolean value indicating if the dashboard is public (shared) or not.*/
 /*SDA CUSTOM*/ static async getIsPublic(req: Request, res: Response, next: NextFunction) {
 /*SDA CUSTOM*/   try {
 /*SDA CUSTOM*/     const dashboard = await Dashboard.findById(req.params.id, 'config.visible').exec();

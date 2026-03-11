@@ -18,7 +18,8 @@ export class DashboardService extends ApiService {
     getDashboard( id ): Observable<any> {
         return this.get( `${this.route}${id}` );
     }
-/*SDA CUSTOM*/
+/*SDA CUSTOM    // This function is used to check if a dashboard is public (shared) or not. It is used in the login guard to allow anonymous users to access public dashboards without needing to log in.
+                 It returns a boolean value indicating if the dashboard is public (shared) or not.*/
 /*SDA CUSTOM*/   getDashboardVisibility( id ): Observable<any> {
 /*SDA CUSTOM*/       return this.get( `${this.route}${id}/visibility` );
 /*SDA CUSTOM*/   }
