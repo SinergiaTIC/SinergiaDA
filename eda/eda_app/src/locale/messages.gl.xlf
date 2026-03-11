@@ -3076,7 +3076,10 @@
         <source> Últimos 120 días </source>
         <target>Últimos 120 días</target>
       </trans-unit>
-
+      <trans-unit id="DatePickerBeforeTodayIncluded">
+        <source>Todo hasta hoy</source>
+        <target>Todo hasta hoy</target>
+      </trans-unit>
       <trans-unit id="DatePickerTomorrow">
         <source>Mañana</source>
         <target>Mañana</target>

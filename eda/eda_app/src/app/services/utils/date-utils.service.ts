@@ -14,7 +14,8 @@ export class DateUtils {
 
             public getRange(range: any) {
                 switch (range) {
-                    case 'all': return this.allDates();
+/* SDA_CUSTOM*/     case 'beforeTodayIncluded':return this.beforeTodayIncluded();
+/* SDA_CUSTOM*/ //  case 'all': return this.allDates();
 /**SDA CUSTOM  */   case 'today': return this.setToday();
                     case 'yesterday': return this.setYesterday();
                     case 'beforeYesterday': return this.setBeforeYesterday();
@@ -60,6 +61,12 @@ export class DateUtils {
         const today = moment().toDate();
         return [mostOldDate, today];
     }
+   
+/* SDA CUSTOM */    public beforeTodayIncluded(): Array<Date> {
+/* SDA CUSTOM */        const mostOldDate = moment('1939-01-01').toDate();
+/* SDA CUSTOM */        const today = moment().toDate();
+/* SDA CUSTOM */        return [mostOldDate, today];
+/* SDA CUSTOM */    }
 
 /**SDA CUSTOM  */    public setToday(): Array<Date> {
 /**SDA CUSTOM  */        const today = moment().toDate();

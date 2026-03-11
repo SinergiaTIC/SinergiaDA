@@ -25,7 +25,7 @@ export class EdaDatePickerComponent implements OnChanges {
 	public firstDayOfWeek: number = 1;
 
 				public ranges: Array<SelectItem> = [
-					{ label: $localize`:@@DatePickerAll:Todas`, value: 'all' },
+/**SDA CUSTOM  */ //	{ label: $localize`:@@DatePickerAll:Todas`, value: 'all' },
 					// Days
 /**SDA CUSTOM  */	{ label: $localize`:@@DatePickerToday:Hoy`, value: 'today' },
 					{ label: $localize`:@@DatePickerYesterday:Ayer`, value: 'yesterday' },
@@ -56,6 +56,8 @@ export class EdaDatePickerComponent implements OnChanges {
 					{ label: $localize`:@@DatePickerLast90:Últimos 90 días`, value: 'last90' },
 					{ label: $localize`:@@DatePickerLast120:Últimos 120 días`, value: 'last120' },
 					// Future
+
+/* SDA CUSTOM */ 	{ label: $localize`:@@DatePickerBeforeTodayIncluded:Todo hasta hoy`, value: 'beforeTodayIncluded' },
 /* SDA CUSTOM */ 	{ label: $localize`:@@DatePickerTomorrow:Mañana`, value: 'tomorrow' },
 /* SDA CUSTOM */ 	{ label: $localize`:@@DatePickerPastTomorrow:Pasado mañana`, value: 'pastTomorrow' },
 /* SDA CUSTOM */ 	{ label: $localize`:@@DatePickerNextWeek:Próxima semana`, value: 'nextWeek' },

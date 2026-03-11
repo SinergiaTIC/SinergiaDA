@@ -2917,6 +2917,10 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <source> Últimos 120 días </source>
 <target>Last 120 days</target>
 </trans-unit>
+<trans-unit id="DatePickerBeforeTodayIncluded">
+  <source>Todo hasta hoy</source>
+  <target>All until today</target>
+</trans-unit>
 <trans-unit id="DatePickerTomorrow">
   <source>Mañana</source>
   <target>Tomorrow</target>
