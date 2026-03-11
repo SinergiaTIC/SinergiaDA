@@ -29,6 +29,7 @@ export class DateUtils {
                     case 'pastMonthFull': return this.setPastMonthFull();
                     case 'monthStartPreviousYear': return this.setMonthStartPreviousYear();
                     case 'monthFullPreviousYear': return this.setMonthFullPreviousYear();
+/**SDA CUSTOM  */   case 'quarterStart': return this.setQuarterStart();
                     case 'yearStart': return this.setYearStart();
 /**SDA CUSTOM  */   case 'yearStartFull': return this.setYearStartFull();
                     case 'yearStartPreviousYear': return this.setYearStartPreviousYear();
@@ -53,6 +54,7 @@ export class DateUtils {
 /* SDA CUSTOM */    case 'nextYear': return this.setNextYear();
 /* SDA CUSTOM */    case 'tomorrow': return this.setTomorrow();
 /* SDA CUSTOM */    case 'pastTomorrow': return this.setPastTomorrow();
+/* SDA_CUSTOM */    case 'lastQuarter': return this.setLastQuarter();
                 }
             }
 
@@ -175,6 +177,12 @@ export class DateUtils {
         const monthStartPastYear = moment().subtract(1,'years').startOf('month').toDate();
         const monthEndPastYear = moment().subtract(1,'years').endOf('month').toDate();
         return [monthStartPastYear,monthEndPastYear];
+    }
+
+    public setQuarterStart(): Array<Date> {
+        const quarterStart = moment().startOf('quarter').toDate();
+        const quarterEnd = moment().endOf('quarter').toDate();
+        return [quarterStart, quarterEnd];
     }
 
     public setYearStart(): Array<Date> {
@@ -323,6 +331,14 @@ export class DateUtils {
         const pastTomorrow = moment().add(2,'days').toDate()
         return [pastTomorrow,pastTomorrow];
     }
+
+    public setLastQuarter(): Array<Date> {
+        const base = moment().subtract(1, 'quarter');
+        const quarterStart = base.clone().startOf('quarter').toDate();
+        const quarterEnd   = base.clone().endOf('quarter').toDate();
+        return [quarterStart, quarterEnd];
+    }
+
     public rangeToString(range: Array<Date>): Array<string> {
         const dtf = new Intl.DateTimeFormat('en', { year: 'numeric', month: '2-digit', day: '2-digit' });
         if (!range[1]) {

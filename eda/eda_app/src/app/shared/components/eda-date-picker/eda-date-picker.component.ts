@@ -38,7 +38,8 @@ export class EdaDatePickerComponent implements OnChanges {
 					// Months
 /**SDA CUSTOM  */	{ label: $localize`:@@DatePickerMonth:Este mes (hasta hoy)`, value: 'monthStart' },
 /**SDA CUSTOM  */	{ label: $localize`:@@DatePickerMonthFull:Este mes completo`, value: 'monthStartFull' },
-					{ label: $localize`:@@DatePickerLastMonth:El mes pasado (hasta equivalente a hoy)`, value: 'pastMonth' },
+/* SDA CUSTOM */  { label: $localize`:@@DatePickerThisQuarter:Este trimestre`, value: 'quarterStart' },
+{ label: $localize`:@@DatePickerLastMonth:El mes pasado (hasta equivalente a hoy)`, value: 'pastMonth' },
 					{ label: $localize`:@@DatePickerLastMonthFull:El mes pasado completo`, value: 'pastMonthFull' },
 					{ label: $localize`:@@DatePickerMonthPreviousYear:Este mes del año pasado (hasta equivalente a hoy)`, value: 'monthStartPreviousYear' },
 					{ label: $localize`:@@DatePickerMonthPreviousYearFull:Éste mes al completo del año pasado`, value: 'monthFullPreviousYear' },
@@ -55,6 +56,7 @@ export class EdaDatePickerComponent implements OnChanges {
 					{ label: $localize`:@@DatePickerLast60:Últimos 60 días`, value: 'last60' },
 					{ label: $localize`:@@DatePickerLast90:Últimos 90 días`, value: 'last90' },
 					{ label: $localize`:@@DatePickerLast120:Últimos 120 días`, value: 'last120' },
+          { label: $localize`:@@DatePickerLastQuarter:Último trimestre`, value: 'lastQuarter' },
 					// Future
 
 /* SDA CUSTOM */ 	{ label: $localize`:@@DatePickerBeforeTodayIncluded:Todo hasta hoy`, value: 'beforeTodayIncluded' },

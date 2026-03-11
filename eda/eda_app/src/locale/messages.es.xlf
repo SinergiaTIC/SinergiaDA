@@ -3076,6 +3076,14 @@
         <source> Últimos 120 días </source>
         <target>Los últimos 120 días</target>
       </trans-unit>
+      <trans-unit id="DatePickerThisQuarter">
+        <source>Este trimestre</source>
+        <target>Este trimestre</target>
+      </trans-unit>
+      <trans-unit id="DatePickerLastQuarter">
+        <source>Último trimestre</source>
+        <target>El último trimestre</target>
+      </trans-unit>  
       <trans-unit id="DatePickerBeforeTodayIncluded">
         <source>Todo hasta hoy</source>
         <target>Todo hasta hoy</target>
