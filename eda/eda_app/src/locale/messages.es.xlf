@@ -3082,7 +3082,7 @@
       </trans-unit>
       <trans-unit id="DatePickerLastQuarter">
         <source>Último trimestre</source>
-        <target>El último trimestre</target>
+        <target>El trimestre pasado</target>
       </trans-unit>  
       <trans-unit id="DatePickerBeforeTodayIncluded">
         <source>Todo hasta hoy</source>
