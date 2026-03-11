@@ -367,6 +367,18 @@
     <source>Eliminar filtros</source>
     <target>Clear filters</target>
   </trans-unit>
+  <trans-unit id="nombreColumnaH4" datatype="html">
+    <source>Etiqueta para el campo</source>
+    <target>Label for the field</target>
+  </trans-unit>
+  <trans-unit id="lockPanel">
+    <source>Bloquear panel</source>
+    <target>Lock panel</target>
+  </trans-unit>
+  <trans-unit id="unlockPanel">
+    <source>Desbloquear panel</source>
+    <target>Unlock panel</target>
+  </trans-unit>
 </body>
 </file>
 </xliff>
