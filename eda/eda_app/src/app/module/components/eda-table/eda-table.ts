@@ -493,13 +493,14 @@ export class EdaTable {
     }
 
     coltotals() {
-
         this.withColTotals = true;
         this.totalsRow = [];
+
 
         let row = this.buildTotalRow();
         const values = this._value;
         const keys = this.cols.map(col => col.field);
+
 
         for (let i = 0; i < values.length; i++) {
             for (let j = 0; j < keys.length; j++) {
@@ -525,12 +526,6 @@ export class EdaTable {
                             row[keys[j]] = row[keys[j]].toFixed(decimalplaces );
                         }
 
-                    } else if(currentCol.type === "EdaColumnPercentage") {
-                        let total = 0;
-                        values.forEach((e: any) => {
-                            total = total + parseFloat(e[currentCol.field].replace('%', ''));
-                        })
-                        row[keys[j]] = Math.round(total);
                     } else {
                         row[keys[j]] = NaN;
                     }
@@ -539,24 +534,12 @@ export class EdaTable {
         }
 
         let firstNonNumericRow = true;
-
         this.cols.forEach((col, i) => {
-            if (col.type === "EdaColumnNumber") { 
+            if (col.type === "EdaColumnNumber") {
                 this.totalsRow.push(
                     {
-                        data: parseFloat(row[col.field]).toLocaleString('de-DE'),
-                        style: "right",
-                        class: "total-row",
-                        border: '',
-                        type: col.type
-                    });
-            } else if(col.type === "EdaColumnPercentage") { // Total of the percentages
-
-                const value = parseFloat(row[col.field]);
-
-                this.totalsRow.push(
-                    {
-                        data: !isNaN(value) ? `${value.toLocaleString('de-DE')}%` : "0%",
+                        data: parseFloat(row[col.field])
+                            .toLocaleString('de-DE'),
                         style: "right",
                         class: "total-row",
                         border: '',
@@ -565,11 +548,32 @@ export class EdaTable {
             }
             else {
                 if (firstNonNumericRow) {
+/**SDA CUSTOM  */   // add header
                     this.totalsRow.push({ data: `${this.Totals} `, border: " ", class: 'total-row-header', type: col.type });
                     firstNonNumericRow = false;
                 } else {
-                    this.totalsRow.push({ data: " ", border: " ", class: 'total-row', type: col.type });
-                }
+/**SDA CUSTOM  */   //  WE ADD THE PERCENTAGE COLUMNS HERE
+/**SDA CUSTOM  */   //  To match we need to delete the % and add one or two space at the beginning
+/**SDA CUSTOM  */   // If the field starts with ~( no field name ) we add two spaces otherwise just one
+/**SDA CUSTOM  */   const baseField = this.pivot
+/**SDA CUSTOM  */       ? (col.field.trimStart().startsWith('~') ? '  ' : ' ') + col.field.replace('%', '').trim() // pivot fields have leading spaces
+/**SDA CUSTOM  */       : col.field.replace('%', '').trim(); // non-pivot fields have no leading spaces
+/**SDA CUSTOM  */                    
+/**SDA CUSTOM  */   const value: number = Number(row[baseField]); // Actual row value
+/**SDA CUSTOM  */   const total: number = Object.keys(row)// Get total row value
+/**SDA CUSTOM  */       .filter(key => this.pivot
+/**SDA CUSTOM  */           ? (!key.endsWith('%') && key.includes('~'))  // pivot: numeric fields contain ~
+/**SDA CUSTOM  */           : (!key.endsWith('%') && this.cols.some(c => c.field === key && c.type === 'EdaColumnNumber'))) // non-pivot: EdaColumnNumber cols
+/**SDA CUSTOM  */       .reduce((sum, key) => sum + Number(row[key] || 0), 0);
+/**SDA CUSTOM  */                    
+/**SDA CUSTOM  */   // Calculate percentage (check if total is not zero to avoid division by zero ==> Infinity or NaN)
+/**SDA CUSTOM  */   const percentage = (!Number.isNaN(value) && !Number.isNaN(total) && total !== 0) ? ((value / total) * 100).toFixed(2) : '0';
+/**SDA CUSTOM  */
+/**SDA CUSTOM  */   // Push the total row value with % sign
+/**SDA CUSTOM  */   this.totalsRow.push({
+/**SDA CUSTOM  */       data: percentage + '%', border: ' ', class: 'total-row-header text-right', type: col.type
+/**SDA CUSTOM  */   });
+/**SDA CUSTOM  */}
             }
         });
     }
