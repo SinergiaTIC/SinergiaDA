@@ -2946,11 +2946,11 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 </trans-unit>
 <trans-unit id="DatePickerLastQuarter">
   <source>Último trimestre</source>
-  <target>L'últim trimestre</target>
+  <target>El trimestre passat</target>
 </trans-unit>
 <trans-unit id="DatePickerBeforeTodayIncluded">
   <source>Todo hasta hoy</source>
-  <target>Fins avui inclòs</target>
+  <target>Tot fins avui</target>
 </trans-unit>
 <trans-unit id="DatePickerTomorrow">
   <source>Mañana</source>
