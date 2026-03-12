@@ -539,9 +539,16 @@ export class GlobalFilterComponent implements OnInit {
                      globalFilter.selectedIdValues = [];
                 }
 
+                // If selectedItems has values but selectedIdValues is empty, derive selectedIdValues from selectedItems
+                if (globalFilter.selectedItems?.length > 0 && globalFilter.selectedIdValues.length === 0) {
+                    globalFilter.selectedIdValues = globalFilter.selectedItems
+                        .map((element: any) => data.find(d => d.label === element)?.id)
+                        .filter((id: any) => id !== undefined);
+                }
+
                 globalFilter.selectedItems = globalFilter.selectedIdValues?.map(siv => {
                     const value = data.filter(d => d.id === siv);
-                    return value[0].value;
+                    return value[0]?.value;
                 })
 
 
