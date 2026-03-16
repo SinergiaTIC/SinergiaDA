@@ -344,16 +344,16 @@ export class DataSourceController {
 
     static async CheckConnection(req: Request, res: Response, next: NextFunction) {
 
-        if (!['postgres', 'mysql', 'vertica', 'sqlserver', 'oracle', 'bigquery', 'snowflake', 'jsonwebservice', 'mongodb' ].includes(req.qs.type)) {
+        if (!['postgres', 'mysql', 'vertica', 'sqlserver', 'oracle', 'bigquery', 'snowflake', 'jsonwebservice', 'mongodb' ].includes(req.body.type)) {
 
             next(new HttpException(404, '"Only" postgres, MySQL, oracle, SqlServer, Google BigQuery, Snowflake and Vertica are accepted'));
 
         } else {
             try {
-                const cn = req.qs.type !== 'bigquery' ? new ConnectionModel(req.qs.user, req.qs.host, req.qs.database,
-                    req.qs.password, req.qs.port, req.qs.type,
-                    req.body.poolLimit, req.qs.schema, req.qs.sid, req.qs.warehouse, req.qs.ssl)
-                    : new BigQueryConfig(req.qs.type, req.qs.database, req.qs.project_id);
+                const cn = req.body.type !== 'bigquery' ? new ConnectionModel(req.body.user, req.body.host, req.body.database,
+                    req.body.password, req.body.port, req.body.type,
+                    req.body.poolLimit, req.body.schema, req.body.sid, req.body.warehouse, req.body.ssl)
+                    : new BigQueryConfig(req.body.type, req.body.database, req.body.project_id);
                 const manager = await ManagerConnectionService.testConnection(cn);
                 await manager.tryConnection();
                 return res.status(200).json({ ok: true });
@@ -367,14 +367,14 @@ export class DataSourceController {
 
     static async CheckStoredConnection(req: Request, res: Response, next: NextFunction) {
 
-        if (!['postgres', 'mysql', 'vertica', 'sqlserver', 'oracle', 'bigquery', 'snowflake', 'jsonwebservice', 'mongodb'].includes(req.qs.type)) {
+        if (!['postgres', 'mysql', 'vertica', 'sqlserver', 'oracle', 'bigquery', 'snowflake', 'jsonwebservice', 'mongodb'].includes(req.body.type)) {
             next(new HttpException(404, 'Only postgres, MySQL, oracle, SqlServer and Vertica are accepted'));
         } else {
             try {
                 const actualDS = await DataSourceController.getMongoDataSource(req.params.id);
-                const passwd = req.qs.password === '__-(··)-__' ? EnCrypterService.decode(actualDS.ds.connection.password) : req.qs.password;
-                const cn = new ConnectionModel(req.qs.user, req.qs.host, req.qs.database, passwd,
-                    req.qs.port, req.qs.type, req.qs.schema, req.body.poolLimit, req.qs.sidm, req.qs.warehouse, req.qs.ssl);
+                const passwd = req.body.password === '__-(··)-__' ? EnCrypterService.decode(actualDS.ds.connection.password) : req.body.password;
+                const cn = new ConnectionModel(req.body.user, req.body.host, req.body.database, passwd,
+                    req.body.port, req.body.type, req.body.schema, req.body.poolLimit, req.body.sidm, req.body.warehouse, req.body.ssl);
                 const manager = await ManagerConnectionService.testConnection(cn);
                 await manager.tryConnection();
                 return res.status(200).json({ ok: true });

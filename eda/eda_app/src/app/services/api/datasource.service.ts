@@ -652,11 +652,11 @@ export class DataSourceService extends ApiService implements OnDestroy {
     }
 
     testConnection(connection): Observable<any> {
-        return this.getParams(`${this.globalDSRoute}/check-connection`, connection);
+        return this.post(`${this.globalDSRoute}/check-connection`, connection);
     }
 
     testStoredConnection(connection, id): Observable<any> {
-        return this.getParams(`${this.globalDSRoute}/check-connection/${id}`, connection);
+        return this.post(`${this.globalDSRoute}/check-connection/${id}`, connection);
     }
 
     addDataSource(connection): Observable<any> {

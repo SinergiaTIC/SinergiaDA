@@ -114,7 +114,7 @@ router.get('/namesForEdit', authGuard, DataSourceController.GetDataSourcesNamesF
  *     tags:
  *       - DataSource Routes
  */
-router.get('/check-connection', authGuard, roleGuard, DataSourceController.CheckConnection);
+router.post('/check-connection', authGuard, roleGuard, DataSourceController.CheckConnection);
 
 
 
@@ -139,7 +139,7 @@ router.get('/check-connection', authGuard, roleGuard, DataSourceController.Check
  *     tags:
  *       - DataSource Routes
  */
-router.get('/check-connection/:id', authGuard, roleGuard, DataSourceController.CheckStoredConnection);
+router.post('/check-connection/:id', authGuard, roleGuard, DataSourceController.CheckStoredConnection);
 
 
 
