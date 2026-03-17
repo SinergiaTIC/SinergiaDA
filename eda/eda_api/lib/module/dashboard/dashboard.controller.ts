@@ -1454,7 +1454,7 @@ export class DashboardController {
       }
     } catch (err) {
       console.log(err)
-      next(new HttpException(500, 'Error quering database'))
+/*SDA CUSTOM*/ next(new HttpException(500, DashboardController.parseDbErrorMySQL(err)))
     }
   }
 
@@ -1649,14 +1649,10 @@ export class DashboardController {
       }
     } catch (err) {
       console.log(err)
-      next(new HttpException(500, 'Error quering database'))
+/*SDA CUSTOM*/ next(new HttpException(500, DashboardController.parseDbErrorMySQL(err)))
     }
   }
-
-
-  
   //Check if a value is not numeric
-  
   static isNotNumeric(val) {
 
     let isNotNumeric = false;
@@ -1794,7 +1790,7 @@ export class DashboardController {
       return res.status(200).json(output)
     } catch (err) {
       console.log(err)
-      next(new HttpException(500, 'Error quering database'))
+/*SDA CUSTOM*/ next(new HttpException(500, DashboardController.parseDbErrorMySQL(err)))
     }
   }
 
@@ -1933,6 +1929,40 @@ export class DashboardController {
 
     return res.status(200).json({ ok: true })
   }
+
+/*SDA CUSTOM*/ static parseDbErrorMySQL(err: any): string {
+/*SDA CUSTOM*/   /**Parse a database error and return a descriptive message for the user. */
+/*SDA CUSTOM*/   const msg: string = err?.message || '';
+/*SDA CUSTOM*/
+/*SDA CUSTOM*/   // Unknown column in 'field list'
+/*SDA CUSTOM*/   // Error number: 1054; Symbol: ER_BAD_FIELD_ERROR; 
+/*SDA CUSTOM*/   const unknownColumn = msg.match(/Unknown column '([^']+)' in '([^']+)'/i);
+/*SDA CUSTOM*/   if (unknownColumn) {
+/*SDA CUSTOM*/     return `El campo '${unknownColumn[1]}' está incluido en el informe, pero no está disponible en la base de datos.`;
+/*SDA CUSTOM*/   }
+/*SDA CUSTOM*/
+/*SDA CUSTOM*/   //Error number: 1146; Symbol: ER_NO_SUCH_TABLE; SQLSTATE: 42S02
+/*SDA CUSTOM*/   // Table  doesn't exist
+/*SDA CUSTOM*/   const unknownTable = msg.match(/Table '([^']+)' doesn't exist/i);
+/*SDA CUSTOM*/   if (unknownTable) {
+/*SDA CUSTOM*/     const tableName = unknownTable[1].split('.').pop();
+/*SDA CUSTOM*/     return `La tabla '${tableName}' no existe en la base de datos. Revise el modelo de datos.`;
+/*SDA CUSTOM*/   }
+/*SDA CUSTOM*/
+/*SDA CUSTOM*/   // Error number: 1698; Symbol: ER_ACCESS_DENIED_NO_PASSWORD_ERROR; SQLSTATE: 28000
+/*SDA CUSTOM*/   // Access denied for user
+/*SDA CUSTOM*/   if (/Access denied for user/i.test(msg)) {
+/*SDA CUSTOM*/     return `Acceso denegado a la base de datos. Revise las credenciales de conexión.`;
+/*SDA CUSTOM*/   }
+/*SDA CUSTOM*/   
+/*SDA CUSTOM*/   // Generic fallback with the MYSQL/MARIADB original message
+/*SDA CUSTOM*/   if (msg) {
+/*SDA CUSTOM*/     return `Error al consultar la base de datos: ${msg}`;
+/*SDA CUSTOM*/   }
+/*SDA CUSTOM*/
+/*SDA CUSTOM*/   // if bbdd is not MySQL or MariaDB return default value
+/*SDA CUSTOM*/   return 'Error quering database';
+/*SDA CUSTOM*/ }
 }
 
 function insertServerLog(
