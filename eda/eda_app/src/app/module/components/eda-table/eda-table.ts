@@ -73,8 +73,8 @@ export class EdaTable {
     public resultAsPecentage: boolean = false;
     public onlyPercentages: boolean = false;
     public percentageColumns: Array<any> = [];
-    public noRepetitions: boolean; 
-    public negativeNumbers: boolean; 
+    public noRepetitions: boolean;
+    public negativeNumbers: boolean;
     public origValues: any[] = [];
 
 
@@ -103,7 +103,7 @@ export class EdaTable {
     set value(values: any[]) {
         if( this.origValues.length == 0 ){
             this.origValues = _.cloneDeep(values);
-        } 
+        }
         this.clear();
         this._value = values;
         /* Inicialitzar filtres */
@@ -234,7 +234,7 @@ export class EdaTable {
         }
         if (this.withColSubTotals) {
             event ? this.colSubTotals(event.first / event.rows + 1) : this.colSubTotals(1);
-        } 
+        }
         if (!this.pivot) {
             this.noRepeatedRows();
         }
@@ -338,7 +338,7 @@ export class EdaTable {
                 valuesKeys.forEach(key => {
                     totals[key] = 0;
                     row[key] = 0;
-                });                
+                });
 
                 numericCols.forEach(key => {
                     valuesKeys.forEach(valueKey => {
@@ -597,7 +597,7 @@ export class EdaTable {
 
         for (let i = offset; i < lastValue; i++) {
             for (let j = 0; j < keys.length; j++) {
-                const currentCol = this.cols.filter(col => col.field === keys[j])[0];                
+                const currentCol = this.cols.filter(col => col.field === keys[j])[0];
                 if (i < values.length) {
                     if (currentCol.type === "EdaColumnNumber") {
                         if(values[i][keys[j]] === '') {
@@ -650,9 +650,9 @@ export class EdaTable {
         //Es una secuencia similar a la de quitar los valores, pero opuesta.
         if (!this.noRepetitions &&  !this.resultAsPecentage && !this.onlyPercentages) {
             // si no he tocado nada, dejo el valor origintal
-            if (this.noRepetitions !== undefined) { 
-                // securityTable check 
-                this.value = _.cloneDeep(this.origValues); 
+            if (this.noRepetitions !== undefined) {
+                // securityTable check
+                this.value = _.cloneDeep(this.origValues);
             }
         }  else if (!this.noRepetitions && ( this.resultAsPecentage || this.onlyPercentages)) {
             // si  quiero repetidos pero tengo porcentajes....
@@ -762,7 +762,7 @@ export class EdaTable {
 
             const numericColumns = Array.from(new Set(this.series[this.series.length - 1].labels
                 .map(serie => serie.title))).length;
-            
+
             this.series.forEach((serie, i) => {
                 serie.labels.forEach((column, j) => {
                     if (column.isTotal) {
@@ -777,7 +777,7 @@ export class EdaTable {
 
                 });
             })
-            
+
         }
         if (this.onlyPercentages === true) {
             this.cols.forEach(col => {
@@ -788,7 +788,7 @@ export class EdaTable {
         }
     }
 
-    removePercentages() {        
+    removePercentages() {
         const cols = [];
         const hidenColumns = this.cols.filter(col => col.visible === false).length > 0;
         //remove labels
@@ -833,7 +833,7 @@ export class EdaTable {
 
 
     public onSort($event) {
-        if (this.cols.find(col => col.field === $event.field).sortable) {            
+        if (this.cols.find(col => col.field === $event.field).sortable) {
             this.sortedColumn = $event;
             this.onSortColEvent.emit($event);
             this.checkTotals(null);
@@ -971,16 +971,16 @@ export class EdaTable {
 
         const tableColumns = [];
         params.mainCols.forEach(element => {
-            tableColumns.push(new EdaColumnText({ header: element['header'], field: element['field'] }))
+        /* SDA CUSTOM */ tableColumns.push(new EdaColumnText({ header: element['header'], field: element['field'], rangeOption: element['rangeOption'] }))
         })
         newColNames.forEach(col => {
             tableColumns.push(new EdaColumnNumber({ header: col, field: col }));
         })
-        
+
         let newLabels = { mainsLabels: [], seriesLabels: [], metricsLabels: [] };
         newLabels.mainsLabels = params.mainColsLabels;
         newLabels.seriesLabels = params.newCols.splice(params.mainColsLabels.length);
-        
+
         return { cols: tableColumns, rows: newRows, newLabels: newLabels }
 
     }
@@ -1312,7 +1312,7 @@ export class EdaTable {
      * Generates params to build crosstable
      */
     generatePivotParams(): PivotTableSerieParams {
-        //get old rows to build new ones 
+        //get old rows to build new ones
         const oldRows = this.getValues();
         //get index for numeric and text/date columns
         const typesIndex = this.getColsInfo();

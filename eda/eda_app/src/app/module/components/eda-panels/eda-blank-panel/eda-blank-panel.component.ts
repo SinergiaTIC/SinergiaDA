@@ -139,6 +139,9 @@ export class EdaBlankPanelComponent implements OnInit {
     public aggregationText: string = $localize`:@@aggregationText:Agregación`;
     public textBetween: string = $localize`:@@textBetween:Entre`
     public emptyStringString: string = $localize`:@@emptyStringTxt:Vacío`
+/* SDA CUSTOM */ public lockPanelTooltip: string = $localize`:@@lockPanel:Bloquear panel`;
+/* SDA CUSTOM */ public unlockPanelTooltip: string = $localize`:@@unlockPanel:Desbloquear panel`;
+
 
 
     /** Query Variables */
@@ -305,6 +308,12 @@ export class EdaBlankPanelComponent implements OnInit {
 
         if(this.sortedFilters === undefined) this.sortedFilters = []; // if it is an old report, we define the report as empty
     }
+
+
+    /* SDA CUSTOM */  public toggleLock() {
+    /* SDA CUSTOM */    this.panel.locked = !this.panel.locked;
+    /* SDA CUSTOM */    this.dashboardService._notSaved.next(true);
+    /* SDA CUSTOM */  }
 
     /**
      * When selecting a node from the tree, it loads the columns to display.
@@ -525,6 +534,7 @@ export class EdaBlankPanelComponent implements OnInit {
 
 
         this.queryLimit = panelContent.query.query.queryLimit;
+/*SDA CUSTOM*/ this.joinType = panelContent.query.query.joinType || 'inner';
         PanelInteractionUtils.handleFilters(this, panelContent.query.query);
         PanelInteractionUtils.handleFilterColumns(this, panelContent.query.query.filters, panelContent.query.query.fields);
         this.chartForm.patchValue({chart: this.chartUtils.chartTypes.find(o => o.subValue === panelContent.edaChart)});
