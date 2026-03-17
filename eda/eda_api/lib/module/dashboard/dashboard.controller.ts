@@ -1938,7 +1938,7 @@ export class DashboardController {
 /*SDA CUSTOM*/   // Error number: 1054; Symbol: ER_BAD_FIELD_ERROR; 
 /*SDA CUSTOM*/   const unknownColumn = msg.match(/Unknown column '([^']+)' in '([^']+)'/i);
 /*SDA CUSTOM*/   if (unknownColumn) {
-/*SDA CUSTOM*/     return `El campo '${unknownColumn[1]}' está incluido en el informe, pero no está disponible en la base de datos.`;
+/*SDA CUSTOM*/     return `The field '${unknownColumn[1]}' is included in the report but is not available in the database.`;
 /*SDA CUSTOM*/   }
 /*SDA CUSTOM*/
 /*SDA CUSTOM*/   //Error number: 1146; Symbol: ER_NO_SUCH_TABLE; SQLSTATE: 42S02
@@ -1946,22 +1946,22 @@ export class DashboardController {
 /*SDA CUSTOM*/   const unknownTable = msg.match(/Table '([^']+)' doesn't exist/i);
 /*SDA CUSTOM*/   if (unknownTable) {
 /*SDA CUSTOM*/     const tableName = unknownTable[1].split('.').pop();
-/*SDA CUSTOM*/     return `La tabla '${tableName}' no existe en la base de datos. Revise el modelo de datos.`;
+/*SDA CUSTOM*/     return `Table '${tableName}' does not exist in the database. Please review the data model.`;
 /*SDA CUSTOM*/   }
 /*SDA CUSTOM*/
 /*SDA CUSTOM*/   // Error number: 1698; Symbol: ER_ACCESS_DENIED_NO_PASSWORD_ERROR; SQLSTATE: 28000
 /*SDA CUSTOM*/   // Access denied for user
 /*SDA CUSTOM*/   if (/Access denied for user/i.test(msg)) {
-/*SDA CUSTOM*/     return `Acceso denegado a la base de datos. Revise las credenciales de conexión.`;
+/*SDA CUSTOM*/     return `Access denied to the database. Please check the connection credentials.`;
 /*SDA CUSTOM*/   }
-/*SDA CUSTOM*/   
+/*SDA CUSTOM*/
 /*SDA CUSTOM*/   // Generic fallback with the MYSQL/MARIADB original message
 /*SDA CUSTOM*/   if (msg) {
-/*SDA CUSTOM*/     return `Error al consultar la base de datos: ${msg}`;
+/*SDA CUSTOM*/     return `Database query error: ${msg.length > 500 ? msg.substring(0, 500) + '...' : msg}`;
 /*SDA CUSTOM*/   }
 /*SDA CUSTOM*/
 /*SDA CUSTOM*/   // if bbdd is not MySQL or MariaDB return default value
-/*SDA CUSTOM*/   return 'Error quering database';
+/*SDA CUSTOM*/   return 'Error querying database';
 /*SDA CUSTOM*/ }
 }
 
