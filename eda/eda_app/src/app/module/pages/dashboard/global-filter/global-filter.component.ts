@@ -598,7 +598,9 @@ export class GlobalFilterComponent implements OnInit {
                     const columnName = filter.column?.value?.column_name || filter.selectedColumn.column_name;
 
                     if (columnName === paramColumn) {
-                        filter.selectedItems = _.split(urlParams[param], '|');
+                        const rawValue = urlParams[param];
+                        filter.selectedItems = Array.isArray(rawValue) ? rawValue : _.split(rawValue, '|');
+                        filter.selectedIdValues = filter.selectedItems.map(() => null);
 
                         filter.panelList
                             .map(id => this.dashboard.panels.find(p => p.id === id))
