@@ -473,8 +473,8 @@ export class EdaTable {
                 if (firstNonNumericRow) {
                     this.partialTotalsRow.push({ data: `${this.SubTotals} `, border: " ", class: 'sub-total-row-header', type: col.type });
                     firstNonNumericRow = false;
-                } else {
-/**SDA CUSTOM  */   // WE ADD THE PERCENTAGE COLUMNS HERE
+                } else if (col.type === 'EdaColumnPercentage') {
+/**SDA CUSTOM  */   // WE ADD THE PERCENTAGE COLUMNS HERE (only for EdaColumnPercentage columns)
 /**SDA CUSTOM  */   let percentage: string;
 /**SDA CUSTOM  */   if (!this.pivot) {
 /**SDA CUSTOM  */       // Non-pivot: percentage = (subtotal / grand total) * 100
@@ -500,6 +500,9 @@ export class EdaTable {
 /**SDA CUSTOM  */   this.partialTotalsRow.push({
 /**SDA CUSTOM  */       data: percentage + '%', border: ' ', class: 'total-row-header text-right', type: col.type
 /**SDA CUSTOM  */   });
+                } else {
+/**SDA CUSTOM  */   // Non-numeric, non-percentage columns (text, date, etc.) show empty cell
+/**SDA CUSTOM  */   this.partialTotalsRow.push({ data: '', border: ' ', class: 'total-row-header', type: col.type });
                 }
             }
         });
@@ -564,8 +567,8 @@ export class EdaTable {
 /**SDA CUSTOM  */   // add header
                     this.totalsRow.push({ data: `${this.Totals} `, border: " ", class: 'total-row-header', type: col.type });
                     firstNonNumericRow = false;
-                } else {
-/**SDA CUSTOM  */   //  WE ADD THE PERCENTAGE COLUMNS HERE
+                } else if (col.type === 'EdaColumnPercentage') {
+/**SDA CUSTOM  */   //  WE ADD THE PERCENTAGE COLUMNS HERE (only for EdaColumnPercentage columns)
 /**SDA CUSTOM  */   let percentage: string;
 /**SDA CUSTOM  */   if (!this.pivot) {
 /**SDA CUSTOM  */       // Non-pivot: the totals row is the sum of all rows = 100% of itself
@@ -585,6 +588,9 @@ export class EdaTable {
 /**SDA CUSTOM  */   this.totalsRow.push({
 /**SDA CUSTOM  */       data: percentage + '%', border: ' ', class: 'total-row-header text-right', type: col.type
 /**SDA CUSTOM  */   });
+                } else {
+/**SDA CUSTOM  */   // Non-numeric, non-percentage columns (text, date, etc.) show empty cell
+/**SDA CUSTOM  */   this.totalsRow.push({ data: '', border: ' ', class: 'total-row-header', type: col.type });
                 }
             }
         });
