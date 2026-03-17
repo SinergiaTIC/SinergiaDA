@@ -659,12 +659,13 @@ export class ChartUtilsService {
             notAllowed.splice(notAllowed.indexOf('dynamicText'), 1);
         }
         // Pie && Polar (Only one numeric column and one char/date column)
-        if (dataDescription.totalColumns === 2 && dataDescription.numericColumns.length === 1) {
+/* SDA CUSTOM */ if ((dataDescription.totalColumns === 2 && dataDescription.numericColumns.length === 1) ||
+/* SDA CUSTOM */    (dataDescription.totalColumns === 2 && dataDescription.numericColumns.length === 2))  {         
             notAllowed.splice(notAllowed.indexOf('doughnut'), 1);
             notAllowed.splice(notAllowed.indexOf('polarArea'), 1);
             notAllowed.splice(notAllowed.indexOf('kpibar'), 1);
             notAllowed.splice(notAllowed.indexOf('kpiline'), 1);
-            notAllowed.splice(notAllowed.indexOf('kpiarea',), 1);
+/* SDA CUSTOM */notAllowed.splice(notAllowed.indexOf('kpiarea'), 1);
         }
         // barchart i horizontalbar  poden ser grafics normals o poden ser histograms....
         if (dataDescription.numericColumns.length >= 1 && dataDescription.totalColumns > 1 && dataDescription.otherColumns.length < 2
