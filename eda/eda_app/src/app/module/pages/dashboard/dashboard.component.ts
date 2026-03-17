@@ -402,7 +402,8 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
 
         if (me.id) {
             me.dashboardService.getDashboard(me.id).subscribe(
-                res => {
+                async res => {
+                  try {
                     /** res - retorna 2 objectes, el dashboard i el datasource per separat  */
                     const config = res.dashboard.config;
                     // Estableix els permisos d'edició i propietat...
@@ -454,7 +455,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
                             })
                         );
                         // Check url for filters in params
-                        this.gFilter.findGlobalFilterByUrlParams(this.queryParams);
+                        await this.gFilter.findGlobalFilterByUrlParams(this.queryParams, me.panels);
                         this.gFilter.fillFiltersData();
 
                         me.dashboard = new Dashboard({
@@ -463,10 +464,11 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
                         });
 
                     } else {
+                        // Resolve URL filter codes BEFORE setting me.panels so Angular does not
+                        // render the panel components prematurely (before this.inject is ready).
+                        await this.gFilter.findGlobalFilterByUrlParams(this.queryParams, config.panel);
                         // Si te panels els carrega
                         me.panels = config.panel;
-                        // Check url for filters in params
-                        this.gFilter.findGlobalFilterByUrlParams(this.queryParams);
                         this.gFilter.fillFiltersData();
 
                         me.dashboard = new Dashboard({
@@ -496,6 +498,16 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
                         me.panelsCopy.push(p);
                     });
 
+                  } catch (err: any) {
+                    if (err.text === "DashboardInactive") {
+                        this.router.navigate(['/home']);
+                    } else if (err.text === "You don't have permission") {
+                        console.log("You don't have permission");
+                        this.router.navigate(['/login']);
+                    } else {
+                        this.alertService.addError(err);
+                    }
+                  }
                 },
                 err => {
 /* SDA CUSTOM*/                    if (err.text === "DashboardInactive") {

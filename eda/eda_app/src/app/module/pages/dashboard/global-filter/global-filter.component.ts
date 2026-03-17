@@ -473,7 +473,7 @@ export class GlobalFilterComponent implements OnInit {
         }
     }
 
-    private async loadGlobalFiltersData(globalFilter?: any): Promise<void> {
+    public async loadGlobalFiltersData(globalFilter?: any): Promise<void> {
         if (!globalFilter) {
             globalFilter = this.globalFilter;
         }
@@ -583,10 +583,12 @@ export class GlobalFilterComponent implements OnInit {
         }
     }
 
-    public findGlobalFilterByUrlParams(urlParams: any): void {
+    public async findGlobalFilterByUrlParams(urlParams: any, panels?: any[]): Promise<void> {
         if (Object.keys(urlParams).length === 0) {
             return;
         }
+
+        const panelList = panels || this.dashboard.panels;
 
         for (const filter of this.globalFilters) {
             for (const param of Object.keys(urlParams)) {
@@ -602,8 +604,15 @@ export class GlobalFilterComponent implements OnInit {
                         filter.selectedItems = Array.isArray(rawValue) ? rawValue : _.split(rawValue, '|');
                         filter.selectedIdValues = filter.selectedItems.map(() => null);
 
+                        // For valueListSource columns the URL param carries the display label,
+                        // so we need to resolve it to the actual code before building the filter.
+                        const hasValueListSource = filter.column?.value?.valueListSource || filter.selectedColumn?.valueListSource;
+                        if (hasValueListSource) {
+                            await this.loadGlobalFiltersData(filter);
+                        }
+
                         filter.panelList
-                            .map(id => this.dashboard.panels.find(p => p.id === id))
+                            .map(id => panelList.find(p => p.id === id))
                             .forEach((panel) => {
                                 const panelFilter = panel.content.query.query.filters;
                                 let formatedFilter = this.globalFilterService.formatFilter(filter);
