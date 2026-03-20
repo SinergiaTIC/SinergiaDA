@@ -402,8 +402,8 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
 
         if (me.id) {
             me.dashboardService.getDashboard(me.id).subscribe(
-                async res => {
-                  try {
+/* SDA CUSTOM */                async res => {
+/* SDA CUSTOM */                  try {
                     /** res - retorna 2 objectes, el dashboard i el datasource per separat  */
                     const config = res.dashboard.config;
                     // Estableix els permisos d'edició i propietat...
@@ -455,7 +455,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
                             })
                         );
                         // Check url for filters in params
-                        await this.gFilter.findGlobalFilterByUrlParams(this.queryParams, me.panels);
+/* SDA CUSTOM */                        await this.gFilter.findGlobalFilterByUrlParams(this.queryParams, me.panels);
                         this.gFilter.fillFiltersData();
 
                         me.dashboard = new Dashboard({
@@ -464,9 +464,9 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
                         });
 
                     } else {
-                        // Resolve URL filter codes BEFORE setting me.panels so Angular does not
-                        // render the panel components prematurely (before this.inject is ready).
-                        await this.gFilter.findGlobalFilterByUrlParams(this.queryParams, config.panel);
+/* SDA CUSTOM */                        // Resolve URL filter codes BEFORE setting me.panels so Angular does not
+/* SDA CUSTOM */                        // render the panel components prematurely (before this.inject is ready).
+/* SDA CUSTOM */                        await this.gFilter.findGlobalFilterByUrlParams(this.queryParams, config.panel);
                         // Si te panels els carrega
                         me.panels = config.panel;
                         this.gFilter.fillFiltersData();
@@ -498,16 +498,16 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
                         me.panelsCopy.push(p);
                     });
 
-                  } catch (err: any) {
-                    if (err.text === "DashboardInactive") {
-                        this.router.navigate(['/home']);
-                    } else if (err.text === "You don't have permission") {
-                        console.log("You don't have permission");
-                        this.router.navigate(['/login']);
-                    } else {
-                        this.alertService.addError(err);
-                    }
-                  }
+/* SDA CUSTOM */                  } catch (err: any) {
+/* SDA CUSTOM */                    if (err.text === "DashboardInactive") {
+/* SDA CUSTOM */                        this.router.navigate(['/home']);
+/* SDA CUSTOM */                    } else if (err.text === "You don't have permission") {
+/* SDA CUSTOM */                        console.log("You don't have permission");
+/* SDA CUSTOM */                        this.router.navigate(['/login']);
+/* SDA CUSTOM */                    } else {
+/* SDA CUSTOM */                        this.alertService.addError(err);
+/* SDA CUSTOM */                    }
+/* SDA CUSTOM */                  }
                 },
                 err => {
 /* SDA CUSTOM*/                    if (err.text === "DashboardInactive") {
