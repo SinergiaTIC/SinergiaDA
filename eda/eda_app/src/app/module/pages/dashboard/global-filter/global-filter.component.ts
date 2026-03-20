@@ -540,15 +540,15 @@ export class GlobalFilterComponent implements OnInit {
                 }
 
                 // If selectedItems has values but selectedIdValues is empty, derive selectedIdValues from selectedItems
-                if (globalFilter.selectedItems?.length > 0 && globalFilter.selectedIdValues.length === 0) {
-                    globalFilter.selectedIdValues = globalFilter.selectedItems
-                        .map((element: any) => data.find(d => d.label === element)?.id)
-                        .filter((id: any) => id !== undefined);
-                }
+                /* SDA CUSTOM */ if (globalFilter.selectedItems?.length > 0 && globalFilter.selectedIdValues.length === 0) {
+                /* SDA CUSTOM */     globalFilter.selectedIdValues = globalFilter.selectedItems
+                /* SDA CUSTOM */         .map((element: any) => data.find(d => d.label === element)?.id)
+                /* SDA CUSTOM */         .filter((id: any) => id !== undefined);
+                /* SDA CUSTOM */ }
 
                 globalFilter.selectedItems = globalFilter.selectedIdValues?.map(siv => {
                     const value = data.filter(d => d.id === siv);
-                    return value[0]?.value;
+                    return value[0]?.value; // SDA CUSTOM => ? added
                 })
 
 
