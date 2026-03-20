@@ -643,7 +643,7 @@ export class ChartUtilsService {
                 'table', 'crosstable', 'kpi','dynamicText', 'geoJsonMap', 'coordinatesMap',
                 'doughnut', 'polarArea', 'line', 'kpiline', 'area', 'kpiarea', 'bar', 'kpibar', 'histogram',  'funnel', 'bubblechart',
                 'horizontalBar', 'barline', 'stackedbar', 'parallelSets', 'treeMap', 'scatterPlot', 'knob' ,
-                'pyramid', 'radar', 'stackedbar100', 'treetable', 'sunburst'
+/*SDA CUSTOM*/  'pyramid', 'radar', 'stackedbar100', 'treetable', 'sunburst'
             ];
 
         //table (at least one column)
@@ -764,10 +764,10 @@ export class ChartUtilsService {
         }
 
 
-        // sunbrust two or more value columns and one numeric
-        if(  dataDescription.totalColumns > 2 && dataDescription.otherColumns.length >= 1 && dataDescription.numericColumns.length === 1  ) {
-            notAllowed.splice(notAllowed.indexOf('sunburst'), 1);
-        }
+/*SDA CUSTOM*/ // sunbrust two or more value columns and one numeric
+/*SDA CUSTOM*/ if(  dataDescription.totalColumns > 2 && dataDescription.otherColumns.length >= 1 && dataDescription.numericColumns.length === 1  ) {
+/*SDA CUSTOM*/     notAllowed.splice(notAllowed.indexOf('sunburst'), 1);
+/*SDA CUSTOM*/ }
 
 
         return notAllowed;
