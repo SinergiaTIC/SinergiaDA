@@ -166,7 +166,7 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
             this.availableRange = true;
         }
 
-        if(this.selectedColumn.valueListSource) this.isValueListSource = true; 
+        /* SDA CUSTOM */ if(this.selectedColumn.valueListSource) this.isValueListSource = true; 
     }
 
     private carregarValidacions(): void {
@@ -429,10 +429,10 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
                 this.filterValue = {};
             }
 
-            if(filter.value === "=" || filter.value === "!=") {
-                this.loadDropDrownData();
-                this.filter.switch = handler.switchBtn || this.isValueListSource;
-            }
+            /* SDA CUSTOM */ if(filter.value === "=" || filter.value === "!=") {
+            /* SDA CUSTOM */     this.loadDropDrownData();
+            /* SDA CUSTOM */     this.filter.switch = handler.switchBtn || this.isValueListSource;
+            /* SDA CUSTOM */ }
 
         } else {
             this.resetDisplay();
@@ -702,8 +702,8 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
     async loadDropDrownData() {
         this.filterValue.value1 = null;
         this.filterValue.value2 = null;
-/* SDA CUSTOM*/ this.dropDownFields = [];
-        if (this.filter.switch || this.isValueListSource) {
+        /* SDA CUSTOM*/ this.dropDownFields = [];
+        if (this.filter.switch || this.isValueListSource) {  // SDA CUSTOM => this.isValueListSource
             const column = _.cloneDeep(this.selectedColumn);
             column.table_id = column.table_id.split('.')[0];
             column.ordenation_type = 'Asc';
