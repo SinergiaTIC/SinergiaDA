@@ -468,25 +468,41 @@ export class EdaTable {
                         border: '',
                         type: col.type
                     });
-            } else if(col.type === "EdaColumnPercentage") { // Subtotal of the percentages
-
-                const value = Math.round(parseFloat(partialRow[col.field]));
-
-                this.partialTotalsRow.push(
-                    {
-                        data: !isNaN(value) ? `${value.toLocaleString('de-DE')}%` : "0%",
-                        style: "right",
-                        class: "sub-total-row",
-                        border: '',
-                        type: col.type
-                    });
             }
             else {
                 if (firstNonNumericRow) {
                     this.partialTotalsRow.push({ data: `${this.SubTotals} `, border: " ", class: 'sub-total-row-header', type: col.type });
                     firstNonNumericRow = false;
                 } else {
-                    this.partialTotalsRow.push({ data: " ", border: " ", class: 'sub-total-row', type: col.type });
+/**SDA CUSTOM  */   // WE ADD THE PERCENTAGE COLUMNS HERE
+                    if (!this.pivot && col.type === 'EdaColumnPercentage') {
+/**SDA CUSTOM  */       // For non-pivot tables: sum visible rows' percentage values
+                        const lastValue = Math.min(offset + this.initRows, this._value.length);
+                        const percentageSum = this._value.slice(offset, lastValue).reduce((sum, row) => {
+                            const val = parseFloat(String(row[col.field]).replace('%', ''));
+                            return sum + (isNaN(val) ? 0 : val);
+                        }, 0);
+                        this.partialTotalsRow.push({
+                            data: percentageSum.toFixed(2) + '%', border: ' ', class: 'total-row-header text-right', type: col.type
+                        });
+                    } else {
+/**SDA CUSTOM  */   //  To match we need to delete the % and add one or two space at the beginning
+/**SDA CUSTOM  */   // If the field starts with ~ ( no field name ) we add two spaces otherwise just one
+/**SDA CUSTOM  */   const baseField = (col.field.trimStart().startsWith('~') ? '  ' : ' ') + col.field.replace('%', '').trim();
+/**SDA CUSTOM  */
+/**SDA CUSTOM  */   const value: number = Number(partialRow[baseField]); // Actual row value
+/**SDA CUSTOM  */   const total: number = Object.keys(partialRow)// Get total row value
+/**SDA CUSTOM  */       .filter(key => !key.endsWith('%') && key.includes('~')) // N fields always contains ~ and ends with %
+/**SDA CUSTOM  */       .reduce((sum, key) => sum + Number(partialRow[key] || 0), 0);
+/**SDA CUSTOM  */
+/**SDA CUSTOM  */   // Calculate percentage (check if total is not zero to avoid division by zero ==> Infinity or NaN)
+/**SDA CUSTOM  */   const percentage = (!Number.isNaN(value) && !Number.isNaN(total) && total !== 0) ? ((value / total) * 100).toFixed(2) : '0';
+/**SDA CUSTOM  */
+/**SDA CUSTOM  */   // Push the total row value with % sign
+/**SDA CUSTOM  */   this.partialTotalsRow.push({
+/**SDA CUSTOM  */       data: percentage + '%', border: ' ', class: 'total-row-header text-right', type: col.type
+/**SDA CUSTOM  */   });
+                    }
                 }
             }
         });
@@ -553,19 +569,25 @@ export class EdaTable {
                     firstNonNumericRow = false;
                 } else {
 /**SDA CUSTOM  */   //  WE ADD THE PERCENTAGE COLUMNS HERE
+                    if (!this.pivot && col.type === 'EdaColumnPercentage') {
+/**SDA CUSTOM  */       // For non-pivot tables: sum all rows' percentage values
+                        const percentageSum = this._value.reduce((sum, dataRow) => {
+                            const val = parseFloat(String(dataRow[col.field]).replace('%', ''));
+                            return sum + (isNaN(val) ? 0 : val);
+                        }, 0);
+                        this.totalsRow.push({
+                            data: percentageSum.toFixed(2) + '%', border: ' ', class: 'total-row-header text-right', type: col.type
+                        });
+                    } else {
 /**SDA CUSTOM  */   //  To match we need to delete the % and add one or two space at the beginning
 /**SDA CUSTOM  */   // If the field starts with ~( no field name ) we add two spaces otherwise just one
-/**SDA CUSTOM  */   const baseField = this.pivot
-/**SDA CUSTOM  */       ? (col.field.trimStart().startsWith('~') ? '  ' : ' ') + col.field.replace('%', '').trim() // pivot fields have leading spaces
-/**SDA CUSTOM  */       : col.field.replace('%', '').trim(); // non-pivot fields have no leading spaces
-/**SDA CUSTOM  */                    
+/**SDA CUSTOM  */   const baseField = (col.field.trimStart().startsWith('~') ? '  ' : ' ') + col.field.replace('%', '').trim();
+/**SDA CUSTOM  */
 /**SDA CUSTOM  */   const value: number = Number(row[baseField]); // Actual row value
 /**SDA CUSTOM  */   const total: number = Object.keys(row)// Get total row value
-/**SDA CUSTOM  */       .filter(key => this.pivot
-/**SDA CUSTOM  */           ? (!key.endsWith('%') && key.includes('~'))  // pivot: numeric fields contain ~
-/**SDA CUSTOM  */           : (!key.endsWith('%') && this.cols.some(c => c.field === key && c.type === 'EdaColumnNumber'))) // non-pivot: EdaColumnNumber cols
+/**SDA CUSTOM  */       .filter(key => !key.endsWith('%') && key.includes('~')) // N fields always contains ~ and ends with %
 /**SDA CUSTOM  */       .reduce((sum, key) => sum + Number(row[key] || 0), 0);
-/**SDA CUSTOM  */                    
+/**SDA CUSTOM  */
 /**SDA CUSTOM  */   // Calculate percentage (check if total is not zero to avoid division by zero ==> Infinity or NaN)
 /**SDA CUSTOM  */   const percentage = (!Number.isNaN(value) && !Number.isNaN(total) && total !== 0) ? ((value / total) * 100).toFixed(2) : '0';
 /**SDA CUSTOM  */
@@ -573,6 +595,7 @@ export class EdaTable {
 /**SDA CUSTOM  */   this.totalsRow.push({
 /**SDA CUSTOM  */       data: percentage + '%', border: ' ', class: 'total-row-header text-right', type: col.type
 /**SDA CUSTOM  */   });
+                    }
 /**SDA CUSTOM  */}
             }
         });
@@ -602,16 +625,9 @@ export class EdaTable {
                     if (currentCol.type === "EdaColumnNumber") {
                         if(values[i][keys[j]] === '') {
                             row[keys[j]] = row[keys[j]] + 0;
-                        } 
+                        }
                         else {
                             row[keys[j]] = row[keys[j]] + parseFloat(values[i][keys[j]]);
-                        }
-                    } else if(currentCol.type === "EdaColumnPercentage") {
-                        if(values[i][keys[j]] === '') {
-                            row[keys[j]] = row[keys[j]] + 0;
-                        } 
-                        else {
-                            row[keys[j]] =  row[keys[j]] + parseFloat(values[i][keys[j]]);
                         }
                     }
                 }
@@ -656,21 +672,26 @@ export class EdaTable {
             }
         }  else if (!this.noRepetitions && ( this.resultAsPecentage || this.onlyPercentages)) {
             // si  quiero repetidos pero tengo porcentajes....
-            // Se usa acceso por nombre de campo para evitar desalineamiento posicional
-            // entre _value (porcentajes al final) y this.cols (porcentajes intercalados).
-            let output = [];
-            for (let i = 0; i < this._value.length; i += 1) {
-                const obj: any = {};
-                this.cols.forEach(col => {
-                    if (!['EdaColumnPercentage', 'EdaColumnNumber'].includes(col.type)) {
-                        obj[col.field] = this.origValues[i] ? this.origValues[i][col.field] : this._value[i][col.field];
-                    } else {
-                        obj[col.field] = this._value[i][col.field];
+        //separamos valores de claves
+        let values = this.extractDataValues(this.value);
+        //tomamos claves que serán el cabecero
+        let labels = this.extractLabels(this.value)
+        labels.shift(); //borramos el primer objeto.
+        let output = [];
+        // ESTO SE HACE PARA EVITAR REPETIDOS EN LA TABLA. SI UN CAMPO TIENE UNA COLUMNA QUE SE REPITE
+
+        for (let i = 0; i < values.length; i += 1) {
+            const obj = [];
+            for (let e = 0; e < values[i].length; e += 1) {
+                    if( ! ['EdaColumnPercentage', 'EdaColumnNumber'].includes(  this.cols[e].type ) ) {
+                        obj[labels[e]] =  this.origValues[i][labels[e]];
+                    }else{
+                        obj[labels[e]] = values[i][e];
                     }
-                });
-                output.push(obj);
             }
-            this.value = output;
+            output.push(obj);
+            }
+        this.value = output;
 
         }else {
             //separamos valores de claves
