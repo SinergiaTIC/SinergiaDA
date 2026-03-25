@@ -129,21 +129,14 @@
                         </ng-container>
 
                         <ng-container *ngIf="filter.switch">
-                            <span class="p-float-label mt-1 edaColumnDialogFilter">
-
-                                <p-multiSelect id="float-input" [options]="dropDownFields"
-                                    [(ngModel)]="filterValue.value1" [virtualScroll]="true" [itemSize]="34"
-                                    [filter]="true" defaultLabel="Selecciona..." [style]="{width: '100%'}"
-                                    (onChange)="handleValidForm({value1: filterValue.value1})"
-                                    [selectionLimit]="limitSelectionFields">
-                                </p-multiSelect>
-
-                                <label *ngIf="filterValue.value1" i18n="@@valorFiltrarLabel" for="float-input">
-                                    Valor a filtrar
-                                </label>
-
-                            </span>
-
+                            <div class="date-picker-single">
+                                <eda-date-picker
+                                    (onDatesChanges)="processPickerEvent($event)"
+                                    [filterSelected]="filterSelected"
+                                    [selectionMode]="(filterSelected?.value === 'in' || filterSelected?.value === 'not_in') ? 'range' : 'single'"
+                                >
+                                </eda-date-picker>
+                            </div>
                         </ng-container>
 
                     </div>
@@ -172,16 +165,16 @@
                 </ng-container>
 
                 <ng-container *ngIf="!!display.between">
-                    <div class="grid col-12">
+                    <div class="col-12 md:col-4">
                         <ng-container *ngIf="!!display.calendar && !filter.switch">
-                            <div class="col-6 mt-3">
-
-                                <div style="margin-top: -0.8em;">
-                                    <eda-date-picker #myCalendar (onDatesChanges)="processPickerEvent($event)">
+                            <div>
+                                <div class="date-picker-single">
+                                    <eda-date-picker 
+                                        #myCalendar 
+                                        (onDatesChanges)="processPickerEvent($event)"
+                                    >
                                     </eda-date-picker>
-
                                 </div>
-
                             </div>
 
                         </ng-container>
