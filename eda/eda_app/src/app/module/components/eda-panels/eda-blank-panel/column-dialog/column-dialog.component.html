@@ -129,14 +129,34 @@
                         </ng-container>
 
                         <ng-container *ngIf="filter.switch">
-                            <div class="date-picker-single">
+
+
+                            <span *ngIf="!(filterSelected?.value === 'in' || filterSelected?.value === 'not_in') || (selectedColumn.column_type === 'text' || selectedColumn.column_type === 'numeric')" class="p-float-label mt-1 edaColumnDialogFilter">
+
+                                <p-multiSelect id="float-input" [options]="dropDownFields"
+                                    [(ngModel)]="filterValue.value1" [virtualScroll]="true" [itemSize]="34"
+                                    [filter]="true" defaultLabel="Selecciona..." [style]="{width: '100%'}"
+                                    (onChange)="handleValidForm({value1: filterValue.value1})"
+                                    [selectionLimit]="limitSelectionFields">
+                                </p-multiSelect>
+
+                                <label *ngIf="filterValue.value1" i18n="@@valorFiltrarLabel" for="float-input">
+                                    Valor a filtrar
+                                </label>
+
+                            </span>
+
+                            
+                            <div *ngIf="(filterSelected?.value === 'in' || filterSelected?.value === 'not_in') && selectedColumn.column_type === 'date'" class="date-picker-single">
                                 <eda-date-picker
                                     (onDatesChanges)="processPickerEvent($event)"
                                     [filterSelected]="filterSelected"
                                     [selectionMode]="(filterSelected?.value === 'in' || filterSelected?.value === 'not_in') ? 'range' : 'single'"
                                 >
                                 </eda-date-picker>
-                            </div>
+                            </div> 
+                           
+
                         </ng-container>
 
                     </div>

@@ -408,6 +408,7 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
     handleFilterChange(filter: FilterType) {
 
         console.log('filterfilterfilter:::: ', filter);
+        console.log('selectedColumn:::: ', this.selectedColumn);
 
         if (filter) {
             const handler = this.columnUtils.handleFilterChange(filter);
