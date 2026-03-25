@@ -17,6 +17,8 @@ export class EdaDatePickerComponent implements OnChanges {
 	@Input() inject: EdaDatePickerConfig;
 	@Input() autoRemove: boolean = false;
 	@Input() autoClear: boolean = false;
+	@Input() filterSelected: any = {};
+	@Input() selectionMode: string = "range";
 	@Output() onDatesChanges = new EventEmitter<any>();
 	@Output() onRemove = new EventEmitter<void>();
 
@@ -90,6 +92,10 @@ export class EdaDatePickerComponent implements OnChanges {
 	}
 
 	ngOnChanges(changes: SimpleChanges): void {
+
+		// debugger;
+		console.log('filterSelected: ', this.filterSelected)
+
 		if (this.inject) {
 			if (!this.selectedRange && this.inject.range) {
 				this.selectedRange = this.ranges.filter(r => r.value === this.inject.range)[0].value;
@@ -98,10 +104,17 @@ export class EdaDatePickerComponent implements OnChanges {
 				this.rangeDates = this.inject.dateRange;
 			}
 		}
+
+		// Control for single selection 
+		if(['=', '!=', '>', '<', '>=', '<='].includes(this.filterSelected.value)) {
+			this.ranges = this.ranges.filter(r => ['beforeYesterday', 'yesterday', 'today', 'pastTomorrow'].includes(r.value));
+		}
 	}
 
 	public emitChanges(): void {
-		this.onDatesChanges.emit({ dates: this.rangeDates, range: this.selectedRange });
+		let dates = this.rangeDates;
+		if (this.selectionMode === 'single' && dates && !Array.isArray(dates)) dates = [dates, dates];
+		this.onDatesChanges.emit({ dates, range: this.selectedRange });
 		this.active = false;
 	}
 
@@ -125,6 +138,7 @@ export class EdaDatePickerComponent implements OnChanges {
 
 	public getRange() {
 		const value = <any>this.selectedRange;
-		this.rangeDates = this.dateUtilsService.getRange(value);
+		const dates = this.dateUtilsService.getRange(value);
+		this.rangeDates = this.selectionMode === 'single' ? dates[0] : dates;
 	}
 }

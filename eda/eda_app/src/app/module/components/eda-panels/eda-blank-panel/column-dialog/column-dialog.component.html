@@ -100,16 +100,14 @@
 
                         <ng-container *ngIf="!!display.calendar && !filter.switch">
 
-                            <div >
-
-                                <!-- <label i18n="@@fechaLabel" class="p-float-label" for="datepicker">
-                                    Fecha
-                                </label> -->
-
-                                <input id="datepicker" [type]="inputType" class="w-100" [(ngModel)]="filterValue.value1"
-                                    (input)="handleValidForm({value1: $event.target.value})" pInputText required>
-
-
+                            <div class="date-picker-single">
+                                <eda-date-picker 
+                                    #myCalendar 
+                                    (onDatesChanges)="processPickerEvent($event)"
+                                    [filterSelected]="filterSelected"
+                                    [selectionMode]="'single'"
+                                >
+                                </eda-date-picker>
                             </div>
 
                         </ng-container>
@@ -131,7 +129,6 @@
                         </ng-container>
 
                         <ng-container *ngIf="filter.switch">
-
                             <span class="p-float-label mt-1 edaColumnDialogFilter">
 
                                 <p-multiSelect id="float-input" [options]="dropDownFields"
@@ -177,15 +174,9 @@
                 <ng-container *ngIf="!!display.between">
                     <div class="grid col-12">
                         <ng-container *ngIf="!!display.calendar && !filter.switch">
-
                             <div class="col-6 mt-3">
 
                                 <div style="margin-top: -0.8em;">
-
-                                    <!-- <label i18n="@@DateSelectRange" class="p-float-label" for="datepicker1">
-                                        Selecciona un rango
-                                    </label> -->
-
                                     <eda-date-picker #myCalendar (onDatesChanges)="processPickerEvent($event)">
                                     </eda-date-picker>
 
@@ -193,25 +184,9 @@
 
                             </div>
 
-                            <!-- <div class="col-6 mt-3">
-
-                                <div class="form-group mb-0">
-
-                                    <label i18n="@@fechaFinalLabel" class="p-float-label" for="datepicker2">
-                                        Fecha final
-                                    </label>
-
-                                    <input id="datepicker2" [type]="inputType" class="w-100" [(ngModel)]="filterValue.value2"
-                                        (input)="handleValidForm({value2: $event.target.value})" pInputText required>
-
-                                </div>
-
-                            </div> -->
-
                         </ng-container>
 
                         <ng-container *ngIf="!display.calendar && !filter.switch">
-
                             <div class="col-6 mt-3">
 
                                 <span class="p-float-label">
@@ -247,22 +222,26 @@
                         </ng-container>
 
                         <ng-container *ngIf="filter.switch">
-
                             <div class="col-6 mt-3">
 
                                 <div class="form-group mb-0">
 
-                                    <!-- <label i18n="@@valor1Label" class="p-float-label" for="float-input1">
-                                        Valor 1
-                                    </label> -->
-
+                                    <div class="date-picker-single">
+                                        <eda-date-picker 
+                                            #myCalendar 
+                                            (onDatesChanges)="processPickerEvent($event)"
+                                            [filterSelected]="filterSelected"
+                                        >
+                                        </eda-date-picker>
+                                    </div>
+                                    <!-- 
                                     <p-multiSelect [options]="dropDownFields" [(ngModel)]="filterValue.value1"
                                         [virtualScroll]="true" [itemSize]="34" [filter]="false" [style]="{width: '100%'}"
                                         [panelStyle]="{minWidth:'100%'}"
                                         (onChange)="handleValidForm({value1: filterValue.value1})"
                                         defaultLabel="Selecciona Valor 1" [selectionLimit]="limitSelectionFields"
                                         id="float-input1">
-                                    </p-multiSelect>
+                                    </p-multiSelect> -->
 
                                 </div>
 

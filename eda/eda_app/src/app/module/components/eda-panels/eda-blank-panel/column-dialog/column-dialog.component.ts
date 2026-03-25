@@ -406,6 +406,9 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
 
 
     handleFilterChange(filter: FilterType) {
+
+        console.log('filterfilterfilter:::: ', filter);
+
         if (filter) {
             const handler = this.columnUtils.handleFilterChange(filter);
             this.display.between = handler.between;
@@ -750,6 +753,12 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
     }
 
     processPickerEvent(event) {
+
+        console.log('event: ', event);
+        console.log('selectedColumn: ', this.selectedColumn);
+        console.log('filter: ', this.filter);
+        console.log('filterSelected: ', this.filterSelected);
+
         if (event.dates) {
             const dtf = new Intl.DateTimeFormat('en', { year: 'numeric', month: '2-digit', day: '2-digit' });
             if (!event.dates[1]) {
@@ -764,7 +773,9 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
 
             this.filter.range = event.range;
             this.filterValue.value1 = stringRange[0];
-            this.filterValue.value2 = stringRange[1];
+            if (this.display.between) {
+                this.filterValue.value2 = stringRange[1];
+            }
             this.display.filterButton = false;
         }
     }
