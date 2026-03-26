@@ -17,8 +17,8 @@ export class EdaDatePickerComponent implements OnChanges {
 	@Input() inject: EdaDatePickerConfig;
 	@Input() autoRemove: boolean = false;
 	@Input() autoClear: boolean = false;
-	@Input() filterSelected: any = {};
-	@Input() selectionMode: string = "range";
+	/**SDA CUSTOM  */@Input() filterSelected: any = {};
+	/**SDA CUSTOM  */@Input() selectionMode: string = "range";
 	@Output() onDatesChanges = new EventEmitter<any>();
 	@Output() onRemove = new EventEmitter<void>();
 
@@ -91,14 +91,10 @@ export class EdaDatePickerComponent implements OnChanges {
 		this.locale = lan_ca.test(url) ? locales.ca : lan_es.test(url) ? locales.es : locales.en;
 		//this.firstDayOfWeek = lan_es.test(url) || lan_ca.test(url) ? 1 : 0;
 		this.firstDayOfWeek = lan_es.test(url) || lan_ca.test(url) ? 1 : 1;
-		this._allRanges = [...this.ranges];
+		/**SDA CUSTOM  */this._allRanges = [...this.ranges];
 	}
 
 	ngOnChanges(changes: SimpleChanges): void {
-
-		// debugger;
-		console.log('filterSelected: ', this.filterSelected)
-
 		if (this.inject) {
 			if (!this.selectedRange && this.inject.range) {
 				this.selectedRange = this.ranges.filter(r => r.value === this.inject.range)[0].value;
@@ -109,15 +105,15 @@ export class EdaDatePickerComponent implements OnChanges {
 		}
 
 		// Control for single selection 
-		this.ranges = [...this._allRanges];
-		if(['=', '!=', '>', '<', '>=', '<='].includes(this.filterSelected?.value)) {
-			this.ranges = this.ranges.filter(r => ['beforeYesterday', 'yesterday', 'today', 'pastTomorrow'].includes(r.value));
-		}
+		/**SDA CUSTOM  */ this.ranges = [...this._allRanges];
+		/**SDA CUSTOM  */ if(['=', '!=', '>', '<', '>=', '<='].includes(this.filterSelected?.value)) {
+		/**SDA CUSTOM  */ 	this.ranges = this.ranges.filter(r => ['beforeYesterday', 'yesterday', 'today', 'pastTomorrow'].includes(r.value));
+		/**SDA CUSTOM  */ }
 	}
 
 	public emitChanges(): void {
-		let dates = this.rangeDates;
-		if (this.selectionMode === 'single' && dates && !Array.isArray(dates)) dates = [dates, dates];
+		/**SDA CUSTOM  */ let dates = this.rangeDates;
+		/**SDA CUSTOM  */ if (this.selectionMode === 'single' && dates && !Array.isArray(dates)) dates = [dates, dates];
 		this.onDatesChanges.emit({ dates, range: this.selectedRange });
 		this.active = false;
 	}
@@ -142,8 +138,8 @@ export class EdaDatePickerComponent implements OnChanges {
 
 	public getRange() {
 		const value = <any>this.selectedRange;
-		const dates = this.dateUtilsService.getRange(value);
+		/**SDA CUSTOM  */ const dates = this.dateUtilsService.getRange(value);
 		this.rangeDates = this.selectionMode === 'single' ? dates[0] : dates;
-		this.emitChanges();
+		/**SDA CUSTOM  */ this.emitChanges();
 	}
 }

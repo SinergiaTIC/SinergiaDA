@@ -406,11 +406,6 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
 
 
     handleFilterChange(filter: FilterType) {
-
-        console.log('filterfilterfilter:::: ', filter);
-        console.log('selectedColumn:::: ', this.selectedColumn);
-        // debugger;
-
         if (filter) {
             const handler = this.columnUtils.handleFilterChange(filter);
             this.display.between = handler.between;
@@ -419,11 +414,11 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
             this.display.switchButton = _.isEqual(filter.value, 'not_null') || _.isEqual(filter.value, 'not_null_nor_empty') || _.isEqual(filter.value, 'null_or_empty'); // se usa para deshabilitar el boton que da las opciones en el selector.
             this.display.filterButton = filter.value == 'not_null' || filter.value == 'not_null_nor_empty' || filter.value == 'null_or_empty' ? false : true ;
             this.limitSelectionFields = handler.limitFields === 1 ? 1 : 50;
-            if(['in', 'not_in'].includes(filter.value) && this.selectedColumn.column_type === 'date') {
-                this.filter.switch = false;
-            } else {
-                this.filter.switch = handler.switchBtn;
-            }
+            /**SDA CUSTOM  */ if(['in', 'not_in'].includes(filter.value) && this.selectedColumn.column_type === 'date') {
+            /**SDA CUSTOM  */     this.filter.switch = false;
+            /**SDA CUSTOM  */ } else {
+            /**SDA CUSTOM  */     this.filter.switch = handler.switchBtn;
+            /**SDA CUSTOM  */ }
 
             if (handler.switchBtn) {
                 this.loadDropDrownData();
@@ -763,44 +758,38 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
 
     processPickerEvent(event) {
         this.dropDownFields = [];
-
-        console.log('event: ', event);
-        console.log('selectedColumn: ', this.selectedColumn);
-        console.log('filter: ', this.filter);
-        console.log('filterSelected: ', this.filterSelected);
-
         if (event.dates) {
             const dtf = new Intl.DateTimeFormat('en', { year: 'numeric', month: '2-digit', day: '2-digit' });
             const dates = Array.isArray(event.dates) ? event.dates : [event.dates, event.dates];
-            if (!dates[1]) {
-                dates[1] = dates[0];
-            }
+            /**SDA CUSTOM  */ if (!dates[1]) {
+            /**SDA CUSTOM  */     dates[1] = dates[0];
+            /**SDA CUSTOM  */ }
 
-            this.filter.range = event.range;
+            /**SDA CUSTOM  */ this.filter.range = event.range;
 
-            const isInFilter = this.filterSelected?.value === 'in' || this.filterSelected?.value === 'not_in';
-            if (isInFilter) {
-                const allDates = [];
-                const start = new Date(dates[0]);
-                const end = new Date(dates[1]);
-                start.setHours(0, 0, 0, 0);
-                end.setHours(0, 0, 0, 0);
-                for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
-                    const [{ value: mo }, , { value: da }, , { value: ye }] = dtf.formatToParts(new Date(d));
-                    allDates.push(`${ye}-${mo}-${da}`);
-                }
-                this.filterValue.value1 = allDates;
-            } else {
-                const stringRange = [dates[0], dates[1]].map(date => {
-                    const [{ value: mo }, , { value: da }, , { value: ye }] = dtf.formatToParts(date);
-                    return `${ye}-${mo}-${da}`;
-                });
-                this.filterValue.value1 = stringRange[0];
-                if (this.display.between) {
-                    this.filterValue.value2 = stringRange[1];
-                }
-            }
-            this.display.filterButton = false;
+            /**SDA CUSTOM  */ const isInFilter = this.filterSelected?.value === 'in' || this.filterSelected?.value === 'not_in';
+            /**SDA CUSTOM  */ if (isInFilter) {
+            /**SDA CUSTOM  */     const allDates = [];
+            /**SDA CUSTOM  */     const start = new Date(dates[0]);
+            /**SDA CUSTOM  */     const end = new Date(dates[1]);
+            /**SDA CUSTOM  */     start.setHours(0, 0, 0, 0);
+            /**SDA CUSTOM  */     end.setHours(0, 0, 0, 0);
+            /**SDA CUSTOM  */     for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
+            /**SDA CUSTOM  */         const [{ value: mo }, , { value: da }, , { value: ye }] = dtf.formatToParts(new Date(d));
+            /**SDA CUSTOM  */         allDates.push(`${ye}-${mo}-${da}`);
+            /**SDA CUSTOM  */     }
+            /**SDA CUSTOM  */     this.filterValue.value1 = allDates;
+            /**SDA CUSTOM  */ } else {
+            /**SDA CUSTOM  */     const stringRange = [dates[0], dates[1]].map(date => {
+            /**SDA CUSTOM  */         const [{ value: mo }, , { value: da }, , { value: ye }] = dtf.formatToParts(date);
+            /**SDA CUSTOM  */         return `${ye}-${mo}-${da}`;
+            /**SDA CUSTOM  */     });
+            /**SDA CUSTOM  */     this.filterValue.value1 = stringRange[0];
+            /**SDA CUSTOM  */     if (this.display.between) {
+            /**SDA CUSTOM  */         this.filterValue.value2 = stringRange[1];
+            /**SDA CUSTOM  */     }
+            /**SDA CUSTOM  */ }
+            /**SDA CUSTOM  */ this.display.filterButton = false;
         }
     }
                     // Function to rename the column in the query when the user changes the name in the dialog, also updates the title of the dialog
