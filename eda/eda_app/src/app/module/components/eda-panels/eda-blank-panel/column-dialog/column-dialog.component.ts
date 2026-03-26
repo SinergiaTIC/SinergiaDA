@@ -428,6 +428,8 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
             if (handler.switchBtn) {
                 this.loadDropDrownData();
                 this.display.switchButton = true;
+            } else {
+                this.dropDownFields = [];
             }
 
             if (!_.isEqual(filter.value, 'between')) {
@@ -695,6 +697,7 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
         this.display.calendar = false; // input calendar
         this.display.switchButton = true;
         this.filter.switch = false; // options switch
+        this.dropDownFields = [];
     }
 
     /** Query per dropdown  */
@@ -773,17 +776,10 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
                 dates[1] = dates[0];
             }
 
-            let stringRange = [dates[0], dates[1]]
-                .map(date => {
-                    let [{ value: mo }, , { value: da }, , { value: ye }] = dtf.formatToParts(date);
-                    return `${ye}-${mo}-${da}`
-                });
-
             this.filter.range = event.range;
 
             const isInFilter = this.filterSelected?.value === 'in' || this.filterSelected?.value === 'not_in';
             if (isInFilter) {
-                this.dropDownFields = [];
                 const allDates = [];
                 const start = new Date(dates[0]);
                 const end = new Date(dates[1]);
@@ -795,6 +791,10 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
                 }
                 this.filterValue.value1 = allDates;
             } else {
+                const stringRange = [dates[0], dates[1]].map(date => {
+                    const [{ value: mo }, , { value: da }, , { value: ye }] = dtf.formatToParts(date);
+                    return `${ye}-${mo}-${da}`;
+                });
                 this.filterValue.value1 = stringRange[0];
                 if (this.display.between) {
                     this.filterValue.value2 = stringRange[1];
