@@ -196,11 +196,12 @@
                                     </eda-date-picker>
                                 </div>
                             </div>
-
                         </ng-container>
+                    </div>
 
-                        <ng-container *ngIf="!display.calendar && !filter.switch">
-                            <div class="grid col-12">
+                    <ng-container *ngIf="!display.calendar && !filter.switch">
+                        <div class="col-12">
+                            <div class="grid">
 
                                 <div class="col-6 mt-3">
                                     <span class="p-float-label">
@@ -221,9 +222,8 @@
                                 </div>
 
                             </div>
-                        </ng-container>
-
-                    </div>
+                        </div>
+                    </ng-container>
 
                     <ng-container *ngIf="filter.switch">
                         <div class="col-12">
