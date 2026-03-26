@@ -102,10 +102,9 @@
 
                             <div class="date-picker-single">
                                 <eda-date-picker 
-                                    #myCalendar 
                                     (onDatesChanges)="processPickerEvent($event)"
                                     [filterSelected]="filterSelected"
-                                    [selectionMode]="'single'"
+                                    [selectionMode]="(filterSelected?.value === 'in' || filterSelected?.value === 'not_in') ? 'range' : 'single'"
                                 >
                                 </eda-date-picker>
                             </div>
