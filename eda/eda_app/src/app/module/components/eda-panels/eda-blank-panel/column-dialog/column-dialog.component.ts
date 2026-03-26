@@ -759,6 +759,7 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
     }
 
     processPickerEvent(event) {
+        this.dropDownFields = [];
 
         console.log('event: ', event);
         console.log('selectedColumn: ', this.selectedColumn);
