@@ -158,6 +158,12 @@ export class EdaBlankPanelComponent implements OnInit {
     public joinType: string = 'inner';
     public sortedFilters: any[] = [];
     public temporalSortedFilters: any[] = [];
+    public groupByEnabled: boolean = true;
+    public groupByEnabledMessage: string = "Mostrar Repetidos";
+    public groupByEnabledMessages: any = [
+        {value: true, message: "Mostrar Repetidos"},
+        {value: false, message: "Ocultar Repetidos"},
+    ];
 
     public queryModes: any[] = [
         /* SDA CUSTOM */ { label: $localize`:@@PanelModeSelectorEDA:Modo EDA`, value: 'EDA', disabled: true},
@@ -1969,6 +1975,14 @@ export class EdaBlankPanelComponent implements OnInit {
                 this.alertService.addWarning($localize`:@@filterSettingsReboot:La configuración de filtros se ha reiniciado`);
             }
             this.sortedFilters = [];
+        }
+    }
+
+    groupByEnabledButton() {
+        if(this.groupByEnabledMessage === 'Mostrar Repetidos') {
+            this.groupByEnabledMessage = this.groupByEnabledMessages[1].message;
+        } else {
+            this.groupByEnabledMessage = this.groupByEnabledMessages[0].message;
         }
     }
 
