@@ -32,6 +32,18 @@
 
             </div>
 
+            <ng-container *ngIf="!!display.between && !!display.calendar && !filter.switch">
+                <div class="col-12 md:col-4">
+                    <div class="date-picker-single">
+                        <eda-date-picker
+                            #myCalendar
+                            (onDatesChanges)="processPickerEvent($event)"
+                        >
+                        </eda-date-picker>
+                    </div>
+                </div>
+            </ng-container>
+
             <ng-container *ngIf="!display.between">
 
                 <div class="col-12 md:col-4" >
@@ -162,41 +174,7 @@
                     </ng-container>
         
                     <ng-container *ngIf="!!display.between">
-            
-                        <ng-container *ngIf="!!display.calendar && !filter.switch">
-        
-                            <div class="col-12 md:col-6 mt-3">
-        
-                                <div style="margin-top: -0.8em;" >
-        
-                                    <!-- <label i18n="@@fechaInicioLabel" for="datepicker">
-                                        Fecha inicio
-                                    </label> -->
-        
-                                    <eda-date-picker #myCalendar (onDatesChanges)="processPickerEvent($event)">
-                                    </eda-date-picker>
-        
-                                </div>
-        
-                            </div>
-        
-                            <!-- <div class="col-6 mt-3">
-        
-                                <div class="form-group mb-0">
-        
-                                    <label i18n="@@fechaFinalLabel" for="datepicker">
-                                        Fecha final
-                                    </label>
-        
-                                    <input id="datepicker" [type]="inputType" class="w-100" [(ngModel)]="filterValue.value2"
-                                        (input)="handleValidForm({value2: $event.target.value})" pInputText required>
-        
-                                </div>
-        
-                            </div> -->
-        
-                        </ng-container>
-        
+
                         <ng-container *ngIf="!display.calendar && !filter.switch">
         
                             <div class="col-12 md:col-4 mt-3">
