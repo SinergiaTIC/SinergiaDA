@@ -4590,6 +4590,14 @@ Un cop configurada podreu invocar-la des del botó sempre que calgui.</target>
         <source>elementos seleccionados</source>
         <target>elements seleccionats</target>
       </trans-unit>
+      <trans-unit id="groupByEnabledShow">
+        <source>Mostrar Repetidos</source>
+        <target>Mostrar repetits</target>
+      </trans-unit>
+      <trans-unit id="groupByEnabledHide">
+        <source>Ocultar Repetidos</source>
+        <target>Ocultar Repetits</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>

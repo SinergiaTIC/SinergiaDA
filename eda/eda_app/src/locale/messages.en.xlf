@@ -4695,6 +4695,14 @@ Once configured you can invoke it whenever you want from the button.</target>
         <source>elementos seleccionados</source>
         <target>selected items</target>
       </trans-unit>
+      <trans-unit id="groupByEnabledShow">
+        <source>Mostrar Repetidos</source>
+        <target>Show Duplicates</target>
+      </trans-unit>
+      <trans-unit id="groupByEnabledHide">
+        <source>Ocultar Repetidos</source>
+        <target>Hide Duplicates</target>
+      </trans-unit>
         </body>
   </file>
 </xliff>

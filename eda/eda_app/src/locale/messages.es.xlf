@@ -4584,6 +4584,14 @@
         <source>elementos seleccionados</source>
         <target>elementos seleccionados</target>
       </trans-unit>
+      <trans-unit id="groupByEnabledShow">
+        <source>Mostrar Repetidos</source>
+        <target>Mostrar Repetidos</target>
+      </trans-unit>
+      <trans-unit id="groupByEnabledHide">
+        <source>Ocultar Repetidos</source>
+        <target>Ocultar Repetidos</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>

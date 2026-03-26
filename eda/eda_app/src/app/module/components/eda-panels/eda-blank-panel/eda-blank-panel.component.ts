@@ -161,8 +161,8 @@ export class EdaBlankPanelComponent implements OnInit {
     /* SDA CUSTOM */ public groupByEnabled: boolean = true;
     /* SDA CUSTOM */ public groupByEnabledMessage: string = "Mostrar Repetidos";
     /* SDA CUSTOM */ public groupByEnabledMessages: any = [
-    /* SDA CUSTOM */     {value: true, message: "Mostrar Repetidos"},
-    /* SDA CUSTOM */     {value: false, message: "Ocultar Repetidos"},
+    /* SDA CUSTOM */     {value: true, message: $localize`:@@groupByEnabledShow:Mostrar Repetidos`},
+    /* SDA CUSTOM */     {value: false, message: $localize`:@@groupByEnabledHide:Ocultar Repetidos`},
     /* SDA CUSTOM */ ];
 
     public queryModes: any[] = [
