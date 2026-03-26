@@ -350,7 +350,7 @@ export abstract class QueryBuilderService {
         const tables = this.dataModel.ds.model.tables.map(table => ({ name: table.table_name, query: table.query }));
         const joinType = this.queryTODO.joinType;
         const queryLimit = this.queryTODO.queryLimit;
-        const groupByEnabled = this.queryTODO.groupByEnabled !== undefined ? this.queryTODO.groupByEnabled : true;
+        /* SDA CUSTOM */ const groupByEnabled = this.queryTODO.groupByEnabled !== undefined ? this.queryTODO.groupByEnabled : true;
         const schema = this.dataModel.ds.connection.schema || 'public'; 
         const database = this.dataModel.ds.connection.database; 
         const forSelector = this.queryTODO.forSelector; 

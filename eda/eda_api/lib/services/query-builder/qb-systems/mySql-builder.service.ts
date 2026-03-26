@@ -262,9 +262,9 @@ export class MySqlBuilderService extends QueryBuilderService {
     }
 
     // GroupBy
-    if (grouping.length > 0 && ((groupByEnabled))) {
-      myQuery += '\ngroup by ' + grouping.join(', ');
-    }
+    /* SDA CUSTOM */ if (grouping.length > 0 && ((groupByEnabled))) {
+    /* SDA CUSTOM */   myQuery += '\ngroup by ' + grouping.join(', ');
+    /* SDA CUSTOM */ }
 
     //HAVING 
     myQuery += this.getHavingFilters(havingFilters);

@@ -158,12 +158,12 @@ export class EdaBlankPanelComponent implements OnInit {
     public joinType: string = 'inner';
     public sortedFilters: any[] = [];
     public temporalSortedFilters: any[] = [];
-    public groupByEnabled: boolean = true;
-    public groupByEnabledMessage: string = "Mostrar Repetidos";
-    public groupByEnabledMessages: any = [
-        {value: true, message: "Mostrar Repetidos"},
-        {value: false, message: "Ocultar Repetidos"},
-    ];
+    /* SDA CUSTOM */ public groupByEnabled: boolean = true;
+    /* SDA CUSTOM */ public groupByEnabledMessage: string = "Mostrar Repetidos";
+    /* SDA CUSTOM */ public groupByEnabledMessages: any = [
+    /* SDA CUSTOM */     {value: true, message: "Mostrar Repetidos"},
+    /* SDA CUSTOM */     {value: false, message: "Ocultar Repetidos"},
+    /* SDA CUSTOM */ ];
 
     public queryModes: any[] = [
         /* SDA CUSTOM */ { label: $localize`:@@PanelModeSelectorEDA:Modo EDA`, value: 'EDA', disabled: true},
@@ -500,10 +500,11 @@ export class EdaBlankPanelComponent implements OnInit {
      */
 
     public async buildGlobalconfiguration(panelContent: any) {
-
         const modeSQL = panelContent.query.query.modeSQL;
+        /* SDA CUSTOM */ const groupByEnabled = panelContent.query.query.groupByEnabled;
         const queryMode = this.selectedQueryMode;
         /*SDA CUSTOM*/ this.showHiddenColumn = true;
+        console.log()
 
         const currentQuery = panelContent.query.query.fields;
 
@@ -540,7 +541,8 @@ export class EdaBlankPanelComponent implements OnInit {
 
 
         this.queryLimit = panelContent.query.query.queryLimit;
-/*SDA CUSTOM*/ this.joinType = panelContent.query.query.joinType || 'inner';
+        /*SDA CUSTOM*/ this.joinType = panelContent.query.query.joinType || 'inner';
+        /* SDA CUSTOM */ this.groupByEnabled = groupByEnabled;
         PanelInteractionUtils.handleFilters(this, panelContent.query.query);
         PanelInteractionUtils.handleFilterColumns(this, panelContent.query.query.filters, panelContent.query.query.fields);
         this.chartForm.patchValue({chart: this.chartUtils.chartTypes.find(o => o.subValue === panelContent.edaChart)});
@@ -1978,12 +1980,13 @@ export class EdaBlankPanelComponent implements OnInit {
         }
     }
 
-    groupByEnabledButton() {
-        if(this.groupByEnabledMessage === 'Mostrar Repetidos') {
-            this.groupByEnabledMessage = this.groupByEnabledMessages[1].message;
-        } else {
-            this.groupByEnabledMessage = this.groupByEnabledMessages[0].message;
-        }
-    }
+    /* SDA CUSTOM */ groupByEnabledButton() {
+    /* SDA CUSTOM */     this.groupByEnabled = !this.groupByEnabled;
+    /* SDA CUSTOM */     if(this.groupByEnabledMessage === 'Mostrar Repetidos') {
+    /* SDA CUSTOM */         this.groupByEnabledMessage = this.groupByEnabledMessages[1].message;
+    /* SDA CUSTOM */     } else {
+    /* SDA CUSTOM */         this.groupByEnabledMessage = this.groupByEnabledMessages[0].message;
+    /* SDA CUSTOM */     }
+    /* SDA CUSTOM */ }
 
 }
