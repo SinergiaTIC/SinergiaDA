@@ -275,7 +275,12 @@ export class FilterDialogComponent extends EdaDialogAbstract {
             this.display.switchButton = _.isEqual(filter.value, 'not_null') || _.isEqual(filter.value, 'not_null_nor_empty') || _.isEqual(filter.value, 'null_or_empty') ? true : false ;
             this.display.filterButton = filter.value == 'not_null' || filter.value == 'not_null_nor_empty' || filter.value == 'null_or_empty' ? false : true ;
             this.limitSelectionFields = handler.limitFields === 1 ? 1 : 50;
-            this.filter.switch = handler.switchBtn;
+
+            if(['in', 'not_in'].includes(filter.value) && this.selectedColumn.column_type === 'date') {
+                this.filter.switch = false;
+            } else {
+                this.filter.switch = handler.switchBtn;
+            }
 
             if (handler.switchBtn) {
                 this.loadDropDrownData();
