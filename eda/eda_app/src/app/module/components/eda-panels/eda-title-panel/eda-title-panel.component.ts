@@ -20,6 +20,7 @@ export class EdaTitlePanelComponent implements OnInit {
     @Input() panel: EdaTitlePanel;
     @Input() inject: InjectEdaPanel;
     @Output() remove: EventEmitter<any> = new EventEmitter();
+/* SDA CUSTOM */    @Output() duplicate: EventEmitter<any> = new EventEmitter();
 
     titleClick: boolean = false;
     contextMenu: EdaContextMenu;
@@ -84,6 +85,14 @@ export class EdaTitlePanelComponent implements OnInit {
                             }
                           });
                     }
+/* SDA CUSTOM */                }),
+/* SDA CUSTOM */                new EdaContextMenuItem({
+/* SDA CUSTOM */                    label: $localize`:@@duplicatePanel:Duplicar panel`,
+/* SDA CUSTOM */                    icon: 'fa fa-copy',
+/* SDA CUSTOM */                    command: () => {
+/* SDA CUSTOM */                        this.contextMenu.hideContextMenu();
+/* SDA CUSTOM */                        this.duplicatePanel();
+/* SDA CUSTOM */                    }
                 })
             ]
         });
@@ -93,6 +102,34 @@ export class EdaTitlePanelComponent implements OnInit {
     public removePanel(): void {
         this.remove.emit(this.panel.id);
     }
+/* SDA CUSTOM */     public openEditDialog(): void {
+/* SDA CUSTOM */         this.editTittleController = new EdaDialogController({
+/* SDA CUSTOM */             params: { title: this.panel.title },
+/* SDA CUSTOM */             close: (event, response) => {
+/* SDA CUSTOM */                 if(!_.isEqual(event, EdaDialogCloseEvent.NONE)){
+/* SDA CUSTOM */                     this.panel.title = response.title;
+/* SDA CUSTOM */                     this.setPanelSize()
+/* SDA CUSTOM */                     this.dashboardService._notSaved.next(true);
+/* SDA CUSTOM */                 }
+/* SDA CUSTOM */                 this.editTittleController = null;
+/* SDA CUSTOM */             }
+/* SDA CUSTOM */         });
+/* SDA CUSTOM */     }
+
+/* SDA CUSTOM */    public duplicatePanel(): void {
+/* SDA CUSTOM */        const duplicatedPanel = _.cloneDeep(this.panel, true);
+/* SDA CUSTOM */        duplicatedPanel.id = this.generateUUID();
+/* SDA CUSTOM */        duplicatedPanel.y = duplicatedPanel.y + 1;
+/* SDA CUSTOM */        this.duplicate.emit(duplicatedPanel);
+/* SDA CUSTOM */    }
+
+/* SDA CUSTOM */    private generateUUID(): string {
+/* SDA CUSTOM */        return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+/* SDA CUSTOM */            const r = Math.random() * 16 | 0;
+/* SDA CUSTOM */            const v = c === 'x' ? r : (r & 0x3 | 0x8);
+/* SDA CUSTOM */            return v.toString(16);
+/* SDA CUSTOM */        });
+/* SDA CUSTOM */    }
 
     public setPanelSize(): void {
         let element: any;
