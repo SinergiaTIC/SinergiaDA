@@ -10,6 +10,7 @@ import { CachedQueryService } from '../../services/cache-service/cached-query.se
 import { QueryOptions } from 'mongoose'
 import ServerLogService from '../../services/server-log/server-log.service'
 import _ from 'lodash'
+import { getSdaDbErrorMessage, resolveSdaDbLang } from './SdaDbErrorMessages'
 const cache_config = require('../../../config/cache.config')
 const eda_api_config = require('../../../config/eda_api_config');
 export class DashboardController {
@@ -1454,7 +1455,7 @@ export class DashboardController {
       }
     } catch (err) {
       console.log(err)
-/*SDA CUSTOM*/ next(new HttpException(500, DashboardController.parseDbErrorMySQL(err)))
+/*SDA CUSTOM*/ next(new HttpException(500, DashboardController.parseDbErrorMySQL(err, req.acceptsLanguages(['es', 'ca', 'en', 'gl']))))
     }
   }
 
@@ -1649,7 +1650,7 @@ export class DashboardController {
       }
     } catch (err) {
       console.log(err)
-/*SDA CUSTOM*/ next(new HttpException(500, DashboardController.parseDbErrorMySQL(err)))
+/*SDA CUSTOM*/ next(new HttpException(500, DashboardController.parseDbErrorMySQL(err, req.acceptsLanguages(['es', 'ca', 'en', 'gl']))))
     }
   }
   //Check if a value is not numeric
@@ -1790,7 +1791,7 @@ export class DashboardController {
       return res.status(200).json(output)
     } catch (err) {
       console.log(err)
-/*SDA CUSTOM*/ next(new HttpException(500, DashboardController.parseDbErrorMySQL(err)))
+/*SDA CUSTOM*/ next(new HttpException(500, DashboardController.parseDbErrorMySQL(err, req.acceptsLanguages(['es', 'ca', 'en', 'gl']))))
     }
   }
 
@@ -1930,38 +1931,58 @@ export class DashboardController {
     return res.status(200).json({ ok: true })
   }
 
-/*SDA CUSTOM*/ static parseDbErrorMySQL(err: any): string {
-/*SDA CUSTOM*/   /**Parse a database error and return a descriptive message for the user. */
+/*SDA CUSTOM*/ static parseDbErrorMySQL(err: any, lang?: string | false): string {
+/*SDA CUSTOM*/   /** Parse a MySQL/MariaDB error and return a localized descriptive message for the user. */
 /*SDA CUSTOM*/   const msg: string = err?.message || '';
+/*SDA CUSTOM*/   const code: string = err?.code || '';
+/*SDA CUSTOM*/   const l = resolveSdaDbLang(lang);
 /*SDA CUSTOM*/
-/*SDA CUSTOM*/   // Unknown column in 'field list'
-/*SDA CUSTOM*/   // Error number: 1054; Symbol: ER_BAD_FIELD_ERROR; 
-/*SDA CUSTOM*/   const unknownColumn = msg.match(/Unknown column '([^']+)' in '([^']+)'/i);
-/*SDA CUSTOM*/   if (unknownColumn) {
-/*SDA CUSTOM*/     return `The field '${unknownColumn[1]}' is included in the report but is not available in the database.`;
+/*SDA CUSTOM*/   // Error number: 1054; Symbol: ER_BAD_FIELD_ERROR
+/*SDA CUSTOM*/   if (code === 'ER_BAD_FIELD_ERROR' || err?.errno === 1054) {
+/*SDA CUSTOM*/     const match = msg.match(/Unknown column '([^']+)'/i);
+/*SDA CUSTOM*/     return getSdaDbErrorMessage('unknownColumn', l, match ? match[1] : '?');
 /*SDA CUSTOM*/   }
 /*SDA CUSTOM*/
-/*SDA CUSTOM*/   //Error number: 1146; Symbol: ER_NO_SUCH_TABLE; SQLSTATE: 42S02
-/*SDA CUSTOM*/   // Table  doesn't exist
-/*SDA CUSTOM*/   const unknownTable = msg.match(/Table '([^']+)' doesn't exist/i);
-/*SDA CUSTOM*/   if (unknownTable) {
-/*SDA CUSTOM*/     const tableName = unknownTable[1].split('.').pop();
-/*SDA CUSTOM*/     return `Table '${tableName}' does not exist in the database. Please review the data model.`;
+/*SDA CUSTOM*/   // Error number: 1146; Symbol: ER_NO_SUCH_TABLE; SQLSTATE: 42S02
+/*SDA CUSTOM*/   if (code === 'ER_NO_SUCH_TABLE' || err?.errno === 1146) {
+/*SDA CUSTOM*/     const match = msg.match(/Table '([^']+)' doesn't exist/i);
+/*SDA CUSTOM*/     const tableName = match ? match[1].split('.').pop() : '?';
+/*SDA CUSTOM*/     return getSdaDbErrorMessage('unknownTable', l, tableName);
 /*SDA CUSTOM*/   }
 /*SDA CUSTOM*/
-/*SDA CUSTOM*/   // Error number: 1698; Symbol: ER_ACCESS_DENIED_NO_PASSWORD_ERROR; SQLSTATE: 28000
-/*SDA CUSTOM*/   // Access denied for user
-/*SDA CUSTOM*/   if (/Access denied for user/i.test(msg)) {
-/*SDA CUSTOM*/     return `Access denied to the database. Please check the connection credentials.`;
+/*SDA CUSTOM*/   // Error number: 1045/1698; Symbol: ER_ACCESS_DENIED_ERROR / ER_ACCESS_DENIED_NO_PASSWORD_ERROR
+/*SDA CUSTOM*/   if (code === 'ER_ACCESS_DENIED_ERROR' || code === 'ER_ACCESS_DENIED_NO_PASSWORD_ERROR' ||
+/*SDA CUSTOM*/       err?.errno === 1045 || err?.errno === 1698 || /Access denied for user/i.test(msg)) {
+/*SDA CUSTOM*/     return getSdaDbErrorMessage('accessDenied', l);
 /*SDA CUSTOM*/   }
 /*SDA CUSTOM*/
-/*SDA CUSTOM*/   // Generic fallback with the MYSQL/MARIADB original message
+/*SDA CUSTOM*/   // Error number: 1064; Symbol: ER_PARSE_ERROR
+/*SDA CUSTOM*/   if (code === 'ER_PARSE_ERROR' || err?.errno === 1064) {
+/*SDA CUSTOM*/     return getSdaDbErrorMessage('syntaxError', l);
+/*SDA CUSTOM*/   }
+/*SDA CUSTOM*/
+/*SDA CUSTOM*/   // Error number: 1040; Symbol: ER_CON_COUNT_ERROR
+/*SDA CUSTOM*/   if (code === 'ER_CON_COUNT_ERROR' || err?.errno === 1040) {
+/*SDA CUSTOM*/     return getSdaDbErrorMessage('tooManyConnections', l);
+/*SDA CUSTOM*/   }
+/*SDA CUSTOM*/
+/*SDA CUSTOM*/   // Error number: 1205; Symbol: ER_LOCK_WAIT_TIMEOUT
+/*SDA CUSTOM*/   if (code === 'ER_LOCK_WAIT_TIMEOUT' || err?.errno === 1205) {
+/*SDA CUSTOM*/     return getSdaDbErrorMessage('lockTimeout', l);
+/*SDA CUSTOM*/   }
+/*SDA CUSTOM*/
+/*SDA CUSTOM*/   // Node.js connection errors
+/*SDA CUSTOM*/   if (code === 'ECONNREFUSED' || code === 'ER_GET_CONNECTION_TIMEOUT') {
+/*SDA CUSTOM*/     return getSdaDbErrorMessage('connectionRefused', l);
+/*SDA CUSTOM*/   }
+/*SDA CUSTOM*/
+/*SDA CUSTOM*/   // Generic fallback with the original MySQL/MariaDB message
 /*SDA CUSTOM*/   if (msg) {
-/*SDA CUSTOM*/     return `Database query error: ${msg.length > 500 ? msg.substring(0, 500) + '...' : msg}`;
+/*SDA CUSTOM*/     const truncated = msg.length > 500 ? msg.substring(0, 500) + '...' : msg;
+/*SDA CUSTOM*/     return getSdaDbErrorMessage('generic', l, truncated);
 /*SDA CUSTOM*/   }
 /*SDA CUSTOM*/
-/*SDA CUSTOM*/   // if bbdd is not MySQL or MariaDB return default value
-/*SDA CUSTOM*/   return 'Error querying database';
+/*SDA CUSTOM*/   return getSdaDbErrorMessage('fallback', l);
 /*SDA CUSTOM*/ }
 }
 
