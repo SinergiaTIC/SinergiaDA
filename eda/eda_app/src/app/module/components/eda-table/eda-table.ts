@@ -485,6 +485,9 @@ export class EdaTable {
                         this.partialTotalsRow.push({
 /**SDA CUSTOM  */         data: Math.min(100, percentageSum).toFixed(2) + '%', border: ' ', class: 'total-row-header text-right', type: col.type
                         });
+/**SDA CUSTOM  */   } else if (!this.pivot) {
+/**SDA CUSTOM  */   // Non-pivot non-percentage column (text, date, etc.) → leave blank
+/**SDA CUSTOM  */   this.partialTotalsRow.push({ data: '', border: ' ', class: 'sub-total-row-header', type: col.type });
                     } else {
 /**SDA CUSTOM  */   //  To match we need to delete the % and add one or two space at the beginning
 /**SDA CUSTOM  */   // If the field starts with ~ ( no field name ) we add two spaces otherwise just one
@@ -578,6 +581,9 @@ export class EdaTable {
                         this.totalsRow.push({
 /**SDA CUSTOM  */         data: Math.min(100, percentageSum).toFixed(2) + '%', border: ' ', class: 'total-row-header text-right', type: col.type
                         });
+/**SDA CUSTOM  */   } else if (!this.pivot) {
+/**SDA CUSTOM  */   // Non-pivot non-percentage column (text, date, etc.) → leave blank
+/**SDA CUSTOM  */   this.totalsRow.push({ data: '', border: ' ', class: 'total-row-header', type: col.type });
                     } else {
 /**SDA CUSTOM  */   //  To match we need to delete the % and add one or two space at the beginning
 /**SDA CUSTOM  */   // If the field starts with ~( no field name ) we add two spaces otherwise just one
