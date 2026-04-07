@@ -470,7 +470,7 @@ export class EdaTable {
                     });
             }
             else {
-                if (firstNonNumericRow) {
+/**SDA CUSTOM  */if (firstNonNumericRow && col.type !== 'EdaColumnPercentage') {
                     this.partialTotalsRow.push({ data: `${this.SubTotals} `, border: " ", class: 'sub-total-row-header', type: col.type });
                     firstNonNumericRow = false;
                 } else {
@@ -483,7 +483,7 @@ export class EdaTable {
                             return sum + (isNaN(val) ? 0 : val);
                         }, 0);
                         this.partialTotalsRow.push({
-                            data: percentageSum.toFixed(2) + '%', border: ' ', class: 'total-row-header text-right', type: col.type
+/**SDA CUSTOM  */         data: Math.min(100, percentageSum).toFixed(2) + '%', border: ' ', class: 'total-row-header text-right', type: col.type
                         });
                     } else {
 /**SDA CUSTOM  */   //  To match we need to delete the % and add one or two space at the beginning
@@ -563,7 +563,7 @@ export class EdaTable {
                     });
             }
             else {
-                if (firstNonNumericRow) {
+/**SDA CUSTOM  */if (firstNonNumericRow && col.type !== 'EdaColumnPercentage') {
 /**SDA CUSTOM  */   // add header
                     this.totalsRow.push({ data: `${this.Totals} `, border: " ", class: 'total-row-header', type: col.type });
                     firstNonNumericRow = false;
@@ -576,7 +576,7 @@ export class EdaTable {
                             return sum + (isNaN(val) ? 0 : val);
                         }, 0);
                         this.totalsRow.push({
-                            data: percentageSum.toFixed(2) + '%', border: ' ', class: 'total-row-header text-right', type: col.type
+/**SDA CUSTOM  */         data: Math.min(100, percentageSum).toFixed(2) + '%', border: ' ', class: 'total-row-header text-right', type: col.type
                         });
                     } else {
 /**SDA CUSTOM  */   //  To match we need to delete the % and add one or two space at the beginning
@@ -683,7 +683,8 @@ export class EdaTable {
         for (let i = 0; i < values.length; i += 1) {
             const obj = [];
             for (let e = 0; e < values[i].length; e += 1) {
-                    if( ! ['EdaColumnPercentage', 'EdaColumnNumber'].includes(  this.cols[e].type ) ) {
+/**SDA CUSTOM  */   const colType = (this.cols.find(c => c.field === labels[e]) || {}).type;
+/**SDA CUSTOM  */   if( ! ['EdaColumnPercentage', 'EdaColumnNumber'].includes( colType ) ) {
                         obj[labels[e]] =  this.origValues[i][labels[e]];
                     }else{
                         obj[labels[e]] = values[i][e];
