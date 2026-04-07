@@ -746,7 +746,7 @@ export const PanelInteractionUtils = {
       _.map(ebp.currentQuery, selected => selected.table_id === c.table_id);
     }
 
-    const filters = ebp.selectedFilters.filter(f => f.filter_column === c.column_name && f.filter_table === c.table_id);
+    /**SDA CUSTOM  */ const filters = ebp.selectedFilters.filter(f => f.filter_column === c.column_name && f.filter_table === c.table_id);
     filters.forEach(f => ebp.selectedFilters = ebp.selectedFilters.filter(ff => ff.filter_id !== f.filter_id));
   }
 
