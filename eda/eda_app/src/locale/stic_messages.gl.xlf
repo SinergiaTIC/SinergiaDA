@@ -431,6 +431,88 @@
     <source>Desbloquear panel</source>
     <target>Desbloquear panel</target>
   </trans-unit>
+  <trans-unit id="colorKpiLabel">
+    <source>Color del KPI</source>
+    <target>Cor do KPI</target>
+  </trans-unit>
+  <trans-unit id="colorChartLabel">
+    <source>Color del gráfico</source>
+    <target>Cor do gráfico</target>
+  </trans-unit>
+  <trans-unit id="kpiLineH6">
+    <source>Línea</source>
+    <target>Liña</target>
+  </trans-unit>
+  <trans-unit id="kpiLineWidthLabel">
+    <source>Ancho de línea</source>
+    <target>Ancho da liña</target>
+  </trans-unit>
+  <trans-unit id="kpiLineStyleLabel">
+    <source>Estilo de línea</source>
+    <target>Estilo de liña</target>
+  </trans-unit>
+  <trans-unit id="kpiLineStyleSolid">
+    <source>Sólida</source>
+    <target>Sólida</target>
+  </trans-unit>
+  <trans-unit id="kpiLineStyleDashed">
+    <source>Discontinua</source>
+    <target>Descontinua</target>
+  </trans-unit>
+  <trans-unit id="kpiLineStyleDotted">
+    <source>Punteada</source>
+    <target>Punteada</target>
+  </trans-unit>
+  <trans-unit id="kpiXAxisH6">
+    <source>Eje horizontal</source>
+    <target>Eixe horizontal</target>
+  </trans-unit>
+  <trans-unit id="kpiXAxisShowLabel">
+    <source>Mostrar eje</source>
+    <target>Mostrar eixe</target>
+  </trans-unit>
+  <trans-unit id="kpiXAxisLabelsLabel">
+    <source>Mostrar etiquetas del eje</source>
+    <target>Mostrar etiquetas do eixe</target>
+  </trans-unit>
+  <trans-unit id="kpiXAxisAllLabelsLabel">
+    <source>Todas las etiquetas</source>
+    <target>Todas as etiquetas</target>
+  </trans-unit>
+  <trans-unit id="kpiXAxisLabelCountLabel">
+    <source>Número de etiquetas</source>
+    <target>Número de etiquetas</target>
+  </trans-unit>
+  <!-- SDA CUSTOM - KPI/chart option labels -->
+  <trans-unit id="showLabels">
+    <source>Mostrar etiquetas del gráfico</source>
+    <target>Mostrar etiquetas do gráfico</target>
+  </trans-unit>
+  <trans-unit id="showLabelsPercent">
+    <source>Mostrar Etiquetas en Porcentajes</source>
+    <target>Mostrar etiquetas en porcentaxes</target>
+  </trans-unit>
+  <trans-unit id="colorChartBorderLabel">
+    <source>Color del borde</source>
+    <target>Cor do bordo</target>
+  </trans-unit>
+  <trans-unit id="colorChartLineLabel">
+    <source>Color de la línea</source>
+    <target>Cor da liña</target>
+  </trans-unit>
+  <trans-unit id="colorChartFillLabel">
+    <source>Color de relleno</source>
+    <target>Cor de recheo</target>
+  </trans-unit>
+  <trans-unit id="kpiLabelColorLabel">
+    <source>Color de las etiquetas</source>
+    <target>Cor das etiquetas</target>
+  </trans-unit>
+  <trans-unit id="kpiLabelBackgroundColorLabel">
+    <source>Color de fondo de las etiquetas</source>
+    <target>Cor de fondo das etiquetas</target>
+  </trans-unit>
+  <!-- END SDA CUSTOM -->
 </body>
 </file>
 </xliff>

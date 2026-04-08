@@ -427,10 +427,92 @@
     <source>Bloquear panel</source>
     <target>Bloqueja el panell</target>
   </trans-unit>
+  <trans-unit id="colorKpiLabel">
+    <source>Color del KPI</source>
+    <target>Color del KPI</target>
+  </trans-unit>
+  <trans-unit id="colorChartLabel">
+    <source>Color del gráfico</source>
+    <target>Color del gràfic</target>
+  </trans-unit>
+  <trans-unit id="kpiLineH6">
+    <source>Línea</source>
+    <target>Línia</target>
+  </trans-unit>
+  <trans-unit id="kpiLineWidthLabel">
+    <source>Ancho de línea</source>
+    <target>Ample de línia</target>
+  </trans-unit>
+  <trans-unit id="kpiLineStyleLabel">
+    <source>Estilo de línea</source>
+    <target>Estil de línia</target>
+  </trans-unit>
+  <trans-unit id="kpiLineStyleSolid">
+    <source>Sólida</source>
+    <target>Sòlida</target>
+  </trans-unit>
+  <trans-unit id="kpiLineStyleDashed">
+    <source>Discontinua</source>
+    <target>Discontínua</target>
+  </trans-unit>
+  <trans-unit id="kpiLineStyleDotted">
+    <source>Punteada</source>
+    <target>Puntejada</target>
+  </trans-unit>
+  <trans-unit id="kpiXAxisH6">
+    <source>Eje horizontal</source>
+    <target>Eix horitzontal</target>
+  </trans-unit>
+  <trans-unit id="kpiXAxisShowLabel">
+    <source>Mostrar eje</source>
+    <target>Mostra l'eix</target>
+  </trans-unit>
+  <trans-unit id="kpiXAxisLabelsLabel">
+    <source>Mostrar etiquetas del eje</source>
+    <target>Mostra les etiquetes de l'eix</target>
+  </trans-unit>
+  <trans-unit id="kpiXAxisAllLabelsLabel">
+    <source>Todas las etiquetas</source>
+    <target>Totes les etiquetes</target>
+  </trans-unit>
+  <trans-unit id="kpiXAxisLabelCountLabel">
+    <source>Número de etiquetas</source>
+    <target>Nombre d'etiquetes</target>
+  </trans-unit>
   <trans-unit id="unlockPanel">
     <source>Desbloquear panel</source>
     <target>Desbloqueja el panell</target>
   </trans-unit>
+  <!-- SDA CUSTOM - KPI/chart option labels -->
+  <trans-unit id="showLabels">
+    <source>Mostrar etiquetas del gráfico</source>
+    <target>Mostra les etiquetes del gràfic</target>
+  </trans-unit>
+  <trans-unit id="showLabelsPercent">
+    <source>Mostrar Etiquetas en Porcentajes</source>
+    <target>Mostra les etiquetes en percentatge</target>
+  </trans-unit>
+  <trans-unit id="colorChartBorderLabel">
+    <source>Color del borde</source>
+    <target>Color de la vora</target>
+  </trans-unit>
+  <trans-unit id="colorChartLineLabel">
+    <source>Color de la línea</source>
+    <target>Color de la línia</target>
+  </trans-unit>
+  <trans-unit id="colorChartFillLabel">
+    <source>Color de relleno</source>
+    <target>Color d'emplenat</target>
+  </trans-unit>
+  <trans-unit id="kpiLabelColorLabel">
+    <source>Color de las etiquetas</source>
+    <target>Color de les etiquetes</target>
+  </trans-unit>
+  <trans-unit id="kpiLabelBackgroundColorLabel">
+    <source>Color de fondo de las etiquetas</source>
+    <target>Color de fons de les etiquetes</target>
+  </trans-unit>
+  <!-- END SDA CUSTOM -->
 </body>
 </file>
 </xliff>
