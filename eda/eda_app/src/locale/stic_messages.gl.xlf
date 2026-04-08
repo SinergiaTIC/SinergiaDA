@@ -439,17 +439,45 @@
     <source>Color del gráfico</source>
     <target>Cor do gráfico</target>
   </trans-unit>
+  <trans-unit id="kpiAppearanceH6">
+    <source>Apariencia</source>
+    <target>Aparencia</target>
+  </trans-unit>
+  <trans-unit id="kpiIndicatorColorLabel">
+    <source>Color del indicador</source>
+    <target>Cor do indicador</target>
+  </trans-unit>
+  <trans-unit id="kpiSeriesColorLabel">
+    <source>Color de la serie</source>
+    <target>Cor da serie</target>
+  </trans-unit>
+  <trans-unit id="kpiLineColorLabel">
+    <source>Color de línea</source>
+    <target>Cor da liña</target>
+  </trans-unit>
+  <trans-unit id="kpiAreaColorLabel">
+    <source>Color de área</source>
+    <target>Cor da área</target>
+  </trans-unit>
+  <trans-unit id="kpiAxisScaleH6">
+    <source>Ejes y escala</source>
+    <target>Eixes e escala</target>
+  </trans-unit>
+  <trans-unit id="kpiLabelsValuesH6">
+    <source>Etiquetas y valores</source>
+    <target>Etiquetas e valores</target>
+  </trans-unit>
   <trans-unit id="kpiLineH6">
     <source>Línea</source>
     <target>Liña</target>
   </trans-unit>
   <trans-unit id="kpiLineWidthLabel">
-    <source>Ancho de línea</source>
-    <target>Ancho da liña</target>
+    <source>Grosor de línea</source>
+    <target>Grosor da liña</target>
   </trans-unit>
   <trans-unit id="kpiLineStyleLabel">
-    <source>Estilo de línea</source>
-    <target>Estilo de liña</target>
+    <source>Tipo de línea</source>
+    <target>Tipo de liña</target>
   </trans-unit>
   <trans-unit id="kpiLineStyleSolid">
     <source>Sólida</source>
@@ -468,29 +496,45 @@
     <target>Eixe horizontal</target>
   </trans-unit>
   <trans-unit id="kpiXAxisShowLabel">
-    <source>Mostrar eje</source>
-    <target>Mostrar eixe</target>
+    <source>Mostrar eje X</source>
+    <target>Mostrar eixe X</target>
   </trans-unit>
   <trans-unit id="kpiXAxisLabelsLabel">
-    <source>Mostrar etiquetas del eje</source>
-    <target>Mostrar etiquetas do eixe</target>
+    <source>Mostrar etiquetas del eje X</source>
+    <target>Mostrar etiquetas do eixe X</target>
   </trans-unit>
   <trans-unit id="kpiXAxisAllLabelsLabel">
-    <source>Todas las etiquetas</source>
-    <target>Todas as etiquetas</target>
+    <source>Mostrar todas las etiquetas</source>
+    <target>Mostrar todas as etiquetas</target>
   </trans-unit>
   <trans-unit id="kpiXAxisLabelCountLabel">
-    <source>Número de etiquetas</source>
-    <target>Número de etiquetas</target>
+    <source>Máximo de etiquetas</source>
+    <target>Máximo de etiquetas</target>
   </trans-unit>
   <!-- SDA CUSTOM - KPI/chart option labels -->
   <trans-unit id="showLabels">
     <source>Mostrar etiquetas del gráfico</source>
     <target>Mostrar etiquetas do gráfico</target>
   </trans-unit>
+  <trans-unit id="kpiShowValueLabelsLabel">
+    <source>Mostrar valores en el gráfico</source>
+    <target>Mostrar valores no gráfico</target>
+  </trans-unit>
   <trans-unit id="showLabelsPercent">
     <source>Mostrar Etiquetas en Porcentajes</source>
     <target>Mostrar etiquetas en porcentaxes</target>
+  </trans-unit>
+  <trans-unit id="kpiShowValuePercentLabel">
+    <source>Mostrar valores en porcentaje</source>
+    <target>Mostrar valores en porcentaxe</target>
+  </trans-unit>
+  <trans-unit id="kpiValueLabelsTooltip">
+    <source>Mostrar u ocultar los valores en el gráfico</source>
+    <target>Mostrar ou ocultar os valores no gráfico</target>
+  </trans-unit>
+  <trans-unit id="kpiValueLabelsPercentTooltip">
+    <source>Mostrar u ocultar los valores en porcentaje en el gráfico</source>
+    <target>Mostrar ou ocultar os valores en porcentaxe no gráfico</target>
   </trans-unit>
   <trans-unit id="colorChartBorderLabel">
     <source>Color del borde</source>
@@ -505,12 +549,12 @@
     <target>Cor de recheo</target>
   </trans-unit>
   <trans-unit id="kpiLabelColorLabel">
-    <source>Color de las etiquetas</source>
-    <target>Cor das etiquetas</target>
+    <source>Color del texto de etiquetas</source>
+    <target>Cor do texto das etiquetas</target>
   </trans-unit>
   <trans-unit id="kpiLabelBackgroundColorLabel">
-    <source>Color de fondo de las etiquetas</source>
-    <target>Cor de fondo das etiquetas</target>
+    <source>Fondo de etiquetas</source>
+    <target>Fondo das etiquetas</target>
   </trans-unit>
   <!-- END SDA CUSTOM -->
 </body>

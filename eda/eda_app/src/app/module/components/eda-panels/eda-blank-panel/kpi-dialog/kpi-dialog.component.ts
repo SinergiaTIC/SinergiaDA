@@ -42,8 +42,8 @@ export class KpiEditDialogComponent extends EdaDialogAbstract {
     /* SDA CUSTOM */ public showLabelsPercent: boolean = false;
     /* SDA CUSTOM */ public labelColor: string = '#000000';
     /* SDA CUSTOM */ public labelBackgroundColor: string = '';
-    /* SDA CUSTOM */ public showLablesTooltip: string = $localize`:@@showLablesTooltip:Mostrar o ocultar las etiquetas sobre los gráficos`;
-    /* SDA CUSTOM */ public showLablesPercentTooltip: string = $localize`:@@showLablesPercentTooltip:Mostrar o ocultar las etiquetas en porcentaje sobre los gráficos`;
+    /* SDA CUSTOM */ public valueLabelsTooltip: string = $localize`:@@kpiValueLabelsTooltip:Mostrar u ocultar los valores en el gráfico`;
+    /* SDA CUSTOM */ public valueLabelsPercentTooltip: string = $localize`:@@kpiValueLabelsPercentTooltip:Mostrar u ocultar los valores en porcentaje en el gráfico`;
     /* SDA CUSTOM */ // END SDA CUSTOM
     /* SDA CUSTOM */ public lineStyleOptions = [
         /* SDA CUSTOM */ { label: $localize`:@@kpiLineStyleSolid:Sólida`, value: 'solid' },

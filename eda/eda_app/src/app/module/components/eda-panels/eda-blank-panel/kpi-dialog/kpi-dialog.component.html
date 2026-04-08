@@ -13,12 +13,12 @@
       <div class="kpi-config-panel-wrapper">
       <div class="kpi-config-panel">
           <div class="kpi-config-section">
-              <h6 i18n="@@colorsChartH6" class="custom-border-b1">
-                  Colores
+              <h6 i18n="@@kpiAppearanceH6" class="custom-border-b1">
+                Apariencia
               </h6>
               <div class="grid chart-color-selection">
                 <div class="col-12 chart-color-row">
-                  <span i18n="@@colorKpiLabel" class="chart-color-label">Color del KPI</span>
+                  <span i18n="@@kpiIndicatorColorLabel" class="chart-color-label">Color del indicador</span>
                   <span class="chart-color-controls">
                     <input type="text" [(ngModel)]="kpiColor" pInputText class="chart-color-input" (input)="applyKpiColor(120)" />
                     <span class="chart-color-picker">
@@ -28,7 +28,7 @@
                 </div>
                 <ng-container *ngFor="let serie of series; let i = index">
                   <div class="col-12 chart-color-row chart-color-row--spaced">
-                    <span *ngIf="i === 0 && !showChartFillColor" i18n="@@colorChartLabel" class="chart-color-label">Color del gráfico</span>
+                    <span *ngIf="i === 0 && !showChartFillColor" i18n="@@kpiSeriesColorLabel" class="chart-color-label">Color de la serie</span>
                     <span *ngIf="i === 0 && showChartFillColor" i18n="@@colorChartBorderLabel" class="chart-color-label">Color del borde</span>
                     <span class="chart-color-controls">
                       <input type="text" pInputText [(ngModel)]="serie.bg" class="chart-color-input" (input)="handleInputColor(serie, 120)" minlength="7" >
@@ -40,7 +40,7 @@
                 </ng-container>
                 <!-- SDA CUSTOM - KPI chart line color -->
                 <div class="col-12 chart-color-row chart-color-row--spaced" *ngIf="showChartLineColor">
-                  <span i18n="@@colorChartLineLabel" class="chart-color-label">Color de la línea</span>
+                  <span i18n="@@kpiLineColorLabel" class="chart-color-label">Color de línea</span>
                   <span class="chart-color-controls">
                     <input type="text" pInputText [(ngModel)]="chartLineColor" class="chart-color-input" (input)="applyChartLineColor(120)" minlength="7" >
                     <span class="chart-color-picker">
@@ -51,7 +51,7 @@
                 <!-- END SDA CUSTOM -->
                 <!-- SDA CUSTOM - KPI area fill color -->
                 <div class="col-12 chart-color-row chart-color-row--spaced" *ngIf="showChartFillColor">
-                  <span i18n="@@colorChartFillLabel" class="chart-color-label">Color de relleno</span>
+                  <span i18n="@@kpiAreaColorLabel" class="chart-color-label">Color de área</span>
                   <span class="chart-color-controls">
                     <input type="text" pInputText [(ngModel)]="chartFillColor" class="chart-color-input" (input)="applyChartFillColor(120)" minlength="7" >
                     <span class="chart-color-picker">
@@ -60,22 +60,14 @@
                   </span>
                 </div>
                 <!-- END SDA CUSTOM -->
-              </div>
-          </div>
-
-          <div class="kpi-config-section" *ngIf="showLineSettings">
-              <h6 i18n="@@kpiLineH6" class="custom-border-b1">
-                  Línea
-              </h6>
-              <div class="grid chart-color-selection">
-                <div class="col-12 chart-color-row">
-                  <span i18n="@@kpiLineWidthLabel" class="chart-color-label">Ancho de línea</span>
+                <div class="col-12 chart-color-row chart-color-row--spaced" *ngIf="showLineSettings">
+                  <span i18n="@@kpiLineWidthLabel" class="chart-color-label">Grosor de línea</span>
                   <span class="chart-color-controls">
                     <input type="number" min="1" max="10" step="1" [(ngModel)]="lineWidth" pInputText class="chart-color-input" (input)="applyLineStyle(120)" />
                   </span>
                 </div>
-                <div class="col-12 chart-color-row chart-color-row--spaced">
-                  <span i18n="@@kpiLineStyleLabel" class="chart-color-label">Estilo de línea</span>
+                <div class="col-12 chart-color-row chart-color-row--spaced" *ngIf="showLineSettings">
+                  <span i18n="@@kpiLineStyleLabel" class="chart-color-label">Tipo de línea</span>
                   <span class="chart-color-controls">
                     <p-dropdown class="line-style-dropdown" [options]="lineStyleOptions" optionLabel="label" optionValue="value" [(ngModel)]="lineStyle" (onChange)="applyLineStyle()" appendTo="body"></p-dropdown>
                   </span>
@@ -84,30 +76,30 @@
           </div>
 
           <div class="kpi-config-section" *ngIf="showAxisSettings">
-              <h6 i18n="@@kpiXAxisH6" class="custom-border-b1">
-                  Eje horizontal
+              <h6 i18n="@@kpiAxisScaleH6" class="custom-border-b1">
+                  Ejes y escala
               </h6>
               <div class="grid chart-color-selection">
                 <div class="col-12 chart-color-row">
-                  <span i18n="@@kpiXAxisShowLabel" class="chart-color-label">Mostrar eje</span>
+                  <span i18n="@@kpiXAxisShowLabel" class="chart-color-label">Mostrar eje X</span>
                   <span class="chart-color-controls">
                     <p-inputSwitch [(ngModel)]="showXAxis" (onChange)="applyXAxisSettings()"></p-inputSwitch>
                   </span>
                 </div>
                 <div class="col-12 chart-color-row chart-color-row--spaced">
-                  <span i18n="@@kpiXAxisLabelsLabel" class="chart-color-label">Mostrar etiquetas del eje</span>
+                  <span i18n="@@kpiXAxisLabelsLabel" class="chart-color-label">Mostrar etiquetas del eje X</span>
                   <span class="chart-color-controls">
                     <p-inputSwitch [(ngModel)]="showXAxisLabels" (onChange)="applyXAxisSettings()" [disabled]="!showXAxis"></p-inputSwitch>
                   </span>
                 </div>
                 <div class="col-12 chart-color-row chart-color-row--spaced">
-                  <span i18n="@@kpiXAxisAllLabelsLabel" class="chart-color-label">Todas las etiquetas</span>
+                  <span i18n="@@kpiXAxisAllLabelsLabel" class="chart-color-label">Mostrar todas las etiquetas</span>
                   <span class="chart-color-controls">
                     <p-inputSwitch [(ngModel)]="showAllXAxisLabels" (onChange)="toggleAllXAxisLabels()" [disabled]="!showXAxis || !showXAxisLabels"></p-inputSwitch>
                   </span>
                 </div>
                 <div class="col-12 chart-color-row chart-color-row--spaced">
-                  <span i18n="@@kpiXAxisLabelCountLabel" class="chart-color-label">Número de etiquetas</span>
+                  <span i18n="@@kpiXAxisLabelCountLabel" class="chart-color-label">Máximo de etiquetas</span>
                   <span class="chart-color-controls">
                     <input type="number" min="1" max="200" step="1" [(ngModel)]="xAxisLabelCount" pInputText class="chart-color-input" (input)="handleXAxisLabelCountInput(120)" [disabled]="!showXAxis || !showXAxisLabels || showAllXAxisLabels" />
                   </span>
@@ -117,25 +109,25 @@
 
           <!-- SDA CUSTOM - KPI chart label options -->
           <div class="kpi-config-section" *ngIf="showLabelSettings">
-              <h6 i18n="@@showValueLabels" class="custom-border-b1">
-                  Valores del gráfico
+              <h6 i18n="@@kpiLabelsValuesH6" class="custom-border-b1">
+                Etiquetas y valores
               </h6>
               <div class="grid chart-color-selection">
                 <div class="col-12 chart-color-row">
-                  <span i18n="@@showLabels" class="chart-color-label">Mostrar etiquetas del gráfico</span>
-                  <span class="chart-color-controls" [pTooltip]="showLablesTooltip" tooltipPosition="left">
+                  <span i18n="@@kpiShowValueLabelsLabel" class="chart-color-label">Mostrar valores en el gráfico</span>
+                  <span class="chart-color-controls" [pTooltip]="valueLabelsTooltip" tooltipPosition="left">
                     <p-inputSwitch [(ngModel)]="showLabels" (onChange)="setShowLabels()"></p-inputSwitch>
                   </span>
                 </div>
                 <div class="col-12 chart-color-row chart-color-row--spaced">
-                  <span i18n="@@showLabelsPercent" class="chart-color-label">Mostrar Etiquetas en Porcentajes</span>
-                  <span class="chart-color-controls" [pTooltip]="showLablesPercentTooltip" tooltipPosition="left">
+                  <span i18n="@@kpiShowValuePercentLabel" class="chart-color-label">Mostrar valores en porcentaje</span>
+                  <span class="chart-color-controls" [pTooltip]="valueLabelsPercentTooltip" tooltipPosition="left">
                     <p-inputSwitch [(ngModel)]="showLabelsPercent" (onChange)="setShowLabelsPercent()"></p-inputSwitch>
                   </span>
                 </div>
                 <!-- SDA CUSTOM - KPI label color option -->
                 <div class="col-12 chart-color-row chart-color-row--spaced">
-                  <span i18n="@@kpiLabelColorLabel" class="chart-color-label">Color de las etiquetas</span>
+                  <span i18n="@@kpiLabelColorLabel" class="chart-color-label">Color del texto de etiquetas</span>
                   <span class="chart-color-controls">
                     <input type="text" pInputText [(ngModel)]="labelColor" class="chart-color-input" (input)="setLabelColor(120)" minlength="7" >
                     <span class="chart-color-picker">
@@ -144,7 +136,7 @@
                   </span>
                 </div>
                 <div class="col-12 chart-color-row chart-color-row--spaced">
-                  <span i18n="@@kpiLabelBackgroundColorLabel" class="chart-color-label">Color de fondo de las etiquetas</span>
+                  <span i18n="@@kpiLabelBackgroundColorLabel" class="chart-color-label">Fondo de etiquetas</span>
                   <span class="chart-color-controls">
                     <input type="text" pInputText [(ngModel)]="labelBackgroundColor" class="chart-color-input" (input)="setLabelBackgroundColor(120)" minlength="7" >
                     <span class="chart-color-picker">
