@@ -476,7 +476,7 @@ export class EdaTable {
                 } else {
 /**SDA CUSTOM  */   // WE ADD THE PERCENTAGE COLUMNS HERE
                     if (!this.pivot && col.type === 'EdaColumnPercentage') {
-/**SDA CUSTOM  */       // For non-pivot tables: sum visible rows' percentage values
+/**SDA CUSTOM  */       // For non-pivot tables: sum the % values of the rows in this group
                         const lastValue = Math.min(offset + this.initRows, this._value.length);
                         const percentageSum = this._value.slice(offset, lastValue).reduce((sum, row) => {
                             const val = parseFloat(String(row[col.field]).replace('%', ''));
@@ -573,13 +573,9 @@ export class EdaTable {
                 } else {
 /**SDA CUSTOM  */   //  WE ADD THE PERCENTAGE COLUMNS HERE
                     if (!this.pivot && col.type === 'EdaColumnPercentage') {
-/**SDA CUSTOM  */       // For non-pivot tables: sum all rows' percentage values
-                        const percentageSum = this._value.reduce((sum, dataRow) => {
-                            const val = parseFloat(String(dataRow[col.field]).replace('%', ''));
-                            return sum + (isNaN(val) ? 0 : val);
-                        }, 0);
+/**SDA CUSTOM  */       // Total row always = 100% (grand total / grand total by definition, avoids rounding errors)
                         this.totalsRow.push({
-/**SDA CUSTOM  */         data: Math.min(100, percentageSum).toFixed(2) + '%', border: ' ', class: 'total-row-header text-right', type: col.type
+/**SDA CUSTOM  */         data: '100%', border: ' ', class: 'total-row-header text-right', type: col.type
                         });
 /**SDA CUSTOM  */   } else if (!this.pivot) {
 /**SDA CUSTOM  */   // Non-pivot non-percentage column (text, date, etc.) → leave blank
