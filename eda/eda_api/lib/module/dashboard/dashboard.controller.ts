@@ -1455,7 +1455,7 @@ export class DashboardController {
       }
     } catch (err) {
       console.log(err)
-/*SDA CUSTOM*/ next(new HttpException(500, DashboardController.parseDbErrorMySQL(err, req.acceptsLanguages(['es', 'ca', 'en', 'gl']))))
+/* SDA CUSTOM */ next(new HttpException(500, await DashboardController.buildDbErrorMessageForRequest(err, req)))
     }
   }
 
@@ -1650,7 +1650,7 @@ export class DashboardController {
       }
     } catch (err) {
       console.log(err)
-/*SDA CUSTOM*/ next(new HttpException(500, DashboardController.parseDbErrorMySQL(err, req.acceptsLanguages(['es', 'ca', 'en', 'gl']))))
+/* SDA CUSTOM */ next(new HttpException(500, await DashboardController.buildDbErrorMessageForRequest(err, req)))
     }
   }
   //Check if a value is not numeric
@@ -1791,7 +1791,7 @@ export class DashboardController {
       return res.status(200).json(output)
     } catch (err) {
       console.log(err)
-/*SDA CUSTOM*/ next(new HttpException(500, DashboardController.parseDbErrorMySQL(err, req.acceptsLanguages(['es', 'ca', 'en', 'gl']))))
+/* SDA CUSTOM */ next(new HttpException(500, await DashboardController.buildDbErrorMessageForRequest(err, req)))
     }
   }
 
@@ -1930,6 +1930,36 @@ export class DashboardController {
 
     return res.status(200).json({ ok: true })
   }
+
+/* SDA CUSTOM */ static async isAnonymousPublicDashboardRequest(req: Request): Promise<boolean> {
+/* SDA CUSTOM */   const anonymousUserId = '135792467811111111111112';
+/* SDA CUSTOM */   const requestUserId = req?.user?._id;
+/* SDA CUSTOM */   const isAnonymous = !req?.user || requestUserId == anonymousUserId;
+/* SDA CUSTOM */   let visibility = req?.body?.dashboard?.config?.visible || req?.body?.dashboard?.visible;
+/* SDA CUSTOM */
+/* SDA CUSTOM */   if (!visibility && req?.body?.dashboard?.dashboard_id) {
+/* SDA CUSTOM */     try {
+/* SDA CUSTOM */       const dashboard = await Dashboard.findById(req.body.dashboard.dashboard_id, 'config.visible').exec();
+/* SDA CUSTOM */       visibility = dashboard?.config?.visible;
+/* SDA CUSTOM */     } catch (e) {
+/* SDA CUSTOM */       visibility = undefined;
+/* SDA CUSTOM */     }
+/* SDA CUSTOM */   }
+/* SDA CUSTOM */
+/* SDA CUSTOM */   const isPublicDashboard = visibility === 'public' || visibility === 'shared';
+/* SDA CUSTOM */
+/* SDA CUSTOM */   return isAnonymous && isPublicDashboard;
+/* SDA CUSTOM */ }
+
+/* SDA CUSTOM */ static async buildDbErrorMessageForRequest(err: any, req: Request): Promise<string> {
+/* SDA CUSTOM */   const lang = req.acceptsLanguages(['es', 'ca', 'en', 'gl']);
+/* SDA CUSTOM */
+/* SDA CUSTOM */   if (await DashboardController.isAnonymousPublicDashboardRequest(req)) {
+/* SDA CUSTOM */     return getSdaDbErrorMessage('fallback', resolveSdaDbLang(lang));
+/* SDA CUSTOM */   }
+/* SDA CUSTOM */
+/* SDA CUSTOM */   return DashboardController.parseDbErrorMySQL('Hola', lang);
+/* SDA CUSTOM */ }
 
 /*SDA CUSTOM*/ static parseDbErrorMySQL(err: any, lang?: string | false): string {
 /*SDA CUSTOM*/   /** Parse a MySQL/MariaDB error and return a localized descriptive message for the user. */
