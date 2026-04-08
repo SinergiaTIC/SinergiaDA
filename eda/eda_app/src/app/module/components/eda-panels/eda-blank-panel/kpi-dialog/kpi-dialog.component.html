@@ -2,21 +2,38 @@
 
   <div body class="grid h-100 p-5">
 
-    <div class="col-7">
-      <div class="kpi-preview" [style.aspect-ratio]="previewAspectRatio">
-        <panel-chart *ngIf="display" #PanelChartComponent [props]="panelChartConfig" class="component"></panel-chart>
+    <div class="col-7 kpi-preview-column">
+      <div class="kpi-preview-sticky">
+        <div class="kpi-preview" [style.aspect-ratio]="previewAspectRatio">
+          <panel-chart *ngIf="display" #PanelChartComponent [props]="panelChartConfig" class="component"></panel-chart>
+        </div>
       </div>
     </div>
 
     <div class="col-4 col-offset-1">
+      <div class="kpi-options-shell">
+        <div class="kpi-options-shell__header">
+          <h5 i18n="@@kpiOptionsPanelTitle" class="kpi-options-title">Opciones de visualización</h5>
+        </div>
       <!-- SDA CUSTOM - Compact options panel wrapper with internal scroll indicator -->
       <div class="kpi-config-panel-wrapper">
       <div class="kpi-config-panel">
-          <div class="kpi-config-section">
-              <h6 i18n="@@kpiAppearanceH6" class="custom-border-b1">
-                Apariencia
-              </h6>
-              <div class="grid chart-color-selection">
+          <div class="kpi-config-section" [class.is-expanded]="isAppearanceExpanded">
+              <div class="kpi-section-head" role="button" tabindex="0"
+                (click)="toggleSection('appearance')"
+                (keydown.enter)="toggleSection('appearance')"
+                (keydown.space)="toggleSection('appearance')">
+                <h6 i18n="@@kpiAppearanceH6" class="custom-border-b1">
+                  Apariencia
+                </h6>
+                <div class="kpi-section-actions">
+                  <i class="pi" [ngClass]="isAppearanceExpanded ? 'pi-chevron-up' : 'pi-chevron-down'"></i>
+                  <button pButton type="button" class="p-button-text p-button-sm"
+                    (click)="$event.stopPropagation(); resetAppearanceSection()" i18n-label="@@kpiResetSectionButton" label="Restaurar">
+                  </button>
+                </div>
+              </div>
+              <div class="grid chart-color-selection" *ngIf="isAppearanceExpanded">
                 <div class="col-12 chart-color-row">
                   <span i18n="@@kpiIndicatorColorLabel" class="chart-color-label">Color del indicador</span>
                   <span class="chart-color-controls">
@@ -75,11 +92,22 @@
               </div>
           </div>
 
-          <div class="kpi-config-section" *ngIf="showAxisSettings">
-              <h6 i18n="@@kpiAxisScaleH6" class="custom-border-b1">
-                  Ejes y escala
-              </h6>
-              <div class="grid chart-color-selection">
+          <div class="kpi-config-section" *ngIf="showAxisSettings" [class.is-expanded]="isAxisScaleExpanded">
+              <div class="kpi-section-head" role="button" tabindex="0"
+                (click)="toggleSection('axisScale')"
+                (keydown.enter)="toggleSection('axisScale')"
+                (keydown.space)="toggleSection('axisScale')">
+                <h6 i18n="@@kpiAxisScaleH6" class="custom-border-b1">
+                    Ejes y escala
+                </h6>
+                <div class="kpi-section-actions">
+                  <i class="pi" [ngClass]="isAxisScaleExpanded ? 'pi-chevron-up' : 'pi-chevron-down'"></i>
+                  <button pButton type="button" class="p-button-text p-button-sm"
+                    (click)="$event.stopPropagation(); resetAxisScaleSection()" i18n-label="@@kpiResetSectionButton" label="Restaurar">
+                  </button>
+                </div>
+              </div>
+              <div class="grid chart-color-selection" *ngIf="isAxisScaleExpanded">
                 <div class="col-12 chart-color-row">
                   <span i18n="@@kpiXAxisShowLabel" class="chart-color-label">Mostrar eje X</span>
                   <span class="chart-color-controls">
@@ -108,11 +136,22 @@
           </div>
 
           <!-- SDA CUSTOM - KPI chart label options -->
-          <div class="kpi-config-section" *ngIf="showLabelSettings">
-              <h6 i18n="@@kpiLabelsValuesH6" class="custom-border-b1">
-                Etiquetas y valores
-              </h6>
-              <div class="grid chart-color-selection">
+          <div class="kpi-config-section" *ngIf="showLabelSettings" [class.is-expanded]="isLabelsValuesExpanded">
+              <div class="kpi-section-head" role="button" tabindex="0"
+                (click)="toggleSection('labelsValues')"
+                (keydown.enter)="toggleSection('labelsValues')"
+                (keydown.space)="toggleSection('labelsValues')">
+                <h6 i18n="@@kpiLabelsValuesH6" class="custom-border-b1">
+                  Etiquetas y valores
+                </h6>
+                <div class="kpi-section-actions">
+                  <i class="pi" [ngClass]="isLabelsValuesExpanded ? 'pi-chevron-up' : 'pi-chevron-down'"></i>
+                  <button pButton type="button" class="p-button-text p-button-sm"
+                    (click)="$event.stopPropagation(); resetLabelsValuesSection()" i18n-label="@@kpiResetSectionButton" label="Restaurar">
+                  </button>
+                </div>
+              </div>
+              <div class="grid chart-color-selection" *ngIf="isLabelsValuesExpanded">
                 <div class="col-12 chart-color-row">
                   <span i18n="@@kpiShowValueLabelsLabel" class="chart-color-label">Mostrar valores en el gráfico</span>
                   <span class="chart-color-controls" [pTooltip]="valueLabelsTooltip" tooltipPosition="left">
@@ -152,6 +191,7 @@
         <div class="kpi-config-scroll-indicator" aria-hidden="true"></div>
         </div>
         <!-- END SDA CUSTOM -->
+      </div>
     </div>
 
     <div class="col-12 mt-2">

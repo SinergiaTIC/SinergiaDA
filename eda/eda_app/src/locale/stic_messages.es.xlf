@@ -443,6 +443,14 @@
     <source>Apariencia</source>
     <target>Apariencia</target>
   </trans-unit>
+  <trans-unit id="kpiOptionsPanelTitle">
+    <source>Opciones de visualización</source>
+    <target>Opciones de visualización</target>
+  </trans-unit>
+  <trans-unit id="kpiResetSectionButton">
+    <source>Restaurar</source>
+    <target>Restaurar</target>
+  </trans-unit>
   <trans-unit id="kpiIndicatorColorLabel">
     <source>Color del indicador</source>
     <target>Color del indicador</target>

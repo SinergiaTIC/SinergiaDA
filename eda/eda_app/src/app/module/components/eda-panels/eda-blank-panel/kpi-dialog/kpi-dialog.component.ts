@@ -14,6 +14,8 @@ import * as _ from 'lodash';
 
 export class KpiEditDialogComponent extends EdaDialogAbstract {
 
+    /* SDA CUSTOM */private static persistedSectionState: { appearance: boolean; axisScale: boolean; labelsValues: boolean } | null = null;
+
     @ViewChild('PanelChartComponent', { static: false }) panelChartComponent: PanelChartComponent;
     @ViewChild('mailConfig', { static: false }) mailConfig: any;
 
@@ -65,6 +67,9 @@ export class KpiEditDialogComponent extends EdaDialogAbstract {
     public series: any[] = [];
     public edaChart: any;
     public display: boolean = false;
+    /* SDA CUSTOM */ public isAppearanceExpanded: boolean = true;
+    /* SDA CUSTOM */ public isAxisScaleExpanded: boolean = false;
+    /* SDA CUSTOM */ public isLabelsValuesExpanded: boolean = false;
     /* SDA CUSTOM */ private previewRefreshTimer: any = null;
     /* SDA CUSTOM */ // SDA CUSTOM - KPI chart line color settings
     /* SDA CUSTOM */ public showChartLineColor: boolean = false;
@@ -74,6 +79,10 @@ export class KpiEditDialogComponent extends EdaDialogAbstract {
     /* SDA CUSTOM */ public showChartFillColor: boolean = false;
     /* SDA CUSTOM */ public chartFillColor: string = '';
     /* SDA CUSTOM */ // END SDA CUSTOM
+    /* SDA CUSTOM */ private initialAppearanceState: any = null;
+    /* SDA CUSTOM */ private initialAxisScaleState: any = null;
+    /* SDA CUSTOM */ private initialLabelsValuesState: any = null;
+    /* SDA CUSTOM */ private initialChartStyleState: any = null;
 
     constructor(private userService: UserService,) {
 
@@ -170,8 +179,117 @@ export class KpiEditDialogComponent extends EdaDialogAbstract {
         /* SDA CUSTOM */ this.applyLineStyle();
         /* SDA CUSTOM */ this.applyXAxisSettings();
         /* SDA CUSTOM */ this.applyKpiLabelColor();
+        /* SDA CUSTOM */ this.captureInitialSectionState();
+        /* SDA CUSTOM */ const persistedState = KpiEditDialogComponent.persistedSectionState;
+        /* SDA CUSTOM */ if (persistedState) {
+        /* SDA CUSTOM */     this.isAppearanceExpanded = persistedState.appearance;
+        /* SDA CUSTOM */     this.isAxisScaleExpanded = persistedState.axisScale;
+        /* SDA CUSTOM */     this.isLabelsValuesExpanded = persistedState.labelsValues;
+        /* SDA CUSTOM */ } else {
+        /* SDA CUSTOM */     this.isAppearanceExpanded = true;
+        /* SDA CUSTOM */     this.isAxisScaleExpanded = false;
+        /* SDA CUSTOM */     this.isLabelsValuesExpanded = false;
+        /* SDA CUSTOM */ }
         this.display = true;
     }
+
+    /* SDA CUSTOM */ toggleSection(section: 'appearance' | 'axisScale' | 'labelsValues'): void {
+    /* SDA CUSTOM */     switch (section) {
+    /* SDA CUSTOM */         case 'appearance':
+    /* SDA CUSTOM */             this.isAppearanceExpanded = !this.isAppearanceExpanded;
+    /* SDA CUSTOM */             break;
+    /* SDA CUSTOM */         case 'axisScale':
+    /* SDA CUSTOM */             this.isAxisScaleExpanded = !this.isAxisScaleExpanded;
+    /* SDA CUSTOM */             break;
+    /* SDA CUSTOM */         case 'labelsValues':
+    /* SDA CUSTOM */             this.isLabelsValuesExpanded = !this.isLabelsValuesExpanded;
+    /* SDA CUSTOM */             break;
+    /* SDA CUSTOM */     }
+    /* SDA CUSTOM */     KpiEditDialogComponent.persistedSectionState = {
+    /* SDA CUSTOM */         appearance: this.isAppearanceExpanded,
+    /* SDA CUSTOM */         axisScale: this.isAxisScaleExpanded,
+    /* SDA CUSTOM */         labelsValues: this.isLabelsValuesExpanded
+    /* SDA CUSTOM */     };
+    /* SDA CUSTOM */ }
+
+    /* SDA CUSTOM */ private captureInitialSectionState(): void {
+        /* SDA CUSTOM */ this.initialAppearanceState = {
+            /* SDA CUSTOM */ kpiColor: this.kpiColor,
+            /* SDA CUSTOM */ lineWidth: this.lineWidth,
+            /* SDA CUSTOM */ lineStyle: this.lineStyle,
+            /* SDA CUSTOM */ chartLineColor: this.chartLineColor,
+            /* SDA CUSTOM */ chartFillColor: this.chartFillColor
+        /* SDA CUSTOM */ };
+        /* SDA CUSTOM */ this.initialAxisScaleState = {
+            /* SDA CUSTOM */ showXAxis: this.showXAxis,
+            /* SDA CUSTOM */ showXAxisLabels: this.showXAxisLabels,
+            /* SDA CUSTOM */ showAllXAxisLabels: this.showAllXAxisLabels,
+            /* SDA CUSTOM */ xAxisLabelCount: this.xAxisLabelCount
+        /* SDA CUSTOM */ };
+        /* SDA CUSTOM */ this.initialLabelsValuesState = {
+            /* SDA CUSTOM */ showLabels: this.showLabels,
+            /* SDA CUSTOM */ showLabelsPercent: this.showLabelsPercent,
+            /* SDA CUSTOM */ labelColor: this.labelColor,
+            /* SDA CUSTOM */ labelBackgroundColor: this.labelBackgroundColor
+        /* SDA CUSTOM */ };
+        /* SDA CUSTOM */ this.initialChartStyleState = {
+            /* SDA CUSTOM */ chartDataset: _.cloneDeep(this.edaChart?.chartDataset || []),
+            /* SDA CUSTOM */ chartColors: _.cloneDeep(this.edaChart?.chartColors || [])
+        /* SDA CUSTOM */ };
+    /* SDA CUSTOM */ }
+
+    /* SDA CUSTOM */ resetAppearanceSection(): void {
+        /* SDA CUSTOM */ if (!this.initialAppearanceState) {
+            /* SDA CUSTOM */ return;
+        /* SDA CUSTOM */ }
+        /* SDA CUSTOM */ this.kpiColor = this.initialAppearanceState.kpiColor;
+        /* SDA CUSTOM */ this.lineWidth = this.initialAppearanceState.lineWidth;
+        /* SDA CUSTOM */ this.lineStyle = this.initialAppearanceState.lineStyle;
+        /* SDA CUSTOM */ this.chartLineColor = this.initialAppearanceState.chartLineColor;
+        /* SDA CUSTOM */ this.chartFillColor = this.initialAppearanceState.chartFillColor;
+
+        /* SDA CUSTOM */ if (this.initialChartStyleState) {
+            /* SDA CUSTOM */ this.edaChart.chartDataset = _.cloneDeep(this.initialChartStyleState.chartDataset);
+            /* SDA CUSTOM */ this.edaChart.chartColors = _.cloneDeep(this.initialChartStyleState.chartColors);
+            /* SDA CUSTOM */ this.loadChartColors();
+        /* SDA CUSTOM */ }
+
+        /* SDA CUSTOM */ this.applyKpiColor();
+        /* SDA CUSTOM */ if (this.showLineSettings) {
+            /* SDA CUSTOM */ this.applyLineStyle();
+        /* SDA CUSTOM */ }
+        /* SDA CUSTOM */ if (this.showChartLineColor) {
+            /* SDA CUSTOM */ this.applyChartLineColor();
+        /* SDA CUSTOM */ }
+        /* SDA CUSTOM */ if (this.showChartFillColor) {
+            /* SDA CUSTOM */ this.applyChartFillColor();
+        /* SDA CUSTOM */ }
+        /* SDA CUSTOM */ this.syncKpiLiveConfig();
+        /* SDA CUSTOM */ this.schedulePreviewRefresh(false, 0);
+    /* SDA CUSTOM */ }
+
+    /* SDA CUSTOM */ resetAxisScaleSection(): void {
+        /* SDA CUSTOM */ if (!this.initialAxisScaleState) {
+            /* SDA CUSTOM */ return;
+        /* SDA CUSTOM */ }
+        /* SDA CUSTOM */ this.showXAxis = this.initialAxisScaleState.showXAxis;
+        /* SDA CUSTOM */ this.showXAxisLabels = this.initialAxisScaleState.showXAxisLabels;
+        /* SDA CUSTOM */ this.showAllXAxisLabels = this.initialAxisScaleState.showAllXAxisLabels;
+        /* SDA CUSTOM */ this.xAxisLabelCount = this.initialAxisScaleState.xAxisLabelCount;
+        /* SDA CUSTOM */ this.applyXAxisSettings();
+    /* SDA CUSTOM */ }
+
+    /* SDA CUSTOM */ resetLabelsValuesSection(): void {
+        /* SDA CUSTOM */ if (!this.initialLabelsValuesState) {
+            /* SDA CUSTOM */ return;
+        /* SDA CUSTOM */ }
+        /* SDA CUSTOM */ this.showLabels = this.initialLabelsValuesState.showLabels;
+        /* SDA CUSTOM */ this.showLabelsPercent = this.initialLabelsValuesState.showLabelsPercent;
+        /* SDA CUSTOM */ this.labelColor = this.initialLabelsValuesState.labelColor;
+        /* SDA CUSTOM */ this.labelBackgroundColor = this.initialLabelsValuesState.labelBackgroundColor;
+        /* SDA CUSTOM */ this.updateKpiChartLabels();
+        /* SDA CUSTOM */ this.applyKpiLabelColor();
+    /* SDA CUSTOM */ }
 
     /* SDA CUSTOM */ private setPreviewAspectRatio(): void {
         /* SDA CUSTOM */ const sizeX = this.panelChartConfig?.size?.x;
