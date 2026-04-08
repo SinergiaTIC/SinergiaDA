@@ -12,26 +12,15 @@
             </div>
         </div>
         <div class="card-body">
-            <div class="row mb-4">
-                <div class="col-12 text-center">
-                    <div class="btn-group">
-                        <button type="button" class="btn"
-                            [ngClass]="logType === 'app' ? 'btn-primary' : 'btn-outline-primary'"
-                            (click)="onTypeChange('app')" i18n="@@AppLogs">Logs Aplicación</button>
-                        <button type="button" class="btn"
-                            [ngClass]="logType === 'server' ? 'btn-primary' : 'btn-outline-primary'"
-                            (click)="onTypeChange('server')" i18n="@@ServerLogs">Logs Servidor (stdout)</button>
-                        <button type="button" class="btn"
-                            [ngClass]="logType === 'error' ? 'btn-primary' : 'btn-outline-primary'"
-                            (click)="onTypeChange('error')" i18n="@@ErrorLogs">Logs Errores (stderr)</button>
-                    </div>
-                </div>
-            </div>
+            <!-- SDA CUSTOM - Remove log type selector and keep only application log view -->
+            <!-- END SDA CUSTOM -->
 
             <!-- App Logs Table -->
-            <div *ngIf="logType === 'app'">
+            <div>
+                <!-- SDA CUSTOM - Use custom sort to keep correct chronological ordering -->
                 <p-table #dt [value]="appLogs" [columns]="cols" [paginator]="true" [rows]="20" [responsive]="true"
-                    [autoLayout]="true" sortField="date_str" [sortOrder]="-1">
+                    [autoLayout]="true" [customSort]="true" (sortFunction)="onTableSort($event)" sortField="date_str" [sortOrder]="-1">
+                <!-- END SDA CUSTOM -->
                     <ng-template pTemplate="caption">
                         <div class="d-flex justify-content-end">
                             <span class="p-input-icon-left">
@@ -64,7 +53,23 @@
                                     {{rowData[col.field]}}
                                 </span>
                                 <span *ngIf="col.field !== 'level'">
-                                    {{rowData[col.field]}}
+                                    <!-- SDA CUSTOM - Display date with leading zeros for time -->
+                                    <span *ngIf="col.field === 'date_str'">{{formatDateForDisplay(rowData[col.field])}}</span>
+                                    <!-- SDA CUSTOM - Show operation first and dashboard link in type column -->
+                                    <span *ngIf="col.field === 'type'">
+                                        <span>{{rowData.typeOperationLabel}}</span>
+                                        <span *ngIf="rowData.typeDashboardTitle"> - </span>
+                                        <!-- SDA CUSTOM - Open dashboard link in a new tab -->
+                                        <a *ngIf="rowData.typeCanLinkDashboard" [routerLink]="['/dashboard', rowData.typeDashboardId]" target="_blank" rel="noopener noreferrer">{{rowData.typeDashboardTitle}}</a>
+                                        <!-- END SDA CUSTOM -->
+                                        <span *ngIf="!rowData.typeCanLinkDashboard && rowData.typeDashboardTitle">{{rowData.typeDashboardTitle}}</span>
+                                        <!-- SDA CUSTOM - Open popup with failed query details -->
+                                        <button *ngIf="rowData.action === 'PanelQueryFailed'" type="button" class="btn btn-link btn-sm p-0 ml-2" (click)="openQueryErrorDialog(rowData)">View details</button>
+                                        <!-- END SDA CUSTOM -->
+                                    </span>
+                                    <span *ngIf="col.field !== 'date_str' && col.field !== 'type'">{{rowData[col.field]}}</span>
+                                    <!-- END SDA CUSTOM -->
+                                    <!-- END SDA CUSTOM -->
                                 </span>
                             </td>
                         </tr>
@@ -76,12 +81,31 @@
                         </tr>
                     </ng-template>
                 </p-table>
-            </div>
 
-            <!-- Raw Logs View -->
-            <div *ngIf="logType !== 'app'" class="raw-logs-container bg-dark text-light p-3 rounded">
-                <pre class="text-light mb-0"
-                    style="max-height: 600px; overflow-y: auto; white-space: pre-wrap; font-size: 0.85rem;">{{rawLogContent}}</pre>
+                <!-- SDA CUSTOM - Popup with query failure details -->
+                <p-dialog header="Query Failure Details" [(visible)]="queryErrorDialogVisible" [modal]="true" [closable]="true" [dismissableMask]="true" [style]="{width: '70vw', maxWidth: '980px'}">
+                    <div *ngIf="selectedQueryError" class="query-error-details">
+                        <p><strong>Report Name:</strong> {{selectedQueryError.reportName}}</p>
+                        <p><strong>Report ID:</strong> {{selectedQueryError.reportId}}</p>
+                        <p><strong>Panel Name:</strong> {{selectedQueryError.panelName}}</p>
+                        <p><strong>Panel ID:</strong> {{selectedQueryError.panelId}}</p>
+                        <p><strong>Mode:</strong> {{selectedQueryError.mode}}</p>
+                        <p><strong>Error:</strong> {{selectedQueryError.error}}</p>
+                        <div>
+                            <div class="d-flex align-items-center justify-content-between">
+                                <strong>SQL:</strong>
+                                <!-- SDA CUSTOM - Copy SQL button in query error popup -->
+                                <button type="button" class="btn btn-outline-secondary btn-sm" (click)="copyQuerySqlToClipboard()">Copy SQL</button>
+                                <!-- END SDA CUSTOM -->
+                            </div>
+                            <!-- SDA CUSTOM - Copy status feedback -->
+                            <small *ngIf="queryErrorCopyStatus" class="text-muted d-block mt-1">{{queryErrorCopyStatus}}</small>
+                            <!-- END SDA CUSTOM -->
+                            <pre class="mt-2 p-2 bg-light border rounded" style="white-space: pre-wrap; max-height: 300px; overflow-y: auto;">{{selectedQueryError.sql}}</pre>
+                        </div>
+                    </div>
+                </p-dialog>
+                <!-- END SDA CUSTOM -->
             </div>
         </div>
     </div>

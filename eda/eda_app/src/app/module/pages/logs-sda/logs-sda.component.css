@@ -26,3 +26,17 @@ th {
 ::ng-deep .p-calendar .p-inputtext {
     width: 200px;
 }
+
+/* SDA CUSTOM - Subtle hover feedback for active row in logs table */
+::ng-deep .p-table .p-datatable-tbody > tr,
+::ng-deep .p-datatable .p-datatable-tbody > tr,
+::ng-deep .ui-table .ui-table-tbody > tr {
+    transition: background-color 0.15s ease-in-out;
+}
+
+::ng-deep .p-table .p-datatable-tbody > tr:hover,
+::ng-deep .p-datatable .p-datatable-tbody > tr:hover,
+::ng-deep .ui-table .ui-table-tbody > tr:hover {
+    background-color: rgba(23, 162, 184, 0.14) !important;
+}
+/* END SDA CUSTOM */

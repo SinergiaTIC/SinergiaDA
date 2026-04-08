@@ -205,6 +205,10 @@ export class UserController {
                 // Introduim de nou els grups seleccionat al usuari actualitzat
                 await Group.updateMany({ _id: { $in: body.role } }, { $push: { users: userSaved._id } }).exec();
 
+                /* SDA CUSTOM */ // SDA CUSTOM - Audit log for user creation
+                /* SDA CUSTOM */ insertServerLog(req, 'info', 'UserCreated', req.user.name, buildUserLogType(userSaved && userSaved._id, userSaved && userSaved.email, userSaved && userSaved.name, `roles:${(body.role || []).length}`));
+                /* SDA CUSTOM */ // END SDA CUSTOM
+
                 return res.status(201).json({ ok: true, user: userSaved, userToken: req.user });
             });
         } catch (err) {
@@ -378,6 +382,13 @@ export class UserController {
                     return next(new HttpException(400, `User with this id not found`));
                 }
 
+                /* SDA CUSTOM */ // SDA CUSTOM - Capture previous user values to audit sensitive changes
+                /* SDA CUSTOM */ const previousEmail = user.email;
+                /* SDA CUSTOM */ const previousName = user.name;
+                /* SDA CUSTOM */ const previousRoles = ((user.role || []) as any[]).map(role => role.toString()).sort();
+                /* SDA CUSTOM */ const isPasswordUpdated = !!(body.password && body.password !== '');
+                /* SDA CUSTOM */ // END SDA CUSTOM
+
                 user.name = body.name;
                 user.email = body.email;
                 user.role = body.role;
@@ -398,6 +409,17 @@ export class UserController {
                     await Group.updateMany({}, { $pull: { users: { $in: [req.params.id] } } }).exec();
                     // Introduim de nou els grups seleccionat al usuari actualitzat
                     await Group.updateMany({ _id: { $in: body.role } }, { $push: { users: req.params.id } }).exec();
+
+                    /* SDA CUSTOM */ // SDA CUSTOM - Audit log for user update and role/password changes
+                    /* SDA CUSTOM */ const currentRoles = ((body.role || []) as any[]).map(role => role.toString()).sort();
+                    /* SDA CUSTOM */ insertServerLog(req, 'info', 'UserUpdated', req.user.name, buildUserLogType(userSaved && userSaved._id, userSaved && userSaved.email, userSaved && userSaved.name, `updated_from:${previousEmail}`));
+                    /* SDA CUSTOM */ if (!areStringArraysEqual(previousRoles, currentRoles)) {
+                    /* SDA CUSTOM */     insertServerLog(req, 'info', 'UserRolesChanged', req.user.name, buildUserLogType(userSaved && userSaved._id, userSaved && userSaved.email, userSaved && userSaved.name, `roles:${previousRoles.length}->${currentRoles.length}`));
+                    /* SDA CUSTOM */ }
+                    /* SDA CUSTOM */ if (isPasswordUpdated) {
+                    /* SDA CUSTOM */     insertServerLog(req, 'info', 'UserPasswordChanged', req.user.name, buildUserLogType(userSaved && userSaved._id, userSaved && userSaved.email, userSaved && userSaved.name, `password_changed_for:${previousName}`));
+                    /* SDA CUSTOM */ }
+                    /* SDA CUSTOM */ // END SDA CUSTOM
 
                     userSaved.password = ':)';
 
@@ -421,6 +443,10 @@ export class UserController {
                 if (!userRemoved) {
                     return next(new HttpException(400, 'Not exists user with this id'));
                 }
+
+                /* SDA CUSTOM */ // SDA CUSTOM - Audit log for user deletion
+                /* SDA CUSTOM */ insertServerLog(req, 'info', 'UserDeleted', req.user.name, buildUserLogType(userRemoved && userRemoved._id, userRemoved && userRemoved.email, userRemoved && userRemoved.name, 'deleted'));
+                /* SDA CUSTOM */ // END SDA CUSTOM
 
                 return res.status(200).json({ ok: true, user: userRemoved });
             });
@@ -465,3 +491,24 @@ function insertServerLog(req: Request, level: string, action: string, userMail: 
     var date_str = date.getFullYear() + "-" + monthstr + "-" + daystr + " " +  date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds();
     ServerLogService.log({ level, action, userMail, ip, type, date_str});
 }
+
+/* SDA CUSTOM */ // SDA CUSTOM - Build normalized payload for user audit events
+/* SDA CUSTOM */ function buildUserLogType(targetUserId: any, targetUserEmail: any, targetUserName: any, extra?: any) {
+/* SDA CUSTOM */     const safeId = (targetUserId || '').toString().replace(/\|,\|/g, ' ');
+/* SDA CUSTOM */     const safeEmail = (targetUserEmail || '-').toString().replace(/\|,\|/g, ' ');
+/* SDA CUSTOM */     const safeName = (targetUserName || '-').toString().replace(/\|,\|/g, ' ');
+/* SDA CUSTOM */     if (!extra) return `${safeId}--${safeEmail}--${safeName}`;
+/* SDA CUSTOM */     const safeExtra = extra.toString().replace(/\|,\|/g, ' ');
+/* SDA CUSTOM */     return `${safeId}--${safeEmail}--${safeName}--${safeExtra}`;
+/* SDA CUSTOM */ }
+/* SDA CUSTOM */ // END SDA CUSTOM
+
+/* SDA CUSTOM */ // SDA CUSTOM - Compare two string arrays regardless of order
+/* SDA CUSTOM */ function areStringArraysEqual(first: string[], second: string[]) {
+/* SDA CUSTOM */     if ((first || []).length !== (second || []).length) return false;
+/* SDA CUSTOM */     for (let i = 0; i < first.length; i++) {
+/* SDA CUSTOM */         if (first[i] !== second[i]) return false;
+/* SDA CUSTOM */     }
+/* SDA CUSTOM */     return true;
+/* SDA CUSTOM */ }
+/* SDA CUSTOM */ // END SDA CUSTOM
