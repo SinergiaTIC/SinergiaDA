@@ -1931,7 +1931,7 @@ export class DashboardController {
     return res.status(200).json({ ok: true })
   }
 
-/* SDA CUSTOM */ static async isAnonymousPublicDashboardRequest(req: Request): Promise<boolean> {
+/* SDA CUSTOM */ static async isPublicDashboardRequest(req: Request): Promise<boolean> {
 /* SDA CUSTOM */   const anonymousUserId = '135792467811111111111112';
 /* SDA CUSTOM */   const requestUserId = req?.user?._id;
 /* SDA CUSTOM */   const isAnonymous = !req?.user || requestUserId == anonymousUserId;
@@ -1952,13 +1952,36 @@ export class DashboardController {
 /* SDA CUSTOM */ }
 
 /* SDA CUSTOM */ static async buildDbErrorMessageForRequest(err: any, req: Request): Promise<string> {
-/* SDA CUSTOM */   const lang = req.acceptsLanguages(['es', 'ca', 'en', 'gl']);
+/* SDA CUSTOM */   const lang = DashboardController.resolveDbErrorLangFromRequest(req);
 /* SDA CUSTOM */
-/* SDA CUSTOM */   if (await DashboardController.isAnonymousPublicDashboardRequest(req)) {
-/* SDA CUSTOM */     return getSdaDbErrorMessage('fallback', resolveSdaDbLang(lang));
+/* SDA CUSTOM */   if (await DashboardController.isPublicDashboardRequest(req)) {
+/* SDA CUSTOM */     return 'Error';
 /* SDA CUSTOM */   }
 /* SDA CUSTOM */
-/* SDA CUSTOM */   return DashboardController.parseDbErrorMySQL('Hola', lang);
+/* SDA CUSTOM */   return DashboardController.parseDbErrorMySQL(err, lang);
+/* SDA CUSTOM */ }
+
+/* SDA CUSTOM */ static resolveDbErrorLangFromRequest(req: Request): string {
+/* SDA CUSTOM */   const supportedLangs = ['es', 'ca', 'en', 'gl'];
+/* SDA CUSTOM */   const queryLang = (req?.query as any)?.lang;
+/* SDA CUSTOM */   const paramLang = (req?.params as any)?.lang;
+/* SDA CUSTOM */   const bodyLang = (req?.body as any)?.lang;
+/* SDA CUSTOM */   const headerLang = req?.headers?.['x-sda-lang'];
+/* SDA CUSTOM */   const explicitLang = [queryLang, paramLang, bodyLang, headerLang].find(value => typeof value === 'string') as string | undefined;
+/* SDA CUSTOM */
+/* SDA CUSTOM */   if (explicitLang) {
+/* SDA CUSTOM */     const normalized = explicitLang.toLowerCase();
+/* SDA CUSTOM */     return supportedLangs.includes(normalized) ? normalized : 'en';
+/* SDA CUSTOM */   }
+/* SDA CUSTOM */
+/* SDA CUSTOM */   const refererLike = String(req?.headers?.referer || req?.headers?.referrer || req?.headers?.origin || '').toLowerCase();
+/* SDA CUSTOM */   const match = refererLike.match(/\/(es|ca|en|gl|pl)\//);
+/* SDA CUSTOM */
+/* SDA CUSTOM */   if (match && match[1]) {
+/* SDA CUSTOM */     return supportedLangs.includes(match[1]) ? match[1] : 'en';
+/* SDA CUSTOM */   }
+/* SDA CUSTOM */
+/* SDA CUSTOM */   return 'en';
 /* SDA CUSTOM */ }
 
 /*SDA CUSTOM*/ static parseDbErrorMySQL(err: any, lang?: string | false): string {

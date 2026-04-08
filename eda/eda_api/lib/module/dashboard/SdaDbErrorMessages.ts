@@ -71,7 +71,7 @@ const SDA_DB_ERROR_MESSAGES: Record<SdaDbMessageKey, Record<SdaDbMessageLang, (v
 export function resolveSdaDbLang(lang?: string | false): SdaDbMessageLang {
   return typeof lang === 'string' && ['es', 'ca', 'en', 'gl'].includes(lang)
     ? (lang as SdaDbMessageLang)
-    : 'es';
+    : 'en';
 }
 
 export function getSdaDbErrorMessage(key: SdaDbMessageKey, lang: SdaDbMessageLang, value?: string): string {
