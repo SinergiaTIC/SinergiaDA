@@ -423,8 +423,8 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
             if (handler.switchBtn) {
                 this.loadDropDrownData();
                 this.display.switchButton = true;
-            } else {
-                this.dropDownFields = [];
+            } /**SDA CUSTOM  */ else {
+              /**SDA CUSTOM  */  this.dropDownFields = [];
             }
 
             if (!_.isEqual(filter.value, 'between')) {
@@ -692,7 +692,7 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
         this.display.calendar = false; // input calendar
         this.display.switchButton = true;
         this.filter.switch = false; // options switch
-        this.dropDownFields = [];
+        /* SDA CUSTOM*/ this.dropDownFields = [];
     }
 
     /** Query per dropdown  */
@@ -757,7 +757,7 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
     }
 
     processPickerEvent(event) {
-        this.dropDownFields = [];
+        /**SDA CUSTOM  */ this.dropDownFields = [];
         if (event.dates) {
             const dtf = new Intl.DateTimeFormat('en', { year: 'numeric', month: '2-digit', day: '2-digit' });
             const dates = Array.isArray(event.dates) ? event.dates : [event.dates, event.dates];
@@ -847,7 +847,6 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
 /* SDA CUSTOM */        this.filterSelected = undefined;
 /* SDA CUSTOM */        this.filterValue = {};
 /* SDA CUSTOM */        this.onClose(EdaDialogCloseEvent.NONE, []);
-        /* SDA CUSTOM */
 }
 
     closeDialog() {

@@ -81,7 +81,7 @@ export class EdaDatePickerComponent implements OnChanges {
 	public rangePlaceholder: string = $localize`:@@DateSelectRange:Selecciona un rango`;
 	public rangeDates: any;
 
-	private _allRanges: Array<SelectItem>;
+	/**SDA CUSTOM  */ private _allRanges: Array<SelectItem>;
 
 	constructor(
 		private dateUtilsService: DateUtils) {
@@ -114,7 +114,7 @@ export class EdaDatePickerComponent implements OnChanges {
 	public emitChanges(): void {
 		/**SDA CUSTOM  */ let dates = this.rangeDates;
 		/**SDA CUSTOM  */ if (this.selectionMode === 'single' && dates && !Array.isArray(dates)) dates = [dates, dates];
-		this.onDatesChanges.emit({ dates, range: this.selectedRange });
+		/**SDA CUSTOM  */ this.onDatesChanges.emit({ dates, range: this.selectedRange });
 		this.active = false;
 	}
 
@@ -139,7 +139,7 @@ export class EdaDatePickerComponent implements OnChanges {
 	public getRange() {
 		const value = <any>this.selectedRange;
 		/**SDA CUSTOM  */ const dates = this.dateUtilsService.getRange(value);
-		this.rangeDates = this.selectionMode === 'single' ? dates[0] : dates;
+		/**SDA CUSTOM  */ this.rangeDates = this.selectionMode === 'single' ? dates[0] : dates;
 		/**SDA CUSTOM  */ this.emitChanges();
 	}
 }

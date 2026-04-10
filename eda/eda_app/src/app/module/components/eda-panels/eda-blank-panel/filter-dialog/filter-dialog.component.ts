@@ -285,8 +285,8 @@ export class FilterDialogComponent extends EdaDialogAbstract {
             if (handler.switchBtn) {
                 this.loadDropDrownData();
                 this.display.switchButton = true;
-            } else {
-                this.dropDownFields = [];
+            } /**SDA CUSTOM  */else {
+              /**SDA CUSTOM  */  this.dropDownFields = [];
             }
 
             if ( !_.isEqual(filter.value, 'between') ) {
@@ -370,10 +370,10 @@ export class FilterDialogComponent extends EdaDialogAbstract {
     }
 
     processPickerEvent(event) {
-        this.dropDownFields = [];
+        /**SDA CUSTOM  */ this.dropDownFields = [];
         if (event.dates) {
             const dtf = new Intl.DateTimeFormat('en', { year: 'numeric', month: '2-digit', day: '2-digit' });
-            const dates = Array.isArray(event.dates) ? event.dates : [event.dates, event.dates];
+            /**SDA CUSTOM  */const dates = Array.isArray(event.dates) ? event.dates : [event.dates, event.dates];
             /**SDA CUSTOM  */if (!dates[1]) {
             /**SDA CUSTOM  */    dates[1] = dates[0];
             /**SDA CUSTOM  */}
