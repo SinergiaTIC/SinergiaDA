@@ -159,11 +159,11 @@ export class EdaBlankPanelComponent implements OnInit {
     public sortedFilters: any[] = [];
     public temporalSortedFilters: any[] = [];
     /* SDA CUSTOM */ public groupByEnabled: boolean = true;
-    /* SDA CUSTOM */ public groupByEnabledMessage: string = "Mostrar Repetidos";
-    /* SDA CUSTOM */ public groupByEnabledMessages: any = [
+    /* SDA CUSTOM */ public groupByEnabledMessages: {value: boolean, message: string}[] = [
     /* SDA CUSTOM */     {value: true, message: $localize`:@@groupByEnabledShow:Mostrar Repetidos`},
     /* SDA CUSTOM */     {value: false, message: $localize`:@@groupByEnabledHide:Ocultar Repetidos`},
     /* SDA CUSTOM */ ];
+    /* SDA CUSTOM */ public groupByEnabledMessage: string = this.groupByEnabledMessages[0].message;
 
     public queryModes: any[] = [
         /* SDA CUSTOM */ { label: $localize`:@@PanelModeSelectorEDA:Modo EDA`, value: 'EDA', disabled: true},
@@ -1981,11 +1981,7 @@ export class EdaBlankPanelComponent implements OnInit {
 
     /* SDA CUSTOM */ groupByEnabledButton() {
     /* SDA CUSTOM */     this.groupByEnabled = !this.groupByEnabled;
-    /* SDA CUSTOM */     if(this.groupByEnabledMessage === 'Mostrar Repetidos') {
-    /* SDA CUSTOM */         this.groupByEnabledMessage = this.groupByEnabledMessages[1].message;
-    /* SDA CUSTOM */     } else {
-    /* SDA CUSTOM */         this.groupByEnabledMessage = this.groupByEnabledMessages[0].message;
-    /* SDA CUSTOM */     }
+    /* SDA CUSTOM */     this.groupByEnabledMessage = this.groupByEnabledMessages.find((m: {value: boolean, message: string}) => m.value === this.groupByEnabled).message;
     /* SDA CUSTOM */ }
 
 }
