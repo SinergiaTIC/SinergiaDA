@@ -1388,34 +1388,62 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
 
         if (this.form.invalid) {
             this.display_v.rightSidebar = false;
-            this.alertService.addError($localize`:@@mandatoryFields:Recuerde rellenar los campos obligatorios`);
+            this.alertService.addError($localize`:@@mandatoryFields:Recuerde relleno los campos obligatorios`);
         } else {
-
-            const body = {
-                config: {
-                    title: this.title,
-                    panel: [],
-                    ds: { _id: this.dataSource._id },
-                    filters: this.cleanFiltersData(),
-                    applyToAllfilter: this.applyToAllfilter,
-                    visible: this.form.controls['visible'].value,
-                    tag: this.saveTag(),
-                    refreshTime: (this.refreshTime > 5) ? this.refreshTime : this.refreshTime ? 5 : null,
-                    mailingAlertsEnabled: this.getMailingAlertsEnabled(),
-                    sendViaMailConfig: this.sendViaMailConfig,
-                    onlyIcanEdit: this.onlyIcanEdit,
-                    styles : this.styles,
-                    urls: this.urls
-
+            const newTitle = this.title.trim();
+            // SDA CUSTOM - check for duplicate title before saving
+            this.dashboardService.checkTitle(newTitle, this.id).subscribe({
+                next: (res) => {
+                    if (res.exists) {
+                        Swal.fire({
+                            title: $localize`:@@duplicateTitleWarning:Título duplicado`,
+                            text: $localize`:@@duplicateTitleMessage:Ya existe un informe con este nombre. ¿Desea continuar?`,
+                            icon: 'warning',
+                            showCancelButton: true,
+                            confirmButtonText: $localize`:@@duplicateTitleConfirm:Continuar`,
+                            cancelButtonText: $localize`:@@cancelarBtn:Cancelar`
+                        }).then((proceed) => {
+                            if (proceed.isConfirmed) {
+                                this.doSaveDashboard(newTitle);
+                            }
+                        });
+                    } else {
+                        this.doSaveDashboard(newTitle);
+                    }
                 },
-                group: this.form.value.group ? _.map(this.form.value.group, '_id') : undefined
-            };
-            this.edaPanels.forEach(panel => { panel.savePanel(); });
-            body.config.panel = this.dashboard.panel;
+                error: () => {
+                    this.doSaveDashboard(newTitle);
+                }
+            });
+            // END SDA CUSTOM
+        }
+    }
 
+    // SDA CUSTOM - extracted save logic
+    private doSaveDashboard(title: string): void {
+        const body = {
+            config: {
+                title: title,
+                panel: [],
+                ds: { _id: this.dataSource._id },
+                filters: this.cleanFiltersData(),
+                applyToAllfilter: this.applyToAllfilter,
+                visible: this.form.controls['visible'].value,
+                tag: this.saveTag(),
+                refreshTime: (this.refreshTime > 5) ? this.refreshTime : this.refreshTime ? 5 : null,
+                mailingAlertsEnabled: this.getMailingAlertsEnabled(),
+                sendViaMailConfig: this.sendViaMailConfig,
+                onlyIcanEdit: this.onlyIcanEdit,
+                styles : this.styles,
+                urls: this.urls
+            },
+            group: this.form.value.group ? _.map(this.form.value.group, '_id') : undefined
+        };
+        this.edaPanels.forEach(panel => { panel.savePanel(); });
+        body.config.panel = this.dashboard.panel;
 
-            if( this.checkPannels(body) === 'true'){
-                this.dashboardService.updateDashboard(this.id, body).subscribe(
+        if( this.checkPannels(body) === 'true'){
+            this.dashboardService.updateDashboard(this.id, body).subscribe(
                     () => {
                         this.display_v.rightSidebar = false;
                         this.alertService.addSuccess($localize`:@@dahsboardSaved:Informe guardado correctamente`);
@@ -1775,7 +1803,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
             confirmButtonColor: '#3085d6',
             confirmButtonText: swal.resolveBtnText,
         });
-    }
+}
 
     /**
      * Filters dashboard visibility types based on user role.
@@ -1784,20 +1812,60 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
      *
      * @description
      * Returns all types for admins, excludes 'shared' for non-admins.
-    */
-    /*SDA CUSTOM*/public getFilteredVisibleTypes(): SelectItem[] {
-    /*SDA CUSTOM*/  return this.userService.isAdmin
-    /*SDA CUSTOM*/    ? this.visibleTypes
-    /*SDA CUSTOM*/    : this.visibleTypes.filter(type => type.value !== 'shared');
-    /*SDA CUSTOM*/}
+     */
+    public getFilteredVisibleTypes(): SelectItem[] {
+        return this.userService.isAdmin
+            ? this.visibleTypes
+            : this.visibleTypes.filter(type => type.value !== 'shared');
+    }
 
-  public getCorrectColumnFiltered(event): string {
-        if (['doughnut', 'polarArea', 'bar', 'line', 'radar',''].includes(event.data.panel.content.chart)) {  //Si el evento es de un chart de la libreria ng2Chart
-          if (event.data.query.length > 2) // Si la query tiene más de dos valores en barras, necesitamos redefinir el filterBy
+    public validateDashboard(action: string): boolean {
+        let isvalid = true;
+
+        if (action == 'GLOBALFILTER') {
+            const emptyQuery = this.edaPanels.some((panel) => panel.currentQuery.length === 0);
+            if (emptyQuery) isvalid = false;
+
+            if (!isvalid) {
+                this.showSwalAlert({
+                    title: $localize`:@@AddFiltersWarningTittle:Solo puedes añadir filtros cuando todos los paneles están configurados`,
+                    text: $localize`:@@AddFiltersWarningText:Puedes borrar los paneles en blanco o configurarlos`,
+                    resolveBtnText: $localize`:@@AddFiltersWarningButton:Entendido`
+                });
+            }
+        }
+
+        return isvalid;
+    }
+
+    private showSwalAlert(swal: any) {
+        Swal.fire({
+            icon: 'success',
+            title: swal.title,
+            text: swal.text,
+            showConfirmButton: true,
+            showCancelButton: false,
+            confirmButtonColor: '#3085d6',
+            confirmButtonText: swal.resolveBtnText,
+        });
+    }
+
+    public getCorrectColumnFiltered(event): string {
+        if (['doughnut', 'polarArea', 'bar', 'line', 'radar',''].includes(event.data.panel.content.chart)) {
+          if (event.data.query.length > 2)
              return event.data.query.find((query: any) => query?.display_name?.default === event.data.query[0].display_name.default);
           else
             return event.data.query.find((query: any) => query?.display_name?.default === event.data.filterBy);
         }
+        else if (['table','crosstable','treetable'].includes(event.data.panel.content.chart)) {
+            return event.data.query.find((query: any) => query?.column_name === event.data.filterBy);
+        }
+        else {
+            //Si el evento es de un chart de la libreria D3Chart o Leaflet
+            return event.data.query.find((query: any) => query?.display_name?.default.localeCompare(event.data.filterBy, undefined, { sensitivity: 'base' }) === 0);
+        }
+    }
+}
         else if (['table','crosstable','treetable'].includes(event.data.panel.content.chart)) {
             return event.data.query.find((query: any) => query?.column_name === event.data.filterBy);
         }

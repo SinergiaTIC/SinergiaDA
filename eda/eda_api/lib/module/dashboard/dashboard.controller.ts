@@ -785,9 +785,33 @@ export class DashboardController {
           }
         );
       } catch (err) {
-        next(err);
-      }
+next(err);
+    }
   }
+
+  // SDA CUSTOM - check title using URL path param for duplicate detection
+  static async checkTitleWithParam(req: Request, res: Response, next: NextFunction) {
+    try {
+      const title = (req.params.title as string)?.trim();
+      if (!title) {
+        return res.status(400).json({ ok: true, exists: false });
+      }
+      const query: any = { 'config.title': title };
+      const groups = await Group.find({ users: { $in: req.user._id } }).exec();
+      const isAdmin = groups.filter(g => g.role === 'EDA_ADMIN_ROLE').length > 0;
+      let dashboards: IDashboard[] = [];
+      if (isAdmin) {
+        dashboards = await Dashboard.find(query, 'config.title').populate('user', 'name').exec();
+      } else {
+        const userQuery: any = { ...query, $or: [{ user: req.user._id }, { 'config.visible': 'public' }, { 'config.visible': 'shared' }, { group: { $in: groups.map(g => g._id) } }] };
+        dashboards = await Dashboard.find(userQuery, 'config.title').populate('user', 'name').exec();
+      }
+      return res.status(200).json({ ok: true, exists: dashboards.length > 0 });
+    } catch (err) {
+      next(err);
+    }
+  }
+  // END SDA CUSTOM
 
   static async delete(req: Request, res: Response, next: NextFunction) {
     let options: QueryOptions = {}
@@ -1875,10 +1899,23 @@ export class DashboardController {
       }
 
       // Create a new dashboard object with cloned properties
+      // SDA CUSTOM - auto-increment clone title suffix to avoid duplicates
+      let cloneTitle = `${originalDashboard.config.title} copy`;
+      let counter = 2;
+      const findDuplicate = async (t: string) => {
+        const existing = await Dashboard.find({ 'config.title': t }, '_id').exec();
+        return existing.length > 0;
+      };
+      while (await findDuplicate(cloneTitle)) {
+        cloneTitle = `${originalDashboard.config.title} copy ${counter}`;
+        counter++;
+      }
+      // END SDA CUSTOM
+
       const clonedDashboard: IDashboard = new Dashboard({
         config: {
           ...originalDashboard.config,
-          title: `${originalDashboard.config.title} copy`, // Append 'copy' to the title
+          title: cloneTitle,
           createdAt: new Date(),
           modifiedAt: new Date()
         },

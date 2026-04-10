@@ -431,6 +431,18 @@
     <source>Desbloquear panel</source>
     <target>Desbloquear panel</target>
   </trans-unit>
+  <trans-unit id="duplicateTitleWarning" datatype="html">
+    <source>Título duplicado</source>
+    <target>Título duplicado</target>
+  </trans-unit>
+  <trans-unit id="duplicateTitleMessage" datatype="html">
+    <source>Ya existe un informe con este nombre. ¿Desea continuar?</source>
+    <target>Ya existe un informe con este nombre. ¿Desea continuar?</target>
+  </trans-unit>
+  <trans-unit id="duplicateTitleConfirm" datatype="html">
+    <source>Continuar</source>
+    <target>Continuar</target>
+  </trans-unit>
 </body>
 </file>
 </xliff>

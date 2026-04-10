@@ -1,8 +1,11 @@
 import { Component } from "@angular/core";
 import { UntypedFormBuilder, UntypedFormGroup, Validators } from "@angular/forms";
-import { AlertService, GroupService, IGroup } from "@eda/services/service.index";
+import { AlertService, DashboardService, GroupService, IGroup } from "@eda/services/service.index";
 import { EdaDialog, EdaDialogAbstract, EdaDialogCloseEvent } from "@eda/shared/components/shared-components.index";
 import { SelectItem } from "primeng/api";
+// SDA CUSTOM - import Swal for duplicate title confirmation
+/* SDA CUSTOM */ import Swal from 'sweetalert2';
+// END SDA CUSTOM
 
 @Component({
   selector: 'save-as-dialog',
@@ -23,6 +26,7 @@ export class SaveAsDialogComponent extends EdaDialogAbstract {
   constructor(
     private formBuilder: UntypedFormBuilder, 
     private groupService: GroupService,
+    /* SDA CUSTOM */ private dashboardService: DashboardService,
     private alertService: AlertService) {
     super();
 
@@ -76,13 +80,44 @@ export class SaveAsDialogComponent extends EdaDialogAbstract {
 }
 
   public createNewDashboard(): void {
-    let response = {
-      name:this.form.value.name, 
-      visible:this.form.value.visible, 
-      group:this.form.value.group
-    }
-    this.onClose(EdaDialogCloseEvent.NEW, response);
+    const title = this.form.value.name.trim();
+    // SDA CUSTOM - check for duplicate title before creating save-as dashboard
+    /* SDA CUSTOM */ this.dashboardService.checkTitle(title).subscribe({
+    /* SDA CUSTOM */   next: (res) => {
+    /* SDA_CUSTOM */     if (res.exists) {
+    /* SDA_CUSTOM */       Swal.fire({
+    /* SDA_CUSTOM */         title: $localize`:@@duplicateTitleWarning:Título duplicado`,
+    /* SDA_CUSTOM */         text: $localize`:@@duplicateTitleMessage:Ya existe un informe con este nombre. ¿Desea continuar?`,
+    /* SDA_CUSTOM */         icon: 'warning',
+    /* SDA_CUSTOM */         showCancelButton: true,
+    /* SDA_CUSTOM */         confirmButtonText: $localize`:@@duplicateTitleConfirm:Continuar`,
+    /* SDA_CUSTOM */         cancelButtonText: $localize`:@@cancelarBtn:Cancelar`
+    /* SDA_CUSTOM */       }).then((proceed) => {
+    /* SDA_CUSTOM */         if (proceed.isConfirmed) {
+    /* SDA_CUSTOM */           this.doCreateResponse();
+    /* SDA_CUSTOM */         }
+    /* SDA_CUSTOM */       });
+    /* SDA_CUSTOM */     } else {
+    /* SDA_CUSTOM */       this.doCreateResponse();
+    /* SDA_CUSTOM */     }
+    /* SDA_CUSTOM */   },
+    /* SDA_CUSTOM */   error: () => {
+    /* SDA_CUSTOM */     this.doCreateResponse();
+    /* SDA_CUSTOM */   }
+    /* SDA_CUSTOM */ });
+    // END SDA CUSTOM
   }
+
+  // SDA CUSTOM - extracted response creation
+  /* SDA_CUSTOM */ private doCreateResponse(): void {
+  /* SDA_CUSTOM */   const response = {
+  /* SDA_CUSTOM */     name: this.form.value.name.trim(),
+  /* SDA_CUSTOM */     visible: this.form.value.visible,
+  /* SDA_CUSTOM */     group: this.form.value.group
+  /* SDA_CUSTOM */   };
+  /* SDA_CUSTOM */   this.onClose(EdaDialogCloseEvent.NEW, response);
+  /* SDA_CUSTOM */ }
+  // END SDA CUSTOM
 
   public handleSelectedBtn(event): void {
     const groupControl = this.form.get('group');

@@ -60,10 +60,17 @@ export class DashboardService extends ApiService {
     /*SDA CUSTOM*/  return this.post(`${this.route}${id}/clone`, {});
     /*SDA CUSTOM*/ }
 
-    /*SDA CUSTOM*/ updateDashboardSpecific( id, body ): Observable<any> {
+/*SDA CUSTOM*/ updateDashboardSpecific( id, body ): Observable<any> {
     /*SDA CUSTOM*/   return this.put( `${this.route}${id}/updateSpecific`, body );
     /*SDA CUSTOM*/ }
 
+    // SDA CUSTOM - check if a dashboard title already exists
+    /*SDA CUSTOM*/ checkTitle(title: string, excludeId?: string): Observable<any> {
+    /*SDA CUSTOM*/   const pathTitle = encodeURIComponent(title);
+    /*SDA CUSTOM*/   const url = `${this.route}check-title/${pathTitle}${excludeId ? '?excludeId=' + excludeId : ''}`;
+    /*SDA CUSTOM*/   return this.get(url);
+    /*SDA CUSTOM*/ }
+    // END SDA CUSTOM
 
 
 }

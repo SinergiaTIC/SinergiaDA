@@ -3,6 +3,9 @@ import { FormBuilder, UntypedFormGroup, Validators } from "@angular/forms";
 import { AlertService, DashboardService, GroupService, IGroup, SidebarService, StyleProviderService } from "@eda/services/service.index";
 import { SelectItem } from "primeng/api";
 import * as _ from 'lodash';
+// SDA CUSTOM - import Swal for duplicate title confirmation
+/* SDA CUSTOM */ import Swal from 'sweetalert2';
+// END SDA CUSTOM
 
 @Component({
     selector: 'app-create-dashboard',
@@ -96,11 +99,27 @@ export class CreateDashboardComponent implements OnInit {
         if (this.form.invalid) {
             this.alertService.addError('Recuerde rellenar los campos obligatorios');
         } else {
+            const title = this.form.value.name.trim();
+            // SDA CUSTOM - check for duplicate title before creating
+            /* SDA CUSTOM */ const titleExists = await this.checkDuplicateTitle(title);
+            /* SDA CUSTOM */ if (titleExists) {
+            /* SDA CUSTOM */   const proceed = await Swal.fire({
+            /* SDA CUSTOM */     title: $localize`:@@duplicateTitleWarning:Título duplicado`,
+            /* SDA CUSTOM */     text: $localize`:@@duplicateTitleMessage:Ya existe un informe con este nombre. ¿Desea continuar?`,
+            /* SDA CUSTOM */     icon: 'warning',
+            /* SDA CUSTOM */     showCancelButton: true,
+            /* SDA CUSTOM */     confirmButtonText: $localize`:@@duplicateTitleConfirm:Continuar`,
+            /* SDA CUSTOM */     cancelButtonText: $localize`:@@cancelarBtn:Cancelar`
+            /* SDA CUSTOM */   });
+            /* SDA CUSTOM */   if (!proceed.isConfirmed) { return; }
+            /* SDA CUSTOM */ }
+            // END SDA CUSTOM
+
             const ds = { _id: this.form.value.ds._id };
             const body = {
                 config: {
                     ds,
-                    title: this.form.value.name,
+                    title: title,
                     visible: this.form.value.visible,
                     tag: null,
                     refreshTime:null,
@@ -127,4 +146,15 @@ export class CreateDashboardComponent implements OnInit {
     private onClose(res?: any): void {
         this.close.emit(res);
     }
+
+    // SDA CUSTOM - check if a dashboard title already exists
+    /* SDA CUSTOM */ private async checkDuplicateTitle(title: string): Promise<boolean> {
+    /* SDA_CUSTOM */   try {
+    /* SDA_CUSTOM */     const res = await this.dashboardService.checkTitle(title).toPromise();
+    /* SDA_CUSTOM */     return res.exists === true;
+    /* SDA_CUSTOM */   } catch (err) {
+    /* SDA_CUSTOM */     return false;
+    /* SDA_CUSTOM */   }
+    /* SDA_CUSTOM */ }
+    // END SDA CUSTOM
 }

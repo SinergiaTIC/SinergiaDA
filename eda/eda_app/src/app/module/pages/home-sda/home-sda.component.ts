@@ -856,29 +856,61 @@ public filterGroups() {
     const newTitle = event.target.textContent.trim();
     this.isEditing = false;
     if (newTitle !== dashboard.config.title) {
-      dashboard.config.title = newTitle;
-      this.dashboardService
-        .updateDashboardSpecific(dashboard._id, {
-          data: {
-            key: "config.title",
-            newValue: newTitle
-          }
-        })
-        .subscribe(
-          () => {
-            this.alertService.addSuccess(
-              $localize`:@@DashboardTitleUpdated:Título del informe actualizado correctamente.`
-            );
-          },
-          error => {
-            this.alertService.addError(
-              $localize`:@@ErrorUpdatingDashboardTitle:Error al actualizar el título del informe.`
-            );
-            console.error("Error updating dashboard title:", error);
-          }
-        );
+      // SDA CUSTOM - check for duplicate title before updating
+      /* SDA CUSTOM */ this.dashboardService.checkTitle(newTitle, dashboard._id).subscribe({
+      /* SDA_CUSTOM */   next: (res) => {
+      /* SDA_CUSTOM */     if (res.exists) {
+      /* SDA_CUSTOM */       Swal.fire({
+      /* SDA_CUSTOM */         title: $localize`:@@duplicateTitleWarning:Título duplicado`,
+      /* SDA_CUSTOM */         text: $localize`:@@duplicateTitleMessage:Ya existe un informe con este nombre. ¿Desea continuar?`,
+      /* SDA_CUSTOM */         icon: 'warning',
+      /* SDA_CUSTOM */         showCancelButton: true,
+      /* SDA_CUSTOM */         confirmButtonText: $localize`:@@duplicateTitleConfirm:Continuar`,
+      /* SDA_CUSTOM */         cancelButtonText: $localize`:@@cancelarBtn:Cancelar`
+      /* SDA_CUSTOM */       }).then((proceed) => {
+      /* SDA_CUSTOM */         if (proceed.isConfirmed) {
+      /* SDA_CUSTOM */           this.doUpdateDashboardTitle(dashboard, newTitle);
+      /* SDA_CUSTOM */         } else {
+      /* SDA_CUSTOM */           event.target.textContent = dashboard.config.title;
+      /* SDA_CUSTOM */         }
+      /* SDA_CUSTOM */       });
+      /* SDA_CUSTOM */     } else {
+      /* SDA_CUSTOM */       this.doUpdateDashboardTitle(dashboard, newTitle);
+      /* SDA_CUSTOM */     }
+      /* SDA_CUSTOM */   },
+      /* SDA_CUSTOM */   error: () => {
+      /* SDA_CUSTOM */     this.doUpdateDashboardTitle(dashboard, newTitle);
+      /* SDA_CUSTOM */   }
+      /* SDA_CUSTOM */ });
+      // END SDA CUSTOM
     }
   }
+
+  // SDA CUSTOM - extracted title update logic
+  /* SDA_CUSTOM */ private doUpdateDashboardTitle(dashboard: any, newTitle: string): void {
+  /* SDA_CUSTOM */   dashboard.config.title = newTitle;
+  /* SDA_CUSTOM */   this.dashboardService
+  /* SDA_CUSTOM */     .updateDashboardSpecific(dashboard._id, {
+  /* SDA_CUSTOM */       data: {
+  /* SDA_CUSTOM */         key: "config.title",
+  /* SDA_CUSTOM */         newValue: newTitle
+  /* SDA_CUSTOM */       }
+  /* SDA_CUSTOM */     })
+  /* SDA_CUSTOM */     .subscribe(
+  /* SDA_CUSTOM */       () => {
+  /* SDA_CUSTOM */         this.alertService.addSuccess(
+  /* SDA_CUSTOM */           $localize`:@@DashboardTitleUpdated:Título del informe actualizado correctamente.`
+  /* SDA_CUSTOM */         );
+  /* SDA_CUSTOM */       },
+  /* SDA_CUSTOM */       error => {
+  /* SDA_CUSTOM */         this.alertService.addError(
+  /* SDA_CUSTOM */           $localize`:@@ErrorUpdatingDashboardTitle:Error al actualizar el título del informe.`
+  /* SDA_CUSTOM */         );
+  /* SDA_CUSTOM */         console.error("Error updating dashboard title:", error);
+  /* SDA_CUSTOM */       }
+  /* SDA_CUSTOM */     );
+  /* SDA_CUSTOM */ }
+  // END SDA CUSTOM
 
   /**
    * Applies the current filters to the dashboard list
