@@ -504,7 +504,6 @@ export class EdaBlankPanelComponent implements OnInit {
         /* SDA CUSTOM */ const groupByEnabled = panelContent.query.query.groupByEnabled;
         const queryMode = this.selectedQueryMode;
         /*SDA CUSTOM*/ this.showHiddenColumn = true;
-        console.log()
 
         const currentQuery = panelContent.query.query.fields;
 

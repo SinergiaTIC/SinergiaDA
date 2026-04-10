@@ -497,7 +497,7 @@ export class GlobalFilterComponent implements OnInit {
             dataSource: this.dashboard.dataSource._id,
             dashboard: '',
             panel: '',
-            groupByEnabled: true,
+            /* SDA CUSTOM */ groupByEnabled: true,
             filters: []
         };
 

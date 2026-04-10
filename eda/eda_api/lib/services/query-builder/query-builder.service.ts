@@ -58,7 +58,7 @@ export abstract class QueryBuilderService {
     abstract processFilter(filter: any, columnType: string);
     abstract normalQuery(columns: string[], origin: string, dest: any[], joinTree: any[],
         grouping: any[], filters: any[], havingFilters: any[], tables: Array<any>, limit: number, 
-        joinType: string, valueListJoins:any[], groupByEnabled?:boolean, Schema?: string, database?: string, forSelector?: any, sortedFilters?: any[] );
+        /* SDA CUSTOM */ joinType: string, valueListJoins:any[], groupByEnabled?:boolean, Schema?: string, database?: string, forSelector?: any, sortedFilters?: any[] );
     abstract sqlQuery(query: string, filters: any[], filterMarks: string[]): string;
     abstract buildPermissionJoin(origin: string, join: string[], permissions: any[], schema?: string);
     abstract parseSchema(tables: string[], schema?: string, database?: string);
@@ -368,7 +368,7 @@ export abstract class QueryBuilderService {
                 .map(table => { return { name: table.table_name, query: table.query } });
 
             this.query = this.normalQuery(columns, origin, dest, joinTree, grouping,  filters, havingFilters,  tables,
-                this.queryTODO.queryLimit,   this.queryTODO.joinType, valueListJoins, groupByEnabled, this.dataModel.ds.connection.schema, 
+                /* SDA CUSTOM */ this.queryTODO.queryLimit,   this.queryTODO.joinType, valueListJoins, groupByEnabled, this.dataModel.ds.connection.schema, 
                 this.dataModel.ds.connection.database, this.queryTODO.forSelector, this.queryTODO.sortedFilters);
             
             return this.query;
