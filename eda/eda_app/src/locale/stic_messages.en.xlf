@@ -291,6 +291,22 @@
     <source>Error al actualizar el título del informe.</source>
     <target>Error updating report title.</target>
   </trans-unit>
+  <trans-unit id="DashboardTitleAlreadyExists">
+    <source>Ya existe un informe con ese nombre en este ámbito. Indique otro nombre.</source>
+    <target>A report with this name already exists in this scope. Please provide a different name.</target>
+  </trans-unit>
+  <trans-unit id="DashboardTitleDuplicateContinuePrompt">
+    <source>Ya existe un informe con ese nombre. ¿Desea continuar?</source>
+    <target>A report with this name already exists. Do you want to continue?</target>
+  </trans-unit>
+  <trans-unit id="ErrorCheckingDashboardTitle">
+    <source>Error al comprobar el nombre del informe.</source>
+    <target>Error checking report name.</target>
+  </trans-unit>
+  <trans-unit id="Continue">
+    <source>Continuar</source>
+    <target>Continue</target>
+  </trans-unit>
   <trans-unit id="DashboardTypeUpdated">
     <source>Tipo de informe actualizado correctamente.</source>
     <target>Report type successfully updated.</target>

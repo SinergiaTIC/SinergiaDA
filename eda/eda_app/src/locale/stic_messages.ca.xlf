@@ -291,6 +291,22 @@
     <source>Error al actualizar el título del informe.</source>
     <target>S'ha produït un error en actualitzar el títol de l'informe.</target>
   </trans-unit>
+  <trans-unit id="DashboardTitleAlreadyExists">
+    <source>Ya existe un informe con ese nombre en este ámbito. Indique otro nombre.</source>
+    <target>Ja existeix un informe amb aquest nom en aquest àmbit. Indiqueu un altre nom.</target>
+  </trans-unit>
+  <trans-unit id="DashboardTitleDuplicateContinuePrompt">
+    <source>Ya existe un informe con ese nombre. ¿Desea continuar?</source>
+    <target>Ja existeix un informe amb aquest nom. Voleu continuar?</target>
+  </trans-unit>
+  <trans-unit id="ErrorCheckingDashboardTitle">
+    <source>Error al comprobar el nombre del informe.</source>
+    <target>S'ha produït un error en comprovar el nom de l'informe.</target>
+  </trans-unit>
+  <trans-unit id="Continue">
+    <source>Continuar</source>
+    <target>Continua</target>
+  </trans-unit>
   <trans-unit id="DashboardTypeUpdated">
     <source>Tipo de informe actualizado correctamente.</source>
     <target>El tipus d'informe s'ha actualitzat correctament.</target>

@@ -24,12 +24,14 @@ export class DashboardService extends ApiService {
 /*SDA CUSTOM*/       return this.get( `${this.route}${id}/visibility` );
 /*SDA CUSTOM*/   }
 
-    addNewDashboard( dashboard ): Observable<any> {
-        return this.post( this.route,  dashboard);
+    addNewDashboard( dashboard, forceDuplicate?: boolean ): Observable<any> {
+        /* SDA CUSTOM */ const body = forceDuplicate ? { ...dashboard, forceDuplicate: true } : dashboard;
+        return this.post( this.route,  body);
     }
 
-    updateDashboard( id, body ): Observable<any> {
-        return this.put( `${this.route}${id}`, body );
+    updateDashboard( id, body, forceDuplicate?: boolean ): Observable<any> {
+        /* SDA CUSTOM */ const requestBody = forceDuplicate ? { ...body, forceDuplicate: true } : body;
+        return this.put( `${this.route}${id}`, requestBody );
     }
 
     deleteDashboard( id ): Observable<any> {
@@ -55,14 +57,30 @@ export class DashboardService extends ApiService {
         return this.post(`${this.route}clean-refresh`, body);
     }
 
-    /*SDA CUSTOM*/ cloneDashboard(id: string): Observable<any> {
+    /*SDA CUSTOM*/ cloneDashboard(id: string, title?: string, forceDuplicate?: boolean): Observable<any> {
     /*SDA CUSTOM*/  console.log(`Clonando dashboard con ID: ${id}`);
-    /*SDA CUSTOM*/  return this.post(`${this.route}${id}/clone`, {});
+    /*SDA CUSTOM*/  const body = title ? { title } : {};
+    /* SDA CUSTOM */ const requestBody = forceDuplicate ? { ...body, forceDuplicate: true } : body;
+    /*SDA CUSTOM*/  return this.post(`${this.route}${id}/clone`, requestBody);
     /*SDA CUSTOM*/ }
 
-    /*SDA CUSTOM*/ updateDashboardSpecific( id, body ): Observable<any> {
-    /*SDA CUSTOM*/   return this.put( `${this.route}${id}/updateSpecific`, body );
+    /*SDA CUSTOM*/ updateDashboardSpecific( id, body, forceDuplicate?: boolean ): Observable<any> {
+    /* SDA CUSTOM */   const requestBody = forceDuplicate ? { ...body, forceDuplicate: true } : body;
+    /*SDA CUSTOM*/   return this.put( `${this.route}${id}/updateSpecific`, requestBody );
     /*SDA CUSTOM*/ }
+
+    /* SDA CUSTOM */ checkTitle(title: string, visible: string, group?: any[], excludeId?: string): Observable<any> {
+    /* SDA CUSTOM */   const params: any = {
+    /* SDA CUSTOM */     visible,
+    /* SDA CUSTOM */     excludeId: excludeId || null
+    /* SDA CUSTOM */   };
+
+    /* SDA CUSTOM */   if (group && group.length > 0) {
+    /* SDA CUSTOM */     params.group = group.map(g => g?._id || g).join(',');
+    /* SDA CUSTOM */   }
+
+    /* SDA CUSTOM */   return this.getParams(`${this.route}check-title/${encodeURIComponent((title || '').trim())}`, params);
+    /* SDA CUSTOM */ }
 
 
 
