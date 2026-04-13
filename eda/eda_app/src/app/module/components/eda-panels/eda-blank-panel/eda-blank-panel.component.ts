@@ -160,8 +160,8 @@ export class EdaBlankPanelComponent implements OnInit {
     public temporalSortedFilters: any[] = [];
     /* SDA CUSTOM */ public groupByEnabled: boolean = true;
     /* SDA CUSTOM */ public groupByEnabledMessages: {value: boolean, message: string}[] = [
-    /* SDA CUSTOM */     {value: true, message: $localize`:@@groupByEnabledShow:Mostrar Repetidos`},
-    /* SDA CUSTOM */     {value: false, message: $localize`:@@groupByEnabledHide:Ocultar Repetidos`},
+    /* SDA CUSTOM */     {value: true, message: $localize`:@@groupByEnabledHide:Ocultar Repetidos`},
+    /* SDA CUSTOM */     {value: false, message: $localize`:@@groupByEnabledShow:Mostrar Repetidos`},
     /* SDA CUSTOM */ ];
     /* SDA CUSTOM */ public groupByEnabledMessage: string = this.groupByEnabledMessages[0].message;
 
