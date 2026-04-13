@@ -4592,6 +4592,18 @@
         <source>Ocultar Repetidos</source>
         <target>Ocultar Repetidos</target>
       </trans-unit>
+      <trans-unit id="noAttributeShouldHaveAggregation">
+        <source>Ningún Atributo debe tener agregación</source>
+        <target>Ningún Atributo debe tener agregación</target>
+      </trans-unit>
+      <trans-unit id="mustConfigureAtLeastOneAttribute">
+        <source>Debe configurar un atributo como mínimo para habilitar esta opción</source>
+        <target>Debe configurar un atributo como mínimo para habilitar esta opción</target>
+      </trans-unit>
+      <trans-unit id="mustAddTheGroupingsToRunWithAggregations">
+        <source>Debe activar las agrupaciones para ejecutar con agregaciones configuradas en los atributos</source>
+        <target>Debe activar las agrupaciones para ejecutar con agregaciones configuradas en los atributos</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>

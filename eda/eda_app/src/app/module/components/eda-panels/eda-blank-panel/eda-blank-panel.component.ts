@@ -1566,6 +1566,20 @@ export class EdaBlankPanelComponent implements OnInit {
     * Runs actual query when execute button is pressed to check for heavy queries
     */
     public runManualQuery = () => {
+
+        /* SDA CUSTOM */ if(!this.groupByEnabled) {
+        /* SDA CUSTOM */     let isAnAggregation: boolean = false;
+        /* SDA CUSTOM */     isAnAggregation = this.currentQuery.some((column: any) =>
+        /* SDA CUSTOM */         column.aggregation_type.some((at: any) =>
+        /* SDA CUSTOM */             at.selected && at.display_name !== 'None'
+        /* SDA CUSTOM */         )
+        /* SDA CUSTOM */     );
+        /* SDA CUSTOM */     if(isAnAggregation) {
+        /* SDA CUSTOM */         this.alertService.addWarning($localize`:@@mustAddTheGroupingsToRunWithAggregations:Debe activar las agrupaciones para ejecutar con agregaciones configuradas en los atributos`);
+        /* SDA CUSTOM */         return;
+        /* SDA CUSTOM */     }
+        /* SDA CUSTOM */ }
+
         this.hiddenButtonExecuter = true;
         // isNewAxes --> Verify if the axes construction is new.
         QueryUtils.runManualQuery(this);
@@ -1643,6 +1657,19 @@ export class EdaBlankPanelComponent implements OnInit {
     }
 
     public async getQuery($event) {
+
+        /* SDA CUSTOM */ if(!this.groupByEnabled) {
+        /* SDA CUSTOM */     let isAnAggregation: boolean = false;
+        /* SDA CUSTOM */     isAnAggregation = this.currentQuery.some((column: any) =>
+        /* SDA CUSTOM */         column.aggregation_type.some((at: any) =>
+        /* SDA CUSTOM */             at.selected && at.display_name !== 'None'
+        /* SDA CUSTOM */         )
+        /* SDA CUSTOM */     );
+        /* SDA CUSTOM */     if(isAnAggregation) {
+        /* SDA CUSTOM */         this.alertService.addWarning($localize`:@@mustAddTheGroupingsToRunWithAggregations:Debe activar las agrupaciones para ejecutar con agregaciones configuradas en los atributos`);
+        /* SDA CUSTOM */         return;
+        /* SDA CUSTOM */     }
+        /* SDA CUSTOM */ }
 
         this.display_v.minispinnerSQL = true;
         this.queryFromServer = null;
@@ -1979,9 +2006,32 @@ export class EdaBlankPanelComponent implements OnInit {
         }
     }
 
-    /* SDA CUSTOM */ groupByEnabledButton() {
-    /* SDA CUSTOM */     this.groupByEnabled = !this.groupByEnabled;
-    /* SDA CUSTOM */     this.groupByEnabledMessage = this.groupByEnabledMessages.find((m: {value: boolean, message: string}) => m.value === this.groupByEnabled).message;
-    /* SDA CUSTOM */ }
+/* SDA CUSTOM */ groupByEnabledButton() {
+/* SDA CUSTOM */
+/* SDA CUSTOM */        if(this.groupByEnabled) {
+/* SDA CUSTOM */            const currentQueryLength = this.currentQuery.length
+/* SDA CUSTOM */            let isAnAggregation: boolean = false;
+/* SDA CUSTOM */
+/* SDA CUSTOM */            isAnAggregation = this.currentQuery.some((column: any) =>
+/* SDA CUSTOM */                column.aggregation_type.some((at: any) =>
+/* SDA CUSTOM */                    at.selected && at.display_name !== 'None'
+/* SDA CUSTOM */                )
+/* SDA CUSTOM */            );
+/* SDA CUSTOM */
+/* SDA CUSTOM */            if(currentQueryLength !== 0){
+/* SDA CUSTOM */                if(isAnAggregation) {
+/* SDA CUSTOM */                    this.alertService.addWarning($localize`:@@noAttributeShouldHaveAggregation:Ningún Atributo debe tener agregación`);
+/* SDA CUSTOM */                    return;
+/* SDA CUSTOM */                }
+/* SDA CUSTOM */            } else {
+/* SDA CUSTOM */                this.alertService.addWarning($localize`:@@mustConfigureAtLeastOneAttribute:Debe configurar un atributo como mínimo para habilitar esta opción`);
+/* SDA CUSTOM */                return
+/* SDA CUSTOM */            }
+/* SDA CUSTOM */
+/* SDA CUSTOM */        }
+/* SDA CUSTOM */
+/* SDA CUSTOM */        this.groupByEnabled = !this.groupByEnabled;
+/* SDA CUSTOM */        this.groupByEnabledMessage = this.groupByEnabledMessages.find((m: {value: boolean, message: string}) => m.value === this.groupByEnabled).message;
+/* SDA CUSTOM */     }
 
 }
