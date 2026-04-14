@@ -101,7 +101,7 @@ export const QueryUtils = {
     const response = await ebp.queryService.executeAnalizedQuery(query).toPromise();
     return response;
   },
-
+  
   transformAnalizedQueryData: (ebp: EdaBlankPanelComponent, data: any) => {
     const labels = [$localize`:@@atributoLabel:Atributo`, $localize`:@@atributoConsulta:Consulta`, $localize`:@@atributoValor:Valor`];
     const values = [];
@@ -218,7 +218,7 @@ export const QueryUtils = {
         }
         return a;
       })); // canviem els null y els '' per valor customitzable
-
+       
       // ebp.chartData = response[1];       // Chart data
       ebp.ableBtnSave();                 // Button save
       /* Labels i Data - Arrays */
@@ -251,7 +251,7 @@ export const QueryUtils = {
       ebp.index = 1;
       ebp.display_v.saved_panel = true;
     } catch (err) {
-      ebp.alertService.addError(err);
+      ebp.alertService.addError(err); 
       ebp.spinnerService.off();
     }
 
