@@ -64,6 +64,7 @@ ul li:hover {
   padding: 2px 6px;
 }
 
+/* SDA CUSTOM - Responsive chart color row with container query */
 .chart-color-row {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(110px, 160px);
@@ -72,17 +73,30 @@ ul li:hover {
   min-height: 24px;
 }
 
+@container (max-width: 320px) {
+  .chart-color-row {
+    grid-template-columns: 1fr;
+  }
+
+  .chart-color-controls {
+    justify-content: flex-start;
+  }
+}
+/* END SDA CUSTOM */
+
 .chart-color-row--spaced {
   margin-top: 2px;
 }
 
+/* SDA CUSTOM - Label with wrap support for small containers */
 .chart-color-label {
-  white-space: nowrap;
+  white-space: normal;
   min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  line-height: 1.1;
+  overflow-wrap: break-word;
+  word-break: break-word;
+  line-height: 1.2;
 }
+/* END SDA CUSTOM */
 
 .chart-color-controls {
   display: flex;
@@ -166,6 +180,7 @@ ul li:hover {
   position: relative;
 }
 
+/* SDA CUSTOM - Container query context for responsive grid layout */
 .kpi-config-panel {
   max-height: 34vh;
   overflow-y: auto;
@@ -174,7 +189,9 @@ ul li:hover {
   flex-direction: column;
   gap: 4px;
   font-size: 12px;
+  container-type: inline-size;
 }
+/* END SDA CUSTOM */
 
 .kpi-config-section {
   padding: 6px 8px 8px 8px;
