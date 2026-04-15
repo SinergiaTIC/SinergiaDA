@@ -2,11 +2,11 @@
 <div class="logs-sda-page">
     <div class="card shadow">
         <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
-            <h3 class="mb-0" i18n="@@LogsViewer">Visor de Logs (SDA)</h3>
+            <h3 class="mb-0" i18n="@@LogsViewer">Visor de logs</h3>
             <div class="d-flex align-items-center">
                 <span class="mr-2" i18n="@@FilterByPeriod">Periodo:</span>
                 <p-dropdown [options]="periods" [(ngModel)]="selectedPeriod" (onChange)="onPeriodChange()"
-                    [autoDisplayFirst]="false" [showClear]="false" [placeholder]="'Selecciona periodo'"
+                    [autoDisplayFirst]="false" [showClear]="false" [placeholder]="selectPeriodPlaceholder"
                     class="mr-3"></p-dropdown>
                 <!-- SDA CUSTOM - Show date picker restricted to days where logs may exist (last 10 days) -->
                 <span class="mr-2" i18n="@@FilterByDate">Fecha:</span>
@@ -26,7 +26,7 @@
                 <!-- SDA CUSTOM - Use custom sort to keep correct chronological ordering -->
                 <p-table #dt [value]="appLogs" [columns]="cols" [paginator]="true" [rows]="20" [responsive]="true"
                     [rowsPerPageOptions]="[10, 20, 50, 100, 500]" [showCurrentPageReport]="true"
-                    currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} registros"
+                    [currentPageReportTemplate]="showingRecordsTemplate"
                     [autoLayout]="true" [customSort]="true" (sortFunction)="onTableSort($event)" sortField="date_str" [sortOrder]="-1">
                 <!-- END SDA CUSTOM -->
                     <ng-template pTemplate="caption">
@@ -49,7 +49,7 @@
                         <tr>
                             <th *ngFor="let col of columns">
                                 <input #f pInputText type="text" (input)="dt.filter(f.value, col.field, 'contains')"
-                                    placeholder="Filtro..." class="form-control form-control-sm" />
+                                    [placeholder]="filterColumnPlaceholder" class="form-control form-control-sm" />
                             </th>
                         </tr>
                     </ng-template>
@@ -72,7 +72,7 @@
                                         <!-- END SDA CUSTOM -->
                                         <span *ngIf="!rowData.typeCanLinkDashboard && rowData.typeDashboardTitle">{{rowData.typeDashboardTitle}}</span>
                                         <!-- SDA CUSTOM - Open popup with failed query details -->
-                                        <button *ngIf="rowData.action === 'PanelQueryFailed'" type="button" class="btn btn-link btn-sm p-0 ml-2" (click)="openQueryErrorDialog(rowData)">View details</button>
+                                        <button *ngIf="rowData.action === 'PanelQueryFailed'" type="button" class="btn btn-link btn-sm p-0 ml-2" (click)="openQueryErrorDialog(rowData)" i18n="@@LogsViewDetails">Ver detalles</button>
                                         <!-- END SDA CUSTOM -->
                                     </span>
                                     <span *ngIf="col.field !== 'date_str' && col.field !== 'type'">{{rowData[col.field]}}</span>
@@ -91,19 +91,21 @@
                 </p-table>
 
                 <!-- SDA CUSTOM - Popup with query failure details -->
-                <p-dialog header="Query Failure Details" [(visible)]="queryErrorDialogVisible" [modal]="true" [closable]="true" [dismissableMask]="true" [style]="{width: '70vw', maxWidth: '980px'}">
+                <p-dialog [header]="queryFailureTitle" [(visible)]="queryErrorDialogVisible" [modal]="true" [closable]="true" [dismissableMask]="true" [style]="{width: '70vw', maxWidth: '980px'}">
                     <div *ngIf="selectedQueryError" class="query-error-details">
-                        <p><strong>Report Name:</strong> {{selectedQueryError.reportName}}</p>
-                        <p><strong>Report ID:</strong> {{selectedQueryError.reportId}}</p>
-                        <p><strong>Panel Name:</strong> {{selectedQueryError.panelName}}</p>
-                        <p><strong>Panel ID:</strong> {{selectedQueryError.panelId}}</p>
-                        <p><strong>Mode:</strong> {{selectedQueryError.mode}}</p>
-                        <p><strong>Error:</strong> {{selectedQueryError.error}}</p>
+                        <!-- SDA CUSTOM - i18n labels for query error fields -->
+                        <p><strong i18n="@@LogsReportName">Nombre del informe:</strong> {{selectedQueryError.reportName}}</p>
+                        <p><strong i18n="@@LogsReportId">ID del informe:</strong> {{selectedQueryError.reportId}}</p>
+                        <p><strong i18n="@@LogsPanelName">Nombre del panel:</strong> {{selectedQueryError.panelName}}</p>
+                        <p><strong i18n="@@LogsPanelId">ID del panel:</strong> {{selectedQueryError.panelId}}</p>
+                        <p><strong i18n="@@LogsMode">Modo:</strong> {{selectedQueryError.mode}}</p>
+                        <p><strong i18n="@@LogsError">Error:</strong> {{selectedQueryError.error}}</p>
+                        <!-- END SDA CUSTOM -->
                         <div>
                             <div class="d-flex align-items-center justify-content-between">
-                                <strong>SQL:</strong>
+                                <strong i18n="@@LogsSql">SQL:</strong>
                                 <!-- SDA CUSTOM - Copy SQL button in query error popup -->
-                                <button type="button" class="btn btn-outline-secondary btn-sm" (click)="copyQuerySqlToClipboard()">Copy SQL</button>
+                                <button type="button" class="btn btn-outline-secondary btn-sm" (click)="copyQuerySqlToClipboard()" i18n="@@LogsCopySql">Copiar SQL</button>
                                 <!-- END SDA CUSTOM -->
                             </div>
                             <!-- SDA CUSTOM - Copy status feedback -->

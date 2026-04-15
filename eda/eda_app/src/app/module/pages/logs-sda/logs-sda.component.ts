@@ -21,6 +21,12 @@ export class LogsSdaComponent implements OnInit {
     /* SDA CUSTOM */ public queryErrorDialogVisible: boolean = false;
     /* SDA CUSTOM */ public selectedQueryError: any = null;
     /* SDA CUSTOM */ public queryErrorCopyStatus: string = '';
+    // SDA CUSTOM - i18n-bound properties for runtime-interpolated strings (cannot use inline i18n attributes)
+    /* SDA CUSTOM */ public selectPeriodPlaceholder: string = $localize`:@@SelectPeriodPlaceholder:Selecciona periodo`;
+    /* SDA CUSTOM */ public showingRecordsTemplate: string = $localize`:@@ShowingRecordsTemplate:Mostrando {first} a {last} de {totalRecords} registros`;
+    /* SDA CUSTOM */ public filterColumnPlaceholder: string = $localize`:@@FilterColumn:Filtro...`;
+    /* SDA CUSTOM */ public queryFailureTitle: string = $localize`:@@LogsQueryFailureTitle:Detalles del error de consulta`;
+    // END SDA CUSTOM
 
     public periods: any[] = [
         { label: $localize`:@@Today:Hoy`, value: 'today' },
@@ -339,13 +345,13 @@ export class LogsSdaComponent implements OnInit {
     /* SDA CUSTOM */ async copyQuerySqlToClipboard() {
     /* SDA CUSTOM */     const sql = (this.selectedQueryError && this.selectedQueryError.sql) ? this.selectedQueryError.sql.toString() : '';
     /* SDA CUSTOM */     if (!sql || sql === '-') {
-    /* SDA CUSTOM */         this.queryErrorCopyStatus = 'No SQL available';
+    /* SDA CUSTOM */         this.queryErrorCopyStatus = $localize`:@@LogsSqlNotAvailable:SQL no disponible`;
     /* SDA CUSTOM */         return;
     /* SDA CUSTOM */     }
     /* SDA CUSTOM */     try {
     /* SDA CUSTOM */         if (navigator && navigator.clipboard && navigator.clipboard.writeText) {
     /* SDA CUSTOM */             await navigator.clipboard.writeText(sql);
-    /* SDA CUSTOM */             this.queryErrorCopyStatus = 'SQL copied';
+    /* SDA CUSTOM */             this.queryErrorCopyStatus = $localize`:@@LogsSqlCopied:SQL copiado`;
     /* SDA CUSTOM */             return;
     /* SDA CUSTOM */         }
     /* SDA CUSTOM */     } catch (e) {
@@ -360,9 +366,9 @@ export class LogsSdaComponent implements OnInit {
     /* SDA CUSTOM */     textArea.select();
     /* SDA CUSTOM */     try {
     /* SDA CUSTOM */         document.execCommand('copy');
-    /* SDA CUSTOM */         this.queryErrorCopyStatus = 'SQL copied';
+    /* SDA CUSTOM */         this.queryErrorCopyStatus = $localize`:@@LogsSqlCopied:SQL copiado`;
     /* SDA CUSTOM */     } catch (e) {
-    /* SDA CUSTOM */         this.queryErrorCopyStatus = 'Copy failed';
+    /* SDA CUSTOM */         this.queryErrorCopyStatus = $localize`:@@LogsCopyFailed:Error al copiar`;
     /* SDA CUSTOM */     }
     /* SDA CUSTOM */     document.body.removeChild(textArea);
     /* SDA CUSTOM */ }

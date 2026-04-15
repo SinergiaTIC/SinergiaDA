@@ -431,6 +431,132 @@
     <source>Desbloquear panel</source>
     <target>Desbloquear panel</target>
   </trans-unit>
+  <!-- SDA CUSTOM - Logs viewer labels -->
+  <trans-unit id="LogsViewer" datatype="html">
+    <source>Visor de logs</source>
+    <target>Visor de rexistros</target>
+  </trans-unit>
+  <trans-unit id="FilterByPeriod" datatype="html">
+    <source>Periodo:</source>
+    <target>Período:</target>
+  </trans-unit>
+  <trans-unit id="FilterByDate" datatype="html">
+    <source>Fecha:</source>
+    <target>Data:</target>
+  </trans-unit>
+  <trans-unit id="SelectPeriodPlaceholder" datatype="html">
+    <source>Selecciona periodo</source>
+    <target>Selecciona período</target>
+  </trans-unit>
+  <trans-unit id="Today" datatype="html">
+    <source>Hoy</source>
+    <target>Hoxe</target>
+  </trans-unit>
+  <trans-unit id="Yesterday" datatype="html">
+    <source>Ayer</source>
+    <target>Onte</target>
+  </trans-unit>
+  <trans-unit id="Last5Days" datatype="html">
+    <source>Últimos 5 días</source>
+    <target>Últimos 5 días</target>
+  </trans-unit>
+  <trans-unit id="Last10Days" datatype="html">
+    <source>Últimos 10 días</source>
+    <target>Últimos 10 días</target>
+  </trans-unit>
+  <trans-unit id="Date" datatype="html">
+    <source>Fecha</source>
+    <target>Data</target>
+  </trans-unit>
+  <trans-unit id="Level" datatype="html">
+    <source>Nivel</source>
+    <target>Nivel</target>
+  </trans-unit>
+  <trans-unit id="Action" datatype="html">
+    <source>Acción</source>
+    <target>Acción</target>
+  </trans-unit>
+  <trans-unit id="User" datatype="html">
+    <source>Usuario</source>
+    <target>Usuario</target>
+  </trans-unit>
+  <trans-unit id="IP" datatype="html">
+    <source>IP</source>
+    <target>IP</target>
+  </trans-unit>
+  <trans-unit id="Type" datatype="html">
+    <source>Tipo</source>
+    <target>Tipo</target>
+  </trans-unit>
+  <trans-unit id="Search" datatype="html">
+    <source>Buscar...</source>
+    <target>Buscar...</target>
+  </trans-unit>
+  <trans-unit id="FilterColumn" datatype="html">
+    <source>Filtro...</source>
+    <target>Filtro...</target>
+  </trans-unit>
+  <trans-unit id="ShowingRecordsTemplate" datatype="html">
+    <source>Mostrando {first} a {last} de {totalRecords} registros</source>
+    <target>Mostrando {first} a {last} de {totalRecords} rexistros</target>
+  </trans-unit>
+  <trans-unit id="NoLogsFound" datatype="html">
+    <source>No se encontraron logs para esta fecha.</source>
+    <target>Non se atoparon rexistros para esta data.</target>
+  </trans-unit>
+  <trans-unit id="LogsQueryFailureTitle" datatype="html">
+    <source>Detalles del error de consulta</source>
+    <target>Detalles do erro de consulta</target>
+  </trans-unit>
+  <trans-unit id="LogsReportName" datatype="html">
+    <source>Nombre del informe:</source>
+    <target>Nome do informe:</target>
+  </trans-unit>
+  <trans-unit id="LogsReportId" datatype="html">
+    <source>ID del informe:</source>
+    <target>ID do informe:</target>
+  </trans-unit>
+  <trans-unit id="LogsPanelName" datatype="html">
+    <source>Nombre del panel:</source>
+    <target>Nome do panel:</target>
+  </trans-unit>
+  <trans-unit id="LogsPanelId" datatype="html">
+    <source>ID del panel:</source>
+    <target>ID do panel:</target>
+  </trans-unit>
+  <trans-unit id="LogsMode" datatype="html">
+    <source>Modo:</source>
+    <target>Modo:</target>
+  </trans-unit>
+  <trans-unit id="LogsError" datatype="html">
+    <source>Error:</source>
+    <target>Erro:</target>
+  </trans-unit>
+  <trans-unit id="LogsSql" datatype="html">
+    <source>SQL:</source>
+    <target>SQL:</target>
+  </trans-unit>
+  <trans-unit id="LogsCopySql" datatype="html">
+    <source>Copiar SQL</source>
+    <target>Copiar SQL</target>
+  </trans-unit>
+  <trans-unit id="LogsViewDetails" datatype="html">
+    <source>Ver detalles</source>
+    <target>Ver detalles</target>
+  </trans-unit>
+  <trans-unit id="LogsSqlNotAvailable" datatype="html">
+    <source>SQL no disponible</source>
+    <target>SQL non dispoñible</target>
+  </trans-unit>
+  <trans-unit id="LogsSqlCopied" datatype="html">
+    <source>SQL copiado</source>
+    <target>SQL copiado</target>
+  </trans-unit>
+  <trans-unit id="LogsCopyFailed" datatype="html">
+    <source>Error al copiar</source>
+    <target>Erro ao copiar</target>
+  </trans-unit>
+  <!-- END SDA CUSTOM -->
 </body>
 </file>
 </xliff>
