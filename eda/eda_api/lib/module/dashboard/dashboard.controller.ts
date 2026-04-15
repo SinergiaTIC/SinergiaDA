@@ -8,7 +8,9 @@ import Group from '../admin/groups/model/group.model'
 import formatDate from '../../services/date-format/date-format.service'
 import { CachedQueryService } from '../../services/cache-service/cached-query.service'
 import { QueryOptions } from 'mongoose'
-import ServerLogService from '../../services/server-log/server-log.service'
+// SDA CUSTOM - Use SDA daily log service instead of winston-based service
+import ServerLogService from '../../services/server-log/server-log-sda.service'
+// END SDA CUSTOM
 import _ from 'lodash'
 const cache_config = require('../../../config/cache.config')
 const eda_api_config = require('../../../config/eda_api_config');

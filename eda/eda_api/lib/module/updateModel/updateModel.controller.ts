@@ -9,7 +9,7 @@ import { pushModelToMongo } from "./service/push.Model.to.Mongo";
 import path from 'path';
 import fs from "fs";
 import { CleanModel } from "./service/cleanModel";
-import ServerLogService from '../../services/server-log/server-log.service';
+/* SDA CUSTOM */ import ServerLogService from '../../services/server-log/server-log-sda.service';
 
 const sinergiaDatabase = require("../../../config/sinergiacrm.config");
 let mariadbModule: any;

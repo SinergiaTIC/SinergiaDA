@@ -3,7 +3,9 @@ import { HttpException } from '../../global/model/index';
 import { ActiveDirectoryService } from '../../../services/active-directory/active-directory.service';
 import User, { IUser } from './model/user.model';
 import Group, { IGroup } from '../groups/model/group.model';
-import ServerLogService from '../../../services/server-log/server-log.service';
+// SDA CUSTOM - Use SDA daily log service instead of winston-based service
+import ServerLogService from '../../../services/server-log/server-log-sda.service';
+// END SDA CUSTOM
 import * as path from 'path';
 import * as fs from 'fs';
 import { QueryOptions } from 'mongoose';

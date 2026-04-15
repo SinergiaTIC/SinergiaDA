@@ -11,7 +11,7 @@ import * as fs from 'fs';
 import { ActiveDirectoryService } from '../../../services/active-directory/active-directory.service';
 import { GroupActiveDirectoryModel } from 'services/active-directory/model/group-active-directory.model'
 import { groupCollapsed } from 'console'
-/* SDA CUSTOM */ import ServerLogService from '../../../services/server-log/server-log.service';
+/* SDA CUSTOM */ import ServerLogService from '../../../services/server-log/server-log-sda.service';
 
 
 
