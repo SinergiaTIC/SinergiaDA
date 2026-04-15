@@ -16,6 +16,19 @@
                     [readonlyInput]="true" [panelStyleClass]="'logs-sda-calendar-panel'"></p-calendar>
                 <!-- END SDA CUSTOM -->
             </div>
+            <!-- SDA CUSTOM - Toggle to hide DashboardAccessed entries and global search in header -->
+            <div class="d-flex align-items-center ml-3">
+              <label for="showDashboardAccessed" class="mb-0 ml-2 mr-2 text-white" style="cursor:pointer;white-space:nowrap"
+              i18n="@@HideDashboardAccessed">Mostrar accesos a informes</label>
+              <p-inputSwitch [(ngModel)]="showDashboardAccessed" inputId="showDashboardAccessed" class="mr-3"></p-inputSwitch>
+                <span class="logs-search-wrapper">
+                    <i class="fa fa-search logs-search-icon"></i>
+                    <input #gb pInputText type="text" (input)="dt.filterGlobal(gb.value, 'contains')"
+                        placeholder="Buscar..." i18n-placeholder="@@Search"
+                        class="logs-search-input" />
+                </span>
+            </div>
+            <!-- END SDA CUSTOM -->
         </div>
         <div class="card-body">
             <!-- SDA CUSTOM - Remove log type selector and keep only application log view -->
@@ -24,21 +37,11 @@
             <!-- App Logs Table -->
             <div>
                 <!-- SDA CUSTOM - Use custom sort to keep correct chronological ordering -->
-                <p-table #dt [value]="appLogs" [columns]="cols" [paginator]="true" [rows]="20" [responsive]="true"
+                <p-table #dt [value]="filteredLogs" [columns]="cols" [paginator]="true" [rows]="20" [responsive]="true"
                     [rowsPerPageOptions]="[10, 20, 50, 100, 500]" [showCurrentPageReport]="true"
                     [currentPageReportTemplate]="showingRecordsTemplate"
                     [autoLayout]="true" [customSort]="true" (sortFunction)="onTableSort($event)" sortField="date_str" [sortOrder]="-1">
                 <!-- END SDA CUSTOM -->
-                    <ng-template pTemplate="caption">
-                        <div class="d-flex justify-content-end">
-                            <span class="logs-search-wrapper">
-                                <i class="fa fa-search logs-search-icon"></i>
-                                <input #gb pInputText type="text" (input)="dt.filterGlobal(gb.value, 'contains')"
-                                    placeholder="Buscar..." i18n-placeholder="@@Search"
-                                    class="logs-search-input" />
-                            </span>
-                        </div>
-                    </ng-template>
                     <ng-template pTemplate="header" let-columns>
                         <tr>
                             <th *ngFor="let col of columns" [pSortableColumn]="col.field">

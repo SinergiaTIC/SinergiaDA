@@ -21,11 +21,15 @@ export class LogsSdaComponent implements OnInit {
     /* SDA CUSTOM */ public queryErrorDialogVisible: boolean = false;
     /* SDA CUSTOM */ public selectedQueryError: any = null;
     /* SDA CUSTOM */ public queryErrorCopyStatus: string = '';
+    // SDA CUSTOM - Toggle to show/hide frequent DashboardAccessed entries (hidden by default)
+    /* SDA CUSTOM */ public showDashboardAccessed: boolean = false;
+    // END SDA CUSTOM
     // SDA CUSTOM - i18n-bound properties for runtime-interpolated strings (cannot use inline i18n attributes)
     /* SDA CUSTOM */ public selectPeriodPlaceholder: string = $localize`:@@SelectPeriodPlaceholder:Selecciona periodo`;
     /* SDA CUSTOM */ public showingRecordsTemplate: string = $localize`:@@ShowingRecordsTemplate:Mostrando {first} a {last} de {totalRecords} registros`;
     /* SDA CUSTOM */ public filterColumnPlaceholder: string = $localize`:@@FilterColumn:Filtro...`;
     /* SDA CUSTOM */ public queryFailureTitle: string = $localize`:@@LogsQueryFailureTitle:Detalles del error de consulta`;
+    /* SDA CUSTOM */ public hideDashboardAccessedLabel: string = $localize`:@@HideDashboardAccessed:Mostrar accesos a informes`;
     // END SDA CUSTOM
 
     public periods: any[] = [
@@ -61,6 +65,13 @@ export class LogsSdaComponent implements OnInit {
     ngOnInit(): void {
         this.loadLogs();
     }
+
+    // SDA CUSTOM - Filter out DashboardAccessed entries when toggle is inactive
+    /* SDA CUSTOM */ get filteredLogs(): any[] {
+    /* SDA CUSTOM */     if (this.showDashboardAccessed) return this.appLogs;
+    /* SDA CUSTOM */     return this.appLogs.filter(log => log?.action !== 'DashboardAccessed');
+    /* SDA CUSTOM */ }
+    // END SDA CUSTOM
 
     loadLogs() {
         this.spinnerService.on();

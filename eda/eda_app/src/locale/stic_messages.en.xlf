@@ -556,6 +556,10 @@
     <source>Error al copiar</source>
     <target>Copy failed</target>
   </trans-unit>
+  <trans-unit id="HideDashboardAccessed" datatype="html">
+    <source>Mostrar accesos a informes</source>
+    <target>Show report accesses</target>
+  </trans-unit>
   <!-- END SDA CUSTOM -->
 </body>
 </file>
