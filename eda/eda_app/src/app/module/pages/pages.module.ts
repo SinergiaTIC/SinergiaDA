@@ -29,21 +29,20 @@ import { ColumnValueListDialogComponent } from './data-sources/data-source-detai
 import { ModelPermissionDialogComponent } from './data-sources/data-source-detail/model-permissions-dialog/model-permission-dialog.component';
 import { MapDialogComponent } from './data-sources/data-source-detail/mapsDialog/maps-dialog.component';
 import { ViewDialogComponent } from './data-sources/data-source-detail/viewDialog/view-dialog.component';
-import { AddCsvComponent } from './data-sources/data-source-list/addCSV/add-csv.component';
+import {AddCsvComponent} from './data-sources/data-source-list/addCSV/add-csv.component';
 import { AddTagComponent } from './data-sources/data-source-list/addTag/add-tag.component';
 import { ModelSettingsComponent } from './model-settings/model-settings.component';
 import { CacheDialogComponent } from './data-sources/data-source-detail/cache-dialog/cache-dialog.component';
 import { SecurityDialogComponent } from './data-sources/data-source-detail/security-dialog/security-dialog.component';
 import { AlertsManagementComponent } from './alerts-management/alerts-management.component';
 import { MailManagementComponent } from './mail-management/mail-management.component';
-import { DashboardMailDialogComponent } from './dashboard/email-dialog/dashboard-mail-dialog.component';
+import {DashboardMailDialogComponent} from './dashboard/email-dialog/dashboard-mail-dialog.component';
 import { UrlsActionComponent } from './dashboard/urls-action/urls-action.component';
 import { LogsComponent } from './logs/logs.component';
-import { LogsSdaComponent } from './logs-sda/logs-sda.component';
+/* SDA CUSTOM */ import { LogsSdaComponent } from './logs-sda/logs-sda.component';
 
 
-
-/*SDA CUSTOM*/ import { AboutComponent } from './about/about.component';
+/*SDA CUSTOM*/ import {AboutComponent} from './about/about.component';
 
 // Routes
 import { PAGES_ROUTES } from './pages.routes';
@@ -102,9 +101,8 @@ import { CalculatedColumnEditDialogComponent } from './data-sources/data-source-
         EditStylesDialogComponent,
         UrlsActionComponent,
         LogsComponent,
-        LogsSdaComponent,
+        /*SDA CUSTOM*/LogsSdaComponent,
         /*SDA CUSTOM*/ HomeSdaComponent,
-
         /*SDA CUSTOM*/ AboutComponent,
         /*SDA CUSTOM*/ CalculatedColumnEditDialogComponent
 

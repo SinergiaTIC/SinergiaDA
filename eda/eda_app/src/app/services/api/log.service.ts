@@ -6,7 +6,7 @@ import { Observable, BehaviorSubject } from 'rxjs';
 @Injectable({
     providedIn: 'root'
 })
-export class LogService extends ApiService {
+export class LogService extends ApiService{
 
     private route = '/admin/log';
 
@@ -18,11 +18,10 @@ export class LogService extends ApiService {
         return this.get(`${this.route}/log-error-file`);
     }
 
-    // AI START
-    getAppLogs(params?: any): Observable<any> {
-        return this.getParams(`${this.route}/app-logs`, params);
-    }
-    // AI END
+    /* SDA CUSTOM */ // Fetch logs from the new SDA audit log endpoint
+    /* SDA CUSTOM */ getAppLogs(params?: any): Observable<any> {
+    /* SDA CUSTOM */    return this.getParams(`${this.route}/app-logs`, params);
+    /* SDA CUSTOM */ }
 
 
 }

@@ -1,4 +1,4 @@
-<ng-container *ngIf="mobileSize && sideBtn && edit_mode && !sidebarService.toggleSideNav ">
+<ng-container *ngIf="mobileSize && sideBtn && edit_mode && !sidebarService.toggleSideNav " >
     <div>
         <img id="sidebar-btn-toggle" [src]="logoSidebar" (click)="toggleClassSide()" alt="logo icono"
             class="dark-logo" />
@@ -32,12 +32,11 @@
                 <li class="nav-devider"></li>
 
                 <li class="user-profile">
-                    <a class="has-arrow waves-effect waves-dark" href="#" aria-expanded="false"
-                        (click)="ignoreNotSaved()">
+                    <a class="has-arrow waves-effect waves-dark" href="#" aria-expanded="false" (click)="ignoreNotSaved()">
                         <!--SDA CUSTOM  <img [src]="user.img | image" alt="user" /> -->
                         <!--SDA CUSTOM --><i class="mdi mdi-account-outline"></i>
 
-                        <span class="hide-menu ml-2"> {{ user.name }} </span>
+                          <span class="hide-menu ml-2"> {{ user.name }} </span>
                     </a>
                     <ul aria-expanded="false" class="collapse">
                         <li>
@@ -46,7 +45,7 @@
                             </a>
                         </li>
                         <li *ngIf="userService.isAdmin">
-                            <a routerLinkActive="active" routerLink="/users-management" (click)="ignoreNotSaved()">
+                            <a routerLinkActive="active"  routerLink="/users-management" (click)="ignoreNotSaved()">
                                 <i class="mdi mdi-settings"></i> <span i18n="@@sidebarUserManagement">Gestión de
                                     Usuarios</span>
                             </a>
@@ -62,16 +61,17 @@
                                 <i class="mdi mdi-settings"></i> <span i18n="@@mailmanagementHeader">Gestión de
                                     correo y envio de mails</span>
                             </a>
-                            <!-- AI START -->
+
+                           <!--SDA CUSTOM-->
                             <a routerLinkActive="active" routerLink="/logs-sda" (click)="ignoreNotSaved()">
                                 <i class="mdi mdi-clipboard-text"></i> <span i18n="@@logsSdaManagement">Logs
                                     </span>
                             </a>
-                            <!-- AI END -->
+                            <!-- SDA CUSTOM END -->
 
                         </li>
                         <!-- SDA CUSTOM -->
-                        <!--  -->
+                         <!--  -->
                         <!-- <li *ngIf="userService.isDataSourceCreator||userService.isAdmin" class="user-profile">
                             <a routerLinkActive="active"  routerLink="/logs" (click)="ignoreNotSaved()">
                                 <i class="mdi mdi-clipboard-text"></i> <span i18n="@@logsManagement">Gestión de
@@ -90,8 +90,7 @@
                 <li class="nav-devider"></li>
 
                 <li class="user-profile">
-                    <a class="has-arrow waves-effect waves-dark collapser" href="#" (click)="checkNotSaved()"
-                        aria-expanded="false">
+                    <a class="has-arrow waves-effect waves-dark collapser" href="#"  (click)="checkNotSaved()" aria-expanded="false">
                         <i class="mdi mdi-view-dashboard"></i>
                         <span class="hide-menu ml-2" i18n="@@Dashboards_ms"> Informes </span>
                     </a>
@@ -103,23 +102,20 @@
                             </a>
                         </li>
                         <li>
-                            <!--SDA CUSTOM-->
-                            <div *ngIf="!isObserver">
-                                <!--SDA CUSTOM--> <a class="waves-effect waves-dark" (click)="createDashboard = true;">
-                                    <!--SDA CUSTOM--> <i class="mdi mdi-view-dashboard"></i>
-                                    <!--SDA CUSTOM--> <span i18n="@@tituloNuevoInforme"> Nuevo informe</span>
-                                    <!--SDA CUSTOM--> </a>
-                                <!--SDA CUSTOM-->
-                            </div>
+<!--SDA CUSTOM-->       <div *ngIf="!isObserver">
+<!--SDA CUSTOM-->            <a  class="waves-effect waves-dark" (click)="createDashboard = true;">
+<!--SDA CUSTOM-->                <i class="mdi mdi-view-dashboard"></i>
+<!--SDA CUSTOM-->                <span i18n="@@tituloNuevoInforme"> Nuevo informe</span>
+<!--SDA CUSTOM-->            </a>
+<!--SDA CUSTOM-->       </div>
                         </li>
                     </ul>
                 </li>
 
-                <li *ngIf="userService.isDataSourceCreator||userService.isAdmin" class="nav-devider"></li>
+                <li *ngIf="userService.isDataSourceCreator||userService.isAdmin"  class="nav-devider"></li>
 
                 <li *ngIf="userService.isDataSourceCreator||userService.isAdmin" class="user-profile">
-                    <a class="has-arrow waves-effect waves-dark collapser" href="#" aria-expanded="false"
-                        id="edaNewDataSource">
+                    <a class="has-arrow waves-effect waves-dark collapser" href="#" aria-expanded="false" id="edaNewDataSource">
                         <i class="mdi mdi-database"></i>
                         <span class="hide-menu ml-2" i18n="@@sidebarDataFonts">Fuente de Datos</span>
                     </a>
@@ -146,36 +142,34 @@
 
 
                 <li class="nav-devider"></li>
-                <li>
+                <li  >
                     <a class="has-arrow waves-effect waves-dark collapser">
-                        <!-- SDA CUSTOM<i class="pi pi-globe"></i> -->
-                        <!-- SDA CUSTOM --> <i class="mdi mdi-web"></i>
+                         <!-- SDA CUSTOM<i class="pi pi-globe"></i> -->
+<!-- SDA CUSTOM -->     <i class="mdi mdi-web"></i>
                     </a>
                     <ul aria-expanded="false" class="collapse">
                         <li>
-                            <a style=" cursor: pointer;" (click)="redirectLocale('EN')">English</a>
+                            <a style=" cursor: pointer;"   (click)="redirectLocale('EN')" >English</a>
                         </li>
                         <li>
-                            <a style="cursor: pointer;" (click)="redirectLocale('ES')">Español</a>
+                            <a style="cursor: pointer;" (click)="redirectLocale('ES')" >Español</a>
                         </li>
                         <li>
-                            <a style="cursor: pointer;" (click)="redirectLocale('CAT')">Català</a>
+                           <a  style="cursor: pointer;" (click)="redirectLocale('CAT')" >Català</a>
                         </li>
                         <li>
-                            <a style="cursor: pointer;" (click)="redirectLocale('GL')">Galego</a>
+                            <a  style="cursor: pointer;" (click)="redirectLocale('GL')" >Galego</a>
                         </li>
                     </ul>
                 </li>
                 <li class="nav-devider"></li>
 
-                <!--SDA CUSTOM-->
-                <li class="user-profile">
-                    <!--SDA CUSTOM--> <a routerLink="/about" (click)="ignoreNotSaved()">
-                        <!--SDA CUSTOM--> <i class="mdi mdi-information-outline"></i>
-                        <!--SDA CUSTOM--> <span class="hide-menu ml-2" i18n="@@aboutPageTitle">Acerca de</span>
-                        <!--SDA CUSTOM--> </a>
-                    <!--SDA CUSTOM-->
-                </li>
+<!--SDA CUSTOM-->                 <li class="user-profile">
+<!--SDA CUSTOM-->                   <a routerLink="/about" (click)="ignoreNotSaved()">
+<!--SDA CUSTOM-->                     <i class="mdi mdi-information-outline"></i>
+<!--SDA CUSTOM-->                     <span class="hide-menu ml-2" i18n="@@aboutPageTitle">Acerca de</span>
+<!--SDA CUSTOM-->                   </a>
+<!--SDA CUSTOM-->                 </li>
             </ul>
 
         </nav>
