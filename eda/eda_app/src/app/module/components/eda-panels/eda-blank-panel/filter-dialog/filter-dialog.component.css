@@ -9,3 +9,12 @@
     }
 
 }
+
+/* SDA CUSTOM */.date-picker-single {
+/* SDA CUSTOM */margin-top: 0.025em;
+/* SDA CUSTOM */}
+
+/* SDA CUSTOM */.date-picker-single ::ng-deep .p-calendar,
+/* SDA CUSTOM */.date-picker-single ::ng-deep .p-calendar .p-inputtext {
+/* SDA CUSTOM */    width: 100%;
+/* SDA CUSTOM */}
