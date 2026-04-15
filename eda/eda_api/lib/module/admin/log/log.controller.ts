@@ -77,20 +77,26 @@ export class LogController {
     // AI START
     static async getAppLogs(req: Request, res: Response, next: NextFunction) {
         try {
-            const logFilePath = path.resolve(__dirname, '../../../../logs/app.log');
-            const qs = (req as any).qs;
-            const { date, startDate, endDate } = qs || {} as any;
+            /* SDA CUSTOM */ const logsDirectoryPath = path.resolve(__dirname, '../../../../logs');
+            /* SDA CUSTOM */ const qs = (req as any).qs;
+            /* SDA CUSTOM */ const { date, startDate, endDate } = qs || {} as any;
 
-            /* SDA CUSTOM */ // SDA CUSTOM - Read only recent log lines to keep memory/cpu bounded as log grows
-            /* SDA CUSTOM */ if (!fs.existsSync(logFilePath)) {
+            /* SDA CUSTOM */ // SDA CUSTOM - Read all files that may contain requested range to guarantee 10-day visibility
+            /* SDA CUSTOM */ if (!fs.existsSync(logsDirectoryPath)) {
             /* SDA CUSTOM */     return res.status(200).json([]);
             /* SDA CUSTOM */ }
-            /* SDA CUSTOM */ const requestedLimit = Number((qs || {}).limit || 300);
-            /* SDA CUSTOM */ const safeLimit = Number.isFinite(requestedLimit) ? Math.max(1, Math.min(2000, requestedLimit)) : 300;
-            /* SDA CUSTOM */ const readWindowMultiplier = (date || startDate || endDate) ? 20 : 4;
-            /* SDA CUSTOM */ const maxTailLines = Math.min(20000, safeLimit * readWindowMultiplier);
-            /* SDA CUSTOM */ const tailContent = readLastLines(logFilePath, maxTailLines);
-            /* SDA CUSTOM */ const lines = tailContent.split('\n');
+            /* SDA CUSTOM */ const requestedLimitRaw = (qs || {}).limit;
+            /* SDA CUSTOM */ const hasRequestedLimit = requestedLimitRaw !== undefined && requestedLimitRaw !== null && requestedLimitRaw !== '';
+            /* SDA CUSTOM */ const requestedLimit = Number(requestedLimitRaw);
+            /* SDA CUSTOM */ const safeLimit = hasRequestedLimit && Number.isFinite(requestedLimit) ? Math.max(1, Math.min(20000, requestedLimit)) : 0;
+            /* SDA CUSTOM */ const requestedStartDate = date ? date.toString() : (startDate ? startDate.toString() : undefined);
+            /* SDA CUSTOM */ const requestedEndDate = date ? date.toString() : (endDate ? endDate.toString() : undefined);
+            /* SDA CUSTOM */ const logFiles = resolveAppLogFiles(logsDirectoryPath, requestedStartDate, requestedEndDate);
+            /* SDA CUSTOM */ if (logFiles.length === 0) {
+            /* SDA CUSTOM */     return res.status(200).json([]);
+            /* SDA CUSTOM */ }
+            /* SDA CUSTOM */ const rawContent = logFiles.map(filePath => readFileSafely(filePath)).join('\n');
+            /* SDA CUSTOM */ const lines = rawContent.split('\n');
             /* SDA CUSTOM */ const logs = lines
             /* SDA CUSTOM */     .filter(line => line.trim() !== '')
             /* SDA CUSTOM */     .map(line => {
@@ -125,7 +131,7 @@ export class LogController {
             /* SDA CUSTOM */ });
             /* SDA CUSTOM */ // END SDA CUSTOM
 
-            /* SDA CUSTOM */ return res.status(200).json(filteredLogs.slice(0, safeLimit));
+            /* SDA CUSTOM */ return res.status(200).json(safeLimit > 0 ? filteredLogs.slice(0, safeLimit) : filteredLogs);
         } catch (err) {
             next(err);
         }
@@ -133,29 +139,39 @@ export class LogController {
     // AI END
 }
 
-/* SDA CUSTOM */ // SDA CUSTOM - Efficiently read last N lines from large log files (tail-like)
-/* SDA CUSTOM */ function readLastLines(filePath: string, maxLines: number): string {
-/* SDA CUSTOM */     const fileDescriptor = fs.openSync(filePath, 'r');
-/* SDA CUSTOM */     try {
-/* SDA CUSTOM */         const fileStats = fs.fstatSync(fileDescriptor);
-/* SDA CUSTOM */         const chunkSize = 64 * 1024;
-/* SDA CUSTOM */         let position = fileStats.size;
-/* SDA CUSTOM */         let content = '';
-/* SDA CUSTOM */         let lineCount = 0;
+/* SDA CUSTOM */ // SDA CUSTOM - Resolve all application log files (daily + rotated + legacy) for requested date range
+/* SDA CUSTOM */ function resolveAppLogFiles(logsDirectoryPath: string, startDate?: string, endDate?: string): string[] {
+/* SDA CUSTOM */     const fileNames = fs.readdirSync(logsDirectoryPath);
+/* SDA CUSTOM */     const selectedFiles: string[] = [];
 /* SDA CUSTOM */
-/* SDA CUSTOM */         while (position > 0 && lineCount <= maxLines) {
-/* SDA CUSTOM */             const currentChunkSize = Math.min(chunkSize, position);
-/* SDA CUSTOM */             position -= currentChunkSize;
-/* SDA CUSTOM */             const buffer = Buffer.alloc(currentChunkSize);
-/* SDA CUSTOM */             fs.readSync(fileDescriptor, buffer, 0, currentChunkSize, position);
-/* SDA CUSTOM */             content = buffer.toString('utf8') + content;
-/* SDA CUSTOM */             lineCount = content.split('\n').length - 1;
+/* SDA CUSTOM */     fileNames.forEach(fileName => {
+/* SDA CUSTOM */         const dailyMatch = fileName.match(/^app-(\d{4}-\d{2}-\d{2})\.log(?:\.\d+)?$/);
+/* SDA CUSTOM */         if (dailyMatch) {
+/* SDA CUSTOM */             const logDate = dailyMatch[1];
+/* SDA CUSTOM */             if (startDate && logDate < startDate) return;
+/* SDA CUSTOM */             if (endDate && logDate > endDate) return;
+/* SDA CUSTOM */             selectedFiles.push(path.join(logsDirectoryPath, fileName));
+/* SDA CUSTOM */             return;
 /* SDA CUSTOM */         }
 /* SDA CUSTOM */
-/* SDA CUSTOM */         const lines = content.split('\n').filter(line => line.trim() !== '');
-/* SDA CUSTOM */         return lines.slice(-maxLines).join('\n');
-/* SDA CUSTOM */     } finally {
-/* SDA CUSTOM */         fs.closeSync(fileDescriptor);
+/* SDA CUSTOM */         if (/^app\.log(?:\.\d+)?$/.test(fileName)) {
+/* SDA CUSTOM */             selectedFiles.push(path.join(logsDirectoryPath, fileName));
+/* SDA CUSTOM */         }
+/* SDA CUSTOM */     });
+/* SDA CUSTOM */
+/* SDA CUSTOM */     return selectedFiles.sort((firstPath, secondPath) => {
+/* SDA CUSTOM */         const firstMtime = fs.statSync(firstPath).mtime.getTime();
+/* SDA CUSTOM */         const secondMtime = fs.statSync(secondPath).mtime.getTime();
+/* SDA CUSTOM */         return firstMtime - secondMtime;
+/* SDA CUSTOM */     });
+/* SDA CUSTOM */ }
+/* SDA CUSTOM */
+/* SDA CUSTOM */ // SDA CUSTOM - Read file content safely to avoid breaking whole response if one rotated file is unreadable
+/* SDA CUSTOM */ function readFileSafely(filePath: string): string {
+/* SDA CUSTOM */     try {
+/* SDA CUSTOM */         return fs.readFileSync(filePath, 'utf8');
+/* SDA CUSTOM */     } catch (error) {
+/* SDA CUSTOM */         return '';
 /* SDA CUSTOM */     }
 /* SDA CUSTOM */ }
 /* SDA CUSTOM */ // END SDA CUSTOM

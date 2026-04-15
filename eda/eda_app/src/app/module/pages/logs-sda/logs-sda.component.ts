@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { LogService, AlertService } from '@eda/services/service.index';
 import { SpinnerService } from '@eda/services/shared/spinner.service';
-import * as moment from 'moment';
+/* SDA CUSTOM */ import moment from 'moment';
 import { format as formatSqlStatement } from 'sql-formatter';
 
 @Component({
@@ -12,8 +12,12 @@ import { format as formatSqlStatement } from 'sql-formatter';
 export class LogsSdaComponent implements OnInit {
 
     public appLogs: any[] = [];
-    public selectedDate: Date = new Date();
-    public firstDayOfWeek: number = 1;
+    /* SDA CUSTOM */ public selectedDate: Date = new Date();
+    /* SDA CUSTOM */ public firstDayOfWeek: number = 1;
+    /* SDA CUSTOM */ public calendarLocale: any = {};
+    /* SDA CUSTOM */ public minSelectableDate: Date;
+    /* SDA CUSTOM */ public maxSelectableDate: Date;
+    /* SDA CUSTOM */ public useExactDateFilter: boolean = false;
     /* SDA CUSTOM */ public queryErrorDialogVisible: boolean = false;
     /* SDA CUSTOM */ public selectedQueryError: any = null;
     /* SDA CUSTOM */ public queryErrorCopyStatus: string = '';
@@ -21,10 +25,10 @@ export class LogsSdaComponent implements OnInit {
     public periods: any[] = [
         { label: $localize`:@@Today:Hoy`, value: 'today' },
         { label: $localize`:@@Yesterday:Ayer`, value: 'yesterday' },
-        { label: $localize`:@@Last7Days:Últimos 7 días`, value: 'last7days' },
-        { label: $localize`:@@Last30Days:Últimos 30 días`, value: 'last30days' },
-        { label: $localize`:@@ThisMonth:Este mes`, value: 'thismonth' },
-        { label: $localize`:@@Custom:Personalizado`, value: 'custom' }
+        /* SDA CUSTOM */ { label: $localize`:@@Last5Days:Últimos 5 días`, value: 'last5days' },
+        /* SDA CUSTOM */ { label: $localize`:@@Last10Days:Últimos 10 días`, value: 'last10days' },
+        /* SDA CUSTOM */ // SDA CUSTOM - Removed "This month" and "Custom" periods to keep fixed quick filters only
+        /* SDA CUSTOM */ // END SDA CUSTOM
     ];
     public selectedPeriod: string = 'today';
 
@@ -41,7 +45,12 @@ export class LogsSdaComponent implements OnInit {
         private logService: LogService,
         private alertService: AlertService,
         private spinnerService: SpinnerService
-    ) { }
+    ) {
+        /* SDA CUSTOM */ this.maxSelectableDate = moment().endOf('day').toDate();
+        /* SDA CUSTOM */ this.minSelectableDate = moment().subtract(9, 'days').startOf('day').toDate();
+        /* SDA CUSTOM */ this.calendarLocale = this.resolveCalendarLocaleFromActiveLanguage();
+        /* SDA CUSTOM */ this.firstDayOfWeek = this.calendarLocale && this.calendarLocale.firstDayOfWeek !== undefined ? this.calendarLocale.firstDayOfWeek : 1;
+    }
 
     ngOnInit(): void {
         this.loadLogs();
@@ -52,14 +61,15 @@ export class LogsSdaComponent implements OnInit {
 
         let params: any = {};
 
-        if (this.selectedPeriod === 'custom') {
-            params.date = moment(this.selectedDate).format('YYYY-MM-DD');
-        } else {
-            const range = this.getPeriodRange(this.selectedPeriod);
-            params.startDate = range.start;
-            params.endDate = range.end;
-        }
-        /* SDA CUSTOM */ params.limit = 300; // SDA CUSTOM - Keep log payload bounded to reduce server and UI load
+        /* SDA CUSTOM */ if (this.useExactDateFilter) {
+        /* SDA CUSTOM */     params.date = moment(this.selectedDate).format('YYYY-MM-DD');
+        /* SDA CUSTOM */ } else {
+        /* SDA CUSTOM */     const range = this.getPeriodRange(this.selectedPeriod);
+        /* SDA CUSTOM */     params.startDate = range.start;
+        /* SDA CUSTOM */     params.endDate = range.end;
+        /* SDA CUSTOM */ }
+        /* SDA CUSTOM */ // SDA CUSTOM - Keep limit undefined to fetch full period and avoid truncating 10-day range data
+        /* SDA CUSTOM */ // END SDA CUSTOM
 
         /* SDA CUSTOM */ // SDA CUSTOM - Keep logs viewer focused on application audit log only
         /* SDA CUSTOM */ this.logService.getAppLogs(params).subscribe(
@@ -90,16 +100,12 @@ export class LogsSdaComponent implements OnInit {
                 start = moment().subtract(1, 'days');
                 end = start;
                 break;
-            case 'last7days':
-                start = moment().subtract(6, 'days');
+            /* SDA CUSTOM */ case 'last5days':
+                /* SDA CUSTOM */ start = moment().subtract(4, 'days');
                 end = today;
                 break;
-            case 'last30days':
-                start = moment().subtract(29, 'days');
-                end = today;
-                break;
-            case 'thismonth':
-                start = moment().startOf('month');
+            /* SDA CUSTOM */ case 'last10days':
+                /* SDA CUSTOM */ start = moment().subtract(9, 'days');
                 end = today;
                 break;
         }
@@ -111,15 +117,76 @@ export class LogsSdaComponent implements OnInit {
     }
 
     onPeriodChange() {
-        if (this.selectedPeriod !== 'custom') {
-            this.loadLogs();
-        }
-    }
-
-    onDateChange() {
-        this.selectedPeriod = 'custom';
+        /* SDA CUSTOM */ // SDA CUSTOM - With only fixed periods, always reload on selection change
+        /* SDA CUSTOM */ // END SDA CUSTOM
+        /* SDA CUSTOM */ this.useExactDateFilter = false;
         this.loadLogs();
     }
+
+    /* SDA CUSTOM */ // SDA CUSTOM - Enable exact-date mode when a day is selected in calendar (restricted to last 10 days)
+    /* SDA CUSTOM */ onDateChange() {
+    /* SDA CUSTOM */     const selectedMoment = moment(this.selectedDate);
+    /* SDA CUSTOM */     const minMoment = moment(this.minSelectableDate);
+    /* SDA CUSTOM */     const maxMoment = moment(this.maxSelectableDate);
+    /* SDA CUSTOM */
+    /* SDA CUSTOM */     if (selectedMoment.isBefore(minMoment, 'day')) {
+    /* SDA CUSTOM */         this.selectedDate = minMoment.toDate();
+    /* SDA CUSTOM */     } else if (selectedMoment.isAfter(maxMoment, 'day')) {
+    /* SDA CUSTOM */         this.selectedDate = maxMoment.toDate();
+    /* SDA CUSTOM */     }
+    /* SDA CUSTOM */
+    /* SDA CUSTOM */     this.useExactDateFilter = true;
+    /* SDA CUSTOM */     this.loadLogs();
+    /* SDA CUSTOM */ }
+    /* SDA CUSTOM */ // END SDA CUSTOM
+
+    /* SDA CUSTOM */ // SDA CUSTOM - Use active app language from URL (not browser locale) with english fallback
+    /* SDA CUSTOM */ private resolveCalendarLocaleFromActiveLanguage() {
+    /* SDA CUSTOM */     const url = window.location.href;
+    /* SDA CUSTOM */     const lanCa = /\/ca\//i;
+    /* SDA CUSTOM */     const lanEs = /\/es\//i;
+    /* SDA CUSTOM */
+    /* SDA CUSTOM */     const localesByLanguage = {
+    /* SDA CUSTOM */         es: {
+    /* SDA CUSTOM */             firstDayOfWeek: 1,
+    /* SDA CUSTOM */             dayNames: ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'],
+    /* SDA CUSTOM */             dayNamesShort: ['Dom', 'Lun', 'Mar', 'Mie', 'Jue', 'Vie', 'Sab'],
+    /* SDA CUSTOM */             dayNamesMin: ['Do', 'Lu', 'Ma', 'Mi', 'Ju', 'Vi', 'Sa'],
+    /* SDA CUSTOM */             monthNames: ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'],
+    /* SDA CUSTOM */             monthNamesShort: ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'],
+    /* SDA CUSTOM */             today: 'Hoy',
+    /* SDA CUSTOM */             clear: 'Limpiar',
+    /* SDA CUSTOM */             weekHeader: 'Semana'
+    /* SDA CUSTOM */         },
+    /* SDA CUSTOM */         ca: {
+    /* SDA CUSTOM */             firstDayOfWeek: 1,
+    /* SDA CUSTOM */             dayNames: ['Diumenge', 'Dilluns', 'Dimarts', 'Dimecres', 'Dijous', 'Divendres', 'Dissabte'],
+    /* SDA CUSTOM */             dayNamesShort: ['Dg', 'Dl', 'Dt', 'Dc', 'Dj', 'Dv', 'Ds'],
+    /* SDA CUSTOM */             dayNamesMin: ['Dg', 'Dl', 'Dt', 'Dc', 'Dj', 'Dv', 'Ds'],
+    /* SDA CUSTOM */             monthNames: ['Gener', 'Febrer', 'Març', 'Abril', 'Maig', 'Juny', 'Juliol', 'Agost', 'Setembre', 'Octubre', 'Novembre', 'Desembre'],
+    /* SDA CUSTOM */             monthNamesShort: ['Gen', 'Feb', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Oct', 'Nov', 'Des'],
+    /* SDA CUSTOM */             today: 'Avui',
+    /* SDA CUSTOM */             clear: 'Netejar',
+    /* SDA CUSTOM */             weekHeader: 'Setmana'
+    /* SDA CUSTOM */         },
+    /* SDA CUSTOM */         en: {
+    /* SDA CUSTOM */             firstDayOfWeek: 1,
+    /* SDA CUSTOM */             dayNames: ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
+    /* SDA CUSTOM */             dayNamesShort: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
+    /* SDA CUSTOM */             dayNamesMin: ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'],
+    /* SDA CUSTOM */             monthNames: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
+    /* SDA CUSTOM */             monthNamesShort: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+    /* SDA CUSTOM */             today: 'Today',
+    /* SDA CUSTOM */             clear: 'Clear',
+    /* SDA CUSTOM */             weekHeader: 'Wk'
+    /* SDA CUSTOM */         }
+    /* SDA CUSTOM */     };
+    /* SDA CUSTOM */
+    /* SDA CUSTOM */     if (lanCa.test(url)) return localesByLanguage.ca;
+    /* SDA CUSTOM */     if (lanEs.test(url)) return localesByLanguage.es;
+    /* SDA CUSTOM */     return localesByLanguage.en;
+    /* SDA CUSTOM */ }
+    /* SDA CUSTOM */ // END SDA CUSTOM
 
     /* SDA CUSTOM */ // SDA CUSTOM - Parse log date format YYYY-MM-DD H:m:s safely (with or without zero padding)
     /* SDA CUSTOM */ private parseLogDateToTimestamp(dateStr: string): number {

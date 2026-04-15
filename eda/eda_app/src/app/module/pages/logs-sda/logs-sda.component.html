@@ -6,9 +6,13 @@
                 <span class="mr-2" i18n="@@FilterByPeriod">Periodo:</span>
                 <p-dropdown [options]="periods" [(ngModel)]="selectedPeriod" (onChange)="onPeriodChange()"
                     class="mr-3"></p-dropdown>
+                <!-- SDA CUSTOM - Show date picker restricted to days where logs may exist (last 10 days) -->
                 <span class="mr-2" i18n="@@FilterByDate">Fecha:</span>
-                <p-calendar [(ngModel)]="selectedDate" (onSelect)="onDateChange()" dateFormat="yy-mm-dd"
-                    [showIcon]="true" [firstDayOfWeek]="firstDayOfWeek"></p-calendar>
+                <p-calendar styleClass="logs-sda-calendar" [(ngModel)]="selectedDate" (onSelect)="onDateChange()"
+                    dateFormat="yy-mm-dd" [showIcon]="true" [firstDayOfWeek]="firstDayOfWeek"
+                    [locale]="calendarLocale" [minDate]="minSelectableDate" [maxDate]="maxSelectableDate"
+                    [readonlyInput]="true" [panelStyleClass]="'logs-sda-calendar-panel'"></p-calendar>
+                <!-- END SDA CUSTOM -->
             </div>
         </div>
         <div class="card-body">
@@ -23,11 +27,11 @@
                 <!-- END SDA CUSTOM -->
                     <ng-template pTemplate="caption">
                         <div class="d-flex justify-content-end">
-                            <span class="p-input-icon-left">
-                                <i class="fa fa-search"></i>
+                            <span class="logs-search-wrapper">
+                                <i class="fa fa-search logs-search-icon"></i>
                                 <input #gb pInputText type="text" (input)="dt.filterGlobal(gb.value, 'contains')"
                                     placeholder="Buscar..." i18n-placeholder="@@Search"
-                                    class="form-control d-inline-block w-auto ml-2" />
+                                    class="logs-search-input" />
                             </span>
                         </div>
                     </ng-template>
