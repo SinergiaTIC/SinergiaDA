@@ -3,6 +3,19 @@
     box-shadow: inset 0 0 10px rgba(0,0,0,0.5);
 }
 
+/* SDA CUSTOM - Keep same page dimensions/margins as Home SDA (full width, no container gutters) */
+.logs-sda-page {
+    width: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+.logs-sda-page .card {
+    margin: 0;
+    border-radius: 0;
+}
+/* END SDA CUSTOM */
+
 /* SDA CUSTOM - Ensure high contrast between title and header background */
 .card-header {
     background-color: #242A33 !important;

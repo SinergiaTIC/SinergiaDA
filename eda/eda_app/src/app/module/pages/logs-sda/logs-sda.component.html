@@ -1,10 +1,12 @@
-<div class="container-fluid pt-4">
+<!-- SDA CUSTOM - Match Home SDA page width/margins (no container side padding) -->
+<div class="logs-sda-page">
     <div class="card shadow">
         <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
             <h3 class="mb-0" i18n="@@LogsViewer">Visor de Logs (SDA)</h3>
             <div class="d-flex align-items-center">
                 <span class="mr-2" i18n="@@FilterByPeriod">Periodo:</span>
                 <p-dropdown [options]="periods" [(ngModel)]="selectedPeriod" (onChange)="onPeriodChange()"
+                    [autoDisplayFirst]="false" [showClear]="false" [placeholder]="'Selecciona periodo'"
                     class="mr-3"></p-dropdown>
                 <!-- SDA CUSTOM - Show date picker restricted to days where logs may exist (last 10 days) -->
                 <span class="mr-2" i18n="@@FilterByDate">Fecha:</span>
@@ -23,6 +25,8 @@
             <div>
                 <!-- SDA CUSTOM - Use custom sort to keep correct chronological ordering -->
                 <p-table #dt [value]="appLogs" [columns]="cols" [paginator]="true" [rows]="20" [responsive]="true"
+                    [rowsPerPageOptions]="[10, 20, 50, 100, 500]" [showCurrentPageReport]="true"
+                    currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} registros"
                     [autoLayout]="true" [customSort]="true" (sortFunction)="onTableSort($event)" sortField="date_str" [sortOrder]="-1">
                 <!-- END SDA CUSTOM -->
                     <ng-template pTemplate="caption">

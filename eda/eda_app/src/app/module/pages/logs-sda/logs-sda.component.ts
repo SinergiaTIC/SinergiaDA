@@ -12,7 +12,7 @@ import { format as formatSqlStatement } from 'sql-formatter';
 export class LogsSdaComponent implements OnInit {
 
     public appLogs: any[] = [];
-    /* SDA CUSTOM */ public selectedDate: Date = new Date();
+    /* SDA CUSTOM */ public selectedDate: Date | null = new Date();
     /* SDA CUSTOM */ public firstDayOfWeek: number = 1;
     /* SDA CUSTOM */ public calendarLocale: any = {};
     /* SDA CUSTOM */ public minSelectableDate: Date;
@@ -30,7 +30,7 @@ export class LogsSdaComponent implements OnInit {
         /* SDA CUSTOM */ // SDA CUSTOM - Removed "This month" and "Custom" periods to keep fixed quick filters only
         /* SDA CUSTOM */ // END SDA CUSTOM
     ];
-    public selectedPeriod: string = 'today';
+    /* SDA CUSTOM */ public selectedPeriod: string | null = 'today';
 
     public cols: any[] = [
         { field: 'date_str', header: $localize`:@@Date:Fecha` },
@@ -86,10 +86,14 @@ export class LogsSdaComponent implements OnInit {
         /* SDA CUSTOM */ // END SDA CUSTOM
     }
 
-    getPeriodRange(period: string): { start: string, end: string } {
+    /* SDA CUSTOM */ getPeriodRange(period: string | null): { start: string, end: string } {
         const today = moment();
         let start = moment();
         let end = moment();
+
+        /* SDA CUSTOM */ if (!period) {
+        /* SDA CUSTOM */     period = 'today';
+        /* SDA CUSTOM */ }
 
         switch (period) {
             case 'today':
@@ -119,6 +123,17 @@ export class LogsSdaComponent implements OnInit {
     onPeriodChange() {
         /* SDA CUSTOM */ // SDA CUSTOM - With only fixed periods, always reload on selection change
         /* SDA CUSTOM */ // END SDA CUSTOM
+        /* SDA CUSTOM */ if (!this.selectedPeriod) {
+        /* SDA CUSTOM */     return;
+        /* SDA CUSTOM */ }
+        /* SDA CUSTOM */ // SDA CUSTOM - Clear date picker only for multi-day periods; keep visible date for single-day periods
+        /* SDA CUSTOM */ const range = this.getPeriodRange(this.selectedPeriod);
+        /* SDA CUSTOM */ if (range.start === range.end) {
+        /* SDA CUSTOM */     this.selectedDate = moment(range.start, 'YYYY-MM-DD').toDate();
+        /* SDA CUSTOM */ } else {
+        /* SDA CUSTOM */     this.selectedDate = null;
+        /* SDA CUSTOM */ }
+        /* SDA CUSTOM */ // END SDA CUSTOM
         /* SDA CUSTOM */ this.useExactDateFilter = false;
         this.loadLogs();
     }
@@ -128,6 +143,8 @@ export class LogsSdaComponent implements OnInit {
     /* SDA CUSTOM */     const selectedMoment = moment(this.selectedDate);
     /* SDA CUSTOM */     const minMoment = moment(this.minSelectableDate);
     /* SDA CUSTOM */     const maxMoment = moment(this.maxSelectableDate);
+    /* SDA CUSTOM */     const todayMoment = moment().startOf('day');
+    /* SDA CUSTOM */     const yesterdayMoment = moment().subtract(1, 'day').startOf('day');
     /* SDA CUSTOM */
     /* SDA CUSTOM */     if (selectedMoment.isBefore(minMoment, 'day')) {
     /* SDA CUSTOM */         this.selectedDate = minMoment.toDate();
@@ -135,7 +152,17 @@ export class LogsSdaComponent implements OnInit {
     /* SDA CUSTOM */         this.selectedDate = maxMoment.toDate();
     /* SDA CUSTOM */     }
     /* SDA CUSTOM */
-    /* SDA CUSTOM */     this.useExactDateFilter = true;
+    /* SDA CUSTOM */     const normalizedSelected = moment(this.selectedDate).startOf('day');
+    /* SDA CUSTOM */     if (normalizedSelected.isSame(todayMoment, 'day')) {
+    /* SDA CUSTOM */         this.selectedPeriod = 'today';
+    /* SDA CUSTOM */         this.useExactDateFilter = false;
+    /* SDA CUSTOM */     } else if (normalizedSelected.isSame(yesterdayMoment, 'day')) {
+    /* SDA CUSTOM */         this.selectedPeriod = 'yesterday';
+    /* SDA CUSTOM */         this.useExactDateFilter = false;
+    /* SDA CUSTOM */     } else {
+    /* SDA CUSTOM */         this.selectedPeriod = null;
+    /* SDA CUSTOM */         this.useExactDateFilter = true;
+    /* SDA CUSTOM */     }
     /* SDA CUSTOM */     this.loadLogs();
     /* SDA CUSTOM */ }
     /* SDA CUSTOM */ // END SDA CUSTOM
