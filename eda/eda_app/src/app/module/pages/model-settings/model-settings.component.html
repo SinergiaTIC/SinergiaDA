@@ -70,9 +70,15 @@
                   [style]="{width:'50%', padding:'.35rem .75rem'}" (onChange)="exportDashboard()"> </p-dropdown>
               </div>
               <div *ngIf="dashBoardForm.value.dashboard!=null" class="download-container">
-                <a style="margin: auto" title="Download JSON" [href]="downloadJsonDashboardHref"
-                  download="dashboard.json">
-                  <i class="fa fa-download"></i> {{downloadDashboard}}</a>
+                <a style="margin: auto" title="Download JSON"
+                  [href]="downloadJsonDashboardHref"
+                  download="dashboard.json"
+                  [class.disabled]="loadingDashboardExport"
+                  (click)="onDownloadDashboardClick($event)">
+                  <i *ngIf="!loadingDashboardExport" class="fa fa-fw fa-download"></i>
+                  <i *ngIf="loadingDashboardExport" class="fa fa-fw fa-spinner fa-spin"></i>
+                  {{downloadDashboard}}
+                </a>
               </div>
             </form>
           </div>

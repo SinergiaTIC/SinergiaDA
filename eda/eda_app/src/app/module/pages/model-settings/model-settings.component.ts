@@ -23,6 +23,7 @@ export class ModelSettingsComponent implements OnInit {
   private globalDSRoute = '/datasource';
   public downloadJsonModelHref: any;
   public downloadJsonDashboardHref: any;
+  public loadingDashboardExport: boolean = false;
   public files: any;
 
   //STRINGS
@@ -122,16 +123,26 @@ export class ModelSettingsComponent implements OnInit {
 
   }
 
+  onDownloadDashboardClick(event: MouseEvent): void {
+    if (this.loadingDashboardExport) {
+      event.preventDefault();
+    }
+  }
+
   exportDashboard() {
     const id = this.dashBoardForm.value.dashboard._id;
+    this.downloadJsonDashboardHref = null;
+    this.loadingDashboardExport = true;
 
     this.dashboardService.getDashboard(id).subscribe(
       data => {
         let theJSON = JSON.stringify(data.dashboard);
         let uri = this.sanitizer.bypassSecurityTrustUrl("data:text/json;charset=UTF-8," + encodeURIComponent(theJSON));
         this.downloadJsonDashboardHref = uri;
+        this.loadingDashboardExport = false;
       },
       err => {
+        this.loadingDashboardExport = false;
         this.alertService.addError(err);
       });
 
