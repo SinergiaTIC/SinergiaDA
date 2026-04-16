@@ -4591,12 +4591,12 @@ Un cop configurada podreu invocar-la des del botó sempre que calgui.</target>
         <target>elements seleccionats</target>
       </trans-unit>
       <trans-unit id="groupByEnabledShow">
-        <source>Mostrar Repetidos</source>
-        <target>Mostrar repetits</target>
+        <source>No agrupar</source>
+        <target>No agrupar</target>
       </trans-unit>
       <trans-unit id="groupByEnabledHide">
-        <source>Ocultar Repetidos</source>
-        <target>Ocultar Repetits</target>
+        <source>Agrupar</source>
+        <target>Agrupar</target>
       </trans-unit>
       <trans-unit id="noAttributeShouldHaveAggregation">
         <source>Ningún Atributo debe tener agregación</source>

@@ -4696,12 +4696,12 @@ Once configured you can invoke it whenever you want from the button.</target>
         <target>selected items</target>
       </trans-unit>
       <trans-unit id="groupByEnabledShow">
-        <source>Mostrar Repetidos</source>
-        <target>Show Duplicates</target>
+        <source>No agrupar</source>
+        <target>Do not group</target>
       </trans-unit>
       <trans-unit id="groupByEnabledHide">
-        <source>Ocultar Repetidos</source>
-        <target>Hide Duplicates</target>
+        <source>Agrupar</source>
+        <target>Group</target>
       </trans-unit>
       <trans-unit id="noAttributeShouldHaveAggregation">
         <source>Ningún Atributo debe tener agregación</source>

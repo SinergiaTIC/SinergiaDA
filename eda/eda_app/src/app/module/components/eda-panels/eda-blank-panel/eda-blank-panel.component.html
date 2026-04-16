@@ -402,9 +402,13 @@
                                     <button pButton (click)="onWhatIfDialog()" icon="pi pi-question-circle" class="p-button-info p-button-outlined button-whatif ml-2" label="What IF"></button>
                                 </div-->
 
-                                <!-- SDA CUSTOM --> <div class="col-3 md:col-12 buttonAndOr d-flex justify-content-end">
-                                <!-- SDA CUSTOM -->     <button pButton (click)="groupByEnabledButton()" class="p-button-outlined ml-2" style="width: 165px; justify-content: center;">{{groupByEnabledMessage}}</button>
-                                <!-- SDA CUSTOM --> </div>
+<!-- SDA CUSTOM -->             <div class="col-3 md:col-12 buttonAndOr d-flex justify-content-end">
+<!-- SDA CUSTOM -->                 <!-- <button pButton (click)="groupByEnabledButton()" class="p-button-outlined ml-2" style="width: 165px; justify-content: center;">{{groupByEnabledMessage}}</button> -->
+<!-- SDA CUSTOM -->                 <div class="flex flex-row align-items-center justify-content gap-2">
+<!-- SDA CUSTOM -->                     <p-inputSwitch (onChange)="groupByEnabledButton()" [(ngModel)]="groupByEnabled" [disabled]="atLeastThereIsOneWithAggregation"></p-inputSwitch>
+<!-- SDA CUSTOM -->                     <h5 class="title-datamodel" style="min-width: 120px; margin: 0;">{{groupByEnabledMessage}}</h5>
+<!-- SDA CUSTOM -->                 </div>
+<!-- SDA CUSTOM -->             </div>
 
                                 <div class="col-3 md:col-12 buttonAndOr d-flex justify-content-end">
                                     <button pButton (click)="filterAndOrDialog()" icon="pi pi-filter" class="p-button-outlined ml-2" i18n-label="@@filterSettings" label="Configuración de filtros"></button>
@@ -626,7 +630,7 @@
 
 </eda-page-dialog>
 
-<app-column-dialog *ngIf="configController" [controller]="configController" (updateSortedFiltersColumnDialog)="updateSortedFiltersColumnDialogFunction($event)"></app-column-dialog>
+<!-- SDA CUSTOM --> <app-column-dialog *ngIf="configController" [controller]="configController" (updateSortedFiltersColumnDialog)="updateSortedFiltersColumnDialogFunction($event)" [(groupByEnabled)]="groupByEnabled"></app-column-dialog>
 
 <app-filter-dialog *ngIf="filterController" [controller]="filterController" (updateSortedFiltersFilterDialog)="updateSortedFiltersFilterDialogFunction($event)"></app-filter-dialog>
 

@@ -4585,12 +4585,12 @@
         <target>elementos seleccionados</target>
       </trans-unit>
       <trans-unit id="groupByEnabledShow">
-        <source>Mostrar Repetidos</source>
-        <target>Mostrar Repetidos</target>
+        <source>No agrupar</source>
+        <target>No agrupar</target>
       </trans-unit>
       <trans-unit id="groupByEnabledHide">
-        <source>Ocultar Repetidos</source>
-        <target>Ocultar Repetidos</target>
+        <source>Agrupar</source>
+        <target>Agrupar</target>
       </trans-unit>
       <trans-unit id="noAttributeShouldHaveAggregation">
         <source>Ningún Atributo debe tener agregación</source>
