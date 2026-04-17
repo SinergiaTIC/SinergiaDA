@@ -23,7 +23,7 @@ export class ModelSettingsComponent implements OnInit {
   private globalDSRoute = '/datasource';
   public downloadJsonModelHref: any;
   public downloadJsonDashboardHref: any;
-  public loadingDashboardExport: boolean = false;
+  /*SDA CUSTOM*/ public loadingDashboardExport: boolean = false;
   public files: any;
 
   //STRINGS
@@ -123,27 +123,27 @@ export class ModelSettingsComponent implements OnInit {
 
   }
 
-  onDownloadDashboardClick(event: MouseEvent): void {
-    if (this.loadingDashboardExport) {
-      event.preventDefault();
-    }
-  }
+/*SDA CUSTOM*/  onDownloadDashboardClick(event: MouseEvent): void {
+/*SDA CUSTOM*/    if (this.loadingDashboardExport) {
+/*SDA CUSTOM*/      event.preventDefault();
+/*SDA CUSTOM*/    }
+/*SDA CUSTOM*/  }
 
   exportDashboard() {
     const id = this.dashBoardForm.value.dashboard._id;
-    this.downloadJsonDashboardHref = null;
-    this.loadingDashboardExport = true;
+    /*SDA CUSTOM*/ this.downloadJsonDashboardHref = null;
+    /*SDA CUSTOM*/ this.loadingDashboardExport = true;
 
     this.dashboardService.getDashboard(id).subscribe(
       data => {
         let theJSON = JSON.stringify(data.dashboard);
         let uri = this.sanitizer.bypassSecurityTrustUrl("data:text/json;charset=UTF-8," + encodeURIComponent(theJSON));
         this.downloadJsonDashboardHref = uri;
-        this.loadingDashboardExport = false;
+        /*SDA CUSTOM*/ this.loadingDashboardExport = false;
       },
       err => {
         this.loadingDashboardExport = false;
-        this.alertService.addError(err);
+        /*SDA CUSTOM*/ this.alertService.addError(err);
       });
 
   }
@@ -170,6 +170,10 @@ export class ModelSettingsComponent implements OnInit {
 
           panels.forEach(panel => {
             const fields = panel.content.query.query.fields;
+            
+/*SDA CUSTOM*/ // No se verifican los paneles en modo SQL
+/*SDA CUSTOM*/ if(panel.content.query.query?.modeSQL) return
+/*SDA CUSTOM*/
             fields.forEach(field => {
 
               const table = tables.filter(t => t.table_name === field.table_id);
