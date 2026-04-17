@@ -1165,7 +1165,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
                                     () => {
                                         this.dashboardService._notSaved.next(false);
                                         this.display_v.rightSidebar = false;
-                                        this.alertService.addSuccess($localize`:@@dahsboardSaved:Informe guardado correctamente`);
+                                        this.alertService.addSuccess($localize`:@@dashboardSaved:Informe guardado correctamente`);
                                         this.router.navigate(['/dashboard/', r.dashboard._id]).then(() => {
                                             window.location.reload();
                                         });
@@ -1419,7 +1419,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
                 this.dashboardService.updateDashboard(this.id, body).subscribe(
                     () => {
                         this.display_v.rightSidebar = false;
-                        this.alertService.addSuccess($localize`:@@dahsboardSaved:Informe guardado correctamente`);
+                        this.alertService.addSuccess($localize`:@@dashboardSaved:Informe guardado correctamente`);
                     },
                     err => {
                         this.display_v.rightSidebar = false;

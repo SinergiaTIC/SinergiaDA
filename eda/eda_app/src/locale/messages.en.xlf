@@ -1305,7 +1305,7 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <context context-type="linenumber">162</context>
 </context-group>
 </trans-unit>
-<trans-unit id="placholderSelectTipo" datatype="html">
+<trans-unit id="placeholderSelectTipo" datatype="html">
 <source>Selecciona un tipo</source>
 <target>Select type</target>
 <context-group purpose="location">
@@ -2538,21 +2538,15 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 </context-group>
 </trans-unit>
 
-<trans-unit id="dahsboardSaved">
+<trans-unit id="dashboardSaved">
 <source>Informe guardado correctamente</source>
 <target>Dashboard correctly saved</target>
 </trans-unit>
 
-<trans-unit id="DatadourceTitle">
+<trans-unit id="DatasourceTitle">
 <source>Fuente de datos: </source>
 <target>Datasource:  </target>
 </trans-unit>
-
-<trans-unit id="DatadourceText">
-<source>Creada correctamente </source>
-<target>Correctly created</target>
-</trans-unit>
-
 <trans-unit id="ErrorMessage">
 <source>Ha ocurrido un error </source>
 <target>Some error has occurred</target>
@@ -2922,7 +2916,7 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
   <target>This quarter</target>
 </trans-unit>
 <trans-unit id="DatePickerLastQuarter">
-  <source>Último trimestre</source> 
+  <source>Último trimestre</source>
   <target>Last quarter</target>
 </trans-unit>
 <trans-unit id="DatePickerBeforeTodayIncluded">
@@ -3113,11 +3107,11 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
   </trans-unit>
 
   <trans-unit id="topQueryH4" datatype="html">
-    <source> Mostrar Top:  
+    <source> Mostrar Top:
       <x id="START_TAG_P-INPUTNUMBER" ctype="x-p-inputNumber" equiv-text="&lt;p-inputNumber&gt;"/>
       <x id="CLOSE_TAG_P-INPUTNUMBER" ctype="x-p-inputNumber" equiv-text="&lt;/p-inputNumber&gt;"/>
     </source>
-    <target> Show Top:  
+    <target> Show Top:
       <x id="START_TAG_P-INPUTNUMBER" ctype="x-p-inputNumber" equiv-text="&lt;p-inputNumber&gt;"/>
       <x id="CLOSE_TAG_P-INPUTNUMBER" ctype="x-p-inputNumber" equiv-text="&lt;/p-inputNumber&gt;"/>
     </target>
@@ -3426,7 +3420,7 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
     <target>  User permissions </target>
   </trans-unit>
 
-  <trans-unit id="groupsPersmissions">
+  <trans-unit id="groupsPermissions">
     <source> Permisos de grupo</source>
     <target>  Group permissions</target>
   </trans-unit>

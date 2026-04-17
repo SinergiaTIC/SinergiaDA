@@ -1424,7 +1424,7 @@
           <context context-type="linenumber">162</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="placholderSelectTipo" datatype="html">
+      <trans-unit id="placeholderSelectTipo" datatype="html">
         <source>Selecciona un tipo</source>
         <target>Selecciona un tipo</target>
         <context-group purpose="location">
@@ -2684,21 +2684,15 @@
         </context-group>
       </trans-unit>
 
-      <trans-unit id="dahsboardSaved">
+      <trans-unit id="dashboardSaved">
         <source>Informe guardado correctamente</source>
         <target>Informe guardado correctamente</target>
       </trans-unit>
 
-      <trans-unit id="DatadourceTitle">
+      <trans-unit id="DatasourceTitle">
         <source>Fuente de datos: </source>
         <target>Fuente de datos: </target>
       </trans-unit>
-
-      <trans-unit id="DatadourceText">
-        <source>Creada correctamente </source>
-        <target>Creada correctamente</target>
-      </trans-unit>
-
       <trans-unit id="ErrorMessage">
         <source>Ha ocurrido un error </source>
         <target>Ha ocurrido un error</target>
@@ -3041,7 +3035,7 @@
         <source>El año pasado, completo</source>
         <target>El año pasado, completo</target>
       </trans-unit>
-      
+
       <trans-unit id="DatePickerLast3">
         <source> Últimos 3 días </source>
         <target>Últimos 3 días</target>
@@ -3092,7 +3086,7 @@
         <source>Mañana</source>
         <target>Mañana</target>
       </trans-unit>
-      
+
       <trans-unit id="DatePickerPastTomorrow">
         <source>Pasado mañana</source>
         <target>Pasado mañana</target>
@@ -3112,7 +3106,7 @@
         <source>Próximos 3 días</source>
         <target>Próximos 3 días</target>
       </trans-unit>
-          
+
       <trans-unit id="DatePickerNext7">
         <source>Próximos 7 días</source>
         <target>Próximos 7 días</target>
@@ -3637,7 +3631,7 @@
         <target> Permisos de usuario </target>
       </trans-unit>
 
-      <trans-unit id="groupsPersmissions">
+      <trans-unit id="groupsPermissions">
         <source> Permisos de grupo</source>
         <target> Permisos de grupo </target>
       </trans-unit>

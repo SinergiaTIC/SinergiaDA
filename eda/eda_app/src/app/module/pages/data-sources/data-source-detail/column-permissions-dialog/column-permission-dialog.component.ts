@@ -34,7 +34,7 @@ export class ColumnPermissionDialogComponent extends EdaDialogAbstract {
     public type : string; 
 
     public usersLabel = $localize`:@@usersPermissions:Permisos de usuario`;
-    public groupsLabel = $localize`:@@groupsPersmissions:Permisos de grupo`;
+    public groupsLabel = $localize`:@@groupsPermissions:Permisos de grupo`;
     public usersDefaultLabel = $localize`:@@users:Usuarios`;
     public groupsDefaultLabel = $localize`:@@groups:Grupos`;
 
