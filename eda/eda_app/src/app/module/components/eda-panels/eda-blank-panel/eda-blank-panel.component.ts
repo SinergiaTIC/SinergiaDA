@@ -506,7 +506,9 @@ export class EdaBlankPanelComponent implements OnInit {
         const queryMode = this.selectedQueryMode;
         /*SDA CUSTOM*/ this.showHiddenColumn = true;
 
+
         const currentQuery = panelContent.query.query.fields;
+
 
         if ((queryMode && queryMode != 'SQL') || modeSQL === false) {
 
@@ -537,9 +539,10 @@ export class EdaBlankPanelComponent implements OnInit {
                 console.error(e);
                 throw e;
             }
+
+            
         }
-
-
+        
         this.queryLimit = panelContent.query.query.queryLimit;
         /*SDA CUSTOM*/ this.joinType = panelContent.query.query.joinType || 'inner';
         /* SDA CUSTOM */ this.groupByEnabled = groupByEnabled ?? true;
@@ -562,6 +565,10 @@ export class EdaBlankPanelComponent implements OnInit {
 
         // Verify if it is a cross table to show it on home screen
         this.dragAndDropAvailable = !this.chartTypes.filter( grafico => grafico.subValue === 'crosstable')[0].ngIf;
+
+
+        const currentQueryCheck = this.currentQuery;
+        this.atLeastThereIsOneWithAggregation = this.checkAtLeastOneWithAggregation(currentQueryCheck);
     }
 
 
