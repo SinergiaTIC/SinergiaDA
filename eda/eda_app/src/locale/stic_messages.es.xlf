@@ -514,7 +514,7 @@
     <target>Máximo de etiquetas</target>
   </trans-unit>
   <!-- SDA CUSTOM - KPI/chart option labels -->
-  <trans-unit id="showLabels">
+  <trans-unit id="showChartLabels">
     <source>Mostrar etiquetas del gráfico</source>
     <target>Mostrar etiquetas del gráfico</target>
   </trans-unit>
@@ -522,7 +522,7 @@
     <source>Mostrar valores en el gráfico</source>
     <target>Mostrar valores en el gráfico</target>
   </trans-unit>
-  <trans-unit id="showLabelsPercent">
+  <trans-unit id="showChartLabelsPercent">
     <source>Mostrar Etiquetas en Porcentajes</source>
     <target>Mostrar Etiquetas en Porcentajes</target>
   </trans-unit>

@@ -512,7 +512,7 @@
     <target>Desbloqueja el panell</target>
   </trans-unit>
   <!-- SDA CUSTOM - KPI/chart option labels -->
-  <trans-unit id="showLabels">
+  <trans-unit id="showChartLabels">
     <source>Mostrar etiquetas del gráfico</source>
     <target>Mostra les etiquetes del gràfic</target>
   </trans-unit>
@@ -520,7 +520,7 @@
     <source>Mostrar valores en el gráfico</source>
     <target>Mostra els valors al gràfic</target>
   </trans-unit>
-  <trans-unit id="showLabelsPercent">
+  <trans-unit id="showChartLabelsPercent">
     <source>Mostrar Etiquetas en Porcentajes</source>
     <target>Mostra les etiquetes en percentatge</target>
   </trans-unit>
