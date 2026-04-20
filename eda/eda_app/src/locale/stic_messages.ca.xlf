@@ -431,6 +431,14 @@
     <source>Desbloquear panel</source>
     <target>Desbloqueja el panell</target>
   </trans-unit>
+  <trans-unit id="opcionTitulo" datatype="html">
+    <source>PANEL DE TEXTO</source>
+    <target>NOU PANELL DE TEXT</target>
+    <context-group purpose="location">
+      <context context-type="sourcefile">app/module/pages/dashboard/dashboard.component.html</context>
+      <context context-type="linenumber">137</context>
+    </context-group>
+</trans-unit>
 </body>
 </file>
 </xliff>

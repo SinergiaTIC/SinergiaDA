@@ -1,5 +1,9 @@
 <eda-dialog [inject]="dialog">
 	<div body class="grid">
+<!-- SDA CUSTOM -->		<div class="col-12 mb-2">
+<!-- SDA CUSTOM -->			<p-checkbox [(ngModel)]="backgroundTransparent" [binary]="true" inputId="bgTransparent"></p-checkbox>
+<!-- SDA CUSTOM -->			<label for="bgTransparent" class="ml-2">Quitar fondo del panel</label>
+<!-- SDA CUSTOM -->		</div>
 		<div class="col-12">
 
 			<p-editor #Editor [(ngModel)]="title" [style]="{'height':'100%'}">

@@ -12,6 +12,7 @@ export class TitleDialogComponent extends EdaDialogAbstract {
 	@ViewChild('Editor') editor: Editor;
 	public dialog: EdaDialog;
 	public title: string;
+/* SDA CUSTOM */	public backgroundTransparent: boolean = false;
 	constructor(private sanitizer: DomSanitizer) {
 		super();
 		this.dialog = new EdaDialog({
@@ -24,6 +25,7 @@ export class TitleDialogComponent extends EdaDialogAbstract {
 
 	public onShow(): void {
 		this.title = this.controller.params.title;
+/* SDA CUSTOM */		this.backgroundTransparent = this.controller.params.backgroundTransparent || false;
 		const urlImage = document.querySelector('#qlUrlImage');
 		urlImage.addEventListener('click', ($event) => this.urlImageHandler(event));
 	}
@@ -33,7 +35,7 @@ export class TitleDialogComponent extends EdaDialogAbstract {
 	}
 
 	public saveChartConfig(): void {
-		this.onClose(EdaDialogCloseEvent.UPDATE, { title: this.title });
+		/* SDA CUSTOM */this.onClose(EdaDialogCloseEvent.UPDATE, { title: this.title, backgroundTransparent: this.backgroundTransparent });
 	}
 
 	public urlImageHandler(event?: any): void {

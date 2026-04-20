@@ -58,34 +58,26 @@ export class EdaTitlePanelComponent implements OnInit {
             header: $localize`:@@panelOptions0:OPCIONES DEL PANEL`,
             contextMenuItems: [
                 new EdaContextMenuItem({
-                    label: $localize`:@@panelOptions4:Eliminar panel`,
-                    icon: 'fa fa-trash',
-                    command: () => {
-                        this.contextMenu.hideContextMenu();
-                        this.removePanel();
-                    }
-                }),
-                new EdaContextMenuItem({
                     label: $localize`:@@panelOptions2:Editar opciones del gráfico`,
-                    icon: 'mdi mdi-wrench', 
+                    icon: 'mdi mdi-wrench',
                     command: () => {
                         
                         this.contextMenu.hideContextMenu();
 
                         this.editTittleController = new EdaDialogController({
-                            params: { title: this.panel.title },
+                        /* SDA CUSTOM */ params: { title: this.panel.title, backgroundTransparent: this.panel.backgroundTransparent },
                             close: (event, response) => {
                                 if(!_.isEqual(event, EdaDialogCloseEvent.NONE)){
                                     this.panel.title = response.title;
+                        /* SDA CUSTOM */ this.panel.backgroundTransparent = response.backgroundTransparent;
                                     this.setPanelSize()
                                     this.dashboardService._notSaved.next(true);
                                 }
                                 this.editTittleController = null;
-                                // this.setPanelSize()
                             }
                           });
                     }
-/* SDA CUSTOM */                }),
+                }),
 /* SDA CUSTOM */                new EdaContextMenuItem({
 /* SDA CUSTOM */                    label: $localize`:@@duplicatePanel:Duplicar panel`,
 /* SDA CUSTOM */                    icon: 'fa fa-copy',
@@ -93,7 +85,15 @@ export class EdaTitlePanelComponent implements OnInit {
 /* SDA CUSTOM */                        this.contextMenu.hideContextMenu();
 /* SDA CUSTOM */                        this.duplicatePanel();
 /* SDA CUSTOM */                    }
-                })
+                }),
+                new EdaContextMenuItem({
+                    label: $localize`:@@panelOptions4:Eliminar panel`,
+                    icon: 'fa fa-trash',
+                    command: () => {
+                        this.contextMenu.hideContextMenu();
+                        this.removePanel();
+                    }
+                }),
             ]
         });
 
@@ -102,12 +102,14 @@ export class EdaTitlePanelComponent implements OnInit {
     public removePanel(): void {
         this.remove.emit(this.panel.id);
     }
+
 /* SDA CUSTOM */     public openEditDialog(): void {
 /* SDA CUSTOM */         this.editTittleController = new EdaDialogController({
-/* SDA CUSTOM */             params: { title: this.panel.title },
+/* SDA CUSTOM */             params: { title: this.panel.title, backgroundTransparent: this.panel.backgroundTransparent },
 /* SDA CUSTOM */             close: (event, response) => {
 /* SDA CUSTOM */                 if(!_.isEqual(event, EdaDialogCloseEvent.NONE)){
 /* SDA CUSTOM */                     this.panel.title = response.title;
+/* SDA CUSTOM */                     this.panel.backgroundTransparent = response.backgroundTransparent;
 /* SDA CUSTOM */                     this.setPanelSize()
 /* SDA CUSTOM */                     this.dashboardService._notSaved.next(true);
 /* SDA CUSTOM */                 }
