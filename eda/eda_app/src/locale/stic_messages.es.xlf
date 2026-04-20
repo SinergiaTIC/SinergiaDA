@@ -524,7 +524,7 @@
   </trans-unit>
   <trans-unit id="showChartLabelsPercent">
     <source>Mostrar Etiquetas en Porcentajes</source>
-    <target>Mostrar Etiquetas en Porcentajes</target>
+    <target>Mostrar etiquetas en porcentaje</target>
   </trans-unit>
   <trans-unit id="showValuePercentLabel">
     <source>Mostrar valores en porcentaje</source>
