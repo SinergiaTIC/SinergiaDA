@@ -292,11 +292,13 @@ export class LogsSdaComponent implements OnInit {
     /* SDA CUSTOM */         const parsedQueryFailure = this.parsePanelQueryFailureDetail(parsedType?.detail);
     /* SDA CUSTOM */         const operationLabel = this.getOperationLabel(log?.action, parsedType?.detail);
     /* SDA CUSTOM */         const canLinkDashboard = this.isDashboardAction(log?.action) && !!parsedType?.dashboardId && log?.action !== 'DashboardDeleted';
+    /* SDA CUSTOM */         const showDetail = (log?.action === 'DashboardDeleted' || log?.action === 'UserDeleted') && !!parsedType?.detail;
     /* SDA CUSTOM */         return {
     /* SDA CUSTOM */             ...log,
     /* SDA CUSTOM */             typeOperationLabel: operationLabel,
     /* SDA CUSTOM */             typeDashboardId: parsedType?.dashboardId || '',
     /* SDA CUSTOM */             typeDashboardTitle: parsedType?.dashboardTitle || '',
+    /* SDA CUSTOM */             typeDetail: showDetail ? parsedType.detail : '',
     /* SDA CUSTOM */             typeCanLinkDashboard: canLinkDashboard,
     /* SDA CUSTOM */             typePanelId: parsedQueryFailure.panel,
     /* SDA CUSTOM */             typePanelName: parsedQueryFailure.panelName,

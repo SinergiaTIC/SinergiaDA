@@ -842,8 +842,8 @@ export class DashboardController {
           )
         }
 
-        /* SDA CUSTOM */ // SDA CUSTOM - Audit log for dashboard deletion with report name
-        /* SDA CUSTOM */ insertServerLog(req, 'info', 'DashboardDeleted', req.user.name, buildDashboardLogType(dashboard?._id, dashboard?.config?.title, 'deleted'))
+        /* SDA CUSTOM */ // SDA CUSTOM - Audit log for dashboard deletion with report name and recoverable ID
+        /* SDA CUSTOM */ insertServerLog(req, 'info', 'DashboardDeleted', req.user.name, buildDashboardLogType(dashboard?._id, dashboard?.config?.title, `deleted--id:${dashboard?._id}`))
         /* SDA CUSTOM */ // END SDA CUSTOM
 
         return res.status(200).json({ ok: true, dashboard })

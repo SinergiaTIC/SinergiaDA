@@ -444,8 +444,8 @@ export class UserController {
                     return next(new HttpException(400, 'Not exists user with this id'));
                 }
 
-                /* SDA CUSTOM */ // SDA CUSTOM - Audit log for user deletion
-                /* SDA CUSTOM */ insertServerLog(req, 'info', 'UserDeleted', req.user.name, buildUserLogType(userRemoved && userRemoved._id, userRemoved && userRemoved.email, userRemoved && userRemoved.name, 'deleted'));
+                /* SDA CUSTOM */ // SDA CUSTOM - Audit log for user deletion with recoverable ID
+                /* SDA CUSTOM */ insertServerLog(req, 'info', 'UserDeleted', req.user.name, buildUserLogType(userRemoved && userRemoved._id, userRemoved && userRemoved.email, userRemoved && userRemoved.name, `deleted--id:${userRemoved && userRemoved._id}`));
                 /* SDA CUSTOM */ // END SDA CUSTOM
 
                 return res.status(200).json({ ok: true, user: userRemoved });

@@ -74,6 +74,9 @@
                                         <a *ngIf="rowData.typeCanLinkDashboard" [routerLink]="['/dashboard', rowData.typeDashboardId]" target="_blank" rel="noopener noreferrer">{{rowData.typeDashboardTitle}}</a>
                                         <!-- END SDA CUSTOM -->
                                         <span *ngIf="!rowData.typeCanLinkDashboard && rowData.typeDashboardTitle">{{rowData.typeDashboardTitle}}</span>
+                                        <!-- SDA CUSTOM - Show deletion detail with recoverable ID -->
+                                        <span *ngIf="(rowData.action === 'DashboardDeleted' || rowData.action === 'UserDeleted') && rowData.typeDetail"> ({{rowData.typeDetail}})</span>
+                                        <!-- END SDA CUSTOM -->
                                         <!-- SDA CUSTOM - Open popup with failed query details -->
                                         <button *ngIf="rowData.action === 'PanelQueryFailed'" type="button" class="btn btn-link btn-sm p-0 ml-2" (click)="openQueryErrorDialog(rowData)" i18n="@@LogsViewDetails">Ver detalles</button>
                                         <!-- END SDA CUSTOM -->
