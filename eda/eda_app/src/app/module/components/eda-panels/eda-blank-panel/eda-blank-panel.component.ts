@@ -165,6 +165,8 @@ export class EdaBlankPanelComponent implements OnInit {
     /* SDA CUSTOM */     {value: false, message: $localize`:@@groupByEnabledShow:No agrupar`},
     /* SDA CUSTOM */ ];
     /* SDA CUSTOM */ public groupByEnabledMessage: string = this.groupByEnabledMessages[0].message;
+    /* SDA CUSTOM */ public groupByDisabledReasonMessage: string = $localize`:@@groupByDisabledReason:No se puede cambiar el agrupamiento porque hay campos con agregaciones configuradas. Elimina las agregaciones primero.`;
+    /* SDA CUSTOM */ public groupByDisabledAggregationsMessage: string = $localize`:@@groupByDisabledAggregations:En modo No agrupar, las agregaciones en los campos están deshabilitadas automáticamente.`;
 
     public queryModes: any[] = [
         /* SDA CUSTOM */ { label: $localize`:@@PanelModeSelectorEDA:Modo EDA`, value: 'EDA', disabled: true},
@@ -540,9 +542,9 @@ export class EdaBlankPanelComponent implements OnInit {
                 throw e;
             }
 
-            
+
         }
-        
+
         this.queryLimit = panelContent.query.query.queryLimit;
         /*SDA CUSTOM*/ this.joinType = panelContent.query.query.joinType || 'inner';
         /* SDA CUSTOM */ this.groupByEnabled = groupByEnabled ?? true;
@@ -2004,7 +2006,7 @@ export class EdaBlankPanelComponent implements OnInit {
     }
 
 /* SDA CUSTOM  */    groupByEnabledButton() {
-/* SDA CUSTOM  */        
+/* SDA CUSTOM  */
 /* SDA CUSTOM  */        this.groupByEnabledMessage = this.groupByEnabledMessages.find((m: {value: boolean, message: string}) => m.value === this.groupByEnabled).message;
 /* SDA CUSTOM  */
 /* SDA CUSTOM  */    }

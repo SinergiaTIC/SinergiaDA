@@ -404,9 +404,13 @@
 
 <!-- SDA CUSTOM -->             <div class="col-3 md:col-12 buttonAndOr d-flex justify-content-end">
 <!-- SDA CUSTOM -->                 <!-- <button pButton (click)="groupByEnabledButton()" class="p-button-outlined ml-2" style="width: 165px; justify-content: center;">{{groupByEnabledMessage}}</button> -->
-<!-- SDA CUSTOM -->                 <div class="flex flex-row align-items-center justify-content gap-2">
+<!-- SDA CUSTOM -->                 <div class="flex flex-row align-items-center justify-content gap-2" style="width: 100%;">
 <!-- SDA CUSTOM -->                     <p-inputSwitch (onChange)="groupByEnabledButton()" [(ngModel)]="groupByEnabled" [disabled]="atLeastThereIsOneWithAggregation"></p-inputSwitch>
 <!-- SDA CUSTOM -->                     <h5 class="title-datamodel" style="min-width: 120px; margin: 0;">{{groupByEnabledMessage}}</h5>
+<!-- SDA CUSTOM -->                     <!-- Info icon when switch is disabled -->
+<!-- SDA CUSTOM -->                     <i *ngIf="atLeastThereIsOneWithAggregation" class="pi pi-exclamation-circle" [pTooltip]="groupByDisabledReasonMessage" tooltipPosition="left" style="color: #ff9800; cursor: help; font-size: 1.1em;"></i>
+<!-- SDA CUSTOM -->                     <!-- Info icon when in Do not group mode -->
+<!-- SDA CUSTOM -->                     <i *ngIf="!groupByEnabled && !atLeastThereIsOneWithAggregation" class="pi pi-info-circle" [pTooltip]="groupByDisabledAggregationsMessage" tooltipPosition="left" style="color: #2196f3; cursor: help; font-size: 1.1em;"></i>
 <!-- SDA CUSTOM -->                 </div>
 <!-- SDA CUSTOM -->             </div>
 

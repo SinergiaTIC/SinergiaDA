@@ -4703,6 +4703,14 @@ Once configured you can invoke it whenever you want from the button.</target>
         <source>Agrupar</source>
         <target>Group</target>
       </trans-unit>
-        </body>
+      <trans-unit id="groupByDisabledReason">
+        <source>No se puede cambiar el agrupamiento porque hay campos con agregaciones configuradas. Elimina las agregaciones primero.</source>
+        <target>Cannot change grouping because there are fields with aggregations configured. Remove aggregations first.</target>
+      </trans-unit>
+      <trans-unit id="groupByDisabledAggregations">
+        <source>En modo No agrupar, las agregaciones en los campos están deshabilitadas automáticamente.</source>
+        <target>In Do not group mode, field aggregations are automatically disabled.</target>
+      </trans-unit>
+    </body>
   </file>
 </xliff>

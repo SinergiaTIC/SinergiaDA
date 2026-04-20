@@ -4593,6 +4593,14 @@
         <source>Agrupar</source>
         <target>Agrupar</target>
       </trans-unit>
+      <trans-unit id="groupByDisabledReason">
+        <source>No se puede cambiar el agrupamiento porque hay campos con agregaciones configuradas. Elimina las agregaciones primero.</source>
+        <target>Non se pode cambiar a agrupación porque hai campos con agregacións configuradas. Elimina as agregacións primeiro.</target>
+      </trans-unit>
+      <trans-unit id="groupByDisabledAggregations">
+        <source>En modo No agrupar, las agregaciones en los campos están deshabilitadas automáticamente.</source>
+        <target>En modo Non agrupar, as agregacións nos campos están deshabilitadas automáticamente.</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>

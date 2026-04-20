@@ -3135,11 +3135,11 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
   </trans-unit>
 
   <trans-unit id="topQueryH4" datatype="html">
-    <source> Mostrar Top:  
+    <source> Mostrar Top:
       <x id="START_TAG_P-INPUTNUMBER" ctype="x-p-inputNumber" equiv-text="&lt;p-inputNumber&gt;"/>
       <x id="CLOSE_TAG_P-INPUTNUMBER" ctype="x-p-inputNumber" equiv-text="&lt;/p-inputNumber&gt;"/>
     </source>
-    <target> Mostrar Top:  
+    <target> Mostrar Top:
       <x id="START_TAG_P-INPUTNUMBER" ctype="x-p-inputNumber" equiv-text="&lt;p-inputNumber&gt;"/>
       <x id="CLOSE_TAG_P-INPUTNUMBER" ctype="x-p-inputNumber" equiv-text="&lt;/p-inputNumber&gt;"/>
     </target>
@@ -4597,6 +4597,14 @@ Un cop configurada podreu invocar-la des del botó sempre que calgui.</target>
       <trans-unit id="groupByEnabledHide">
         <source>Agrupar</source>
         <target>Agrupar</target>
+      </trans-unit>
+      <trans-unit id="groupByDisabledReason">
+        <source>No se puede cambiar el agrupamiento porque hay campos con agregaciones configuradas. Elimina las agregaciones primero.</source>
+        <target>No es pot canviar l'agrupació perquè hi ha camps amb agregacions configurades. Elimina les agregacions primer.</target>
+      </trans-unit>
+      <trans-unit id="groupByDisabledAggregations">
+        <source>En modo No agrupar, las agregaciones en los campos están deshabilitadas automáticamente.</source>
+        <target>En mode No agrupar, les agregacions als camps estan deshabilitades automàticament.</target>
       </trans-unit>
     </body>
   </file>
