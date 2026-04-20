@@ -26,7 +26,7 @@ export class LogsSdaComponent implements OnInit {
     // END SDA CUSTOM
     // SDA CUSTOM - i18n-bound properties for runtime-interpolated strings (cannot use inline i18n attributes)
     /* SDA CUSTOM */ public selectPeriodPlaceholder: string = $localize`:@@SelectPeriodPlaceholder:Selecciona periodo`;
-    /* SDA CUSTOM */ public showingRecordsTemplate: string = $localize`:@@ShowingRecordsTemplate:Mostrando {first} a {last} de {totalRecords} registros`;
+    /* SDA CUSTOM */ public showingRecordsTemplate: string;
     /* SDA CUSTOM */ public filterColumnPlaceholder: string = $localize`:@@FilterColumn:Filtro...`;
     /* SDA CUSTOM */ public queryFailureTitle: string = $localize`:@@LogsQueryFailureTitle:Detalles del error de consulta`;
     /* SDA CUSTOM */ public hideDashboardAccessedLabel: string = $localize`:@@HideDashboardAccessed:Mostrar accesos a informes`;
@@ -60,6 +60,7 @@ export class LogsSdaComponent implements OnInit {
         /* SDA CUSTOM */ this.minSelectableDate = moment().subtract(9, 'days').startOf('day').toDate();
         /* SDA CUSTOM */ this.calendarLocale = this.resolveCalendarLocaleFromActiveLanguage();
         /* SDA CUSTOM */ this.firstDayOfWeek = this.calendarLocale && this.calendarLocale.firstDayOfWeek !== undefined ? this.calendarLocale.firstDayOfWeek : 1;
+        /* SDA CUSTOM */ this.showingRecordsTemplate = this.resolveShowingRecordsTemplate();
     }
 
     ngOnInit(): void {
@@ -189,6 +190,7 @@ export class LogsSdaComponent implements OnInit {
     /* SDA CUSTOM */     const url = window.location.href;
     /* SDA CUSTOM */     const lanCa = /\/ca\//i;
     /* SDA CUSTOM */     const lanEs = /\/es\//i;
+    /* SDA CUSTOM */     const lanGl = /\/gl\//i;
     /* SDA CUSTOM */
     /* SDA CUSTOM */     const localesByLanguage = {
     /* SDA CUSTOM */         es: {
@@ -229,6 +231,19 @@ export class LogsSdaComponent implements OnInit {
     /* SDA CUSTOM */     if (lanCa.test(url)) return localesByLanguage.ca;
     /* SDA CUSTOM */     if (lanEs.test(url)) return localesByLanguage.es;
     /* SDA CUSTOM */     return localesByLanguage.en;
+    /* SDA CUSTOM */ }
+    /* SDA CUSTOM */ // END SDA CUSTOM
+
+    /* SDA CUSTOM */ // SDA CUSTOM - Build paginator report template based on active language
+    /* SDA CUSTOM */ private resolveShowingRecordsTemplate(): string {
+    /* SDA CUSTOM */     const url = window.location.href;
+    /* SDA CUSTOM */     const lanCa = /\/ca\//i;
+    /* SDA CUSTOM */     const lanEn = /\/en\//i;
+    /* SDA CUSTOM */     const lanGl = /\/gl\//i;
+    /* SDA CUSTOM */     if (lanCa.test(url)) return 'Mostrant {first} a {last} de {totalRecords} registres';
+    /* SDA CUSTOM */     if (lanGl.test(url)) return 'Mostrando {first} a {last} de {totalRecords} rexistros';
+    /* SDA CUSTOM */     if (lanEn.test(url)) return 'Showing {first} to {last} of {totalRecords} records';
+    /* SDA CUSTOM */     return 'Mostrando {first} a {last} de {totalRecords} registros';
     /* SDA CUSTOM */ }
     /* SDA CUSTOM */ // END SDA CUSTOM
 
