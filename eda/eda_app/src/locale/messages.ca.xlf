@@ -4592,19 +4592,19 @@ Un cop configurada podreu invocar-la des del botó sempre que calgui.</target>
       </trans-unit>
       <trans-unit id="groupByEnabledShow">
         <source>No agrupar</source>
-        <target>No agrupar</target>
+        <target>No agrupis</target>
       </trans-unit>
       <trans-unit id="groupByEnabledHide">
         <source>Agrupar</source>
-        <target>Agrupar</target>
+        <target>Agrupa</target>
       </trans-unit>
       <trans-unit id="groupByDisabledReason">
         <source>No se puede cambiar el agrupamiento porque hay campos con agregaciones configuradas. Elimina las agregaciones primero.</source>
-        <target>No es pot canviar l'agrupació perquè hi ha camps amb agregacions configurades. Elimina les agregacions primer.</target>
+        <target>Abans de poder canviar l'agrupació cal que elimineu les agregacions configurades als camps.</target>
       </trans-unit>
       <trans-unit id="groupByDisabledAggregations">
         <source>En modo No agrupar, las agregaciones en los campos están deshabilitadas automáticamente.</source>
-        <target>En mode No agrupar, les agregacions als camps estan deshabilitades automàticament.</target>
+        <target>En el mode "No agrupis" les agregacions als camps es deshabiliten automàticament.</target>
       </trans-unit>
     </body>
   </file>
