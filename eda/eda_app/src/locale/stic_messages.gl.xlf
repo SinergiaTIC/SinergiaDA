@@ -439,83 +439,75 @@
     <source>Color del gráfico</source>
     <target>Cor do gráfico</target>
   </trans-unit>
-  <trans-unit id="kpiAppearanceH6">
+  <trans-unit id="appearanceSection">
     <source>Apariencia</source>
     <target>Aparencia</target>
   </trans-unit>
-  <trans-unit id="kpiOptionsPanelTitle">
+  <trans-unit id="panelTitleOptions">
     <source>Opciones de visualización</source>
     <target>Opcións de visualización</target>
   </trans-unit>
-  <trans-unit id="kpiResetSectionButton">
+  <trans-unit id="resetSectionButton">
     <source>Restaurar</source>
     <target>Restaurar</target>
   </trans-unit>
-  <trans-unit id="kpiIndicatorColorLabel">
+  <trans-unit id="colorLabelIndicator">
     <source>Color del indicador</source>
     <target>Cor do indicador</target>
   </trans-unit>
-  <trans-unit id="kpiSeriesColorLabel">
+  <trans-unit id="colorLabelSeries">
     <source>Color de la serie</source>
     <target>Cor da serie</target>
   </trans-unit>
-  <trans-unit id="kpiLineColorLabel">
+  <trans-unit id="colorLabelLine">
     <source>Color de línea</source>
     <target>Cor da liña</target>
   </trans-unit>
-  <trans-unit id="kpiAreaColorLabel">
+  <trans-unit id="colorLabelArea">
     <source>Color de área</source>
     <target>Cor da área</target>
   </trans-unit>
-  <trans-unit id="kpiAxisScaleH6">
+  <trans-unit id="axisScaleH6">
     <source>Ejes y escala</source>
     <target>Eixes e escala</target>
   </trans-unit>
-  <trans-unit id="kpiLabelsValuesH6">
+  <trans-unit id="labelsValuesH6">
     <source>Etiquetas y valores</source>
     <target>Etiquetas e valores</target>
   </trans-unit>
-  <trans-unit id="kpiLineH6">
-    <source>Línea</source>
-    <target>Liña</target>
-  </trans-unit>
-  <trans-unit id="kpiLineWidthLabel">
+  <trans-unit id="widthLabelLine">
     <source>Grosor de línea</source>
     <target>Grosor da liña</target>
   </trans-unit>
-  <trans-unit id="kpiLineStyleLabel">
+  <trans-unit id="lineStyleLabel">
     <source>Tipo de línea</source>
     <target>Tipo de liña</target>
   </trans-unit>
-  <trans-unit id="kpiLineStyleSolid">
+  <trans-unit id="lineStyleSolid">
     <source>Sólida</source>
     <target>Sólida</target>
   </trans-unit>
-  <trans-unit id="kpiLineStyleDashed">
+  <trans-unit id="lineStyleDashed">
     <source>Discontinua</source>
     <target>Descontinua</target>
   </trans-unit>
-  <trans-unit id="kpiLineStyleDotted">
+  <trans-unit id="lineStyleDotted">
     <source>Punteada</source>
     <target>Punteada</target>
   </trans-unit>
-  <trans-unit id="kpiXAxisH6">
-    <source>Eje horizontal</source>
-    <target>Eixe horizontal</target>
-  </trans-unit>
-  <trans-unit id="kpiXAxisShowLabel">
+  <trans-unit id="xAxisShowLabel">
     <source>Mostrar eje X</source>
     <target>Mostrar eixe X</target>
   </trans-unit>
-  <trans-unit id="kpiXAxisLabelsLabel">
+  <trans-unit id="xAxisLabelsLabel">
     <source>Mostrar etiquetas del eje X</source>
     <target>Mostrar etiquetas do eixe X</target>
   </trans-unit>
-  <trans-unit id="kpiXAxisAllLabelsLabel">
+  <trans-unit id="xAxisAllLabelsLabel">
     <source>Mostrar todas las etiquetas</source>
     <target>Mostrar todas as etiquetas</target>
   </trans-unit>
-  <trans-unit id="kpiXAxisLabelCountLabel">
+  <trans-unit id="xAxisLabelCountLabel">
     <source>Máximo de etiquetas</source>
     <target>Máximo de etiquetas</target>
   </trans-unit>
@@ -524,7 +516,7 @@
     <source>Mostrar etiquetas del gráfico</source>
     <target>Mostrar etiquetas do gráfico</target>
   </trans-unit>
-  <trans-unit id="kpiShowValueLabelsLabel">
+  <trans-unit id="showValueLabelsLabel">
     <source>Mostrar valores en el gráfico</source>
     <target>Mostrar valores no gráfico</target>
   </trans-unit>
@@ -532,15 +524,15 @@
     <source>Mostrar Etiquetas en Porcentajes</source>
     <target>Mostrar etiquetas en porcentaxes</target>
   </trans-unit>
-  <trans-unit id="kpiShowValuePercentLabel">
+  <trans-unit id="showValuePercentLabel">
     <source>Mostrar valores en porcentaje</source>
     <target>Mostrar valores en porcentaxe</target>
   </trans-unit>
-  <trans-unit id="kpiValueLabelsTooltip">
+  <trans-unit id="valueLabelsTooltip">
     <source>Mostrar u ocultar los valores en el gráfico</source>
     <target>Mostrar ou ocultar os valores no gráfico</target>
   </trans-unit>
-  <trans-unit id="kpiValueLabelsPercentTooltip">
+  <trans-unit id="valueLabelsPercentTooltip">
     <source>Mostrar u ocultar los valores en porcentaje en el gráfico</source>
     <target>Mostrar ou ocultar os valores en porcentaxe no gráfico</target>
   </trans-unit>
@@ -548,19 +540,15 @@
     <source>Color del borde</source>
     <target>Cor do bordo</target>
   </trans-unit>
-  <trans-unit id="colorChartLineLabel">
-    <source>Color de la línea</source>
-    <target>Cor da liña</target>
-  </trans-unit>
   <trans-unit id="colorChartFillLabel">
     <source>Color de relleno</source>
     <target>Cor de recheo</target>
   </trans-unit>
-  <trans-unit id="kpiLabelColorLabel">
+  <trans-unit id="labelColorLabel">
     <source>Color del texto de etiquetas</source>
     <target>Cor do texto das etiquetas</target>
   </trans-unit>
-  <trans-unit id="kpiLabelBackgroundColorLabel">
+  <trans-unit id="labelBackgroundColorLabel">
     <source>Fondo de etiquetas</source>
     <target>Fondo das etiquetas</target>
   </trans-unit>

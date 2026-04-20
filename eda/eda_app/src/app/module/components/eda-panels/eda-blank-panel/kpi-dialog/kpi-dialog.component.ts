@@ -44,13 +44,13 @@ export class KpiEditDialogComponent extends EdaDialogAbstract {
     /* SDA CUSTOM */ public showLabelsPercent: boolean = false;
     /* SDA CUSTOM */ public labelColor: string = '#000000';
     /* SDA CUSTOM */ public labelBackgroundColor: string = '';
-    /* SDA CUSTOM */ public valueLabelsTooltip: string = $localize`:@@kpiValueLabelsTooltip:Mostrar u ocultar los valores en el gráfico`;
-    /* SDA CUSTOM */ public valueLabelsPercentTooltip: string = $localize`:@@kpiValueLabelsPercentTooltip:Mostrar u ocultar los valores en porcentaje en el gráfico`;
+    /* SDA CUSTOM */ public valueLabelsTooltip: string = $localize`:@@valueLabelsTooltip:Mostrar u ocultar los valores en el gráfico`;
+    /* SDA CUSTOM */ public valueLabelsPercentTooltip: string = $localize`:@@valueLabelsPercentTooltip:Mostrar u ocultar los valores en porcentaje en el gráfico`;
     /* SDA CUSTOM */ // END SDA CUSTOM
     /* SDA CUSTOM */ public lineStyleOptions = [
-        /* SDA CUSTOM */ { label: $localize`:@@kpiLineStyleSolid:Sólida`, value: 'solid' },
-        /* SDA CUSTOM */ { label: $localize`:@@kpiLineStyleDashed:Discontinua`, value: 'dashed' },
-        /* SDA CUSTOM */ { label: $localize`:@@kpiLineStyleDotted:Punteada`, value: 'dotted' }
+        /* SDA CUSTOM */ { label: $localize`:@@lineStyleSolid:Sólida`, value: 'solid' },
+        /* SDA CUSTOM */ { label: $localize`:@@lineStyleDashed:Discontinua`, value: 'dashed' },
+        /* SDA CUSTOM */ { label: $localize`:@@lineStyleDotted:Punteada`, value: 'dotted' }
     /* SDA CUSTOM */ ];
 
     public units: string;
