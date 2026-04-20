@@ -35,6 +35,8 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
 /* SDA CUSTOM */    public backupName: string;
 /* SDA CUSTOM */    public sourceFieldName: string;
 /* SDA CUSTOM */    public tableLabel: string;
+/* SDA CUSTOM */    public isValueListSource: boolean = false;
+
 
     public display = {
         calendar: false, // calendars inputs
@@ -165,6 +167,8 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
         } else {
             this.availableRange = true;
         }
+
+        /* SDA CUSTOM */ if(this.selectedColumn.valueListSource) this.isValueListSource = true; 
     }
 
     private carregarValidacions(): void {
@@ -426,6 +430,12 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
             if (!_.isEqual(filter.value, 'between')) {
                 this.filterValue = {};
             }
+
+            /* SDA CUSTOM */ if(filter.value === "=" || filter.value === "!=") {
+            /* SDA CUSTOM */     this.loadDropDrownData();
+            /* SDA CUSTOM */     this.filter.switch = handler.switchBtn || this.isValueListSource;
+            /* SDA CUSTOM */ }
+
         } else {
             this.resetDisplay();
         }
@@ -694,8 +704,8 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
     async loadDropDrownData() {
         this.filterValue.value1 = null;
         this.filterValue.value2 = null;
-/* SDA CUSTOM*/ this.dropDownFields = [];
-        if (this.filter.switch) {
+        /* SDA CUSTOM*/ this.dropDownFields = [];
+        if (this.filter.switch || this.isValueListSource) {  // SDA CUSTOM => this.isValueListSource
             const column = _.cloneDeep(this.selectedColumn);
             column.table_id = column.table_id.split('.')[0];
             column.ordenation_type = 'Asc';
