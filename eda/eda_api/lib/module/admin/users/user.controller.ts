@@ -32,8 +32,6 @@ export class UserController {
             let token: string;
             let user: IUser = new User({ name: '', email: '', password: '', img: '', role: [] });
 
-            insertServerLog(req, 'info', 'newLogin', body.email, 'attempt');
-
             // Busca artxiu de configuracio activedirectory
             const ldapPath = path.resolve(__dirname, `../../../../config/activedirectory.json`);
 
