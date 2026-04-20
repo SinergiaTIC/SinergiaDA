@@ -4594,11 +4594,11 @@
       </trans-unit>
       <trans-unit id="groupByDisabledReason">
         <source>No se puede cambiar el agrupamiento porque hay campos con agregaciones configuradas. Elimina las agregaciones primero.</source>
-        <target>No se puede cambiar el agrupamiento porque hay campos con agregaciones configuradas. Elimina las agregaciones primero.</target>
+        <target>Antes de cambiar la agrupación, debe eliminar las agregaciones configuradas en los campos.</target>
       </trans-unit>
       <trans-unit id="groupByDisabledAggregations">
         <source>En modo No agrupar, las agregaciones en los campos están deshabilitadas automáticamente.</source>
-        <target>En modo No agrupar, las agregaciones en los campos están deshabilitadas automáticamente.</target>
+        <target>En el modo "No agrupar" las agregaciones a los campos se deshabilitan automáticamente.</target>
       </trans-unit>
     </body>
   </file>
