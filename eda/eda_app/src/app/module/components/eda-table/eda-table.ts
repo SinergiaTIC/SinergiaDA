@@ -483,7 +483,7 @@ export class EdaTable {
                             return sum + (isNaN(val) ? 0 : val);
                         }, 0);
                         this.partialTotalsRow.push({
-/**SDA CUSTOM  */         data: Math.min(100, percentageSum).toFixed(2) + '%', border: ' ', class: 'total-row-header text-right', type: col.type  /**  wen we summarize we can sumarize numbers with decimals and with more than 2. in this cas it will be over 100 */
+/**SDA CUSTOM  */         data: Math.min(100, percentageSum).toFixed(2) + '%', border: ' ', class: 'total-row-header text-right', type: col.type  /* when summarizing, results are capped at 100% */
                         });
 /**SDA CUSTOM  */   } else if (!this.pivot) {
 /**SDA CUSTOM  */   // Non-pivot non-percentage column (text, date, etc.) → leave blank
