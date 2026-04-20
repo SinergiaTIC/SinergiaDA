@@ -66,8 +66,10 @@
                                 <span *ngIf="col.field !== 'level'">
                                     <!-- SDA CUSTOM - Display date with leading zeros for time -->
                                     <span *ngIf="col.field === 'date_str'">{{formatDateForDisplay(rowData[col.field])}}</span>
-                                    <!-- SDA CUSTOM - Show operation first and dashboard link in type column -->
-                                    <span *ngIf="col.field === 'type'">
+                                    <!-- SDA CUSTOM - Show action label -->
+                                    <span *ngIf="col.field === 'actionLabel'">{{rowData.actionLabel}}</span>
+                                    <!-- SDA CUSTOM - Show type column with operation + dashboard link -->
+                                    <span *ngIf="col.field === 'typeFilterText'">
                                         <span>{{rowData.typeOperationLabel}}</span>
                                         <span *ngIf="rowData.typeDashboardTitle"> - </span>
                                         <!-- SDA CUSTOM - Open dashboard link in a new tab -->
@@ -81,7 +83,7 @@
                                         <button *ngIf="rowData.action === 'PanelQueryFailed'" type="button" class="btn btn-link btn-sm p-0 ml-2" (click)="openQueryErrorDialog(rowData)" i18n="@@LogsViewDetails">Ver detalles</button>
                                         <!-- END SDA CUSTOM -->
                                     </span>
-                                    <span *ngIf="col.field !== 'date_str' && col.field !== 'type'">{{rowData[col.field]}}</span>
+                                    <span *ngIf="col.field !== 'date_str' && col.field !== 'typeFilterText' && col.field !== 'actionLabel'">{{rowData[col.field]}}</span>
                                     <!-- END SDA CUSTOM -->
                                     <!-- END SDA CUSTOM -->
                                 </span>

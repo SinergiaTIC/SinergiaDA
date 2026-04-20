@@ -45,10 +45,10 @@ export class LogsSdaComponent implements OnInit {
     public cols: any[] = [
         { field: 'date_str', header: $localize`:@@Date:Fecha` },
         { field: 'level', header: $localize`:@@Level:Nivel` },
-        { field: 'action', header: $localize`:@@Action:Acción` },
+        { field: 'actionLabel', header: $localize`:@@Action:Acción` },
         { field: 'userMail', header: $localize`:@@User:Usuario` },
         { field: 'ip', header: $localize`:@@IP:IP` },
-        { field: 'type', header: $localize`:@@Type:Tipo` }
+        { field: 'typeFilterText', header: $localize`:@@Type:Tipo` }
     ];
 
     constructor(
@@ -291,15 +291,19 @@ export class LogsSdaComponent implements OnInit {
     /* SDA CUSTOM */         const parsedType = this.parseDashboardType(log?.type);
     /* SDA CUSTOM */         const parsedQueryFailure = this.parsePanelQueryFailureDetail(parsedType?.detail);
     /* SDA CUSTOM */         const operationLabel = this.getOperationLabel(log?.action, parsedType?.detail);
+    /* SDA CUSTOM */         const actionLabel = this.getActionLabel(log?.action);
     /* SDA CUSTOM */         const canLinkDashboard = this.isDashboardAction(log?.action) && !!parsedType?.dashboardId && log?.action !== 'DashboardDeleted';
     /* SDA CUSTOM */         const showDetail = (log?.action === 'DashboardDeleted' || log?.action === 'UserDeleted') && !!parsedType?.detail;
+    /* SDA CUSTOM */         const typeFilterText = `${operationLabel} ${parsedType?.dashboardTitle || ''} ${showDetail ? parsedType.detail : ''}`.trim();
     /* SDA CUSTOM */         return {
     /* SDA CUSTOM */             ...log,
+    /* SDA CUSTOM */             actionLabel: actionLabel,
     /* SDA CUSTOM */             typeOperationLabel: operationLabel,
     /* SDA CUSTOM */             typeDashboardId: parsedType?.dashboardId || '',
     /* SDA CUSTOM */             typeDashboardTitle: parsedType?.dashboardTitle || '',
     /* SDA CUSTOM */             typeDetail: showDetail ? parsedType.detail : '',
     /* SDA CUSTOM */             typeCanLinkDashboard: canLinkDashboard,
+    /* SDA CUSTOM */             typeFilterText: typeFilterText,
     /* SDA CUSTOM */             typePanelId: parsedQueryFailure.panel,
     /* SDA CUSTOM */             typePanelName: parsedQueryFailure.panelName,
     /* SDA CUSTOM */             typeQueryMode: parsedQueryFailure.mode,
@@ -441,39 +445,74 @@ export class LogsSdaComponent implements OnInit {
     /* SDA CUSTOM */ }
     /* SDA CUSTOM */ // END SDA CUSTOM
 
+    /* SDA CUSTOM */ // SDA CUSTOM - Translate raw action key for the Action column
+    /* SDA CUSTOM */ private getActionLabel(action: string): string {
+    /* SDA CUSTOM */     const labels = {
+    /* SDA CUSTOM */         newLogin: $localize`:@@LogsActionNewLogin:Login`,
+    /* SDA CUSTOM */         DashboardAccessed: $localize`:@@LogsActionDashboardAccessed:Acceso a informe`,
+    /* SDA CUSTOM */         DashboardCreated: $localize`:@@LogsActionDashboardCreated:Informe creado`,
+    /* SDA CUSTOM */         DashboardUpdated: $localize`:@@LogsActionDashboardUpdated:Informe actualizado`,
+    /* SDA CUSTOM */         DashboardRenamed: $localize`:@@LogsActionDashboardRenamed:Informe renombrado`,
+    /* SDA CUSTOM */         DashboardVisibilityChanged: $localize`:@@LogsActionDashboardVisibilityChanged:Visibilidad del informe cambiada`,
+    /* SDA CUSTOM */         DashboardDeleted: $localize`:@@LogsActionDashboardDeleted:Informe eliminado`,
+    /* SDA CUSTOM */         PanelQueryFailed: $localize`:@@LogsActionPanelQueryFailed:Consulta del panel fallida`,
+    /* SDA CUSTOM */         UserCreated: $localize`:@@LogsActionUserCreated:Usuario creado`,
+    /* SDA CUSTOM */         UserUpdated: $localize`:@@LogsActionUserUpdated:Usuario actualizado`,
+    /* SDA CUSTOM */         UserDeleted: $localize`:@@LogsActionUserDeleted:Usuario eliminado`,
+    /* SDA CUSTOM */         UserRolesChanged: $localize`:@@LogsActionUserRolesChanged:Roles de usuario cambiados`,
+    /* SDA CUSTOM */         UserPasswordChanged: $localize`:@@LogsActionUserPasswordChanged:Contraseña de usuario cambiada`,
+    /* SDA CUSTOM */         GroupCreated: $localize`:@@LogsActionGroupCreated:Grupo creado`,
+    /* SDA CUSTOM */         GroupUpdated: $localize`:@@LogsActionGroupUpdated:Grupo actualizado`,
+    /* SDA CUSTOM */         GroupDeleted: $localize`:@@LogsActionGroupDeleted:Grupo eliminado`,
+    /* SDA CUSTOM */         GroupMembershipChanged: $localize`:@@LogsActionGroupMembershipChanged:Membresía de grupo cambiada`,
+    /* SDA CUSTOM */         UpdateModelStarted: $localize`:@@LogsActionUpdateModelStarted:Actualización del modelo iniciada`,
+    /* SDA CUSTOM */         UpdateModelUsersAndGroupsSynced: $localize`:@@LogsActionUpdateModelUsersAndGroupsSynced:Usuarios/Grupos sincronizados`,
+    /* SDA CUSTOM */         UpdateModelUsersAndGroupsSyncFailed: $localize`:@@LogsActionUpdateModelUsersAndGroupsSyncFailed:Fallo en sincronización de Usuarios/Grupos`,
+    /* SDA CUSTOM */         UpdateModelRolesMapped: $localize`:@@LogsActionUpdateModelRolesMapped:Roles mapeados`,
+    /* SDA CUSTOM */         UpdateModelRolesMappingFailed: $localize`:@@LogsActionUpdateModelRolesMappingFailed:Fallo en mapeo de roles`,
+    /* SDA CUSTOM */         UpdateModelDataModelBuilt: $localize`:@@LogsActionUpdateModelDataModelBuilt:Modelo de datos construido`,
+    /* SDA CUSTOM */         UpdateModelDataModelBuildFailed: $localize`:@@LogsActionUpdateModelDataModelBuildFailed:Fallo en construcción del modelo de datos`,
+    /* SDA CUSTOM */         UpdateModelCompleted: $localize`:@@LogsActionUpdateModelCompleted:Actualización del modelo completada`,
+    /* SDA CUSTOM */         UpdateModelPushFailed: $localize`:@@LogsActionUpdateModelPushFailed:Fallo en push del modelo`,
+    /* SDA CUSTOM */         UpdateModelFailed: $localize`:@@LogsActionUpdateModelFailed:Fallo en actualización del modelo`
+    /* SDA CUSTOM */     };
+    /* SDA CUSTOM */     return labels[action] || action || '-';
+    /* SDA CUSTOM */ }
+    /* SDA CUSTOM */ // END SDA CUSTOM
+
     /* SDA CUSTOM */ // SDA CUSTOM - Convert action/detail to user-friendly operation label for type column
     /* SDA CUSTOM */ private getOperationLabel(action: string, detail: string): string {
     /* SDA CUSTOM */     const actionLabels = {
-    /* SDA CUSTOM */         DashboardAccessed: 'Access',
-    /* SDA CUSTOM */         DashboardCreated: 'Creation',
-    /* SDA CUSTOM */         DashboardUpdated: 'Update',
-    /* SDA CUSTOM */         DashboardRenamed: 'Rename',
-    /* SDA CUSTOM */         DashboardVisibilityChanged: 'Visibility Change',
-    /* SDA CUSTOM */         DashboardDeleted: 'Deletion',
-    /* SDA CUSTOM */         PanelQueryFailed: 'Query Failure',
-    /* SDA CUSTOM */         UserCreated: 'User Creation',
-    /* SDA CUSTOM */         UserUpdated: 'User Update',
-    /* SDA CUSTOM */         UserDeleted: 'User Deletion',
-    /* SDA CUSTOM */         UserRolesChanged: 'User Roles Change',
-    /* SDA CUSTOM */         UserPasswordChanged: 'User Password Change',
-    /* SDA CUSTOM */         GroupCreated: 'Group Creation',
-    /* SDA CUSTOM */         GroupUpdated: 'Group Update',
-    /* SDA CUSTOM */         GroupDeleted: 'Group Deletion',
-    /* SDA CUSTOM */         GroupMembershipChanged: 'Group Membership Change',
-    /* SDA CUSTOM */         UpdateModelStarted: 'Model Update Start',
-    /* SDA CUSTOM */         UpdateModelUsersAndGroupsSynced: 'Users/Groups Sync',
-    /* SDA CUSTOM */         UpdateModelUsersAndGroupsSyncFailed: 'Users/Groups Sync Failure',
-    /* SDA CUSTOM */         UpdateModelRolesMapped: 'Role Mapping',
-    /* SDA CUSTOM */         UpdateModelRolesMappingFailed: 'Role Mapping Failure',
-    /* SDA CUSTOM */         UpdateModelDataModelBuilt: 'Data Model Build',
-    /* SDA CUSTOM */         UpdateModelDataModelBuildFailed: 'Data Model Build Failure',
-    /* SDA CUSTOM */         UpdateModelCompleted: 'Model Update Completed',
-    /* SDA CUSTOM */         UpdateModelPushFailed: 'Model Push Failure',
-    /* SDA CUSTOM */         UpdateModelFailed: 'Model Update Failure'
+    /* SDA CUSTOM */         DashboardAccessed: $localize`:@@LogsActionAccess:Acceso`,
+    /* SDA CUSTOM */         DashboardCreated: $localize`:@@LogsActionCreation:Creación`,
+    /* SDA CUSTOM */         DashboardUpdated: $localize`:@@LogsActionUpdate:Actualización`,
+    /* SDA CUSTOM */         DashboardRenamed: $localize`:@@LogsActionRename:Renombrado`,
+    /* SDA CUSTOM */         DashboardVisibilityChanged: $localize`:@@LogsActionVisibilityChange:Cambio de visibilidad`,
+    /* SDA CUSTOM */         DashboardDeleted: $localize`:@@LogsActionDeletion:Eliminación`,
+    /* SDA CUSTOM */         PanelQueryFailed: $localize`:@@LogsActionQueryFailure:Fallo de consulta`,
+    /* SDA CUSTOM */         UserCreated: $localize`:@@LogsActionUserCreation:Creación de usuario`,
+    /* SDA CUSTOM */         UserUpdated: $localize`:@@LogsActionUserUpdate:Actualización de usuario`,
+    /* SDA CUSTOM */         UserDeleted: $localize`:@@LogsActionUserDeletion:Eliminación de usuario`,
+    /* SDA CUSTOM */         UserRolesChanged: $localize`:@@LogsActionUserRolesChange:Cambio de roles de usuario`,
+    /* SDA CUSTOM */         UserPasswordChanged: $localize`:@@LogsActionUserPasswordChange:Cambio de contraseña de usuario`,
+    /* SDA CUSTOM */         GroupCreated: $localize`:@@LogsActionGroupCreation:Creación de grupo`,
+    /* SDA CUSTOM */         GroupUpdated: $localize`:@@LogsActionGroupUpdate:Actualización de grupo`,
+    /* SDA CUSTOM */         GroupDeleted: $localize`:@@LogsActionGroupDeletion:Eliminación de grupo`,
+    /* SDA CUSTOM */         GroupMembershipChanged: $localize`:@@LogsActionGroupMembershipChange:Cambio de membresía de grupo`,
+    /* SDA CUSTOM */         UpdateModelStarted: $localize`:@@LogsActionModelUpdateStart:Inicio de actualización del modelo`,
+    /* SDA CUSTOM */         UpdateModelUsersAndGroupsSynced: $localize`:@@LogsActionUsersGroupsSync:Sincronización de usuarios/grupos`,
+    /* SDA CUSTOM */         UpdateModelUsersAndGroupsSyncFailed: $localize`:@@LogsActionUsersGroupsSyncFailure:Fallo en sincronización de usuarios/grupos`,
+    /* SDA CUSTOM */         UpdateModelRolesMapped: $localize`:@@LogsActionRoleMapping:Mapeo de roles`,
+    /* SDA CUSTOM */         UpdateModelRolesMappingFailed: $localize`:@@LogsActionRoleMappingFailure:Fallo en mapeo de roles`,
+    /* SDA CUSTOM */         UpdateModelDataModelBuilt: $localize`:@@LogsActionDataModelBuild:Construcción del modelo de datos`,
+    /* SDA CUSTOM */         UpdateModelDataModelBuildFailed: $localize`:@@LogsActionDataModelBuildFailure:Fallo en construcción del modelo de datos`,
+    /* SDA CUSTOM */         UpdateModelCompleted: $localize`:@@LogsActionModelUpdateCompleted:Actualización del modelo completada`,
+    /* SDA CUSTOM */         UpdateModelPushFailed: $localize`:@@LogsActionModelPushFailure:Fallo en push del modelo`,
+    /* SDA CUSTOM */         UpdateModelFailed: $localize`:@@LogsActionModelUpdateFailure:Fallo en actualización del modelo`
     /* SDA CUSTOM */     };
     /* SDA CUSTOM */     if (actionLabels[action]) return actionLabels[action];
-    /* SDA CUSTOM */     if (detail === 'attempt') return 'Attempt';
-    /* SDA CUSTOM */     if (detail === 'login') return 'Login';
+    /* SDA CUSTOM */     if (detail === 'attempt') return $localize`:@@LogsActionAttempt:Intento`;
+    /* SDA CUSTOM */     if (detail === 'login') return $localize`:@@LogsActionLogin:Inicio de sesión`;
     /* SDA CUSTOM */     return detail || '-';
     /* SDA CUSTOM */ }
     /* SDA CUSTOM */ // END SDA CUSTOM
