@@ -4705,11 +4705,11 @@ Once configured you can invoke it whenever you want from the button.</target>
       </trans-unit>
       <trans-unit id="groupByDisabledReason">
         <source>No se puede cambiar el agrupamiento porque hay campos con agregaciones configuradas. Elimina las agregaciones primero.</source>
-        <target>Cannot change grouping because there are fields with aggregations configured. Remove aggregations first.</target>
+        <target>Before you can change the grouping, you must remove the aggregations configured on the fields.</target>
       </trans-unit>
       <trans-unit id="groupByDisabledAggregations">
         <source>En modo No agrupar, las agregaciones en los campos están deshabilitadas automáticamente.</source>
-        <target>In Do not group mode, field aggregations are automatically disabled.</target>
+        <target>In "Do not group" mode, aggregations on fields are automatically disabled.</target>
       </trans-unit>
     </body>
   </file>
