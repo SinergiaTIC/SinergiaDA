@@ -427,6 +427,10 @@
     <source>Bloquear panel</source>
     <target>Bloqueja el panell</target>
   </trans-unit>
+  <trans-unit id="unlockPanel">
+    <source>Desbloquear panel</source>
+    <target>Desbloqueja el panell</target>
+  </trans-unit>
   <trans-unit id="colorKpiLabel">
     <source>Color del KPI</source>
     <target>Color del KPI</target>
@@ -445,7 +449,7 @@
   </trans-unit>
   <trans-unit id="resetSectionButton">
     <source>Restaurar</source>
-    <target>Restablir</target>
+    <target>Restableix</target>
   </trans-unit>
   <trans-unit id="colorLabelIndicator">
     <source>Color del indicador</source>
@@ -489,7 +493,7 @@
   </trans-unit>
   <trans-unit id="lineStyleDotted">
     <source>Punteada</source>
-    <target>Puntejada</target>
+    <target>De punts</target>
   </trans-unit>
   <trans-unit id="xAxisShowLabel">
     <source>Mostrar eje X</source>
@@ -506,10 +510,6 @@
   <trans-unit id="xAxisLabelCountLabel">
     <source>Máximo de etiquetas</source>
     <target>Màxim d'etiquetes</target>
-  </trans-unit>
-  <trans-unit id="unlockPanel">
-    <source>Desbloquear panel</source>
-    <target>Desbloqueja el panell</target>
   </trans-unit>
   <!-- SDA CUSTOM - KPI/chart option labels -->
   <trans-unit id="showChartLabels">
