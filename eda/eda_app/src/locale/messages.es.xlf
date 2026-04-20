@@ -3083,7 +3083,7 @@
       <trans-unit id="DatePickerLastQuarter">
         <source>Último trimestre</source>
         <target>El trimestre pasado</target>
-      </trans-unit>  
+      </trans-unit>
       <trans-unit id="DatePickerBeforeTodayIncluded">
         <source>Todo hasta hoy</source>
         <target>Todo hasta hoy</target>
@@ -3092,7 +3092,7 @@
         <source>Mañana</source>
         <target>Mañana</target>
       </trans-unit>
-      
+
       <trans-unit id="DatePickerPastTomorrow">
         <source>Pasado mañana</source>
         <target>Pasado mañana</target>
@@ -4591,18 +4591,6 @@
       <trans-unit id="groupByEnabledHide">
         <source>Agrupar</source>
         <target>Agrupar</target>
-      </trans-unit>
-      <trans-unit id="noAttributeShouldHaveAggregation">
-        <source>Ningún Atributo debe tener agregación</source>
-        <target>Ningún Atributo debe tener agregación</target>
-      </trans-unit>
-      <trans-unit id="mustConfigureAtLeastOneAttribute">
-        <source>Debe configurar un atributo como mínimo para habilitar esta opción</source>
-        <target>Debe configurar un atributo como mínimo para habilitar esta opción</target>
-      </trans-unit>
-      <trans-unit id="mustAddTheGroupingsToRunWithAggregations">
-        <source>Debe activar las agrupaciones para ejecutar con agregaciones configuradas en los atributos</source>
-        <target>Debe activar las agrupaciones para ejecutar con agregaciones configuradas en los atributos</target>
       </trans-unit>
     </body>
   </file>

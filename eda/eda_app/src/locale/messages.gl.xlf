@@ -3041,7 +3041,7 @@
         <source>El año pasado, completo</source>
         <target>El año pasado, completo</target>
       </trans-unit>
-      
+
       <trans-unit id="DatePickerLast3">
         <source> Últimos 3 días </source>
         <target>Últimos 3 días</target>
@@ -3092,7 +3092,7 @@
         <source>Mañana</source>
         <target>Mañana</target>
       </trans-unit>
-      
+
       <trans-unit id="DatePickerPastTomorrow">
         <source>Pasado mañana</source>
         <target>Pasado mañana</target>
@@ -3112,7 +3112,7 @@
         <source>Próximos 3 días</source>
         <target>Próximos 3 días</target>
       </trans-unit>
-          
+
       <trans-unit id="DatePickerNext7">
         <source>Próximos 7 días</source>
         <target>Próximos 7 días</target>
@@ -4592,18 +4592,6 @@
       <trans-unit id="groupByEnabledHide">
         <source>Agrupar</source>
         <target>Agrupar</target>
-      </trans-unit>
-      <trans-unit id="noAttributeShouldHaveAggregation">
-        <source>Ningún Atributo debe tener agregación</source>
-        <target>Ningún atributo debe ter agregación</target>
-      </trans-unit>
-      <trans-unit id="mustConfigureAtLeastOneAttribute">
-        <source>Debe configurar un atributo como mínimo para habilitar esta opción</source>
-        <target>Debe configurar polo menos un atributo para habilitar esta opción</target>
-      </trans-unit>
-      <trans-unit id="mustAddTheGroupingsToRunWithAggregations">
-        <source>Debe activar las agrupaciones para ejecutar con agregaciones configuradas en los atributos</source>
-        <target>Debe activar as agrupacións para executar con agregacións configuradas nos atributos</target>
       </trans-unit>
     </body>
   </file>

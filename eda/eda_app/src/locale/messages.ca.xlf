@@ -4598,18 +4598,6 @@ Un cop configurada podreu invocar-la des del botó sempre que calgui.</target>
         <source>Agrupar</source>
         <target>Agrupar</target>
       </trans-unit>
-      <trans-unit id="noAttributeShouldHaveAggregation">
-        <source>Ningún Atributo debe tener agregación</source>
-        <target>Cap atribut ha de tenir agregació</target>
-      </trans-unit>
-      <trans-unit id="mustConfigureAtLeastOneAttribute">
-        <source>Debe configurar un atributo como mínimo para habilitar esta opción</source>
-        <target>Cal configurar com a mínim un atribut per habilitar aquesta opció</target>
-      </trans-unit>
-      <trans-unit id="mustAddTheGroupingsToRunWithAggregations">
-        <source>Debe activar las agrupaciones para ejecutar con agregaciones configuradas en los atributos</source>
-        <target>Cal activar les agrupacions per executar amb agregacions configurades als atributs</target>
-      </trans-unit>
     </body>
   </file>
 </xliff>
