@@ -526,29 +526,36 @@ export class EdaTable {
                 if (i < values.length) {
                     const currentCol = this.cols.filter(col => col.field === keys[j])[0];
                     if (currentCol.type === "EdaColumnNumber") {
-
-                        let decimalplaces = 0;
-                        try{
-                            let c =  <EdaColumnNumber>currentCol;
-                            decimalplaces =  c.decimals;  /** esta mierda se hace  para ajustar el número de dicimales porque 3.1+2.5 puede dar 5.600004 */
-                        }catch(e){
-                            console.log('error getting decimal places');
-                            console.log(e);
-                        }
-
                         if(values[i][keys[j]]===''){
-                            row[keys[j]] = parseFloat(row[keys[j]] ) + 0;
-                            row[keys[j]] = row[keys[j]].toFixed(decimalplaces );
+                            row[keys[j]] = parseFloat(row[keys[j]]) + 0;
                         }
                         else {
-                            row[keys[j]] = parseFloat(row[keys[j]] ) + parseFloat(values[i][keys[j]]);
-                            row[keys[j]] = row[keys[j]].toFixed(decimalplaces );
+                            row[keys[j]] = parseFloat(row[keys[j]]) + parseFloat(values[i][keys[j]]);
                         }
-
                     } else {
                         row[keys[j]] = NaN;
                     }
                 }
+            }
+        }
+
+        // Apply rounding once after all rows are accumulated to avoid mid-sum rounding errors
+        for (let j = 0; j < keys.length; j++) {
+            const currentCol = this.cols.filter(col => col.field === keys[j])[0];
+            if (currentCol.type === "EdaColumnNumber") {
+                let decimalplaces: number = (currentCol as any).decimals;
+                // If decimals is not a valid positive integer, detect from actual data values
+                if (!Number.isInteger(decimalplaces) || decimalplaces <= 0) {
+                    decimalplaces = 0;
+                    for (let i = 0; i < values.length; i++) {
+                        const strVal = String(values[i][keys[j]]);
+                        const dotIndex = strVal.indexOf('.');
+                        if (dotIndex !== -1) {
+                            decimalplaces = Math.max(decimalplaces, strVal.length - dotIndex - 1);
+                        }
+                    }
+                }
+                row[keys[j]] = parseFloat(row[keys[j]]).toFixed(decimalplaces);
             }
         }
 
