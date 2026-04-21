@@ -36,6 +36,8 @@ router.get('', authGuard,  DashboardController.getDashboards);
 
 router.post('/clean-refresh', authGuard, DashboardController.cleanDashboardCache)
 
+/* SDA CUSTOM */ router.get('/check-title/:title', authGuard, DashboardController.checkTitle);
+
 /**
  * @openapi
  * /dashboard/{id}:

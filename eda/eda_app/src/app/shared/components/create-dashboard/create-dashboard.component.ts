@@ -3,6 +3,7 @@ import { FormBuilder, UntypedFormGroup, Validators } from "@angular/forms";
 import { AlertService, DashboardService, GroupService, IGroup, SidebarService, StyleProviderService } from "@eda/services/service.index";
 import { SelectItem } from "primeng/api";
 import * as _ from 'lodash';
+import Swal from 'sweetalert2';
 
 @Component({
     selector: 'app-create-dashboard',
@@ -96,11 +97,34 @@ export class CreateDashboardComponent implements OnInit {
         if (this.form.invalid) {
             this.alertService.addError('Recuerde rellenar los campos obligatorios');
         } else {
+            /* SDA CUSTOM */ const normalizedTitle = (this.form.value.name || '').trim();
+            /* SDA CUSTOM */ const duplicatedTitleRes = await this.dashboardService.checkTitle(
+                /* SDA CUSTOM */ normalizedTitle,
+                /* SDA CUSTOM */ this.form.value.visible,
+                /* SDA CUSTOM */ this.form.value.group
+            /* SDA CUSTOM */ ).toPromise();
+
+            /* SDA CUSTOM */ let forceDuplicate = false;
+
+            /* SDA CUSTOM */ if (duplicatedTitleRes?.exists) {
+                /* SDA CUSTOM */ const confirmation = await Swal.fire({
+                    /* SDA CUSTOM */ title: $localize`:@@DashboardTitleAlreadyExists:Nombre ya existente`,
+                    /* SDA CUSTOM */ text: $localize`:@@DashboardTitleDuplicateContinuePrompt:Ya existe un informe con ese nombre. ¿Desea continuar?`,
+                    /* SDA CUSTOM */ icon: 'warning',
+                    /* SDA CUSTOM */ showCancelButton: true,
+                    /* SDA CUSTOM */ confirmButtonText: $localize`:@@Continue:Continuar`,
+                    /* SDA CUSTOM */ cancelButtonText: $localize`:@@DeleteGroupCancel:Cancelar`
+                /* SDA CUSTOM */ });
+
+                /* SDA CUSTOM */ if (!confirmation.isConfirmed) return;
+                /* SDA CUSTOM */ forceDuplicate = true;
+            /* SDA CUSTOM */ }
+
             const ds = { _id: this.form.value.ds._id };
             const body = {
                 config: {
                     ds,
-                    title: this.form.value.name,
+                    /* SDA CUSTOM */ title: normalizedTitle,
                     visible: this.form.value.visible,
                     tag: null,
                     refreshTime:null,
@@ -116,7 +140,7 @@ export class CreateDashboardComponent implements OnInit {
             };
 
             try {
-                const res = await this.dashboardService.addNewDashboard(body).toPromise();
+                const res = await this.dashboardService.addNewDashboard(body, forceDuplicate).toPromise();
                 this.onClose(res.dashboard);
             } catch (err) {
                 this.alertService.addError(err);

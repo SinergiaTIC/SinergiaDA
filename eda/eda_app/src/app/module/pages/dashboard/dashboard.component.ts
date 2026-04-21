@@ -1122,72 +1122,92 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
             params,
             close: (event, response) => {
                 if (!_.isEqual(event, EdaDialogCloseEvent.NONE)) {
-                    const ds = { _id: this.dataSource._id };
-                    const body = {
-                        config: {
-                            title: response.name, visible: response.visible, ds, tag: null, refreshTime: null,
-                            styles: this.stylesProviderService.generateDefaultStyles(),
-                        },
-                        group: response.group
-                            ? _.map(response.group, '_id')
-                            : undefined
-                    };
+                    /* SDA CUSTOM */ this.dashboardService.checkTitle(response.name, response.visible, response.group).subscribe(
+                        /* SDA CUSTOM */ checkResponse => {
+                            /* SDA CUSTOM */ const proceedWithSaveAs = (forceDuplicate: boolean) => {
+                                const ds = { _id: this.dataSource._id };
+                                const body = {
+                                    config: {
+                                        title: response.name, visible: response.visible, ds, tag: null, refreshTime: null,
+                                        styles: this.stylesProviderService.generateDefaultStyles(),
+                                    },
+                                    group: response.group
+                                        ? _.map(response.group, '_id')
+                                        : undefined
+                                };
 
-                    this.dashboardService.addNewDashboard(body).subscribe(
-                        r => {
-                            const body = {
-                                config: {
-                                    title: response.name,
-                                    panel: this.dashboard.panel,
-                                    ds: { _id: this.dataSource._id },
-                                    filters: this.cleanFiltersData(),
-                                    applyToAllfilter: this.applyToAllfilter,
-                                    visible: response.visible,
-                                    tags: this.selectedTags,
-                                    refreshTime: (this.refreshTime > 5) ? this.refreshTime : this.refreshTime ? 5 : null,
-                                    mailingAlertsEnabled: this.getMailingAlertsEnabled(),
-                                    sendViaMailConfig: this.sendViaMailConfig,
-                                    onlyIcanEdit: this.onlyIcanEdit,
-                                    styles:this.styles
+                                this.dashboardService.addNewDashboard(body, forceDuplicate).subscribe(
+                                    r => {
+                                        const body = {
+                                            config: {
+                                                title: response.name,
+                                                panel: this.dashboard.panel,
+                                                ds: { _id: this.dataSource._id },
+                                                filters: this.cleanFiltersData(),
+                                                applyToAllfilter: this.applyToAllfilter,
+                                                visible: response.visible,
+                                                tags: this.selectedTags,
+                                                refreshTime: (this.refreshTime > 5) ? this.refreshTime : this.refreshTime ? 5 : null,
+                                                mailingAlertsEnabled: this.getMailingAlertsEnabled(),
+                                                sendViaMailConfig: this.sendViaMailConfig,
+                                                onlyIcanEdit: this.onlyIcanEdit,
+                                                styles:this.styles
 
-                                },
-                                group: response.group ? _.map(response.group, '_id') : undefined
-                            };
+                                            },
+                                            group: response.group ? _.map(response.group, '_id') : undefined
+                                        };
 
-                            this.edaPanels.forEach(panel => {
-                                panel.savePanel();
-                            });
-
-
-
-                            if(  this.checkPannels(body) === 'true'){
-                                this.dashboardService.updateDashboard(r.dashboard._id, body).subscribe(
-                                    () => {
-                                        this.dashboardService._notSaved.next(false);
-                                        this.display_v.rightSidebar = false;
-                                        this.alertService.addSuccess($localize`:@@dahsboardSaved:Informe guardado correctamente`);
-                                        this.router.navigate(['/dashboard/', r.dashboard._id]).then(() => {
-                                            window.location.reload();
+                                        this.edaPanels.forEach(panel => {
+                                            panel.savePanel();
                                         });
 
+                                        if(  this.checkPannels(body) === 'true'){
+                                            this.dashboardService.updateDashboard(r.dashboard._id, body, forceDuplicate).subscribe(
+                                                () => {
+                                                    this.dashboardService._notSaved.next(false);
+                                                    this.display_v.rightSidebar = false;
+                                                    this.alertService.addSuccess($localize`:@@dahsboardSaved:Informe guardado correctamente`);
+                                                    this.router.navigate(['/dashboard/', r.dashboard._id]).then(() => {
+                                                        window.location.reload();
+                                                    });
+
+                                                },
+                                                err => {
+                                                    this.dashboardService._notSaved.next(false);
+                                                    this.display_v.rightSidebar = false;
+                                                    this.alertService.addError(err);
+                                                }
+                                            );
+                                        }else{
+
+                                           this.alertService.addError($localize`:@@errorSavingDashboardPannels:Error al guardar el informe. Error en el panel: ` + this.checkPannels(body) );
+
+                                        }
                                     },
-                                    err => {
-                                        this.dashboardService._notSaved.next(false);
-                                        this.display_v.rightSidebar = false;
-                                        this.alertService.addError(err);
-                                    }
+                                    err => this.alertService.addError(err)
                                 );
-                            }else{
+                            /* SDA CUSTOM */ };
 
-                               this.alertService.addError($localize`:@@errorSavingDashboardPannels:Error al guardar el informe. Error en el panel: ` + this.checkPannels(body) );
+                            /* SDA CUSTOM */ if (checkResponse?.exists) {
+                                /* SDA CUSTOM */ Swal.fire({
+                                    /* SDA CUSTOM */ title: $localize`:@@DashboardTitleAlreadyExists:Nombre ya existenteAAA`,
+                                    /* SDA CUSTOM */ text: $localize`:@@DashboardTitleDuplicateContinuePrompt:Ya existe un informe con ese nombre. ¿Desea continuar?`,
+                                    /* SDA CUSTOM */ icon: 'warning',
+                                    /* SDA CUSTOM */ showCancelButton: true,
+                                    /* SDA CUSTOM */ confirmButtonText: $localize`:@@Continue:Continuar`,
+                                    /* SDA CUSTOM */ cancelButtonText: $localize`:@@DeleteGroupCancel:Cancelar`
+                                /* SDA CUSTOM */ }).then(result => {
+                                    /* SDA CUSTOM */ if (result.isConfirmed) proceedWithSaveAs(true);
+                                /* SDA CUSTOM */ });
+                                /* SDA CUSTOM */ return;
+                            /* SDA CUSTOM */ }
 
-                            }
-
-
-
-                        },
-                        err => this.alertService.addError(err)
-                    );
+                            /* SDA CUSTOM */ proceedWithSaveAs(false);
+                        /* SDA CUSTOM */ },
+                        /* SDA CUSTOM */ () => {
+                            /* SDA CUSTOM */ this.alertService.addError($localize`:@@ErrorCheckingDashboardTitle:Error al comprobar el nombre del informe.`);
+                        /* SDA CUSTOM */ }
+                    /* SDA CUSTOM */ );
                 }
                 this.saveasController = null;
             }
@@ -1414,24 +1434,50 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
             this.edaPanels.forEach(panel => { panel.savePanel(); });
             body.config.panel = this.dashboard.panel;
 
+            /* SDA CUSTOM */ this.dashboardService.checkTitle(this.title, body.config.visible, this.form.value.group, this.id).subscribe(
+                /* SDA CUSTOM */ checkResponse => {
+                    /* SDA CUSTOM */ const proceedWithSave = (forceDuplicate: boolean) => {
+                        if( this.checkPannels(body) === 'true'){
+                            this.dashboardService.updateDashboard(this.id, body, forceDuplicate).subscribe(
+                                () => {
+                                    this.display_v.rightSidebar = false;
+                                    this.alertService.addSuccess($localize`:@@dahsboardSaved:Informe guardado correctamente`);
+                                },
+                                err => {
+                                    this.display_v.rightSidebar = false;
+                                    this.alertService.addError(err);
+                                }
+                            );
+                            //not saved alert message
+                            this.dashboardService._notSaved.next(false);
+                        }else{
+                            this.display_v.rightSidebar = false;
+                            this.alertService.addError($localize`:@@errorSavingDashboardPannels:Error al guardar el informe. Error en el panel: ` + this.checkPannels(body) );
+                        }
+                    /* SDA CUSTOM */ };
 
-            if( this.checkPannels(body) === 'true'){
-                this.dashboardService.updateDashboard(this.id, body).subscribe(
-                    () => {
-                        this.display_v.rightSidebar = false;
-                        this.alertService.addSuccess($localize`:@@dahsboardSaved:Informe guardado correctamente`);
-                    },
-                    err => {
-                        this.display_v.rightSidebar = false;
-                        this.alertService.addError(err);
-                    }
-                );
-                //not saved alert message
-                this.dashboardService._notSaved.next(false);
-            }else{
-                this.display_v.rightSidebar = false;
-                this.alertService.addError($localize`:@@errorSavingDashboardPannels:Error al guardar el informe. Error en el panel: ` + this.checkPannels(body) );
-            }
+                    /* SDA CUSTOM */ if (checkResponse?.exists) {
+                        /* SDA CUSTOM */ Swal.fire({
+                            /* SDA CUSTOM */ title: $localize`:@@DashboardTitleAlreadyExists:Nombre ya existenteAAAA`,
+                            /* SDA CUSTOM */ text: $localize`:@@DashboardTitleDuplicateContinuePrompt:Ya existe un informe con ese nombre. ¿Desea continuar?`,
+                            /* SDA CUSTOM */ icon: 'warning',
+                            /* SDA CUSTOM */ showCancelButton: true,
+                            /* SDA CUSTOM */ confirmButtonText: $localize`:@@Continue:Continuar`,
+                            /* SDA CUSTOM */ cancelButtonText: $localize`:@@DeleteGroupCancel:Cancelar`
+                        /* SDA CUSTOM */ }).then(result => {
+                            /* SDA CUSTOM */ if (result.isConfirmed) proceedWithSave(true);
+                            /* SDA CUSTOM */ else this.display_v.rightSidebar = false;
+                        /* SDA CUSTOM */ });
+                        /* SDA CUSTOM */ return;
+                    /* SDA CUSTOM */ }
+
+                    /* SDA CUSTOM */ proceedWithSave(false);
+                /* SDA CUSTOM */ },
+                /* SDA CUSTOM */ () => {
+                    /* SDA CUSTOM */ this.display_v.rightSidebar = false;
+                    /* SDA CUSTOM */ this.alertService.addError($localize`:@@ErrorCheckingDashboardTitle:Error al comprobar el nombre del informe.`);
+                /* SDA CUSTOM */ }
+            /* SDA CUSTOM */ );
         }
     }
 

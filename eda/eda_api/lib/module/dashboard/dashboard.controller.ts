@@ -661,9 +661,100 @@ export class DashboardController {
 /*SDA CUSTOM*/   }
 /*SDA CUSTOM*/ }
 
+  /* SDA CUSTOM */ static normalizeDashboardTitle(title: any): string {
+    /* SDA CUSTOM */ if (_.isNil(title)) return '';
+    /* SDA CUSTOM */ return String(title).trim();
+  }
+
+  /* SDA CUSTOM */ static escapeRegExp(value: string): string {
+    /* SDA CUSTOM */ return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  }
+
+  /* SDA CUSTOM */ static parseGroupIds(rawGroup: any): string[] {
+    /* SDA CUSTOM */ if (_.isNil(rawGroup)) return [];
+    /* SDA CUSTOM */ if (Array.isArray(rawGroup)) {
+      /* SDA CUSTOM */ return rawGroup.map(group => String(group?._id || group)).filter(groupId => groupId.length > 0);
+    /* SDA CUSTOM */ }
+    /* SDA CUSTOM */ return String(rawGroup).split(',').map(groupId => groupId.trim()).filter(groupId => groupId.length > 0);
+  }
+
+  /* SDA CUSTOM */ static async existsDuplicatedDashboardTitle(
+    /* SDA CUSTOM */ title: string,
+    /* SDA CUSTOM */ visible: string,
+    /* SDA CUSTOM */ ownerId: any,
+    /* SDA CUSTOM */ groupIds: string[] = [],
+    /* SDA CUSTOM */ excludeId?: string
+  /* SDA CUSTOM */ ): Promise<boolean> {
+    /* SDA CUSTOM */ const escapedTitle = DashboardController.escapeRegExp(title);
+    /* SDA CUSTOM */ const query: any = {
+      /* SDA CUSTOM */ 'config.title': { $regex: `^${escapedTitle}$`, $options: 'i' },
+      /* SDA CUSTOM */ 'config.visible': visible
+    /* SDA CUSTOM */ };
+
+    /* SDA CUSTOM */ if (excludeId) {
+      /* SDA CUSTOM */ query._id = { $ne: excludeId };
+    /* SDA CUSTOM */ }
+
+    /* SDA CUSTOM */ if (visible === 'private') {
+      /* SDA CUSTOM */ query.user = ownerId;
+    /* SDA CUSTOM */ }
+
+    /* SDA CUSTOM */ if (visible === 'group' && groupIds.length > 0) {
+      /* SDA CUSTOM */ query.group = { $in: groupIds };
+    /* SDA CUSTOM */ }
+
+    /* SDA CUSTOM */ const duplicatedDashboard = await Dashboard.findOne(query, '_id').lean().exec();
+    /* SDA CUSTOM */ return !_.isNil(duplicatedDashboard);
+  }
+
+  /* SDA CUSTOM */ static async checkTitle(req: Request, res: Response, next: NextFunction) {
+    /* SDA CUSTOM */ try {
+      /* SDA CUSTOM */ const rawTitle = decodeURIComponent(req.params.title || '');
+      /* SDA CUSTOM */ const normalizedTitle = DashboardController.normalizeDashboardTitle(rawTitle);
+      /* SDA CUSTOM */ const visible = String(req.qs.visible || '').trim();
+      /* SDA CUSTOM */ const excludeId = req.qs.excludeId ? String(req.qs.excludeId).trim() : undefined;
+      /* SDA CUSTOM */ const groupIds = DashboardController.parseGroupIds(req.qs.group);
+
+      /* SDA CUSTOM */ if (_.isEmpty(normalizedTitle)) {
+        /* SDA CUSTOM */ return next(new HttpException(400, 'Dashboard title is mandatory'));
+      /* SDA CUSTOM */ }
+
+      /* SDA CUSTOM */ if (_.isEmpty(visible)) {
+        /* SDA CUSTOM */ return next(new HttpException(400, 'Dashboard visibility is mandatory'));
+      /* SDA CUSTOM */ }
+
+      /* SDA CUSTOM */ const exists = await DashboardController.existsDuplicatedDashboardTitle(
+        /* SDA CUSTOM */ normalizedTitle,
+        /* SDA CUSTOM */ visible,
+        /* SDA CUSTOM */ req.user._id,
+        /* SDA CUSTOM */ groupIds,
+        /* SDA CUSTOM */ excludeId
+      /* SDA CUSTOM */ );
+
+      /* SDA CUSTOM */ return res.status(200).json({ ok: true, exists });
+    /* SDA CUSTOM */ } catch (err) {
+      /* SDA CUSTOM */ return next(new HttpException(500, 'Error checking duplicated dashboard title'));
+    /* SDA CUSTOM */ }
+  /* SDA CUSTOM */ }
+
   static async create(req: Request, res: Response, next: NextFunction) {
     try {
       const body = req.body
+      /* SDA CUSTOM */ const forceDuplicate = req.body?.forceDuplicate === true || req.body?.forceDuplicate === 'true';
+
+      /* SDA CUSTOM */ const normalizedTitle = DashboardController.normalizeDashboardTitle(body?.config?.title) || '-';
+      /* SDA CUSTOM */ const visible = String(body?.config?.visible || '').trim();
+      /* SDA CUSTOM */ const groupIds = DashboardController.parseGroupIds(body?.group);
+      /* SDA CUSTOM */ const duplicatedTitle = await DashboardController.existsDuplicatedDashboardTitle(
+        /* SDA CUSTOM */ normalizedTitle,
+        /* SDA CUSTOM */ visible,
+        /* SDA CUSTOM */ req.user._id,
+        /* SDA CUSTOM */ groupIds
+      /* SDA CUSTOM */ );
+
+      /* SDA CUSTOM */ if (duplicatedTitle && !forceDuplicate) {
+        /* SDA CUSTOM */ return next(new HttpException(409, 'Dashboard title already exists in this scope'));
+      /* SDA CUSTOM */ }
 
       const dashboard: IDashboard = new Dashboard({
         config: body.config,
@@ -676,6 +767,7 @@ export class DashboardController {
 
       //avoid dashboards without name 
       if (dashboard.config.title === null) { dashboard.config.title = '-' };
+      /* SDA CUSTOM */ dashboard.config.title = normalizedTitle;
       //Save dashboard in db
       dashboard.save((err, dashboard) => {
         if (err) {
@@ -697,37 +789,42 @@ export class DashboardController {
   static async update(req: Request, res: Response, next: NextFunction) {
     try {
       const body = req.body;
+      /* SDA CUSTOM */ const forceDuplicate = req.body?.forceDuplicate === true || req.body?.forceDuplicate === 'true';
+      /* SDA CUSTOM */ const dashboard: IDashboard = await Dashboard.findById(req.params.id).exec();
 
-      Dashboard.findById(req.params.id, (err, dashboard: IDashboard) => {
-        if (err) {
-          return next(new HttpException(500, 'Error searching the dashboard'))
-        }
+      /* SDA CUSTOM */ if (!dashboard) {
+        /* SDA CUSTOM */ return next(new HttpException(400, 'Dashboard not exist with this id'));
+      /* SDA CUSTOM */ }
 
-        if (!dashboard) {
-          return next(
-            new HttpException(400, 'Dashboard not exist with this id')
-          )
-        }
-        const createdAt=dashboard.config.createdAt
-        dashboard.config = body.config
-        dashboard.config.createdAt = createdAt
-        dashboard.user = req.user._id
-        dashboard.group = body.group
-        // avoid dashboards without name 
-        if (dashboard.config.title === null) { dashboard.config.title = '-' };
-        
-        // Update modifiedAt with current date and time
-        dashboard.config.modifiedAt = new Date();
-        
-        
-        dashboard.save((err, dashboard) => {
-          if (err) {
-            return next(new HttpException(500, 'Error updating dashboard'))
-          }
+      /* SDA CUSTOM */ const normalizedTitle = DashboardController.normalizeDashboardTitle(body?.config?.title) || '-';
+      /* SDA CUSTOM */ const visible = String(body?.config?.visible || '').trim();
+      /* SDA CUSTOM */ const groupIds = DashboardController.parseGroupIds(body?.group);
+      /* SDA CUSTOM */ const duplicatedTitle = await DashboardController.existsDuplicatedDashboardTitle(
+        /* SDA CUSTOM */ normalizedTitle,
+        /* SDA CUSTOM */ visible,
+        /* SDA CUSTOM */ req.user._id,
+        /* SDA CUSTOM */ groupIds,
+        /* SDA CUSTOM */ req.params.id
+      /* SDA CUSTOM */ );
 
-          return res.status(200).json({ ok: true, dashboard })
-        })
-      })
+      /* SDA CUSTOM */ if (duplicatedTitle && !forceDuplicate) {
+        /* SDA CUSTOM */ return next(new HttpException(409, 'Dashboard title already exists in this scope'));
+      /* SDA CUSTOM */ }
+
+      const createdAt = dashboard.config.createdAt
+      dashboard.config = body.config
+      dashboard.config.createdAt = createdAt
+      dashboard.user = req.user._id
+      dashboard.group = body.group
+      // avoid dashboards without name 
+      if (dashboard.config.title === null) { dashboard.config.title = '-' };
+      /* SDA CUSTOM */ dashboard.config.title = normalizedTitle;
+      
+      // Update modifiedAt with current date and time
+      dashboard.config.modifiedAt = new Date();
+
+      /* SDA CUSTOM */ const savedDashboard = await dashboard.save();
+      /* SDA CUSTOM */ return res.status(200).json({ ok: true, dashboard: savedDashboard })
     } catch (err) {
       next(err)
     }
@@ -751,8 +848,52 @@ export class DashboardController {
         const { id } = req.params;
         const { data } = req.body;
         const { key, newValue } = data;
+        /* SDA CUSTOM */ const forceDuplicate = req.body?.forceDuplicate === true || req.body?.forceDuplicate === 'true';
+        /* SDA CUSTOM */ const dashboard = await Dashboard.findById(id, 'user group config.visible config.title').exec();
+
+        /* SDA CUSTOM */ if (!dashboard) {
+          /* SDA CUSTOM */ return next(new HttpException(404, 'Dashboard not found with this id'));
+        /* SDA CUSTOM */ }
+
+        /* SDA CUSTOM */ let finalValue = newValue;
 
         let updateObj: any = { [key]: newValue };
+
+        /* SDA CUSTOM */ if (key === 'config.title') {
+          /* SDA CUSTOM */ const normalizedTitle = DashboardController.normalizeDashboardTitle(newValue);
+          /* SDA CUSTOM */ if (_.isEmpty(normalizedTitle)) {
+            /* SDA CUSTOM */ return next(new HttpException(400, 'Dashboard title is mandatory'));
+          /* SDA CUSTOM */ }
+
+          /* SDA CUSTOM */ const duplicatedTitle = await DashboardController.existsDuplicatedDashboardTitle(
+            /* SDA CUSTOM */ normalizedTitle,
+            /* SDA CUSTOM */ dashboard.config.visible,
+            /* SDA CUSTOM */ dashboard.user,
+            /* SDA CUSTOM */ DashboardController.parseGroupIds(dashboard.group),
+            /* SDA CUSTOM */ id
+          /* SDA CUSTOM */ );
+
+          /* SDA CUSTOM */ if (duplicatedTitle && !forceDuplicate) {
+            /* SDA CUSTOM */ return next(new HttpException(409, 'Dashboard title already exists in this scope'));
+          /* SDA CUSTOM */ }
+
+          /* SDA CUSTOM */ finalValue = normalizedTitle;
+          /* SDA CUSTOM */ updateObj = { [key]: finalValue };
+        /* SDA CUSTOM */ }
+
+        /* SDA CUSTOM */ if (key === 'config.visible') {
+          /* SDA CUSTOM */ const duplicatedTitle = await DashboardController.existsDuplicatedDashboardTitle(
+            /* SDA CUSTOM */ dashboard.config.title,
+            /* SDA CUSTOM */ String(newValue),
+            /* SDA CUSTOM */ dashboard.user,
+            /* SDA CUSTOM */ DashboardController.parseGroupIds(dashboard.group),
+            /* SDA CUSTOM */ id
+          /* SDA CUSTOM */ );
+
+          /* SDA CUSTOM */ if (duplicatedTitle && !forceDuplicate) {
+            /* SDA CUSTOM */ return next(new HttpException(409, 'Dashboard title already exists in this scope'));
+          /* SDA CUSTOM */ }
+        /* SDA CUSTOM */ }
 
         if (key === 'config.visible' && newValue !== 'group') {
           updateObj = {
@@ -760,6 +901,13 @@ export class DashboardController {
             group: []
           };
         }
+
+        /* SDA CUSTOM */ if (key.indexOf('config.') === 0) {
+          /* SDA CUSTOM */ updateObj = {
+            /* SDA CUSTOM */ ...updateObj,
+            /* SDA CUSTOM */ 'config.modifiedAt': new Date()
+          /* SDA CUSTOM */ };
+        /* SDA CUSTOM */ }
 
         Dashboard.findByIdAndUpdate(
           id,
@@ -1864,6 +2012,8 @@ export class DashboardController {
   static async clone(req: Request, res: Response, next: NextFunction) {
     try {
       const dashboardId = req.params.id;
+      /* SDA CUSTOM */ const forceDuplicate = req.body?.forceDuplicate === true || req.body?.forceDuplicate === 'true';
+      /* SDA CUSTOM */ const requestedTitle = DashboardController.normalizeDashboardTitle(req.body?.title);
       console.log('Attempting to clone dashboard with ID:', dashboardId);
       
       // Find the original dashboard by ID
@@ -1874,11 +2024,26 @@ export class DashboardController {
         return next(new HttpException(404, 'Dashboard not found'));
       }
 
+      /* SDA CUSTOM */ const clonedTitle = _.isEmpty(requestedTitle)
+        /* SDA CUSTOM */ ? `${originalDashboard.config.title} copy`
+        /* SDA CUSTOM */ : requestedTitle;
+
+      /* SDA CUSTOM */ const duplicatedTitle = await DashboardController.existsDuplicatedDashboardTitle(
+        /* SDA CUSTOM */ clonedTitle,
+        /* SDA CUSTOM */ originalDashboard.config.visible,
+        /* SDA CUSTOM */ req.user._id,
+        /* SDA CUSTOM */ DashboardController.parseGroupIds(originalDashboard.group)
+      /* SDA CUSTOM */ );
+
+      /* SDA CUSTOM */ if (duplicatedTitle && !forceDuplicate) {
+        /* SDA CUSTOM */ return next(new HttpException(409, 'Dashboard title already exists in this scope'));
+      /* SDA CUSTOM */ }
+
       // Create a new dashboard object with cloned properties
       const clonedDashboard: IDashboard = new Dashboard({
         config: {
           ...originalDashboard.config,
-          title: `${originalDashboard.config.title} copy`, // Append 'copy' to the title
+          title: clonedTitle,
           createdAt: new Date(),
           modifiedAt: new Date()
         },

@@ -711,7 +711,33 @@ public filterGroups() {
    * @param dashboard The dashboard to clone
    */
   public cloneDashboard(dashboard: any): void {
-    this.dashboardService.cloneDashboard(dashboard._id).subscribe(
+    /* SDA CUSTOM */ const suggestedTitle = `${dashboard.config.title} copy`;
+    /* SDA CUSTOM */ this.dashboardService.checkTitle(suggestedTitle, dashboard.config.visible, dashboard.group).subscribe(
+      /* SDA CUSTOM */ checkResponse => {
+        /* SDA CUSTOM */ if (checkResponse?.exists) {
+          /* SDA CUSTOM */ Swal.fire({
+            /* SDA CUSTOM */ title: $localize`:@@DashboardTitleAlreadyExists:Nombre ya existente`,
+            /* SDA CUSTOM */ text: $localize`:@@DashboardTitleDuplicateContinuePrompt:Ya existe un informe con ese nombre. ¿Desea continuar?`,
+            /* SDA CUSTOM */ icon: 'warning',
+            /* SDA CUSTOM */ showCancelButton: true,
+            /* SDA CUSTOM */ confirmButtonText: $localize`:@@Continue:Continuar`,
+            /* SDA CUSTOM */ cancelButtonText: $localize`:@@DeleteGroupCancel:Cancelar`
+          /* SDA CUSTOM */ }).then(result => {
+            /* SDA CUSTOM */ if (result.isConfirmed) this.executeCloneDashboard(dashboard, suggestedTitle, true);
+          /* SDA CUSTOM */ });
+          /* SDA CUSTOM */ return;
+        /* SDA CUSTOM */ }
+
+        /* SDA CUSTOM */ this.executeCloneDashboard(dashboard, suggestedTitle, false);
+      /* SDA CUSTOM */ },
+      /* SDA CUSTOM */ () => {
+        /* SDA CUSTOM */ this.executeCloneDashboard(dashboard, suggestedTitle, false);
+      /* SDA CUSTOM */ }
+    /* SDA CUSTOM */ );
+  }
+
+  /* SDA CUSTOM */ private executeCloneDashboard(dashboard: any, title?: string, forceDuplicate?: boolean): void {
+    /* SDA CUSTOM */ this.dashboardService.cloneDashboard(dashboard._id, title, forceDuplicate).subscribe(
       response => {
         if (response.ok && response.dashboard) {
           // Create a deep copy of the original dashboard
@@ -778,7 +804,7 @@ public filterGroups() {
         );
       }
     );
-  }
+  /* SDA CUSTOM */ }
 
   /**
    * Copies the public URL of a shared dashboard to the clipboard
@@ -856,27 +882,64 @@ public filterGroups() {
     const newTitle = event.target.textContent.trim();
     this.isEditing = false;
     if (newTitle !== dashboard.config.title) {
-      dashboard.config.title = newTitle;
-      this.dashboardService
-        .updateDashboardSpecific(dashboard._id, {
-          data: {
-            key: "config.title",
-            newValue: newTitle
-          }
-        })
-        .subscribe(
-          () => {
-            this.alertService.addSuccess(
-              $localize`:@@DashboardTitleUpdated:Título del informe actualizado correctamente.`
-            );
-          },
-          error => {
-            this.alertService.addError(
-              $localize`:@@ErrorUpdatingDashboardTitle:Error al actualizar el título del informe.`
-            );
-            console.error("Error updating dashboard title:", error);
-          }
-        );
+      /* SDA CUSTOM */ const previousTitle = dashboard.config.title;
+      /* SDA CUSTOM */ this.dashboardService.checkTitle(newTitle, dashboard.config.visible, dashboard.group, dashboard._id).subscribe(
+        /* SDA CUSTOM */ checkResponse => {
+          /* SDA CUSTOM */ const proceedWithRename = (forceDuplicate: boolean) => {
+            /* SDA CUSTOM */ dashboard.config.title = newTitle;
+            this.dashboardService
+              .updateDashboardSpecific(dashboard._id, {
+                data: {
+                  key: "config.title",
+                  newValue: newTitle
+                }
+              }, forceDuplicate)
+              .subscribe(
+                () => {
+                  this.alertService.addSuccess(
+                    $localize`:@@DashboardTitleUpdated:Título del informe actualizado correctamente.`
+                  );
+                },
+                error => {
+                  this.alertService.addError(
+                    $localize`:@@ErrorUpdatingDashboardTitle:Error al actualizar el título del informe.`
+                  );
+                  console.error("Error updating dashboard title:", error);
+                  /* SDA CUSTOM */ dashboard.config.title = previousTitle;
+                  /* SDA CUSTOM */ event.target.textContent = previousTitle;
+                }
+              );
+          /* SDA CUSTOM */ };
+
+          /* SDA CUSTOM */ if (checkResponse?.exists) {
+            /* SDA CUSTOM */ Swal.fire({
+              /* SDA CUSTOM */ title: $localize`:@@DashboardTitleAlreadyExists:Nombre ya existente`,
+              /* SDA CUSTOM */ text: $localize`:@@DashboardTitleDuplicateContinuePrompt:Ya existe un informe con ese nombre. ¿Desea continuar?`,
+              /* SDA CUSTOM */ icon: 'warning',
+              /* SDA CUSTOM */ showCancelButton: true,
+              /* SDA CUSTOM */ confirmButtonText: $localize`:@@Continue:Continuar`,
+              /* SDA CUSTOM */ cancelButtonText: $localize`:@@DeleteGroupCancel:Cancelar`
+            /* SDA CUSTOM */ }).then(result => {
+              /* SDA CUSTOM */ if (result.isConfirmed) proceedWithRename(true);
+              /* SDA CUSTOM */ else {
+                /* SDA CUSTOM */ dashboard.config.title = previousTitle;
+                /* SDA CUSTOM */ event.target.textContent = previousTitle;
+              /* SDA CUSTOM */ }
+            /* SDA CUSTOM */ });
+            /* SDA CUSTOM */ return;
+          /* SDA CUSTOM */ }
+
+          /* SDA CUSTOM */ proceedWithRename(false);
+        /* SDA CUSTOM */ },
+        /* SDA CUSTOM */ error => {
+          /* SDA CUSTOM */ this.alertService.addError(
+            /* SDA CUSTOM */ $localize`:@@ErrorCheckingDashboardTitle:Error al comprobar el nombre del informe.`
+          /* SDA CUSTOM */ );
+          /* SDA CUSTOM */ console.error("Error checking duplicated dashboard title:", error);
+          /* SDA CUSTOM */ dashboard.config.title = previousTitle;
+          /* SDA CUSTOM */ event.target.textContent = previousTitle;
+        /* SDA CUSTOM */ }
+      /* SDA CUSTOM */ );
     }
   }
 
