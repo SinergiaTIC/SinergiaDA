@@ -1617,15 +1617,17 @@ export class EdaBlankPanelComponent implements OnInit {
     public loadColumns = (table: any) => PanelInteractionUtils.loadColumns(this, table);
 
 /**SDA CUSTOM  */   public removeColumn = (c: Column, list?: string) => {
-/**SDA CUSTOM  */       // Conditions to check if we can delete the column
-/**SDA CUSTOM  */       const isNotRootColumn = !!c?.joins?.length;
-/**SDA CUSTOM  */       const rootColumnElements = this.currentQuery.filter(col => !col?.joins?.length).length;
+/**SDA CUSTOM  */       // rootTableName To have the principal table => conditions to check if we can delete the column
+/**SDA CUSTOM  */       const rootTableName = this.rootTable?.table_name;
+/**SDA CUSTOM  */       // joins is reliable when interacting on the app; table_id comparison is the fallback after save and reload when joins may be empty
+/**SDA CUSTOM  */       const isNotRootColumn = !!c?.joins?.length || (!!rootTableName && c?.table_id !== rootTableName);
+/**SDA CUSTOM  */       const rootColumnElements = this.currentQuery.filter(col => !col?.joins?.length && (!rootTableName || col?.table_id === rootTableName)).length;
 /**SDA CUSTOM  */       const currentQueryLength = this.currentQuery.length;
-/**SDA CUSTOM  */
+
 /**SDA CUSTOM  */       // We just proceed if it is not the last column of the root table
 /**SDA CUSTOM  */       if (isNotRootColumn || rootColumnElements > 1 || currentQueryLength === 1) {
 /**SDA CUSTOM  */           // We check if when deleting a field it has a filter at selectedFilters
-                            if (this.selectedFilters.some((sf: any) => sf.filter_column === c.column_name)) {
+/**SDA CUSTOM  */           if (this.selectedFilters.some((sf: any) => sf.filter_column === c.column_name && sf.filter_table === c.table_id)) {
                                 if (this.sortedFilters.length !== 0) {
                                     this.alertService.addWarning($localize`:@@filterSettingsReboot:La configuración de filtros se ha reiniciado`);
                                 }
