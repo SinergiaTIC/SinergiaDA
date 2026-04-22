@@ -569,9 +569,16 @@ export class KpiEditDialogComponent extends EdaDialogAbstract {
         /* SDA CUSTOM */ if (!this.edaChart.chartOptions.scales.x.ticks) {
             /* SDA CUSTOM */ this.edaChart.chartOptions.scales.x.ticks = {};
         /* SDA CUSTOM */ }
+        /* SDA CUSTOM */ if (!this.edaChart.chartOptions.scales.x.grid) {
+            /* SDA CUSTOM */ this.edaChart.chartOptions.scales.x.grid = {};
+        /* SDA CUSTOM */ }
+        /* SDA CUSTOM */ if (!this.edaChart.chartOptions.scales.x.border) {
+            /* SDA CUSTOM */ this.edaChart.chartOptions.scales.x.border = {};
+        /* SDA CUSTOM */ }
 
-        /* SDA CUSTOM */ this.edaChart.chartOptions.scales.x.display = this.showXAxis;
-        /* SDA CUSTOM */ this.edaChart.chartOptions.scales.x.ticks.display = this.showXAxis && this.showXAxisLabels;
+        /* SDA CUSTOM */ this.edaChart.chartOptions.scales.x.display = this.showXAxis || this.showXAxisLabels;
+        /* SDA CUSTOM */ this.edaChart.chartOptions.scales.x.grid.drawBorder = this.showXAxis;
+        /* SDA CUSTOM */ this.edaChart.chartOptions.scales.x.ticks.display = this.showXAxisLabels;
         /* SDA CUSTOM */ this.edaChart.chartOptions.scales.x.ticks.maxTicksLimit = maxTicksLimit || undefined;
         /* SDA CUSTOM */ this.edaChart.chartOptions.scales.x.ticks.autoSkip = !useAll;
         /* SDA CUSTOM */ this.edaChart.chartOptions.scales.x.ticks.callback = this.buildXAxisTickCallback(
@@ -580,9 +587,6 @@ export class KpiEditDialogComponent extends EdaDialogAbstract {
             /* SDA CUSTOM */ this.xAxisLabelCount,
             /* SDA CUSTOM */ this.edaChart.chartLabels
         /* SDA CUSTOM */ );
-        /* SDA CUSTOM */ if (this.edaChart.chartOptions.scales.x.grid) {
-            /* SDA CUSTOM */ this.edaChart.chartOptions.scales.x.grid.display = this.showXAxis ? this.edaChart.chartOptions.scales.x.grid.display : false;
-        /* SDA CUSTOM */ }
     /* SDA CUSTOM */ }
 
     /* SDA CUSTOM */ private buildXAxisTickCallback(

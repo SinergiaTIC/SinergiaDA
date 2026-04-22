@@ -825,15 +825,15 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         /* SDA CUSTOM */ if (!chartOptions.scales.x.ticks) {
             /* SDA CUSTOM */ chartOptions.scales.x.ticks = {};
         /* SDA CUSTOM */ }
-
-        /* SDA CUSTOM */ chartOptions.scales.x.display = showAxis;
-        /* SDA CUSTOM */ chartOptions.scales.x.ticks.display = showAxis && showLabels;
+        /* SDA CUSTOM */ if (!chartOptions.scales.x.grid) {
+            /* SDA CUSTOM */ chartOptions.scales.x.grid = {};
+        /* SDA CUSTOM */ }
+        /* SDA CUSTOM */ chartOptions.scales.x.display = showAxis || showLabels;
+        /* SDA CUSTOM */ chartOptions.scales.x.grid.drawBorder = showAxis;
+        /* SDA CUSTOM */ chartOptions.scales.x.ticks.display = showLabels;
         /* SDA CUSTOM */ chartOptions.scales.x.ticks.maxTicksLimit = maxTicksLimit || undefined;
         /* SDA CUSTOM */ chartOptions.scales.x.ticks.autoSkip = !useAll;
         /* SDA CUSTOM */ chartOptions.scales.x.ticks.callback = this.buildKpiXAxisTickCallback(useAll, labelsLength, labelCount, chartLabels);
-        /* SDA CUSTOM */ if (chartOptions.scales.x.grid) {
-            /* SDA CUSTOM */ chartOptions.scales.x.grid.display = showAxis ? chartOptions.scales.x.grid.display : false;
-        /* SDA CUSTOM */ }
     /* SDA CUSTOM */ }
 
     /* SDA CUSTOM */ private buildKpiXAxisTickCallback(

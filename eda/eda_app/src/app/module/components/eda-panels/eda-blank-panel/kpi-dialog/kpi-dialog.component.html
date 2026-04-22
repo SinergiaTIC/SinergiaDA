@@ -117,19 +117,19 @@
                 <div class="col-12 chart-color-row chart-color-row--spaced">
                   <span i18n="@@xAxisLabelsLabel" class="chart-color-label">Mostrar etiquetas del eje X</span>
                   <span class="chart-color-controls">
-                    <p-inputSwitch [(ngModel)]="showXAxisLabels" (onChange)="applyXAxisSettings()" [disabled]="!showXAxis"></p-inputSwitch>
+                    <p-inputSwitch [(ngModel)]="showXAxisLabels" (onChange)="applyXAxisSettings()"></p-inputSwitch>
                   </span>
                 </div>
                 <div class="col-12 chart-color-row chart-color-row--spaced">
                   <span i18n="@@xAxisAllLabelsLabel" class="chart-color-label">Mostrar todas las etiquetas</span>
                   <span class="chart-color-controls">
-                    <p-inputSwitch [(ngModel)]="showAllXAxisLabels" (onChange)="toggleAllXAxisLabels()" [disabled]="!showXAxis || !showXAxisLabels"></p-inputSwitch>
+                    <p-inputSwitch [(ngModel)]="showAllXAxisLabels" (onChange)="toggleAllXAxisLabels()" [disabled]="!showXAxisLabels"></p-inputSwitch>
                   </span>
                 </div>
                 <div class="col-12 chart-color-row chart-color-row--spaced">
                   <span i18n="@@xAxisLabelCountLabel" class="chart-color-label">Máximo de etiquetas</span>
                   <span class="chart-color-controls">
-                    <input type="number" min="1" max="200" step="1" [(ngModel)]="xAxisLabelCount" pInputText class="chart-color-input" (input)="handleXAxisLabelCountInput(120)" [disabled]="!showXAxis || !showXAxisLabels || showAllXAxisLabels" />
+                    <input type="number" min="1" max="200" step="1" [(ngModel)]="xAxisLabelCount" pInputText class="chart-color-input" (input)="handleXAxisLabelCountInput(120)" [disabled]="!showXAxisLabels || showAllXAxisLabels" />
                   </span>
                 </div>
               </div>
