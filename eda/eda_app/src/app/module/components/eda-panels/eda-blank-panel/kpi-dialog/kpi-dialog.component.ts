@@ -535,6 +535,9 @@ export class KpiEditDialogComponent extends EdaDialogAbstract {
     /* SDA CUSTOM */     this.labelBackgroundColor = this.normalizeHexColor(this.labelBackgroundColor, '');
     /* SDA CUSTOM */     this.edaChart.chartOptions.plugins.datalabels.color = this.labelColor;
     /* SDA CUSTOM */     this.edaChart.chartOptions.plugins.datalabels.backgroundColor = this.labelBackgroundColor || null;
+    /* SDA CUSTOM */     if (this.panelChartConfig?.chartType === 'kpibar') {
+    /* SDA CUSTOM */         this.edaChart.chartOptions.plugins.datalabels.borderRadius = 4;
+    /* SDA CUSTOM */     }
     /* SDA CUSTOM */     this.syncKpiLiveConfig();
     /* SDA CUSTOM */     if (softPreview) {
     /* SDA CUSTOM */         this.schedulePreviewUpdate(debounceMs);
@@ -570,7 +573,7 @@ export class KpiEditDialogComponent extends EdaDialogAbstract {
         /* SDA CUSTOM */ this.edaChart.chartOptions.scales.x.display = this.showXAxis;
         /* SDA CUSTOM */ this.edaChart.chartOptions.scales.x.ticks.display = this.showXAxis && this.showXAxisLabels;
         /* SDA CUSTOM */ this.edaChart.chartOptions.scales.x.ticks.maxTicksLimit = maxTicksLimit || undefined;
-        /* SDA CUSTOM */ this.edaChart.chartOptions.scales.x.ticks.autoSkip = useAll;
+        /* SDA CUSTOM */ this.edaChart.chartOptions.scales.x.ticks.autoSkip = !useAll;
         /* SDA CUSTOM */ this.edaChart.chartOptions.scales.x.ticks.callback = this.buildXAxisTickCallback(
             /* SDA CUSTOM */ useAll,
             /* SDA CUSTOM */ labelsLength,
@@ -588,8 +591,16 @@ export class KpiEditDialogComponent extends EdaDialogAbstract {
         /* SDA CUSTOM */ labelCount: number,
         /* SDA CUSTOM */ chartLabels: any[]
     /* SDA CUSTOM */ ): ((value: any, index: number) => string) | undefined {
-        /* SDA CUSTOM */ if (useAll || labelsLength === 0 || !labelCount || labelCount <= 0) {
+        /* SDA CUSTOM */ if (labelsLength === 0) {
             /* SDA CUSTOM */ return undefined;
+        /* SDA CUSTOM */ }
+        /* SDA CUSTOM */ if (useAll || !labelCount || labelCount <= 0) {
+            /* SDA CUSTOM */ return (value, index) => {
+                /* SDA CUSTOM */ const label = Array.isArray(chartLabels)
+                    /* SDA CUSTOM */ ? (chartLabels[index] ?? chartLabels[value])
+                    /* SDA CUSTOM */ : value;
+                /* SDA CUSTOM */ return `${label ?? ''}`;
+            /* SDA CUSTOM */ };
         /* SDA CUSTOM */ }
         /* SDA CUSTOM */ const maxCount = Math.min(labelCount, labelsLength);
         /* SDA CUSTOM */ if (maxCount <= 1) {
