@@ -367,7 +367,7 @@ export class KpiEditDialogComponent extends EdaDialogAbstract {
         }
     }
 
-    /* SDA CUSTOM */ handleInputColor(event, debounceMs: number = 0) {
+    /* SDA CUSTOM */ handleInputColor(event, debounceMs: number = 0, softPreview: boolean = false) {
         /* SDA CUSTOM */ const isAreaBorderMode = this.showChartFillColor;
         if (this.edaChart.chartDataset) {
             const newDatasets = [];
@@ -415,10 +415,14 @@ export class KpiEditDialogComponent extends EdaDialogAbstract {
         }
 
         /* SDA CUSTOM */ this.syncKpiLiveConfig();
-        /* SDA CUSTOM */ this.schedulePreviewRefresh(false, debounceMs);
+        /* SDA CUSTOM */ if (softPreview) {
+            /* SDA CUSTOM */ this.schedulePreviewUpdate(debounceMs);
+        /* SDA CUSTOM */ } else {
+            /* SDA CUSTOM */ this.schedulePreviewRefresh(false, debounceMs);
+        /* SDA CUSTOM */ }
     /* SDA CUSTOM */ }
 
-    /* SDA CUSTOM */ applyKpiColor(debounceMs: number = 0) {
+    /* SDA CUSTOM */ applyKpiColor(debounceMs: number = 0, softPreview: boolean = false) {
         /* SDA CUSTOM */ if (!this.panelChartComponent?.componentRef?.instance?.inject) {
             /* SDA CUSTOM */ return;
         /* SDA CUSTOM */ }
@@ -430,7 +434,11 @@ export class KpiEditDialogComponent extends EdaDialogAbstract {
         /* SDA CUSTOM */ }
         this.panelChartComponent.componentRef.instance.inject.edaChart = this.edaChart;
         /* SDA CUSTOM */ this.syncKpiLiveConfig();
-        /* SDA CUSTOM */ this.schedulePreviewRefresh(false, debounceMs);
+        /* SDA CUSTOM */ if (softPreview) {
+            /* SDA CUSTOM */ this.schedulePreviewUpdate(debounceMs);
+        /* SDA CUSTOM */ } else {
+            /* SDA CUSTOM */ this.schedulePreviewRefresh(false, debounceMs);
+        /* SDA CUSTOM */ }
     /* SDA CUSTOM */ }
 
     /* SDA CUSTOM */ applyLineStyle(debounceMs: number = 0) {
@@ -487,12 +495,12 @@ export class KpiEditDialogComponent extends EdaDialogAbstract {
     /* SDA CUSTOM */     this.updateKpiChartLabels();
     /* SDA CUSTOM */ }
 
-    /* SDA CUSTOM */ setLabelColor(debounceMs: number = 0) {
-    /* SDA CUSTOM */     this.applyKpiLabelColor(debounceMs);
+    /* SDA CUSTOM */ setLabelColor(debounceMs: number = 0, softPreview: boolean = false) {
+    /* SDA CUSTOM */     this.applyKpiLabelColor(debounceMs, softPreview);
     /* SDA CUSTOM */ }
 
-    /* SDA CUSTOM */ setLabelBackgroundColor(debounceMs: number = 0) {
-    /* SDA CUSTOM */     this.applyKpiLabelColor(debounceMs);
+    /* SDA CUSTOM */ setLabelBackgroundColor(debounceMs: number = 0, softPreview: boolean = false) {
+    /* SDA CUSTOM */     this.applyKpiLabelColor(debounceMs, softPreview);
     /* SDA CUSTOM */ }
 
     /* SDA CUSTOM */ private updateKpiChartLabels() {
@@ -514,7 +522,7 @@ export class KpiEditDialogComponent extends EdaDialogAbstract {
     /* SDA CUSTOM */     this.refreshKpiPreview(true);
     /* SDA CUSTOM */ }
 
-    /* SDA CUSTOM */ private applyKpiLabelColor(debounceMs: number = 0): void {
+    /* SDA CUSTOM */ private applyKpiLabelColor(debounceMs: number = 0, softPreview: boolean = false): void {
     /* SDA CUSTOM */     if (!this.edaChart?.chartOptions) {
     /* SDA CUSTOM */         return;
     /* SDA CUSTOM */     }
@@ -528,7 +536,11 @@ export class KpiEditDialogComponent extends EdaDialogAbstract {
     /* SDA CUSTOM */     this.edaChart.chartOptions.plugins.datalabels.color = this.labelColor;
     /* SDA CUSTOM */     this.edaChart.chartOptions.plugins.datalabels.backgroundColor = this.labelBackgroundColor || null;
     /* SDA CUSTOM */     this.syncKpiLiveConfig();
-    /* SDA CUSTOM */     this.schedulePreviewRefresh(false, debounceMs);
+    /* SDA CUSTOM */     if (softPreview) {
+    /* SDA CUSTOM */         this.schedulePreviewUpdate(debounceMs);
+    /* SDA CUSTOM */     } else {
+    /* SDA CUSTOM */         this.schedulePreviewRefresh(false, debounceMs);
+    /* SDA CUSTOM */     }
     /* SDA CUSTOM */ }
 
     /* SDA CUSTOM */ private getKpiLabelColor(): string {
@@ -639,7 +651,7 @@ export class KpiEditDialogComponent extends EdaDialogAbstract {
     /* SDA CUSTOM */ }
 
     /* SDA CUSTOM */ // SDA CUSTOM - KPI chart line color handlers
-    /* SDA CUSTOM */ applyChartLineColor(debounceMs: number = 0) {
+    /* SDA CUSTOM */ applyChartLineColor(debounceMs: number = 0, softPreview: boolean = false) {
     /* SDA CUSTOM */     if (!this.showChartLineColor || !this.edaChart?.chartDataset) {
     /* SDA CUSTOM */         return;
     /* SDA CUSTOM */     }
@@ -659,7 +671,11 @@ export class KpiEditDialogComponent extends EdaDialogAbstract {
     /* SDA CUSTOM */         this.panelChartComponent.componentRef.instance.inject.edaChart = this.edaChart;
     /* SDA CUSTOM */     }
     /* SDA CUSTOM */     this.syncKpiLiveConfig();
-    /* SDA CUSTOM */     this.schedulePreviewRefresh(false, debounceMs);
+    /* SDA CUSTOM */     if (softPreview) {
+    /* SDA CUSTOM */         this.schedulePreviewUpdate(debounceMs);
+    /* SDA CUSTOM */     } else {
+    /* SDA CUSTOM */         this.schedulePreviewRefresh(false, debounceMs);
+    /* SDA CUSTOM */     }
     /* SDA CUSTOM */ }
 
     /* SDA CUSTOM */ private getKpiChartLineColor(): string {
@@ -670,7 +686,7 @@ export class KpiEditDialogComponent extends EdaDialogAbstract {
     /* SDA CUSTOM */ // END SDA CUSTOM
 
     /* SDA CUSTOM */ // SDA CUSTOM - KPI area fill color handlers
-    /* SDA CUSTOM */ applyChartFillColor(debounceMs: number = 0) {
+    /* SDA CUSTOM */ applyChartFillColor(debounceMs: number = 0, softPreview: boolean = false) {
     /* SDA CUSTOM */     if (!this.showChartFillColor || !this.edaChart?.chartDataset) {
     /* SDA CUSTOM */         return;
     /* SDA CUSTOM */     }
@@ -689,7 +705,11 @@ export class KpiEditDialogComponent extends EdaDialogAbstract {
     /* SDA CUSTOM */         this.panelChartComponent.componentRef.instance.inject.edaChart = this.edaChart;
     /* SDA CUSTOM */     }
     /* SDA CUSTOM */     this.syncKpiLiveConfig();
-    /* SDA CUSTOM */     this.schedulePreviewRefresh(false, debounceMs);
+    /* SDA CUSTOM */     if (softPreview) {
+    /* SDA CUSTOM */         this.schedulePreviewUpdate(debounceMs);
+    /* SDA CUSTOM */     } else {
+    /* SDA CUSTOM */         this.schedulePreviewRefresh(false, debounceMs);
+    /* SDA CUSTOM */     }
     /* SDA CUSTOM */ }
 
     /* SDA CUSTOM */ private getKpiChartFillColor(): string {
@@ -774,6 +794,30 @@ export class KpiEditDialogComponent extends EdaDialogAbstract {
     /* SDA CUSTOM */         this.refreshKpiPreview(forceRebuild);
     /* SDA CUSTOM */     }, debounceMs);
     /* SDA CUSTOM */ }
+
+    /* SDA CUSTOM */ // SDA CUSTOM - Soft preview update to keep color pickers opened while selecting
+    /* SDA CUSTOM */ private schedulePreviewUpdate(debounceMs: number = 0): void {
+    /* SDA CUSTOM */     const updateFromPanel = () => {
+    /* SDA CUSTOM */         if (!this.panelChartComponent?.componentRef?.instance) {
+    /* SDA CUSTOM */             return;
+    /* SDA CUSTOM */         }
+    /* SDA CUSTOM */         this.panelChartComponent.componentRef.instance.inject.edaChart = this.edaChart;
+    /* SDA CUSTOM */         this.panelChartComponent.updateComponent?.();
+    /* SDA CUSTOM */     };
+
+    /* SDA CUSTOM */     if (debounceMs <= 0) {
+    /* SDA CUSTOM */         updateFromPanel();
+    /* SDA CUSTOM */         return;
+    /* SDA CUSTOM */     }
+    /* SDA CUSTOM */     if (this.previewRefreshTimer) {
+    /* SDA CUSTOM */         clearTimeout(this.previewRefreshTimer);
+    /* SDA CUSTOM */     }
+    /* SDA CUSTOM */     this.previewRefreshTimer = setTimeout(() => {
+    /* SDA CUSTOM */         this.previewRefreshTimer = null;
+    /* SDA CUSTOM */         updateFromPanel();
+    /* SDA CUSTOM */     }, debounceMs);
+    /* SDA CUSTOM */ }
+    /* SDA CUSTOM */ // END SDA CUSTOM
     /* SDA CUSTOM */ // END SDA CUSTOM
 
     /* SDA CUSTOM */ // SDA CUSTOM - Normalize color values for dialog inputs

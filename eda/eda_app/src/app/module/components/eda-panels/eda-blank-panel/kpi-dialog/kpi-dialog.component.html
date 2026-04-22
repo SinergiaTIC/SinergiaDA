@@ -39,7 +39,7 @@
                   <span class="chart-color-controls">
                     <input type="text" [(ngModel)]="kpiColor" pInputText class="chart-color-input" (input)="applyKpiColor(120)" />
                     <span class="chart-color-picker">
-                      <p-colorPicker [(ngModel)]="kpiColor" appendTo="body" (onChange)="applyKpiColor()"></p-colorPicker>
+                      <p-colorPicker [(ngModel)]="kpiColor" appendTo="body" (onChange)="applyKpiColor(0, true)"></p-colorPicker>
                     </span>
                   </span>
                 </div>
@@ -50,7 +50,7 @@
                     <span class="chart-color-controls">
                       <input type="text" pInputText [(ngModel)]="serie.bg" class="chart-color-input" (input)="handleInputColor(serie, 120)" minlength="7" >
                       <span class="chart-color-picker">
-                        <p-colorPicker [(ngModel)]="serie.bg" (onChange)="handleInputColor(serie)" format="hex" appendTo="body"></p-colorPicker>
+                        <p-colorPicker [(ngModel)]="serie.bg" (onChange)="handleInputColor(serie, 0, true)" format="hex" appendTo="body"></p-colorPicker>
                       </span>
                     </span>
                   </div>
@@ -61,7 +61,7 @@
                   <span class="chart-color-controls">
                     <input type="text" pInputText [(ngModel)]="chartLineColor" class="chart-color-input" (input)="applyChartLineColor(120)" minlength="7" >
                     <span class="chart-color-picker">
-                      <p-colorPicker [(ngModel)]="chartLineColor" (onChange)="applyChartLineColor()" format="hex" appendTo="body"></p-colorPicker>
+                      <p-colorPicker [(ngModel)]="chartLineColor" (onChange)="applyChartLineColor(0, true)" format="hex" appendTo="body"></p-colorPicker>
                     </span>
                   </span>
                 </div>
@@ -72,7 +72,7 @@
                   <span class="chart-color-controls">
                     <input type="text" pInputText [(ngModel)]="chartFillColor" class="chart-color-input" (input)="applyChartFillColor(120)" minlength="7" >
                     <span class="chart-color-picker">
-                      <p-colorPicker [(ngModel)]="chartFillColor" (onChange)="applyChartFillColor()" format="hex" appendTo="body"></p-colorPicker>
+                      <p-colorPicker [(ngModel)]="chartFillColor" (onChange)="applyChartFillColor(0, true)" format="hex" appendTo="body"></p-colorPicker>
                     </span>
                   </span>
                 </div>
@@ -170,7 +170,7 @@
                   <span class="chart-color-controls">
                     <input type="text" pInputText [(ngModel)]="labelColor" class="chart-color-input" (input)="setLabelColor(120)" minlength="7" >
                     <span class="chart-color-picker">
-                      <p-colorPicker [(ngModel)]="labelColor" (onChange)="setLabelColor()" format="hex" appendTo="body"></p-colorPicker>
+                      <p-colorPicker [(ngModel)]="labelColor" (onChange)="setLabelColor(0, true)" format="hex" appendTo="body"></p-colorPicker>
                     </span>
                   </span>
                 </div>
@@ -179,7 +179,7 @@
                   <span class="chart-color-controls">
                     <input type="text" pInputText [(ngModel)]="labelBackgroundColor" class="chart-color-input" (input)="setLabelBackgroundColor(120)" minlength="7" >
                     <span class="chart-color-picker">
-                      <p-colorPicker [(ngModel)]="labelBackgroundColor" (onChange)="setLabelBackgroundColor()" format="hex" appendTo="body"></p-colorPicker>
+                      <p-colorPicker [(ngModel)]="labelBackgroundColor" (onChange)="setLabelBackgroundColor(0, true)" format="hex" appendTo="body"></p-colorPicker>
                     </span>
                   </span>
                 </div>
