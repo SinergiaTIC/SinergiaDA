@@ -49,7 +49,7 @@ export class UserController {
                                     Object.assign(user, userEda);
                                     user.password = ':)';
                                     token = await jwt.sign({ user }, SEED, { expiresIn: 14400 }); // 4 hours
-                                    insertServerLog(req, 'info', 'newLogin', body.email, 'login');
+                                    insertServerLog(req, 'info', 'newLogin', user.name.toString(), 'login');
                                     return res.status(200).json({ user, token: token, id: user._id });
 
                     } 
@@ -144,7 +144,7 @@ export class UserController {
                     user.password = ':)';
                     token = await jwt.sign({ user }, SEED, { expiresIn: 14400 }); // 4 hours
 
-                    insertServerLog(req, 'info', 'newLogin', body.email, 'login');
+                    insertServerLog(req, 'info', 'newLogin', user.name.toString(), 'login');
 
                     return res.status(200).json({ user, token: token, id: user._id });
                 
