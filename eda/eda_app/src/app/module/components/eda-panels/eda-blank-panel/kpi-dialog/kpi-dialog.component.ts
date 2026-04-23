@@ -580,7 +580,7 @@ export class KpiEditDialogComponent extends EdaDialogAbstract {
         /* SDA CUSTOM */ this.edaChart.chartOptions.scales.x.grid.drawBorder = this.showXAxis;
         /* SDA CUSTOM */ this.edaChart.chartOptions.scales.x.ticks.display = this.showXAxisLabels;
         /* SDA CUSTOM */ this.edaChart.chartOptions.scales.x.ticks.maxTicksLimit = maxTicksLimit || undefined;
-        /* SDA CUSTOM */ this.edaChart.chartOptions.scales.x.ticks.autoSkip = !useAll;
+        /* SDA CUSTOM */ this.edaChart.chartOptions.scales.x.ticks.autoSkip = false;
         /* SDA CUSTOM */ this.edaChart.chartOptions.scales.x.ticks.callback = this.buildXAxisTickCallback(
             /* SDA CUSTOM */ useAll,
             /* SDA CUSTOM */ labelsLength,

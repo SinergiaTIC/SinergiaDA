@@ -832,7 +832,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         /* SDA CUSTOM */ chartOptions.scales.x.grid.drawBorder = showAxis;
         /* SDA CUSTOM */ chartOptions.scales.x.ticks.display = showLabels;
         /* SDA CUSTOM */ chartOptions.scales.x.ticks.maxTicksLimit = maxTicksLimit || undefined;
-        /* SDA CUSTOM */ chartOptions.scales.x.ticks.autoSkip = !useAll;
+        /* SDA CUSTOM */ chartOptions.scales.x.ticks.autoSkip = false;
         /* SDA CUSTOM */ chartOptions.scales.x.ticks.callback = this.buildKpiXAxisTickCallback(useAll, labelsLength, labelCount, chartLabels);
     /* SDA CUSTOM */ }
 
