@@ -3162,6 +3162,11 @@
         <target>Seleccione un rango</target>
       </trans-unit>
 
+      <trans-unit id="DatePickerCustomDate">
+      <source>Seleccionar fecha</source>
+      <target>Seleccionar data</target>
+      </trans-unit>
+
       <trans-unit id="inputPuerto" datatype="html">
         <source>Puerto </source>
         <target>Puerto </target>

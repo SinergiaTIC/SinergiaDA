@@ -1,0 +1,12 @@
+
+.date-format-card {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    height: 100%;
+}
+
+.date-format-col {
+    flex: 1;
+    padding: 1rem;
+}

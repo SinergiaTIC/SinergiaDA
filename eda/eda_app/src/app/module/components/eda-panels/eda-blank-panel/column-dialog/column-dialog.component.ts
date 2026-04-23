@@ -91,6 +91,7 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
     public rangeDescriptionNumberError: string = $localize`:@@rangeDescriptionNumberError:El correcto orden de los límites del rango van de menor a mayor`;
     public rangeDescriptionCharacterError: string = $localize`:@@rangeDescriptionCharacterError:El último caracter del rango debe ser un número`;
 
+    /* SDA CUSTOM */ public displayDateFormat: boolean = false;
 
     constructor(
         private dashboardService: DashboardService,
@@ -961,5 +962,15 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
         if(inputElement.value=== '.' || inputElement.value===',' || inputElement.value===':') inputElement.value = '';
         this.rangeString = inputElement.value; // Se actualiza ngModel
     }
+
+    /**SDA CUSTOM  */ onOpenDateFormatDialog() {
+    /**SDA CUSTOM  */     this.displayDateFormat = true;
+    /**SDA CUSTOM  */     console.log('Desde Column-dialog open')
+    /**SDA CUSTOM  */ }
+    
+    /**SDA CUSTOM  */ onCloseDateFormatDialog() {
+    /**SDA CUSTOM  */     console.log('Desde Column-dialog close')
+    /**SDA CUSTOM  */     this.displayDateFormat = false;
+    /**SDA CUSTOM  */ }
 
 }

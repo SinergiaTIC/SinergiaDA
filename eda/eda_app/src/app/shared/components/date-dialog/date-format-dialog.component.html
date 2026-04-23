@@ -1,0 +1,79 @@
+<eda-dialog2
+    [display]="display"
+    header="Componente Fecha" 
+    i18n-label="@@dateFormatTitle"
+    width="72.81vw" height="45vh"
+    (apply)="onApplyDateFormatDialog()"
+    (close)="oncloseDateFormatDialog()"
+    >
+
+    <div content>
+        <div class="date-format-card">
+            <div class="date-format-col">
+                <h3>Selección de operador del filtro: </h3>
+                
+                <div class="">
+                    <span class="p-float-label">
+                        <p-dropdown 
+                            id="operatorTypes" 
+                            [options]="filter.types" 
+                            [(ngModel)]="filterTypeSelected" 
+                            optionLabel="label"
+                            [autoDisplayFirst]="false" 
+                            [style]="{'width': '100%'}" 
+                            [showClear]="true"
+                            (onChange)="handleFilterChange(filterTypeSelected)"
+                        >
+                        </p-dropdown>
+    
+                        <label i18n="@@tiposFiltrosLabel" for="types">
+                            Tipos de filtro
+                        </label>
+    
+                    </span>
+                </div>
+
+            </div>
+            
+            <div class="date-format-col">
+                <h3>Selección de fecha: </h3>
+
+                <div *ngIf="showDateFormatSelecter" class="">
+                    <span class="p-float-label">
+                        <p-dropdown 
+                            id="dateFormatSelection" 
+                            [options]="rangeDateFormat.types" 
+                            [(ngModel)]="dateFormatSelected" 
+                            optionLabel="label"
+                            [autoDisplayFirst]="false" 
+                            [style]="{'width': '100%'}" 
+                            [showClear]="true"
+                            [disabled]="!isDateFormatAvailable"
+                            (onChange)="handleDateFormatChange(dateFormatSelected)"
+                        >
+                        </p-dropdown>
+    
+                        <label i18n="@@tiposFiltrosLabel" for="types">
+                            Tipos de filtro
+                        </label>
+    
+                    </span>
+                </div>
+
+                <div *ngIf="showEdaDatePicker">
+                    <div class="date-picker-single">
+                        <eda-date-picker 
+                            (onDatesChanges)="processPickerEvent($event)" 
+                            [filterSelected]="filterSelected" 
+                            [selectionMode]="'range'"
+                            [showSelector]="false"
+                            >
+                        </eda-date-picker>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+</eda-dialog2>

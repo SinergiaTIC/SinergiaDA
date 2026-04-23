@@ -3008,7 +3008,10 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <source>Selecciona un rango</source>
 <target>Seleccioneu un rang</target>
 </trans-unit>
-
+<trans-unit id="DatePickerCustomDate">
+<source>Seleccionar fecha</source>
+<target>Seleccionar data</target>
+</trans-unit>
 <trans-unit id="inputPuerto" datatype="html">
 <source>Puerto  </source>
 <target>Port  </target>

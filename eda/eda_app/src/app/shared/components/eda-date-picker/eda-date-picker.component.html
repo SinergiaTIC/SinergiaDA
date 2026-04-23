@@ -1,7 +1,7 @@
 
 <!-- SDA CUSTOM --> <p-calendar class='eda-filter-multiselect' [locale]="locale" [(ngModel)]="rangeDates" dateFormat="dd.mm.yy" [selectionMode]="selectionMode" [readonlyInput]="true" [monthNavigator]="true" [yearNavigator]="true" yearRange="1984:2030"  [firstDayOfWeek]="firstDayOfWeek" [placeholder]="rangePlaceholder" (onClickOutside)="emitChanges()" (onClose)="emitChanges()" (onFocus)="activate()" (onSelect)="clearRange()" appendTo="body">
 						<p-footer>
-							<div class="col-10">
+<!-- SDA CUSTOM -->			<div *ngIf="showSelector" class="col-10">
 								<p-dropdown [options]="ranges" [(ngModel)]="selectedRange" [placeholder]="rangePlaceholder" (onChange)="getRange()"></p-dropdown>
 							</div>
 

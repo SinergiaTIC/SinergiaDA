@@ -17,6 +17,7 @@ export class EdaDatePickerComponent implements OnChanges {
 	@Input() inject: EdaDatePickerConfig;
 	@Input() autoRemove: boolean = false;
 	@Input() autoClear: boolean = false;
+	/**SDA CUSTOM  */@Input() showSelector: boolean = true;
 	/**SDA CUSTOM  */@Input() filterSelected: any = {};
 	/**SDA CUSTOM  */@Input() selectionMode: string = "range";
 	@Output() onDatesChanges = new EventEmitter<any>();

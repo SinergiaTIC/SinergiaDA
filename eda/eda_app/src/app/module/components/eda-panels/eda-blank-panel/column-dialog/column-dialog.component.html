@@ -95,6 +95,15 @@
                 </div>
 
                 <ng-container *ngIf="!display.between">
+                    
+                    <div class="ml-8">
+                        <p-button
+                            (onClick)="onOpenDateFormatDialog()"
+                        >
+                            Date Format
+                        </p-button>
+                    </div>
+
 
                     <div class="col-12 md:col-4">
 
@@ -489,3 +498,5 @@
         </div>
     </div>
 </eda-dialog2>
+
+<date-format-dialog *ngIf="displayDateFormat" (close)="onCloseDateFormatDialog()"></date-format-dialog>
