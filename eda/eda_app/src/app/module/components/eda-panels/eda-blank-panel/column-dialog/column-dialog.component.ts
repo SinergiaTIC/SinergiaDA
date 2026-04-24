@@ -963,14 +963,18 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
         this.rangeString = inputElement.value; // Se actualiza ngModel
     }
 
-    /**SDA CUSTOM  */ onOpenDateFormatDialog() {
-    /**SDA CUSTOM  */     this.displayDateFormat = true;
-    /**SDA CUSTOM  */     console.log('Desde Column-dialog open')
-    /**SDA CUSTOM  */ }
+    onOpenDateFormatDialog() {
+        this.displayDateFormat = true;
+        console.log('Desde Column-dialog open')
+    }
     
-    /**SDA CUSTOM  */ onCloseDateFormatDialog() {
-    /**SDA CUSTOM  */     console.log('Desde Column-dialog close')
-    /**SDA CUSTOM  */     this.displayDateFormat = false;
-    /**SDA CUSTOM  */ }
+    onCloseDateFormatDialog(event: any) {
+        this.displayDateFormat = false;
+        console.log('Desde Column-dialog close');
+
+
+        // Event for the actions of data format
+        console.log('event recibido dateFormatSet => ', event);
+    }
 
 }

@@ -108,7 +108,7 @@
                     <div class="col-12 md:col-4">
 
                         <ng-container *ngIf="!!display.calendar && !filter.switch">
-
+                            <h1>hey 2</h1>
 <!-- SDA CUSTOM -->                            <div class="date-picker-single">
 <!-- SDA CUSTOM -->                                <eda-date-picker (onDatesChanges)="processPickerEvent($event)" [filterSelected]="filterSelected" [selectionMode]="(filterSelected?.value === 'in' || filterSelected?.value === 'not_in') ? 'range' : 'single'">
 <!-- SDA CUSTOM -->                                </eda-date-picker>
@@ -185,6 +185,7 @@
                         <ng-container *ngIf="!!display.calendar && !filter.switch">
                             <div>
 <!-- SDA CUSTOM -->             <div class="date-picker-single">
+    <h1>hey 1</h1>
 <!-- SDA CUSTOM -->                 <eda-date-picker #myCalendar (onDatesChanges)="processPickerEvent($event)">
 <!-- SDA CUSTOM -->                 </eda-date-picker>
 <!-- SDA CUSTOM -->             </div>
@@ -499,4 +500,4 @@
     </div>
 </eda-dialog2>
 
-<date-format-dialog *ngIf="displayDateFormat" (close)="onCloseDateFormatDialog()"></date-format-dialog>
+<date-format-dialog *ngIf="displayDateFormat" (close)="onCloseDateFormatDialog($event)"></date-format-dialog>

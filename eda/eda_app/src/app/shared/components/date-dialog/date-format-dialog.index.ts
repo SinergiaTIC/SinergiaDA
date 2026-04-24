@@ -48,5 +48,5 @@ export const rangeDateFormats: Array<SelectItem> = [
         { label: $localize`:@@DatePickerNext120:Próximos 120 días`, value: 'next120' },
         { label: $localize`:@@DatePickerBeforeTodayIncluded:Todo hasta hoy`, value: 'beforeTodayIncluded' },
         // Custom date
-        { label: $localize`:@@DatePickerCustomDate:Seleccionar fecha`, value: 'CustomDate' },
+        { label: $localize`:@@DatePickerCustomDate:Seleccionar fecha`, value: 'customDate' },
     ];

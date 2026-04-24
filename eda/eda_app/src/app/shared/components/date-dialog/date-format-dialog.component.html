@@ -64,8 +64,32 @@
                     <div class="date-picker-single">
                         <eda-date-picker 
                             (onDatesChanges)="processPickerEvent($event)" 
-                            [filterSelected]="filterSelected" 
+                            [filterSelected]="filterTypeSelected" 
                             [selectionMode]="'range'"
+                            [showSelector]="false"
+                            >
+                        </eda-date-picker>
+                    </div>
+                </div>
+
+                <div *ngIf="showEdaDatePickerSingleSelection">
+                    <div class="date-picker-single">
+                        <eda-date-picker 
+                            (onDatesChanges)="processPickerEvent($event)" 
+                            [filterSelected]="filterTypeSelected" 
+                            [selectionMode]="'single'"
+                            [showSelector]="false"
+                            >
+                        </eda-date-picker>
+                    </div>
+                </div>
+
+                <div *ngIf="showEdaDatePickerMultipleSelection">
+                    <div class="date-picker-single">
+                        <eda-date-picker 
+                            (onDatesChanges)="processPickerEvent($event)" 
+                            [filterSelected]="filterTypeSelected" 
+                            [selectionMode]="'multiple'"
                             [showSelector]="false"
                             >
                         </eda-date-picker>
