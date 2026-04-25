@@ -47,6 +47,8 @@ export class DateFormatDialogComponent implements OnInit {
   public dateFormatSet: dataFormatSettings;
   public dateFormatCustomValue: any = {};
 
+  public isReadyForConfirmation: boolean = false;
+
   constructor(
     private chartUtils: ChartUtilsService,
   ) {
@@ -76,15 +78,25 @@ export class DateFormatDialogComponent implements OnInit {
       const dateValue = dynamic ? null : this.dateFormatCustomValue;
 
       this.dateFormatSet = { operator, dynamic, dynamicValue, dateValue }
-
       console.log('dateFormatSet => Generado: ', this.dateFormatSet);
 
-      this.close.emit(this.dateFormatSet);
+      this.close.emit({
+        dateFormatSet: this.dateFormatSet,
+        filterSelected: this.filterTypeSelected,
+      });
+
+      // restoring values
+      this.filterTypeSelected = null;
+      this.dateFormatSelected = null;
   }
 
   public oncloseDateFormatDialog() {
       console.log('Cancelando los cambios de fecha')
-      this.close.emit('Cancelledddddd');
+      this.close.emit(false);
+      
+      // restoring values
+      this.filterTypeSelected = null;
+      this.dateFormatSelected = null;
   }
 
 

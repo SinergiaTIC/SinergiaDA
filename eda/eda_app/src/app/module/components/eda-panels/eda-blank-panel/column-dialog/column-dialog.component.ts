@@ -975,6 +975,14 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
 
         // Event for the actions of data format
         console.log('event recibido dateFormatSet => ', event);
+
+        if(event) {
+            const {dateFormatSet, filterSelected}: any = event;
+            this.filterSelected = JSON.parse(JSON.stringify(filterSelected));
+            this.filterValue = JSON.parse(JSON.stringify(dateFormatSet.dateValue));
+            this.addFilter();
+        }
+
     }
 
 }
