@@ -31,6 +31,11 @@
                 </span>
 
             </div>
+
+<!-- SDA CUSTOM -->            <div *ngIf="selectedColumn?.column_type === 'date'" class="col-12 md:col-4" style="display:flex; align-items:center;">
+<!-- SDA CUSTOM -->                <p-button (onClick)="onOpenDateFormatDialog()" label="Date Format"></p-button>
+<!-- SDA CUSTOM -->            </div>
+
 <!-- SDA CUSTOM -->            <ng-container *ngIf="!!display.between && !!display.calendar && !filter.switch">
 <!-- SDA CUSTOM -->                <div class="col-12 md:col-4">
 <!-- SDA CUSTOM -->                    <div class="date-picker-single">
@@ -359,3 +364,6 @@
         </div>
     </div>
 </eda-dialog>
+
+<!-- SDA CUSTOM -->
+<date-format-dialog *ngIf="displayDateFormat" (close)="onCloseDateFormatDialog($event)"></date-format-dialog>

@@ -61,6 +61,8 @@ export class FilterDialogComponent extends EdaDialogAbstract {
     public aggregationsTypes: any[] = [];
     public aggregationType: any = null;
 
+    public displayDateFormat: boolean = false;
+
     // Tooltip
     public whereMessage: string = $localize`:@@whereMessage: Filtro sobre todos los registros`;
     public havingMessage: string = $localize`:@@havingMessage: Filtro sobre los resultados`;
@@ -403,6 +405,20 @@ export class FilterDialogComponent extends EdaDialogAbstract {
             /**SDA CUSTOM  */    }
             }
             this.display.filterButton = false;
+        }
+    }
+
+    onOpenDateFormatDialog() {
+        this.displayDateFormat = true;
+    }
+
+    onCloseDateFormatDialog(event: any) {
+        this.displayDateFormat = false;
+        if (event) {
+            const { dateFormatSet, filterSelected }: any = event;
+            this.filterSelected = JSON.parse(JSON.stringify(filterSelected));
+            this.filterValue = JSON.parse(JSON.stringify(dateFormatSet.dateValue));
+            this.addFilter();
         }
     }
 
