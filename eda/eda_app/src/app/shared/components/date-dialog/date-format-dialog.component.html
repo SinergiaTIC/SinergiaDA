@@ -1,8 +1,9 @@
 <eda-dialog2
     [display]="display"
-    header="Componente Fecha" 
+    header="Componente Fecha"
     i18n-label="@@dateFormatTitle"
     width="72.81vw" height="45vh"
+    [disableApply]="isReadyForConfirmation"
     (apply)="onApplyDateFormatDialog()"
     (close)="oncloseDateFormatDialog()"
     >

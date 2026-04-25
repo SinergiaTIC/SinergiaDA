@@ -47,7 +47,15 @@ export class DateFormatDialogComponent implements OnInit {
   public dateFormatSet: dataFormatSettings;
   public dateFormatCustomValue: any = {};
 
-  public isReadyForConfirmation: boolean = false;
+  public get isReadyForConfirmation(): boolean {
+    if (this.filterTypeSelected == null || this.dateFormatSelected == null) return true;
+    const noDateNeeded = ['not_null', 'not_null_nor_empty', 'null_or_empty'];
+    if (noDateNeeded.includes(this.filterTypeSelected.value)) return false;
+    if (this.dateFormatSelected.value === 'customDate') {
+      return !this.dateFormatCustomValue?.value1;
+    }
+    return false;
+  }
 
   constructor(
     private chartUtils: ChartUtilsService,
