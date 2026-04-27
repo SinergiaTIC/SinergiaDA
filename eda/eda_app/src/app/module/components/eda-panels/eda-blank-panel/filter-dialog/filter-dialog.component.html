@@ -11,7 +11,7 @@
 
         <div class="grid col-12 mt-2">
 
-            <div 
+<!-- SDA CUSTOM --><div *ngIf="selectedColumn?.column_type && selectedColumn.column_type !== 'date'"
                 [ngClass]="{ 
                             'md:col-4': (!display.between && !display.calendar ) || (!!display.calendar ),
                             'md:col-8': !(!display.between && !display.calendar) || (!!display.calendar) 
@@ -33,8 +33,10 @@
             </div>
 
 <!-- SDA CUSTOM -->            <div *ngIf="selectedColumn?.column_type === 'date'" class="col-12 md:col-4" style="display:flex; align-items:center;">
-<!-- SDA CUSTOM -->                <p-button (onClick)="onOpenDateFormatDialog()" label="Date Format"></p-button>
-<!-- SDA CUSTOM -->            </div>
+<!-- SDA CUSTOM -->               <p-button (onClick)="onOpenDateFormatDialog()" [style]="{'min-width': '200px', 'background': 'white', 'color': '#495057', 'border-color': '#ced4da', 'justify-content': 'center'}">
+<!-- SDA CUSTOM -->                     Date Format
+<!-- SDA CUSTOM -->                </p-button>
+ <!-- SDA CUSTOM -->            </div>
 
 <!-- SDA CUSTOM -->            <ng-container *ngIf="!!display.between && !!display.calendar && !filter.switch">
 <!-- SDA CUSTOM -->                <div class="col-12 md:col-4">
@@ -141,7 +143,7 @@
                     <ng-container>
                         <div class="col-12 md:col-4">
                             <div class="grid col-12">
-                                <div class="col-12 md:col-4">
+<!-- SDA CUSTOM -->             <div class="col-12 md:col-4" *ngIf="selectedColumn?.column_type !== 'date'">
                     
                                     <label i18n="@@optionsLabel" for="filter_options">
                                         Opciones
@@ -159,7 +161,7 @@
                     
                                 </div>
                     
-                                <div class="col-12 md:col-8" style="margin: 0, auto; display: flex; align-items: center; justify-content: center;">
+<!-- SDA CUSTOM -->             <div class="col-12 md:col-8" style="margin: 0, auto; display: flex; align-items: center; justify-content: center;" *ngIf="selectedColumn?.column_type !== 'date'">
                     
                                     <p-button (onClick)="addFilter()" [disabled]="display.filterButton"
                                         i18n-label="@@addFilterButton" label="Añadir filtro">
