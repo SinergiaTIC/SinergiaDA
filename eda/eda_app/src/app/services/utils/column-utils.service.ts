@@ -9,6 +9,7 @@ interface FilterOptions {
     column_type: string;
     type: string;
     selectedRange: string;
+    /* SDA CUSTOM */ dynamicValue?: string;
     valueListSource?: {};
     autorelation?: boolean;
     joins?: any[];
@@ -25,7 +26,7 @@ export class ColumnUtilsService {
 
     
     public setFilter(options: FilterOptions): object {
-        const { obj, table, column, column_type, type, selectedRange, valueListSource, autorelation, joins, filterBeforeGrouping, aggregation_type,  data,  computed_column, SQLexpression } = options;
+        /* SDA CUSTOM */ const { obj, table, column, column_type, type, selectedRange, dynamicValue, valueListSource, autorelation, joins, filterBeforeGrouping, aggregation_type, data, computed_column, SQLexpression } = options;
     
         const values = Object.keys(obj).map((key) => {
             if (!_.isNil(obj[key])) {
@@ -51,6 +52,7 @@ export class ColumnUtilsService {
             filter_elements: values,
             filter_codes: valuesIds,
             selectedRange: selectedRange,
+            /* SDA CUSTOM */ dynamicValue: dynamicValue || null,
             autorelation, 
             joins,
             filterBeforeGrouping,

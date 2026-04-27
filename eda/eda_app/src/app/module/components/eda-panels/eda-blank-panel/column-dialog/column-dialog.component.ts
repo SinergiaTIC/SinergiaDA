@@ -93,6 +93,7 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
     public rangeDescriptionCharacterError: string = $localize`:@@rangeDescriptionCharacterError:El último caracter del rango debe ser un número`;
 
     /* SDA CUSTOM */ public displayDateFormat: boolean = false;
+    /* SDA CUSTOM */ private _pendingDynamicValue: string = null;
 
     constructor(
         private dashboardService: DashboardService,
@@ -187,6 +188,7 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
         const column_type = this.selectedColumn.column_type;
         const type = this.filterSelected.value;
         const selectedRange = this.filter.range;
+        /* SDA CUSTOM */ const dynamicValue = this._pendingDynamicValue;
         const valueListSource = this.selectedColumn.valueListSource;
         const joins = this.selectedColumn.joins;
         const autorelation = this.selectedColumn.autorelation;
@@ -195,7 +197,6 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
         const data = this.dropDownFields;
         const computed_column = this.selectedColumn.computed_column;
         const SQLexpression = this.selectedColumn.SQLexpression;
-        
 
         const filter = this.columnUtils.setFilter({
             obj: this.filterValue,
@@ -204,6 +205,7 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
             column_type,
             type,
             selectedRange,
+            /* SDA CUSTOM */ dynamicValue,
             valueListSource,
             autorelation,
             joins,
@@ -1001,12 +1003,15 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
                 }
 
                 this.filter.range = dateFormatSet.dynamicValue;
+                this._pendingDynamicValue = dateFormatSet.dynamicLabel;
             } else {
                 this.filterValue = JSON.parse(JSON.stringify(dateFormatSet.dateValue));
                 this.filter.range = null;
+                this._pendingDynamicValue = null;
             }
 
             this.addFilter();
+            this._pendingDynamicValue = null;
         }
     }
 

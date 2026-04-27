@@ -63,6 +63,7 @@ export class FilterDialogComponent extends EdaDialogAbstract {
     public aggregationType: any = null;
 
     public displayDateFormat: boolean = false;
+    /* SDA CUSTOM */ private _pendingDynamicValue: string = null;
 
     // Tooltip
     public whereMessage: string = $localize`:@@whereMessage: Filtro sobre todos los registros`;
@@ -109,6 +110,7 @@ export class FilterDialogComponent extends EdaDialogAbstract {
         const column = this.selectedColumn.column_name;
         const type = this.filterSelected.value;
         const selectedRange = this.filter.range;
+        /* SDA CUSTOM */ const dynamicValue = this._pendingDynamicValue;
         const valueListSource = this.selectedColumn.valueListSource;
         const joins = this.selectedColumn.joins;
         const autorelation = this.selectedColumn.autorelation;
@@ -126,6 +128,7 @@ export class FilterDialogComponent extends EdaDialogAbstract {
             column_type,
             type,
             selectedRange,
+            /* SDA CUSTOM */ dynamicValue,
             valueListSource,
             autorelation,
             joins,
@@ -445,12 +448,15 @@ export class FilterDialogComponent extends EdaDialogAbstract {
                 }
 
                 this.filter.range = dateFormatSet.dynamicValue;
+                this._pendingDynamicValue = dateFormatSet.dynamicLabel;
             } else {
                 this.filterValue = JSON.parse(JSON.stringify(dateFormatSet.dateValue));
                 this.filter.range = null;
+                this._pendingDynamicValue = null;
             }
 
             this.addFilter();
+            this._pendingDynamicValue = null;
         }
     }
 

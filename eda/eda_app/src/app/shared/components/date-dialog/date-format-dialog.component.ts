@@ -10,6 +10,7 @@ interface dataFormatSettings {
   operator: string,
   dynamic: boolean,
   dynamicValue: string | null,
+  dynamicLabel: string | null,
   dateValue: any | null
 }
 
@@ -88,7 +89,8 @@ export class DateFormatDialogComponent implements OnInit {
       const dynamicValue = dynamic ? this.dateFormatSelected.value : null;
       const dateValue = dynamic ? null : this.dateFormatCustomValue;
 
-      this.dateFormatSet = { operator, dynamic, dynamicValue, dateValue }
+      const dynamicLabel = dynamic ? this.dateFormatSelected.value : null;
+      this.dateFormatSet = { operator, dynamic, dynamicValue, dynamicLabel, dateValue }
       console.log('dateFormatSet => Generado: ', this.dateFormatSet);
 
       this.close.emit({
