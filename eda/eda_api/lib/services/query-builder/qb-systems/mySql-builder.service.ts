@@ -437,12 +437,16 @@ export class MySqlBuilderService extends QueryBuilderService {
     // Recursive function for the necessary nesting according to the AND/OR filter graph.
     function cadenaRecursiva(item: any) {
       // recursive item
-      const { cols, rows, y, x, filter_table, filter_column, filter_type, filter_column_type, filter_elements, filter_codes, value, valueListSource, sqlOptional, computed_column, SQLexpression } = item;
+/* SDA CUSTOM */      const { cols, rows, y, x, filter_table, filter_column, filter_type, filter_column_type, filter_elements, filter_codes, value, valueListSource, sqlOptional, computed_column, SQLexpression, dynamicValue } = item;
 
-      ////////////////////////////////////////////////// filter_type ////////////////////////////////////////////////// 
+      ////////////////////////////////////////////////// filter_type //////////////////////////////////////////////////
       let filter_type_value = '';
-      if(filter_type === 'not_in'){
+      if(filter_type === 'not_in' && !dynamicValue){
         filter_type_value = 'not in';
+/* SDA CUSTOM */      } else if(filter_type === 'not_between' || (dynamicValue && filter_type === 'not_in')){
+/* SDA CUSTOM */        filter_type_value = 'not between';
+/* SDA CUSTOM */      } else if(dynamicValue && filter_type === 'in'){
+/* SDA CUSTOM */        filter_type_value = 'between';
       } else {
         if(filter_type === 'not_like') {
           filter_type_value = 'not like';
@@ -483,7 +487,7 @@ export class MySqlBuilderService extends QueryBuilderService {
 
           // Numeric type value
           if(filter_column_type === 'numeric'){
-            if(filter_type === 'between') {
+/* SDA CUSTOM */            if(filter_type === 'between' || filter_type === 'not_between' || (dynamicValue && (filter_type === 'in' || filter_type === 'not_in'))) {
               filter_elements_value = filter_elements_value + ` ${Number(filter_codes[0].value1[0])} and ${Number(filter_codes[1].value2[0])}`;
             } else {
               if(filter_type === 'in' || filter_type === 'not_in') {
@@ -496,7 +500,7 @@ export class MySqlBuilderService extends QueryBuilderService {
 
           // Date type value
           if(filter_column_type === 'date'){
-            if(filter_type === 'between'){
+/* SDA CUSTOM */            if(filter_type === 'between' || filter_type === 'not_between' || (dynamicValue && (filter_type === 'in' || filter_type === 'not_in'))){
               filter_elements_value = filter_elements_value + ` STR_TO_DATE(\'${filter_codes[0].value1[0]}\',\'%Y-%m-%d\')` + ' and ' + `STR_TO_DATE(\'${filter_codes[1].value2[0]} 23:59:59\',\'%Y-%m-%d %H:%i:%S\')`;
             } else {
               if(filter_type==='in' || filter_type==='not_in') {
@@ -1058,7 +1062,7 @@ export class MySqlBuilderService extends QueryBuilderService {
       column.valueListSource = filterObject.valueListSource;
       const colname=this.getFilterColname(column, filterObject.filter_codes?.length !== undefined  ,  filterObject.valueListSource !== undefined );
       
-      switch (this.setFilterType(filterObject.filter_type)) {
+/* SDA CUSTOM *//* SDA CUSTOM */      switch (this.setFilterType(filterObject.filter_type, filterObject.dynamicValue)) {
         case 0:
           if (filterObject.filter_type === '!=') { filterObject.filter_type = '<>' }
           if (filterObject.filter_type === 'like') {
@@ -1096,6 +1100,9 @@ export class MySqlBuilderService extends QueryBuilderService {
             }
           
         case 2:
+/* SDA CUSTOM */          if (filterObject.filter_type === 'not_between') { filterObject.filter_type = 'not between'; }
+/* SDA CUSTOM */          else if (filterObject.dynamicValue && filterObject.filter_type === 'in') { filterObject.filter_type = 'between'; }
+/* SDA CUSTOM */          else if (filterObject.dynamicValue && filterObject.filter_type === 'not_in') { filterObject.filter_type = 'not between'; }
             /** if i have the lovely code i use the code */
             if( filterObject.filter_codes?.length !== undefined  &&  filterObject.valueListSource !== undefined ){
                 return `${colname}  ${filterObject.filter_type} 
@@ -1245,7 +1252,7 @@ public getHavingColname(column: any){
     const  colname = this.getHavingColname(column) ;
     let colType = column.column_type;
     
-    switch (this.setFilterType(filterObject.filter_type)) {
+/* SDA CUSTOM */    switch (this.setFilterType(filterObject.filter_type, filterObject.dynamicValue)) {
       case 0:
         if (filterObject.filter_type === '!=') { filterObject.filter_type = '<>' }
         if (filterObject.filter_type === 'like') {
@@ -1260,6 +1267,9 @@ public getHavingColname(column: any){
         if (filterObject.filter_type === 'not_in') { filterObject.filter_type = 'not in' }
         return `${colname}  ${filterObject.filter_type} (${this.processFilter(filterObject.filter_elements[0].value1, colType)}) `;
       case 2:
+/* SDA CUSTOM */          if (filterObject.filter_type === 'not_between') { filterObject.filter_type = 'not between'; }
+/* SDA CUSTOM */          else if (filterObject.dynamicValue && filterObject.filter_type === 'in') { filterObject.filter_type = 'between'; }
+/* SDA CUSTOM */          else if (filterObject.dynamicValue && filterObject.filter_type === 'not_in') { filterObject.filter_type = 'not between'; }
         return `${colname}  ${filterObject.filter_type} 
                     ${this.processFilter(filterObject.filter_elements[0].value1, colType)} and ${this.processFilterEndRange(filterObject.filter_elements[1].value2, colType)}`;
       case 3:

@@ -437,17 +437,9 @@ export class FilterDialogComponent extends EdaDialogAbstract {
                     return `${ye}-${mo}-${da}`;
                 };
 
-                const isInFilter = filterSelected.value === 'in' || filterSelected.value === 'not_in';
-                if (isInFilter) {
-                    const allDates: string[] = [];
-                    const start = new Date(dates[0]);
-                    const end = new Date(dates[1]);
-                    start.setHours(0, 0, 0, 0);
-                    end.setHours(0, 0, 0, 0);
-                    for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
-                        allDates.push(toStr(new Date(d)));
-                    }
-                    this.filterValue = { value1: allDates };
+                if (filterSelected.value === 'in' || filterSelected.value === 'not_in') {
+                    /* SDA CUSTOM: store boundary dates; dynamicValue signals BETWEEN semantics to the backend */
+                    this.filterValue = { value1: toStr(dates[0]), value2: toStr(dates[1]) };
                 } else {
                     this.filterValue = { value1: toStr(dates[0]) };
                 }
