@@ -289,6 +289,11 @@ export class UserController {
                 if (err) {
                     return next(new HttpException(500, 'User not found with this id'));
                 }
+                /* SDA CUSTOM */ // SDA CUSTOM - Prevent null dereference when user id does not exist
+                /* SDA CUSTOM */ if (!user) {
+                /* SDA CUSTOM */     return next(new HttpException(400, 'User not found with this id'));
+                /* SDA CUSTOM */ }
+                /* SDA CUSTOM */ // END SDA CUSTOM
                 let options:QueryOptions = {};
                 Group.find({ _id: { $in: user.role } }, 'name role', options, (err, groups) => {
                     if (err) {
@@ -315,6 +320,11 @@ export class UserController {
                 if (err) {
                     return next(new HttpException(500, 'User not found with this id'));
                 }
+                /* SDA CUSTOM */ // SDA CUSTOM - Prevent null dereference when user id does not exist
+                /* SDA CUSTOM */ if (!user) {
+                /* SDA CUSTOM */     return next(new HttpException(400, 'User not found with this id'));
+                /* SDA CUSTOM */ }
+                /* SDA CUSTOM */ // END SDA CUSTOM
                 let options:QueryOptions = {};
                 Group.find({ _id: { $in: user.role } }, 'name role',options, (err, groups) => {
                     if (err) {
@@ -338,6 +348,11 @@ export class UserController {
                 if (err) {
                     return next(new HttpException(500, 'User not found with this id'));
                 }
+                /* SDA CUSTOM */ // SDA CUSTOM - Prevent null dereference when user id does not exist
+                /* SDA CUSTOM */ if (!user) {
+                /* SDA CUSTOM */     return next(new HttpException(400, 'User not found with this id'));
+                /* SDA CUSTOM */ }
+                /* SDA CUSTOM */ // END SDA CUSTOM
                 let options:QueryOptions = {};
                 Group.find({ _id: { $in: user.role } }, 'name role',options, (err, groups) => {
                     if (err) {
@@ -385,7 +400,7 @@ export class UserController {
                 /* SDA CUSTOM */ // SDA CUSTOM - Capture previous user values to audit sensitive changes
                 /* SDA CUSTOM */ const previousEmail = user.email;
                 /* SDA CUSTOM */ const previousName = user.name;
-                /* SDA CUSTOM */ const previousRoles = ((user.role || []) as any[]).map(role => role.toString()).sort();
+                /* SDA CUSTOM */ const previousRoles = ((user.role || []) as any[]).map(role => String(role)).filter(r => r).sort();
                 /* SDA CUSTOM */ const isPasswordUpdated = !!(body.password && body.password !== '');
                 /* SDA CUSTOM */ // END SDA CUSTOM
 
@@ -411,7 +426,9 @@ export class UserController {
                     await Group.updateMany({ _id: { $in: body.role } }, { $push: { users: req.params.id } }).exec();
 
                     /* SDA CUSTOM */ // SDA CUSTOM - Audit log for user update and role/password changes
-                    /* SDA CUSTOM */ const currentRoles = ((body.role || []) as any[]).map(role => role.toString()).sort();
+                    /* SDA CUSTOM */ const currentRoles = body.role !== undefined
+                    /* SDA CUSTOM */     ? ((body.role || []) as any[]).map(role => role && role._id ? String(role._id) : String(role)).filter(r => r).sort()
+                    /* SDA CUSTOM */     : previousRoles;
                     /* SDA CUSTOM */ insertServerLog(req, 'info', 'UserUpdated', req.user.name, buildUserLogType(userSaved && userSaved._id, userSaved && userSaved.email, userSaved && userSaved.name, `updated_from:${previousEmail}`));
                     /* SDA CUSTOM */ if (!areStringArraysEqual(previousRoles, currentRoles)) {
                     /* SDA CUSTOM */     insertServerLog(req, 'info', 'UserRolesChanged', req.user.name, buildUserLogType(userSaved && userSaved._id, userSaved && userSaved.email, userSaved && userSaved.name, `roles:${previousRoles.length}->${currentRoles.length}`));
