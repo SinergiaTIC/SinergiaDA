@@ -63,9 +63,10 @@
 
                 <div *ngIf="showEdaDatePicker">
                     <div class="date-picker-single">
-                        <eda-date-picker 
-                            (onDatesChanges)="processPickerEvent($event)" 
-                            [filterSelected]="filterTypeSelected" 
+                        <eda-date-picker
+                            [inject]="datePickerConfig"
+                            (onDatesChanges)="processPickerEvent($event)"
+                            [filterSelected]="filterTypeSelected"
                             [selectionMode]="'range'"
                             [showSelector]="false"
                             >
@@ -75,9 +76,10 @@
 
                 <div *ngIf="showEdaDatePickerSingleSelection">
                     <div class="date-picker-single">
-                        <eda-date-picker 
-                            (onDatesChanges)="processPickerEvent($event)" 
-                            [filterSelected]="filterTypeSelected" 
+                        <eda-date-picker
+                            [inject]="datePickerConfig"
+                            (onDatesChanges)="processPickerEvent($event)"
+                            [filterSelected]="filterTypeSelected"
                             [selectionMode]="'single'"
                             [showSelector]="false"
                             >
@@ -87,9 +89,10 @@
 
                 <div *ngIf="showEdaDatePickerMultipleSelection">
                     <div class="date-picker-single">
-                        <eda-date-picker 
-                            (onDatesChanges)="processPickerEvent($event)" 
-                            [filterSelected]="filterTypeSelected" 
+                        <eda-date-picker
+                            [inject]="datePickerConfig"
+                            (onDatesChanges)="processPickerEvent($event)"
+                            [filterSelected]="filterTypeSelected"
                             [selectionMode]="'multiple'"
                             [showSelector]="false"
                             >

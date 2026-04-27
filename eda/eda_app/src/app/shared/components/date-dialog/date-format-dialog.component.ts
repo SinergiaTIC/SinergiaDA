@@ -1,9 +1,10 @@
-import { Component, EventEmitter, OnInit, Output, Input  } from '@angular/core'; 
+import { Component, EventEmitter, OnInit, Output, Input  } from '@angular/core';
 import { rangeDateFormats } from './date-format-dialog.index'
 import { SelectItem } from 'primeng/api';
 
 // Services
 import { ChartUtilsService, FilterType } from '@eda/services/service.index';
+import { EdaDatePickerConfig } from '@eda/shared/components/eda-date-picker/datePickerConfig';
 
 interface dataFormatSettings {
   operator: string,
@@ -46,6 +47,8 @@ export class DateFormatDialogComponent implements OnInit {
 
   public dateFormatSet: dataFormatSettings;
   public dateFormatCustomValue: any = {};
+  
+  public datePickerConfig: EdaDatePickerConfig;
 
   public get isReadyForConfirmation(): boolean {
     if (this.filterTypeSelected == null || this.dateFormatSelected == null) return true;
@@ -192,6 +195,7 @@ export class DateFormatDialogComponent implements OnInit {
       this.dateFormatSelected = {label: 'Seleccionar fecha', value: 'customDate'}
       this.showDateFormatSelecter = false;
       this.showEdaDatePicker = true;
+      this.initDatePickerConfig();
       return;
     }
 
@@ -210,15 +214,36 @@ export class DateFormatDialogComponent implements OnInit {
     this.showEdaDatePickerMultipleSelection = false;
 
     if(['=', '!=', '>', '<', '>=', '<='].includes(this.filterTypeSelected.value) && dateFormatSelected.value === 'customDate') {
-      this.showEdaDatePickerSingleSelection = true
+      this.showEdaDatePickerSingleSelection = true;
+      this.initDatePickerConfig();
       return;
     }
 
     if(['in', 'not_in'].includes(this.filterTypeSelected.value) && dateFormatSelected.value === 'customDate') {
       this.showEdaDatePickerMultipleSelection = true;
+      this.initDatePickerConfig();
       return;
-    }    
+    }
 
+  }
+
+  private initDatePickerConfig(): void {
+    this.datePickerConfig = new EdaDatePickerConfig();
+    this.datePickerConfig.dateRange = [];
+    this.datePickerConfig.range = null;
+
+    if (this.dateFormatCustomValue?.value1) {
+      const v1 = this.dateFormatCustomValue.value1;
+      if (Array.isArray(v1)) {
+        // multiple selection: array of date strings
+        this.datePickerConfig.dateRange = v1.map((d: string) => new Date(d.replace(/-/g, '/')));
+      } else {
+        this.datePickerConfig.dateRange.push(new Date(v1.replace(/-/g, '/')));
+        if (this.dateFormatCustomValue.value2) {
+          this.datePickerConfig.dateRange.push(new Date(this.dateFormatCustomValue.value2.replace(/-/g, '/')));
+        }
+      }
+    }
   }
 
 

@@ -9,6 +9,7 @@ import {
     OrdenationType,
     ColumnUtilsService, FormatDates, QueryBuilderService
 } from '@eda/services/service.index';
+/* SDA CUSTOM */ import { DateUtils } from '@eda/services/utils/date-utils.service';
 import { Column, Query } from '@eda/models/model.index';
 import * as _ from 'lodash';
 
@@ -98,7 +99,8 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
         private chartUtils: ChartUtilsService,
         private columnUtils: ColumnUtilsService,
         private queryBuilder: QueryBuilderService,
-        private alertService: AlertService) {
+        private alertService: AlertService,
+        /* SDA CUSTOM */ private dateUtils: DateUtils) {
         super();
 
         this.filter.types = this.chartUtils.filterTypes;
@@ -970,19 +972,42 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
     
     onCloseDateFormatDialog(event: any) {
         this.displayDateFormat = false;
-        console.log('Desde Column-dialog close');
 
-
-        // Event for the actions of data format
-        console.log('event recibido dateFormatSet => ', event);
-
-        if(event) {
-            const {dateFormatSet, filterSelected}: any = event;
+        if (event) {
+            const { dateFormatSet, filterSelected }: any = event;
             this.filterSelected = JSON.parse(JSON.stringify(filterSelected));
-            this.filterValue = JSON.parse(JSON.stringify(dateFormatSet.dateValue));
+
+            if (dateFormatSet.dynamic) {
+                const dates = this.dateUtils.getRange(dateFormatSet.dynamicValue);
+                const dtf = new Intl.DateTimeFormat('en', { year: 'numeric', month: '2-digit', day: '2-digit' });
+                const toStr = (d: Date): string => {
+                    const [{ value: mo }, , { value: da }, , { value: ye }] = dtf.formatToParts(d);
+                    return `${ye}-${mo}-${da}`;
+                };
+
+                const isInFilter = filterSelected.value === 'in' || filterSelected.value === 'not_in';
+                if (isInFilter) {
+                    const allDates: string[] = [];
+                    const start = new Date(dates[0]);
+                    const end = new Date(dates[1]);
+                    start.setHours(0, 0, 0, 0);
+                    end.setHours(0, 0, 0, 0);
+                    for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
+                        allDates.push(toStr(new Date(d)));
+                    }
+                    this.filterValue = { value1: allDates };
+                } else {
+                    this.filterValue = { value1: toStr(dates[0]) };
+                }
+
+                this.filter.range = dateFormatSet.dynamicValue;
+            } else {
+                this.filterValue = JSON.parse(JSON.stringify(dateFormatSet.dateValue));
+                this.filter.range = null;
+            }
+
             this.addFilter();
         }
-
     }
 
 }
