@@ -74,7 +74,7 @@
 
             <div class="grid mt-2">
 
-                <div
+<!-- SDA CUSTOM --><div *ngIf="selectedColumn?.column_type && selectedColumn.column_type !== 'date'"
                     [ngClass]="{
                         'md:col-4': (!display.between && !display.calendar ) || (!!display.calendar ),
                         'md:col-8': !(!display.between && !display.calendar) || (!!display.calendar)
@@ -96,12 +96,10 @@
 
                 <ng-container *ngIf="!display.between">
                     
-                    <div class="ml-8">
-                        <p-button
-                            (onClick)="onOpenDateFormatDialog()"
-                        >
-                            Date Format
-                        </p-button>
+<!-- SDA CUSTOM --> <div class="ml-2" *ngIf="selectedColumn?.column_type === 'date'">
+<!-- SDA CUSTOM --> <p-button (onClick)="onOpenDateFormatDialog()" [style]="{'min-width': '200px', 'background': 'white', 'color': '#495057', 'border-color': '#ced4da', 'justify-content': 'center'}">
+<!-- SDA CUSTOM -->     Date Format
+<!-- SDA CUSTOM --> </p-button>
                     </div>
 
 
@@ -248,7 +246,7 @@
 
                         <div class="grid">
 
-                            <div class="col-1">
+<!-- SDA CUSTOM -->     <div class="col-1" *ngIf="selectedColumn?.column_type !== 'date'">
 
                                 <label i18n="@@optionsLabel" for="filter_options">
                                     Opciones
@@ -266,7 +264,7 @@
 
                             </div>
 
-                            <div class="col-3" style="margin-left: 25px; padding: 25px;">
+<!-- SDA CUSTOM -->         <div class="col-3" style="margin-left: 25px; padding: 25px;" *ngIf="selectedColumn?.column_type !== 'date'">
 
                                 <p-button (onClick)="addFilter()" [disabled]="display.filterButton"
                                     i18n-label="@@addFilterBtn" label="Añadir filtro"></p-button>
