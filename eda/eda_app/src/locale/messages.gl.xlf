@@ -21,14 +21,6 @@
         <source>Ingresar</source>
         <target>Ingresar</target>
       </trans-unit>
-      <trans-unit id="e369e13629132e32dcd958b82261059243f21d58">
-        <source>Contraseña</source>
-        <target>Contraseña</target>
-      </trans-unit>
-      <trans-unit id="d554461cfe5e5317e9257ceb0f9f96bec13c86c4">
-        <source>Confirma contraseña</source>
-        <target>Confirma contraseña</target>
-      </trans-unit>
       <trans-unit id="tituloPerfilUsuario">
         <source>Perfil del usuario</source>
         <target>Perfil del usuario</target>
@@ -2096,11 +2088,6 @@
       <trans-unit id="crearGrupoLabel">
         <source>Crear grupo</source>
         <target>Crear grupo</target>
-      </trans-unit>
-      <trans-unit id="0acf4e0f9350f920b529a38364281d337c54edfd">
-        <source>Cerrar</source>
-        <target>Cerrar</target>
-        <note priority="1" from="description">cerrarBtn</note>
       </trans-unit>
       <trans-unit id="inputx">
         <source>Centro del mapa (Latitud, Longitud)</source>
