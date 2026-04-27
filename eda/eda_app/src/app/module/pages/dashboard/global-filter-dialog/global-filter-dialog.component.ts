@@ -3,6 +3,8 @@ import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from "@angu
 import { EdaPanel } from "@eda/models/model.index";
 import { AlertService, DashboardService, FileUtiles, GlobalFiltersService, QueryBuilderService } from "@eda/services/service.index";
 import { EdaDatePickerConfig } from "@eda/shared/components/eda-date-picker/datePickerConfig";
+/* SDA CUSTOM */ import { DateUtils } from '@eda/services/utils/date-utils.service';
+/* SDA CUSTOM */ import { rangeDateFormats } from '@eda/shared/components/date-dialog/date-format-dialog.index';
 import * as _ from 'lodash';
 
 @Component({
@@ -58,12 +60,15 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
     public datePickerConfigs: any = {};
     public aliasValue: string = "";
 
+    /* SDA CUSTOM */ public displayDateFormat: boolean = false;
+
     constructor(
         private globalFilterService: GlobalFiltersService,
         private dashboardService: DashboardService,
         private queryBuilderService: QueryBuilderService,
         private alertService: AlertService,
         private fileUtils: FileUtiles,
+        /* SDA CUSTOM */ private dateUtils: DateUtils,
     ) { }
 
     private sortByTittle = (a: any, b: any) => {
@@ -535,6 +540,71 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
     public onClose(): void {
         this.display = false;
         this.close.emit(false);
+    }
+
+    onOpenDateFormatDialog() {
+        this.displayDateFormat = true;
+    }
+
+    /* SDA CUSTOM */
+    onCloseDateFormatDialog(event: any) {
+        this.displayDateFormat = false;
+        if (!event) return;
+
+        const { dateFormatSet, filterSelected } = event;
+        const dtf = new Intl.DateTimeFormat('en', { year: 'numeric', month: '2-digit', day: '2-digit' });
+        const toStr = (d: Date): string => {
+            const [{ value: mo }, , { value: da }, , { value: ye }] = dtf.formatToParts(d);
+            return `${ye}-${mo}-${da}`;
+        };
+
+        this.globalFilter.dateFilterType = filterSelected.value;
+
+        if (dateFormatSet.dynamic) {
+            const dates = this.dateUtils.getRange(dateFormatSet.dynamicValue);
+            this.globalFilter.selectedRange = dateFormatSet.dynamicValue;
+            this.globalFilter.dynamicValue = dateFormatSet.dynamicValue;
+
+            if (filterSelected.value === 'in' || filterSelected.value === 'not_in') {
+                this.globalFilter.selectedItems = [toStr(dates[0]), toStr(dates[1])];
+            } else {
+                this.globalFilter.selectedItems = [toStr(dates[0]), toStr(dates[1])];
+            }
+        } else {
+            this.globalFilter.selectedRange = null;
+            this.globalFilter.dynamicValue = null;
+
+            const noValueTypes = ['not_null', 'not_null_nor_empty', 'null_or_empty'];
+            if (noValueTypes.includes(filterSelected.value)) {
+                this.globalFilter.selectedItems = [];
+            } else {
+                const val = dateFormatSet.dateValue;
+                this.globalFilter.selectedItems = val.value2
+                    ? [val.value1, val.value2]
+                    : Array.isArray(val.value1) ? val.value1 : [val.value1];
+            }
+        }
+    }
+
+    /* SDA CUSTOM */
+    getRangeLabel(value: string): string {
+        return rangeDateFormats.find((r: any) => r.value === value)?.label || value;
+    }
+
+    /* SDA CUSTOM */
+    getDateFormatButtonLabel(): string {
+        if (this.globalFilter.dynamicValue) {
+            return this.getRangeLabel(this.globalFilter.dynamicValue);
+        }
+        const items = this.globalFilter.selectedItems;
+        if (!items || items.length === 0) return 'Date Format';
+        const fmt = (s: string) => {
+            if (!s) return '';
+            const [ye, mo, da] = s.split('-');
+            return `${da}-${mo}-${ye.slice(2)}`;
+        };
+        if (items.length === 1 || !items[1]) return fmt(items[0]);
+        return `${fmt(items[0])} - ${fmt(items[1])}`;
     }
 
 }

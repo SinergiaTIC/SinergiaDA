@@ -40,11 +40,11 @@
                                 >
                             </p-multiSelect>
 
-                            <eda-date-picker #myCalendar
-                                *ngIf="globalFilter.selectedColumn?.column_type === 'date'"
-                                [inject]="datePickerConfigs[selectedFilter?.id]"
-                                [autoClear]="true" (onDatesChanges)="processPickerEvent($event)">
-                            </eda-date-picker>
+<!-- SDA CUSTOM -->                            <!-- SDA CUSTOM: date format dialog button, only for date columns -->
+<!-- SDA CUSTOM -->                            <div *ngIf="globalFilter.selectedColumn?.column_type === 'date'" class="ml-8">
+<!-- SDA CUSTOM -->                                <p-button (onClick)="onOpenDateFormatDialog()" [label]="getDateFormatButtonLabel()"></p-button>
+<!-- SDA CUSTOM -->                            </div>
+<!-- SDA CUSTOM -->                            
                         </div>
                     </div>
                 </p-card>
@@ -148,3 +148,6 @@
         </div>
     </div>
 </eda-dialog2>
+
+<!-- SDA CUSTOM -->
+<date-format-dialog *ngIf="displayDateFormat" (close)="onCloseDateFormatDialog($event)"></date-format-dialog>
