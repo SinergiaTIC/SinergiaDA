@@ -10,3 +10,22 @@
     flex: 1;
     padding: 1rem;
 }
+
+.date-picker-single {
+    width: 100%;
+}
+
+.date-picker-single eda-date-picker {
+    display: block;
+    width: 100%;
+}
+
+.date-picker-single ::ng-deep p-calendar,
+.date-picker-single ::ng-deep .ui-calendar,
+.date-picker-single ::ng-deep .p-calendar {
+    width: 100% !important;
+}
+
+.date-picker-single ::ng-deep p-calendar input {
+    width: 100% !important;
+}
