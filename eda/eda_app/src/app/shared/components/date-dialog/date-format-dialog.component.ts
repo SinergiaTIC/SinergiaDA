@@ -67,20 +67,15 @@ export class DateFormatDialogComponent implements OnInit {
 
     // Operators for date type
     this.filter.types = this.chartUtils.filterTypes.filter((ft: any) => ft.value !== 'like' && ft.value !== 'not_like');
-    console.log('filter.types: ', this.filter);
-    console.log('filterTypeSelected: ', this.filterTypeSelected);
-    
+
     // All the date formats
     this.rangeDateFormat.types = [...rangeDateFormats];
-    console.log('dateFormatSelected: ', this.dateFormatSelected);
   }
 
   ngOnInit(): void {
   }
   
   public onApplyDateFormatDialog() {
-      console.log('Aplicando los cambios de fecha');
-      console.log('dateFormatSelected: ', this.dateFormatSelected);
 
 
       // Preparing the dateFormatSet
@@ -91,7 +86,6 @@ export class DateFormatDialogComponent implements OnInit {
 
       const dynamicLabel = dynamic ? this.dateFormatSelected.value : null;
       this.dateFormatSet = { operator, dynamic, dynamicValue, dynamicLabel, dateValue }
-      console.log('dateFormatSet => Generado: ', this.dateFormatSet);
 
       this.close.emit({
         dateFormatSet: this.dateFormatSet,
@@ -104,7 +98,6 @@ export class DateFormatDialogComponent implements OnInit {
   }
 
   public oncloseDateFormatDialog() {
-      console.log('Cancelando los cambios de fecha')
       this.close.emit(false);
       
       // restoring values
@@ -149,8 +142,6 @@ export class DateFormatDialogComponent implements OnInit {
       }
     }
 
-    console.log('filterTypeSelected --- filterTypeSelected => ', this.filterTypeSelected)
-    console.log('filterValue --- filterValue => ', filterValue)
     // take the value of the new object
     this.dateFormatCustomValue = JSON.parse(JSON.stringify(filterValue));
   }
@@ -161,7 +152,6 @@ export class DateFormatDialogComponent implements OnInit {
 
   public handleFilterChange(filterTypeSelected: FilterType) {
 
-    console.log('filterTypeSelected ==> : ', filterTypeSelected);
     this.showDateFormatSelecter = true;
     this.showEdaDatePicker = false;
     this.showEdaDatePickerSingleSelection = false;
@@ -177,9 +167,6 @@ export class DateFormatDialogComponent implements OnInit {
       return
     }
     
-    console.log('isDateFormatAvailable: ', this.isDateFormatAvailable);
-
-    ////////////////////////////////// Selection control //////////////////////////////////
     if(['=', '!=', '>', '<', '>=', '<='].includes(filterTypeSelected.value)) {
       this.dateFormatSelected = null;
       this.rangeDateFormat.types = rangeDateFormats.filter((ft: any, index: number) => index<5);
@@ -193,7 +180,7 @@ export class DateFormatDialogComponent implements OnInit {
       return;
     }
 
-    if(['between'].includes(filterTypeSelected.value)) {
+    if(['between', 'not_between'].includes(filterTypeSelected.value)) {
       this.dateFormatSelected = {label: 'Seleccionar fecha', value: 'customDate'}
       this.showDateFormatSelecter = false;
       this.showEdaDatePicker = true;
@@ -201,19 +188,19 @@ export class DateFormatDialogComponent implements OnInit {
       return;
     }
 
-    if(['not_null',  'not_null_nor_empty', 'null_or_empty'].includes(filterTypeSelected.value)) {
+    if(['not_null', 'not_null_nor_empty', 'null_or_empty'].includes(filterTypeSelected.value)) {
       this.dateFormatSelected = {label: 'Seleccionar fecha', value: 'customDate'}
       this.showDateFormatSelecter = false;
       return;
     }
-    
+
   }
 
   public handleDateFormatChange(dateFormatSelected: any) {
-    console.log('this.filterTypeSelected ==> ', this.filterTypeSelected);
-    console.log('dateFormatSelected ==> ', dateFormatSelected);
     this.showEdaDatePickerSingleSelection = false;
     this.showEdaDatePickerMultipleSelection = false;
+
+    if (!dateFormatSelected) return;
 
     if(['=', '!=', '>', '<', '>=', '<='].includes(this.filterTypeSelected.value) && dateFormatSelected.value === 'customDate') {
       this.showEdaDatePickerSingleSelection = true;
