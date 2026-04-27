@@ -18,6 +18,7 @@ import { EdaChartComponent } from '@eda/components/component.index';
 import { EdaFilterAndOrComponent } from '../../eda-filter-and-or/eda-filter-and-or.component';
 import { PanelChart } from './panel-charts/panel-chart';
 import * as _ from 'lodash';
+/* SDA CUSTOM */ import { rangeDateFormats } from '@eda/shared/components/date-dialog/date-format-dialog.index';
 import { ChartConfig } from './panel-charts/chart-configuration-models/chart-config';
 import { ChartJsConfig } from './panel-charts/chart-configuration-models/chart-js-config';
 import { EdaInputText } from '@eda/shared/components/eda-input/eda-input-text';
@@ -1769,7 +1770,11 @@ export class EdaBlankPanelComponent implements OnInit {
 
             let valueStr = '';
 
-            if (values) {
+            /* SDA CUSTOM: if dynamicValue is set, show the human-readable label instead of resolved dates */
+/* SDA CUSTOM  */            if (filter.dynamicValue) {
+/* SDA CUSTOM  */                const label = rangeDateFormats.find((r: any) => r.value === filter.dynamicValue)?.label || filter.dynamicValue;
+/* SDA CUSTOM  */                valueStr = `"${label}"`;
+/* SDA CUSTOM  */            } else if (values) {
                 if (values.length == 1 && !['in', 'not_in'].includes(filter.filter_type)) {
                     valueStr = `"${values[0]}"`;
                 }  else if (values.length > 1 || ['in', 'not_in'].includes(filter.filter_type)) {
