@@ -279,7 +279,7 @@
       </trans-unit>
       <trans-unit id="LinkDashboardDbFilter">
         <source>Informe a vincular</source>
-        <target>Dashbaord to link</target>
+        <target>Dashboard to link</target>
       </trans-unit>
       <trans-unit id="LinkDashboardSelectedDashboard">
         <source>Campo del informe</source>
