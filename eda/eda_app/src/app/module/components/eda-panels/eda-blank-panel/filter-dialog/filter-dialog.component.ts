@@ -10,6 +10,7 @@ import {
     FilterType, QueryBuilderService,
 } from '@eda/services/service.index';
 /* SDA CUSTOM */ import { DateUtils } from '@eda/services/utils/date-utils.service';
+/* SDA CUSTOM */ import { rangeDateFormats } from '@eda/shared/components/date-dialog/date-format-dialog.index';
 import * as _ from 'lodash';
 
 import { aggTypes } from 'app/config/aggretation-types';
@@ -224,6 +225,10 @@ export class FilterDialogComponent extends EdaDialogAbstract {
     getAggName(value: string) {
         return aggTypes.filter(agg => agg.value === value)[0].label;
     }
+
+    /* SDA CUSTOM */ getRangeLabel(value: string): string {
+    /* SDA CUSTOM */    return rangeDateFormats.find(r => r.value === value)?.label || value;
+    /* SDA CUSTOM */ }
 
     getAggregationText(value: any) {
         if(!value.aggregation_type){

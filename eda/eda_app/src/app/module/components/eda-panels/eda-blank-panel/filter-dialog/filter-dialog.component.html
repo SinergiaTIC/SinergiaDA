@@ -263,17 +263,17 @@
                                                 <b class="mr-2">
                                                     * {{ controller.params.selectedColumn.display_name.default }}
                                                     {{ filtre.filter_type }}
-                                                    "{{ filtre.filter_elements[0].value1 }}" 
+                                                    <!-- SDA CUSTOM --> "{{ filtre.dynamicValue ? getRangeLabel(filtre.dynamicValue) : filtre.filter_elements[0].value1 }}"
                                                 </b> <span [pTooltip]="filtre.filterBeforeGrouping ? whereMessage : havingMessage"  tooltipPosition="left"><b>[ {{filtre.filterBeforeGrouping ? whereMessage : havingMessage}} ]  - <span i18n="@@AggregationText">Agregación</span>: {{getAggregationText(filtre)}} &nbsp;</b></span>
-                    
+
                                                 <i class="ui-dropdown-clear-icon pi pi-times pointer" (click)="removeFilter(filtre)"></i>
                                             </p>
-                    
+
                                             <p *ngIf="filtre.filter_elements.length === 2" class="d-flex align-items-center">
                                                 <b class="mr-2">
                                                     * {{ controller.params.selectedColumn.display_name.default }}
                                                     {{ getFilterText(filtre) }}
-                                                    "{{ filtre.filter_elements[0].value1}}" Y "{{ filtre.filter_elements[1].value2 }}"
+                                                    <!-- SDA CUSTOM --> "{{ filtre.dynamicValue ? getRangeLabel(filtre.dynamicValue) : filtre.filter_elements[0].value1 }}"<ng-container *ngIf="!filtre.dynamicValue"> Y "{{ filtre.filter_elements[1].value2 }}"</ng-container>
                                                 </b> <span [pTooltip]="filtre.filterBeforeGrouping ? whereMessage : havingMessage"  tooltipPosition="left"><b>[ {{filtre.filterBeforeGrouping ? whereMessage : havingMessage}} ]  - <span i18n="@@AggregationText">Agregación</span>: {{getAggregationText(filtre)}} &nbsp;</b></span>
                     
                                                 <i class="ui-dropdown-clear-icon pi pi-times pointer" (click)="removeFilter(filtre)"></i>
