@@ -121,7 +121,9 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
 
     public styles : DashboardStyles;
 
-    public filtrar: string = $localize`:@@filterButtonDashboard:Filtrar`;
+    // SDA CUSTOM - Replace eliminated duplicate ID filterButtonDashboard with canonical filtrarH4
+/* SDA CUSTOM */    public filtrar: string = $localize`:@@filtrarH4:Filtrar`;
+    // END SDA CUSTOM
     public addTagString: string = $localize`:@@addTag:AÑADIR ETIQUETA`;
     public Seconds_to_refresh = $localize`:@@seconds_to_refresh:Intervalo de recarga`;
     public canIeditTooltip = $localize`:@@canIeditTooltip:Si esta opción está seleccionada sólo el propietario del informe y los administradores podrán guardar los cambios`;
@@ -1218,7 +1220,9 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
       confirmButtonColor: "#3085d6",
       cancelButtonColor: "#d33",
       confirmButtonText: $localize`:@@ConfirmDeleteModel:Si, ¡Eliminalo!`,
-      cancelButtonText: $localize`:@@DeleteGroupCancel:Cancelar`,
+    // SDA CUSTOM - Replace eliminated duplicate ID DeleteGroupCancel with canonical cancelarButton
+/* SDA CUSTOM */      cancelButtonText: $localize`:@@cancelarButton:Cancelar`,
+    // END SDA CUSTOM
     }).then(async (borrado) => {
       if (borrado.value) {
         try {
@@ -1291,7 +1295,9 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     public onAddWidget(): void {
         let panel = new EdaPanel({
             id: this.fileUtiles.generateUUID(),
-            title: $localize`:@@newPanelTitle2:Nuevo Panel`,
+            // SDA CUSTOM - Replace eliminated duplicate ID newPanelTitle2 with canonical newPanelTitle
+/* SDA CUSTOM */            title: $localize`:@@newPanelTitle:Nuevo Panel`,
+            // END SDA CUSTOM
             type: EdaPanelType.BLANK,
             w: 20,
             h: 10,

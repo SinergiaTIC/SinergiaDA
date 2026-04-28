@@ -9,10 +9,6 @@
         <source>Usuario</source>
         <target>Usuari</target>
       </trans-unit>
-      <trans-unit id="placeholderInputPassword">
-        <source>Contraseña</source>
-        <target>Contrasenya</target>
-      </trans-unit>
       <trans-unit id="spanRememberme">
         <source>Recuérdame</source>
         <target>Recorda'm</target>
@@ -97,10 +93,6 @@
         <source>ROLE</source>
         <target>ROL</target>
       </trans-unit>
-      <trans-unit id="newPassPlaceholderProfile">
-        <source>Repite la contraseña</source>
-        <target>Repetiu la contrasenya</target>
-      </trans-unit>
       <trans-unit id="direccionMail">
         <source>Dirección Email</source>
         <target>Adreça de correu electrònic</target>
@@ -108,10 +100,6 @@
       <trans-unit id="passwordLogin">
         <source>Contraseña</source>
         <target>Contrasenya</target>
-      </trans-unit>
-      <trans-unit id="newPassPlaceholderUsers">
-        <source>Repite la contraseña</source>
-        <target>Repetiu la contrasenya</target>
       </trans-unit>
       <trans-unit id="UserDeletedOk">
         <source>El usuario ha sido eliminado correctamente</source>
@@ -129,10 +117,6 @@
         <source>Error al registrarse</source>
         <target>Error en registrar-se</target>
       </trans-unit>
-      <trans-unit id="userDetailHeader">
-        <source>USUARIO</source>
-        <target>USUARI</target>
-      </trans-unit>
       <trans-unit id="userDetailSaveButton">
         <source>GUARDAR</source>
         <target>DESA</target>
@@ -144,10 +128,6 @@
       <trans-unit id="PasswordsNotEqual">
         <source>Las contraseñas no coinciden</source>
         <target>Les contrasenyes no coincideixen</target>
-      </trans-unit>
-      <trans-unit id="CreatedUser">
-        <source>Usuario creado</source>
-        <target>Usuari creat</target>
       </trans-unit>
       <trans-unit id="fileNotPicture">
         <source>El archivo seleccionado no es una imagen</source>
@@ -433,10 +413,6 @@
         <source>RECARGAR INFORME</source>
         <target>RECARREGA L'INFORME</target>
       </trans-unit>
-      <trans-unit id="opcionGuardar">
-        <source>GUARDAR</source>
-        <target>DESA</target>
-      </trans-unit>
       <trans-unit id="loading">
         <source>Cargando panel de control...</source>
         <target>S'està carregant l'informe...</target>
@@ -462,10 +438,6 @@
         <target>Duplica el panell</target>
       </trans-unit>
       <trans-unit id="newPanelTitle">
-        <source>Nuevo Panel</source>
-        <target>Nou panell</target>
-      </trans-unit>
-      <trans-unit id="newPanelTitle2">
         <source>Nuevo Panel</source>
         <target>Nou panell</target>
       </trans-unit>
@@ -512,10 +484,6 @@
       <trans-unit id="columnsTooltip">
         <source>Elige cuantas columnas quieres mostrar</source>
         <target>Trieu quantes columnes voleu mostrar</target>
-      </trans-unit>
-      <trans-unit id="panelTitleEdit">
-        <source>Título del panel</source>
-        <target>Títol del panell</target>
       </trans-unit>
       <trans-unit id="panelContentEdit">
         <source>Contenido del panel</source>
@@ -655,10 +623,6 @@
       <trans-unit id="chartInfo12">
         <source>Es necesario un campo vinculado a un archivo GeoJson y un campo de tipo numérico.</source>
         <target>És necessari un camp vinculat a un arxiu GeoJson i un camp de tipus numèric.</target>
-      </trans-unit>
-      <trans-unit id="chartInfo13">
-        <source>Los datos seleccionados no permiten utilizar este gráfico.</source>
-        <target>Les dades seleccionades no permeten utilitzar aquest gràfic.</target>
       </trans-unit>
       <trans-unit id="chartInfoBubble">
         <source>Un gráfico de burbujas necesita una categoría y una serie numérica.</source>
@@ -878,14 +842,6 @@
         <source>Tenemos un filtro en el informe para el campo 'office_id' de la tabla OFFICES</source>
         <target>Hi ha un filtre a l'informe pel camp 'office_id' de la taula OFFICES</target>
       </trans-unit>
-      <trans-unit id="indicaciones15">
-        <source>Consulta sin filtros vinculados</source>
-        <target>Consulta sense filtres vinculats</target>
-      </trans-unit>
-      <trans-unit id="indicaciones16">
-        <source>Consulta con filtros vinculados</source>
-        <target>Consulta amb filtres vinculats</target>
-      </trans-unit>
       <trans-unit id="vistaPrevia">
         <source>VISTA PREVIA</source>
         <target>VISTA PRÈVIA</target>
@@ -901,10 +857,6 @@
       <trans-unit id="EditSQLQuery">
         <source>EDITAR CONSULTA SQL</source>
         <target>EDITA LA CONSULTA SQL</target>
-      </trans-unit>
-      <trans-unit id="FiltersH4">
-        <source>Filtros</source>
-        <target>Filtres</target>
       </trans-unit>
       <trans-unit id="dragFields">
         <source>Arrastre aquí los atributos que quiera ver en su panel</source>
@@ -1048,10 +1000,6 @@
         <source>Tornar a cargar el modelo de datos almacenado</source>
         <target>Torna a carregar el model de dades emmagatzemat</target>
       </trans-unit>
-      <trans-unit id="addRelationButton">
-        <source>Añadir relación</source>
-        <target>Afegeix una relació</target>
-      </trans-unit>
       <trans-unit id="addCalculatedCol">
         <source>Añadir columna calculada</source>
         <target>Afegeix una columna calculada</target>
@@ -1071,10 +1019,6 @@
       <trans-unit id="listRelations">
         <source>Relaciones</source>
         <target>Relacions</target>
-      </trans-unit>
-      <trans-unit id="AddPermiso">
-        <source>Añadir permiso</source>
-        <target>Afegeix un permís</target>
       </trans-unit>
       <trans-unit id="AddValueListOptions">
         <source>Definir un listado de valores posibles</source>
@@ -1488,14 +1432,6 @@
         <source>Formato</source>
         <target>Format</target>
       </trans-unit>
-      <trans-unit id="tiposFiltroLabel">
-        <source>Tipos de filtro</source>
-        <target>Tipus de filtre</target>
-      </trans-unit>
-      <trans-unit id="addFilterButton">
-        <source>Añadir filtro</source>
-        <target>Afegeix un filtre</target>
-      </trans-unit>
       <trans-unit id="aplyToAllPanelsH5">
         <source>¿Aplica a todos los paneles?</source>
         <target>Aplica'l a tots els panells</target>
@@ -1564,17 +1500,9 @@
         <source>FILTROS DEL INFORME</source>
         <target>FILTRES DE L'INFORME</target>
       </trans-unit>
-      <trans-unit id="filterButtonDashboard">
-        <source>Filtrar</source>
-        <target>Filtra</target>
-      </trans-unit>
       <trans-unit id="unlink">
         <source>Desvincular del informe:</source>
         <target>Desvincula de l'informe:</target>
-      </trans-unit>
-      <trans-unit id="filtersEdit">
-        <source>Filtros</source>
-        <target>Filtres</target>
       </trans-unit>
       <trans-unit id="positionFilterInReport">
         <source>Posición del filtro en el informe</source>
@@ -2036,10 +1964,6 @@
         <source>Confirmar</source>
         <target>Confirma</target>
       </trans-unit>
-      <trans-unit id="guardarBtn">
-        <source>Confirmar</source>
-        <target>Confirma</target>
-      </trans-unit>
       <trans-unit id="colorsChartH6">
         <source>Colores</source>
         <target>Colors</target>
@@ -2063,10 +1987,6 @@
       <trans-unit id="dangerQueryText3">
         <source>¿Deseas continuar?</source>
         <target>Voleu continuar?</target>
-      </trans-unit>
-      <trans-unit id="cancelarBtn">
-        <source>Cancelar</source>
-        <target>Cancel·la</target>
       </trans-unit>
       <trans-unit id="LogarithmicScaleH6">
         <source>¿Escala logarítmica?</source>
@@ -2195,10 +2115,6 @@
       <trans-unit id="DeleteGroupButton">
         <source>Si, ¡Eliminalo!</source>
         <target>Si, elimina'l</target>
-      </trans-unit>
-      <trans-unit id="DeleteGroupCancel">
-        <source>Cancelar</source>
-        <target>Cancel·la</target>
       </trans-unit>
       <trans-unit id="cantDeleteUser">
         <source>No se puede borrar el usuario</source>
@@ -2408,10 +2324,6 @@
         <source>No hay columnas válidas</source>
         <target>No hi ha columnes vàlides</target>
       </trans-unit>
-      <trans-unit id="agregacionh5">
-        <source>Agregación</source>
-        <target>Agregació</target>
-      </trans-unit>
       <trans-unit id="inputFormat">
         <source>Número de decimales *</source>
         <target>Nombre de decimals *</target>
@@ -2428,17 +2340,9 @@
         <source>Edición privada:</source>
         <target>Edició privada:</target>
       </trans-unit>
-      <trans-unit id="histogramColum">
-        <source>Columnas</source>
-        <target>Columnes</target>
-      </trans-unit>
       <trans-unit id="filterTooltip">
         <source>Puedes añadir palabras separadas por comas, que se aplicarán como filtros de tipo LIKE a la hora de recuperar las tablas de tu base de datos</source>
         <target>Podeu afegir paraules separades per comes, que s'aplicaran com a filtres de tipus LIKE a l'hora de recuperar les taules de la vostra base de dades.</target>
-      </trans-unit>
-      <trans-unit id="histoGramRangesTxt">
-        <source>Rango</source>
-        <target>Rang</target>
       </trans-unit>
       <trans-unit id="histoGramDescTxt">
         <source>Número de</source>

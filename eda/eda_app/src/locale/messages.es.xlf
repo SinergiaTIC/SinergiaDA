@@ -9,10 +9,6 @@
         <source>Usuario</source>
         <target>Usuario</target>
       </trans-unit>
-      <trans-unit id="placeholderInputPassword">
-        <source>Contraseña</source>
-        <target>Contraseña</target>
-      </trans-unit>
       <trans-unit id="spanRememberme">
         <source>Recuérdame</source>
         <target>Recuérdame</target>
@@ -97,10 +93,6 @@
         <source>ROLE</source>
         <target>ROLE</target>
       </trans-unit>
-      <trans-unit id="newPassPlaceholderProfile">
-        <source>Repite la contraseña</source>
-        <target>Repite la contraseña</target>
-      </trans-unit>
       <trans-unit id="direccionMail">
         <source>Dirección Email</source>
         <target>Usuario</target>
@@ -108,10 +100,6 @@
       <trans-unit id="passwordLogin">
         <source>Contraseña</source>
         <target>Contraseña</target>
-      </trans-unit>
-      <trans-unit id="newPassPlaceholderUsers">
-        <source>Repite la contraseña</source>
-        <target>Repite la contraseña</target>
       </trans-unit>
       <trans-unit id="UserDeletedOk">
         <source>El usuario ha sido eliminado correctamente</source>
@@ -129,10 +117,6 @@
         <source>Error al registrarse</source>
         <target>Error al registrarse</target>
       </trans-unit>
-      <trans-unit id="userDetailHeader">
-        <source>USUARIO</source>
-        <target>USUARIO</target>
-      </trans-unit>
       <trans-unit id="userDetailSaveButton">
         <source>GUARDAR</source>
         <target>GUARDAR</target>
@@ -144,10 +128,6 @@
       <trans-unit id="PasswordsNotEqual">
         <source>Las contraseñas no coinciden</source>
         <target>Las contraseñas no coinciden</target>
-      </trans-unit>
-      <trans-unit id="CreatedUser">
-        <source>Usuario creado</source>
-        <target>Usuario creado</target>
       </trans-unit>
       <trans-unit id="fileNotPicture">
         <source>El archivo seleccionado no es una imagen</source>
@@ -433,10 +413,6 @@
         <source>RECARGAR INFORME</source>
         <target>RECARGAR INFORME</target>
       </trans-unit>
-      <trans-unit id="opcionGuardar">
-        <source>GUARDAR</source>
-        <target>GUARDAR</target>
-      </trans-unit>
       <trans-unit id="loading">
         <source>Cargando panel de control...</source>
         <target>Cargando panel de control...</target>
@@ -462,10 +438,6 @@
         <target>Duplicar panel</target>
       </trans-unit>
       <trans-unit id="newPanelTitle">
-        <source>Nuevo Panel</source>
-        <target>Nuevo Panel</target>
-      </trans-unit>
-      <trans-unit id="newPanelTitle2">
         <source>Nuevo Panel</source>
         <target>Nuevo Panel</target>
       </trans-unit>
@@ -512,10 +484,6 @@
       <trans-unit id="columnsTooltip">
         <source>Elige cuantas columnas quieres mostrar</source>
         <target>Elige cuántas columnas deseas mostrar</target>
-      </trans-unit>
-      <trans-unit id="panelTitleEdit">
-        <source>Título del panel</source>
-        <target>Título del panel</target>
       </trans-unit>
       <trans-unit id="panelContentEdit">
         <source>Contenido del panel</source>
@@ -654,10 +622,6 @@
       <trans-unit id="chartInfo12">
         <source>Es necesario un campo vinculado a un archivo GeoJson y un campo de tipo numérico.</source>
         <target>Es necesario un campo vinculado a un archivo GeoJson y un campo de tipo numérico.</target>
-      </trans-unit>
-      <trans-unit id="chartInfo13">
-        <source>Los datos seleccionados no permiten utilizar este gráfico.</source>
-        <target>Los datos seleccionados no permiten utilizar este gráfico.</target>
       </trans-unit>
       <trans-unit id="chartInfoBubble">
         <source>Un gráfico de burbujas necesita una categoría y una serie numérica.</source>
@@ -877,14 +841,6 @@
         <source>Tenemos un filtro en el informe para el campo 'office_id' de la tabla OFFICES</source>
         <target>Tenemos un filtro en el informe para el campo 'office_id' de la tabla OFFICES</target>
       </trans-unit>
-      <trans-unit id="indicaciones15">
-        <source>Consulta sin filtros vinculados</source>
-        <target>Consulta sin filtros vinculados</target>
-      </trans-unit>
-      <trans-unit id="indicaciones16">
-        <source>Consulta con filtros vinculados</source>
-        <target>Consulta con filtros vinculados</target>
-      </trans-unit>
       <trans-unit id="vistaPrevia">
         <source>VISTA PREVIA</source>
         <target>VISTA PREVIA</target>
@@ -900,10 +856,6 @@
       <trans-unit id="EditSQLQuery">
         <source>EDITAR CONSULTA SQL</source>
         <target>EDITAR CONSULTA SQL</target>
-      </trans-unit>
-      <trans-unit id="FiltersH4">
-        <source>Filtros</source>
-        <target>Filtros</target>
       </trans-unit>
       <trans-unit id="dragFields">
         <source>Arrastre aquí los atributos que quiera ver en su panel</source>
@@ -1047,10 +999,6 @@
         <source>Tornar a cargar el modelo de datos almacenado</source>
         <target>Recargar el modelo de datos almacenado</target>
       </trans-unit>
-      <trans-unit id="addRelationButton">
-        <source>Añadir relación</source>
-        <target>Añadir relación</target>
-      </trans-unit>
       <trans-unit id="addCalculatedCol">
         <source>Añadir columna calculada</source>
         <target>Añadir columna calculada</target>
@@ -1070,10 +1018,6 @@
       <trans-unit id="listRelations">
         <source>Relaciones</source>
         <target>Relaciones</target>
-      </trans-unit>
-      <trans-unit id="AddPermiso">
-        <source>Añadir permiso</source>
-        <target>Añadir permiso</target>
       </trans-unit>
       <trans-unit id="AddValueListOptions">
         <source>Definir un listado de valores posibles</source>
@@ -1487,14 +1431,6 @@
         <source>Formato</source>
         <target>Formato</target>
       </trans-unit>
-      <trans-unit id="tiposFiltroLabel">
-        <source>Tipos de filtro</source>
-        <target>Tipos de filtro</target>
-      </trans-unit>
-      <trans-unit id="addFilterButton">
-        <source>Añadir filtro</source>
-        <target>Añadir filtro</target>
-      </trans-unit>
       <trans-unit id="aplyToAllPanelsH5">
         <source>¿Aplica a todos los paneles?</source>
         <target>¿Aplica a todos los paneles?</target>
@@ -1563,17 +1499,9 @@
         <source>FILTROS DEL INFORME</source>
         <target>FILTROS DEL INFORME</target>
       </trans-unit>
-      <trans-unit id="filterButtonDashboard">
-        <source>Filtrar</source>
-        <target>Filtrar</target>
-      </trans-unit>
       <trans-unit id="unlink">
         <source>Desvincular del informe:</source>
         <target>Desvincular del informe:</target>
-      </trans-unit>
-      <trans-unit id="filtersEdit">
-        <source>Filtros</source>
-        <target>Filtros</target>
       </trans-unit>
       <trans-unit id="positionFilterInReport">
         <source>Posición del filtro en el informe</source>
@@ -2035,10 +1963,6 @@
         <source>Confirmar</source>
         <target>Confirmar</target>
       </trans-unit>
-      <trans-unit id="guardarBtn">
-        <source>Confirmar</source>
-        <target>Confirmar</target>
-      </trans-unit>
       <trans-unit id="colorsChartH6">
         <source>Colores</source>
         <target>Colores</target>
@@ -2062,10 +1986,6 @@
       <trans-unit id="dangerQueryText3">
         <source>¿Deseas continuar?</source>
         <target>¿Deseas continuar?</target>
-      </trans-unit>
-      <trans-unit id="cancelarBtn">
-        <source>Cancelar</source>
-        <target>Cancelar</target>
       </trans-unit>
       <trans-unit id="LogarithmicScaleH6">
         <source>¿Escala logarítmica?</source>
@@ -2194,10 +2114,6 @@
       <trans-unit id="DeleteGroupButton">
         <source>Si, ¡Eliminalo!</source>
         <target>Si, ¡Eliminalo!</target>
-      </trans-unit>
-      <trans-unit id="DeleteGroupCancel">
-        <source>Cancelar</source>
-        <target>Cancelar</target>
       </trans-unit>
       <trans-unit id="cantDeleteUser">
         <source>No se puede borrar el usuario</source>
@@ -2407,10 +2323,6 @@
         <source>No hay columnas válidas</source>
         <target>No hay columnas válidas</target>
       </trans-unit>
-      <trans-unit id="agregacionh5">
-        <source>Agregación</source>
-        <target>Agregación</target>
-      </trans-unit>
       <trans-unit id="inputFormat">
         <source>Número de decimales *</source>
         <target>Número de decimales *</target>
@@ -2427,17 +2339,9 @@
         <source>Edición privada:</source>
         <target>Edición privada:</target>
       </trans-unit>
-      <trans-unit id="histogramColum">
-        <source>Columnas</source>
-        <target>Columnas</target>
-      </trans-unit>
       <trans-unit id="filterTooltip">
         <source>Puedes añadir palabras separadas por comas, que se aplicarán como filtros de tipo LIKE a la hora de recuperar las tablas de tu base de datos</source>
         <target>Puedes agregar palabras separadas por comas, que se aplicarán como filtros LIKE al recuperar las tablas de tu base de datos</target>
-      </trans-unit>
-      <trans-unit id="histoGramRangesTxt">
-        <source>Rango</source>
-        <target>Rango</target>
       </trans-unit>
       <trans-unit id="histoGramDescTxt">
         <source>Número de</source>
