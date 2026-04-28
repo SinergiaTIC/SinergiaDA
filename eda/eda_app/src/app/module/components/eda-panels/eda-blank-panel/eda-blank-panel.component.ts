@@ -139,6 +139,9 @@ export class EdaBlankPanelComponent implements OnInit {
     public aggregationText: string = $localize`:@@aggregationText:Agregación`;
     public textBetween: string = $localize`:@@textBetween:Entre`
     public emptyStringString: string = $localize`:@@emptyStringTxt:Vacío`
+/* SDA CUSTOM */ public lockPanelTooltip: string = $localize`:@@lockPanel:Bloquear panel`;
+/* SDA CUSTOM */ public unlockPanelTooltip: string = $localize`:@@unlockPanel:Desbloquear panel`;
+
 
 
     /** Query Variables */
@@ -305,6 +308,12 @@ export class EdaBlankPanelComponent implements OnInit {
 
         if(this.sortedFilters === undefined) this.sortedFilters = []; // if it is an old report, we define the report as empty
     }
+
+
+    /* SDA CUSTOM */  public toggleLock() {
+    /* SDA CUSTOM */    this.panel.locked = !this.panel.locked;
+    /* SDA CUSTOM */    this.dashboardService._notSaved.next(true);
+    /* SDA CUSTOM */  }
 
     /**
      * When selecting a node from the tree, it loads the columns to display.
@@ -525,6 +534,7 @@ export class EdaBlankPanelComponent implements OnInit {
 
 
         this.queryLimit = panelContent.query.query.queryLimit;
+/*SDA CUSTOM*/ this.joinType = panelContent.query.query.joinType || 'inner';
         PanelInteractionUtils.handleFilters(this, panelContent.query.query);
         PanelInteractionUtils.handleFilterColumns(this, panelContent.query.query.filters, panelContent.query.query.fields);
         this.chartForm.patchValue({chart: this.chartUtils.chartTypes.find(o => o.subValue === panelContent.edaChart)});
@@ -1567,15 +1577,17 @@ export class EdaBlankPanelComponent implements OnInit {
     public loadColumns = (table: any) => PanelInteractionUtils.loadColumns(this, table);
 
 /**SDA CUSTOM  */   public removeColumn = (c: Column, list?: string) => {
-/**SDA CUSTOM  */       // Conditions to check if we can delete the column
-/**SDA CUSTOM  */       const isNotRootColumn = !!c?.joins?.length;
-/**SDA CUSTOM  */       const rootColumnElements = this.currentQuery.filter(col => !col?.joins?.length).length;
+/**SDA CUSTOM  */       // rootTableName To have the principal table => conditions to check if we can delete the column
+/**SDA CUSTOM  */       const rootTableName = this.rootTable?.table_name;
+/**SDA CUSTOM  */       // joins is reliable when interacting on the app; table_id comparison is the fallback after save and reload when joins may be empty
+/**SDA CUSTOM  */       const isNotRootColumn = !!c?.joins?.length || (!!rootTableName && c?.table_id !== rootTableName);
+/**SDA CUSTOM  */       const rootColumnElements = this.currentQuery.filter(col => !col?.joins?.length && (!rootTableName || col?.table_id === rootTableName)).length;
 /**SDA CUSTOM  */       const currentQueryLength = this.currentQuery.length;
-/**SDA CUSTOM  */
+
 /**SDA CUSTOM  */       // We just proceed if it is not the last column of the root table
 /**SDA CUSTOM  */       if (isNotRootColumn || rootColumnElements > 1 || currentQueryLength === 1) {
 /**SDA CUSTOM  */           // We check if when deleting a field it has a filter at selectedFilters
-                            if (this.selectedFilters.some((sf: any) => sf.filter_column === c.column_name)) {
+/**SDA CUSTOM  */           if (this.selectedFilters.some((sf: any) => sf.filter_column === c.column_name && sf.filter_table === c.table_id)) {
                                 if (this.sortedFilters.length !== 0) {
                                     this.alertService.addWarning($localize`:@@filterSettingsReboot:La configuración de filtros se ha reiniciado`);
                                 }
