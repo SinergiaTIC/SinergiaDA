@@ -28,6 +28,19 @@
             *ngIf="( isAdmin || isDashboardCreator || (['public', 'readOnly'].includes(filter.visible)   &&  (filter.selectedColumn?.visible || filter.column?.value.visible)) )"
             [ngSwitch]="getFilterType(filter)" >
                 <div *ngSwitchCase="'date'">
+
+                    <!-- <date-format-dialog *ngIf="displayDateFormat" (close)="onCloseDateFormatDialog($event)" [settingsButtonsAvailable]="true" [cleanButtonsAvailable]="true">
+                        <ng-container footer>
+                            <button id="dashFilterConf"
+                                pButton pRipple type="button"
+                                icon="pi pi-cog"
+                                class="p-button-rounded p-button-outlined p-button-icon-only filters-size"
+                                style="width: 2rem; height: 2rem; padding: 0;">
+                            </button>
+                        </ng-container>
+                    </date-format-dialog> -->
+
+
                     <eda-date-picker
                         [autoClear]="true"
                         [inject]="datePickerConfigs[filter.id]"

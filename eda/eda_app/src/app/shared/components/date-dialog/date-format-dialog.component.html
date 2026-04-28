@@ -112,4 +112,9 @@
         </div>
     </div>
 
+    <div footer style="margin-right: auto; display: flex; gap: 8px; align-items: center;">
+        <ng-content select="[footer]"></ng-content>
+        <button *ngIf="cleanButtonsAvailable" pButton pRipple type="button" label="Clean" icon="pi pi-undo" class="p-button-rounded p-button-outlined"></button>
+    </div>
+
 </eda-dialog2>

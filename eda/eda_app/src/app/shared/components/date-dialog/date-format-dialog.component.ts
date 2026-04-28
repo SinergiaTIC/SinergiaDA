@@ -23,6 +23,7 @@ interface dataFormatSettings {
 export class DateFormatDialogComponent implements OnInit {
 
   @Output() close: EventEmitter<any> = new EventEmitter<any>();
+  @Input() cleanButtonsAvailable: boolean = false;
 
   public display: boolean = false;
   public filterTypeSelected: FilterType;

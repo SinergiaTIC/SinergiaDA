@@ -40,11 +40,11 @@
                                 >
                             </p-multiSelect>
 
-<!-- SDA CUSTOM -->                            <!-- SDA CUSTOM: date format dialog button, only for date columns -->
-<!-- SDA CUSTOM -->                            <div *ngIf="globalFilter.selectedColumn?.column_type === 'date'" class="ml-8">
-<!-- SDA CUSTOM -->                                <p-button (onClick)="onOpenDateFormatDialog()" [label]="getDateFormatButtonLabel()"></p-button>
-<!-- SDA CUSTOM -->                            </div>
-<!-- SDA CUSTOM -->                            
+<!-- SDA CUSTOM: date format dialog button, only for date columns -->
+<!-- SDA CUSTOM -->         <div *ngIf="globalFilter.selectedColumn?.column_type === 'date'" class="p-0">
+<!-- SDA CUSTOM -->             <p-button (onClick)="onOpenDateFormatDialog()" [label]="getDateFormatButtonLabel()" [style]="{'min-width': '200px', 'background': 'white', 'color': '#495057', 'border-color': '#ced4da', 'justify-content': 'center'}" i18n-label="@@filterDateText" label="Filtrar fecha"></p-button>
+<!-- SDA CUSTOM -->         </div>
+<!-- SDA CUSTOM -->         
                         </div>
                     </div>
                 </p-card>
@@ -149,5 +149,4 @@
     </div>
 </eda-dialog2>
 
-<!-- SDA CUSTOM -->
-<date-format-dialog *ngIf="displayDateFormat" (close)="onCloseDateFormatDialog($event)"></date-format-dialog>
+<!-- SDA CUSTOM --> <date-format-dialog *ngIf="displayDateFormat" (close)="onCloseDateFormatDialog($event)"></date-format-dialog>
