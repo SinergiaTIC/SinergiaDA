@@ -160,11 +160,7 @@ export class EdaBlankPanelComponent implements OnInit {
     public temporalSortedFilters: any[] = [];
     /* SDA CUSTOM */ public atLeastThereIsOneWithAggregation: boolean = false;
     /* SDA CUSTOM */ public groupByEnabled: boolean = true;
-    /* SDA CUSTOM */ public groupByEnabledMessages: {value: boolean, message: string}[] = [
-    /* SDA CUSTOM */     {value: true, message: $localize`:@@groupByEnabledHide:Agrupar`},
-    /* SDA CUSTOM */     {value: false, message: $localize`:@@groupByEnabledShow:No agrupar`},
-    /* SDA CUSTOM */ ];
-    /* SDA CUSTOM */ public groupByEnabledMessage: string = this.groupByEnabledMessages[0].message;
+    /* SDA CUSTOM */ public groupByLabel: string = $localize`:@@groupBy:Agrupar`;
     /* SDA CUSTOM */ public groupByDisabledReasonMessage: string = $localize`:@@groupByDisabledReason:No se puede cambiar el agrupamiento porque hay campos con agregaciones configuradas. Elimina las agregaciones primero.`;
     /* SDA CUSTOM */ public groupByDisabledAggregationsMessage: string = $localize`:@@groupByDisabledAggregations:En modo No agrupar, las agregaciones en los campos están deshabilitadas automáticamente.`;
 
@@ -2004,11 +2000,5 @@ export class EdaBlankPanelComponent implements OnInit {
             this.sortedFilters = [];
         }
     }
-
-/* SDA CUSTOM  */    groupByEnabledButton() {
-/* SDA CUSTOM  */
-/* SDA CUSTOM  */        this.groupByEnabledMessage = this.groupByEnabledMessages.find((m: {value: boolean, message: string}) => m.value === this.groupByEnabled).message;
-/* SDA CUSTOM  */
-/* SDA CUSTOM  */    }
 
 }
