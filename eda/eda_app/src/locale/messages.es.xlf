@@ -4594,7 +4594,7 @@
       </trans-unit>
       <trans-unit id="groupByDisabledAggregations">
         <source>En modo agrupar desactivado, las agregaciones en los campos están deshabilitadas automáticamente.</source>
-        <target>En modo agrupar desactivado,las agregaciones a los campos se deshabilitan automáticamente.</target>
+        <target>Si el modo agrupar está desactivado las agregaciones en los campos se deshabilitan automáticamente.</target>
       </trans-unit>
     </body>
   </file>
