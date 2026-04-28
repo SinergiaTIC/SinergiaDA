@@ -4705,7 +4705,7 @@ Once configured you can invoke it whenever you want from the button.</target>
       </trans-unit>
       <trans-unit id="groupByDisabledAggregations">
         <source>En modo agrupar desactivado, las agregaciones en los campos están deshabilitadas automáticamente.</source>
-        <target>IIn disabled grouping mode, aggregations on fields are automatically disabled.</target>
+        <target>If grouping mode is disabled, aggregations in fields are automatically disabled.</target>
       </trans-unit>
     </body>
   </file>
