@@ -16,9 +16,15 @@ export class MailingService {
 
   static async mailingService() {
 
-    console.log('Maler');
-    const newDate = SchedulerFunctions.totLocalISOTime(new Date()) ;
-    const config = JSON.parse(fs.readFileSync(path.resolve(__dirname, "../../../config/SMPT.config.json"), 'utf-8'));
+// SDA CUSTOM - Fix typo and check if mailing is configured to avoid recurring errors
+/*SDA CUSTOM*/    console.log('Mailer');
+/*SDA CUSTOM*/    const newDate = SchedulerFunctions.totLocalISOTime(new Date()) ;
+/*SDA CUSTOM*/    const config = JSON.parse(fs.readFileSync(path.resolve(__dirname, "../../../config/SMPT.config.json"), 'utf-8'));
+/*SDA CUSTOM*/
+/*SDA CUSTOM*/    if (!config || !config.auth || !config.auth.user || config.auth.user === "") {
+/*SDA CUSTOM*/      return;
+/*SDA CUSTOM*/    }
+// END SDA CUSTOM
 
     const transporter = nodemailer.createTransport(config);
     const verify = transporter.verify(async (error, sucess) => {

@@ -19,28 +19,23 @@ export class ApiService {
         result.status = error.status;
 
         switch (error.status) {
-            case 400:
-                result.text = error.error.message;
-                break;
-            case 404:
-                result.text = error.error.message;
-                break;
-            case 500:
-                result.text = error.error.message;
-                break;
-            case 401: /* Token error */
-                result.text = '401';
-                result.nextPage = 'logout';
-                break;
-            case 403:
-                result.text = result.text = error.error.message;
-                result.nextPage = 'home';
-                break;
-            default:
-                if (error.statusText === 'Unknow Error') {
-                    result.text = ' - Error del servidor';
-                }
-                break;
+// SDA CUSTOM - Generic error message extraction and improved status handling
+/*SDA CUSTOM*/      case 401: /* Token error */
+/*SDA CUSTOM*/          result.text = '401';
+/*SDA CUSTOM*/          result.nextPage = 'logout';
+/*SDA CUSTOM*/          break;
+/*SDA CUSTOM*/      case 403:
+/*SDA CUSTOM*/          result.text = error.error.message;
+/*SDA CUSTOM*/          result.nextPage = 'home';
+/*SDA CUSTOM*/          break;
+/*SDA CUSTOM*/      default:
+/*SDA CUSTOM*/          if (error.error && error.error.message) {
+/*SDA CUSTOM*/              result.text = error.error.message;
+/*SDA CUSTOM*/          } else if (error.statusText === 'Unknow Error') {
+/*SDA CUSTOM*/              result.text = ' - Error del servidor';
+/*SDA CUSTOM*/          }
+/*SDA CUSTOM*/          break;
+// END SDA CUSTOM
         }
         return throwError(result);
     }

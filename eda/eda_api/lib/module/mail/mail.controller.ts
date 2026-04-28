@@ -15,14 +15,18 @@ export class MailController {
       const transporter = nodemailer.createTransport(req.body);
       const verify = transporter.verify((error, sucess) => {
         if (error) {
-          return next(new HttpException(501, 'Error in SMPT configuration file'));
+// SDA CUSTOM - Include the actual error message from nodemailer and fix typo
+/*SDA CUSTOM*/          return next(new HttpException(501, `Error in SMTP configuration: ${error.message}`));
+// END SDA CUSTOM
         } else {
           return res.status(200).json({ ok: true });
         }
       });
 
     } catch (err) {
-      return next(new HttpException(501, 'Error in SMPT configuration file'));
+// SDA CUSTOM - Include the actual error message and fix typo
+/*SDA CUSTOM*/      return next(new HttpException(501, `Error in SMTP configuration: ${err.message}`));
+// END SDA CUSTOM
     }
 
   }
@@ -32,7 +36,9 @@ export class MailController {
     try {
 
       fs.writeFile(`config/SMPT.config.json`, JSON.stringify(req.body), 'utf8', (err) => {
-        if (err) return next(new HttpException(404, 'Error saving configuration'));
+// SDA CUSTOM - Include the actual error message when saving
+/*SDA CUSTOM*/        if (err) return next(new HttpException(404, `Error saving configuration: ${err.message}`));
+// END SDA CUSTOM
         return res.status(200).json({ ok: true });
       });
 
