@@ -36,14 +36,10 @@
       <trans-unit id="labelImagenUsuario">
         <source>Fotografía del usuario</source>
         <target>Fotografia de l'usuari</target>
-        <note priority="1" from="description">Label del input imagen de usuario</note>
-        <note priority="1" from="meaning">Label Input Imagen</note>
       </trans-unit>
       <trans-unit id="button">
         <source>Actualizar Foto</source>
         <target>Actualitza la imatge</target>
-        <note priority="1" from="description">Botón actualizar foto perfil</note>
-        <note priority="1" from="meaning">Botón</note>
       </trans-unit>
       <trans-unit id="nuevoUsuarioBtn">
         <source>Crear usuario</source>
@@ -635,14 +631,7 @@
         <source>Un gráfico de áreas necesita una o más categorías y una serie numérica. Además, si hay más de una serie, los datos numéricos deben agregarse.</source>
         <target>Un gràfic d'àrees necessita una o més categories i una sèrie numèrica. A més, si hi ha més d'una sèrie les dades numèriques han d'agregar-se.</target>
       </trans-unit>
-      <trans-unit id="chartInfo6">
-        <source>Un gráfico de barras necesita una o más categorías y una serie numérica.</source>
-        <target>Un gràfic de barres necessita una o més categories i una sèrie numèrica. A més, si hi ha més d'una sèrie les dades numèriques han d'agregar-se.</target>
-      </trans-unit>
-      <trans-unit id="chartInfo7">
-        <source>Un gráfico de barras necesita una o más categorías y una serie numérica.</source>
-        <target>Un gràfic de barres necessita una o més categories i una sèrie numèrica. A més, si hi ha més d'una sèrie les dades numèriques han d'agregar-se.</target>
-      </trans-unit>
+      
       <trans-unit id="chartInfo8">
         <source>Un gráfico polar necesita una categoría y una serie numérica.</source>
         <target>Un gràfic polar necessita una categoria i una sèrie numèrica.</target>
@@ -978,8 +967,6 @@
       <trans-unit id="tituloCard">
         <source>Modelo de datos</source>
         <target>Model de dades</target>
-        <note priority="1" from="description">Título de la tarjeta</note>
-        <note priority="1" from="meaning">Título de la Tarjeta</note>
       </trans-unit>
       <trans-unit id="inputNombreTecnico">
         <source>Nombre técnico</source>
