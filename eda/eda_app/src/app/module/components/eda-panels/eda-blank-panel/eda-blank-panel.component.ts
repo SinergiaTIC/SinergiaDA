@@ -162,7 +162,7 @@ export class EdaBlankPanelComponent implements OnInit {
     /* SDA CUSTOM */ public groupByEnabled: boolean = true;
     /* SDA CUSTOM */ public groupByLabel: string = $localize`:@@groupBy:Agrupar`;
     /* SDA CUSTOM */ public groupByDisabledReasonMessage: string = $localize`:@@groupByDisabledReason:No se puede cambiar el agrupamiento porque hay campos con agregaciones configuradas. Elimina las agregaciones primero.`;
-    /* SDA CUSTOM */ public groupByDisabledAggregationsMessage: string = $localize`:@@groupByDisabledAggregations:En modo No agrupar, las agregaciones en los campos están deshabilitadas automáticamente.`;
+    /* SDA CUSTOM */ public groupByDisabledAggregationsMessage: string = $localize`:@@groupByDisabledAggregations:En modo agrupar desactivado, las agregaciones en los campos están deshabilitadas automáticamente.`;
 
     public queryModes: any[] = [
         /* SDA CUSTOM */ { label: $localize`:@@PanelModeSelectorEDA:Modo EDA`, value: 'EDA', disabled: true},

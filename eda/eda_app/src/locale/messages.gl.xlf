@@ -4585,10 +4585,6 @@
         <source>elementos seleccionados</source>
         <target>elementos seleccionados</target>
       </trans-unit>
-      <trans-unit id="groupByEnabledShow">
-        <source>Non agrupar</source>
-        <target>Non agrupar</target>
-      </trans-unit>
       <trans-unit id="groupByEnabledHide">
         <source>Agrupar</source>
         <target>Agrupar</target>
@@ -4598,8 +4594,8 @@
         <target>Non se pode cambiar a agrupación porque hai campos con agregacións configuradas. Elimina as agregacións primeiro.</target>
       </trans-unit>
       <trans-unit id="groupByDisabledAggregations">
-        <source>En modo No agrupar, las agregaciones en los campos están deshabilitadas automáticamente.</source>
-        <target>En modo Non agrupar, as agregacións nos campos están deshabilitadas automáticamente.</target>
+        <source>En modo agrupar desactivado, las agregaciones en los campos están deshabilitadas automáticamente.</source>
+        <target>En modo agrupar desactivado, as agregacións nos campos están deshabilitadas automáticamente.</target>
       </trans-unit>
     </body>
   </file>

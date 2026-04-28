@@ -4695,10 +4695,6 @@ Once configured you can invoke it whenever you want from the button.</target>
         <source>elementos seleccionados</source>
         <target>selected items</target>
       </trans-unit>
-      <trans-unit id="groupByEnabledShow">
-        <source>No agrupar</source>
-        <target>Do not group</target>
-      </trans-unit>
       <trans-unit id="groupByEnabledHide">
         <source>Agrupar</source>
         <target>Group</target>
@@ -4708,8 +4704,8 @@ Once configured you can invoke it whenever you want from the button.</target>
         <target>Before you can change the grouping, you must remove the aggregations configured on the fields.</target>
       </trans-unit>
       <trans-unit id="groupByDisabledAggregations">
-        <source>En modo No agrupar, las agregaciones en los campos están deshabilitadas automáticamente.</source>
-        <target>In "Do not group" mode, aggregations on fields are automatically disabled.</target>
+        <source>En modo agrupar desactivado, las agregaciones en los campos están deshabilitadas automáticamente.</source>
+        <target>IIn disabled grouping mode, aggregations on fields are automatically disabled.</target>
       </trans-unit>
     </body>
   </file>
