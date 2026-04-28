@@ -4589,6 +4589,10 @@
         <source>elementos seleccionados</source>
         <target>elementos seleccionados</target>
       </trans-unit>
+      <trans-unit id="filterDateText">
+        <source>Filtrar fecha</source>
+        <target>Filtrar fecha</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>

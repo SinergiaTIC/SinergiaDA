@@ -97,9 +97,7 @@
                 <ng-container *ngIf="!display.between">
                     
 <!-- SDA CUSTOM --> <div class="ml-2" *ngIf="selectedColumn?.column_type === 'date'">
-<!-- SDA CUSTOM --> <p-button (onClick)="onOpenDateFormatDialog()" [style]="{'min-width': '200px', 'background': 'white', 'color': '#495057', 'border-color': '#ced4da', 'justify-content': 'center'}">
-<!-- SDA CUSTOM -->     Date Format
-<!-- SDA CUSTOM --> </p-button>
+<!-- SDA CUSTOM -->     <p-button (onClick)="onOpenDateFormatDialog()" [style]="{'min-width': '200px', 'background': 'white', 'color': '#495057', 'border-color': '#ced4da', 'justify-content': 'center'}" i18n-label="@@filterDateText" label="Filtrar fecha"></p-button>
                     </div>
 
 

@@ -4593,6 +4593,10 @@ Un cop configurada podreu invocar-la des del botó sempre que calgui.</target>
         <source>elementos seleccionados</source>
         <target>elements seleccionats</target>
       </trans-unit>
+      <trans-unit id="filterDateText">
+        <source>Filtrar fecha</source>
+        <target>Filtrar data</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>

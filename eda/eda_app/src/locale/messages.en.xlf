@@ -4699,6 +4699,10 @@ Once configured you can invoke it whenever you want from the button.</target>
         <source>elementos seleccionados</source>
         <target>selected items</target>
       </trans-unit>
+      <trans-unit id="filterDateText">
+        <source>Filtrar fecha</source>
+        <target>Filter by date</target>
+      </trans-unit>
         </body>
   </file>
 </xliff>
