@@ -579,9 +579,14 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
                 this.globalFilter.selectedItems = [];
             } else {
                 const val = dateFormatSet.dateValue;
-                this.globalFilter.selectedItems = val.value2
-                    ? [val.value1, val.value2]
-                    : Array.isArray(val.value1) ? val.value1 : [val.value1];
+/* SDA CUSTOM */const isStaticInNotIn = (filterSelected.value === 'in' || filterSelected.value === 'not_in') && Array.isArray(val.value1);
+/* SDA CUSTOM */if (isStaticInNotIn) {
+/* SDA CUSTOM */    this.globalFilter.selectedItems = [val.value1];
+/* SDA CUSTOM */} else {
+/* SDA CUSTOM */    this.globalFilter.selectedItems = val.value2
+/* SDA CUSTOM */        ? [val.value1, val.value2]
+/* SDA CUSTOM */        : Array.isArray(val.value1) ? val.value1 : [val.value1];
+/* SDA CUSTOM */}
             }
         }
     }
@@ -611,6 +616,7 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
 
         const items = this.globalFilter.selectedItems;
         if (!items || items.length === 0) return 'Date Format';
+/* SDA CUSTOM */if (Array.isArray(items[0])) return `${this.getOperatorLabel(op)} | ${(items[0] as string[]).map(fmt).join(', ')}`;
         if (items.length === 1 || !items[1]) return `${this.getOperatorLabel(op)} | ${fmt(items[0])}`;
         return `${this.getOperatorLabel(op)} | ${fmt(items[0])} - ${fmt(items[1])}`;
     }

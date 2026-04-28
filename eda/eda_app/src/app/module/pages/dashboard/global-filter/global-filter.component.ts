@@ -5,6 +5,8 @@ import { EdaDialogCloseEvent, EdaDialogController } from "@eda/shared/components
 import { DashboardComponent } from "../dashboard.component";
 import { EdaBlankPanelComponent } from "@eda/components/eda-panels/eda-blank-panel/eda-blank-panel.component";
 import * as _ from 'lodash';
+/* SDA CUSTOM */ import { DateUtils } from '@eda/services/utils/date-utils.service';
+/* SDA CUSTOM */ import { rangeDateFormats } from '@eda/shared/components/date-dialog/date-format-dialog.index';
 
 @Component({
     selector: 'app-global-filter',
@@ -28,6 +30,8 @@ export class GlobalFilterComponent implements OnInit {
     // flag para ver ultimo panel
     private lastPanel: any;
 
+    /* SDA CUSTOM */ public displayDateFormatMap: { [filterId: string]: boolean } = {};
+
     public filtrar: string = $localize`:@@filterButtonDashboard:Filtrar`;
     /*SDA CUSTOM*/ public resumen: string = $localize`:@@filterSummary:Resumen de filtros`;
 /* SDA CUSTOM */ public selectedItemsLabel: string = $localize`:@@globalFilterSelectedItemsLabel:elementos seleccionados`;
@@ -39,7 +43,8 @@ export class GlobalFilterComponent implements OnInit {
         private dashboardService: DashboardService,
         private queryBuilderService: QueryBuilderService,
         private alertService: AlertService,
-        private userService: UserService) { }
+        private userService: UserService,
+        /* SDA CUSTOM */ private dateUtils: DateUtils) { }
 
 
     /**
@@ -389,6 +394,9 @@ export class GlobalFilterComponent implements OnInit {
 
     public removeGlobalFilter(filter: any, reload?: boolean): void {
 
+        console.log('filter: ', filter);
+        console.log('reload: ', reload);
+
         const formatedFilter = filter;
 
         // Remove 'applytoall' filter if it's the same fitler
@@ -425,6 +433,10 @@ export class GlobalFilterComponent implements OnInit {
      * @param filter
      */
     public processPickerEvent(event: any, filter: any): void {
+
+        console.log('event ---> ', event);
+        console.log('filter ---> ', filter);
+
         if (event.dates) {
             const dtf = new Intl.DateTimeFormat('en', { year: 'numeric', month: '2-digit', day: '2-digit' });
             if (!event.dates[1]) {
@@ -673,4 +685,95 @@ export class GlobalFilterComponent implements OnInit {
 /*SDA CUSTOM*/          this.tooltipHideTimeout = null;
 /*SDA CUSTOM*/      }, 150);
 /*SDA CUSTOM*/  }
+
+    /* SDA CUSTOM */
+    public onOpenDateFormatDialog(filter: any): void {
+        this.displayDateFormatMap[filter.id] = true;
+    }
+
+    /* SDA CUSTOM */
+    public onCloseDateFormatDialog(event: any, filter: any): void {
+        this.displayDateFormatMap[filter.id] = false;
+        if (!event) return;
+
+        const { dateFormatSet, filterSelected } = event;
+        const dtf = new Intl.DateTimeFormat('en', { year: 'numeric', month: '2-digit', day: '2-digit' });
+        const toStr = (d: Date): string => {
+            const [{ value: mo }, , { value: da }, , { value: ye }] = dtf.formatToParts(d);
+            return `${ye}-${mo}-${da}`;
+        };
+
+        filter.dateFilterType = filterSelected.value;
+
+        if (dateFormatSet.dynamic) {
+            const dates = this.dateUtils.getRange(dateFormatSet.dynamicValue);
+            filter.selectedRange = dateFormatSet.dynamicValue;
+            filter.dynamicValue = dateFormatSet.dynamicValue;
+            filter.selectedItems = [toStr(dates[0]), toStr(dates[1])];
+        } else {
+            filter.selectedRange = null;
+            filter.dynamicValue = null;
+            const noValueTypes = ['not_null', 'not_null_nor_empty', 'null_or_empty'];
+            if (noValueTypes.includes(filterSelected.value)) {
+                filter.selectedItems = [];
+            } else {
+                const val = dateFormatSet.dateValue;
+                const isStaticInNotIn = (filterSelected.value === 'in' || filterSelected.value === 'not_in') && Array.isArray(val.value1);
+                if (isStaticInNotIn) {
+                    filter.selectedItems = [val.value1];
+                } else {
+                    filter.selectedItems = val.value2
+                        ? [val.value1, val.value2]
+                        : Array.isArray(val.value1) ? val.value1 : [val.value1];
+                }
+            }
+        }
+
+        this.loadDatesFromFilter(filter);
+        this.applyGlobalFilter(filter);
+    }
+
+    /* SDA CUSTOM */
+    public getDateFilterLabel(filter: any): string {
+        const op = filter.dateFilterType;
+        if (!op) return 'Fecha';
+
+        const noValueTypes = ['not_null', 'not_null_nor_empty', 'null_or_empty'];
+        if (noValueTypes.includes(op)) return this.getOperatorLabel(op);
+
+        const fmt = (s: string) => {
+            if (!s) return '';
+            const [ye, mo, da] = s.split('-');
+            return `${da}-${mo}-${ye.slice(2)}`;
+        };
+
+        if (filter.dynamicValue) {
+            return `${this.getOperatorLabel(op)} | ${this.getRangeLabel(filter.dynamicValue)}`;
+        }
+
+        const items = filter.selectedItems;
+        if (!items || items.length === 0) return 'Fecha';
+        if (Array.isArray(items[0])) return `${this.getOperatorLabel(op)} | ${(items[0] as string[]).map(fmt).join(', ')}`;
+        if (items.length === 1 || !items[1]) return `${this.getOperatorLabel(op)} | ${fmt(items[0])}`;
+        return `${this.getOperatorLabel(op)} | ${fmt(items[0])} - ${fmt(items[1])}`;
+    }
+
+    /* SDA CUSTOM */
+    private getRangeLabel(value: string): string {
+        return rangeDateFormats.find((r: any) => r.value === value)?.label || value;
+    }
+
+    /* SDA CUSTOM */
+    private getOperatorLabel(op: string): string {
+        const labels: Record<string, string> = {
+            'between':            'between',
+            'not_between':        'not between',
+            'in':                 'in',
+            'not_in':             'not in',
+            'not_null':           'not null',
+            'not_null_nor_empty': 'not null nor empty',
+            'null_or_empty':      'null or empty',
+        };
+        return labels[op] || op;
+    }
 }
