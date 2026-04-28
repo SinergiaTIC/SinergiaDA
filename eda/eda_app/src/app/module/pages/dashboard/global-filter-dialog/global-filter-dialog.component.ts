@@ -593,18 +593,42 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
 
     /* SDA CUSTOM */
     getDateFormatButtonLabel(): string {
-        if (this.globalFilter.dynamicValue) {
-            return this.getRangeLabel(this.globalFilter.dynamicValue);
-        }
-        const items = this.globalFilter.selectedItems;
-        if (!items || items.length === 0) return 'Date Format';
+        const op = this.globalFilter.dateFilterType;
+        if (!op) return 'Date Format';
+
+        const noValueTypes = ['not_null', 'not_null_nor_empty', 'null_or_empty'];
+        if (noValueTypes.includes(op)) return this.getOperatorLabel(op);
+
         const fmt = (s: string) => {
             if (!s) return '';
             const [ye, mo, da] = s.split('-');
             return `${da}-${mo}-${ye.slice(2)}`;
         };
-        if (items.length === 1 || !items[1]) return fmt(items[0]);
-        return `${fmt(items[0])} - ${fmt(items[1])}`;
+
+        if (this.globalFilter.dynamicValue) {
+            return `${this.getOperatorLabel(op)} | ${this.getRangeLabel(this.globalFilter.dynamicValue)}`;
+        }
+
+        const items = this.globalFilter.selectedItems;
+        if (!items || items.length === 0) return 'Date Format';
+        if (items.length === 1 || !items[1]) return `${this.getOperatorLabel(op)} | ${fmt(items[0])}`;
+        return `${this.getOperatorLabel(op)} | ${fmt(items[0])} - ${fmt(items[1])}`;
+    }
+
+    /* SDA CUSTOM */
+    private getOperatorLabel(op: string): string {
+        const labels: Record<string, string> = {
+            'between':           'between',
+            'not_between':       'not between',
+            'in':                'in',
+            'not_in':            'not in',
+            'not_null':          'not null',
+            'not_null_nor_empty':'not null nor empty',
+            'null_or_empty':     'null or empty',
+            'like':              'like',
+            'not_like':          'not like',
+        };
+        return labels[op] || op;
     }
 
 }

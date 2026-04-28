@@ -256,6 +256,8 @@ export class GlobalFilterComponent implements OnInit {
                     filter.type = this.globalFilter.type;
                     filter.isGlobal = this.globalFilter.isGlobal;
                     filter.visible = this.globalFilter.visible;
+                    /* SDA CUSTOM */ filter.dateFilterType = this.globalFilter.dateFilterType;
+                    /* SDA CUSTOM */ filter.dynamicValue = this.globalFilter.dynamicValue;
 
                     for (const key in filter.pathList) {
                         if (filter.pathList[key]?.selectedTableNodes) {
