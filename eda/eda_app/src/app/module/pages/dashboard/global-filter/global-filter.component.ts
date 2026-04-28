@@ -696,6 +696,15 @@ export class GlobalFilterComponent implements OnInit {
         this.displayDateFormatMap[filter.id] = false;
         if (!event) return;
 
+/* SDA CUSTOM */if (event.clean) {
+/* SDA CUSTOM */    filter.dateFilterType = null;
+/* SDA CUSTOM */    filter.dynamicValue = null;
+/* SDA CUSTOM */    filter.selectedRange = null;
+/* SDA CUSTOM */    filter.selectedItems = [];
+/* SDA CUSTOM */    this.applyGlobalFilter(filter);
+/* SDA CUSTOM */    return;
+/* SDA CUSTOM */}
+
         const { dateFormatSet, filterSelected } = event;
         const dtf = new Intl.DateTimeFormat('en', { year: 'numeric', month: '2-digit', day: '2-digit' });
         const toStr = (d: Date): string => {

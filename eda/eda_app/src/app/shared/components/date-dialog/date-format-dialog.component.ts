@@ -100,13 +100,20 @@ export class DateFormatDialogComponent implements OnInit {
 
   public oncloseDateFormatDialog() {
       this.close.emit(false);
-      
+
       // restoring values
       this.filterTypeSelected = null;
       this.dateFormatSelected = null;
   }
 
+  public onCleanDateFormatDialog() {
+      this.close.emit({ clean: true });
 
+      // restoring values
+      this.filterTypeSelected = null;
+      this.dateFormatSelected = null;
+      this.dateFormatCustomValue = {};
+  }
 
   processPickerEvent(event) {
     
