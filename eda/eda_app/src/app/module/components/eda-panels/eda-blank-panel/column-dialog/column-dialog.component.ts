@@ -974,7 +974,6 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
 
     onOpenDateFormatDialog() {
         this.displayDateFormat = true;
-        console.log('Desde Column-dialog open')
     }
     
     onCloseDateFormatDialog(event: any) {

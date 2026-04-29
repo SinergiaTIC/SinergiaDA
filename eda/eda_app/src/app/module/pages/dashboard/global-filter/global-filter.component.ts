@@ -742,47 +742,44 @@ export class GlobalFilterComponent implements OnInit {
         this.applyGlobalFilter(filter);
     }
 
-    /* SDA CUSTOM */
-    public getDateFilterLabel(filter: any): string {
-        const op = filter.dateFilterType;
-        if (!op) return '';
+/* SDA CUSTOM */    public getDateFilterLabel(filter: any): string {
+/* SDA CUSTOM */        const op = filter.dateFilterType;
+/* SDA CUSTOM */        if (!op) return '';
+/* SDA CUSTOM */
+/* SDA CUSTOM */        const noValueTypes = ['not_null', 'not_null_nor_empty', 'null_or_empty'];
+/* SDA CUSTOM */        if (noValueTypes.includes(op)) return this.getOperatorLabel(op);
+/* SDA CUSTOM */
+/* SDA CUSTOM */        const fmt = (s: string) => {
+/* SDA CUSTOM */            if (!s) return '';
+/* SDA CUSTOM */            const [ye, mo, da] = s.split('-');
+/* SDA CUSTOM */            return `${da}-${mo}-${ye.slice(2)}`;
+/* SDA CUSTOM */        };
+/* SDA CUSTOM */
+/* SDA CUSTOM */        if (filter.dynamicValue) {
+/* SDA CUSTOM */            return `${this.getOperatorLabel(op)} | ${this.getRangeLabel(filter.dynamicValue)}`;
+/* SDA CUSTOM */        }
+/* SDA CUSTOM */
+/* SDA CUSTOM */        const items = filter.selectedItems;
+/* SDA CUSTOM */        if (!items || items.length === 0) return 'Fecha';
+/* SDA CUSTOM */        if (Array.isArray(items[0])) return `${this.getOperatorLabel(op)} | ${(items[0] as string[]).map(fmt).join(', ')}`;
+/* SDA CUSTOM */        if (items.length === 1 || !items[1]) return `${this.getOperatorLabel(op)} | ${fmt(items[0])}`;
+/* SDA CUSTOM */        return `${this.getOperatorLabel(op)} | ${fmt(items[0])} - ${fmt(items[1])}`;
+/* SDA CUSTOM */    }
 
-        const noValueTypes = ['not_null', 'not_null_nor_empty', 'null_or_empty'];
-        if (noValueTypes.includes(op)) return this.getOperatorLabel(op);
+/* SDA CUSTOM */    private getRangeLabel(value: string): string {
+/* SDA CUSTOM */        return rangeDateFormats.find((r: any) => r.value === value)?.label || value;
+/* SDA CUSTOM */    }
 
-        const fmt = (s: string) => {
-            if (!s) return '';
-            const [ye, mo, da] = s.split('-');
-            return `${da}-${mo}-${ye.slice(2)}`;
-        };
-
-        if (filter.dynamicValue) {
-            return `${this.getOperatorLabel(op)} | ${this.getRangeLabel(filter.dynamicValue)}`;
-        }
-
-        const items = filter.selectedItems;
-        if (!items || items.length === 0) return 'Fecha';
-        if (Array.isArray(items[0])) return `${this.getOperatorLabel(op)} | ${(items[0] as string[]).map(fmt).join(', ')}`;
-        if (items.length === 1 || !items[1]) return `${this.getOperatorLabel(op)} | ${fmt(items[0])}`;
-        return `${this.getOperatorLabel(op)} | ${fmt(items[0])} - ${fmt(items[1])}`;
-    }
-
-    /* SDA CUSTOM */
-    private getRangeLabel(value: string): string {
-        return rangeDateFormats.find((r: any) => r.value === value)?.label || value;
-    }
-
-    /* SDA CUSTOM */
-    private getOperatorLabel(op: string): string {
-        const labels: Record<string, string> = {
-            'between':            'between',
-            'not_between':        'not between',
-            'in':                 'in',
-            'not_in':             'not in',
-            'not_null':           'not null',
-            'not_null_nor_empty': 'not null nor empty',
-            'null_or_empty':      'null or empty',
-        };
-        return labels[op] || op;
-    }
+/* SDA CUSTOM */    private getOperatorLabel(op: string): string {
+/* SDA CUSTOM */        const labels: Record<string, string> = {
+/* SDA CUSTOM */            'between':            'between',
+/* SDA CUSTOM */            'not_between':        'not between',
+/* SDA CUSTOM */            'in':                 'in',
+/* SDA CUSTOM */            'not_in':             'not in',
+/* SDA CUSTOM */            'not_null':           'not null',
+/* SDA CUSTOM */            'not_null_nor_empty': 'not null nor empty',
+/* SDA CUSTOM */            'null_or_empty':      'null or empty',
+/* SDA CUSTOM */        };
+/* SDA CUSTOM */        return labels[op] || op;
+/* SDA CUSTOM */    }
 }

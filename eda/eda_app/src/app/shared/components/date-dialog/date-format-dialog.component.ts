@@ -1,251 +1,251 @@
-import { Component, EventEmitter, OnInit, Output, Input  } from '@angular/core';
-import { rangeDateFormats } from './date-format-dialog.index'
-import { SelectItem } from 'primeng/api';
-
-// Services
-import { ChartUtilsService, FilterType } from '@eda/services/service.index';
-import { EdaDatePickerConfig } from '@eda/shared/components/eda-date-picker/datePickerConfig';
-
-interface dataFormatSettings {
-  operator: string,
-  dynamic: boolean,
-  dynamicValue: string | null,
-  dynamicLabel: string | null,
-  dateValue: any | null
-}
-
-@Component({
-  selector: 'date-format-dialog',
-  templateUrl: './date-format-dialog.component.html',
-  styleUrls: ['./date-format-dialog.component.css']
-})
-
-export class DateFormatDialogComponent implements OnInit {
-
-  @Output() close: EventEmitter<any> = new EventEmitter<any>();
-  @Input() cleanButtonsAvailable: boolean = false;
-
-  public dateFormatDialogTextHeader: string = $localize`:@@dateFormatDialogTextHeader:Componente Fecha`;
-
-  public display: boolean = false;
-  public filterTypeSelected: FilterType;
-  public filter = {
-    switch: false,
-    types: [],
-    forDisplay: [],
-    selecteds: [],
-    range: null
-  };
-
-  public isDateFormatAvailable: boolean = false;
-  public dateFormatSelected: any;
-  public rangeDateFormat: any = {
-    types: [],
-  }
-  
-  public showDateFormatSelecter: boolean = true;
-  public showEdaDatePicker: boolean = false;
-
-  public showEdaDatePickerSingleSelection: boolean = false;
-  public showEdaDatePickerMultipleSelection: boolean = false;
-
-  public dateFormatSet: dataFormatSettings;
-  public dateFormatCustomValue: any = {};
-  
-  public datePickerConfig: EdaDatePickerConfig;
-
-  public get isReadyForConfirmation(): boolean {
-    if (this.filterTypeSelected == null || this.dateFormatSelected == null) return true;
-    const noDateNeeded = ['not_null', 'not_null_nor_empty', 'null_or_empty'];
-    if (noDateNeeded.includes(this.filterTypeSelected.value)) return false;
-    if (this.dateFormatSelected.value === 'customDate') {
-      return !this.dateFormatCustomValue?.value1;
-    }
-    return false;
-  }
-
-  constructor(
-    private chartUtils: ChartUtilsService,
-  ) {
-
-    // Operators for date type
-    this.filter.types = this.chartUtils.filterTypes.filter((ft: any) => ft.value !== 'like' && ft.value !== 'not_like');
-
-    // All the date formats
-    this.rangeDateFormat.types = [...rangeDateFormats];
-
-    console.log(this.filter);
-  }
-
-  ngOnInit(): void {
-  }
-  
-  public onApplyDateFormatDialog() {
-
-
-      // Preparing the dateFormatSet
-      const operator = this.filterTypeSelected.value;
-      const dynamic = this.dateFormatSelected.value === 'customDate' ? false : true;
-      const dynamicValue = dynamic ? this.dateFormatSelected.value : null;
-      const dateValue = dynamic ? null : this.dateFormatCustomValue;
-
-      const dynamicLabel = dynamic ? this.dateFormatSelected.value : null;
-      this.dateFormatSet = { operator, dynamic, dynamicValue, dynamicLabel, dateValue }
-
-      this.close.emit({
-        dateFormatSet: this.dateFormatSet,
-        filterSelected: this.filterTypeSelected,
-      });
-
-      // restoring values
-      this.filterTypeSelected = null;
-      this.dateFormatSelected = null;
-  }
-
-  public oncloseDateFormatDialog() {
-      this.close.emit(false);
-
-      // restoring values
-      this.filterTypeSelected = null;
-      this.dateFormatSelected = null;
-  }
-
-  public onCleanDateFormatDialog() {
-      this.close.emit({ clean: true });
-
-      // restoring values
-      this.filterTypeSelected = null;
-      this.dateFormatSelected = null;
-      this.dateFormatCustomValue = {};
-  }
-
-  processPickerEvent(event) {
-    
-    let filterValue: any = {};
-
-    if (event.dates) {
-      const dtf = new Intl.DateTimeFormat('en', { year: 'numeric', month: '2-digit', day: '2-digit' });
-      const dates = Array.isArray(event.dates) ? event.dates : [event.dates, event.dates];
-
-      if (!dates[1]) {
-          dates[1] = dates[0];
-      }
-
-      this.filter.range = event.range;
-
-      const isInFilter = this.filterTypeSelected?.value === 'in' || this.filterTypeSelected?.value === 'not_in';
-      if (isInFilter) {
-          // multiple selection mode: dates is an array of individually picked Date objects
-          filterValue.value1 = dates
-              .filter((d: any) => d != null)
-              .map((date: any) => {
-                  const [{ value: mo }, , { value: da }, , { value: ye }] = dtf.formatToParts(new Date(date));
-                  return `${ye}-${mo}-${da}`;
-              });
-      } else {
-          const stringRange = [dates[0], dates[1]].map(date => {
-              const [{ value: mo }, , { value: da }, , { value: ye }] = dtf.formatToParts(date);
-              return `${ye}-${mo}-${da}`;
-          });
-          filterValue.value1 = stringRange[0];
-          if (this.filterTypeSelected.value === 'between') {
-              filterValue.value2 = stringRange[1];
-          }
-      }
-    }
-
-    // take the value of the new object
-    this.dateFormatCustomValue = JSON.parse(JSON.stringify(filterValue));
-  }
-
-
-
-
-
-  public handleFilterChange(filterTypeSelected: FilterType) {
-
-    this.showDateFormatSelecter = true;
-    this.showEdaDatePicker = false;
-    this.showEdaDatePickerSingleSelection = false;
-    this.showEdaDatePickerMultipleSelection = false
-
-    if (filterTypeSelected !== undefined && filterTypeSelected !== null) {
-      this.isDateFormatAvailable = true 
-    } else {
-      // selection deleted
-      this.dateFormatSelected = null;
-      this.isDateFormatAvailable = false;
-      this.rangeDateFormat.types = [];
-      return
-    }
-    
-    if(['=', '!=', '>', '<', '>=', '<='].includes(filterTypeSelected.value)) {
-      this.dateFormatSelected = null;
-      this.rangeDateFormat.types = rangeDateFormats.filter((ft: any, index: number) => index<5);
-      this.rangeDateFormat.types.push(rangeDateFormats[rangeDateFormats.length-1]);
-      return;
-    }
-
-    if(['in', 'not_in'].includes(filterTypeSelected.value)) {
-      this.dateFormatSelected = null;
-      this.rangeDateFormat.types = rangeDateFormats.filter((ft: any, index: number) => index>=5);
-      return;
-    }
-
-    if(['between', 'not_between'].includes(filterTypeSelected.value)) {
-      this.dateFormatSelected = {label: 'Seleccionar fecha', value: 'customDate'}
-      this.showDateFormatSelecter = false;
-      this.showEdaDatePicker = true;
-      this.initDatePickerConfig();
-      return;
-    }
-
-    if(['not_null', 'not_null_nor_empty', 'null_or_empty'].includes(filterTypeSelected.value)) {
-      this.dateFormatSelected = {label: 'Seleccionar fecha', value: 'customDate'}
-      this.showDateFormatSelecter = false;
-      return;
-    }
-
-  }
-
-  public handleDateFormatChange(dateFormatSelected: any) {
-    this.showEdaDatePickerSingleSelection = false;
-    this.showEdaDatePickerMultipleSelection = false;
-
-    if (!dateFormatSelected) return;
-
-    if(['=', '!=', '>', '<', '>=', '<='].includes(this.filterTypeSelected.value) && dateFormatSelected.value === 'customDate') {
-      this.showEdaDatePickerSingleSelection = true;
-      this.initDatePickerConfig();
-      return;
-    }
-
-    if(['in', 'not_in'].includes(this.filterTypeSelected.value) && dateFormatSelected.value === 'customDate') {
-      this.showEdaDatePickerMultipleSelection = true;
-      this.initDatePickerConfig();
-      return;
-    }
-
-  }
-
-  private initDatePickerConfig(): void {
-    this.datePickerConfig = new EdaDatePickerConfig();
-    this.datePickerConfig.dateRange = [];
-    this.datePickerConfig.range = null;
-
-    if (this.dateFormatCustomValue?.value1) {
-      const v1 = this.dateFormatCustomValue.value1;
-      if (Array.isArray(v1)) {
-        // multiple selection: array of date strings
-        this.datePickerConfig.dateRange = v1.map((d: string) => new Date(d.replace(/-/g, '/')));
-      } else {
-        this.datePickerConfig.dateRange.push(new Date(v1.replace(/-/g, '/')));
-        if (this.dateFormatCustomValue.value2) {
-          this.datePickerConfig.dateRange.push(new Date(this.dateFormatCustomValue.value2.replace(/-/g, '/')));
-        }
-      }
-    }
-  }
-
-
-}
+/* SDA CUSTOM */import { Component, EventEmitter, OnInit, Output, Input  } from '@angular/core';
+/* SDA CUSTOM */import { rangeDateFormats } from './date-format-dialog.index'
+/* SDA CUSTOM */import { SelectItem } from 'primeng/api';
+/* SDA CUSTOM */
+/* SDA CUSTOM */// Services
+/* SDA CUSTOM */import { ChartUtilsService, FilterType } from '@eda/services/service.index';
+/* SDA CUSTOM */import { EdaDatePickerConfig } from '@eda/shared/components/eda-date-picker/datePickerConfig';
+/* SDA CUSTOM */
+/* SDA CUSTOM */interface dataFormatSettings {
+/* SDA CUSTOM */  operator: string,
+/* SDA CUSTOM */  dynamic: boolean,
+/* SDA CUSTOM */  dynamicValue: string | null,
+/* SDA CUSTOM */  dynamicLabel: string | null,
+/* SDA CUSTOM */  dateValue: any | null
+/* SDA CUSTOM */}
+/* SDA CUSTOM */
+/* SDA CUSTOM */@Component({
+/* SDA CUSTOM */  selector: 'date-format-dialog',
+/* SDA CUSTOM */  templateUrl: './date-format-dialog.component.html',
+/* SDA CUSTOM */  styleUrls: ['./date-format-dialog.component.css']
+/* SDA CUSTOM */})
+/* SDA CUSTOM */
+/* SDA CUSTOM */export class DateFormatDialogComponent implements OnInit {
+/* SDA CUSTOM */
+/* SDA CUSTOM */  @Output() close: EventEmitter<any> = new EventEmitter<any>();
+/* SDA CUSTOM */  @Input() cleanButtonsAvailable: boolean = false;
+/* SDA CUSTOM */
+/* SDA CUSTOM */  public dateFormatDialogTextHeader: string = $localize`:@@dateFormatDialogTextHeader:Componente Fecha`;
+/* SDA CUSTOM */
+/* SDA CUSTOM */  public display: boolean = false;
+/* SDA CUSTOM */  public filterTypeSelected: FilterType;
+/* SDA CUSTOM */  public filter = {
+/* SDA CUSTOM */    switch: false,
+/* SDA CUSTOM */    types: [],
+/* SDA CUSTOM */    forDisplay: [],
+/* SDA CUSTOM */    selecteds: [],
+/* SDA CUSTOM */    range: null
+/* SDA CUSTOM */  };
+/* SDA CUSTOM */
+/* SDA CUSTOM */  public isDateFormatAvailable: boolean = false;
+/* SDA CUSTOM */  public dateFormatSelected: any;
+/* SDA CUSTOM */  public rangeDateFormat: any = {
+/* SDA CUSTOM */    types: [],
+/* SDA CUSTOM */  }
+/* SDA CUSTOM */  
+/* SDA CUSTOM */  public showDateFormatSelecter: boolean = true;
+/* SDA CUSTOM */  public showEdaDatePicker: boolean = false;
+/* SDA CUSTOM */
+/* SDA CUSTOM */  public showEdaDatePickerSingleSelection: boolean = false;
+/* SDA CUSTOM */  public showEdaDatePickerMultipleSelection: boolean = false;
+/* SDA CUSTOM */
+/* SDA CUSTOM */  public dateFormatSet: dataFormatSettings;
+/* SDA CUSTOM */  public dateFormatCustomValue: any = {};
+/* SDA CUSTOM */  
+/* SDA CUSTOM */  public datePickerConfig: EdaDatePickerConfig;
+/* SDA CUSTOM */
+/* SDA CUSTOM */  public get isReadyForConfirmation(): boolean {
+/* SDA CUSTOM */    if (this.filterTypeSelected == null || this.dateFormatSelected == null) return true;
+/* SDA CUSTOM */    const noDateNeeded = ['not_null', 'not_null_nor_empty', 'null_or_empty'];
+/* SDA CUSTOM */    if (noDateNeeded.includes(this.filterTypeSelected.value)) return false;
+/* SDA CUSTOM */    if (this.dateFormatSelected.value === 'customDate') {
+/* SDA CUSTOM */      return !this.dateFormatCustomValue?.value1;
+/* SDA CUSTOM */    }
+/* SDA CUSTOM */    return false;
+/* SDA CUSTOM */  }
+/* SDA CUSTOM */
+/* SDA CUSTOM */  constructor(
+/* SDA CUSTOM */    private chartUtils: ChartUtilsService,
+/* SDA CUSTOM */  ) {
+/* SDA CUSTOM */
+/* SDA CUSTOM */    // Operators for date type
+/* SDA CUSTOM */    this.filter.types = this.chartUtils.filterTypes.filter((ft: any) => ft.value !== 'like' && ft.value !== 'not_like');
+/* SDA CUSTOM */
+/* SDA CUSTOM */    // All the date formats
+/* SDA CUSTOM */    this.rangeDateFormat.types = [...rangeDateFormats];
+/* SDA CUSTOM */
+/* SDA CUSTOM */    console.log(this.filter);
+/* SDA CUSTOM */  }
+/* SDA CUSTOM */
+/* SDA CUSTOM */  ngOnInit(): void {
+/* SDA CUSTOM */  }
+/* SDA CUSTOM */  
+/* SDA CUSTOM */  public onApplyDateFormatDialog() {
+/* SDA CUSTOM */
+/* SDA CUSTOM */
+/* SDA CUSTOM */      // Preparing the dateFormatSet
+/* SDA CUSTOM */      const operator = this.filterTypeSelected.value;
+/* SDA CUSTOM */      const dynamic = this.dateFormatSelected.value === 'customDate' ? false : true;
+/* SDA CUSTOM */      const dynamicValue = dynamic ? this.dateFormatSelected.value : null;
+/* SDA CUSTOM */      const dateValue = dynamic ? null : this.dateFormatCustomValue;
+/* SDA CUSTOM */
+/* SDA CUSTOM */      const dynamicLabel = dynamic ? this.dateFormatSelected.value : null;
+/* SDA CUSTOM */      this.dateFormatSet = { operator, dynamic, dynamicValue, dynamicLabel, dateValue }
+/* SDA CUSTOM */
+/* SDA CUSTOM */      this.close.emit({
+/* SDA CUSTOM */        dateFormatSet: this.dateFormatSet,
+/* SDA CUSTOM */        filterSelected: this.filterTypeSelected,
+/* SDA CUSTOM */      });
+/* SDA CUSTOM */
+/* SDA CUSTOM */      // restoring values
+/* SDA CUSTOM */      this.filterTypeSelected = null;
+/* SDA CUSTOM */      this.dateFormatSelected = null;
+/* SDA CUSTOM */  }
+/* SDA CUSTOM */
+/* SDA CUSTOM */  public oncloseDateFormatDialog() {
+/* SDA CUSTOM */      this.close.emit(false);
+/* SDA CUSTOM */
+/* SDA CUSTOM */      // restoring values
+/* SDA CUSTOM */      this.filterTypeSelected = null;
+/* SDA CUSTOM */      this.dateFormatSelected = null;
+/* SDA CUSTOM */  }
+/* SDA CUSTOM */
+/* SDA CUSTOM */  public onCleanDateFormatDialog() {
+/* SDA CUSTOM */      this.close.emit({ clean: true });
+/* SDA CUSTOM */
+/* SDA CUSTOM */      // restoring values
+/* SDA CUSTOM */      this.filterTypeSelected = null;
+/* SDA CUSTOM */      this.dateFormatSelected = null;
+/* SDA CUSTOM */      this.dateFormatCustomValue = {};
+/* SDA CUSTOM */  }
+/* SDA CUSTOM */
+/* SDA CUSTOM */  processPickerEvent(event) {
+/* SDA CUSTOM */    
+/* SDA CUSTOM */    let filterValue: any = {};
+/* SDA CUSTOM */
+/* SDA CUSTOM */    if (event.dates) {
+/* SDA CUSTOM */      const dtf = new Intl.DateTimeFormat('en', { year: 'numeric', month: '2-digit', day: '2-digit' });
+/* SDA CUSTOM */      const dates = Array.isArray(event.dates) ? event.dates : [event.dates, event.dates];
+/* SDA CUSTOM */
+/* SDA CUSTOM */      if (!dates[1]) {
+/* SDA CUSTOM */          dates[1] = dates[0];
+/* SDA CUSTOM */      }
+/* SDA CUSTOM */
+/* SDA CUSTOM */      this.filter.range = event.range;
+/* SDA CUSTOM */
+/* SDA CUSTOM */      const isInFilter = this.filterTypeSelected?.value === 'in' || this.filterTypeSelected?.value === 'not_in';
+/* SDA CUSTOM */      if (isInFilter) {
+/* SDA CUSTOM */          // multiple selection mode: dates is an array of individually picked Date objects
+/* SDA CUSTOM */          filterValue.value1 = dates
+/* SDA CUSTOM */              .filter((d: any) => d != null)
+/* SDA CUSTOM */              .map((date: any) => {
+/* SDA CUSTOM */                  const [{ value: mo }, , { value: da }, , { value: ye }] = dtf.formatToParts(new Date(date));
+/* SDA CUSTOM */                  return `${ye}-${mo}-${da}`;
+/* SDA CUSTOM */              });
+/* SDA CUSTOM */      } else {
+/* SDA CUSTOM */          const stringRange = [dates[0], dates[1]].map(date => {
+/* SDA CUSTOM */              const [{ value: mo }, , { value: da }, , { value: ye }] = dtf.formatToParts(date);
+/* SDA CUSTOM */              return `${ye}-${mo}-${da}`;
+/* SDA CUSTOM */          });
+/* SDA CUSTOM */          filterValue.value1 = stringRange[0];
+/* SDA CUSTOM */          if (this.filterTypeSelected.value === 'between') {
+/* SDA CUSTOM */              filterValue.value2 = stringRange[1];
+/* SDA CUSTOM */          }
+/* SDA CUSTOM */      }
+/* SDA CUSTOM */    }
+/* SDA CUSTOM */
+/* SDA CUSTOM */    // take the value of the new object
+/* SDA CUSTOM */    this.dateFormatCustomValue = JSON.parse(JSON.stringify(filterValue));
+/* SDA CUSTOM */  }
+/* SDA CUSTOM */
+/* SDA CUSTOM */
+/* SDA CUSTOM */
+/* SDA CUSTOM */
+/* SDA CUSTOM */
+/* SDA CUSTOM */  public handleFilterChange(filterTypeSelected: FilterType) {
+/* SDA CUSTOM */
+/* SDA CUSTOM */    this.showDateFormatSelecter = true;
+/* SDA CUSTOM */    this.showEdaDatePicker = false;
+/* SDA CUSTOM */    this.showEdaDatePickerSingleSelection = false;
+/* SDA CUSTOM */    this.showEdaDatePickerMultipleSelection = false
+/* SDA CUSTOM */
+/* SDA CUSTOM */    if (filterTypeSelected !== undefined && filterTypeSelected !== null) {
+/* SDA CUSTOM */      this.isDateFormatAvailable = true 
+/* SDA CUSTOM */    } else {
+/* SDA CUSTOM */      // selection deleted
+/* SDA CUSTOM */      this.dateFormatSelected = null;
+/* SDA CUSTOM */      this.isDateFormatAvailable = false;
+/* SDA CUSTOM */      this.rangeDateFormat.types = [];
+/* SDA CUSTOM */      return
+/* SDA CUSTOM */    }
+/* SDA CUSTOM */    
+/* SDA CUSTOM */    if(['=', '!=', '>', '<', '>=', '<='].includes(filterTypeSelected.value)) {
+/* SDA CUSTOM */      this.dateFormatSelected = null;
+/* SDA CUSTOM */      this.rangeDateFormat.types = rangeDateFormats.filter((ft: any, index: number) => index<5);
+/* SDA CUSTOM */      this.rangeDateFormat.types.push(rangeDateFormats[rangeDateFormats.length-1]);
+/* SDA CUSTOM */      return;
+/* SDA CUSTOM */    }
+/* SDA CUSTOM */
+/* SDA CUSTOM */    if(['in', 'not_in'].includes(filterTypeSelected.value)) {
+/* SDA CUSTOM */      this.dateFormatSelected = null;
+/* SDA CUSTOM */      this.rangeDateFormat.types = rangeDateFormats.filter((ft: any, index: number) => index>=5);
+/* SDA CUSTOM */      return;
+/* SDA CUSTOM */    }
+/* SDA CUSTOM */
+/* SDA CUSTOM */    if(['between', 'not_between'].includes(filterTypeSelected.value)) {
+/* SDA CUSTOM */      this.dateFormatSelected = {label: 'Seleccionar fecha', value: 'customDate'}
+/* SDA CUSTOM */      this.showDateFormatSelecter = false;
+/* SDA CUSTOM */      this.showEdaDatePicker = true;
+/* SDA CUSTOM */      this.initDatePickerConfig();
+/* SDA CUSTOM */      return;
+/* SDA CUSTOM */    }
+/* SDA CUSTOM */
+/* SDA CUSTOM */    if(['not_null', 'not_null_nor_empty', 'null_or_empty'].includes(filterTypeSelected.value)) {
+/* SDA CUSTOM */      this.dateFormatSelected = {label: 'Seleccionar fecha', value: 'customDate'}
+/* SDA CUSTOM */      this.showDateFormatSelecter = false;
+/* SDA CUSTOM */      return;
+/* SDA CUSTOM */    }
+/* SDA CUSTOM */
+/* SDA CUSTOM */  }
+/* SDA CUSTOM */
+/* SDA CUSTOM */  public handleDateFormatChange(dateFormatSelected: any) {
+/* SDA CUSTOM */    this.showEdaDatePickerSingleSelection = false;
+/* SDA CUSTOM */    this.showEdaDatePickerMultipleSelection = false;
+/* SDA CUSTOM */
+/* SDA CUSTOM */    if (!dateFormatSelected) return;
+/* SDA CUSTOM */
+/* SDA CUSTOM */    if(['=', '!=', '>', '<', '>=', '<='].includes(this.filterTypeSelected.value) && dateFormatSelected.value === 'customDate') {
+/* SDA CUSTOM */      this.showEdaDatePickerSingleSelection = true;
+/* SDA CUSTOM */      this.initDatePickerConfig();
+/* SDA CUSTOM */      return;
+/* SDA CUSTOM */    }
+/* SDA CUSTOM */
+/* SDA CUSTOM */    if(['in', 'not_in'].includes(this.filterTypeSelected.value) && dateFormatSelected.value === 'customDate') {
+/* SDA CUSTOM */      this.showEdaDatePickerMultipleSelection = true;
+/* SDA CUSTOM */      this.initDatePickerConfig();
+/* SDA CUSTOM */      return;
+/* SDA CUSTOM */    }
+/* SDA CUSTOM */
+/* SDA CUSTOM */  }
+/* SDA CUSTOM */
+/* SDA CUSTOM */  private initDatePickerConfig(): void {
+/* SDA CUSTOM */    this.datePickerConfig = new EdaDatePickerConfig();
+/* SDA CUSTOM */    this.datePickerConfig.dateRange = [];
+/* SDA CUSTOM */    this.datePickerConfig.range = null;
+/* SDA CUSTOM */
+/* SDA CUSTOM */    if (this.dateFormatCustomValue?.value1) {
+/* SDA CUSTOM */      const v1 = this.dateFormatCustomValue.value1;
+/* SDA CUSTOM */      if (Array.isArray(v1)) {
+/* SDA CUSTOM */        // multiple selection: array of date strings
+/* SDA CUSTOM */        this.datePickerConfig.dateRange = v1.map((d: string) => new Date(d.replace(/-/g, '/')));
+/* SDA CUSTOM */      } else {
+/* SDA CUSTOM */        this.datePickerConfig.dateRange.push(new Date(v1.replace(/-/g, '/')));
+/* SDA CUSTOM */        if (this.dateFormatCustomValue.value2) {
+/* SDA CUSTOM */          this.datePickerConfig.dateRange.push(new Date(this.dateFormatCustomValue.value2.replace(/-/g, '/')));
+/* SDA CUSTOM */        }
+/* SDA CUSTOM */      }
+/* SDA CUSTOM */    }
+/* SDA CUSTOM */  }
+/* SDA CUSTOM */
+/* SDA CUSTOM */
+/* SDA CUSTOM */}
