@@ -972,43 +972,43 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
         this.rangeString = inputElement.value; // Se actualiza ngModel
     }
 
-    onOpenDateFormatDialog() {
-        this.displayDateFormat = true;
-    }
+    /* SDA CUSTOM */ onOpenDateFormatDialog() {
+    /* SDA CUSTOM */     this.displayDateFormat = true;
+    /* SDA CUSTOM */ }
     
-    onCloseDateFormatDialog(event: any) {
-        this.displayDateFormat = false;
-
-        if (event) {
-            const { dateFormatSet, filterSelected }: any = event;
-            this.filterSelected = JSON.parse(JSON.stringify(filterSelected));
-
-            if (dateFormatSet.dynamic) {
-                const dates = this.dateUtils.getRange(dateFormatSet.dynamicValue);
-                const dtf = new Intl.DateTimeFormat('en', { year: 'numeric', month: '2-digit', day: '2-digit' });
-                const toStr = (d: Date): string => {
-                    const [{ value: mo }, , { value: da }, , { value: ye }] = dtf.formatToParts(d);
-                    return `${ye}-${mo}-${da}`;
-                };
-
-                if (filterSelected.value === 'in' || filterSelected.value === 'not_in') {
-                    /* SDA CUSTOM: store boundary dates; dynamicValue signals BETWEEN semantics to the backend */
-                    this.filterValue = { value1: toStr(dates[0]), value2: toStr(dates[1]) };
-                } else {
-                    this.filterValue = { value1: toStr(dates[0]) };
-                }
-
-                this.filter.range = dateFormatSet.dynamicValue;
-                this._pendingDynamicValue = dateFormatSet.dynamicLabel;
-            } else {
-                this.filterValue = JSON.parse(JSON.stringify(dateFormatSet.dateValue));
-                this.filter.range = null;
-                this._pendingDynamicValue = null;
-            }
-
-            this.addFilter();
-            this._pendingDynamicValue = null;
-        }
-    }
+    /* SDA CUSTOM */onCloseDateFormatDialog(event: any) {
+    /* SDA CUSTOM */    this.displayDateFormat = false;
+    /* SDA CUSTOM */
+    /* SDA CUSTOM */    if (event) {
+    /* SDA CUSTOM */        const { dateFormatSet, filterSelected }: any = event;
+    /* SDA CUSTOM */        this.filterSelected = JSON.parse(JSON.stringify(filterSelected));
+    /* SDA CUSTOM */
+    /* SDA CUSTOM */        if (dateFormatSet.dynamic) {
+    /* SDA CUSTOM */            const dates = this.dateUtils.getRange(dateFormatSet.dynamicValue);
+    /* SDA CUSTOM */            const dtf = new Intl.DateTimeFormat('en', { year: 'numeric', month: '2-digit', day: '2-digit' });
+    /* SDA CUSTOM */            const toStr = (d: Date): string => {
+    /* SDA CUSTOM */                const [{ value: mo }, , { value: da }, , { value: ye }] = dtf.formatToParts(d);
+    /* SDA CUSTOM */                return `${ye}-${mo}-${da}`;
+    /* SDA CUSTOM */            };
+    /* SDA CUSTOM */
+    /* SDA CUSTOM */            if (filterSelected.value === 'in' || filterSelected.value === 'not_in') {
+    /* SDA CUSTOM */                /* SDA CUSTOM: store boundary dates; dynamicValue signals BETWEEN semantics to the backend */
+    /* SDA CUSTOM */                this.filterValue = { value1: toStr(dates[0]), value2: toStr(dates[1]) };
+    /* SDA CUSTOM */            } else {
+    /* SDA CUSTOM */                this.filterValue = { value1: toStr(dates[0]) };
+    /* SDA CUSTOM */            }
+    /* SDA CUSTOM */
+    /* SDA CUSTOM */            this.filter.range = dateFormatSet.dynamicValue;
+    /* SDA CUSTOM */            this._pendingDynamicValue = dateFormatSet.dynamicLabel;
+    /* SDA CUSTOM */        } else {
+    /* SDA CUSTOM */            this.filterValue = JSON.parse(JSON.stringify(dateFormatSet.dateValue));
+    /* SDA CUSTOM */            this.filter.range = null;
+    /* SDA CUSTOM */            this._pendingDynamicValue = null;
+    /* SDA CUSTOM */        }
+    /* SDA CUSTOM */
+    /* SDA CUSTOM */        this.addFilter();
+    /* SDA CUSTOM */        this._pendingDynamicValue = null;
+    /* SDA CUSTOM */    }
+    /* SDA CUSTOM */}
 
 }

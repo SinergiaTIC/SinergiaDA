@@ -547,94 +547,94 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
     }
 
     /* SDA CUSTOM */
-    onCloseDateFormatDialog(event: any) {
-        this.displayDateFormat = false;
-        if (!event) return;
-
-        const { dateFormatSet, filterSelected } = event;
-        const dtf = new Intl.DateTimeFormat('en', { year: 'numeric', month: '2-digit', day: '2-digit' });
-        const toStr = (d: Date): string => {
-            const [{ value: mo }, , { value: da }, , { value: ye }] = dtf.formatToParts(d);
-            return `${ye}-${mo}-${da}`;
-        };
-
-        this.globalFilter.dateFilterType = filterSelected.value;
-
-        if (dateFormatSet.dynamic) {
-            const dates = this.dateUtils.getRange(dateFormatSet.dynamicValue);
-            this.globalFilter.selectedRange = dateFormatSet.dynamicValue;
-            this.globalFilter.dynamicValue = dateFormatSet.dynamicValue;
-
-            if (filterSelected.value === 'in' || filterSelected.value === 'not_in') {
-                this.globalFilter.selectedItems = [toStr(dates[0]), toStr(dates[1])];
-            } else {
-                this.globalFilter.selectedItems = [toStr(dates[0]), toStr(dates[1])];
-            }
-        } else {
-            this.globalFilter.selectedRange = null;
-            this.globalFilter.dynamicValue = null;
-
-            const noValueTypes = ['not_null', 'not_null_nor_empty', 'null_or_empty'];
-            if (noValueTypes.includes(filterSelected.value)) {
-                this.globalFilter.selectedItems = [];
-            } else {
-                const val = dateFormatSet.dateValue;
-/* SDA CUSTOM */const isStaticInNotIn = (filterSelected.value === 'in' || filterSelected.value === 'not_in') && Array.isArray(val.value1);
-/* SDA CUSTOM */if (isStaticInNotIn) {
-/* SDA CUSTOM */    this.globalFilter.selectedItems = [val.value1];
-/* SDA CUSTOM */} else {
-/* SDA CUSTOM */    this.globalFilter.selectedItems = val.value2
-/* SDA CUSTOM */        ? [val.value1, val.value2]
-/* SDA CUSTOM */        : Array.isArray(val.value1) ? val.value1 : [val.value1];
-/* SDA CUSTOM */}
-            }
-        }
-    }
+    /* SDA CUSTOM */onCloseDateFormatDialog(event: any) {
+    /* SDA CUSTOM */    this.displayDateFormat = false;
+    /* SDA CUSTOM */    if (!event) return;
+    /* SDA CUSTOM */
+    /* SDA CUSTOM */    const { dateFormatSet, filterSelected } = event;
+    /* SDA CUSTOM */    const dtf = new Intl.DateTimeFormat('en', { year: 'numeric', month: '2-digit', day: '2-digit' });
+    /* SDA CUSTOM */    const toStr = (d: Date): string => {
+    /* SDA CUSTOM */        const [{ value: mo }, , { value: da }, , { value: ye }] = dtf.formatToParts(d);
+    /* SDA CUSTOM */        return `${ye}-${mo}-${da}`;
+    /* SDA CUSTOM */    };
+    /* SDA CUSTOM */
+    /* SDA CUSTOM */    this.globalFilter.dateFilterType = filterSelected.value;
+    /* SDA CUSTOM */
+    /* SDA CUSTOM */    if (dateFormatSet.dynamic) {
+    /* SDA CUSTOM */        const dates = this.dateUtils.getRange(dateFormatSet.dynamicValue);
+    /* SDA CUSTOM */        this.globalFilter.selectedRange = dateFormatSet.dynamicValue;
+    /* SDA CUSTOM */        this.globalFilter.dynamicValue = dateFormatSet.dynamicValue;
+    /* SDA CUSTOM */
+    /* SDA CUSTOM */        if (filterSelected.value === 'in' || filterSelected.value === 'not_in') {
+    /* SDA CUSTOM */            this.globalFilter.selectedItems = [toStr(dates[0]), toStr(dates[1])];
+    /* SDA CUSTOM */        } else {
+    /* SDA CUSTOM */            this.globalFilter.selectedItems = [toStr(dates[0]), toStr(dates[1])];
+    /* SDA CUSTOM */        }
+    /* SDA CUSTOM */    } else {
+    /* SDA CUSTOM */        this.globalFilter.selectedRange = null;
+    /* SDA CUSTOM */        this.globalFilter.dynamicValue = null;
+    /* SDA CUSTOM */
+    /* SDA CUSTOM */        const noValueTypes = ['not_null', 'not_null_nor_empty', 'null_or_empty'];
+    /* SDA CUSTOM */        if (noValueTypes.includes(filterSelected.value)) {
+    /* SDA CUSTOM */            this.globalFilter.selectedItems = [];
+    /* SDA CUSTOM */        } else {
+    /* SDA CUSTOM */            const val = dateFormatSet.dateValue;
+    /* SDA CUSTOM */            const isStaticInNotIn = (filterSelected.value === 'in' || filterSelected.value === 'not_in') && Array.isArray(val.value1);
+    /* SDA CUSTOM */            if (isStaticInNotIn) {
+    /* SDA CUSTOM */                this.globalFilter.selectedItems = [val.value1];
+    /* SDA CUSTOM */            } else {
+    /* SDA CUSTOM */                this.globalFilter.selectedItems = val.value2
+    /* SDA CUSTOM */                    ? [val.value1, val.value2]
+    /* SDA CUSTOM */                    : Array.isArray(val.value1) ? val.value1 : [val.value1];
+    /* SDA CUSTOM */            }
+    /* SDA CUSTOM */        }
+    /* SDA CUSTOM */    }
+    /* SDA CUSTOM */}
 
     /* SDA CUSTOM */
-    getRangeLabel(value: string): string {
-        return rangeDateFormats.find((r: any) => r.value === value)?.label || value;
-    }
+    /* SDA CUSTOM */ getRangeLabel(value: string): string {
+    /* SDA CUSTOM */     return rangeDateFormats.find((r: any) => r.value === value)?.label || value;
+    /* SDA CUSTOM */ }
 
     /* SDA CUSTOM */
-    getDateFormatButtonLabel(): string {
-        const op = this.globalFilter.dateFilterType;
-        if (!op) return 'Date Format';
-
-        const noValueTypes = ['not_null', 'not_null_nor_empty', 'null_or_empty'];
-        if (noValueTypes.includes(op)) return this.getOperatorLabel(op);
-
-        const fmt = (s: string) => {
-            if (!s) return '';
-            const [ye, mo, da] = s.split('-');
-            return `${da}-${mo}-${ye.slice(2)}`;
-        };
-
-        if (this.globalFilter.dynamicValue) {
-            return `${this.getOperatorLabel(op)} | ${this.getRangeLabel(this.globalFilter.dynamicValue)}`;
-        }
-
-        const items = this.globalFilter.selectedItems;
-        if (!items || items.length === 0) return 'Date Format';
-/* SDA CUSTOM */if (Array.isArray(items[0])) return `${this.getOperatorLabel(op)} | ${(items[0] as string[]).map(fmt).join(', ')}`;
-        if (items.length === 1 || !items[1]) return `${this.getOperatorLabel(op)} | ${fmt(items[0])}`;
-        return `${this.getOperatorLabel(op)} | ${fmt(items[0])} - ${fmt(items[1])}`;
-    }
+    /* SDA CUSTOM */getDateFormatButtonLabel(): string {
+    /* SDA CUSTOM */    const op = this.globalFilter.dateFilterType;
+    /* SDA CUSTOM */    if (!op) return 'Date Format';
+    /* SDA CUSTOM */
+    /* SDA CUSTOM */    const noValueTypes = ['not_null', 'not_null_nor_empty', 'null_or_empty'];
+    /* SDA CUSTOM */    if (noValueTypes.includes(op)) return this.getOperatorLabel(op);
+    /* SDA CUSTOM */
+    /* SDA CUSTOM */    const fmt = (s: string) => {
+    /* SDA CUSTOM */        if (!s) return '';
+    /* SDA CUSTOM */        const [ye, mo, da] = s.split('-');
+    /* SDA CUSTOM */        return `${da}-${mo}-${ye.slice(2)}`;
+    /* SDA CUSTOM */    };
+    /* SDA CUSTOM */
+    /* SDA CUSTOM */    if (this.globalFilter.dynamicValue) {
+    /* SDA CUSTOM */        return `${this.getOperatorLabel(op)} | ${this.getRangeLabel(this.globalFilter.dynamicValue)}`;
+    /* SDA CUSTOM */    }
+    /* SDA CUSTOM */
+    /* SDA CUSTOM */    const items = this.globalFilter.selectedItems;
+    /* SDA CUSTOM */    if (!items || items.length === 0) return 'Date Format';
+    /* SDA CUSTOM */    if (Array.isArray(items[0])) return `${this.getOperatorLabel(op)} | ${(items[0] as string[]).map(fmt).join(', ')}`;
+    /* SDA CUSTOM */    if (items.length === 1 || !items[1]) return `${this.getOperatorLabel(op)} | ${fmt(items[0])}`;
+    /* SDA CUSTOM */    return `${this.getOperatorLabel(op)} | ${fmt(items[0])} - ${fmt(items[1])}`;
+    /* SDA CUSTOM */}
 
     /* SDA CUSTOM */
-    private getOperatorLabel(op: string): string {
-        const labels: Record<string, string> = {
-            'between':           'between',
-            'not_between':       'not between',
-            'in':                'in',
-            'not_in':            'not in',
-            'not_null':          'not null',
-            'not_null_nor_empty':'not null nor empty',
-            'null_or_empty':     'null or empty',
-            'like':              'like',
-            'not_like':          'not like',
-        };
-        return labels[op] || op;
-    }
+    /* SDA CUSTOM */private getOperatorLabel(op: string): string {
+    /* SDA CUSTOM */    const labels: Record<string, string> = {
+    /* SDA CUSTOM */        'between':           'between',
+    /* SDA CUSTOM */        'not_between':       'not between',
+    /* SDA CUSTOM */        'in':                'in',
+    /* SDA CUSTOM */        'not_in':            'not in',
+    /* SDA CUSTOM */        'not_null':          'not null',
+    /* SDA CUSTOM */        'not_null_nor_empty':'not null nor empty',
+    /* SDA CUSTOM */        'null_or_empty':     'null or empty',
+    /* SDA CUSTOM */        'like':              'like',
+    /* SDA CUSTOM */        'not_like':          'not like',
+    /* SDA CUSTOM */    };
+    /* SDA CUSTOM */    return labels[op] || op;
+    /* SDA CUSTOM */}
 
 }
