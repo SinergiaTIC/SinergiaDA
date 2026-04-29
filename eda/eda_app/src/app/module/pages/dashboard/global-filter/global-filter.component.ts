@@ -745,7 +745,7 @@ export class GlobalFilterComponent implements OnInit {
     /* SDA CUSTOM */
     public getDateFilterLabel(filter: any): string {
         const op = filter.dateFilterType;
-        if (!op) return 'Fecha';
+        if (!op) return '';
 
         const noValueTypes = ['not_null', 'not_null_nor_empty', 'null_or_empty'];
         if (noValueTypes.includes(op)) return this.getOperatorLabel(op);
