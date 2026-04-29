@@ -25,6 +25,8 @@ export class DateFormatDialogComponent implements OnInit {
   @Output() close: EventEmitter<any> = new EventEmitter<any>();
   @Input() cleanButtonsAvailable: boolean = false;
 
+  public dateFormatDialogTextHeader: string = $localize`:@@dateFormatDialogTextHeader:Componente Fecha`;
+
   public display: boolean = false;
   public filterTypeSelected: FilterType;
   public filter = {
@@ -71,6 +73,8 @@ export class DateFormatDialogComponent implements OnInit {
 
     // All the date formats
     this.rangeDateFormat.types = [...rangeDateFormats];
+
+    console.log(this.filter);
   }
 
   ngOnInit(): void {

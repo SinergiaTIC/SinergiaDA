@@ -4593,6 +4593,22 @@
         <source>Filtrar fecha</source>
         <target>Filtrar fecha</target>
       </trans-unit>
+      <trans-unit id="calendarSelectionText">
+        <source>Selección en calendario:</source>
+        <target>Selección en calendario:</target>
+      </trans-unit>
+      <trans-unit id="dateSelectionText">
+        <source>Selección de fecha:</source>
+        <target>Selección de fecha:</target>
+      </trans-unit>
+      <trans-unit id="filterOperatorSelectionText">
+        <source>Selección de operador del filtro:</source>
+        <target>Selección de operador del filtro:</target>
+      </trans-unit>
+      <trans-unit id="dateFormatDialogTextHeader">
+        <source>Componente Fecha</source>
+        <target>Componente Fecha</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>

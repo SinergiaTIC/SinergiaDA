@@ -4594,6 +4594,22 @@
         <source>Filtrar fecha</source>
         <target>Filtrar data</target>
       </trans-unit>
+      <trans-unit id="calendarSelectionText">
+        <source>Selección en calendario:</source>
+        <target>Selección no calendario:</target>
+      </trans-unit>
+      <trans-unit id="dateSelectionText">
+        <source>Selección de fecha:</source>
+        <target>Selección de data:</target>
+      </trans-unit>
+      <trans-unit id="filterOperatorSelectionText">
+        <source>Selección de operador del filtro:</source>
+        <target>Selección do operador do filtro:</target>
+      </trans-unit>
+      <trans-unit id="dateFormatDialogTextHeader">
+        <source>Componente Fecha</source>
+        <target>Compoñente de data</target>
+      </trans-unit>      
     </body>
   </file>
 </xliff>

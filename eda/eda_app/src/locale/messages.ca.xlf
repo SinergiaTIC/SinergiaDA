@@ -4597,6 +4597,22 @@ Un cop configurada podreu invocar-la des del botó sempre que calgui.</target>
         <source>Filtrar fecha</source>
         <target>Filtrar data</target>
       </trans-unit>
+      <trans-unit id="calendarSelectionText">
+        <source>Selección en calendario:</source>
+        <target>Selecció al calendari:</target>
+      </trans-unit>
+      <trans-unit id="dateSelectionText">
+        <source>Selección de fecha:</source>
+        <target>Selecció de data:</target>
+      </trans-unit>
+      <trans-unit id="filterOperatorSelectionText">
+        <source>Selección de operador del filtro:</source>
+        <target>Selecció d'operador del filtre:</target>
+      </trans-unit>
+      <trans-unit id="dateFormatDialogTextHeader">
+        <source>Componente Fecha</source>
+        <target>Component de data</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>

@@ -1,6 +1,6 @@
 <eda-dialog2
     [display]="display"
-    header="Componente Fecha"
+    [header]="dateFormatDialogTextHeader"
     i18n-label="@@dateFormatTitle"
     width="60vw" height="70vh"
     [disableApply]="isReadyForConfirmation"
@@ -12,7 +12,9 @@
         <div class="date-format-card">
             
             <div class="date-format-col">
-                <h5>Selección de operador del filtro: </h5>
+                <h5>
+                    <span i18n="@@filterOperatorSelectionText">Selección de operador del filtro:</span>
+                </h5>
                 
                 <div class="mt-5">
                     <span class="p-float-label">
@@ -38,7 +40,9 @@
             </div>
             
             <div class="date-format-col">
-                <h5 *ngIf="filterTypeSelected?.value !== 'between' && filterTypeSelected?.value !== 'not_null' && filterTypeSelected?.value !== 'not_null_nor_empty' && filterTypeSelected?.value !== 'null_or_empty'">Selección de fecha: </h5>
+                <h5 *ngIf="filterTypeSelected?.value !== 'between' && filterTypeSelected?.value !== 'not_null' && filterTypeSelected?.value !== 'not_null_nor_empty' && filterTypeSelected?.value !== 'null_or_empty'">
+                    <span i18n="@@dateSelectionText">Selección de fecha:</span> 
+                </h5>
 
                 <div *ngIf="showDateFormatSelecter" class="mt-5">
                     <span class="p-float-label">
@@ -62,7 +66,9 @@
                     </span>
                 </div>
 
-                <h5 *ngIf="showEdaDatePicker">Selección en calendario: </h5>
+                <h5 *ngIf="showEdaDatePicker">
+                    <span i18n="@@calendarSelectionText">Selección en calendario:</span> 
+                </h5>
 
                 <div *ngIf="showEdaDatePicker" class="mt-5">
                     <div class="date-picker-single">
@@ -80,7 +86,9 @@
             </div>
             
             <div class="date-format-col">
-                <h5 *ngIf="showEdaDatePickerSingleSelection || showEdaDatePickerMultipleSelection">Selección en calendario: </h5>
+                <h5 *ngIf="showEdaDatePickerSingleSelection || showEdaDatePickerMultipleSelection">
+                    <span i18n="@@calendarSelectionText">Selección en calendario:</span> 
+                </h5>
     
                 <div *ngIf="showEdaDatePickerSingleSelection" class="mt-5">
                     <div class="date-picker-single">
