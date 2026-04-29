@@ -2,75 +2,79 @@ import { MailingService } from "../mailingService/mailing.service";
 const serverConfig = require('../../../config/mailing.config');
 const puppeteer = require('puppeteer');
 
+/*SDA CUSTOM*/const wait = (ms) => {
+/*SDA CUSTOM*/  return new Promise<void>(resolve => setTimeout(() => resolve(), ms));
+/*SDA CUSTOM*/}
+
 export class MailDashboardsController {
 
   static sendDashboard = async (dashboard: string, userMail: string, transporter: any, message: string, token: string) => {
 
     try {
-      console.log('Send Dashboard token');
-      console.log(token);
+      console.log(`[MailDashboardsController] Starting sendDashboard for ${userMail} on dashboard ${dashboard}`);
       const browser = await puppeteer.launch({ headless: true , args: ['--no-sandbox'] });
       const loginPage = await browser.newPage();
-      // Configure the navigation timeout
-      //await loginPage.setDefaultNavigationTimeout(300000);
-
-      const wait = (ms) => {
-        return new Promise<void>(resolve => setTimeout(() => resolve(), ms));
-      }
 
       await loginPage.on('response', async (response) => {
 
-        try {
-          const res = await response.json();
+        if (response.url().includes('fake-login')) {
+          try {
+            console.log(`[MailDashboardsController] Fake-login response received: ${response.status()}`);
+            const res = await response.json();
+            console.log(`[MailDashboardsController] Token obtained for ${userMail}`);
+            
+            const browserPDF = await puppeteer.launch({ headless: true,  args: ['--no-sandbox'] });
+            const page = await browserPDF.newPage();
 
-          console.log(res.user, res.token)
-          
-          const browser = await puppeteer.launch({ headless: true,  args: ['--no-sandbox'] });
-          const page = await browser.newPage();
+            await page.setViewport({ width: 1366, height: 768 });
 
-          await page.setViewport({
-            width: 1366,
-            height: 768
-          });
+            console.log(`[MailDashboardsController] Navigating to dashboard page: ${serverConfig.server_baseURL}`);
+            await page.goto(`${serverConfig.server_baseURL}`);
+            await page.evaluate((res) => {
+              localStorage.setItem('token', res.token);
+              localStorage.setItem('user', JSON.stringify(res.user));
+              localStorage.setItem('id', res.user._id);
+            }, res);
 
-
-          await page.goto(`${serverConfig.server_baseURL}`)
-          await page.evaluate((res) => {
-            localStorage.setItem('token', res.token);
-            localStorage.setItem('user', JSON.stringify(res.user));
-            localStorage.setItem('id', res.user._id)
-          }, res);
-
-
-          await page.goto(`${serverConfig.server_baseURL}/#/dashboard/${dashboard}`);
-          await wait(40000);
-          const filename = `${dashboard}_${userMail}.pdf`;
-          const filepath = __dirname;
-          await page.pdf(
-            {
-              path: `${__dirname}/${dashboard}_${userMail}.pdf`,
-              // format: 'a3',
-              width:1380,
-              height:775,
-              printBackground: true,
-              displayHeaderFooter: false,
-              landscape: false,
-
+            const dashboardUrl = `${serverConfig.server_baseURL}/#/dashboard/${dashboard}`;
+            console.log(`[MailDashboardsController] Loading dashboard: ${dashboardUrl}`);
+            await page.goto(dashboardUrl);
+            console.log(`[MailDashboardsController] Waiting for dashboard to render (40s)...`);
+            await wait(40000);
+            
+            const filename = `${dashboard}_${userMail.replace(/[@.]/g, '_')}.pdf`;
+            const filepath = __dirname;
+            console.log(`[MailDashboardsController] Generating PDF: ${filename}`);
+            
+            await page.pdf({
+                path: `${filepath}/${filename}`,
+                width: 1380,
+                height: 775,
+                printBackground: true,
+                displayHeaderFooter: false,
+                landscape: false,
             });
-          await browser.close();
-          const link = `${serverConfig.server_baseURL}/#/dashboard/${dashboard}`
-          MailingService.mailDashboardSending(userMail, filename, filepath, transporter, message, link);
+            
+            await browserPDF.close();
+            const link = `${serverConfig.server_baseURL}/#/dashboard/${dashboard}`;
+            console.log(`[MailDashboardsController] PDF generated, calling mailDashboardSending`);
+            MailingService.mailDashboardSending(userMail, filename, filepath, transporter, message, link);
 
-        } catch (err) {
-          throw err;
+          } catch (err) {
+            console.error(`[MailDashboardsController] Error in response handler:`, err);
+          }
         }
       });
 
-      await loginPage.goto(`${serverConfig.server_apiURL}/admin/user/fake-login/${userMail}/${token}`, { waitUntil: 'networkidle2' })
+      const loginUrl = `${serverConfig.server_apiURL}/admin/user/fake-login/${userMail}/${token}`;
+      console.log(`[MailDashboardsController] Navigating to login URL: ${loginUrl}`);
+      await loginPage.goto(loginUrl, { waitUntil: 'networkidle2' });
       await browser.close();
+      console.log(`[MailDashboardsController] Initial browser closed`);
 
     }
     catch (err) {
+      console.error(`[MailDashboardsController] Error in sendDashboard:`, err);
       throw err;
     }
 

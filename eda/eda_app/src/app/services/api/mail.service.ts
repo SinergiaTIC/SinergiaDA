@@ -18,4 +18,10 @@ export class MailService extends ApiService{
     return this.get(`${this.globalDSRoute}/credentials`);
   }
 
+// SDA CUSTOM - Add sendNow method
+/*SDA CUSTOM*/  sendNow(data: any) {
+/*SDA CUSTOM*/    return this.post(`${this.globalDSRoute}/send-now`, data);
+/*SDA CUSTOM*/  }
+// END SDA CUSTOM
+
 }

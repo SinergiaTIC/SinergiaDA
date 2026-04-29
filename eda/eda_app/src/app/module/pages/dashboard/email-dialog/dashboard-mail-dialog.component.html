@@ -33,7 +33,12 @@
         <p-multiSelect [(ngModel)]="selectedUsers" [options]="users" [style]="{width: '80%'}" optionLabel="label">
         </p-multiSelect>
       </div>
-
+<!-- SDA CUSTOM -->      <div style="margin-top: 1em;">
+<!-- SDA CUSTOM -->        <h6 i18n="@@AdditionalEmails"> Otros emails </h6>
+<!-- SDA CUSTOM -->        <input type="text" pInputText [(ngModel)]="additionalEmails" [style]="{width: '80%'}" placeholder="email1@test.com, email2@test.com">
+<!-- SDA CUSTOM -->        <small style="display:block; margin-top: 0.2em; opacity: 0.7;">Separados por coma, espacio o punto y coma</small>
+<!-- SDA CUSTOM -->      </div>
+<!-- END SDA CUSTOM -->
     </div>
 
     <div class="col-4">
@@ -60,6 +65,9 @@
 
 
   <div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix text-right">
+<!--SDA CUSTOM - Add Send Now button -->
+<!-- SDA CUSTOM -->    <button type="button" pButton (click)="sendNow()" i18n-label="@@sendNowButton" label="Enviar ahora" icon="fa fa-paper-plane" class="p-button-raised p-button-info" style="margin-right: 1em;"></button>
+<!-- END SDA CUSTOM -->
     <!--SDA CUSTOM--><button id="saveFilterButton" type="submit" pButton (click)="save()" i18n-label="@@guardarButton" [disabled]="disableConfirm()"
         label="Confirmar" icon="fa fa-check" class="p-button-raised p-button-success" ></button>
     <!--SDA CUSTOM--><button type="button" pButton (click)="closeDialog()" class="p-button-raised p-button-danger"

@@ -1,7 +1,8 @@
 import { Dashboard } from './../../../../shared/models/dashboard-models/dashboard.model';
 import { Component } from "@angular/core";
 import { EdaDialog, EdaDialogAbstract, EdaDialogCloseEvent } from "@eda/shared/components/shared-components.index";
-import { UserService } from '@eda/services/service.index';
+/*SDA CUSTOM*/ import { UserService, MailService, AlertService, SpinnerService } from '@eda/services/service.index';
+// END SDA CUSTOM
 
 @Component({
   selector: 'dashboard-mail-dialog',
@@ -25,8 +26,14 @@ export class DashboardMailDialogComponent extends EdaDialogAbstract {
   public users: any;
   public selectedUsers: any = [];
   public enabled : boolean = true ;
+/*SDA CUSTOM*/  public additionalEmails: any = ''; // Changed to string for easier input
+// END SDA CUSTOM
 
-  constructor(private userService: UserService,) {
+  constructor(private userService: UserService,
+/*SDA CUSTOM*/              private mailService: MailService,
+/*SDA CUSTOM*/              private alertService: AlertService,
+/*SDA CUSTOM*/              private spinnerService: SpinnerService) {
+// END SDA CUSTOM
     super();
 
     this.dialog = new EdaDialog({
@@ -62,7 +69,10 @@ export class DashboardMailDialogComponent extends EdaDialogAbstract {
     this.hours = `${config.hours || '00'}:${config.minutes || '00'}`;
     this.units = config.units;
     this.quantity = config.quantity;
-    this.selectedUsers = config.users.map(user => ({ label: user.name, value: user }) );
+// SDA CUSTOM - Separate CRM users from custom emails
+/*SDA CUSTOM*/    this.selectedUsers = config.users.filter(u => u._id).map(user => ({ label: user.name, value: user }) );
+/*SDA CUSTOM*/    this.additionalEmails = config.users.filter(u => !u._id).map(user => user.email).join(', ');
+// END SDA CUSTOM
     this.mailMessage = config.mailMessage;
     this.enabled = config.enabled;
   }
@@ -73,23 +83,59 @@ export class DashboardMailDialogComponent extends EdaDialogAbstract {
       this.hours ? this.fillWithZeros(this.hours.getHours()) : null;
     const minutes = this.hours && typeof this.hours === 'string' ? this.hours.slice(3, 5) :
       this.hours ? this.fillWithZeros(this.hours.getMinutes()) : null;
+// SDA CUSTOM - Combine CRM users and custom emails
+/*SDA CUSTOM*/    const customEmails = (this.additionalEmails || '').split(/[\s,;]+/).filter(e => e.trim() !== '');
+/*SDA CUSTOM*/    const customUsers = customEmails.map(email => ({ email: email.trim(), name: email.trim() }));
+/*SDA CUSTOM*/    const allUsers = [...this.selectedUsers.map(u => u.value), ...customUsers];
+/*SDA CUSTOM*/    const dashboardId = this.dashboard && this.dashboard._id ? this.dashboard._id : this.dashboard;
+// END SDA CUSTOM
 
     const response = {
       units: this.units,
       quantity: this.quantity,
       hours: hours,
       minutes: minutes,
-      users: this.selectedUsers.map(user => user.value),
+/*SDA CUSTOM*/      users: allUsers,
+// END SDA CUSTOM
       mailMessage: this.mailMessage,
       lastUpdated: new Date().toISOString(),
       enabled: this.enabled,
-      dashboard: this.dashboard
+/*SDA CUSTOM*/      dashboard: this.dashboard,
+/*SDA CUSTOM*/      dashboardId: dashboardId
+// END SDA CUSTOM
     };
     this.onClose(EdaDialogCloseEvent.NEW, response);
   }
 
+// SDA CUSTOM - Implement sendNow method
+/*SDA CUSTOM*/  sendNow() {
+/*SDA CUSTOM*/    this.spinnerService.on();
+/*SDA CUSTOM*/    const customEmails = (this.additionalEmails || '').split(/[\s,;]+/).filter(e => e.trim() !== '');
+/*SDA CUSTOM*/    const customUsers = customEmails.map(email => ({ email: email.trim(), name: email.trim() }));
+/*SDA CUSTOM*/    const allUsers = [...this.selectedUsers.map(u => u.value), ...customUsers];
+/*SDA CUSTOM*/    const emails = allUsers.map(u => u.email);
+/*SDA CUSTOM*/    const dashboardId = this.dashboard && this.dashboard._id ? this.dashboard._id : this.dashboard;
+/*SDA CUSTOM*/
+/*SDA CUSTOM*/    this.mailService.sendNow({
+/*SDA CUSTOM*/      dashboardId: dashboardId,
+/*SDA CUSTOM*/      emails: emails,
+/*SDA CUSTOM*/      message: this.mailMessage
+/*SDA CUSTOM*/    }).subscribe(
+/*SDA CUSTOM*/      res => {
+/*SDA CUSTOM*/        this.spinnerService.off();
+/*SDA CUSTOM*/        this.alertService.addSuccess($localize`:@@mailSentSuccess:Envío iniciado correctamente`);
+/*SDA CUSTOM*/      },
+/*SDA CUSTOM*/      err => {
+/*SDA CUSTOM*/        this.spinnerService.off();
+/*SDA CUSTOM*/        this.alertService.addError(err);
+/*SDA CUSTOM*/      }
+/*SDA CUSTOM*/    );
+/*SDA CUSTOM*/  }
+// END SDA CUSTOM
+
   disableConfirm() {
-    return (!this.quantity || !this.units || !(this.selectedUsers.length > 0) || !this.mailMessage)
+/*SDA CUSTOM*/    return (!this.quantity || !this.units || !(this.selectedUsers.length > 0 || (this.additionalEmails && this.additionalEmails.trim() !== '')) || !this.mailMessage)
+// END SDA CUSTOM
   }
 
   fillWithZeros(n: number) {

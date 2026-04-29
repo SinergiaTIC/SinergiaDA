@@ -2,6 +2,10 @@ import { NextFunction, Request, Response } from 'express';
 import { HttpException } from '../global/model/index';
 const fs = require('fs');
 const path = require("path");
+// SDA CUSTOM - Add imports for sendNow
+/*SDA CUSTOM*/ import { UserController } from '../admin/users/user.controller';
+/*SDA CUSTOM*/ import { MailDashboardsController } from '../../services/dashboardToPDFService/mail-dashboards.controller';
+// END SDA CUSTOM
 
 
 let nodemailer = require('nodemailer');
@@ -62,5 +66,30 @@ export class MailController {
 
   }
 
+// SDA CUSTOM - Add sendNow method
+/*SDA CUSTOM*/  static async sendNow(req: Request, res: Response, next: NextFunction) {
+/*SDA CUSTOM*/
+/*SDA CUSTOM*/    try {
+/*SDA CUSTOM*/
+/*SDA CUSTOM*/      const { dashboardId, emails, message } = req.body;
+/*SDA CUSTOM*/      console.log(`[MailController] sendNow called for dashboard ${dashboardId} with emails: ${emails}`);
+/*SDA CUSTOM*/      const config = JSON.parse(fs.readFileSync(path.resolve(__dirname, "../../../config/SMPT.config.json"), 'utf-8'));
+/*SDA CUSTOM*/      const transporter = nodemailer.createTransport(config);
+/*SDA CUSTOM*/      const token = await UserController.provideFakeToken();
+/*SDA CUSTOM*/
+/*SDA CUSTOM*/      emails.forEach(email => {
+/*SDA CUSTOM*/        console.log(`[MailController] Triggering sendDashboard for ${email}`);
+/*SDA CUSTOM*/        MailDashboardsController.sendDashboard(dashboardId, email, transporter, message, token);
+/*SDA CUSTOM*/      });
+/*SDA CUSTOM*/
+/*SDA CUSTOM*/      return res.status(200).json({ ok: true });
+/*SDA CUSTOM*/
+/*SDA CUSTOM*/    } catch (err) {
+/*SDA CUSTOM*/      console.error(`[MailController] Error in sendNow:`, err);
+/*SDA CUSTOM*/      return next(new HttpException(500, err.message));
+/*SDA CUSTOM*/    }
+/*SDA CUSTOM*/
+/*SDA CUSTOM*/  }
+// END SDA CUSTOM
 
 }

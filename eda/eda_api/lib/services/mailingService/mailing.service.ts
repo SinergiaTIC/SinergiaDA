@@ -227,15 +227,18 @@ export class MailingService {
 
     transporter.sendMail(mailOptions, function (error, info) {
       if (error) {
-        console.log(error);
+/*SDA CUSTOM*/        console.error(`[MailingService] Error sending email to ${userMail}:`, error);
       } else {
+/*SDA CUSTOM*/        console.log(`[MailingService] Email sent successfully to ${userMail}: ${info.response}`);
         console.log('Email sent: ' + info.response + `Email sent: ${info.response} from: ${info.envelope.from} to: ${info.envelope.to} at ${SchedulerFunctions.totLocalISOTime(new Date()) }`);
       }
 
       /**Remove file */
       try{
+/*SDA CUSTOM*/        console.log(`[MailingService] Removing temporary file: ${filepath}/${filename}`);
         fs.unlinkSync(`${filepath}/${filename}`);
       }catch(err){
+/*SDA CUSTOM*/        console.error(`[MailingService] Error removing temporary file:`, err);
         throw err
       }
 

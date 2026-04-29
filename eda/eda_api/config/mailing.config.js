@@ -1,5 +1,5 @@
 module.exports = {
-  server_baseURL: 'http://localhost:4200/',
+/*SDA CUSTOM*/  server_baseURL: 'http://localhost/',
   server_apiURL:'http://localhost:8666',
   MAILING_SCHEDULE: '1 * * * *',
 };
