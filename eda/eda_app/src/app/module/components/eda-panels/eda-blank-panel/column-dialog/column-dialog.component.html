@@ -98,7 +98,7 @@
                     
 <!-- SDA CUSTOM --> <div class="ml-2" *ngIf="selectedColumn?.column_type === 'date'">
 <!-- SDA CUSTOM -->     <p-button (onClick)="onOpenDateFormatDialog()" [style]="{'min-width': '200px', 'background': 'white', 'color': '#495057', 'border-color': '#ced4da', 'justify-content': 'center'}" i18n-label="@@filterDateText" label="Filtrar fecha"></p-button>
-                    </div>
+<!-- SDA CUSTOM --> </div>
 
 
                     <div class="col-12 md:col-4">
@@ -492,4 +492,4 @@
     </div>
 </eda-dialog2>
 
-<date-format-dialog *ngIf="displayDateFormat" (close)="onCloseDateFormatDialog($event)"></date-format-dialog>
+<!--SDA CUSTOM--> <date-format-dialog *ngIf="displayDateFormat" (close)="onCloseDateFormatDialog($event)"></date-format-dialog>

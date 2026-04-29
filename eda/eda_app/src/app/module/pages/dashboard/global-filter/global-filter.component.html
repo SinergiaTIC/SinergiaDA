@@ -32,7 +32,7 @@
                     <!-- Botón que muestra el valor configurado y abre el date-format-dialog -->
 <!-- SDA CUSTOM --><button pButton pRipple type="button" [label]="getDateFilterLabel(filter)" [disabled]="disableGlobalFilter(filter)" (click)="onOpenDateFormatDialog(filter)" class="filters-size" [style]="{'background': 'white', 'color': '#495057', 'border-color': '#ced4da', 'min-width': '160px', 'justify-content': 'center', 'height': '26px'}"></button>
 
-                    <!-- date-format-dialog por filtro -->
+<!-- date-format-dialog por filtro -->
 <!-- SDA CUSTOM -->    <date-format-dialog *ngIf="displayDateFormatMap[filter.id]" (close)="onCloseDateFormatDialog($event, filter)" [cleanButtonsAvailable]="true">
 <!-- SDA CUSTOM -->            <ng-container footer>
 <!-- SDA CUSTOM -->                <button *ngIf="dashboard.canIedit()" id="dashFilterConf" pButton pRipple type="button" icon="pi pi-cog" (click)="displayDateFormatMap[filter.id] = false; onShowGlobalFilter(false, filter)" class="p-button-rounded p-button-outlined p-button-icon-only filters-size" style="width: 2rem; height: 2rem; padding: 0;"></button>
