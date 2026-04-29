@@ -158,6 +158,11 @@ export class EdaBlankPanelComponent implements OnInit {
     public joinType: string = 'inner';
     public sortedFilters: any[] = [];
     public temporalSortedFilters: any[] = [];
+    /* SDA CUSTOM */ public atLeastThereIsOneWithAggregation: boolean = false;
+    /* SDA CUSTOM */ public groupByEnabled: boolean = true;
+    /* SDA CUSTOM */ public groupByLabel: string = $localize`:@@groupBy:Agrupar`;
+    /* SDA CUSTOM */ public groupByDisabledReasonMessage: string = $localize`:@@groupByDisabledReason:No se puede cambiar el agrupamiento porque hay campos con agregaciones configuradas. Elimina las agregaciones primero.`;
+    /* SDA CUSTOM */ public groupByDisabledAggregationsMessage: string = $localize`:@@groupByDisabledAggregations:En modo agrupar desactivado, las agregaciones en los campos están deshabilitadas automáticamente.`;
 
     public queryModes: any[] = [
         /* SDA CUSTOM */ { label: $localize`:@@PanelModeSelectorEDA:Modo EDA`, value: 'EDA', disabled: true},
@@ -312,6 +317,14 @@ export class EdaBlankPanelComponent implements OnInit {
 
     /* SDA CUSTOM */  public toggleLock() {
     /* SDA CUSTOM */    this.panel.locked = !this.panel.locked;
+    /* SDA CUSTOM */    if (this.panelChartConfig) {
+    /* SDA CUSTOM */      this.panelChartConfig.locked = this.panel.locked;
+    /* SDA CUSTOM */    }
+    /* SDA CUSTOM */    const showResizeControls = this.getEditMode() && !!this.inject?.canSave && !this.panel.locked;
+    /* SDA CUSTOM */    const chartInstance = this.panelChart?.componentRef?.instance;
+    /* SDA CUSTOM */    if (chartInstance?.inject) {
+    /* SDA CUSTOM */      chartInstance.inject.showResizeControls = showResizeControls;
+    /* SDA CUSTOM */    }
     /* SDA CUSTOM */    this.dashboardService._notSaved.next(true);
     /* SDA CUSTOM */  }
 
@@ -494,12 +507,14 @@ export class EdaBlankPanelComponent implements OnInit {
      */
 
     public async buildGlobalconfiguration(panelContent: any) {
-
         const modeSQL = panelContent.query.query.modeSQL;
+        /* SDA CUSTOM */ const groupByEnabled = panelContent.query.query.groupByEnabled;
         const queryMode = this.selectedQueryMode;
         /*SDA CUSTOM*/ this.showHiddenColumn = true;
 
+
         const currentQuery = panelContent.query.query.fields;
+
 
         if ((queryMode && queryMode != 'SQL') || modeSQL === false) {
 
@@ -530,11 +545,13 @@ export class EdaBlankPanelComponent implements OnInit {
                 console.error(e);
                 throw e;
             }
+
+
         }
 
-
         this.queryLimit = panelContent.query.query.queryLimit;
-/*SDA CUSTOM*/ this.joinType = panelContent.query.query.joinType || 'inner';
+        /*SDA CUSTOM*/ this.joinType = panelContent.query.query.joinType || 'inner';
+        /* SDA CUSTOM */ this.groupByEnabled = groupByEnabled ?? true;
         PanelInteractionUtils.handleFilters(this, panelContent.query.query);
         PanelInteractionUtils.handleFilterColumns(this, panelContent.query.query.filters, panelContent.query.query.fields);
         this.chartForm.patchValue({chart: this.chartUtils.chartTypes.find(o => o.subValue === panelContent.edaChart)});
@@ -554,6 +571,10 @@ export class EdaBlankPanelComponent implements OnInit {
 
         // Verify if it is a cross table to show it on home screen
         this.dragAndDropAvailable = !this.chartTypes.filter( grafico => grafico.subValue === 'crosstable')[0].ngIf;
+
+
+        const currentQueryCheck = this.currentQuery;
+        this.atLeastThereIsOneWithAggregation = this.checkAtLeastOneWithAggregation(currentQueryCheck);
     }
 
 
@@ -638,6 +659,9 @@ export class EdaBlankPanelComponent implements OnInit {
             maps: this.inject.dataSource.model.maps,
             size: { x: this.panel.w, y: this.panel.h },
             linkedDashboardProps: this.panel.linkedDashboardProps,
+            /* SDA CUSTOM */ canEdit: this.getEditMode(),
+            /* SDA CUSTOM */ canSave: !!this.inject?.canSave,
+            /* SDA CUSTOM */ locked: this.panel.locked,
         });
     }
 
@@ -894,6 +918,10 @@ export class EdaBlankPanelComponent implements OnInit {
             this.configController = new EdaDialogController({
                 params: p,
                 close: (event, response) => {
+
+                    /* SDA CUSTOM  */ const currenQuery = this.currentQuery;
+                    /* SDA CUSTOM  */ this.atLeastThereIsOneWithAggregation = this.checkAtLeastOneWithAggregation(currenQuery);
+
                     if (response.duplicated) {
                         this.currentQuery.push(response.column);
                         this.configController = undefined;
@@ -963,6 +991,14 @@ export class EdaBlankPanelComponent implements OnInit {
         }
 
     }
+
+/* SDA CUSTOM  */    checkAtLeastOneWithAggregation(currentQuery: any) {
+/* SDA CUSTOM  */        return currentQuery.some(column => {
+/* SDA CUSTOM  */            return column.aggregation_type.some((at: any) => {
+/* SDA CUSTOM  */                return (at.selected && (at.display_name !== 'None'))
+/* SDA CUSTOM  */            })
+/* SDA CUSTOM  */        })
+/* SDA CUSTOM  */    }
 
     /**
      * find table by name
@@ -1432,6 +1468,18 @@ export class EdaBlankPanelComponent implements OnInit {
         if (!_.isEqual(event, EdaDialogCloseEvent.NONE)) {
             this.panel.content.query.output.config.alertLimits = response.alerts;
             this.panel.content.query.output.config.sufix = response.sufix;
+            /* SDA CUSTOM */ this.panel.content.query.output.config.fontScale = response.fontScale;
+            /* SDA CUSTOM */ this.panel.content.query.output.config.lineWidth = response.lineWidth;
+            /* SDA CUSTOM */ this.panel.content.query.output.config.lineStyle = response.lineStyle;
+            /* SDA CUSTOM */ this.panel.content.query.output.config.showXAxis = response.showXAxis;
+            /* SDA CUSTOM */ this.panel.content.query.output.config.showXAxisLabels = response.showXAxisLabels;
+            /* SDA CUSTOM */ this.panel.content.query.output.config.xAxisLabelCount = response.xAxisLabelCount;
+            /* SDA CUSTOM */ // SDA CUSTOM - KPI chart label settings
+            /* SDA CUSTOM */ this.panel.content.query.output.config.labelColor = response.labelColor;
+            /* SDA CUSTOM */ this.panel.content.query.output.config.labelBackgroundColor = response.labelBackgroundColor;
+            /* SDA CUSTOM */ this.panel.content.query.output.config.showLabels = response.showLabels;
+            /* SDA CUSTOM */ this.panel.content.query.output.config.showLabelsPercent = response.showLabelsPercent;
+            /* SDA CUSTOM */ // END SDA CUSTOM
 
             let layout: any;
             if (response.edaChart) {
@@ -1450,7 +1498,24 @@ export class EdaBlankPanelComponent implements OnInit {
                 );
             }
 
-            const config = new ChartConfig(new KpiConfig({ sufix: response.sufix, alertLimits: response.alerts, edaChart: layout }));
+            /* SDA CUSTOM */ const config = new ChartConfig(new KpiConfig({
+                /* SDA CUSTOM */ sufix: response.sufix,
+                /* SDA CUSTOM */ fontScale: response.fontScale,
+                /* SDA CUSTOM */ alertLimits: response.alerts,
+                /* SDA CUSTOM */ edaChart: layout,
+                /* SDA CUSTOM */ color: response.color,
+                /* SDA CUSTOM */ lineWidth: response.lineWidth,
+                /* SDA CUSTOM */ lineStyle: response.lineStyle,
+                /* SDA CUSTOM */ showXAxis: response.showXAxis,
+                /* SDA CUSTOM */ showXAxisLabels: response.showXAxisLabels,
+                /* SDA CUSTOM */ xAxisLabelCount: response.xAxisLabelCount,
+                /* SDA CUSTOM */ // SDA CUSTOM - KPI chart label settings
+                /* SDA CUSTOM */ labelColor: response.labelColor,
+                /* SDA CUSTOM */ labelBackgroundColor: response.labelBackgroundColor,
+                /* SDA CUSTOM */ showLabels: response.showLabels,
+                /* SDA CUSTOM */ showLabelsPercent: response.showLabelsPercent,
+                /* SDA CUSTOM */ // END SDA CUSTOM
+            /* SDA CUSTOM */ }));
             this.renderChart(this.currentQuery, this.chartLabels, this.chartData, response.chartType, response.chartSubType, config);
             this.dashboardService._notSaved.next(true);
         }
@@ -1577,15 +1642,17 @@ export class EdaBlankPanelComponent implements OnInit {
     public loadColumns = (table: any) => PanelInteractionUtils.loadColumns(this, table);
 
 /**SDA CUSTOM  */   public removeColumn = (c: Column, list?: string) => {
-/**SDA CUSTOM  */       // Conditions to check if we can delete the column
-/**SDA CUSTOM  */       const isNotRootColumn = !!c?.joins?.length;
-/**SDA CUSTOM  */       const rootColumnElements = this.currentQuery.filter(col => !col?.joins?.length).length;
+/**SDA CUSTOM  */       // rootTableName To have the principal table => conditions to check if we can delete the column
+/**SDA CUSTOM  */       const rootTableName = this.rootTable?.table_name;
+/**SDA CUSTOM  */       // joins is reliable when interacting on the app; table_id comparison is the fallback after save and reload when joins may be empty
+/**SDA CUSTOM  */       const isNotRootColumn = !!c?.joins?.length || (!!rootTableName && c?.table_id !== rootTableName);
+/**SDA CUSTOM  */       const rootColumnElements = this.currentQuery.filter(col => !col?.joins?.length && (!rootTableName || col?.table_id === rootTableName)).length;
 /**SDA CUSTOM  */       const currentQueryLength = this.currentQuery.length;
-/**SDA CUSTOM  */
+
 /**SDA CUSTOM  */       // We just proceed if it is not the last column of the root table
 /**SDA CUSTOM  */       if (isNotRootColumn || rootColumnElements > 1 || currentQueryLength === 1) {
 /**SDA CUSTOM  */           // We check if when deleting a field it has a filter at selectedFilters
-                            if (this.selectedFilters.some((sf: any) => sf.filter_column === c.column_name)) {
+/**SDA CUSTOM  */           if (this.selectedFilters.some((sf: any) => sf.filter_column === c.column_name && sf.filter_table === c.table_id)) {
                                 if (this.sortedFilters.length !== 0) {
                                     this.alertService.addWarning($localize`:@@filterSettingsReboot:La configuración de filtros se ha reiniciado`);
                                 }
@@ -1598,6 +1665,9 @@ export class EdaBlankPanelComponent implements OnInit {
 /**SDA CUSTOM  */           event.stopPropagation();
 /**SDA CUSTOM  */           this.alertService.addError($localize`:@@cannotRemoveLastColumn:No se puede eliminar todas las columnas de la tabla raíz sin eliminar las columnas dependientes.`);
 /**SDA CUSTOM  */       }
+
+/* SDA CUSTOM  */       const currenQuery = this.currentQuery;
+/* SDA CUSTOM  */       this.atLeastThereIsOneWithAggregation = this.checkAtLeastOneWithAggregation(currenQuery);
                    }
 
     public getOptionDescription = (value: string): string => EbpUtils.getOptionDescription(value);
@@ -1636,7 +1706,6 @@ export class EdaBlankPanelComponent implements OnInit {
     }
 
     public async getQuery($event) {
-
         this.display_v.minispinnerSQL = true;
         this.queryFromServer = null;
 
