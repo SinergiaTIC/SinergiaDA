@@ -283,8 +283,13 @@ export const PanelOptions = {
 },
   generateMenu : (panelComponent : EdaBlankPanelComponent ) => {
     const menu = [];
-    const editmode = panelComponent.getEditMode();
+/* SDA CUSTOM */    const editmode = !!panelComponent.inject?.canSave;
     const type = panelComponent.getChartType();
+
+/* SDA CUSTOM */    if (!editmode) {
+/* SDA CUSTOM */      menu.push(PanelOptions.exportExcel(panelComponent));
+/* SDA CUSTOM */      return menu;
+/* SDA CUSTOM */    }
     
     if (editmode) {
         menu.push(PanelOptions.editQuery(panelComponent));
