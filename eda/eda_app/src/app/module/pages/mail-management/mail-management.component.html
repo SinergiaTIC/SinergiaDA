@@ -36,6 +36,10 @@
           <div class="col-8 lg:col-10">
             <button type="button" pButton (click)="checkCredentials()" class="ui-button-success ml-2"
               i18n-label="@@checkCredentials" label="Comprobar credenciales" [disabled]="!form.valid"></button>
+            <!-- SDA CUSTOM - Add send test email button -->
+            <button type="button" pButton (click)="sendTestEmail()" class="ui-button-success ml-2"
+              i18n-label="@@sendTestEmail" label="Enviar correo de prueba" [disabled]="!form.valid"></button>
+            <!-- END SDA CUSTOM -->
           </div>
 
           <div class="col-4 lg:col-2">
@@ -60,7 +64,7 @@
     </p-card>
 
   </div>
-  
+
   <div class="col-12 lg:col-6">
 
     <p-card [header]="dashboardsHeader" [style]="{marginTop:'1em'}">

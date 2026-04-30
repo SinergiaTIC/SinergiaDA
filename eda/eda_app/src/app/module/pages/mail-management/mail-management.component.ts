@@ -6,6 +6,7 @@ import { DashboardService, SpinnerService } from '@eda/services/service.index';
 import { EdaColumnContextMenu, EdaColumnText, EdaTable } from '@eda/components/component.index';
 import { Router } from '@angular/router';
 import { EdaContextMenu, EdaContextMenuItem } from '@eda/shared/components/shared-components.index';
+/* SDA CUSTOM */import Swal from 'sweetalert2';
 
 @Component({
   selector: 'mail-management',
@@ -105,6 +106,45 @@ export class MailManagementComponent implements OnInit {
     );
 
   }
+
+// SDA CUSTOM - Add test email action using current SMTP form values
+/* SDA CUSTOM */  public async sendTestEmail() {
+/* SDA CUSTOM */    const popupResult = await Swal.fire({
+/* SDA CUSTOM */      title: $localize`:@@sendTestEmail:Enviar correo de prueba`,
+/* SDA CUSTOM */      input: 'email',
+/* SDA CUSTOM */      inputLabel: $localize`:@@sendTestRecipient:Destinatario de prueba`,
+/* SDA CUSTOM */      inputPlaceholder: 'mail@dominio.com',
+/* SDA CUSTOM */      confirmButtonText: $localize`:@@sendNowButton:Enviar ahora`,
+/* SDA CUSTOM */      showCancelButton: true,
+/* SDA CUSTOM */      cancelButtonText: $localize`:@@cancelButton:Cancelar`,
+/* SDA CUSTOM */      inputValidator: (value) => {
+/* SDA CUSTOM */        if (!value || !value.trim()) {
+/* SDA CUSTOM */          return $localize`:@@sendTestRecipientRequired:La dirección de destino es obligatoria`;
+/* SDA CUSTOM */        }
+/* SDA CUSTOM */        return null;
+/* SDA CUSTOM */      }
+/* SDA CUSTOM */    });
+/* SDA CUSTOM */
+/* SDA CUSTOM */    if (!popupResult.isConfirmed) {
+/* SDA CUSTOM */      return;
+/* SDA CUSTOM */    }
+/* SDA CUSTOM */
+/* SDA CUSTOM */    this.spinnerService.on();
+/* SDA CUSTOM */    const options: any = this.getOptions();
+/* SDA CUSTOM */    options.testRecipient = (popupResult.value || '').trim();
+/* SDA CUSTOM */
+/* SDA CUSTOM */    this.mailService.sendTestMail(options).subscribe(
+/* SDA CUSTOM */      res => {
+/* SDA CUSTOM */        this.spinnerService.off();
+/* SDA CUSTOM */        this.alertService.addSuccess($localize`:@@mailTestSent:Correo de prueba enviado correctamente`);
+/* SDA CUSTOM */      },
+/* SDA CUSTOM */      err => {
+/* SDA CUSTOM */        this.spinnerService.off();
+/* SDA CUSTOM */        this.alertService.addError(err)
+/* SDA CUSTOM */      }
+/* SDA CUSTOM */    );
+/* SDA CUSTOM */
+/* SDA CUSTOM */  }
 
   public getOptions() {
     const options = {

@@ -5,7 +5,7 @@ import { ApiService } from "./api.service";
 export class MailService extends ApiService{
 
   private globalDSRoute = '/mail';
-  
+
   checkConfiguration(config:any){
     return this.post(`${this.globalDSRoute}/check`, config);
   }
@@ -13,6 +13,11 @@ export class MailService extends ApiService{
   saveConfiguration(config:any){
     return this.post(`${this.globalDSRoute}/save`, config);
   }
+
+// SDA CUSTOM - Add sendTestMail method
+/* SDA CUSTOM */  sendTestMail(config: any) {
+/* SDA CUSTOM */    return this.post(`${this.globalDSRoute}/send-test`, config);
+/* SDA CUSTOM */  }
 
   getConfiguration(){
     return this.get(`${this.globalDSRoute}/credentials`);
