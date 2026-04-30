@@ -12,7 +12,8 @@ import {
     FilterType, QueryBuilderService, OrdenationType, UserService
 } from '@eda/services/service.index';
 import {
-    EdaPageDialogComponent, EdaDialogController, EdaContextMenu, EdaDialogCloseEvent
+    EdaPageDialogComponent, EdaDialogController, EdaContextMenu, EdaDialogCloseEvent,
+    SdaHighlightComponent, SdaHighlightConfig
 } from '@eda/shared/components/shared-components.index';
 import { EdaChartComponent } from '@eda/components/component.index';
 import { EdaFilterAndOrComponent } from '../../eda-filter-and-or/eda-filter-and-or.component';
@@ -56,6 +57,7 @@ export class EdaBlankPanelComponent implements OnInit {
     @ViewChild(PanelChartComponent, { static: false }) panelChart: PanelChartComponent;
     @ViewChild('panelChartComponentPreview', { static: false }) panelChartPreview: PanelChartComponent;
     @ViewChild('op', { static: false }) op: any;
+    /* SDA CUSTOM */ @ViewChild('panelGroupByHighlight', { static: false }) panelGroupByHighlight: SdaHighlightComponent;
 
 
 
@@ -163,6 +165,12 @@ export class EdaBlankPanelComponent implements OnInit {
     /* SDA CUSTOM */ public groupByLabel: string = $localize`:@@groupBy:Agrupar`;
     /* SDA CUSTOM */ public groupByDisabledReasonMessage: string = $localize`:@@groupByDisabledReason:No se puede cambiar el agrupamiento porque hay campos con agregaciones configuradas. Elimina las agregaciones primero.`;
     /* SDA CUSTOM */ public groupByDisabledAggregationsMessage: string = $localize`:@@groupByDisabledAggregations:En modo agrupar desactivado, las agregaciones en los campos están deshabilitadas automáticamente.`;
+    /* SDA CUSTOM */ public readonly groupByHighlightConfig: SdaHighlightConfig = {
+    /* SDA CUSTOM */     selector: '#panel-groupby-highlight-target .p-inputswitch',
+    /* SDA CUSTOM */     title: $localize`:@@groupByHighlightTitle:Nuevo control de agrupación`,
+    /* SDA CUSTOM */     text: $localize`:@@groupByHighlightText:Este interruptor permite activar o desactivar el modo de agrupación de la consulta.`,
+    /* SDA CUSTOM */     storageKey: 'sda-hint-panel-group-by-v1'
+    /* SDA CUSTOM */ };
 
     public queryModes: any[] = [
         /* SDA CUSTOM */ { label: $localize`:@@PanelModeSelectorEDA:Modo EDA`, value: 'EDA', disabled: true},
@@ -1123,6 +1131,10 @@ export class EdaBlankPanelComponent implements OnInit {
 
         // Temporarily store the sortedFilters in the temporarySortedFilters
         this.temporalSortedFilters = _.cloneDeep(this.sortedFilters);
+        // SDA CUSTOM - Auto show contextual highlight once the edit dialog is visible
+    /* SDA CUSTOM */    if (this.selectedQueryMode !== 'SQL') {
+    /* SDA CUSTOM */        setTimeout(() => this.panelGroupByHighlight?.autoStart(), 420);
+    /* SDA CUSTOM */    }
     }
 
     /**
@@ -1749,6 +1761,10 @@ export class EdaBlankPanelComponent implements OnInit {
         this.display_v.btnSave = true;
         this.rootTable = undefined;
         this.action.emit({ code: 'QUERYMODE', data: { queryMode: this.selectedQueryMode, panel: this.panel } })
+        // SDA CUSTOM - Show highlight when switching to visual query modes
+    /* SDA CUSTOM */    if (this.display_v.page_dialog && this.selectedQueryMode !== 'SQL') {
+    /* SDA CUSTOM */        setTimeout(() => this.panelGroupByHighlight?.autoStart(), 320);
+    /* SDA CUSTOM */    }
     }
 
 /** This function allows the switch in the attribute column to see or hide the columns with the hidden attribute. */

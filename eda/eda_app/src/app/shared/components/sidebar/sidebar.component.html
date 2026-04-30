@@ -90,20 +90,22 @@
                 <li class="nav-devider"></li>
 
                 <li class="user-profile">
-                    <a class="has-arrow waves-effect waves-dark collapser" href="#"  (click)="checkNotSaved()" aria-expanded="false">
+                    <!-- SDA CUSTOM - Tour anchor for reports section in sidebar -->
+                    <a id="sidebar-reports-collapser" class="has-arrow waves-effect waves-dark collapser" href="#"  (click)="checkNotSaved()" aria-expanded="false">
                         <i class="mdi mdi-view-dashboard"></i>
                         <span class="hide-menu ml-2" i18n="@@Dashboards_ms"> Informes </span>
                     </a>
                     <ul aria-expanded="false" class="collapse">
                         <li>
-                            <a class="waves-effect waves-dark" (click)="checkNotSaved()">
+                            <!-- SDA CUSTOM - Tour anchor for sidebar reports access -->
+                            <a id="sidebar-reports-link" class="waves-effect waves-dark" (click)="checkNotSaved()">
                                 <i class="mdi mdi-view-dashboard"></i>
                                 <span i18n="@@sidebarMyDashboards"> Ver informes</span>
                             </a>
                         </li>
                         <li>
 <!--SDA CUSTOM-->       <div *ngIf="!isObserver">
-<!--SDA CUSTOM-->            <a  class="waves-effect waves-dark" (click)="createDashboard = true;">
+<!--SDA CUSTOM-->            <a id="sidebar-new-report-link" class="waves-effect waves-dark" (click)="createDashboard = true;">
 <!--SDA CUSTOM-->                <i class="mdi mdi-view-dashboard"></i>
 <!--SDA CUSTOM-->                <span i18n="@@tituloNuevoInforme"> Nuevo informe</span>
 <!--SDA CUSTOM-->            </a>

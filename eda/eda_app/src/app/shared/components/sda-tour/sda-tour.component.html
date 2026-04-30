@@ -1,0 +1,89 @@
+<!-- SDA CUSTOM - Guided tour component template with spotlight effect -->
+<ng-container *ngIf="active">
+
+  <!-- Spotlight cutout: uses massive box-shadow to dim everything except the target -->
+  <div
+    class="sda-tour-spotlight"
+    [style.top.px]="spotlightTop"
+    [style.left.px]="spotlightLeft"
+    [style.width.px]="spotlightWidth"
+    [style.height.px]="spotlightHeight"
+  ></div>
+
+  <!-- Tooltip card -->
+  <div
+    *ngIf="visible"
+    class="sda-tour-card"
+    [class.sda-tour-arrow-up]="arrowDir === 'up'"
+    [class.sda-tour-arrow-down]="arrowDir === 'down'"
+    [style.top.px]="tooltipTop"
+    [style.left.px]="tooltipLeft"
+  >
+    <!-- Arrow pointer -->
+    <span class="sda-tour-arrow-ptr" [style.left.px]="arrowOffset"></span>
+
+    <!-- Gradient header -->
+    <div class="sda-tour-header">
+      <div class="sda-tour-header-left">
+        <i class="fa fa-compass sda-tour-header-icon"></i>
+        <span class="sda-tour-label" i18n="@@sdaTourTitle">Tour guiado</span>
+      </div>
+      <div class="sda-tour-header-right">
+        <span class="sda-tour-counter">{{ stepIndex + 1 }}&thinsp;/&thinsp;{{ totalSteps }}</span>
+        <button class="sda-tour-close-btn" (click)="skip()" title="Saltar tour">&#x2715;</button>
+      </div>
+    </div>
+
+    <!-- Progress bar -->
+    <div class="sda-tour-progress-bar">
+      <div class="sda-tour-progress-fill" [style.width.%]="progressPercent"></div>
+    </div>
+
+    <!-- Body -->
+    <div class="sda-tour-body">
+      <h5 class="sda-tour-step-title">{{ title }}</h5>
+      <p class="sda-tour-step-text">{{ text }}</p>
+    </div>
+
+    <!-- Footer: dot indicators + navigation buttons -->
+    <div class="sda-tour-footer">
+      <div class="sda-tour-dots" aria-hidden="true">
+        <span
+          *ngFor="let d of stepDots"
+          class="sda-tour-dot"
+          [class.sda-tour-dot-active]="d === stepIndex"
+          [class.sda-tour-dot-done]="d < stepIndex"
+        ></span>
+      </div>
+      <div class="sda-tour-actions">
+        <button
+          class="sda-tour-btn sda-tour-btn-ghost"
+          (click)="skip()"
+          i18n="@@skipTour"
+        >Saltar</button>
+        <button
+          class="sda-tour-btn sda-tour-btn-nav"
+          (click)="previous()"
+          [disabled]="isFirst"
+          title="Anterior (&#x2190;)"
+        ><i class="fa fa-chevron-left"></i></button>
+        <button
+          class="sda-tour-btn sda-tour-btn-primary"
+          (click)="isLast ? finish() : next()"
+        >
+          <span *ngIf="!isLast" i18n="@@next">Siguiente</span>
+          <span *ngIf="isLast" i18n="@@finish">Finalizar</span>
+          <i *ngIf="!isLast" class="fa fa-chevron-right ml-1"></i>
+          <i *ngIf="isLast" class="fa fa-check ml-1"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- Keyboard hint -->
+    <div class="sda-tour-keyboard-hint" aria-hidden="true">
+      <kbd>&#x2190;</kbd> <kbd>&#x2192;</kbd>&nbsp;navegar &nbsp;&middot;&nbsp; <kbd>Esc</kbd>&nbsp;saltar
+    </div>
+
+  </div>
+</ng-container>
+<!-- END SDA CUSTOM -->

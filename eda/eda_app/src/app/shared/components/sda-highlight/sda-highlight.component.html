@@ -1,0 +1,34 @@
+<!-- SDA CUSTOM - Reusable single-target feature highlight -->
+<ng-container *ngIf="active">
+  <div
+    class="sda-highlight-spotlight"
+    [style.inset-block-start.px]="spotlightInsetBlockStart"
+    [style.inset-inline-start.px]="spotlightInsetInlineStart"
+    [style.inline-size.px]="spotlightInlineSize"
+    [style.block-size.px]="spotlightBlockSize"
+  ></div>
+
+  <div
+    *ngIf="visible"
+    class="sda-highlight-card"
+    [class.sda-highlight-arrow-up]="arrowDir === 'up'"
+    [class.sda-highlight-arrow-down]="arrowDir === 'down'"
+    [style.inset-block-start.px]="tooltipInsetBlockStart"
+    [style.inset-inline-start.px]="tooltipInsetInlineStart"
+  >
+    <span class="sda-highlight-arrow" [style.inset-inline-start.px]="arrowOffset"></span>
+
+    <div class="sda-highlight-header">
+      <span class="sda-highlight-badge" i18n="@@sdaNewFeature">Novedad</span>
+      <button class="sda-highlight-close" (click)="dismiss()" title="Cerrar">&#x2715;</button>
+    </div>
+
+    <h5 class="sda-highlight-title">{{ config?.title }}</h5>
+    <p class="sda-highlight-text">{{ config?.text }}</p>
+
+    <div class="sda-highlight-actions">
+      <button class="sda-highlight-btn" (click)="dismiss()" i18n="@@understood">Entendido</button>
+    </div>
+  </div>
+</ng-container>
+<!-- END SDA CUSTOM -->

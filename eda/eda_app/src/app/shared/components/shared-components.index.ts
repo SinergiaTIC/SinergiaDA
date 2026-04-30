@@ -28,3 +28,13 @@ export { NavbarComponent } from './navbar/navbar.component';
 export { SidebarComponent } from './sidebar/sidebar.component';
 
 export { CreateDashboardComponent } from './create-dashboard/create-dashboard.component';
+
+// SDA CUSTOM - Reusable guided tour component
+export { SdaTourComponent } from './sda-tour/sda-tour.component';
+export { SdaTourStep } from './sda-tour/sda-tour.component';
+// END SDA CUSTOM
+
+// SDA CUSTOM - Reusable single-target highlight component
+export { SdaHighlightComponent } from './sda-highlight/sda-highlight.component';
+export { SdaHighlightConfig } from './sda-highlight/sda-highlight.component';
+// END SDA CUSTOM

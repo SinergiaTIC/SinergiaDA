@@ -1,0 +1,120 @@
+/* SDA CUSTOM - Feature highlight visuals */
+.sda-highlight-spotlight {
+  position: fixed;
+  z-index: 1401;
+  border-radius: 8px;
+  pointer-events: none;
+  box-shadow:
+    0 0 0 9999px rgba(0, 0, 0, 0.62),
+    0 0 0 3px #46c16a,
+    0 0 18px 6px rgba(70, 193, 106, 0.45);
+  transition: inset-block-start .25s ease, inset-inline-start .25s ease, inline-size .25s ease, block-size .25s ease;
+}
+
+.sda-highlight-card {
+  position: fixed;
+  z-index: 1410;
+  inline-size: 390px;
+  max-inline-size: calc(100vw - 24px);
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 12px 14px 14px;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, .42);
+  border: 1px solid #d7e8da;
+  animation: sdaHighlightIn .25s ease forwards;
+}
+
+@keyframes sdaHighlightIn {
+  from { opacity: 0; transform: translateY(8px) scale(.97); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.sda-highlight-arrow {
+  position: absolute;
+  inline-size: 0;
+  block-size: 0;
+  transform: translateX(-50%);
+}
+
+.sda-highlight-arrow-up .sda-highlight-arrow {
+  inset-block-start: -11px;
+  border-inline-start: 10px solid transparent;
+  border-inline-end: 10px solid transparent;
+  border-block-end: 11px solid #46c16a;
+}
+
+.sda-highlight-arrow-down .sda-highlight-arrow {
+  inset-block-end: -11px;
+  border-inline-start: 10px solid transparent;
+  border-inline-end: 10px solid transparent;
+  border-block-start: 11px solid #ffffff;
+}
+
+.sda-highlight-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.sda-highlight-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2px 9px;
+  border-radius: 99px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .4px;
+  text-transform: uppercase;
+  color: #ffffff;
+  background: linear-gradient(120deg, #46c16a, #2f9f51);
+}
+
+.sda-highlight-close {
+  border: none;
+  background: #f1f1f1;
+  color: #888;
+  border-radius: 50%;
+  inline-size: 24px;
+  block-size: 24px;
+  cursor: pointer;
+}
+
+.sda-highlight-title {
+  margin: 8px 0 6px;
+  font-size: 16px;
+  color: #1d1d1d;
+}
+
+.sda-highlight-text {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.55;
+  color: #555;
+}
+
+.sda-highlight-actions {
+  margin-block-start: 12px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.sda-highlight-btn {
+  border: none;
+  border-radius: 8px;
+  padding: 7px 14px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #fff;
+  background: linear-gradient(120deg, #46c16a, #2f9f51);
+  cursor: pointer;
+}
+
+.sda-highlight-target {
+  position: relative !important;
+  z-index: 1405 !important;
+  outline: 3px solid rgba(70, 193, 106, .95);
+  outline-offset: 3px;
+  border-radius: 6px;
+}
+/* END SDA CUSTOM */

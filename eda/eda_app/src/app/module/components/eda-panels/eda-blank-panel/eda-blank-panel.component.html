@@ -403,12 +403,19 @@
 <!-- SDA CUSTOM -->                     <i *ngIf="atLeastThereIsOneWithAggregation" class="pi pi-exclamation-circle" [pTooltip]="groupByDisabledReasonMessage" tooltipPosition="left" style="color: #ff9800; cursor: help; font-size: 1.1em; margin-right: 4px;"></i>
 <!-- SDA CUSTOM -->                     <!-- Info icon when in Do not group mode -->
 <!-- SDA CUSTOM -->                     <i *ngIf="!groupByEnabled && !atLeastThereIsOneWithAggregation" class="pi pi-info-circle" [pTooltip]="groupByDisabledAggregationsMessage" tooltipPosition="left" style="color: #2196f3; cursor: help; font-size: 1.1em; margin-right: 4px;"></i>
-<!-- SDA CUSTOM -->                     <p-inputSwitch [(ngModel)]="groupByEnabled" [disabled]="atLeastThereIsOneWithAggregation"></p-inputSwitch>
+<!-- SDA CUSTOM -->                     <p-inputSwitch id="panel-groupby-highlight-target" [(ngModel)]="groupByEnabled" [disabled]="atLeastThereIsOneWithAggregation"></p-inputSwitch>
 <!-- SDA CUSTOM -->             </div>
 
                                 <div class="col-3 md:col-12 buttonAndOr d-flex justify-content-end">
                                     <button pButton (click)="filterAndOrDialog()" icon="pi pi-filter" class="p-button-outlined ml-2" i18n-label="@@filterSettings" label="Configuración de filtros"></button>
                                 </div>
+
+                                <!-- SDA CUSTOM - Reusable contextual highlight for new features -->
+                                <sda-highlight
+                                    #panelGroupByHighlight
+                                    [config]="groupByHighlightConfig"
+                                ></sda-highlight>
+                                <!-- END SDA CUSTOM -->
 
                                 <div class="col-12 md:col-12 info-query" *ngIf="currentQuery.length !== 0">
                                     <div #myQuery>

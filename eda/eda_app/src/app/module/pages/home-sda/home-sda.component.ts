@@ -1,8 +1,8 @@
 import { GroupService } from "../../../services/api/group.service";
-import { Component, OnInit, ChangeDetectorRef, NgZone } from "@angular/core";
+import { Component, OnInit, ChangeDetectorRef, NgZone, ViewChild } from "@angular/core";
 import { Router } from "@angular/router";
 import { AlertService, DashboardService, SidebarService, StyleProviderService } from "@eda/services/service.index";
-import { EdaDialogController, EdaDialogCloseEvent } from "@eda/shared/components/shared-components.index";
+import { EdaDialogController, EdaDialogCloseEvent, SdaTourComponent, SdaTourStep } from "@eda/shared/components/shared-components.index";
 import { IGroup } from "@eda/services/api/group.service";
 import Swal from "sweetalert2";
 import * as _ from "lodash";
@@ -140,6 +140,100 @@ export class HomeSdaComponent implements OnInit {
   } = {};
   public editingTypeId: string | null = null;
 
+  // SDA CUSTOM - Reference to guided tour child component
+/* SDA CUSTOM */  @ViewChild("sdaTour") private sdaTourRef!: SdaTourComponent;
+  // END SDA CUSTOM
+
+  // SDA CUSTOM - Tour steps definition for home-sda page
+/* SDA CUSTOM */  public readonly tourSteps: SdaTourStep[] = [
+/* SDA CUSTOM */    {
+/* SDA CUSTOM */      selector: "#sidebar",
+/* SDA CUSTOM */      title: $localize`:@@homeTourSidebarTitle:Menú lateral`,
+/* SDA CUSTOM */      text: $localize`:@@homeTourSidebarText:Desde el menú lateral puedes navegar rápidamente por las secciones principales.`
+/* SDA CUSTOM */    },
+/* SDA CUSTOM */    {
+/* SDA CUSTOM */      selector: "#sidebar-reports-collapser",
+/* SDA CUSTOM */      title: $localize`:@@homeTourSidebarReportsMenuTitle:Menú de informes`,
+/* SDA CUSTOM */      text: $localize`:@@homeTourSidebarReportsMenuText:Este apartado agrupa las acciones principales relacionadas con informes.`
+/* SDA CUSTOM */    },
+/* SDA CUSTOM */    {
+/* SDA CUSTOM */      selector: "#sidebar-reports-link",
+/* SDA CUSTOM */      title: $localize`:@@homeTourSidebarReportsTitle:Acceso a informes`,
+/* SDA CUSTOM */      text: $localize`:@@homeTourSidebarReportsText:Aquí accedes al listado de informes en cualquier momento.`
+/* SDA CUSTOM */    },
+/* SDA CUSTOM */    {
+/* SDA CUSTOM */      selector: "#sidebar-new-report-link",
+/* SDA CUSTOM */      title: $localize`:@@homeTourSidebarNewReportTitle:Nuevo informe desde menú`,
+/* SDA CUSTOM */      text: $localize`:@@homeTourSidebarNewReportText:También puedes crear informes directamente desde el menú lateral.`
+/* SDA CUSTOM */    },
+/* SDA CUSTOM */    {
+/* SDA CUSTOM */      selector: "#home-sda-new-report-button",
+/* SDA CUSTOM */      title: $localize`:@@homeTourCreateTitle:Crear informe`,
+/* SDA CUSTOM */      text: $localize`:@@homeTourCreateText:Desde aquí puedes crear un nuevo informe de forma rápida.`
+/* SDA CUSTOM */    },
+/* SDA CUSTOM */    {
+/* SDA CUSTOM */      selector: "#view-mode",
+/* SDA CUSTOM */      title: $localize`:@@homeTourViewTitle:Modo de vista`,
+/* SDA CUSTOM */      text: $localize`:@@homeTourViewText:Alterna entre vista tabla y vista tarjetas según prefieras.`
+/* SDA CUSTOM */    },
+/* SDA CUSTOM */    {
+/* SDA CUSTOM */      selector: "#tag-filter",
+/* SDA CUSTOM */      title: $localize`:@@homeTourTagFilterTitle:Filtro de etiquetas`,
+/* SDA CUSTOM */      text: $localize`:@@homeTourTagFilterText:Selecciona una o varias etiquetas para acotar los informes visibles.`
+/* SDA CUSTOM */    },
+/* SDA CUSTOM */    {
+/* SDA CUSTOM */      selector: "#group-filter",
+/* SDA CUSTOM */      title: $localize`:@@homeTourGroupFilterTitle:Filtro de grupos`,
+/* SDA CUSTOM */      text: $localize`:@@homeTourGroupFilterText:Filtra por los grupos asociados a cada informe.`
+/* SDA CUSTOM */    },
+/* SDA CUSTOM */    {
+/* SDA CUSTOM */      selector: "#type-filter",
+/* SDA CUSTOM */      title: $localize`:@@homeTourTypeFilterTitle:Filtro por tipo`,
+/* SDA CUSTOM */      text: $localize`:@@homeTourTypeFilterText:Filtra informes por tipo: público, común, grupo o privado.`
+/* SDA CUSTOM */    },
+/* SDA CUSTOM */    {
+/* SDA CUSTOM */      selector: "#active-filter",
+/* SDA CUSTOM */      title: $localize`:@@homeTourStatusFilterTitle:Filtro por estado`,
+/* SDA CUSTOM */      text: $localize`:@@homeTourStatusFilterText:Si eres administrador, aquí puedes filtrar informes activos o inactivos.`
+/* SDA CUSTOM */    },
+/* SDA CUSTOM */    {
+/* SDA CUSTOM */      selector: "#name-filter",
+/* SDA CUSTOM */      title: $localize`:@@homeTourSearchTitle:Buscar por nombre`,
+/* SDA CUSTOM */      text: $localize`:@@homeTourSearchText:Escribe aquí para localizar informes por su título.`
+/* SDA CUSTOM */    },
+/* SDA CUSTOM */    {
+/* SDA CUSTOM */      selector: "#report-counter",
+/* SDA CUSTOM */      title: $localize`:@@homeTourCounterTitle:Contador de resultados`,
+/* SDA CUSTOM */      text: $localize`:@@homeTourCounterText:Indica cuántos informes ves frente al total disponible.`
+/* SDA CUSTOM */    },
+/* SDA CUSTOM */    {
+/* SDA CUSTOM */      selector: "#report-table tbody tr:first-child .report-name, .card-container .card-wrapper:first-child .report-name",
+/* SDA CUSTOM */      title: $localize`:@@homeTourFirstReportTitle:Primer informe`,
+/* SDA CUSTOM */      text: $localize`:@@homeTourFirstReportText:Este es el primer informe visible. Haz clic en su nombre para abrirlo.`
+/* SDA CUSTOM */    },
+/* SDA CUSTOM */    {
+/* SDA CUSTOM */      selector: "#report-table tbody tr:first-child .btn-group button[title='Abrir informe'], .card-container .card-wrapper:first-child button[title='Mostrar informe']",
+/* SDA CUSTOM */      title: $localize`:@@homeTourFirstReportOpenTitle:Abrir informe`,
+/* SDA CUSTOM */      text: $localize`:@@homeTourFirstReportOpenText:Usa este botón para abrir el informe seleccionado.`
+/* SDA CUSTOM */    },
+/* SDA CUSTOM */    {
+/* SDA CUSTOM */      selector: "#report-table tbody tr:first-child .btn-group button[title='Clonar informe'], .card-container .card-wrapper:first-child button[title='Clonar informe']",
+/* SDA CUSTOM */      title: $localize`:@@homeTourFirstReportCloneTitle:Clonar informe`,
+/* SDA CUSTOM */      text: $localize`:@@homeTourFirstReportCloneText:Este botón genera una copia del informe para reutilizar su estructura.`
+/* SDA CUSTOM */    },
+/* SDA CUSTOM */    {
+/* SDA CUSTOM */      selector: "#report-table tbody tr:first-child .btn-group button[title='Eliminar informe'], .card-container .card-wrapper:first-child button[title='Eliminar informe']",
+/* SDA CUSTOM */      title: $localize`:@@homeTourFirstReportDeleteTitle:Eliminar informe`,
+/* SDA CUSTOM */      text: $localize`:@@homeTourFirstReportDeleteText:Desde aquí puedes eliminar el informe si tienes permisos.`
+/* SDA CUSTOM */    },
+/* SDA CUSTOM */    {
+/* SDA CUSTOM */      selector: "#report-table, .card-container",
+/* SDA CUSTOM */      title: $localize`:@@homeTourTableTitle:Listado de informes`,
+/* SDA CUSTOM */      text: $localize`:@@homeTourTableText:Aquí puedes abrir, ordenar y gestionar los informes visibles.`
+/* SDA CUSTOM */    }
+/* SDA CUSTOM */  ];
+  // END SDA CUSTOM
+
   constructor(
     // Services for managing dashboards and related operations
     private dashboardService: DashboardService,
@@ -259,6 +353,10 @@ export class HomeSdaComponent implements OnInit {
         this.initTags();
         this.initGroups();
         this.restoreFiltersAndApply();
+
+        // SDA CUSTOM - Auto-start guided tour once dashboards are rendered for first-time users
+      /* SDA CUSTOM */        setTimeout(() => this.sdaTourRef?.autoStartIfNeeded(), 300);
+        // END SDA CUSTOM
 
         this.setIsObserver();
       },
@@ -1215,4 +1313,11 @@ public filterGroups() {
       this.selectedStatuses.length < 2
     );
   }
+
+  // SDA CUSTOM - Keep tooltip aligned with highlighted element on viewport changes
+/* SDA CUSTOM */  public startTour(): void {
+/* SDA CUSTOM */    this.sdaTourRef?.start();
+/* SDA CUSTOM */  }
+  // END SDA CUSTOM
 }
+

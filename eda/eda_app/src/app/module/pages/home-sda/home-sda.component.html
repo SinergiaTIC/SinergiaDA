@@ -1,7 +1,9 @@
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
   <!-- New report button -->
   <div *ngIf="!isObserver">
+    <!-- SDA CUSTOM - Tour anchor for create report action -->
     <button
+      id="home-sda-new-report-button"
       type="button"
       class="btn btn-success stic-button-green"
       (click)="createDashboard = true"
@@ -287,6 +289,19 @@
     </button>
   </div>
 
+  <!-- SDA CUSTOM - Manual trigger to relaunch guided tour -->
+  <div class="ml-2" id="start-tour-button">
+    <button
+      class="btn btn-secondary"
+      (click)="sdaTour.start()"
+      i18n-title="@@startTour"
+      title="Iniciar tour"
+    >
+      <i class="fa fa-question-circle"></i>
+    </button>
+  </div>
+  <!-- END SDA CUSTOM -->
+
   <div class="ml-2" id="count-indicator">
     <span
       id="report-counter"
@@ -413,7 +428,7 @@
     </thead>
     <tbody>
       <tr
-        *ngFor="let dashboard of visibleDashboards"
+        *ngFor="let dashboard of visibleDashboards; let i = index"
         [id]="'dashboard-' + dashboard._id"
         [class.newly-cloned]="dashboard.isNewlyCloned"
         (dblclick)="goToDashboard(dashboard)"
@@ -434,7 +449,7 @@
               (blur)="updateDashboardTitle(dashboard, $event)"
               (keydown.enter)="$event.target.blur()"
             >
-              <a class="report-name" (click)="goToDashboard(dashboard)">{{ dashboard.config.title }}</a> &nbsp;
+              <a class="report-name" [id]="i === 0 ? 'first-report-title' : null" (click)="goToDashboard(dashboard)">{{ dashboard.config.title }}</a> &nbsp;
               <i
                 *ngIf="dashboard.config.description"
                 class="fa fa-info has-description-icon"
@@ -538,8 +553,9 @@
         </td>
 
         <td>
-          <div class="btn-group">
+          <div class="btn-group" [id]="i === 0 ? 'first-report-actions' : null">
             <button
+              [id]="i === 0 ? 'first-report-open-button' : null"
               class="btn btn-primary btn-sm mr-2 stic-button-green"
               (click)="goToDashboard(dashboard)"
               i18n-title="@@goToDashboard"
@@ -548,6 +564,7 @@
               <i class="fa fa-eye"></i>
             </button>
             <button
+              [id]="i === 0 ? 'first-report-clone-button' : null"
               *ngIf="!isObserver "
               class="btn btn-primary btn-sm mr-2 stic-button-green"
               (click)="cloneDashboard(dashboard)"
@@ -557,6 +574,7 @@
               <i class="fa fa-clone"></i>
             </button>
             <button
+              [id]="i === 0 ? 'first-report-delete-button' : null"
               *ngIf="!isObserver && canIEdit(dashboard)"
               class="btn btn-danger btn-sm mr-2 stic-button-red"
               (click)="deleteDashboard(dashboard)"
@@ -585,7 +603,7 @@
 
 <div *ngIf="viewMode === 'card'" class="md-10">
   <div class="card-container">
-    <div *ngFor="let dashboard of visibleDashboards" class="card-wrapper">
+    <div *ngFor="let dashboard of visibleDashboards; let i = index" class="card-wrapper">
       <div
         class="card"
         [id]="'dashboard-' + dashboard._id"
@@ -603,6 +621,7 @@
             >
               <a
                 #titleSpan
+                [id]="i === 0 ? 'first-card-report-title' : null"
                 [attr.contenteditable]="isEditing ? true : null"
                 (blur)="updateDashboardTitle(dashboard, $event)"
                 (keydown.enter)="$event.target.blur()"
@@ -712,6 +731,7 @@
           </div>
           <div class="mt-auto">
             <button
+              [id]="i === 0 ? 'first-card-report-open-button' : null"
               class="btn btn-primary btn-sm mr-2 stic-button-green"
               (click)="goToDashboard(dashboard)"
               i18n-title="@@showReport"
@@ -720,6 +740,7 @@
               <i class="fa fa-eye"></i>
             </button>
             <button
+              [id]="i === 0 ? 'first-card-report-delete-button' : null"
               *ngIf="!isObserver && canIEdit(dashboard)"
               class="btn btn-danger btn-sm mr-2 stic-button-red"
               (click)="deleteDashboard(dashboard)"
@@ -729,6 +750,7 @@
               <i class="fa fa-trash"></i>
             </button>
             <button
+              [id]="i === 0 ? 'first-card-report-clone-button' : null"
               *ngIf="!isObserver && canIEdit(dashboard)"
               class="btn btn-primary btn-sm mr-2 stic-button-green"
               (click)="cloneDashboard(dashboard)"
@@ -762,3 +784,11 @@
   *ngIf="createDashboard"
   (close)="onCloseCreateDashboard($event)"
 ></app-create-dashboard>
+
+<!-- SDA CUSTOM - Guided tour component (self-contained) -->
+<sda-tour
+  #sdaTour
+  [steps]="tourSteps"
+  storageKey="homeSdaTourCompleted_v1"
+></sda-tour>
+<!-- END SDA CUSTOM -->
