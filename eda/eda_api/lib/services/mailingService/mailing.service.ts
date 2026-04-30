@@ -213,8 +213,13 @@ export class MailingService {
     let text = `${message}\n-------------------------------------------- \n\n`;
     text += link;
 
+/* SDA CUSTOM */    const sender =
+/* SDA CUSTOM */      (transporter && transporter.options && transporter.options.auth && transporter.options.auth.user) ||
+/* SDA CUSTOM */      (transporter && transporter.transporter && transporter.transporter.options && transporter.transporter.options.auth && transporter.transporter.options.auth.user) ||
+/* SDA CUSTOM */      mailConfig.user;
+
     let mailOptions = {
-      from: mailConfig.user,
+/* SDA CUSTOM */      from: sender,
       to: userMail,
       subject: 'Eda Dashboard Sending Service',
       text: text,
@@ -224,6 +229,11 @@ export class MailingService {
         contentType: 'application/pdf'
       }],
     };
+
+/* SDA CUSTOM */    if (!mailOptions.from) {
+/* SDA CUSTOM */      console.error('[MailingService] No sender configured for dashboard email. Configure SMTP auth.user or mailConfig.user');
+/* SDA CUSTOM */      return;
+/* SDA CUSTOM */    }
 
     transporter.sendMail(mailOptions, function (error, info) {
       if (error) {

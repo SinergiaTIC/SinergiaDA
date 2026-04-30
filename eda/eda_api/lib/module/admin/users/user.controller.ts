@@ -475,7 +475,7 @@ export class UserController {
     static async provideToken(req: Request, res: Response, next: NextFunction) {
 
 // SDA CUSTOM - Allow fake login for PDF generation if user not found but token is valid
-/*SDA CUSTOM*/        User.findOne({email:req.params.usermail}, 'name email img role google').exec(async (err, user: IUser) => {
+/*SDA CUSTOM*/        User.findOne({email:req.params.usermail}, 'name email img role google').exec(async (err: any, user: IUser | null) => {
 /*SDA CUSTOM*/            if (err) {
 /*SDA CUSTOM*/                return next(new HttpException(500, `Login error: ${err}`));
 /*SDA CUSTOM*/            }
@@ -487,7 +487,8 @@ export class UserController {
 /*SDA CUSTOM*/                    email: req.params.usermail,
 /*SDA CUSTOM*/                    role: ['135792467811111111111110'] // Admin role
 /*SDA CUSTOM*/                };
-/*SDA CUSTOM*/                return res.status(200).json({ user: fakeUser, token: req.params.token, id: fakeUser._id });
+/* SDA CUSTOM */                const token = await jwt.sign({ user: fakeUser }, SEED, { expiresIn: 3600 }); // 1 hour
+/*SDA CUSTOM*/                return res.status(200).json({ user: fakeUser, token: token, id: fakeUser._id });
 /*SDA CUSTOM*/            }
 /*SDA CUSTOM*/            if(user){
 /*SDA CUSTOM*/          

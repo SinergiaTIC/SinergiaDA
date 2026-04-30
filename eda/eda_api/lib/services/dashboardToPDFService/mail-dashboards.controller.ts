@@ -2,7 +2,7 @@ import { MailingService } from "../mailingService/mailing.service";
 const serverConfig = require('../../../config/mailing.config');
 const puppeteer = require('puppeteer');
 
-/*SDA CUSTOM*/const wait = (ms) => {
+/*SDA CUSTOM*/const wait = (ms: number) => {
 /*SDA CUSTOM*/  return new Promise<void>(resolve => setTimeout(() => resolve(), ms));
 /*SDA CUSTOM*/}
 
@@ -15,7 +15,7 @@ export class MailDashboardsController {
       const browser = await puppeteer.launch({ headless: true , args: ['--no-sandbox'] });
       const loginPage = await browser.newPage();
 
-      await loginPage.on('response', async (response) => {
+    /* SDA CUSTOM */      await loginPage.on('response', async (response: any) => {
 
         if (response.url().includes('fake-login')) {
           try {
@@ -29,8 +29,8 @@ export class MailDashboardsController {
             await page.setViewport({ width: 1366, height: 768 });
 
             console.log(`[MailDashboardsController] Navigating to dashboard page: ${serverConfig.server_baseURL}`);
-            await page.goto(`${serverConfig.server_baseURL}`);
-            await page.evaluate((res) => {
+/* SDA CUSTOM */            await page.goto(`${serverConfig.server_baseURL}`, { waitUntil: 'networkidle2' });
+/* SDA CUSTOM */            await page.evaluate((res: any) => {
               localStorage.setItem('token', res.token);
               localStorage.setItem('user', JSON.stringify(res.user));
               localStorage.setItem('id', res.user._id);
@@ -38,9 +38,15 @@ export class MailDashboardsController {
 
             const dashboardUrl = `${serverConfig.server_baseURL}/#/dashboard/${dashboard}`;
             console.log(`[MailDashboardsController] Loading dashboard: ${dashboardUrl}`);
-            await page.goto(dashboardUrl);
-            console.log(`[MailDashboardsController] Waiting for dashboard to render (40s)...`);
-            await wait(40000);
+/* SDA CUSTOM */            await page.goto(dashboardUrl, { waitUntil: 'networkidle2', timeout: 120000 });
+/* SDA CUSTOM */            await page.waitForSelector('#myDashboard', { timeout: 120000 });
+/* SDA CUSTOM */            console.log(`[MailDashboardsController] Waiting for dashboard widgets/charts to render...`);
+/* SDA CUSTOM */            await page.waitForFunction(() => {
+/* SDA CUSTOM */              const dashboardElement = document.querySelector('#myDashboard');
+/* SDA CUSTOM */              const widgets = document.querySelectorAll('ngx-gridster-item, eda-blank-panel, .gridster-item').length;
+/* SDA CUSTOM */              return !!dashboardElement && widgets > 0;
+/* SDA CUSTOM */            }, { timeout: 120000 });
+/* SDA CUSTOM */            await wait(3000);
             
             const filename = `${dashboard}_${userMail.replace(/[@.]/g, '_')}.pdf`;
             const filepath = __dirname;
@@ -48,8 +54,8 @@ export class MailDashboardsController {
             
             await page.pdf({
                 path: `${filepath}/${filename}`,
-                width: 1380,
-                height: 775,
+/* SDA CUSTOM */                width: 1380,
+/* SDA CUSTOM */                height: 1000,
                 printBackground: true,
                 displayHeaderFooter: false,
                 landscape: false,
