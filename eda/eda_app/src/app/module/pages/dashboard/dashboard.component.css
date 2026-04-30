@@ -385,3 +385,18 @@ app-dashboard {
 /* SDA CUSTOM */ ::ng-deep ngx-gridster {
 /* SDA CUSTOM */     display: block;
 /* SDA CUSTOM */ }
+/* SDA CUSTOM */
+/* SDA CUSTOM - Transparent background for text panels (type=1) */
+/* SDA CUSTOM */ ::ng-deep .dashboard-grid ngx-gridster-item.background-transparent {
+/* SDA CUSTOM */     background-color: transparent !important;
+/* SDA CUSTOM */     box-shadow: none !important;
+/* SDA CUSTOM */     border: none !important;
+/* SDA CUSTOM */ }
+/* SDA CUSTOM */
+/* SDA CUSTOM */ ::ng-deep .dashboard-grid ngx-gridster-item.background-transparent > div {
+/* SDA CUSTOM */     background-color: transparent !important;
+/* SDA CUSTOM */ }
+/* SDA CUSTOM */
+/* SDA CUSTOM */ ::ng-deep .dashboard-grid ngx-gridster-item.background-transparent .panel-heading {
+/* SDA CUSTOM */     background-color: transparent !important;
+/* SDA CUSTOM */ }
