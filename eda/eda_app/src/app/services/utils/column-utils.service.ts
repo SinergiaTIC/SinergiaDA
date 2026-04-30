@@ -23,10 +23,10 @@ interface FilterOptions {
 export class ColumnUtilsService {
     constructor(private fileUtiles: FileUtiles) { }
 
-    
+
     public setFilter(options: FilterOptions): object {
         const { obj, table, column, column_type, type, selectedRange, valueListSource, autorelation, joins, filterBeforeGrouping, aggregation_type,  data,  computed_column, SQLexpression } = options;
-    
+
         const values = Object.keys(obj).map((key) => {
             if (!_.isNil(obj[key])) {
                 return { [key]: Array.isArray(obj[key]) ? obj[key] : [obj[key]] };
@@ -45,7 +45,7 @@ export class ColumnUtilsService {
         /* SDA CUSTOM */ } else {
         /* SDA CUSTOM */     valuesIds = _.cloneDeep(values);
         /* SDA CUSTOM */ }
-    
+
         const filterObject = {
             isGlobal: false,
             filter_id: this.fileUtiles.generateUUID(),
@@ -56,22 +56,22 @@ export class ColumnUtilsService {
             filter_elements: values,
             filter_codes: valuesIds,
             selectedRange: selectedRange,
-            autorelation, 
+            autorelation,
             joins,
             filterBeforeGrouping,
             aggregation_type,
             computed_column,
             SQLexpression
         };
-    
+
         if (valueListSource) {
             filterObject['valueListSource'] = valueListSource;
         }
-    
+
         return filterObject;
     }
 
-    
+
     public handleInputTypes(type: string) {
         let inputType;
         switch (type) {
