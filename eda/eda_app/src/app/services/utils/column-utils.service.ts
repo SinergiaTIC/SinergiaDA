@@ -33,13 +33,18 @@ export class ColumnUtilsService {
             }
         }).filter(Boolean);
 
-        let valuesIds
-        // Adding the values Codes
-        if(data.length !== 0) {
-            valuesIds = [{value1: _.cloneDeep(values)[0].value1.map((e: any) => data.find((d: any) => d.value === e).id)}];
-        } else {
-            valuesIds = _.cloneDeep(values);
-        }
+        /* SDA CUSTOM */ let valuesIds
+        /* SDA CUSTOM */ // Adding the values Codes
+        /* SDA CUSTOM */ if (Array.isArray(data) && data.length !== 0 && _.cloneDeep(values)[0]?.value1) {
+        /* SDA CUSTOM */     valuesIds = [{
+        /* SDA CUSTOM */         value1: _.cloneDeep(values)[0].value1.map((e: any) => {
+        /* SDA CUSTOM */             const match = data.find((d: any) => d.value === e);
+        /* SDA CUSTOM */             return !_.isNil(match?.id) ? match.id : e;
+        /* SDA CUSTOM */         })
+        /* SDA CUSTOM */     }];
+        /* SDA CUSTOM */ } else {
+        /* SDA CUSTOM */     valuesIds = _.cloneDeep(values);
+        /* SDA CUSTOM */ }
     
         const filterObject = {
             isGlobal: false,
