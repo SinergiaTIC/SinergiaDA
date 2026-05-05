@@ -761,10 +761,15 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
         }
     }
 
-    getFilterText(value) {
-        if(value.filter_type === 'between') return this.textBetween;
-        return value.filter_type;
-    }
+/**SDA CUSTOM  */    getFilterText(value) {
+/**SDA CUSTOM  */        if(value.filter_type === 'between') return this.chartUtils.filterTypesLabels.find((value: any) => value.value === 'between').label;
+/**SDA CUSTOM  */        if(value.filter_type === 'in') return this.chartUtils.filterTypesLabels.find((value: any) => value.value === 'in').label;
+/**SDA CUSTOM  */        if(value.filter_type === 'not_in') return this.chartUtils.filterTypesLabels.find((value: any) => value.value === 'not_in').label;
+/**SDA CUSTOM  */        if(value.filter_type === 'not_null') return this.chartUtils.filterTypesLabels.find((value: any) => value.value === 'not_null').label;
+/**SDA CUSTOM  */        if(value.filter_type === 'not_null_nor_empty') return this.chartUtils.filterTypesLabels.find((value: any) => value.value === 'not_null_nor_empty').label;
+/**SDA CUSTOM  */        if(value.filter_type === 'null_or_empty') return this.chartUtils.filterTypesLabels.find((value: any) => value.value === 'null_or_empty').label;
+/**SDA CUSTOM  */        return value.filter_type;
+/**SDA CUSTOM  */    }
 
     processPickerEvent(event) {
         /**SDA CUSTOM  */ this.dropDownFields = [];

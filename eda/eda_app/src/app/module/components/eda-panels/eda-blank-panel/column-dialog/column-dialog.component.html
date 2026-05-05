@@ -154,7 +154,7 @@
                 </ng-container>
 
 
-                <ng-container *ngIf="filterSelected!=undefined && selectedColumn.column_type ==='numeric'  && !display.switchButton && (aggregationSelected.display_name !== 'No')">
+<!-- SDA CUSTOM --><ng-container *ngIf="filterSelected!=undefined && selectedColumn.column_type ==='numeric'  && !display.switchButton && aggregationSelected && (aggregationSelected.display_name !== 'No')">
 
                     <div class="col-12 md:col-4">
 
@@ -410,7 +410,7 @@
                                 <p *ngIf="filtre.filter_elements.length === 0" class="d-flex align-items-center">
                                     <b class="mr-2" style="margin: 2px;">
                                         * {{ selectedColumn.display_name.default }} is
-                                        {{ filtre.filter_type }}
+            <!-- SDA CUSTOM -->         {{ getFilterText(filtre) }}
                                     </b> <span [pTooltip]="filtre.filterBeforeGrouping ? whereMessage : havingMessage"  tooltipPosition="left"><b>[ {{filtre.filterBeforeGrouping ? whereMessage : havingMessage}} ] - <span i18n="@@AggregationText">Agregación</span>: {{getAggregationText(filtre)}}  &nbsp;</b></span>
 
                                     <i class="ui-dropdown-clear-icon pi pi-times pointer"
@@ -420,7 +420,7 @@
                                 <p *ngIf="filtre.filter_elements.length === 1" class="d-flex align-items-center">
                                     <b class="mr-2" style="margin: 2px;">
                                         * {{ selectedColumn.display_name.default }}
-                                        {{ filtre.filter_type }}
+            <!-- SDA CUSTOM -->         {{ getFilterText(filtre) }}
                                         <!--SDA CUSTOM--> "{{ filtre.dynamicValue ? getRangeLabel(filtre.dynamicValue) : filtre.filter_elements[0].value1 }}"
                                     </b> <span [pTooltip]="filtre.filterBeforeGrouping ? whereMessage : havingMessage"  tooltipPosition="left"><b>[ {{filtre.filterBeforeGrouping ? whereMessage : havingMessage}} ] - <span i18n="@@AggregationText">Agregación</span>: {{getAggregationText(filtre)}} &nbsp;</b></span>
 
