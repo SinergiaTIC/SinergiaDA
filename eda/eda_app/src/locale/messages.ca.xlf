@@ -4610,8 +4610,8 @@ Un cop configurada podreu invocar-la des del botó sempre que calgui.</target>
         <target>Selecció d'operador del filtre:</target>
       </trans-unit>
       <trans-unit id="dateFormatDialogTextHeader">
-        <source>Componente Fecha</source>
-        <target>Component de data</target>
+        <source>Filtro:</source>
+        <target>Filtre:</target>
       </trans-unit>
     </body>
   </file>

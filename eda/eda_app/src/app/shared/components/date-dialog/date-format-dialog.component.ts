@@ -24,8 +24,9 @@
 /* SDA CUSTOM */
 /* SDA CUSTOM */  @Output() close: EventEmitter<any> = new EventEmitter<any>();
 /* SDA CUSTOM */  @Input() cleanButtonsAvailable: boolean = false;
+/* SDA CUSTOM */  @Input() selectedColumn: any;
 /* SDA CUSTOM */
-/* SDA CUSTOM */  public dateFormatDialogTextHeader: string = $localize`:@@dateFormatDialogTextHeader:Componente Fecha`;
+/* SDA CUSTOM */  public dateFormatDialogTextHeader: string = $localize`:@@dateFormatDialogTextHeader:Filtro:`;
 /* SDA CUSTOM */
 /* SDA CUSTOM */  public display: boolean = false;
 /* SDA CUSTOM */  public filterTypeSelected: FilterType;
@@ -74,7 +75,6 @@
 /* SDA CUSTOM */    // All the date formats
 /* SDA CUSTOM */    this.rangeDateFormat.types = [...rangeDateFormats];
 /* SDA CUSTOM */
-/* SDA CUSTOM */    console.log(this.filter);
 /* SDA CUSTOM */  }
 /* SDA CUSTOM */
 /* SDA CUSTOM */  ngOnInit(): void {

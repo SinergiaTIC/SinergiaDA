@@ -1,4 +1,4 @@
-<!-- SDA CUSTOM --> <eda-dialog2 [display]="display" [header]="dateFormatDialogTextHeader" i18n-label="@@dateFormatTitle" width="60vw" height="70vh" [disableApply]="isReadyForConfirmation" (apply)="onApplyDateFormatDialog()" (close)="oncloseDateFormatDialog()">
+<!-- SDA CUSTOM --> <eda-dialog2 [display]="display" [header]="dateFormatDialogTextHeader + ' ' + selectedColumn.display_name.default" i18n-label="@@dateFormatTitle" width="60vw" height="70vh" [disableApply]="isReadyForConfirmation" (apply)="onApplyDateFormatDialog()" (close)="oncloseDateFormatDialog()">
 <!-- SDA CUSTOM --> 
 <!-- SDA CUSTOM -->     <div content>
 <!-- SDA CUSTOM -->         <div class="date-format-card">

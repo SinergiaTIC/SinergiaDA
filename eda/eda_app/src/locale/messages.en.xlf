@@ -4716,8 +4716,8 @@ Once configured you can invoke it whenever you want from the button.</target>
         <target>Filter operator selection:</target>
       </trans-unit>
       <trans-unit id="dateFormatDialogTextHeader">
-        <source>Componente Fecha</source>
-        <target>Date component</target>
+        <source>Filtro:</source>
+        <target>Filter:</target>
       </trans-unit>
         </body>
   </file>

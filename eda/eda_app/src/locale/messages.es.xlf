@@ -4606,8 +4606,8 @@
         <target>Selección de operador del filtro:</target>
       </trans-unit>
       <trans-unit id="dateFormatDialogTextHeader">
-        <source>Componente Fecha</source>
-        <target>Componente Fecha</target>
+        <source>Filtro:</source>
+        <target>filtro:</target>
       </trans-unit>
     </body>
   </file>
