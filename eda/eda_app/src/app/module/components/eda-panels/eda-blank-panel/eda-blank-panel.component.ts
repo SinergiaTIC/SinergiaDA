@@ -1797,7 +1797,13 @@ export class EdaBlankPanelComponent implements OnInit {
 
             // Aggregate of internationalisation of the between
             let filterType = filter.filter_type
-            if(filterType === 'between') filterType = this.textBetween;
+
+/**SDA CUSTOM  */        if(filterType === 'between') filterType = this.chartUtils.filterTypesLabels.find((value: any) => value.value === 'between').label;
+/**SDA CUSTOM  */        if(filterType === 'in') filterType = this.chartUtils.filterTypesLabels.find((value: any) => value.value === 'in').label;
+/**SDA CUSTOM  */        if(filterType === 'not_in') filterType = this.chartUtils.filterTypesLabels.find((value: any) => value.value === 'not_in').label;
+/**SDA CUSTOM  */        if(filterType === 'not_null') filterType = this.chartUtils.filterTypesLabels.find((value: any) => value.value === 'not_null').label;
+/**SDA CUSTOM  */        if(filterType === 'not_null_nor_empty') filterType = this.chartUtils.filterTypesLabels.find((value: any) => value.value === 'not_null_nor_empty').label;
+/**SDA CUSTOM  */        if(filterType === 'null_or_empty') filterType = this.chartUtils.filterTypesLabels.find((value: any) => value.value === 'null_or_empty').label;
 
             str = `<strong>${tableName}</strong>&nbsp[${columnName}]&nbsp<strong>${filterType}</strong>&nbsp${valueStr}  &nbsp<strong>${filterBeforeGroupingText}</strong>&nbsp - ${this.aggregationText}: &nbsp<strong>${aggregationLabel}</strong>&nbsp`;
         }
