@@ -744,9 +744,6 @@ export class GlobalFilterComponent implements OnInit {
     }
 
 /* SDA CUSTOM */    public getDateFilterLabel(filter: any): string {
-                        
-                        console.log('filter:::: ', filter)
-
 /* SDA CUSTOM */        const op = filter.dateFilterType;
 /* SDA CUSTOM */        if (!op) return '';
 /* SDA CUSTOM */

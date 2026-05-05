@@ -1,7 +1,7 @@
 import { CdkDragDrop, moveItemInArray } from "@angular/cdk/drag-drop";
 import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from "@angular/core";
 import { EdaPanel } from "@eda/models/model.index";
-import { AlertService, DashboardService, FileUtiles, GlobalFiltersService, QueryBuilderService } from "@eda/services/service.index";
+import { AlertService, ChartUtilsService, DashboardService, FileUtiles, GlobalFiltersService, QueryBuilderService } from "@eda/services/service.index";
 import { EdaDatePickerConfig } from "@eda/shared/components/eda-date-picker/datePickerConfig";
 /* SDA CUSTOM */ import { DateUtils } from '@eda/services/utils/date-utils.service';
 /* SDA CUSTOM */ import { rangeDateFormats } from '@eda/shared/components/date-dialog/date-format-dialog.index';
@@ -69,6 +69,7 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
         private alertService: AlertService,
         private fileUtils: FileUtiles,
         /* SDA CUSTOM */ private dateUtils: DateUtils,
+        /* SDA CUSTOM */ private chartUtilsService: ChartUtilsService
     ) { }
 
     private sortByTittle = (a: any, b: any) => {
@@ -611,28 +612,25 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
     /* SDA CUSTOM */    };
     /* SDA CUSTOM */
     /* SDA CUSTOM */    if (this.globalFilter.dynamicValue) {
-    /* SDA CUSTOM */        return `${this.getOperatorLabel(op)} | ${this.getRangeLabel(this.globalFilter.dynamicValue)}`;
+    /* SDA CUSTOM */        return `${this.getOperatorLabel(op)} : ${this.getRangeLabel(this.globalFilter.dynamicValue)}`;
     /* SDA CUSTOM */    }
     /* SDA CUSTOM */
     /* SDA CUSTOM */    const items = this.globalFilter.selectedItems;
     /* SDA CUSTOM */    if (!items || items.length === 0) return 'Date Format';
-    /* SDA CUSTOM */    if (Array.isArray(items[0])) return `${this.getOperatorLabel(op)} | ${(items[0] as string[]).map(fmt).join(', ')}`;
-    /* SDA CUSTOM */    if (items.length === 1 || !items[1]) return `${this.getOperatorLabel(op)} | ${fmt(items[0])}`;
-    /* SDA CUSTOM */    return `${this.getOperatorLabel(op)} | ${fmt(items[0])} - ${fmt(items[1])}`;
+    /* SDA CUSTOM */    if (Array.isArray(items[0])) return `${this.getOperatorLabel(op)} : ${(items[0] as string[]).map(fmt).join(', ')}`;
+    /* SDA CUSTOM */    if (items.length === 1 || !items[1]) return `${this.getOperatorLabel(op)} : ${fmt(items[0])}`;
+    /* SDA CUSTOM */    return `${this.getOperatorLabel(op)} : ${fmt(items[0])} - ${fmt(items[1])}`;
     /* SDA CUSTOM */}
 
     /* SDA CUSTOM */
     /* SDA CUSTOM */private getOperatorLabel(op: string): string {
     /* SDA CUSTOM */    const labels: Record<string, string> = {
-    /* SDA CUSTOM */        'between':           'between',
-    /* SDA CUSTOM */        'not_between':       'not between',
-    /* SDA CUSTOM */        'in':                'in',
-    /* SDA CUSTOM */        'not_in':            'not in',
-    /* SDA CUSTOM */        'not_null':          'not null',
-    /* SDA CUSTOM */        'not_null_nor_empty':'not null nor empty',
-    /* SDA CUSTOM */        'null_or_empty':     'null or empty',
-    /* SDA CUSTOM */        'like':              'like',
-    /* SDA CUSTOM */        'not_like':          'not like',
+    /* SDA CUSTOM */        'between':           this.chartUtilsService.filterTypesLabels.find((value: any) => value.value === 'between').label,
+    /* SDA CUSTOM */        'in':                this.chartUtilsService.filterTypesLabels.find((value: any) => value.value === 'in').label,
+    /* SDA CUSTOM */        'not_in':            this.chartUtilsService.filterTypesLabels.find((value: any) => value.value === 'not_in').label,
+    /* SDA CUSTOM */        'not_null':          this.chartUtilsService.filterTypesLabels.find((value: any) => value.value === 'not_null').label,
+    /* SDA CUSTOM */        'not_null_nor_empty':this.chartUtilsService.filterTypesLabels.find((value: any) => value.value === 'not_null_nor_empty').label,
+    /* SDA CUSTOM */        'null_or_empty':     this.chartUtilsService.filterTypesLabels.find((value: any) => value.value === 'null_or_empty').label,
     /* SDA CUSTOM */    };
     /* SDA CUSTOM */    return labels[op] || op;
     /* SDA CUSTOM */}
