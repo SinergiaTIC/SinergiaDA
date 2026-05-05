@@ -480,8 +480,12 @@ export class GlobalFilterComponent implements OnInit {
         config.filter = filter;
         if (filter.selectedItems.length > 0) {
             if (!filter.selectedRange) {
-                let firstDate = filter.selectedItems[0];
-                let lastDate = filter.selectedItems[filter.selectedItems.length - 1];
+                // For in/not_in discrete dates, selectedItems is [[date1, date2, ...]]
+                /* SDA CUSTOM */ const items: string[] = Array.isArray(filter.selectedItems[0])
+                /* SDA CUSTOM */     ? filter.selectedItems[0]
+                /* SDA CUSTOM */     : filter.selectedItems;
+                const firstDate = items[0];
+                const lastDate = items[items.length - 1];
                 config.dateRange.push(new Date(firstDate.replace(/-/g, '/')));
                 config.dateRange.push(new Date(lastDate.replace(/-/g, '/')));
             }

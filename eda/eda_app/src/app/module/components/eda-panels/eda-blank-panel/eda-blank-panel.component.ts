@@ -1070,10 +1070,11 @@ export class EdaBlankPanelComponent implements OnInit {
     }
 
     public openEditarConsulta(): void {
-
-        // Only affected at the start of the dashboard
+        /* SDA CUSTOM  */const nullFilterTypes = ['not_null', 'not_null_nor_empty', 'null_or_empty'];
         if(this.variableTemporal.some(filter => {
-            return filter.filter_elements[0].value1.length === 0
+        /* SDA CUSTOM  */    if (nullFilterTypes.includes(filter.filter_type)) return false;
+        /* SDA CUSTOM  */    const val1 = filter.filter_elements?.[0]?.value1;
+        /* SDA CUSTOM  */    return val1 == null || val1.length === 0;
         }) && this.variableTemporal.length != 0) {
             this.globalFilters = _.cloneDeep(this.variableTemporal);
         }
