@@ -203,9 +203,6 @@ export class ModelSettingsComponent implements OnInit {
   }
 
   async importDashboard() {
-
-    console.log('holaaaaaaaaaaaaaaaaaa ..... ');
-
     this.dashboardService.updateDashboard(this.loadedDashboard._id, this.loadedDashboard).subscribe(
       () => {
 
