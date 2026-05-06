@@ -176,7 +176,9 @@ export class ModelSettingsComponent implements OnInit {
 /*SDA CUSTOM*/
             fields.forEach(field => {
 
-              const table = tables.filter(t => t.table_name === field.table_id);
+              // Joined fields encode the join path in table_id (e.g. "sda_project.id.joincolumn"); extract just the table name
+/*SDA CUSTOM*/const realTableId = field.table_id.split('.')[0];
+/*SDA CUSTOM*/const table = tables.filter(t => t.table_name === realTableId);
               if (table.length > 0) {
                 const column = table[0].columns.filter(column => column.column_name === field.column_name)[0];
                 if (!column) {
@@ -201,6 +203,8 @@ export class ModelSettingsComponent implements OnInit {
   }
 
   async importDashboard() {
+
+    console.log('holaaaaaaaaaaaaaaaaaa ..... ');
 
     this.dashboardService.updateDashboard(this.loadedDashboard._id, this.loadedDashboard).subscribe(
       () => {
