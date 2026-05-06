@@ -8,8 +8,11 @@ import Group from '../admin/groups/model/group.model'
 import formatDate from '../../services/date-format/date-format.service'
 import { CachedQueryService } from '../../services/cache-service/cached-query.service'
 import { QueryOptions } from 'mongoose'
-import ServerLogService from '../../services/server-log/server-log.service'
+// SDA CUSTOM - Use SDA daily log service instead of winston-based service
+import ServerLogService from '../../services/server-log/server-log-sda.service'
+// END SDA CUSTOM
 import _ from 'lodash'
+/*SDA CUSTOM*/ import { getSdaDbErrorMessage, resolveSdaDbLang } from './SdaDbErrorMessages'
 const cache_config = require('../../../config/cache.config')
 const eda_api_config = require('../../../config/eda_api_config');
 export class DashboardController {
@@ -687,6 +690,10 @@ export class DashboardController {
           )
         }
 
+        /* SDA CUSTOM */ // SDA CUSTOM - Audit log for dashboard creation with report name
+        /* SDA CUSTOM */ insertServerLog(req, 'info', 'DashboardCreated', req.user.name, buildDashboardLogType(dashboard?._id, dashboard?.config?.title, 'created'))
+        /* SDA CUSTOM */ // END SDA CUSTOM
+
         return res.status(201).json({ ok: true, dashboard })
       })
     } catch (err) {
@@ -708,6 +715,10 @@ export class DashboardController {
             new HttpException(400, 'Dashboard not exist with this id')
           )
         }
+        /* SDA CUSTOM */ // SDA CUSTOM - Capture previous dashboard values to audit update/rename/visibility
+        /* SDA CUSTOM */ const previousTitle = dashboard.config?.title || '-'
+        /* SDA CUSTOM */ const previousVisibility = dashboard.config?.visible || '-'
+        /* SDA CUSTOM */ // END SDA CUSTOM
         const createdAt=dashboard.config.createdAt
         dashboard.config = body.config
         dashboard.config.createdAt = createdAt
@@ -724,6 +735,18 @@ export class DashboardController {
           if (err) {
             return next(new HttpException(500, 'Error updating dashboard'))
           }
+
+          /* SDA CUSTOM */ // SDA CUSTOM - Audit log for dashboard update with report name
+          /* SDA CUSTOM */ const updatedTitle = dashboard?.config?.title || '-'
+          /* SDA CUSTOM */ const updatedVisibility = dashboard?.config?.visible || '-'
+          /* SDA CUSTOM */ insertServerLog(req, 'info', 'DashboardUpdated', req.user.name, buildDashboardLogType(dashboard?._id, updatedTitle, 'updated'))
+          /* SDA CUSTOM */ if (previousTitle !== updatedTitle) {
+          /* SDA CUSTOM */   insertServerLog(req, 'info', 'DashboardRenamed', req.user.name, buildDashboardLogType(dashboard?._id, updatedTitle, `renamed_from:${previousTitle}`))
+          /* SDA CUSTOM */ }
+          /* SDA CUSTOM */ if (previousVisibility !== updatedVisibility) {
+          /* SDA CUSTOM */   insertServerLog(req, 'info', 'DashboardVisibilityChanged', req.user.name, buildDashboardLogType(dashboard?._id, updatedTitle, `visibility:${previousVisibility}->${updatedVisibility}`))
+          /* SDA CUSTOM */ }
+          /* SDA CUSTOM */ // END SDA CUSTOM
 
           return res.status(200).json({ ok: true, dashboard })
         })
@@ -751,6 +774,12 @@ export class DashboardController {
         const { id } = req.params;
         const { data } = req.body;
         const { key, newValue } = data;
+
+        /* SDA CUSTOM */ // SDA CUSTOM - Retrieve previous dashboard values for specific update audit
+        /* SDA CUSTOM */ const previousDashboard = await Dashboard.findById(id).exec();
+        /* SDA CUSTOM */ const previousTitle = previousDashboard?.config?.title || '-';
+        /* SDA CUSTOM */ const previousVisibility = previousDashboard?.config?.visible || '-';
+        /* SDA CUSTOM */ // END SDA CUSTOM
 
         let updateObj: any = { [key]: newValue };
 
@@ -781,6 +810,17 @@ export class DashboardController {
               );
             }
 
+            /* SDA CUSTOM */ // SDA CUSTOM - Audit log for specific dashboard updates with report name
+            /* SDA CUSTOM */ const updatedTitle = dashboard?.config?.title || '-';
+            /* SDA CUSTOM */ const updatedVisibility = dashboard?.config?.visible || '-';
+            /* SDA CUSTOM */ if (key === 'config.title' && previousTitle !== updatedTitle) {
+            /* SDA CUSTOM */   insertServerLog(req, 'info', 'DashboardRenamed', req.user.name, buildDashboardLogType(dashboard?._id, updatedTitle, `renamed_from:${previousTitle}`));
+            /* SDA CUSTOM */ }
+            /* SDA CUSTOM */ if (key === 'config.visible' && previousVisibility !== updatedVisibility) {
+            /* SDA CUSTOM */   insertServerLog(req, 'info', 'DashboardVisibilityChanged', req.user.name, buildDashboardLogType(dashboard?._id, updatedTitle, `visibility:${previousVisibility}->${updatedVisibility}`));
+            /* SDA CUSTOM */ }
+            /* SDA CUSTOM */ // END SDA CUSTOM
+
             return res.status(200).json({ ok: true, dashboard });
           }
         );
@@ -802,6 +842,10 @@ export class DashboardController {
             new HttpException(400, 'Not exists dahsboard with this id')
           )
         }
+
+        /* SDA CUSTOM */ // SDA CUSTOM - Audit log for dashboard deletion with report name and recoverable ID
+        /* SDA CUSTOM */ insertServerLog(req, 'info', 'DashboardDeleted', req.user.name, buildDashboardLogType(dashboard?._id, dashboard?.config?.title, `deleted--id:${dashboard?._id}`))
+        /* SDA CUSTOM */ // END SDA CUSTOM
 
         return res.status(200).json({ ok: true, dashboard })
       })
@@ -1127,6 +1171,7 @@ export class DashboardController {
    * Execute an EDA query for a dashboard
    */
   static async execQuery(req: Request, res: Response, next: NextFunction) {
+    /* SDA CUSTOM */ let builtQuery = ''
 
     try {
       let connectionProps: any;
@@ -1322,12 +1367,13 @@ export class DashboardController {
 
       }
 
-      const query = await connection.getQueryBuilded(
+      /* SDA CUSTOM */ builtQuery = await connection.getQueryBuilded(
         myQuery,
         dataModelObject,
         req.user,
         req.body.query.queryLimit // Added dlimit 
       )
+      /* SDA CUSTOM */ const query = builtQuery
 
       /**---------------------------------------------------------------------------------------------------------*/
 
@@ -1453,8 +1499,11 @@ export class DashboardController {
         return res.status(200).json(cachedQuery.cachedQuery.response)
       }
     } catch (err) {
+      /* SDA CUSTOM */ // SDA CUSTOM - Audit log for panel query failures (EDA mode)
+      /* SDA CUSTOM */ insertServerLog(req, 'error', 'PanelQueryFailed', req.user.name, await buildPanelQueryErrorType(req.body && req.body.dashboard, err, 'EDA', (typeof builtQuery !== 'undefined' ? builtQuery : '')))
+      /* SDA CUSTOM */ // END SDA CUSTOM
       console.log(err)
-      next(new HttpException(500, 'Error quering database'))
+/* SDA CUSTOM */ next(new HttpException(500, await DashboardController.buildDbErrorMessageForRequest(err, req)))
     }
   }
 
@@ -1463,6 +1512,7 @@ export class DashboardController {
    * Run a SQL query for a dashboard
    */
   static async execSqlQuery(req: Request, res: Response, next: NextFunction) {
+    /* SDA CUSTOM */ let builtQuery = ''
     try {
       let connectionProps: any;
       if (req.body.dashboard?.connectionProperties !== undefined) connectionProps = req.body.dashboard.connectionProperties;
@@ -1511,11 +1561,12 @@ export class DashboardController {
       if (notAllowedQuery) {
          return res.status(200).json("[['noDataAllowed'],[]]")
       } else {
-        const query = connection.BuildSqlQuery(
+        /* SDA CUSTOM */ builtQuery = connection.BuildSqlQuery(
           req.body.query,
           dataModelObject,
           req.user
         )
+        /* SDA CUSTOM */ const query = builtQuery
 
         /**If query is in format select foo from a, b queryBuilder returns null */
         if (!query) {
@@ -1648,15 +1699,14 @@ export class DashboardController {
         }
       }
     } catch (err) {
+      /* SDA CUSTOM */ // SDA CUSTOM - Audit log for panel query failures (SQL mode)
+      /* SDA CUSTOM */ insertServerLog(req, 'error', 'PanelQueryFailed', req.user.name, await buildPanelQueryErrorType(req.body && req.body.dashboard, err, 'SQL', (typeof builtQuery !== 'undefined' ? builtQuery : '')))
+      /* SDA CUSTOM */ // END SDA CUSTOM
       console.log(err)
-      next(new HttpException(500, 'Error quering database'))
+/* SDA CUSTOM */ next(new HttpException(500, await DashboardController.buildDbErrorMessageForRequest(err, req)))
     }
   }
-
-
-  
   //Check if a value is not numeric
-  
   static isNotNumeric(val) {
 
     let isNotNumeric = false;
@@ -1794,7 +1844,7 @@ export class DashboardController {
       return res.status(200).json(output)
     } catch (err) {
       console.log(err)
-      next(new HttpException(500, 'Error quering database'))
+/* SDA CUSTOM */ next(new HttpException(500, await DashboardController.buildDbErrorMessageForRequest(err, req)))
     }
   }
 
@@ -1933,6 +1983,113 @@ export class DashboardController {
 
     return res.status(200).json({ ok: true })
   }
+
+/* SDA CUSTOM */ static async isPublicDashboardRequest(req: Request): Promise<boolean> {
+/* SDA CUSTOM */   const anonymousUserId = '135792467811111111111112';
+/* SDA CUSTOM */   const requestUserId = req?.user?._id;
+/* SDA CUSTOM */   const isAnonymous = !req?.user || requestUserId == anonymousUserId;
+/* SDA CUSTOM */   let visibility = req?.body?.dashboard?.config?.visible || req?.body?.dashboard?.visible;
+/* SDA CUSTOM */
+/* SDA CUSTOM */   if (!visibility && req?.body?.dashboard?.dashboard_id) {
+/* SDA CUSTOM */     try {
+/* SDA CUSTOM */       const dashboard = await Dashboard.findById(req.body.dashboard.dashboard_id, 'config.visible').exec();
+/* SDA CUSTOM */       visibility = dashboard?.config?.visible;
+/* SDA CUSTOM */     } catch (e) {
+/* SDA CUSTOM */       visibility = undefined;
+/* SDA CUSTOM */     }
+/* SDA CUSTOM */   }
+/* SDA CUSTOM */
+/* SDA CUSTOM */   const isPublicDashboard = visibility === 'public' || visibility === 'shared';
+/* SDA CUSTOM */
+/* SDA CUSTOM */   return isAnonymous && isPublicDashboard;
+/* SDA CUSTOM */ }
+
+/* SDA CUSTOM */ static async buildDbErrorMessageForRequest(err: any, req: Request): Promise<string> {
+/* SDA CUSTOM */   const lang = DashboardController.resolveDbErrorLangFromRequest(req);
+/* SDA CUSTOM */
+/* SDA CUSTOM */   if (await DashboardController.isPublicDashboardRequest(req)) {
+/* SDA CUSTOM */     return 'Error';
+/* SDA CUSTOM */   }
+/* SDA CUSTOM */
+/* SDA CUSTOM */   return DashboardController.parseDbErrorMySQL(err, lang);
+/* SDA CUSTOM */ }
+
+/* SDA CUSTOM */ static resolveDbErrorLangFromRequest(req: Request): string {
+/* SDA CUSTOM */   const supportedLangs = ['es', 'ca', 'en', 'gl'];
+/* SDA CUSTOM */   const queryLang = (req?.query as any)?.lang;
+/* SDA CUSTOM */   const paramLang = (req?.params as any)?.lang;
+/* SDA CUSTOM */   const bodyLang = (req?.body as any)?.lang;
+/* SDA CUSTOM */   const headerLang = req?.headers?.['x-sda-lang'];
+/* SDA CUSTOM */   const explicitLang = [queryLang, paramLang, bodyLang, headerLang].find(value => typeof value === 'string') as string | undefined;
+/* SDA CUSTOM */
+/* SDA CUSTOM */   if (explicitLang) {
+/* SDA CUSTOM */     const normalized = explicitLang.toLowerCase();
+/* SDA CUSTOM */     return supportedLangs.includes(normalized) ? normalized : 'en';
+/* SDA CUSTOM */   }
+/* SDA CUSTOM */
+/* SDA CUSTOM */   const refererLike = String(req?.headers?.referer || req?.headers?.referrer || req?.headers?.origin || '').toLowerCase();
+/* SDA CUSTOM */   const match = refererLike.match(/\/(es|ca|en|gl|pl)\//);
+/* SDA CUSTOM */
+/* SDA CUSTOM */   if (match && match[1]) {
+/* SDA CUSTOM */     return supportedLangs.includes(match[1]) ? match[1] : 'en';
+/* SDA CUSTOM */   }
+/* SDA CUSTOM */
+/* SDA CUSTOM */   return 'en';
+/* SDA CUSTOM */ }
+
+/*SDA CUSTOM*/ static parseDbErrorMySQL(err: any, lang?: string | false): string {
+/*SDA CUSTOM*/   /** Parse a MySQL/MariaDB error and return a localized descriptive message for the user. */
+/*SDA CUSTOM*/   const msg: string = err?.message || '';
+/*SDA CUSTOM*/   const code: string = err?.code || '';
+/*SDA CUSTOM*/   const l = resolveSdaDbLang(lang);
+/*SDA CUSTOM*/
+/*SDA CUSTOM*/   // Error number: 1054; Symbol: ER_BAD_FIELD_ERROR
+/*SDA CUSTOM*/   if (code === 'ER_BAD_FIELD_ERROR' || err?.errno === 1054) {
+/*SDA CUSTOM*/     const match = msg.match(/Unknown column '([^']+)'/i);
+/*SDA CUSTOM*/     return getSdaDbErrorMessage('unknownColumn', l, match ? match[1] : '?');
+/*SDA CUSTOM*/   }
+/*SDA CUSTOM*/
+/*SDA CUSTOM*/   // Error number: 1146; Symbol: ER_NO_SUCH_TABLE; SQLSTATE: 42S02
+/*SDA CUSTOM*/   if (code === 'ER_NO_SUCH_TABLE' || err?.errno === 1146) {
+/*SDA CUSTOM*/     const match = msg.match(/Table '([^']+)' doesn't exist/i);
+/*SDA CUSTOM*/     const tableName = match ? match[1].split('.').pop() : '?';
+/*SDA CUSTOM*/     return getSdaDbErrorMessage('unknownTable', l, tableName);
+/*SDA CUSTOM*/   }
+/*SDA CUSTOM*/
+/*SDA CUSTOM*/   // Error number: 1045/1698; Symbol: ER_ACCESS_DENIED_ERROR / ER_ACCESS_DENIED_NO_PASSWORD_ERROR
+/*SDA CUSTOM*/   if (code === 'ER_ACCESS_DENIED_ERROR' || code === 'ER_ACCESS_DENIED_NO_PASSWORD_ERROR' ||
+/*SDA CUSTOM*/       err?.errno === 1045 || err?.errno === 1698 || /Access denied for user/i.test(msg)) {
+/*SDA CUSTOM*/     return getSdaDbErrorMessage('accessDenied', l);
+/*SDA CUSTOM*/   }
+/*SDA CUSTOM*/
+/*SDA CUSTOM*/   // Error number: 1064; Symbol: ER_PARSE_ERROR
+/*SDA CUSTOM*/   if (code === 'ER_PARSE_ERROR' || err?.errno === 1064) {
+/*SDA CUSTOM*/     return getSdaDbErrorMessage('syntaxError', l);
+/*SDA CUSTOM*/   }
+/*SDA CUSTOM*/
+/*SDA CUSTOM*/   // Error number: 1040; Symbol: ER_CON_COUNT_ERROR
+/*SDA CUSTOM*/   if (code === 'ER_CON_COUNT_ERROR' || err?.errno === 1040) {
+/*SDA CUSTOM*/     return getSdaDbErrorMessage('tooManyConnections', l);
+/*SDA CUSTOM*/   }
+/*SDA CUSTOM*/
+/*SDA CUSTOM*/   // Error number: 1205; Symbol: ER_LOCK_WAIT_TIMEOUT
+/*SDA CUSTOM*/   if (code === 'ER_LOCK_WAIT_TIMEOUT' || err?.errno === 1205) {
+/*SDA CUSTOM*/     return getSdaDbErrorMessage('lockTimeout', l);
+/*SDA CUSTOM*/   }
+/*SDA CUSTOM*/
+/*SDA CUSTOM*/   // Node.js connection errors
+/*SDA CUSTOM*/   if (code === 'ECONNREFUSED' || code === 'ER_GET_CONNECTION_TIMEOUT') {
+/*SDA CUSTOM*/     return getSdaDbErrorMessage('connectionRefused', l);
+/*SDA CUSTOM*/   }
+/*SDA CUSTOM*/
+/*SDA CUSTOM*/   // Generic fallback with the original MySQL/MariaDB message
+/*SDA CUSTOM*/   if (msg) {
+/*SDA CUSTOM*/     const truncated = msg.length > 500 ? msg.substring(0, 500) + '...' : msg;
+/*SDA CUSTOM*/     return getSdaDbErrorMessage('generic', l, truncated);
+/*SDA CUSTOM*/   }
+/*SDA CUSTOM*/
+/*SDA CUSTOM*/   return getSdaDbErrorMessage('fallback', l);
+/*SDA CUSTOM*/ }
 }
 
 function insertServerLog(
@@ -1962,3 +2119,40 @@ function insertServerLog(
     date.getSeconds()
   ServerLogService.log({ level, action, userMail, ip, type, date_str })
 }
+
+/* SDA CUSTOM */ // SDA CUSTOM - Normalize dashboard log payload including report name
+/* SDA CUSTOM */ function buildDashboardLogType(dashboardId: any, dashboardTitle: string, extra?: string) {
+/* SDA CUSTOM */   const safeId = (dashboardId || '').toString().replace(/\|,\|/g, ' ')
+/* SDA CUSTOM */   const safeTitle = (dashboardTitle || '-').toString().replace(/\|,\|/g, ' ')
+/* SDA CUSTOM */   if (!extra) return `${safeId}--${safeTitle}`
+/* SDA CUSTOM */   const safeExtra = extra.toString().replace(/\|,\|/g, ' ')
+/* SDA CUSTOM */   return `${safeId}--${safeTitle}--${safeExtra}`
+/* SDA CUSTOM */ }
+/* SDA CUSTOM */ // END SDA CUSTOM
+
+/* SDA CUSTOM */ // SDA CUSTOM - Normalize panel query error payload with dashboard and panel identifiers
+/* SDA CUSTOM */ async function buildPanelQueryErrorType(dashboard: any, err: any, mode: string, sqlQuery: any) {
+/* SDA CUSTOM */   const dashboardId = (dashboard && (dashboard.dashboard_id || dashboard._id || dashboard.id)) || ''
+/* SDA CUSTOM */   let dashboardTitle = (dashboard && (dashboard.dashboard_name || dashboard.title || dashboard.name)) || '-'
+/* SDA CUSTOM */   const panelId = (dashboard && (dashboard.panel_id || dashboard.panelId)) || '-'
+/* SDA CUSTOM */   let panelName = (dashboard && (dashboard.panel_name || dashboard.panelTitle || dashboard.panel_title)) || '-'
+/* SDA CUSTOM */   if ((dashboardTitle === '-' || panelName === '-') && dashboardId) {
+/* SDA CUSTOM */     const dashboardDoc: any = await Dashboard.findById(dashboardId).exec()
+/* SDA CUSTOM */     if (dashboardDoc && dashboardDoc.config) {
+/* SDA CUSTOM */       if (dashboardTitle === '-') dashboardTitle = dashboardDoc.config.title || '-'
+/* SDA CUSTOM */       if (panelName === '-' && dashboardDoc.config.panel && panelId) {
+/* SDA CUSTOM */         const panel = dashboardDoc.config.panel.find(p => (p && p.id) == panelId)
+/* SDA CUSTOM */         if (panel && panel.title) panelName = panel.title
+/* SDA CUSTOM */       }
+/* SDA CUSTOM */     }
+/* SDA CUSTOM */   }
+/* SDA CUSTOM */   const rawMessage = (err && (err.message || err.toString && err.toString())) || 'unknown_error'
+/* SDA CUSTOM */   const safeMessage = rawMessage.toString().replace(/\|,\|/g, ' ').replace(/\s+/g, ' ').substring(0, 180)
+/* SDA CUSTOM */   const rawSql = (sqlQuery || '').toString()
+/* SDA CUSTOM */   const rawSqlTrimmed = rawSql.length > 6000 ? rawSql.substring(0, 6000) : rawSql
+/* SDA CUSTOM */   const safeSqlB64 = Buffer.from(rawSqlTrimmed, 'utf8').toString('base64')
+/* SDA CUSTOM */   const safeSql = (sqlQuery || '').toString().replace(/\|,\|/g, ' ').replace(/--/g, ' ').replace(/\s+/g, ' ').substring(0, 1000)
+/* SDA CUSTOM */   const safePanelName = (panelName || '-').toString().replace(/\|,\|/g, ' ').replace(/--/g, ' ').replace(/\s+/g, ' ').substring(0, 180)
+/* SDA CUSTOM */   return buildDashboardLogType(dashboardId, dashboardTitle, `mode:${mode}--panel:${panelId}--panel_name:${safePanelName}--error:${safeMessage}--sql_b64:${safeSqlB64}--sql:${safeSql}`)
+/* SDA CUSTOM */ }
+/* SDA CUSTOM */ // END SDA CUSTOM

@@ -115,7 +115,9 @@ export class ChartUtilsService {
         { display_name: $localize`:@@dates4:NO`, value: 'No', selected: false }
     ];
 
-    public histoGramRangesTxt: string = $localize`:@@histoGramRangesTxt:Rango`;
+    // SDA CUSTOM - Replace eliminated duplicate ID histoGramRangesTxt with canonical rangeDescriptionB
+/* SDA CUSTOM */    public histoGramRangesTxt: string = $localize`:@@rangeDescriptionB:Rango`;
+    // END SDA CUSTOM
 
 
     /*
@@ -701,8 +703,9 @@ export class ChartUtilsService {
             notAllowed.splice(notAllowed.indexOf('crosstable'), 1);
         }
 
-        //Coordinates map Map (two coordinates and two aditional fields at max)
-        if (dataDescription.coordinateColumns === 2 && dataDescription.totalColumns < 5) {
+        //Coordinates map (two coordinates, no field limit)
+        /* SDA CUSTOM if (dataDescription.coordinateColumns === 2 && dataDescription.totalColumns < 5) {
+        /* SDA CUSTOM*/ if (dataDescription.coordinateColumns === 2) {
             notAllowed.splice(notAllowed.indexOf('coordinatesMap'), 1);
         }
 
