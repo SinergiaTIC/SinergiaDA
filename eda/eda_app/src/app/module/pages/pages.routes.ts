@@ -17,6 +17,7 @@ import { LogsComponent } from './logs/logs.component';
 
 // Guard
 import { VerifyTokenGuard } from '../../services/guards/verify-token.guard';
+/* SDA CUSTOM */ import { ReadonlyUserGuard } from '../../services/guards/readonly-user.guard';
 import { GroupListComponent } from './groups-management/group-list/group-list.component';
 import { AlertsManagementComponent } from './alerts-management/alerts-management.component';
 import { MailManagementComponent } from './mail-management/mail-management.component';
@@ -28,17 +29,17 @@ const pagesRoutes: Routes = [
     { path: 'dashboard/:id', component: DashboardComponent, canActivate: [VerifyTokenGuard] },
     { path: 'account-settings', component: AccountSettingsComponent, canActivate: [VerifyTokenGuard] },
     { path: 'profile', component: ProfileComponent, canActivate: [VerifyTokenGuard] },
-    { path: 'data-source', component: DsConfigWrapperComponent, canActivate: [VerifyTokenGuard] },
-    { path: 'data-source/:id', component: DataSourceListComponent, canActivate: [VerifyTokenGuard], runGuardsAndResolvers: 'paramsChange' },
+    /* SDA CUSTOM */ { path: 'data-source', component: DsConfigWrapperComponent, canActivate: [VerifyTokenGuard, ReadonlyUserGuard] },
+    /* SDA CUSTOM */ { path: 'data-source/:id', component: DataSourceListComponent, canActivate: [VerifyTokenGuard, ReadonlyUserGuard], runGuardsAndResolvers: 'paramsChange' },
 
-    { path: 'groups-management', component: GroupListComponent, canActivate: [VerifyTokenGuard] },
-    { path: 'users-management', component: UsersLlistaComponent, canActivate: [VerifyTokenGuard] },
-    { path: 'models-management', component: ModelSettingsComponent, canActivate: [VerifyTokenGuard] },
-    { path: 'alerts-management', component: AlertsManagementComponent, canActivate: [VerifyTokenGuard] },
-    { path: 'mail-management', component: MailManagementComponent, canActivate: [VerifyTokenGuard] },
+    /* SDA CUSTOM */ { path: 'groups-management', component: GroupListComponent, canActivate: [VerifyTokenGuard, ReadonlyUserGuard] },
+    /* SDA CUSTOM */ { path: 'users-management', component: UsersLlistaComponent, canActivate: [VerifyTokenGuard, ReadonlyUserGuard] },
+    /* SDA CUSTOM */ { path: 'models-management', component: ModelSettingsComponent, canActivate: [VerifyTokenGuard, ReadonlyUserGuard] },
+    /* SDA CUSTOM */ { path: 'alerts-management', component: AlertsManagementComponent, canActivate: [VerifyTokenGuard, ReadonlyUserGuard] },
+    /* SDA CUSTOM */ { path: 'mail-management', component: MailManagementComponent, canActivate: [VerifyTokenGuard, ReadonlyUserGuard] },
     /*SDA CUSTOM*/ { path: 'about', component: AboutComponent, canActivate: [VerifyTokenGuard] },
     /*SDA CUSTOM*/ { path: 'home', component: HomeSdaComponent, canActivate: [VerifyTokenGuard] },
-    /*SDA CUSTOM*/ { path: 'logs-sda', component: LogsSdaComponent, canActivate: [VerifyTokenGuard] },
+    /*SDA CUSTOM*/ { path: 'logs-sda', component: LogsSdaComponent, canActivate: [VerifyTokenGuard, ReadonlyUserGuard] },
     { path: 'logs', component: LogsComponent, canActivate: [VerifyTokenGuard] },
     { path: '', redirectTo: 'home', pathMatch: 'full' }
 ];
