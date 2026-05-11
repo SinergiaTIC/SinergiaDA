@@ -17,14 +17,14 @@ const cache_config = require('../../../config/cache.config')
 const eda_api_config = require('../../../config/eda_api_config');
 export class DashboardController {
 
-  static async isReadOnlyUser(req: Request): Promise<boolean> {
-    try {
-      const groups = await Group.find({ users: { $in: req.user._id } }).exec();
-      return groups.some(g => g.name === 'EDA_RO');
-    } catch (err) {
-      return false;
-    }
-  }
+/* SDA CUSTOM */  static async isReadOnlyUser(req: Request): Promise<boolean> {
+/* SDA CUSTOM */    try {
+/* SDA CUSTOM */      const groups = await Group.find({ users: { $in: req.user._id } }).exec();
+/* SDA CUSTOM */      return groups.some(g => g.name === 'EDA_RO');
+/* SDA CUSTOM */    } catch (err) {
+/* SDA CUSTOM */      return false;
+/* SDA CUSTOM */    }
+/* SDA CUSTOM */  }
 
   static async getDashboards(req: Request, res: Response, next: NextFunction) {
     try {

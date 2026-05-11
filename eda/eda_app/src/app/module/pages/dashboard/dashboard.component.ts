@@ -1731,7 +1731,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
 
     }
 
-    /* SDA CUSTOM */ public canIedit(): boolean {
+   public canIedit(): boolean {
         /* SDA CUSTOM */ if (this.inject?.isObserver) return false;
         /* SDA CUSTOM */
         let result: boolean = false;

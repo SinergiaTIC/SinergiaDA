@@ -600,9 +600,8 @@ public filterGroups() {
    * @param dashboard The dashboard to check
    * @returns Boolean indicating if the user can edit the dashboard
    */
-  /* SDA CUSTOM */ public canIEdit(dashboard): boolean {
-    /* SDA CUSTOM */ if (this.isObserver) return false;
-    /* SDA CUSTOM */
+  public canIEdit(dashboard): boolean {
+    if (this.isObserver) return false;
     let result: boolean = false;
     result = this.isAdmin;
     if (result == false) {
