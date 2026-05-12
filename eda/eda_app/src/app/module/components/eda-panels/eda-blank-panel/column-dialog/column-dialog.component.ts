@@ -1141,16 +1141,13 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
     /* SDA CUSTOM */ public getDateFilterDisplayLabel(filtre: any): string {
     /* SDA CUSTOM */     if (!filtre) return '';
 
-    /* SDA CUSTOM */     const op = filtre.filter_type;
-    /* SDA CUSTOM */     const operatorLabel = this.getFilterText(filtre);
-
     /* SDA CUSTOM */     const dynamicValue = filtre.dynamicValue || filtre.selectedRange;
     /* SDA CUSTOM */     if (dynamicValue && dynamicValue !== 'customDate') {
-    /* SDA CUSTOM */         return `${operatorLabel} : ${this.getRangeLabel(dynamicValue)}`;
+    /* SDA CUSTOM */         return this.getRangeLabel(dynamicValue);  // Only return the value, operator is shown separately
     /* SDA CUSTOM */     }
 
     /* SDA CUSTOM */     if (!filtre.filter_elements || filtre.filter_elements.length === 0) {
-    /* SDA CUSTOM */         return operatorLabel;
+    /* SDA CUSTOM */         return '';  // No value to display
     /* SDA CUSTOM */     }
 
     /* SDA CUSTOM */     const fmt = (s: string) => {
@@ -1161,9 +1158,9 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
 
     /* SDA CUSTOM */     const items = filtre.filter_elements;
     /* SDA CUSTOM */     if (items.length === 1 || !items[1]) {
-    /* SDA CUSTOM */         return `${operatorLabel} : ${fmt(items[0].value1)}`;
+    /* SDA CUSTOM */         return fmt(items[0].value1);  // Only return the value, operator is shown separately
     /* SDA CUSTOM */     }
-    /* SDA CUSTOM */     return `${operatorLabel} : ${fmt(items[0].value1)} - ${fmt(items[1].value2)}`;
+    /* SDA CUSTOM */     return `${fmt(items[0].value1)} - ${fmt(items[1].value2)}`;
     /* SDA CUSTOM */ }
 
     /* SDA CUSTOM */ public getRangeLabel(value: string): string {
