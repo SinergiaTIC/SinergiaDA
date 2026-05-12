@@ -1920,26 +1920,28 @@ export class EdaBlankPanelComponent implements OnInit {
 
         if(e.add){
 
-            if(this.sortedFilters.length !==0){
-                const lastElement = this.sortedFilters[this.sortedFilters.length-1];
+            /* SDA CUSTOM */ const lastElement = this.sortedFilters.length !== 0
+            /* SDA CUSTOM */     ? this.sortedFilters[this.sortedFilters.length-1]
+            /* SDA CUSTOM */     : null;
 
-                const newSortedFilter = {
-                    cols: 3,
-                    rows: 1,
-                    y: lastElement.y+1,
-                    x: 0,
-                    filter_table: e.filter.filter_table,
-                    filter_column: e.filter.filter_column,
-                    filter_type: e.filter.filter_type,
-                    filter_column_type: e.filter.filter_column_type,
-                    filter_elements: e.filter.filter_elements,
-                    filter_codes: e.filter.filter_codes,
-                    filter_id: e.filter.filter_id,
-                    value: "and",
-                }
-
-                this.sortedFilters.push(newSortedFilter);
+            /* SDA CUSTOM */ const newSortedFilter = {
+                cols: 3,
+                rows: 1,
+                y: lastElement ? lastElement.y+1 : 0,
+                x: 0,
+                filter_table: e.filter.filter_table,
+                filter_column: e.filter.filter_column,
+                filter_type: e.filter.filter_type,
+                filter_column_type: e.filter.filter_column_type,
+                filter_elements: e.filter.filter_elements,
+                filter_codes: e.filter.filter_codes,
+                filter_id: e.filter.filter_id,
+                /* SDA CUSTOM */ selectedRange: e.filter.selectedRange,
+                /* SDA CUSTOM */ dynamicValue: e.filter.dynamicValue,
+                value: "and",
             }
+
+            this.sortedFilters.push(newSortedFilter);
 
         } else {
 
@@ -1954,26 +1956,28 @@ export class EdaBlankPanelComponent implements OnInit {
 
         if(e.add){
 
-            if(this.sortedFilters.length !==0){
-                const lastElement = this.sortedFilters[this.sortedFilters.length-1];
+            /* SDA CUSTOM */ const lastElement = this.sortedFilters.length !== 0
+            /* SDA CUSTOM */     ? this.sortedFilters[this.sortedFilters.length-1]
+            /* SDA CUSTOM */     : null;
 
-                const newSortedFilter = {
-                    cols: 3,
-                    rows: 1,
-                    y: lastElement.y+1,
-                    x: 0,
-                    filter_table: e.filter.filter_table,
-                    filter_column: e.filter.filter_column,
-                    filter_type: e.filter.filter_type,
-                    filter_column_type: e.filter.filter_column_type,
-                    filter_elements: e.filter.filter_elements,
-                    filter_codes: e.filter.filter_codes,
-                    filter_id: e.filter.filter_id,
-                    value: "and",
-                }
-
-                this.sortedFilters.push(newSortedFilter);
+            /* SDA CUSTOM */ const newSortedFilter = {
+                cols: 3,
+                rows: 1,
+                y: lastElement ? lastElement.y+1 : 0,
+                x: 0,
+                filter_table: e.filter.filter_table,
+                filter_column: e.filter.filter_column,
+                filter_type: e.filter.filter_type,
+                filter_column_type: e.filter.filter_column_type,
+                filter_elements: e.filter.filter_elements,
+                filter_codes: e.filter.filter_codes,
+                filter_id: e.filter.filter_id,
+                /* SDA CUSTOM */ selectedRange: e.filter.selectedRange,
+                /* SDA CUSTOM */ dynamicValue: e.filter.dynamicValue,
+                value: "and",
             }
+
+            this.sortedFilters.push(newSortedFilter);
 
         } else {
 

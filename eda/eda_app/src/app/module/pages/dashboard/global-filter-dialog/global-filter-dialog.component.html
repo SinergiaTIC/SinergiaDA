@@ -25,26 +25,42 @@
                         <div class="col-3" >
                             <input class = "d-flex justify-content-center" type="text" pInputText id="aliasName"
                             [style]="{'vertical-align' : 'bottom', width: '100%' }"
-                            [(ngModel)]="aliasValue"  
+                            [(ngModel)]="aliasValue"
                             placeholder="Alias del filtro (opcional)"
                             i18n-placeholder="@@aliasValuePh">
                         </div>
                         <div class="col-3">
+                            <!-- SDA CUSTOM: non-date filter value selector -->
                             <p-multiSelect id="selectFilterValue" class='eda-filter-multiselect'
                                 *ngIf="globalFilter.selectedColumn?.column_type !== 'date'" [options]="columnValues"
                                 [(ngModel)]="globalFilter.selectedItems" [virtualScroll]="true" itemSize="30"
                                 [style]="{'vertical-align' : 'bottom', 'margin-left' : '15px', width: '100%' }"
                                 [panelStyle]="{minWidth:'15em'}" maxSelectedLabels="1" defaultLabel="Valor por defecto"
                                 display="chip" appendTo="body"
-                                (ngModelChange)="onSelectedItemsChange($event)"
-                                >
+                                (ngModelChange)="onSelectedItemsChange($event)">
                             </p-multiSelect>
-
-<!-- SDA CUSTOM: date format dialog button, only for date columns -->
-<!-- SDA CUSTOM -->         <div *ngIf="globalFilter.selectedColumn?.column_type === 'date'" class="p-0">
-<!-- SDA CUSTOM -->             <p-button (onClick)="onOpenDateFormatDialog()" [label]="getDateFormatButtonLabel()" [style]="{'min-width': '180px', 'background': 'white', 'color': '#495057', 'border-color': '#ced4da', 'justify-content': 'center'}"></p-button>
-<!-- SDA CUSTOM -->         </div>
-<!-- SDA CUSTOM -->         
+                            <!-- SDA CUSTOM: inline date filter selectors -->
+                            <div *ngIf="globalFilter.selectedColumn?.column_type === 'date'" class="d-flex align-items-center gap-2 w-100">
+                                <p-dropdown *ngIf="showDateFormatSelecter" [(ngModel)]="filterSelected"
+                                    [options]="dateFilterOperators" optionLabel="label" [style]="{'min-width': '130px'}"
+                                    placeholder="Operador" (onChange)="handleDateFilterOperatorChange($event.value)" appendTo="body">
+                                </p-dropdown>
+                                <p-dropdown *ngIf="isDateFormatAvailable && showDateFormatSelecter" [(ngModel)]="dateFormatSelected"
+                                    [options]="rangeDateFormat" optionLabel="label" [style]="{'min-width': '130px'}"
+                                    placeholder="Rango" (onChange)="handleDateFilterFormatChange($event.value)" appendTo="body">
+                                </p-dropdown>
+                                <eda-date-picker *ngIf="showEdaDatePicker" [config]="datePickerConfigs[globalFilter.id]"
+                                    (dateSelected)="onApplyDateFilterFromPicker($event)">
+                                </eda-date-picker>
+                                <p-calendar *ngIf="showEdaDatePickerSingleSelection" [(ngModel)]="singleDateValue"
+                                    dateFormat="dd-mm-yy" [showIcon]="true" appendTo="body"
+                                    (onSelect)="onSingleDateSelected($event)">
+                                </p-calendar>
+                                <p-calendar *ngIf="showEdaDatePickerMultipleSelection" [(ngModel)]="multipleDateValues"
+                                    selectionMode="multiple" dateFormat="dd-mm-yy" [showIcon]="true" appendTo="body"
+                                    (onSelect)="onMultipleDateSelected($event)">
+                                </p-calendar>
+                            </div>
                         </div>
                     </div>
                 </p-card>
@@ -63,8 +79,6 @@
                 </p-card>
             </div>
         </div>
-
-
 
         <div class="row">
             <div *ngIf="!isEmpty(globalFilter.selectedTable) && !isEmpty(globalFilter.selectedColumn)" class="col-12">
@@ -85,7 +99,7 @@
                                     </button>
                                 </td>
                                 <td style="width: 60%;">
-                                    <p-treeSelect *ngIf="globalFilter.pathList[panel.id]" 
+                                    <p-treeSelect *ngIf="globalFilter.pathList[panel.id]"
                                         [(ngModel)]="globalFilter.pathList[panel.id].selectedTableNodes"
                                         [options]="panel.content.globalFilterPaths"
                                         (onNodeExpand)="onNodeExpand(panel, $event)"
@@ -122,10 +136,7 @@
                         </div>
                     </div>
                 </p-card>
-
-                <!-- <div *ngIf="isEmpty(globalFilter.selectedTable) || isEmpty(globalFilter.selectedColumn)" class="disabled-div"></div> -->
             </div>
-
         </div>
 
         <div class="row">
@@ -136,9 +147,8 @@
                         <ng-container *ngFor="let filter of globalFilterList">
                             <div *ngIf="!filter.isdeleted" class="select-box col-3 col-md-2 p-1" cdkDrag>
                                 <span class="close-thin pointer" (click)="removeFilter(filter, 'select')"></span>
-                                <!-- [ngClass]="(selectedFilter.table==filter.table) && (selectedFilter.column.label==filter.column.label)?'edaEmfasis':''" -->
                                 <span class="text-center">
-                                    {{getFilterLabel(filter)}}
+                                    <!-- SDA CUSTOM --> {{filter.selectedColumn?.column_type === 'date' ? getDateFormatButtonLabel(filter) : getFilterLabel(filter)}}
                                 </span>
                             </div>
                         </ng-container>
@@ -148,5 +158,3 @@
         </div>
     </div>
 </eda-dialog2>
-
-<!-- SDA CUSTOM --> <date-format-dialog *ngIf="displayDateFormat" (close)="onCloseDateFormatDialog($event)" [selectedColumn]="globalFilter.selectedColumn"></date-format-dialog>
