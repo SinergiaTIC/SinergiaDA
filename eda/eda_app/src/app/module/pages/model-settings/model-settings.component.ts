@@ -172,7 +172,7 @@ export class ModelSettingsComponent implements OnInit {
           panels.forEach(panel => {
             const fields = panel.content.query.query.fields;
             
-/* SDA CUSTOM */ // No se verifican los paneles en modo SQL
+/* SDA CUSTOM */ // Panels are not verified in SQL mode
 /* SDA CUSTOM */ if(panel.content.query.query?.modeSQL) return
 /* SDA CUSTOM */
             fields.forEach(field => {
@@ -198,7 +198,7 @@ export class ModelSettingsComponent implements OnInit {
       }
       fileReader.readAsText(file);
     } catch (err) {
-      this.alertService.addError(err);
+      /* SDA CUSTOM */ this.alertService.addError(err);
     }
 
   }
@@ -299,7 +299,7 @@ export class ModelSettingsComponent implements OnInit {
       fileReader.readAsText(file);
 
     } catch (err) {
-      this.alertService.addError(err);
+      /* SDA CUSTOM */ this.alertService.addError(err);
     }
 
   }
