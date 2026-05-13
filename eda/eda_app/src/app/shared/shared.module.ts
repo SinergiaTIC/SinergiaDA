@@ -7,6 +7,7 @@ import { PipesModule } from './pipes/pipes.module';
 // Directives
 import { FocusOnShowDirective } from './directives/autofocus.directive';
 import { OnlySignsAndNumbersDirective } from './directives/only-signs-and-numbers.directive';
+/* SDA CUSTOM */ import { EdaNewFeatureDirective } from './directives/eda-new-feature.directive';
 
 
 // Components
@@ -37,7 +38,8 @@ import {
         EdaDatePickerComponent,
         CreateDashboardComponent,
         EdaFieldComponent,
-        OnlySignsAndNumbersDirective
+        OnlySignsAndNumbersDirective, /* SDA CUSTOM */
+        EdaNewFeatureDirective /* SDA CUSTOM */
     ],
     imports: [
         CoreModule,
@@ -57,7 +59,9 @@ import {
         OnlySignsAndNumbersDirective,
         EdaDatePickerComponent,
         CreateDashboardComponent,
-        EdaFieldComponent
+        EdaFieldComponent,
+        OnlySignsAndNumbersDirective,
+        EdaNewFeatureDirective /* SDA CUSTOM */
     ]
 })
 export class SharedModule {}

@@ -908,6 +908,20 @@
   </trans-unit>
   <!-- END SDA CUSTOM -->
   <!-- END SDA CUSTOM -->
+  <!-- SDA CUSTOM - new-feature-tooltip -->
+  <trans-unit id="newFeatureBadge">
+    <source>NEW</source>
+    <target>NUEVO</target>
+  </trans-unit>
+  <trans-unit id="newFeatureTitle">
+    <source>New in SinergiaDA</source>
+    <target>Nuevo en SinergiaDA</target>
+  </trans-unit>
+  <trans-unit id="newFeatureClickToDismiss">
+    <source>Click to dismiss</source>
+    <target>Haz clic para cerrar</target>
+  </trans-unit>
+  <!-- END SDA CUSTOM -->
 </body>
 </file>
 </xliff>
