@@ -906,6 +906,28 @@
   </trans-unit>
   <!-- END SDA CUSTOM -->
   <!-- END SDA CUSTOM -->
+  <!-- SDA CUSTOM - new-feature-tooltip -->
+  <trans-unit id="newFeatureBadge">
+    <source>NEW</source>
+    <target>NEW</target>
+  </trans-unit>
+  <trans-unit id="newFeatureTitle">
+    <source>New in SinergiaDA</source>
+    <target>New in SinergiaDA</target>
+  </trans-unit>
+  <trans-unit id="newFeatureClickToDismiss">
+    <source>Click to dismiss</source>
+    <target>Click to dismiss</target>
+  </trans-unit>
+  <trans-unit id="newFeatureClearAllFilters">
+    <source>Clear all filters button - removes all active filters from the dashboard</source>
+    <target>Clear all filters button - removes all active filters from the dashboard</target>
+  </trans-unit>
+  <trans-unit id="newFeatureLogViewerMenu">
+    <source>Here you will find the new application log viewer with a summary of its functionality</source>
+    <target>Here you will find the new application log viewer. It allows you to query system activity logs and detect incidents.</target>
+  </trans-unit>
+  <!-- END SDA CUSTOM -->
 </body>
 </file>
 </xliff>

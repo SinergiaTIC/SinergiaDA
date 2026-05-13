@@ -908,6 +908,28 @@
   </trans-unit>
   <!-- END SDA CUSTOM -->
   <!-- END SDA CUSTOM -->
+  <!-- SDA CUSTOM - new-feature-tooltip -->
+  <trans-unit id="newFeatureBadge">
+    <source>NEW</source>
+    <target>NOU</target>
+  </trans-unit>
+  <trans-unit id="newFeatureTitle">
+    <source>New in SinergiaDA</source>
+    <target>Nou a SinergiaDA</target>
+  </trans-unit>
+  <trans-unit id="newFeatureClickToDismiss">
+    <source>Click to dismiss</source>
+    <target>Fes clic per tancar</target>
+  </trans-unit>
+  <trans-unit id="newFeatureClearAllFilters">
+    <source>Clear all filters button - removes all active filters from the dashboard</source>
+    <target>Botó per eliminar tots els filtres actius del dashboard</target>
+  </trans-unit>
+  <trans-unit id="newFeatureLogViewerMenu">
+    <source>Here you will find the new application log viewer with a summary of its functionality</source>
+    <target>Aquí trobaràs el nou visor de logs de l'aplicació. Permet consultar els registres d'activitat del sistema i detectar incidències.</target>
+  </trans-unit>
+  <!-- END SDA CUSTOM -->
 </body>
 </file>
 </xliff>
