@@ -921,6 +921,10 @@
     <source>Click to dismiss</source>
     <target>Haz clic para cerrar</target>
   </trans-unit>
+  <trans-unit id="newFeatureClearAllFilters">
+    <source>Clear all filters button - removes all active filters from the dashboard</source>
+    <target>Botón para eliminar todos los filtros activos del dashboard</target>
+  </trans-unit>
   <!-- END SDA CUSTOM -->
 </body>
 </file>

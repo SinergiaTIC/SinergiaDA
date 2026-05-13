@@ -34,7 +34,7 @@ export class NewFeatureService {
     shouldShow(key: string): boolean {
         /* SDA CUSTOM */
         const feature = this.getAllFeatures().find(f => f.key === key);
-        if (!feature) return false;
+        if (!feature) return true;
         if (feature.dismissedAt !== null) return false;
         const expiryTime = feature.registeredAt + (feature.days * 24 * 60 * 60 * 1000);
         return Date.now() < expiryTime;
@@ -47,12 +47,20 @@ export class NewFeatureService {
 
     clearExpired(): void {
         /* SDA CUSTOM */
-        const active = this.getAllFeatures().filter(f => {
+        const all = this.getAllFeatures();
+        const active = all.filter(f => {
             if (f.dismissedAt !== null) return true;
             const expiryTime = f.registeredAt + (f.days * 24 * 60 * 60 * 1000);
             return Date.now() < expiryTime;
         });
-        this.saveAllFeatures(active);
+        if (active.length !== all.length) {
+            this.saveAllFeatures(active);
+        }
+    }
+
+    init(): void {
+        /* SDA CUSTOM */
+        this.clearExpired();
     }
 
     private getAllFeatures(): FeatureInfo[] {

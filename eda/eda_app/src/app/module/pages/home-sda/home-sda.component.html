@@ -274,9 +274,12 @@
 
   <!-- Clear all filters button -->
   <div class="ml-2" id="clear-filters-button">
-    <button
-      class="btn"
-      [class.btn-warning]="hasActiveFilters()"
+<button
+      edaNewFeature
+      featureKey="clear-all-filters"
+      [featureDays]="30"
+      featureDescriptionLabel="newFeatureClearAllFilters"
+      [class.btn-danger]="hasActiveFilters()"
       [class.btn-secondary]="!hasActiveFilters()"
       [disabled]="!hasActiveFilters()"
       (click)="clearAllFilters()"
