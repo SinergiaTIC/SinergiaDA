@@ -45,7 +45,11 @@ export class EdaNewFeatureDirective implements OnInit, OnDestroy {
         this.injectStyles();
         this.newFeatureService.registerFeature(this.featureKey, this.featureDays);
         if (this.newFeatureService.shouldShow(this.featureKey)) {
-            setTimeout(() => this.showTooltip(), 500);
+            this.newFeatureService.registerTooltip(
+                this.featureKey,
+                () => this.showTooltip(),
+                () => this.hideTooltip()
+            );
         }
     }
 
@@ -62,7 +66,8 @@ export class EdaNewFeatureDirective implements OnInit, OnDestroy {
         const translations: { [key: string]: string } = {
             'newFeatureTitle': 'Nuevo en SinergiaDA',
             'newFeatureDismiss': 'Haz clic para cerrar',
-            'newFeatureClearAllFilters': 'Botón para eliminar todos los filtros activos del dashboard'
+            'newFeatureClearAllFilters': 'Botón para eliminar todos los filtros activos del dashboard',
+            'newFeatureLogViewerMenu': 'Aquí se encuentra el nuevo visor de logs de la aplicación. Permite consultar los registros de actividad del sistema y detectar incidencias.'
         };
         return translations[key] || key;
     }

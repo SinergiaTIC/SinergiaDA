@@ -925,6 +925,10 @@
     <source>Clear all filters button - removes all active filters from the dashboard</source>
     <target>Botón para eliminar todos os filtros activos do dashboard</target>
   </trans-unit>
+  <trans-unit id="newFeatureLogViewerMenu">
+    <source>Here you will find the new application log viewer with a summary of its functionality</source>
+    <target>Aquí atoparás o novo visor de logs da aplicación. Permite consultar os rexistros de actividade do sistema e detectar incidencias.</target>
+  </trans-unit>
   <!-- END SDA CUSTOM -->
 </body>
 </file>

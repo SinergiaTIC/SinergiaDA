@@ -8,9 +8,16 @@ interface FeatureInfo {
     dismissedAt: number | null;
 }
 
+type ShowCallback = () => void;
+type HideCallback = () => void;
+
 @Injectable()
 export class NewFeatureService {
     private readonly STORAGE_KEY = 'sda_new_features';
+    /* SDA CUSTOM */
+    private queue: { key: string; show: ShowCallback; hide: HideCallback }[] = [];
+    private currentIndex: number = -1;
+    private isShowing: boolean = false;
 
     registerFeature(key: string, days: number = 30): void {
         /* SDA CUSTOM */
@@ -29,6 +36,8 @@ export class NewFeatureService {
             feature.dismissedAt = Date.now();
             this.saveAllFeatures(features);
         }
+        /* SDA CUSTOM */
+        this.showNext();
     }
 
     shouldShow(key: string): boolean {
@@ -61,6 +70,42 @@ export class NewFeatureService {
     init(): void {
         /* SDA CUSTOM */
         this.clearExpired();
+    }
+
+    /* SDA CUSTOM */
+    registerTooltip(key: string, show: ShowCallback, hide: HideCallback): void {
+        /* SDA CUSTOM */
+        if (!this.shouldShow(key)) return;
+        this.queue.push({ key, show, hide });
+        if (!this.isShowing) {
+            this.showNext();
+        }
+    }
+
+    /* SDA CUSTOM */
+    private showNext(): void {
+        /* SDA CUSTOM */
+        if (this.currentIndex >= 0 && this.currentIndex < this.queue.length) {
+            const current = this.queue[this.currentIndex];
+            if (current) {
+                current.hide();
+            }
+        }
+
+        this.currentIndex++;
+        if (this.currentIndex >= this.queue.length) {
+            this.isShowing = false;
+            this.currentIndex = -1;
+            return;
+        }
+
+        this.isShowing = true;
+        const next = this.queue[this.currentIndex];
+        if (next) {
+            setTimeout(() => {
+                next.show();
+            }, 300);
+        }
     }
 
     private getAllFeatures(): FeatureInfo[] {
