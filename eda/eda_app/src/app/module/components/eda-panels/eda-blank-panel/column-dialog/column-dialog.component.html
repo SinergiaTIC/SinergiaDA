@@ -436,7 +436,7 @@
 
                             <ng-container *ngFor="let filtre of filter.forDisplay">
                                 <p *ngIf="filtre.filter_elements.length === 0" class="d-flex align-items-center">
-                                    <b class="mr-2" style="margin: 2px;">
+            <!-- SDA CUSTOM -->     <b class="mr-2 filter-display-text" style="margin: 2px;">
                                         * {{ selectedColumn.display_name.default }} is
             <!-- SDA CUSTOM -->         {{ getFilterText(filtre) }}
                                     </b> <span [pTooltip]="filtre.filterBeforeGrouping ? whereMessage : havingMessage"  tooltipPosition="left"><b>[ {{filtre.filterBeforeGrouping ? whereMessage : havingMessage}} ] - <span i18n="@@AggregationText">Agregación</span>: {{getAggregationText(filtre)}}  &nbsp;</b></span>
@@ -446,7 +446,7 @@
                                 </p>
 
                                 <p *ngIf="filtre.filter_elements.length === 1" class="d-flex align-items-center">
-                                    <b class="mr-2" style="margin: 2px;">
+            <!-- SDA CUSTOM -->     <b class="mr-2 filter-display-text" style="margin: 2px;">
                                         * {{ selectedColumn.display_name.default }}
             <!-- SDA CUSTOM -->         {{ getFilterText(filtre) }}
                                         <!--SDA CUSTOM--> <span *ngIf="selectedColumn?.column_type === 'date'">"{{ getDateFilterDisplayLabel(filtre) }}"</span>
@@ -458,7 +458,7 @@
                                 </p>
 
                                 <p *ngIf="filtre.filter_elements.length === 2" class="d-flex align-items-center">
-                                    <b class="mr-2" style="margin: 2px;">
+            <!-- SDA CUSTOM -->     <b class="mr-2 filter-display-text" style="margin: 2px;">
                                         * {{ selectedColumn.display_name.default }}
                                         {{ getFilterText(filtre) }}
                                         <!--SDA CUSTOM--> <span *ngIf="selectedColumn?.column_type === 'date'">"{{ getDateFilterDisplayLabel(filtre) }}"</span>

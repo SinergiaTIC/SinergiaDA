@@ -279,7 +279,7 @@
                                         <ng-container *ngFor="let filtre of filter.forDisplay">
                     
                                             <p *ngIf="filtre.filter_elements.length === 0" class="d-flex align-items-center">
-                                                <b class="mr-2">
+                        <!-- SDA CUSTOM -->   <b class="mr-2 filter-display-text">
                         <!-- SDA CUSTOM -->         * {{ controller.params.selectedColumn.display_name.default }}
                         <!-- SDA CUSTOM -->         {{ getFilterText(filtre) }}
                         <!-- SDA CUSTOM -->         <span *ngIf="selectedColumn?.column_type === 'date'">"{{ getDateFilterDisplayLabel(filtre) }}"</span>
@@ -289,7 +289,7 @@
                                             </p>
                     
                                             <p *ngIf="filtre.filter_elements.length === 1" class="d-flex align-items-center">
-                                                <b class="mr-2">
+                        <!-- SDA CUSTOM -->   <b class="mr-2 filter-display-text">
                                                     * {{ controller.params.selectedColumn.display_name.default }}
                         <!-- SDA CUSTOM -->         {{ getFilterText(filtre) }}
                         <!-- SDA CUSTOM -->         <span *ngIf="selectedColumn?.column_type === 'date'">"{{ getDateFilterDisplayLabel(filtre) }}"</span>
@@ -300,7 +300,7 @@
                                             </p>
 
                                             <p *ngIf="filtre.filter_elements.length === 2" class="d-flex align-items-center">
-                                                <b class="mr-2">
+                       <!-- SDA CUSTOM -->      <b class="mr-2 filter-display-text">
                                                     * {{ controller.params.selectedColumn.display_name.default }}
                                                     {{ getFilterText(filtre) }}
                         <!-- SDA CUSTOM -->         <span *ngIf="selectedColumn?.column_type === 'date'">"{{ getDateFilterDisplayLabel(filtre) }}"</span>

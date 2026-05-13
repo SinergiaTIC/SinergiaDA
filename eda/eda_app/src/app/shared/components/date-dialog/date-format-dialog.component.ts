@@ -25,6 +25,7 @@
 /* SDA CUSTOM */  @Output() close: EventEmitter<any> = new EventEmitter<any>();
 /* SDA CUSTOM */  @Input() cleanButtonsAvailable: boolean = false;
 /* SDA CUSTOM */  @Input() selectedColumn: any;
+/* SDA CUSTOM */  @Input() currentFilter: any; // Existing filter with operator and value for preloading
 /* SDA CUSTOM */
 /* SDA CUSTOM */  public dateFormatDialogTextHeader: string = $localize`:@@dateFormatDialogTextHeader:Filtro:`;
 /* SDA CUSTOM */
@@ -78,6 +79,63 @@
 /* SDA CUSTOM */  }
 /* SDA CUSTOM */
 /* SDA CUSTOM */  ngOnInit(): void {
+/* SDA CUSTOM */    this.loadExistingDateFilterValues();
+/* SDA CUSTOM */  }
+/* SDA CUSTOM */
+/* SDA CUSTOM */  private loadExistingDateFilterValues(): void {
+/* SDA CUSTOM */    if (!this.currentFilter || !this.currentFilter.dateFilterType) {
+/* SDA CUSTOM */      return;
+/* SDA CUSTOM */    }
+/* SDA CUSTOM */
+/* SDA CUSTOM */    const filter = this.currentFilter;
+/* SDA CUSTOM */    const operatorValue = filter.dateFilterType;
+/* SDA CUSTOM */
+/* SDA CUSTOM */    // Set the filter type (operator)
+/* SDA CUSTOM */    this.filterTypeSelected = this.filter.types.find((ft: any) => ft.value === operatorValue);
+/* SDA CUSTOM */    if (!this.filterTypeSelected) {
+/* SDA CUSTOM */      return;
+/* SDA CUSTOM */    }
+/* SDA CUSTOM */
+/* SDA CUSTOM */    // Handle filter type change to setup available date formats
+/* SDA CUSTOM */    this.handleFilterChange(this.filterTypeSelected);
+/* SDA CUSTOM */
+/* SDA CUSTOM */    // Check if it's a dynamic/predefined range
+/* SDA CUSTOM */    if (filter.dynamicValue) {
+/* SDA CUSTOM */      this.dateFormatSelected = this.rangeDateFormat.types.find(
+/* SDA CUSTOM */        (ft: any) => ft.value === filter.dynamicValue
+/* SDA CUSTOM */      );
+/* SDA CUSTOM */      return;
+/* SDA CUSTOM */    }
+/* SDA CUSTOM */
+/* SDA CUSTOM */    // Check for custom date values (static dates)
+/* SDA CUSTOM */    const hasStaticDates = filter.selectedItems && filter.selectedItems.length > 0;
+/* SDA CUSTOM */    if (hasStaticDates && !filter.dynamicValue) {
+/* SDA CUSTOM */      // Set to custom date option
+/* SDA CUSTOM */      this.dateFormatSelected = this.rangeDateFormat.types.find(
+/* SDA CUSTOM */        (ft: any) => ft.value === 'customDate'
+/* SDA CUSTOM */      );
+/* SDA CUSTOM */      // Handle the date format change to show picker
+/* SDA CUSTOM */      this.handleDateFormatChange(this.dateFormatSelected);
+/* SDA CUSTOM */      // Load the custom date values into the picker
+/* SDA CUSTOM */      this.loadCustomDateValues(filter);
+/* SDA CUSTOM */    }
+/* SDA CUSTOM */  }
+/* SDA CUSTOM */
+/* SDA CUSTOM */  private loadCustomDateValues(filter: any): void {
+/* SDA CUSTOM */    const items = filter.selectedItems;
+/* SDA CUSTOM */    if (!items || items.length === 0) return;
+/* SDA CUSTOM */
+/* SDA CUSTOM */    // Handle array of dates (in/not_in) or single/between dates
+/* SDA CUSTOM */    if (Array.isArray(items[0])) {
+/* SDA CUSTOM */      // Multiple dates for in/not_in
+/* SDA CUSTOM */      this.dateFormatCustomValue = { value1: items[0] };
+/* SDA CUSTOM */    } else if (items.length >= 2) {
+/* SDA CUSTOM */      // Between dates (range)
+/* SDA CUSTOM */      this.dateFormatCustomValue = { value1: items[0], value2: items[1] };
+/* SDA CUSTOM */    } else {
+/* SDA CUSTOM */      // Single date
+/* SDA CUSTOM */      this.dateFormatCustomValue = { value1: items[0] };
+/* SDA CUSTOM */    }
 /* SDA CUSTOM */  }
 /* SDA CUSTOM */  
 /* SDA CUSTOM */  public onApplyDateFormatDialog() {

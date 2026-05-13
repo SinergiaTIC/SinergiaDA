@@ -690,8 +690,21 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
     /* SDA CUSTOM */ private loadExistingDateFilterValues(): void {
     /* SDA CUSTOM */     const gf = this.globalFilter;
 
-    /* SDA CUSTOM */     const dateFilterType = gf.dateFilterType || (gf.selectedRange && gf.selectedRange !== 'customDate' ? 'between' : null);
-    /* SDA CUSTOM */     if (!dateFilterType && !gf.selectedItems?.length) {
+    /* SDA CUSTOM */     // Try to find the filter type from various sources
+    /* SDA CUSTOM */     let dateFilterType = gf.dateFilterType;
+    /* SDA CUSTOM */     
+    /* SDA CUSTOM */     // If no dateFilterType, try to infer from selectedItems count
+    /* SDA CUSTOM */     if (!dateFilterType && gf.selectedItems?.length > 0) {
+    /* SDA CUSTOM */         // If 2 or more items, likely between/not_between or in/not_in
+    /* SDA CUSTOM */         dateFilterType = gf.selectedItems.length >= 2 ? 'between' : '=';
+    /* SDA CUSTOM */     }
+    /* SDA CUSTOM */     
+    /* SDA CUSTOM */     // If still no type but has selectedRange, default to between
+    /* SDA CUSTOM */     if (!dateFilterType && gf.selectedRange && gf.selectedRange !== 'customDate') {
+    /* SDA CUSTOM */         dateFilterType = 'between';
+    /* SDA CUSTOM */     }
+    /* SDA CUSTOM */     
+    /* SDA CUSTOM */     if (!dateFilterType && !gf.selectedItems?.length && !gf.selectedRange) {
     /* SDA CUSTOM */         return;
     /* SDA CUSTOM */     }
 
