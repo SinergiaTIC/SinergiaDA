@@ -49,17 +49,17 @@ function sanitizeField(value: any) {
 
 const ServerLogSdaService = {
   log(payload: any) {
-    ensureLogsDirectory();
-    pruneOldDailyLogs();
-    const row = [
-      sanitizeField(payload && payload.level),
-      sanitizeField(payload && payload.action),
-      sanitizeField(payload && payload.userMail),
-      sanitizeField(payload && payload.ip),
-      sanitizeField(payload && payload.type),
-      sanitizeField(payload && payload.date_str)
-    ].join('|,|');
-    fs.appendFileSync(getDailyLogPath(), `${row}\n`, { encoding: 'utf8' });
+      ensureLogsDirectory();
+      pruneOldDailyLogs();
+      const row = [
+        sanitizeField(payload && payload.level),
+        sanitizeField(payload && payload.action),
+        sanitizeField(payload && payload.userMail),
+        sanitizeField(payload && payload.ip),
+        sanitizeField(payload && payload.type),
+        sanitizeField(payload && payload.date_str)
+      ].join('|,|');
+      fs.appendFileSync(getDailyLogPath(), `${row}\n`, { encoding: 'utf8' });
   }
 };
 // END SDA CUSTOM

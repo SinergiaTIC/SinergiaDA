@@ -2,7 +2,7 @@ import { EdaDialogAbstract, EdaDialogCloseEvent, EdaDialog } from '@eda/shared/c
 import { Component, ViewChild } from '@angular/core';
 import { PanelChartComponent } from '../panel-charts/panel-chart.component';
 import { PanelChart } from '../panel-charts/panel-chart';
-import { UserService } from '@eda/services/service.index';
+import { UserService, MailService, AlertService } from '@eda/services/service.index';
 import * as _ from 'lodash';
 
 
@@ -27,6 +27,11 @@ export class KpiEditDialogComponent extends EdaDialogAbstract {
     public operand: string;
     public color: string = '#ff0000';
     public alerts: Array<any> = [];
+    public additionalEmails: string = '';
+    public emailValidationError: string = '';
+    /* SDA CUSTOM */ public dashboardId: string = '';
+    /* SDA CUSTOM */ public dashboardTitle: string = '';
+    /* SDA CUSTOM */ public panelTitle: string = '';
     public alertInfo: string = $localize`:@@alertsInfo: Cuando el valor del kpi sea (=, <,>) que el valor definido cambiará el color del texto`;
     public ptooltipViewAlerts: string = $localize`:@@ptooltipViewAlerts:Configurar alertas`;
     /* SDA CUSTOM */ public kpiColor: string = '';
@@ -52,13 +57,19 @@ export class KpiEditDialogComponent extends EdaDialogAbstract {
         /* SDA CUSTOM */ { label: $localize`:@@lineStyleDashed:Discontinua`, value: 'dashed' },
         /* SDA CUSTOM */ { label: $localize`:@@lineStyleDotted:Punteada`, value: 'dotted' }
     /* SDA CUSTOM */ ];
+    
+    /* SDA CUSTOM */ public operandOptions = [
+        /* SDA CUSTOM */ { label: '<', value: '<' },
+        /* SDA CUSTOM */ { label: '=', value: '=' },
+        /* SDA CUSTOM */ { label: '>', value: '>' }
+    /* SDA CUSTOM */ ];
 
-    public units: string;
-    public quantity: number;
+    public units: string = 'days';
+    public quantity: number = 1;
     public hours: any;
     public hoursSTR = $localize`:@@hours:Hora/s`;
     public daysSTR = $localize`:@@days:Día/s`;
-    public mailMessage = '';
+    public mailMessage: string = '';
     public currentAlert = null;
     public users: any;
     public selectedUsers: any;
@@ -84,7 +95,9 @@ export class KpiEditDialogComponent extends EdaDialogAbstract {
     /* SDA CUSTOM */ private initialLabelsValuesState: any = null;
     /* SDA CUSTOM */ private initialChartStyleState: any = null;
 
-    constructor(private userService: UserService,) {
+    constructor(private userService: UserService,
+              private mailService: MailService,
+              private alertService: AlertService) {
 
         super();
 
@@ -146,6 +159,21 @@ export class KpiEditDialogComponent extends EdaDialogAbstract {
         /* SDA CUSTOM*/ this.panelChartConfig.locked = true;
         this.edaChart = this.controller.params.edaChart;
         /* SDA CUSTOM */ this.setPreviewAspectRatio();
+        
+        // SDA CUSTOM - Get dashboard info for alerts
+        /* SDA CUSTOM */ if (this.controller.params.dashboard) {
+        /* SDA CUSTOM */   this.dashboardId = this.controller.params.dashboard._id || this.controller.params.dashboard;
+        /* SDA CUSTOM */   this.dashboardTitle = this.controller.params.dashboard.config?.title || 'Dashboard';
+        /* SDA CUSTOM */ }
+        /* SDA CUSTOM */ const panelConfig: any = this.panelChartConfig;
+        /* SDA CUSTOM */ if (panelConfig.content?.query?.display_name?.default) {
+        /* SDA CUSTOM */   this.panelTitle = panelConfig.content.query.display_name.default;
+        /* SDA CUSTOM */ } else if (panelConfig.title) {
+        /* SDA CUSTOM */   this.panelTitle = panelConfig.title;
+        /* SDA CUSTOM */ } else {
+        /* SDA CUSTOM */   this.panelTitle = 'Panel KPI';
+        /* SDA CUSTOM */ }
+        // END SDA CUSTOM
 
         const config: any = this.panelChartConfig.config.getConfig();
 
@@ -341,9 +369,11 @@ export class KpiEditDialogComponent extends EdaDialogAbstract {
     }
 
     deleteAlert(item) {
-        this.alerts = this.alerts.filter(alert => {
-            return alert.operand !== item.operand || alert.value !== item.value || alert.color !== item.color
-        });
+        if (confirm('¿Está seguro de que desea eliminar esta alerta?')) {
+            this.alerts = this.alerts.filter(alert => {
+                return alert.operand !== item.operand || alert.value !== item.value || alert.color !== item.color
+            });
+        }
     }
 
     rgb2hex(rgb): string {
@@ -876,31 +906,61 @@ export class KpiEditDialogComponent extends EdaDialogAbstract {
             err => console.log(err)
         );
 
+        // Build default message with alert info
+        const defaultMessage = `Se ha activado una alerta de KPI:
+- Condición: KPI ${alert.operand} ${alert.value}
+- Color: ${alert.color || 'rojo'}
 
-        this.enabled = alert.mailing.enabled;
-        this.hours = `${alert.mailing.hours || '00'}:${alert.mailing.minutes || '00'}`;
-        this.units = alert.mailing.units;
-        this.quantity = alert.mailing.quantity;
-        this.selectedUsers = alert.mailing.users;
-        this.mailMessage = alert.mailing.mailMessage;
+Accede al dashboard para ver los detalles.`;
+
+        // SDA CUSTOM - Set defaults or load from existing config
+        if (alert.mailing && alert.mailing.enabled) {
+            this.enabled = true;
+            this.hours = `${alert.mailing.hours || '00'}:${alert.mailing.minutes || '00'}`;
+            this.units = alert.mailing.units || 'days';
+            this.quantity = alert.mailing.quantity || 1;
+            this.mailMessage = alert.mailing.mailMessage || defaultMessage;
+            
+            if (alert.mailing.users && alert.mailing.users.length > 0) {
+                const customUsers = alert.mailing.users.filter((u: any) => !u._id);
+                if (customUsers.length > 0) {
+                    this.additionalEmails = customUsers.map((u: any) => u.email).join(', ');
+                }
+            }
+        } else {
+            // Default values for new config
+            this.enabled = true;
+            this.units = 'days';
+            this.quantity = 1;
+            this.hours = null;
+            this.mailMessage = defaultMessage;
+            this.additionalEmails = '';
+        }
+        
         this.currentAlert = alert;
         this.mailConfig.toggle($event);
     }
 
     saveMailingConfig() {
+        if (!this.validateEmails()) {
+            return;
+        }
 
         const hours = this.hours && typeof this.hours === 'string' ? this.hours.slice(0, 2) :
             this.hours ? this.fillWithZeros(this.hours.getHours()) : null;
         const minutes = this.hours && typeof this.hours === 'string' ? this.hours.slice(3, 5) :
             this.hours ? this.fillWithZeros(this.hours.getMinutes()) : null;
 
+        // SDA CUSTOM - Store emails instead of SinergiaDA users
+        const customEmails = (this.additionalEmails || '').split(/[\s,;]+/).filter(e => e.trim() !== '');
+        const customUsers = customEmails.map(email => ({ email: email.trim(), name: email.trim() }));
 
         this.currentAlert.mailing = {
             units: this.units,
             quantity: this.quantity,
             hours: hours,
             minutes: minutes,
-            users: this.selectedUsers,
+            users: customUsers,
             mailMessage: this.mailMessage,
             lastUpdated: '2000-01-01T00:00:01.000',
             enabled: this.enabled
@@ -911,6 +971,7 @@ export class KpiEditDialogComponent extends EdaDialogAbstract {
         this.quantity = null;
         this.hours = null;
         this.mailMessage = null;
+        this.additionalEmails = '';
         this.selectedUsers = [];
         this.mailConfig.hide();
     }
@@ -921,8 +982,36 @@ export class KpiEditDialogComponent extends EdaDialogAbstract {
         this.quantity = null;
         this.hours = null;
         this.mailMessage = null;
+        this.additionalEmails = '';
+        this.emailValidationError = '';
         this.selectedUsers = [];
         this.mailConfig.hide();
+    }
+
+    sendTestAlert() {
+        if (!this.validateEmails()) {
+            return;
+        }
+
+        const customEmails = (this.additionalEmails || '').split(/[\s,;]+/).filter(e => e.trim() !== '');
+        
+        const alertData = {
+            alert: this.currentAlert,
+            emails: customEmails,
+            message: this.mailMessage,
+            dashboardId: this.dashboardId,
+            dashboardTitle: this.dashboardTitle,
+            panelTitle: this.panelTitle
+        };
+
+        this.mailService.sendTestKpiAlert(alertData).subscribe(
+            res => {
+                this.alertService.addSuccess('Alerta de prueba enviada correctamente');
+            },
+            err => {
+                this.alertService.addError('Error al enviar alerta: ' + (err.error?.message || err.message || 'Error desconocido'));
+            }
+        );
     }
 
     fillWithZeros(n: number) {
@@ -930,8 +1019,49 @@ export class KpiEditDialogComponent extends EdaDialogAbstract {
         else return `${n}`;
     }
 
+    getAlertSchedule(mailing: any): string {
+        if (!mailing) return '';
+        if (mailing.units === 'hours') {
+            return `Cada ${mailing.quantity} hora${mailing.quantity > 1 ? 's' : ''}`;
+        } else if (mailing.units === 'days') {
+            const hours = mailing.hours || '00';
+            const minutes = mailing.minutes || '00';
+            return `Diario a las ${hours}:${minutes}`;
+        }
+        return '';
+    }
+
+    getAlertEmails(users: any[]): string {
+        if (!users || users.length === 0) return 'Sin destinatarios';
+        const emails = users.map(u => u.email || u).slice(0, 3);
+        const result = emails.join(', ');
+        return users.length > 3 ? `${result}...` : result;
+    }
+
     disableMailConfirm() {
-        return (!this.quantity || !this.units || !(this.selectedUsers.length > 0) || !this.mailMessage)
+        const emails = (this.additionalEmails || '').split(/[\s,;]+/).filter(e => e.trim() !== '');
+        const validEmails = emails.filter(email => this.isValidEmail(email));
+        return (!this.quantity || !this.units || validEmails.length === 0 || !this.mailMessage);
+    }
+
+    isValidEmail(email: string): boolean {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        return emailRegex.test(email);
+    }
+
+    validateEmails(): boolean {
+        const emails = (this.additionalEmails || '').split(/[\s,;]+/).filter(e => e.trim() !== '');
+        if (emails.length === 0) {
+            this.emailValidationError = 'Debe especificar al menos un email';
+            return false;
+        }
+        const invalidEmails = emails.filter(email => !this.isValidEmail(email));
+        if (invalidEmails.length > 0) {
+            this.emailValidationError = `Email(s) inválido(s): ${invalidEmails.join(', ')}`;
+            return false;
+        }
+        this.emailValidationError = '';
+        return true;
     }
 
 }

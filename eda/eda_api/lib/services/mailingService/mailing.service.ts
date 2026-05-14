@@ -2,6 +2,7 @@ import { UserController } from './../../module/admin/users/user.controller';
 
 import { ManagerConnectionService } from '../../services/connection/manager-connection.service';
 import Dashboard from '../../module/dashboard/model/dashboard.model';
+/* SDA CUSTOM */ import ServerLogSdaService from '../server-log/server-log-sda.service';
 const mailConfig = require('../../../config/mailing.config')
 let nodemailer = require('nodemailer');
 import { SchedulerFunctions } from './../scheduler/schedulerFunctions';
@@ -16,9 +17,15 @@ export class MailingService {
 
   static async mailingService() {
 
-    console.log('Maler');
-    const newDate = SchedulerFunctions.totLocalISOTime(new Date()) ;
-    const config = JSON.parse(fs.readFileSync(path.resolve(__dirname, "../../../config/SMPT.config.json"), 'utf-8'));
+// SDA CUSTOM - Fix typo and check if mailing is configured to avoid recurring errors
+/*SDA CUSTOM*/    console.log('Mailer');
+/*SDA CUSTOM*/    const newDate = SchedulerFunctions.totLocalISOTime(new Date()) ;
+/*SDA CUSTOM*/    const config = JSON.parse(fs.readFileSync(path.resolve(__dirname, "../../../config/SMPT.config.json"), 'utf-8'));
+/*SDA CUSTOM*/
+/*SDA CUSTOM*/    if (!config || !config.auth || !config.auth.user || config.auth.user === "") {
+/*SDA CUSTOM*/      return;
+/*SDA CUSTOM*/    }
+// END SDA CUSTOM
 
     const transporter = nodemailer.createTransport(config);
     const verify = transporter.verify(async (error, sucess) => {
@@ -42,7 +49,20 @@ export class MailingService {
   static async alertSending(newDate: string, transporter: any) {
     try {
 
-      const dashboards = await Dashboard.find({ 'config.mailingAlertsEnabled': true });
+      // SDA CUSTOM - Find dashboards with KPI panels that have alerts configured
+      /*SDA CUSTOM*/    const allDashboards = await Dashboard.find({ 'config.panel': { $exists: true } });
+      /*SDA CUSTOM*/    const dashboards = allDashboards.filter(d => {
+      /*SDA CUSTOM*/      if (!d.config || !d.config.panel) return false;
+      /*SDA CUSTOM*/      return d.config.panel.some(p => 
+      /*SDA CUSTOM*/        p.content && p.content.chart === 'kpi' && 
+      /*SDA CUSTOM*/        p.content.query && p.content.query.output && 
+      /*SDA CUSTOM*/        p.content.query.output.config && 
+      /*SDA CUSTOM*/        p.content.query.output.config.alertLimits && 
+      /*SDA CUSTOM*/        p.content.query.output.config.alertLimits.some((a: any) => a.mailing && a.mailing.enabled)
+      /*SDA CUSTOM*/      );
+      /*SDA CUSTOM*/    });
+      // END SDA CUSTOM
+
       let dashboardsToUpdate = [];
 
       const alerts = MailingService.getAlerts(dashboards);
@@ -165,8 +185,8 @@ export class MailingService {
   }
 
 
-  /**Chech kpi condition and send mail if condition is true
-   * 
+/**Chech kpi condition and send mail if condition is true
+   *
    */
   static mailAlertsSending(alert, transporter) {
 
@@ -178,7 +198,7 @@ export class MailingService {
 
       let condition = MailingService.compareValues(result, alert.value.value, alert.value.operand);
 
-      let text = `${alert.value.mailing.mailMessage}\n-------------------------------------------- \n\n` +
+      let text = `${alert.value.mailing.mailMessage}\-------------------------------------------- \n\n` +
         `${alert.query.query.fields[0].display_name}: ${result.toLocaleString('de-DE')}\n${mailConfig.server_baseURL}dashboard/${alert.query.dashboard.dashboard_id}`
 
       let mailOptions = {
@@ -196,6 +216,24 @@ export class MailingService {
             console.log(error);
           } else {
             console.log('Email sent: ' + info.response + `Email sent: ${info.response} from: ${info.envelope.from} to: ${info.envelope.to} at ${SchedulerFunctions.totLocalISOTime(new Date()) }`);
+
+            // SDA CUSTOM - Log KPI alert email sent
+            const logNow = new Date();
+            const logDateStr = `${logNow.getFullYear()}-${String(logNow.getMonth() + 1).padStart(2, '0')}-${String(logNow.getDate()).padStart(2, '0')} ${String(logNow.getHours()).padStart(2, '0')}:${String(logNow.getMinutes()).padStart(2, '0')}:${String(logNow.getSeconds()).padStart(2, '0')}`;
+            const dashboardId = alert.query.dashboard?.dashboard_id || '';
+            const dashboardTitle = alert.query.dashboard?.dashboard_title || '';
+            const panelTitle = alert.query.query.fields[0]?.display_name || '';
+            const conditionText = `KPI ${alert.value.operand} ${alert.value.value} (${alert.value.color || 'sin color'})`;
+            const typePayload = `${dashboardId}--${dashboardTitle}--${user.email}--${conditionText}`;
+            ServerLogSdaService.log({
+              level: 'INFO',
+              action: 'KpiAlertEmailed',
+              userMail: user.email,
+              ip: '',
+              type: typePayload,
+              date_str: logDateStr
+            });
+            // END SDA CUSTOM
           }
         });
       }
@@ -207,8 +245,16 @@ export class MailingService {
     let text = `${message}\n-------------------------------------------- \n\n`;
     text += link;
 
+/* SDA CUSTOM */    let sender =
+/* SDA CUSTOM */      (transporter && transporter.options && transporter.options.auth && transporter.options.auth.user) ||
+/* SDA CUSTOM */      (transporter && transporter.transporter && transporter.transporter.options && transporter.transporter.options.auth && transporter.transporter.options.auth.user);
+/* SDA CUSTOM */    if (!sender) {
+/* SDA CUSTOM */      const smtpConfig = JSON.parse(fs.readFileSync(path.resolve(__dirname, "../../../config/SMPT.config.json"), 'utf-8'));
+/* SDA CUSTOM */      sender = smtpConfig?.auth?.user;
+/* SDA CUSTOM */    }
+
     let mailOptions = {
-      from: mailConfig.user,
+/* SDA CUSTOM */      from: sender,
       to: userMail,
       subject: 'Eda Dashboard Sending Service',
       text: text,
@@ -219,17 +265,25 @@ export class MailingService {
       }],
     };
 
-    transporter.sendMail(mailOptions, function (error, info) {
+/* SDA CUSTOM */    if (!mailOptions.from) {
+/* SDA CUSTOM */      console.error('[MailingService] No sender configured for dashboard email. Configure SMTP auth.user or mailConfig.user');
+/* SDA CUSTOM */      return;
+/* SDA CUSTOM */    }
+
+transporter.sendMail(mailOptions, function (error, info) {
       if (error) {
-        console.log(error);
+        console.error(`[MailingService] Error sending email to ${userMail}:`, error);
       } else {
+        console.log(`[MailingService] Email sent successfully to ${userMail}: ${info.response}`);
         console.log('Email sent: ' + info.response + `Email sent: ${info.response} from: ${info.envelope.from} to: ${info.envelope.to} at ${SchedulerFunctions.totLocalISOTime(new Date()) }`);
       }
 
       /**Remove file */
       try{
+        console.log(`[MailingService] Removing temporary file: ${filepath}/${filename}`);
         fs.unlinkSync(`${filepath}/${filename}`);
       }catch(err){
+        console.error(`[MailingService] Error removing temporary file:`, err);
         throw err
       }
 
@@ -239,23 +293,15 @@ export class MailingService {
   }
 
   static compareValues(v1, v2, op) {
-
-    switch (op) {
-      case '<': if (v1 < v2) {
-        return true;
-      } else return false;
-      case '>': if (v1 > v2) {
-        return true
-      } else {
-        return false;
-      }
-      case '=': if (v1 === v2) {
-        return true
-      } else {
-        return false;
-      }
-      default: return false;
-    }
+    // SDA CUSTOM - Convert to numbers for proper comparison
+    /*SDA CUSTOM*/    const numV1 = parseFloat(v1);
+    /*SDA CUSTOM*/    const numV2 = parseFloat(v2);
+    /*SDA CUSTOM*/    switch (op) {
+      /*SDA CUSTOM*/  case '<': return numV1 < numV2;
+      /*SDA CUSTOM*/  case '>': return numV1 > numV2;
+      /*SDA CUSTOM*/  case '=': return numV1 === numV2;
+      /*SDA CUSTOM*/  default: return false;
+    /*SDA CUSTOM*/  }
 
   }
 

@@ -1573,7 +1573,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     public openMailConfig() {
-        const params = { dashboard: this.id, config: this.sendViaMailConfig };
+        const params = { dashboard: this.id, config: this.sendViaMailConfig, dashboardTitle: this.title };
         this.display_v.rightSidebar = false;
         this.emailController = new EdaDialogController({
             params,

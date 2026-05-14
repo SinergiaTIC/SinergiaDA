@@ -2,6 +2,7 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ColorPickerModule } from 'primeng/colorpicker';
 import { TabViewModule } from 'primeng/tabview';
+/*SDA CUSTOM*/ import { ChipsModule } from 'primeng/chips';
 import { PanelModule } from 'primeng/panel';
 import { DragDropModule } from 'primeng/dragdrop';
 import { OverlayPanelModule } from 'primeng/overlaypanel';
@@ -64,6 +65,7 @@ import { TreeSelectModule } from 'primeng/treeselect';
         SlideMenuModule,
         DropdownModule,
         MultiSelectModule,
+/*SDA CUSTOM*/        ChipsModule,
         ProgressBarModule,
         ConfirmDialogModule,
         DialogModule,
