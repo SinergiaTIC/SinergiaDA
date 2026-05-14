@@ -41,24 +41,24 @@ export class LogSdaController {
                      };
                  });
     
-             let filteredLogs = logs;
-             if (date) {
-                 filteredLogs = logs.filter(log => log.date_str && log.date_str.startsWith(date.toString()));
-             } else if (startDate || endDate) {
-                 filteredLogs = logs.filter(log => {
-                     if (!log.date_str) return false;
-                     const logDate = log.date_str.split(' ')[0];
-                     if (startDate && logDate < startDate) return false;
-                     if (endDate && logDate > endDate) return false;
-                     return true;
-                 });
-             }
+let filteredLogs = logs;
+              if (date) {
+                  filteredLogs = logs.filter(log => log.date_str && log.date_str.startsWith(date.toString()));
+              } else if (startDate || endDate) {
+                  filteredLogs = logs.filter(log => {
+                      if (!log.date_str) return false;
+                      const logDate = log.date_str.split(' ')[0];
+                      if (startDate && logDate < startDate) return false;
+                      if (endDate && logDate > endDate) return false;
+                      return true;
+                  });
+              }
     
-             filteredLogs = filteredLogs.sort((a, b) => {
-                 const dateA = new Date((a?.date_str || '').replace(' ', 'T')).getTime();
-                 const dateB = new Date((b?.date_str || '').replace(' ', 'T')).getTime();
-                 return dateB - dateA;
-             });
+              filteredLogs = filteredLogs.sort((a, b) => {
+                  const dateA = new Date((a?.date_str || '').replace(' ', 'T')).getTime();
+                  const dateB = new Date((b?.date_str || '').replace(' ', 'T')).getTime();
+                  return dateB - dateA;
+              });
     
              return res.status(200).json(safeLimit > 0 ? filteredLogs.slice(0, safeLimit) : filteredLogs);
          } catch (err) {

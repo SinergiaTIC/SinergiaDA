@@ -1,71 +1,105 @@
 <eda-dialog [inject]="dialog" >
 
 <div body>
-  
-  <div class="grid" >
-    <div class="col-3">
 
+  <p-tabView [(activeIndex)]="sendModeIndex" [style]="{'min-height': '320px'}">
+    
+    <!-- TAB 1: IMMEDIATE SENDING -->
+    <p-tabPanel header="Enviar ahora" [style]="{'min-height': '300px'}">
+      <div class="grid mt-3">
+        <div class="col-6">
+          <h6 class="mb-2">Destinatarios</h6>
+          <div class="mt-2">
+            <label class="block mb-2">Emails:</label>
+            <input type="text" pInputText [(ngModel)]="additionalEmails" class="w-full" 
+              placeholder="email1@test.com, email2@test.com">
+            <small class="block mt-1" style="opacity: 0.7;">Separados por coma, espacio o punto y coma</small>
+          </div>
+        </div>
 
-      <h6 i18n="@@SendMailEvery"> Enviar mail de alerta cada: </h6>
-
-      <div class="col-12" style="margin-top: -0.4em;">
-        <p-inputNumber [(ngModel)]="quantity"></p-inputNumber>
+        <div class="col-6">
+          <h6 class="mb-2">Mensaje (opcional)</h6>
+          <textarea rows="7" pInputTextarea [(ngModel)]="mailMessage" class="w-full" 
+            placeholder="Mensaje opcional para el cuerpo del correo..."></textarea>
+          <div class="mt-3 p-3 surface-50 border-round">
+            <i class="pi pi-info-circle mr-2"></i>
+            <small>Se generará un PDF con el informe actual y se adjuntará al correo.</small>
+          </div>
+        </div>
       </div>
-      <div class="col-12">
-        <p-radioButton name="groupname" value="days" [label]="daysSTR" [(ngModel)]="units">
-        </p-radioButton>
+    </p-tabPanel>
+    
+    <!-- TAB 2: PROGRAMMED/SCHEDULED SENDING -->
+    <p-tabPanel header="Programar envío" [style]="{'min-height': '300px'}">
+      <div class="grid mt-3">
+        <div class="col-4">
+          <h6 class="mb-2">Programación</h6>
+          <div class="mt-2">
+            <div class="mb-2">
+              <label class="block mb-2">Frecuencia:</label>
+              <div class="flex gap-3">
+                <div class="flex align-items-center">
+                  <p-radioButton name="units" value="hours" [(ngModel)]="units" inputId="unitsHours" (onClick)="calculateNextScheduledDate()"></p-radioButton>
+                  <label for="unitsHours" class="ml-2">Cada hora(s)</label>
+                </div>
+                <div class="flex align-items-center">
+                  <p-radioButton name="units" value="days" [(ngModel)]="units" inputId="unitsDays" (onClick)="calculateNextScheduledDate()"></p-radioButton>
+                  <label for="unitsDays" class="ml-2">Diario</label>
+                </div>
+              </div>
+            </div>
+            
+            <div *ngIf="units === 'hours'" class="mb-2">
+              <p-inputNumber [(ngModel)]="quantity" [min]="1" [max]="24" [showButtons]="true" styleClass="w-full" (onInput)="calculateNextScheduledDate()"></p-inputNumber>
+            </div>
+            
+            <div *ngIf="units === 'days'" class="mb-2">
+              <label class="block mb-2">Hora de envío:</label>
+              <p-calendar [(ngModel)]="hours" [timeOnly]="true" [showIcon]="true" styleClass="w-full" (onSelect)="calculateNextScheduledDate()"></p-calendar>
+            </div>
+            
+            <div *ngIf="nextScheduledDate" class="mt-3 p-2 surface-100 border-round">
+              <small><strong>Próximo envío:</strong> {{ nextScheduledDate }}</small>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-4">
+          <h6 class="mb-2">Destinatarios</h6>
+          <div class="mt-2">
+            <label class="block mb-2">Emails:</label>
+            <input type="text" pInputText [(ngModel)]="additionalEmails" class="w-full" 
+              placeholder="email1@test.com, email2@test.com">
+            <small class="block mt-1" style="opacity: 0.7;">Separados por coma, espacio o punto y coma</small>
+          </div>
+        </div>
+
+        <div class="col-4">
+          <h6 class="mb-2">Mensaje</h6>
+          <textarea rows="7" pInputTextarea [(ngModel)]="mailMessage" class="w-full" 
+            placeholder="Mensaje opcional para el cuerpo del correo..."></textarea>
+        </div>
       </div>
-      <div class="col-12" *ngIf="units==='days'">
-        <p i18n="@@at"> A las </p>
-        <p-calendar [timeOnly]="true" [(ngModel)]="hours"></p-calendar>
-      </div>
-      <div class="col-12">
-        <p-radioButton name="groupname" value="hours" [label]="hoursSTR" [(ngModel)]="units">
-        </p-radioButton>
-      </div>
-    </div>
-
-    <div class="col-5">
-
-
-      <h6 i18n="@@SendMailWho"> Destinatarios </h6>
-      <div>
-        <p-multiSelect [(ngModel)]="selectedUsers" [options]="users" [style]="{width: '80%'}" optionLabel="label">
-        </p-multiSelect>
-      </div>
-
-    </div>
-
-    <div class="col-4">
-
-      <h6 i18n="@@SendMailWhat"> Contenido del mail: </h6>
-
-      <textarea rows="8" cols="30" pInputTextarea autoResize="autoResize" [(ngModel)]="mailMessage"></textarea>
-
-    </div>
-
-  </div>
-
-  <div class="col-12">
-    <h6 *ngIf="!enabled" i18n="@@noMail">Sin alertas de correo</h6>
-    <h6 *ngIf="enabled" i18n="@@opcionMail">Enviar per email</h6>
-    <p-inputSwitch id="switchCache" class="col-1" [(ngModel)]="enabled" tooltipPosition="left">
-    </p-inputSwitch>
-  </div>
-
+    </p-tabPanel>
+    
+  </p-tabView>
 
 </div>
 
 <div footer>
-
-
   <div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix text-right">
-    <!--SDA CUSTOM--><button id="saveFilterButton" type="submit" pButton (click)="save()" i18n-label="@@guardarButton" [disabled]="disableConfirm()"
-        label="Confirmar" icon="fa fa-check" class="p-button-raised p-button-success" ></button>
-    <!--SDA CUSTOM--><button type="button" pButton (click)="closeDialog()" class="p-button-raised p-button-danger"
-        i18n-label="@@cancelarButton" label="Cancelar"></button>
+    
+    <button *ngIf="sendModeIndex === 0" type="button" pButton (click)="sendNow()" 
+      label="Enviar ahora" icon="pi pi-send" class="p-button-raised p-button-info mr-2"
+      [disabled]="!canSendNow()"></button>
+    
+    <button *ngIf="sendModeIndex === 1" type="submit" pButton (click)="save()" 
+      label="Guardar programación" icon="pi pi-check" class="p-button-raised p-button-success mr-2"
+      [disabled]="!canSaveSchedule()"></button>
+    
+    <button type="button" pButton (click)="closeDialog()" label="Cancelar" 
+      class="p-button-raised p-button-danger"></button>
+  </div>
 </div>
 
-</div>
-  
 </eda-dialog>

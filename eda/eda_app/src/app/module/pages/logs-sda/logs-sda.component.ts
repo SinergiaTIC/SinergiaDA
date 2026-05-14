@@ -456,13 +456,13 @@ export class LogsSdaComponent implements OnInit {
 
     /* SDA CUSTOM */ // SDA CUSTOM - Identify actions related to dashboard operations
     /* SDA CUSTOM */ private isDashboardAction(action: string): boolean {
-    /* SDA CUSTOM */     return ['DashboardAccessed', 'DashboardCreated', 'DashboardUpdated', 'DashboardRenamed', 'DashboardVisibilityChanged', 'DashboardDeleted', 'PanelQueryFailed'].includes(action);
+    /* SDA CUSTOM */     return ['DashboardAccessed', 'DashboardCreated', 'DashboardUpdated', 'DashboardRenamed', 'DashboardVisibilityChanged', 'DashboardDeleted', 'PanelQueryFailed', 'DashboardEmailed', 'DashboardEmailedPDF', 'DashboardEmailedImage', 'KpiAlertEmailed', 'KpiAlertTestEmailed'].includes(action);
     /* SDA CUSTOM */ }
     /* SDA CUSTOM */ // END SDA CUSTOM
 
     /* SDA CUSTOM */ // SDA CUSTOM - Translate raw action key for the Action column
     /* SDA CUSTOM */ private getActionLabel(action: string): string {
-    /* SDA CUSTOM */     const labels = {
+    /* SDA CUSTOM */     const labels: any = {
     /* SDA CUSTOM */         newLogin: $localize`:@@LogsActionNewLogin:Login`,
     /* SDA CUSTOM */         DashboardAccessed: $localize`:@@LogsActionDashboardAccessed:Acceso a informe`,
     /* SDA CUSTOM */         DashboardCreated: $localize`:@@LogsActionDashboardCreated:Informe creado`,
@@ -487,10 +487,17 @@ export class LogsSdaComponent implements OnInit {
     /* SDA CUSTOM */         UpdateModelRolesMappingFailed: $localize`:@@LogsActionUpdateModelRolesMappingFailed:Fallo en mapeo de roles`,
     /* SDA CUSTOM */         UpdateModelDataModelBuilt: $localize`:@@LogsActionUpdateModelDataModelBuilt:Modelo de datos construido`,
     /* SDA CUSTOM */         UpdateModelDataModelBuildFailed: $localize`:@@LogsActionUpdateModelDataModelBuildFailed:Fallo en construcción del modelo de datos`,
-    /* SDA CUSTOM */         UpdateModelCompleted: $localize`:@@LogsActionUpdateModelCompleted:Actualización del modelo completada`,
-    /* SDA CUSTOM */         UpdateModelPushFailed: $localize`:@@LogsActionUpdateModelPushFailed:Fallo en push del modelo`,
-    /* SDA CUSTOM */         UpdateModelFailed: $localize`:@@LogsActionUpdateModelFailed:Fallo en actualización del modelo`
-    /* SDA CUSTOM */     };
+/* SDA CUSTOM */         UpdateModelCompleted: $localize`:@@LogsActionUpdateModelCompleted:Actualización del modelo completada`,
+        /* SDA CUSTOM */         UpdateModelPushFailed: $localize`:@@LogsActionUpdateModelPushFailed:Fallo en push del modelo`,
+        /* SDA CUSTOM */         UpdateModelFailed: $localize`:@@LogsActionUpdateModelFailed:Fallo en actualización del modelo`,
+        /* SDA CUSTOM */         // SDA CUSTOM - Email report actions
+        /* SDA CUSTOM */         DashboardEmailed: $localize`:@@LogsActionDashboardEmailed:Informe enviado por email`,
+        /* SDA CUSTOM */         DashboardEmailedPDF: $localize`:@@LogsActionDashboardEmailedPDF:Informe con PDF enviado por email`,
+        /* SDA CUSTOM */         DashboardEmailedImage: $localize`:@@LogsActionDashboardEmailedImage:Informe con imagen enviado por email`,
+        /* SDA CUSTOM */         KpiAlertEmailed: $localize`:@@LogsActionKpiAlertEmailed:Alerta de KPI enviada por email`,
+        /* SDA CUSTOM */         KpiAlertTestEmailed: $localize`:@@LogsActionKpiAlertTestEmailed:Alerta de prueba de KPI enviada por email`,
+        /* SDA CUSTOM */         MailConfigUpdated: $localize`:@@LogsActionMailConfigUpdated:Configuración de correo actualizada`
+        /* SDA CUSTOM */     };
     /* SDA CUSTOM */     return labels[action] || action || '-';
     /* SDA CUSTOM */ }
     /* SDA CUSTOM */ // END SDA CUSTOM
@@ -521,10 +528,17 @@ export class LogsSdaComponent implements OnInit {
     /* SDA CUSTOM */         UpdateModelRolesMappingFailed: $localize`:@@LogsActionRoleMappingFailure:Fallo en mapeo de roles`,
     /* SDA CUSTOM */         UpdateModelDataModelBuilt: $localize`:@@LogsActionDataModelBuild:Construcción del modelo de datos`,
     /* SDA CUSTOM */         UpdateModelDataModelBuildFailed: $localize`:@@LogsActionDataModelBuildFailure:Fallo en construcción del modelo de datos`,
-    /* SDA CUSTOM */         UpdateModelCompleted: $localize`:@@LogsActionModelUpdateCompleted:Actualización del modelo completada`,
-    /* SDA CUSTOM */         UpdateModelPushFailed: $localize`:@@LogsActionModelPushFailure:Fallo en push del modelo`,
-    /* SDA CUSTOM */         UpdateModelFailed: $localize`:@@LogsActionModelUpdateFailure:Fallo en actualización del modelo`
-    /* SDA CUSTOM */     };
+/* SDA CUSTOM */         UpdateModelCompleted: $localize`:@@LogsActionModelUpdateCompleted:Actualización del modelo completada`,
+        /* SDA CUSTOM */         UpdateModelPushFailed: $localize`:@@LogsActionModelPushFailure:Fallo en push del modelo`,
+        /* SDA CUSTOM */         UpdateModelFailed: $localize`:@@LogsActionModelUpdateFailure:Fallo en actualización del modelo`,
+        /* SDA CUSTOM */         // SDA CUSTOM - Email report actions
+        /* SDA CUSTOM */         DashboardEmailed: $localize`:@@LogsActionEmailEnvio:Envío de email`,
+        /* SDA CUSTOM */         DashboardEmailedPDF: $localize`:@@LogsActionEmailEnvioPDF:Envío de email con PDF`,
+        /* SDA CUSTOM */         DashboardEmailedImage: $localize`:@@LogsActionEmailEnvioImage:Envío de email con imagen`,
+        /* SDA CUSTOM */         KpiAlertEmailed: $localize`:@@LogsActionKpiAlertEmail:Envío de alerta de KPI`,
+        /* SDA CUSTOM */         KpiAlertTestEmailed: $localize`:@@LogsActionKpiAlertTestEmail:Envío de alerta de prueba de KPI`,
+        /* SDA CUSTOM */         MailConfigUpdated: $localize`:@@LogsActionMailConfigUpdate:Actualización de configuración de correo`
+        /* SDA CUSTOM */     };
     /* SDA CUSTOM */     if (actionLabels[action]) return actionLabels[action];
     /* SDA CUSTOM */     if (detail === 'attempt') return $localize`:@@LogsActionAttempt:Intento`;
     /* SDA CUSTOM */     if (detail === 'login') return $localize`:@@LogsActionLogin:Inicio de sesión`;

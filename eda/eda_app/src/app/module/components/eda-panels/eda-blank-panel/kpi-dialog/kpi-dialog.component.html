@@ -195,79 +195,64 @@
     </div>
 
     <div class="col-12 mt-2">
-      <h6 i18n="@@kpiAlertH6" class="custom-border-b1">
-        Generar alerta
-      </h6>
-      <div class="grid">
-        <div class="col-3">
-          <h6>Valor</h6>
-          <p>{{alertInfo}}</p>
-          <div class="chart-color-selection">
-            <div class="mb-1">
-              <input type="number" [(ngModel)]="value" pInputText style="width: 40%" />
-            </div>
-
+      <h6 i18n="@@kpiAlertH6" class="custom-border-b1 pb-2 mb-2">Generar alerta</h6>
+      <div class="grid align-items-start mt-2">
+        <div class="col-4 p-3 surface-50 border-round">
+          <h6 class="mb-1">Condición</h6>
+          <p class="m-0 p-text-secondary mb-2" style="font-size: 0.85em;">Define cuándo se activará la alerta</p>
+          <div class="flex align-items-center gap-2 mb-2">
+            <input type="number" [(ngModel)]="value" pInputText class="w-50" placeholder="Valor" />
+            <p-dropdown [(ngModel)]="operand" [options]="operandOptions" placeholder="Operador" styleClass="w-auto"></p-dropdown>
           </div>
-        </div>
-        <div class="col-2">
-          <h6 i18n="@@kpiGreatSmallEqualH6">
-            Operador
-          </h6>
-          <div class="mb-1">
-            <div class="p-field-radiobutton">
-              <p-radioButton name="operand" value="<" [(ngModel)]="operand" inputId="operand1"></p-radioButton>
-              <label for="operand1">&nbsp; &lt; </label>
-            </div>
-            <div class="p-field-radiobutton">
-              <p-radioButton name="operand" value="=" [(ngModel)]="operand" inputId="operand2"></p-radioButton>
-              <label for="operand2">&nbsp; = </label>
-            </div>
-            <div class="p-field-radiobutton">
-              <p-radioButton name="operand" value=">" [(ngModel)]="operand" inputId="operand3"></p-radioButton>
-              <label for="operand3">&nbsp; &gt; </label>
-            </div>
-
-          </div>
-        </div>
-        <div class="col-2">
-          <h6 i18n="@@colorKpiH6">
-            Color
-          </h6>
-          <div class="chart-color-selection">
-            <div class="mb-1">
-              <input type="text" [(ngModel)]="color" pInputText style="width: 40%" />
+          <div class="flex align-items-center justify-content-between">
+            <div class="flex align-items-center gap-2">
+              <label class="mr-2">Color:</label>
               <p-colorPicker [(ngModel)]="color" appendTo="body"></p-colorPicker>
             </div>
+            <button pButton class="p-button-sm p-button-success" 
+              (click)="addAlert()" [disabled]="!color || !operand || !value" label="Añadir"></button>
           </div>
         </div>
-        <div class="col-4">
-          <h6 i18n="@@kpiAlerts">
-            Alertas
-          </h6>
-          <ul>
-            <li *ngFor="let item of alerts">
-              <div class="wrap-alert">
-
-                <i  *ngIf="canIRunAlerts" class="fa fa-envelope" style="cursor: pointer; margin-top: 2px;"
-                  (click)="openConfigDialog($event, item)" [pTooltip]="ptooltipViewAlerts"></i> &nbsp;&nbsp;
-                &nbsp;&nbsp;
-                <span class="dot" [ngStyle]="{'background-color':item.color, 'marginTop':'3px'}"></span>
-                &nbsp; KPI &nbsp; {{item.operand}} &nbsp;
-                {{ item.value | number : '1.0-2' : 'es'}} &nbsp;
-                <i class="fa fa-close" style="color: #c0555e; cursor: pointer; margin-top: 2px;"
-                  (click)="deleteAlert(item)"></i>
-
+        
+        <div class="col-8 p-3">
+          <h6 class="mb-1">Alertas configuradas</h6>
+          <p class="m-0 p-text-secondary mb-2" style="font-size: 0.85em;">Listado de alertas con sus destinatarios y programación</p>
+          <ul class="alerts-list">
+            <li *ngFor="let item of alerts" class="mb-2 p-2 surface-100 border-round">
+              <div class="wrap-alert flex align-items-center gap-2 flex-wrap">
+                <i *ngIf="canIRunAlerts" 
+                  [class]="item.mailing && item.mailing.enabled ? 'fa fa-check-circle text-green-500' : 'fa fa-exclamation-circle text-red-500'" 
+                  style="cursor: pointer; font-size: 1.1em;" 
+                  (click)="openConfigDialog($event, item)" 
+                  [pTooltip]="item.mailing && item.mailing.enabled ? 'Envío configurado' : 'Sin configurar'"></i>
+                <span class="dot" [ngStyle]="{'background-color':item.color, 'min-width':'12px', 'min-height':'12px', 'border-radius':'50%'}"></span>
+                <span class="font-bold">KPI {{item.operand}} {{ item.value | number : '1.0-2' : 'es'}}</span>
+                <span class="text-color-secondary">|</span>
+                <span *ngIf="item.mailing && item.mailing.enabled && item.mailing.users && item.mailing.users.length" class="text-sm">
+                  <i class="fa fa-users mr-1"></i>{{ getAlertEmails(item.mailing.users) }}
+                </span>
+                <span *ngIf="item.mailing && item.mailing.enabled && (!item.mailing.users || !item.mailing.users.length)" class="text-sm text-color-secondary">
+                  <i class="fa fa-users mr-1"></i>Sin destinatarios
+                </span>
+                <span *ngIf="item.mailing && item.mailing.enabled" class="text-sm text-color-secondary">
+                  <i class="fa fa-clock-o mr-1 ml-2"></i>{{ getAlertSchedule(item.mailing) }}
+                </span>
+                <span *ngIf="!item.mailing || !item.mailing.enabled" class="text-sm text-red-500">
+                  <i class="fa fa-exclamation-triangle mr-1 ml-2"></i>Sin configurar
+                </span>
+                <span class="ml-auto flex align-items-center gap-2">
+                  <i class="fa fa-pencil" style="cursor: pointer; color: #666;" 
+                    (click)="openConfigDialog($event, item)" pTooltip="Editar alerta"></i>
+                  <i class="fa fa-close" style="color: #c0555e; cursor: pointer;" (click)="deleteAlert(item)"></i>
+                </span>
               </div>
             </li>
+            <li *ngIf="alerts.length === 0" class="text-muted">
+              <small>No hay alertas configuradas</small>
+            </li>
           </ul>
-
         </div>
       </div>
-    </div>
-    <div class="col-2">
-      <button i18n="@@addAlert" pButton class="btn-sm btn-secondary" i18n-title="@@addAlert" title="Añadir alerta"
-        (click)="addAlert()" [disabled]="!color || !operand" label="Añadir alerta">
-      </button>
     </div>
   </div>
 
@@ -285,69 +270,60 @@
 </eda-dialog>
 
 <!-- Overlay kpi mailing config-->
-<p-overlayPanel #mailConfig [appendTo]="'body'" [dismissable]="false">
+<p-overlayPanel #mailConfig [appendTo]="'body'" [dismissable]="false" [style]="{'min-width': '500px'}">
   <ng-template pTemplate>
-    <h6 i18n="@@MailSending" style="font-weight:bold;">
-      Envío de alertas por mail </h6>
-    <div class="grid" style="max-width: 60em; ">
-      <div class="col-3">
-
-
-        <h6 i18n="@@SendMailEvery"> Enviar mail de alerta cada: </h6>
-
-        <div class="col-12" style="margin-top: -0.4em;">
-          <p-inputNumber [(ngModel)]="quantity"></p-inputNumber>
+    <div class="p-3">
+      <h6 i18n="@@MailSending" style="font-weight:bold;" class="mb-3">
+        Envío de alertas por mail </h6>
+      
+      <div class="grid mb-3">
+        <div class="col-12 mb-3">
+          <h6 i18n="@@SendMailEvery" class="mb-2"> Programación </h6>
+          <div class="flex align-items-center gap-3">
+            <div class="flex align-items-center">
+              <p-radioButton name="groupname" value="days" [(ngModel)]="units" inputId="days"></p-radioButton>
+              <label for="days" class="ml-2">{{daysSTR}}</label>
+            </div>
+            <p-inputNumber [(ngModel)]="quantity" [showButtons]="true" [min]="1" [max]="24" styleClass="w-4rem"></p-inputNumber>
+            <div class="flex align-items-center" *ngIf="units === 'days'">
+              <label class="mr-2">a las</label>
+              <p-calendar [timeOnly]="true" [(ngModel)]="hours" [showIcon]="true" styleClass="w-6rem"></p-calendar>
+            </div>
+          </div>
+          <div class="flex align-items-center mt-2">
+            <p-radioButton name="groupname" value="hours" [(ngModel)]="units" inputId="hours"></p-radioButton>
+            <label for="hours" class="ml-2">{{hoursSTR}}</label>
+          </div>
         </div>
+      </div>
+
+      <div class="grid mb-3">
         <div class="col-12">
-          <p-radioButton name="groupname" value="days" [label]="daysSTR" [(ngModel)]="units">
-          </p-radioButton>
+          <h6 i18n="@@SendMailWho" class="mb-2"> Destinatarios </h6>
+          <input type="text" pInputText [(ngModel)]="additionalEmails" class="w-full mb-2" 
+            placeholder="email1@test.com, email2@test.com">
+          <small class="block" style="opacity: 0.7;">Separados por coma, espacio o punto y coma</small>
+          <small *ngIf="emailValidationError" class="text-red-500 block mt-1">{{emailValidationError}}</small>
         </div>
-        <div class="col-12" *ngIf="units==='days'">
-          <p i18n="@@at"> A las </p>
-          <p-calendar [timeOnly]="true" [(ngModel)]="hours"></p-calendar>
-        </div>
+      </div>
+
+      <div class="grid mb-3">
         <div class="col-12">
-          <p-radioButton name="groupname" value="hours" [label]="hoursSTR" [(ngModel)]="units">
-          </p-radioButton>
+          <h6 i18n="@@SendMailWhat" class="mb-2"> Mensaje </h6>
+          <textarea rows="5" pInputTextarea [(ngModel)]="mailMessage" class="w-full"></textarea>
         </div>
       </div>
 
-      <div class="col-5">
-
-
-        <h6 i18n="@@SendMailWho"> Destinatarios </h6>
-        <div>
-          <p-multiSelect [(ngModel)]="selectedUsers" [options]="users" [style]="{width: '80%'}">
-          </p-multiSelect>
+      <div class="flex justify-content-between gap-2 mt-3">
+        <button type="button" pButton class="p-button-warning" 
+          label="Enviar prueba" icon="fa fa-paper-plane" (click)="sendTestAlert()" [disabled]="disableMailConfirm()"></button>
+        <div class="flex gap-2">
+          <button type="button" pButton class="p-button-secondary" 
+            label="Cancelar" (click)="closeMailingConfig()"></button>
+          <button type="submit" pButton class="p-button-success" 
+            (click)="saveMailingConfig()" label="Confirmar" [disabled]="disableMailConfirm()"></button>
         </div>
-
       </div>
-
-      <div class="col-4">
-
-        <h6 i18n="@@SendMailWhat"> Contenido del mail: </h6>
-
-        <textarea rows="8" cols="30" pInputTextarea autoResize="autoResize" [(ngModel)]="mailMessage"></textarea>
-
-      </div>
-
-      <div class="col-12">
-        <h6 *ngIf="!enabled" i18n="@@noMail">Sin alertas de correo</h6>
-        <h6 *ngIf="enabled" i18n="@@opcionMail">Enviar per email</h6>
-        <p-inputSwitch id="switchCache" class="col-1" [(ngModel)]="enabled" tooltipPosition="left">
-        </p-inputSwitch>
-      </div>
-
-      <div class="col-12">
-        <button type="submit" pButton icon="fa fa-check" class="p-button-raised p-button-success" i18n-label="@@guardarButton"
-          (click)="saveMailingConfig()" label="Confirmar" [disabled]="disableMailConfirm()" style="margin-right: 4px;">
-        </button>
-        <button type="button" pButton icon="fa fa-times" class="p-button-raised p-button-danger" i18n-label="@@cancelarButton"
-          label="Cancelar" (click)="closeMailingConfig()">
-        </button>
-
-      </div>
-
     </div>
 
   </ng-template>

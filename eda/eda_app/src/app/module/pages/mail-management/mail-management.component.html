@@ -4,8 +4,27 @@
 
     <p-card [header]="header">
 
-      <form [formGroup]="form" (ngSubmit)="sendMailconfig()">
+      <!-- SDA CUSTOM - Active configuration indicator -->
+      <div *ngIf="isConfigActive" class="mb-3 p-2 rounded" style="background-color: #e8f5e9; border-left: 4px solid #4caf50;">
+        <i class="fa fa-check-circle text-success mr-2"></i>
+        <span class="text-success font-weight-bold">{{activeConfigLabel}}</span>
+      </div>
+      <!-- END SDA CUSTOM -->
 
+      <!-- SDA CUSTOM - Authentication type selector -->
+      <div class="form-group col-12 mb-3">
+        <label i18n="@@authTypeLabel">TIPO DE AUTENTICACIÓN *</label>
+        <div class="mt-1">
+          <p-radioButton name="authType" [value]="'basic'" [(ngModel)]="authType" (onClick)="onAuthTypeChange('basic')"
+            label="SMTP básico (usuario/contraseña)" inputId="authBasic" class="mr-3"></p-radioButton>
+          <p-radioButton name="authType" [value]="'oauth2'" [(ngModel)]="authType" (onClick)="onAuthTypeChange('oauth2')"
+            label="OAuth2 (Gmail / Outlook)" inputId="authOAuth2"></p-radioButton>
+        </div>
+      </div>
+      <!-- END SDA CUSTOM -->
+
+      <!-- SDA CUSTOM - SMTP Basic Form -->
+      <form *ngIf="authType === 'basic'" [formGroup]="form" (ngSubmit)="sendMailconfig()">
         <div class="grid">
 
           <div class="form-group col-12 md:col-3">
@@ -36,6 +55,10 @@
           <div class="col-8 lg:col-10">
             <button type="button" pButton (click)="checkCredentials()" class="ui-button-success ml-2"
               i18n-label="@@checkCredentials" label="Comprobar credenciales" [disabled]="!form.valid"></button>
+            <!-- SDA CUSTOM - Add send test email button -->
+            <button type="button" pButton (click)="sendTestEmail()" class="ui-button-success ml-2"
+              i18n-label="@@sendTestEmail" label="Enviar correo de prueba" [disabled]="!form.valid"></button>
+            <!-- END SDA CUSTOM -->
           </div>
 
           <div class="col-4 lg:col-2">
@@ -47,6 +70,89 @@
         </div>
 
       </form>
+      <!-- END SDA CUSTOM -->
+
+      <!-- SDA CUSTOM - OAuth2 Form -->
+      <form *ngIf="authType === 'oauth2'" [formGroup]="formOAuth2" (ngSubmit)="sendMailconfig()">
+        <div class="grid">
+
+          <div class="form-group col-12 md:col-3">
+            <label i18n="@@inputServidor">SERVIDOR *</label>
+            <input type="text" class="form-control" formControlName="host" id="eda_mail_host_oauth" pInputText>
+          </div>
+
+          <div class="form-group col-12 md:col-3">
+            <label i18n="@@inputPort">PUERTO *</label>
+            <input type="number" class="form-control" formControlName="port" id="eda_mail_port_oauth" pInputText>
+          </div>
+
+          <div class="form-group col-12 md:col-3">
+            <label i18n="@@inputUsuario">USUARIO (email) *</label>
+            <input type="email" class="form-control" formControlName="user" id="eda_mail_user_oauth" pInputText>
+          </div>
+
+          <div class="form-group col-12 md:col-3">
+            <label i18n="@@oauth2ClientId">Client ID *</label>
+            <input type="text" class="form-control" formControlName="clientId" id="eda_mail_client_id" pInputText>
+          </div>
+
+          <div class="form-group col-12 md:col-3">
+            <label i18n="@@oauth2ClientSecret">Client Secret *</label>
+            <input type="password" class="form-control" formControlName="clientSecret" id="eda_mail_client_secret" pInputText>
+          </div>
+
+          <div class="form-group col-12 md:col-3">
+            <label i18n="@@oauth2RefreshToken">Refresh Token *</label>
+            <input type="password" class="form-control" formControlName="refreshToken" id="eda_mail_refresh_token" pInputText>
+          </div>
+
+          <!-- SDA CUSTOM - Button to obtain OAuth2 token -->
+          <div class="form-group col-12 md:col-12">
+            <button type="button" pButton (click)="getOAuth2Url()" class="ui-button-warning"
+              i18n-label="@@oauth2GetToken" label="Obtener Refresh Token" [disabled]="!formOAuth2.value.clientId || !formOAuth2.value.clientSecret"></button>
+          </div>
+          <!-- END SDA CUSTOM -->
+
+          <div class="form-group col-12 md:col-12" style="margin-left: 0.5em;">
+            <h6 i18n="@@inputSecurity">TLS *</h6>
+            <p-inputSwitch formControlName="secure"></p-inputSwitch>
+          </div>
+
+          <div class="col-12 mt-2 mb-2 p-2 rounded" style="background-color: #fff3e0; border-left: 4px solid #ff9800;">
+            <i class="fa fa-info-circle text-warning mr-2"></i>
+            <div i18n="@@oauth2Help">
+              Para usar OAuth2 con Gmail:
+              <ol class="mt-2 mb-2">
+                <li>Ve a <a href="https://console.cloud.google.com/apis/credentials" target="_blank">Google Cloud Console</a></li>
+                <li>Crea o selecciona un OAuth Client ID</li>
+                <li>Añade <strong>http://localhost</strong> a los "URI de redireccionamiento autorizados"</li>
+                <li>Habilita la API de Gmail</li>
+                <li>Copia aquí tu Client ID y Client Secret</li>
+              </ol>
+              El Refresh Token se obtiene haciendo clic en "Obtener Refresh Token".
+            </div>
+          </div>
+
+          <div class="col-8 lg:col-10">
+            <button type="button" pButton (click)="checkCredentials()" class="ui-button-success ml-2"
+              i18n-label="@@checkCredentials" label="Comprobar credenciales" [disabled]="!formOAuth2.valid"></button>
+            <!-- SDA CUSTOM - Add send test email button -->
+            <button type="button" pButton (click)="sendTestEmail()" class="ui-button-success ml-2"
+              i18n-label="@@sendTestEmail" label="Enviar correo de prueba" [disabled]="!formOAuth2.valid"></button>
+            <!-- END SDA CUSTOM -->
+          </div>
+
+          <div class="col-4 lg:col-2">
+            <!--SDA CUSTOM--><button style="margin: auto;" type="submit" pButton class="ui-button-success ml-2" icon="fa fa-save" i18n-label="@@guardarButton"
+              label="Guardar" id="eda_MAIL_guardar" [disabled]="!formOAuth2.valid"></button>
+          </div>
+
+
+        </div>
+
+      </form>
+      <!-- END SDA CUSTOM -->
+
     </p-card>
 
   </div>
@@ -60,7 +166,7 @@
     </p-card>
 
   </div>
-  
+
   <div class="col-12 lg:col-6">
 
     <p-card [header]="dashboardsHeader" [style]="{marginTop:'1em'}">

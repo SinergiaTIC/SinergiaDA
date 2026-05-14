@@ -492,7 +492,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         /* SDA CUSTOM */ chartConfig.showResizeControls = !!this.props?.canEdit && !!this.props?.canSave && !this.props?.locked;
 
         const config: any = this.props.config;
-        const alertLimits = config?.config?.alertLimits || [];
+        const alertLimits = config?.getConfig?.()?.alertLimits || [];
 
         if (config) {
             chartConfig.sufix = (<KpiConfig>config.getConfig())?.sufix || '';

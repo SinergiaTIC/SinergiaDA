@@ -30,11 +30,17 @@ export class AlertService {
         if ( _.isEqual(typeof err, 'string')) {
             message = err;
         } else {
-            if (err.text) {
-                message = err.text;
-            } else {
-                message = ' - Server Error';
-            }
+// SDA CUSTOM - Improve error message extraction from HttpErrorResponse
+/*SDA CUSTOM*/      if (err.error && err.error.message) {
+/*SDA CUSTOM*/          message = err.error.message;
+/*SDA CUSTOM*/      } else if (err.message) {
+/*SDA CUSTOM*/          message = err.message;
+/*SDA CUSTOM*/      } else if (err.text) {
+/*SDA CUSTOM*/          message = err.text;
+/*SDA CUSTOM*/      } else {
+/*SDA CUSTOM*/          message = ' - Server Error';
+/*SDA CUSTOM*/      }
+// END SDA CUSTOM
         }
 
         this.getSource.next(
