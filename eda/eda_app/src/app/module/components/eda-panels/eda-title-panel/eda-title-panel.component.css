@@ -11,6 +11,107 @@
   color: #13427d !important;
 }
 
+/* SDA CUSTOM - Optimal use of vertical space with configurable alignment */
+.eda-title-panel {
+  height: 100%;
+  line-height: 1.2;      /* Compact line height */
+}
+
+/* SDA CUSTOM - Minimalist style: no borders, no background, only text and menu */
+.title-panel-minimal {
+  border: none !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  outline: none !important;
+  border-radius: 0 !important;
+  border-left: none !important;
+  border-right: none !important;
+  border-top: none !important;
+  border-bottom: none !important;
+}
+
+/* Ensure no extra padding in minimalist mode */
+.title-panel-minimal .panel-heading,
+.title-panel-minimal .justify-content-between {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  outline: none !important;
+  border-bottom: none !important;
+  border-left: none !important;
+}
+
+/* SDA CUSTOM - Force removal of any border on the internal container */
+.title-panel-minimal .justify-content-between {
+  border: none !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  outline: none !important;
+  border-bottom: none !important;
+  border-left: none !important;
+}
+
+/* SDA CUSTOM - The eda-title-panel title in minimalist mode */
+:host ::ng-deep .title-panel-minimal,
+:host ::ng-deep .title-panel-minimal * {
+  border: none !important;
+  box-shadow: none !important;
+  outline: none !important;
+  background: transparent !important;
+  border-bottom: none !important;
+  border-left: none !important;
+}
+
+/* SDA CUSTOM - Remove any residual border from the panel parent container */
+:host ::ng-deep .title-panel-minimal .panel-heading,
+:host ::ng-deep .title-panel-minimal .panel-heading * {
+  border: none !important;
+  box-shadow: none !important;
+  background: transparent !important;
+  border-bottom: none !important;
+  border-left: none !important;
+}
+
+/* SDA CUSTOM - Force any container inside the title to have no borders */
+.title-panel-minimal > div,
+.title-panel-minimal > div > div {
+  border: none !important;
+  box-shadow: none !important;
+  border-bottom: none !important;
+  border-left: none !important;
+}
+
+.eda-title-panel p,
+.eda-title-panel h1,
+.eda-title-panel h2,
+.eda-title-panel div {
+  margin: 0;            /* Remove margins that waste space */
+  padding: 0;
+  width: 100%;
+}
+
+/* Ensure images don't overflow vertically */
+.eda-title-panel img {
+  max-height: 100%;     /* Images don't overflow vertically */
+  max-width: 100%;
+  object-fit: contain;
+}
+
+.eda-title-panel p,
+.eda-title-panel h1,
+.eda-title-panel h2,
+.eda-title-panel div {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+}
+
+/* Ensure images don't overflow vertically */
+.eda-title-panel img {
+  max-height: 100%;
+  max-width: 100%;
+  object-fit: contain;
+}
 
 
 
@@ -56,14 +157,13 @@ h2.ql-align-right {
 
 
 
-
 strong {
 font-weight: bold !important;
 }
 
 
-/*============================================================== 
-  For Laptop & above all (1370px) 
+/*==============================================================
+  For Laptop & above all (1370px)
   ============================================================== */
   @media (max-width: 1370px) {
     .ql-size-small {
