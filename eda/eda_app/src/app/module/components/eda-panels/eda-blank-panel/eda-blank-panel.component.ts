@@ -1689,10 +1689,11 @@ export class EdaBlankPanelComponent implements OnInit {
 
     /** duplicates a dashboard panel and positions it one point below the original one. */
     public duplicatePanel(): void {
-        let duplicatedPanel =   _.cloneDeep(this.panel, true);
+        /*SDA CUSTOM*/const sourcePanelId = this.panel.id;
+        let duplicatedPanel = _.cloneDeep(this.panel, true);
         duplicatedPanel.id = this.fileUtiles.generateUUID();
-        duplicatedPanel.y = duplicatedPanel.y+1;
-        this.duplicate.emit(duplicatedPanel);
+        /*SDA CUSTOM*/duplicatedPanel.y = duplicatedPanel.y + 1;
+        /*SDA CUSTOM*/this.duplicate.emit({ panel: duplicatedPanel, sourcePanelId });
     }
 
 

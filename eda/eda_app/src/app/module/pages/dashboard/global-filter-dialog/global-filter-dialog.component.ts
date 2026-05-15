@@ -19,6 +19,7 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
 
     public allPanels: any[] = [];
     public filteredPanels: any[] = [];
+    /*SDA CUSTOM*/ private _pathBackup: { [panelId: string]: any } = {};
 
     @Output() close: EventEmitter<any> = new EventEmitter<any>();
     @Output() globalFilterChange: EventEmitter<any> = new EventEmitter<any>();
@@ -205,9 +206,18 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
             this.filteredPanels = this.allPanels.filter((p: any) => p.avaliable && p.active);
 
             if (panel.active) {
+                /*SDA CUSTOM*/ if (this._pathBackup[panel.id]) {
+                /*SDA CUSTOM*/     this.globalFilter.pathList[panel.id] = _.cloneDeep(this._pathBackup[panel.id]);
+                /*SDA CUSTOM*/     delete this._pathBackup[panel.id];
+                /*SDA CUSTOM*/ }
+                /*SDA CUSTOM*/ if (this.globalFilter.pathList[panel.id] && !this.isEmpty(this.globalFilter.pathList[panel.id].selectedTableNodes)) {
+                /*SDA CUSTOM*/     if (!this.globalFilter.panelList.includes(panel.id)) {
+                /*SDA CUSTOM*/         this.globalFilter.panelList.push(panel.id);
+                /*SDA CUSTOM*/     }
+                /*SDA CUSTOM*/ }
                 this.initTablesForFilter();
                 this.findPanelPathTables();
-            } 
+            }
             else this.clearFilterPaths(panel);
         }
 
@@ -536,6 +546,10 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
     private clearFilterPaths(clearPanel?: any) {
         if (clearPanel) {
             this.globalFilter.panelList = this.globalFilter.panelList.filter((p) => p !== clearPanel.id);
+            /*SDA CUSTOM*/ const current = this.globalFilter.pathList[clearPanel.id];
+            /*SDA CUSTOM*/ if (current && !this.isEmpty(current.selectedTableNodes)) {
+            /*SDA CUSTOM*/     this._pathBackup[clearPanel.id] = _.cloneDeep(current);
+            /*SDA CUSTOM*/ }
             this.globalFilter.pathList[clearPanel.id] = {
                 selectedTableNodes: {},
                 path: []
@@ -544,6 +558,7 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
         } else {
             this.globalFilter.panelList = [];
             this.globalFilter.pathList = {};
+            /*SDA CUSTOM*/ this._pathBackup = {};
 
             for (const panel of this.allPanels) {
                 panel.content.globalFilterPaths = [];

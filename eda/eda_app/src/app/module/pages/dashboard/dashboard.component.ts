@@ -1334,10 +1334,20 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
         }
     }
 
-    public onDuplicatePanel(panel): void {
-        this.panels.push(panel);
-        this.dashboardService._notSaved.next(true);
-    }
+    /*SDA CUSTOM*/public onDuplicatePanel(event: { panel: any, sourcePanelId: string }): void {
+        const { panel, sourcePanelId } = event;
+        /*SDA CUSTOM*/ if (this.gFilter?.globalFilters) {
+        /*SDA CUSTOM*/     this.gFilter.globalFilters
+        /*SDA CUSTOM*/         .filter((f: any) => f.isGlobal && f.pathList)
+        /*SDA CUSTOM*/         .forEach((filter: any) => {
+        /*SDA CUSTOM*/             if (filter.pathList[sourcePanelId]) {
+        /*SDA CUSTOM*/                 filter.pathList[panel.id] = _.cloneDeep(filter.pathList[sourcePanelId]);
+        /*SDA CUSTOM*/             }
+        /*SDA CUSTOM*/         });
+        /*SDA CUSTOM*/ }
+                        this.panels.push(panel);
+                        this.dashboardService._notSaved.next(true);
+    /*SDA CUSTOM*/}
 
     public onResetWidgets(): void {
             // Get the queries in the dashboard for delete it from cache
