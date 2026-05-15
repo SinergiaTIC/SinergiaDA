@@ -224,14 +224,18 @@ case 'groups':
     }
 
     static async UpdateDataSource(req: Request, res: Response, next: NextFunction) {
-        console.log('[DEBUG] UpdateDataSource called');
-
         try {
-            // Validation request
+            console.log('\n========== [DataModelSave] START ==========');
+            console.log('[DEBUG] UpdateDataSource called');
+            console.log('[DEBUG] req.params.id:', req.params.id);
+            console.log('[DEBUG] req.body._id:', req.body._id);
+            console.log('[DEBUG] req.body.ds?.metadata?.model_name:', req.body.ds?.metadata?.model_name);
+
             const body = req.body;
             const psswd = body.ds.connection.password;
             let ds: IDataSource;
             let id = req.body._id;
+
             if (id === undefined) {
                 id = req.params.id;
             }
@@ -239,98 +243,78 @@ case 'groups':
                 id = id.$oid;
                 body._id = id;
             }
-            DataSource.findById(id, (err, dataSource: IDataSource) => {
-                if (err) {
-                    console.error(`[DataModelSave] ERROR finding datasource id=${id}: ${err.message}`);
-                    /* SDA CUSTOM */ // Log datasource save error
-                    /* SDA CUSTOM */ const userMail = (req as any).user && (req as any).user.email ? (req as any).user.email : 'unknown';
-                    /* SDA CUSTOM */ insertDataSourceServerLog(req, 'error', 'DataModelSaveFailed', userMail, `findbyid--${id}--${err.message}`);
-                    /* SDA CUSTOM */ // END SDA CUSTOM
-                    return next(new HttpException(500, 'Datasouce not found'));
-                }
 
-                if (!dataSource) {
-                    console.log(`[DataModelSave] Creating NEW model: ${body.ds?.metadata?.model_name || 'unknown'}`);
-                    let cadena = JSON.stringify(body);
-                    cadena = cadena.split('$oid').join('id');
-                    ds = new DataSource(JSON.parse(cadena.toString()));
-                    ds.ds.metadata.model_owner = req.user?._id;
+            // Find datasource first using Promises
+            const dataSource: IDataSource = await DataSource.findById(id).exec();
+            console.log('[DEBUG] DataSource.findById completed, dataSource:', dataSource ? 'found' : 'null');
 
-                } else {
-                    console.log(`[DataModelSave] Updating EXISTING model: ${dataSource.ds?.metadata?.model_name || 'unknown'}`);
-                    body.ds.connection.password = psswd === '__-(··)-__' ? dataSource.ds.connection.password : EnCrypterService.encrypt(body.ds.connection.password);
-                    let cadena = JSON.stringify(body.ds);
-                    cadena = cadena.split('$oid').join('id');
-                    dataSource.ds = JSON.parse(cadena.toString());
-                    ds = dataSource;
-                    ds.ds.metadata.model_owner = req.user._id;
-                }
+            if (!dataSource) {
+                console.log(`[DataModelSave] Creating NEW model: ${body.ds?.metadata?.model_name || 'unknown'}`);
+                let cadena = JSON.stringify(body);
+                cadena = cadena.split('$oid').join('id');
+                ds = new DataSource(JSON.parse(cadena.toString()));
+                ds.ds.metadata.model_owner = req.user?._id;
+            } else {
+                console.log(`[DataModelSave] Updating EXISTING model: ${dataSource.ds?.metadata?.model_name || 'unknown'}`);
+                body.ds.connection.password = psswd === '__-(··)-__' ? dataSource.ds.connection.password : EnCrypterService.encrypt(body.ds.connection.password);
+                let cadena = JSON.stringify(body.ds);
+                cadena = cadena.split('$oid').join('id');
+                dataSource.ds = JSON.parse(cadena.toString());
+                ds = dataSource;
+                ds.ds.metadata.model_owner = req.user._id;
+            }
 
-
-                //aparto las relaciones ocultas para optimizar el modelo.
-                ds.ds.model.tables.forEach(t => {
-                    t.no_relations = t ? t.relations.filter(r => r.visible == false) : [];
-                });
-                ds.ds.model.tables.forEach(t => {
-                    t.relations = t ? t.relations.filter(r => r.visible !== false) : [];
-                });
-                /** Comprobacionde la reciprocidad de las relaciones */
-                ds.ds.model.tables.forEach(tabla => {
-                    tabla.relations.forEach(relacion => {
-                        const tablas_dstino_array = ds.ds.model.tables.filter(t => t.table_name == relacion.target_table);
-                        tablas_dstino_array.forEach(t => {
-                            const r = t.relations.filter(r => r.source_table == relacion.target_table &&
-                                JSON.stringify(r.source_column) == JSON.stringify(relacion.target_column) &&
-                                r.target_table == relacion.source_table &&
-                                JSON.stringify(r.target_column) == JSON.stringify(relacion.source_column));
-                            if (r.length == 0) {
-                                // si la relacion no se encuentra la meto
-                                const mi_relacion = {
-                                    source_table: relacion.target_table,
-                                    source_column: relacion.target_column,
-                                    target_table: relacion.source_table,
-                                    target_column: relacion.source_column,
-                                    visible: true
-                                }
-                                t.relations.push(mi_relacion);
-                                ds.ds.model.tables = JSON.parse(JSON.stringify(ds.ds.model.tables.filter(item => item.table_name !== t.table_name)));
-                                ds.ds.model.tables.push(t);
+            // Process relations
+            ds.ds.model.tables.forEach(t => {
+                t.no_relations = t ? t.relations.filter(r => r.visible == false) : [];
+            });
+            ds.ds.model.tables.forEach(t => {
+                t.relations = t ? t.relations.filter(r => r.visible !== false) : [];
+            });
+            ds.ds.model.tables.forEach(tabla => {
+                tabla.relations.forEach(relacion => {
+                    const tablas_dstino_array = ds.ds.model.tables.filter(t => t.table_name == relacion.target_table);
+                    tablas_dstino_array.forEach(t => {
+                        const r = t.relations.filter(r => r.source_table == relacion.target_table &&
+                            JSON.stringify(r.source_column) == JSON.stringify(relacion.target_column) &&
+                            r.target_table == relacion.source_table &&
+                            JSON.stringify(r.target_column) == JSON.stringify(relacion.source_column));
+                        if (r.length == 0) {
+                            const mi_relacion = {
+                                source_table: relacion.target_table,
+                                source_column: relacion.target_column,
+                                target_table: relacion.source_table,
+                                target_column: relacion.source_column,
+                                visible: true
                             }
-                        })
+                            t.relations.push(mi_relacion);
+                            ds.ds.model.tables = JSON.parse(JSON.stringify(ds.ds.model.tables.filter(item => item.table_name !== t.table_name)));
+                            ds.ds.model.tables.push(t);
+                        }
                     })
-                });
-
-
-                const iDataSource = new DataSource(ds);
-                /* SDA CUSTOM */ // Log model save result (only success/failure, not start)
-                /* SDA CUSTOM */ const userMailSave = (req as any).user && (req as any).user.email ? (req as any).user.email : 'unknown';
-                /* SDA CUSTOM */ const modelNameForLog = (ds.ds.metadata && ds.ds.metadata.model_name) ? ds.ds.metadata.model_name : 'unknown';
-
-                iDataSource.save((err, dataSource) => {
-                    if (err) {
-                        console.error(`[DataModelSave] ERROR saving model ${modelNameForLog}: ${err.message}`);
-                        /* SDA CUSTOM */ // Log datasource save failure
-                        /* SDA CUSTOM */ insertDataSourceServerLog(req, 'error', 'DataModelSaveFailed', userMailSave, `${modelNameForLog}--${err.message}`);
-                        /* SDA CUSTOM */ // END SDA CUSTOM
-                        next(new HttpException(500, 'Error updating dataSource'));
-
-                    } else {
-                        console.log(`[DataModelSave] SUCCESS saving model ${modelNameForLog}`);
-                        /* SDA CUSTOM */ // Log datasource save success
-                        /* SDA CUSTOM */ insertDataSourceServerLog(req, 'info', 'DataModelSaved', userMailSave, modelNameForLog);
-                        /* SDA CUSTOM */ // END SDA CUSTOM
-                        return res.status(200).json({ ok: true, message: 'Modelo actualizado correctamente' });
-                    }
                 })
             });
 
-        } catch (err) {
-            console.error(`[DataModelSave] ERROR in catch block: ${err.message}`);
-            /* SDA CUSTOM */ // Log unexpected error in update datasource
-            /* SDA CUSTOM */ const userMailCatch = (req as any).user && (req as any).user.email ? (req as any).user.email : 'unknown';
-            /* SDA CUSTOM */ insertDataSourceServerLog(req, 'error', 'DataModelSaveFailed', userMailCatch, `catch--${err.message || err.toString()}`);
+            const iDataSource = new DataSource(ds);
+            const userMailSave = (req as any).user && (req as any).user.email ? (req as any).user.email : 'unknown';
+            const modelNameForLog = (ds.ds.metadata && ds.ds.metadata.model_name) ? ds.ds.metadata.model_name : 'unknown';
+
+            // Save using Promises
+            await iDataSource.save();
+            console.log(`[DataModelSave] SUCCESS saving model ${modelNameForLog}`);
+            /* SDA CUSTOM */ insertDataSourceServerLog(req, 'info', 'DataModelSaved', userMailSave, modelNameForLog);
             /* SDA CUSTOM */ // END SDA CUSTOM
-            next(err);
+            console.log('[DataModelSave] Sending 200 response');
+            console.log('========== [DataModelSave] END ==========\n');
+            return res.status(200).json({ ok: true, message: 'Modelo actualizado correctamente' });
+
+        } catch (err) {
+            console.error(`[DataModelSave] ERROR: ${err.message}`);
+            console.error('[DataModelSave] Stack:', err.stack);
+            const userMailCatch = (req as any).user && (req as any).user.email ? (req as any).user.email : 'unknown';
+            /* SDA CUSTOM */ insertDataSourceServerLog(req, 'error', 'DataModelSaveFailed', userMailCatch, `${err.message || err.toString()}`);
+            /* SDA CUSTOM */ // END SDA CUSTOM
+            return next(new HttpException(500, 'Error updating dataSource'));
         }
     }
 

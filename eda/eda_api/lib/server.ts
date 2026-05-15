@@ -4,7 +4,7 @@ interface IError extends Error{
     status?: any;
 }
 
-const PORT = 8666;
+const PORT = process.env.PORT || 8666;
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
