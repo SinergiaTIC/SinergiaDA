@@ -722,14 +722,19 @@ case 'groups':
 
 // SDA CUSTOM - Helper function for data source model save audit logging
 function insertDataSourceServerLog(req: Request, level: string, action: string, userMail: string, type: string) {
-    const ip = req.headers['x-forwarded-for'] || req.get('origin');
-    var date = new Date();
-    var month = date.getMonth() + 1;
-    var monthstr = month < 10 ? "0" + month.toString() : month.toString();
-    var day = date.getDate();
-    var daystr = day < 10 ? "0" + day.toString() : day.toString();
-    var date_str = date.getFullYear() + "-" + monthstr + "-" + daystr + " " + date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds();
-    ServerLogService.log({ level, action, userMail, ip, type, date_str });
+    try {
+        const ip = req.headers['x-forwarded-for'] || req.get('origin');
+        var date = new Date();
+        var month = date.getMonth() + 1;
+        var monthstr = month < 10 ? "0" + month.toString() : month.toString();
+        var day = date.getDate();
+        var daystr = day < 10 ? "0" + day.toString() : day.toString();
+        var date_str = date.getFullYear() + "-" + monthstr + "-" + daystr + " " + date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds();
+        console.log(`[DEBUG] insertDataSourceServerLog: ${level} ${action} ${userMail} ${type}`);
+        ServerLogService.log({ level, action, userMail, ip, type, date_str });
+    } catch (err) {
+        console.error(`[DEBUG] insertDataSourceServerLog ERROR: ${err.message}`);
+    }
 }
 // END SDA CUSTOM
 

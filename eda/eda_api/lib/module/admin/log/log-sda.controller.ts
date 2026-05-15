@@ -7,7 +7,7 @@ export class LogSdaController {
 
      static async getAppLogs(req: Request, res: Response, next: NextFunction) {
          try {
-             const logsDirectoryPath = path.resolve(__dirname, '../../../../logs');
+             const logsDirectoryPath = path.resolve(process.cwd(), 'logs');
              const qs = (req as any).qs;
              const { date, startDate, endDate } = qs || {} as any;
     
