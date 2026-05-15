@@ -12,6 +12,9 @@ import { upperCase } from 'lodash';
 import Group from '../../module/admin/groups/model/group.model';
 import _ from 'lodash';
 const cache_config = require('../../../config/cache.config');
+// SDA CUSTOM - Use SDA daily log service for model save logging
+import ServerLogService from '../../services/server-log/server-log-sda.service';
+// END SDA CUSTOM
 
 export class DataSourceController {
 
@@ -138,14 +141,15 @@ export class DataSourceController {
                                     if (!users.includes(user)) users.push(user);
                                 });
                                 break;
-                            case 'groups':
+case 'groups':
                                 req.user.role.forEach(role => {
                                     if (permission.groups.includes(role)) {
                                         if (!roles.includes(role)) roles.push(role);
                                     }
                                 });
-                        }
-                    });
+                                break;
+                            }
+                        });
                     if (users.includes(userID) || roles.length > 0 || allCanSee == 'true' || req.user.role.includes('135792467811111111111110') /* admin role  los admin lo ven todo*/) {
                         /**   edalitics free       if (   e.ds.metadata.model_owner == userID   ||   req.user.role.includes('135792467811111111111110')   )  { */
                         output.push({ _id: e._id, model_name: e.ds.metadata.model_name });
@@ -236,19 +240,23 @@ export class DataSourceController {
             }
             DataSource.findById(id, (err, dataSource: IDataSource) => {
                 if (err) {
-                    console.log(err);
+                    console.error(`[DataModelSave] ERROR finding datasource id=${id}: ${err.message}`);
+                    /* SDA CUSTOM */ // Log datasource save error
+                    /* SDA CUSTOM */ const userMail = (req as any).user && (req as any).user.email ? (req as any).user.email : 'unknown';
+                    /* SDA CUSTOM */ insertDataSourceServerLog(req, 'error', 'DataModelSaveFailed', userMail, `findbyid--${id}--${err.message}`);
+                    /* SDA CUSTOM */ // END SDA CUSTOM
                     return next(new HttpException(500, 'Datasouce not found'));
                 }
 
                 if (!dataSource) {
-                    console.log('Importing new datasource');
+                    console.log(`[DataModelSave] Creating NEW model: ${body.ds?.metadata?.model_name || 'unknown'}`);
                     let cadena = JSON.stringify(body);
                     cadena = cadena.split('$oid').join('id');
                     ds = new DataSource(JSON.parse(cadena.toString()));
                     ds.ds.metadata.model_owner = req.user?._id;
 
                 } else {
-                    console.log('Importing existing datasource');
+                    console.log(`[DataModelSave] Updating EXISTING model: ${dataSource.ds?.metadata?.model_name || 'unknown'}`);
                     body.ds.connection.password = psswd === '__-(··)-__' ? dataSource.ds.connection.password : EnCrypterService.encrypt(body.ds.connection.password);
                     let cadena = JSON.stringify(body.ds);
                     cadena = cadena.split('$oid').join('id');
@@ -293,19 +301,33 @@ export class DataSourceController {
 
 
                 const iDataSource = new DataSource(ds);
+                /* SDA CUSTOM */ // Log model save result (only success/failure, not start)
+                /* SDA CUSTOM */ const userMailSave = (req as any).user && (req as any).user.email ? (req as any).user.email : 'unknown';
+                /* SDA CUSTOM */ const modelNameForLog = (ds.ds.metadata && ds.ds.metadata.model_name) ? ds.ds.metadata.model_name : 'unknown';
 
                 iDataSource.save((err, dataSource) => {
                     if (err) {
-                        console.log(err);
+                        console.error(`[DataModelSave] ERROR saving model ${modelNameForLog}: ${err.message}`);
+                        /* SDA CUSTOM */ // Log datasource save failure
+                        /* SDA CUSTOM */ insertDataSourceServerLog(req, 'error', 'DataModelSaveFailed', userMailSave, `${modelNameForLog}--${err.message}`);
+                        /* SDA CUSTOM */ // END SDA CUSTOM
                         next(new HttpException(500, 'Error updating dataSource'));
 
+                    } else {
+                        console.log(`[DataModelSave] SUCCESS saving model ${modelNameForLog}`);
+                        /* SDA CUSTOM */ // Log datasource save success
+                        /* SDA CUSTOM */ insertDataSourceServerLog(req, 'info', 'DataModelSaved', userMailSave, modelNameForLog);
+                        /* SDA CUSTOM */ // END SDA CUSTOM
+                        return res.status(200).json({ ok: true, message: 'Modelo actualizado correctamente' });
                     }
-
-                    return res.status(200).json({ ok: true, message: 'Modelo actualizado correctamente' });
                 })
             });
 
         } catch (err) {
+            /* SDA CUSTOM */ // Log unexpected error in update datasource
+            /* SDA CUSTOM */ const userMailCatch = (req as any).user && (req as any).user.email ? (req as any).user.email : 'unknown';
+            /* SDA CUSTOM */ insertDataSourceServerLog(req, 'error', 'DataModelSaveFailed', userMailCatch, `catch--${err.message || err.toString()}`);
+            /* SDA CUSTOM */ // END SDA CUSTOM
             next(err);
         }
     }
@@ -697,6 +719,19 @@ export class DataSourceController {
     }
 
 }
+
+// SDA CUSTOM - Helper function for data source model save audit logging
+function insertDataSourceServerLog(req: Request, level: string, action: string, userMail: string, type: string) {
+    const ip = req.headers['x-forwarded-for'] || req.get('origin');
+    var date = new Date();
+    var month = date.getMonth() + 1;
+    var monthstr = month < 10 ? "0" + month.toString() : month.toString();
+    var day = date.getDate();
+    var daystr = day < 10 ? "0" + day.toString() : day.toString();
+    var date_str = date.getFullYear() + "-" + monthstr + "-" + daystr + " " + date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds();
+    ServerLogService.log({ level, action, userMail, ip, type, date_str });
+}
+// END SDA CUSTOM
 
 
 

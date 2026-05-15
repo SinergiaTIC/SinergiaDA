@@ -489,7 +489,9 @@ export class LogsSdaComponent implements OnInit {
     /* SDA CUSTOM */         UpdateModelDataModelBuildFailed: $localize`:@@LogsActionUpdateModelDataModelBuildFailed:Fallo en construcción del modelo de datos`,
     /* SDA CUSTOM */         UpdateModelCompleted: $localize`:@@LogsActionUpdateModelCompleted:Actualización del modelo completada`,
     /* SDA CUSTOM */         UpdateModelPushFailed: $localize`:@@LogsActionUpdateModelPushFailed:Fallo en push del modelo`,
-    /* SDA CUSTOM */         UpdateModelFailed: $localize`:@@LogsActionUpdateModelFailed:Fallo en actualización del modelo`
+    /* SDA CUSTOM */         UpdateModelFailed: $localize`:@@LogsActionUpdateModelFailed:Fallo en actualización del modelo`,
+    /* SDA CUSTOM */         DataModelSaved: $localize`:@@LogsActionDataModelSaved:Modelo de datos guardado`,
+    /* SDA CUSTOM */         DataModelSaveFailed: $localize`:@@LogsActionDataModelSaveFailed:Fallo en guardado de modelo de datos`
     /* SDA CUSTOM */     };
     /* SDA CUSTOM */     return labels[action] || action || '-';
     /* SDA CUSTOM */ }
@@ -523,7 +525,9 @@ export class LogsSdaComponent implements OnInit {
     /* SDA CUSTOM */         UpdateModelDataModelBuildFailed: $localize`:@@LogsActionDataModelBuildFailure:Fallo en construcción del modelo de datos`,
     /* SDA CUSTOM */         UpdateModelCompleted: $localize`:@@LogsActionModelUpdateCompleted:Actualización del modelo completada`,
     /* SDA CUSTOM */         UpdateModelPushFailed: $localize`:@@LogsActionModelPushFailure:Fallo en push del modelo`,
-    /* SDA CUSTOM */         UpdateModelFailed: $localize`:@@LogsActionModelUpdateFailure:Fallo en actualización del modelo`
+    /* SDA CUSTOM */         UpdateModelFailed: $localize`:@@LogsActionModelUpdateFailure:Fallo en actualización del modelo`,
+    /* SDA CUSTOM */         DataModelSaved: $localize`:@@LogsActionDataModelSaveSuccess:Guardado del modelo exitoso`,
+    /* SDA CUSTOM */         DataModelSaveFailed: $localize`:@@LogsActionDataModelSaveFailure:Fallo en guardado del modelo`
     /* SDA CUSTOM */     };
     /* SDA CUSTOM */     if (actionLabels[action]) return actionLabels[action];
     /* SDA CUSTOM */     if (detail === 'attempt') return $localize`:@@LogsActionAttempt:Intento`;
