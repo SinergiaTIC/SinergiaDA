@@ -224,6 +224,7 @@ case 'groups':
     }
 
     static async UpdateDataSource(req: Request, res: Response, next: NextFunction) {
+        console.log('[DEBUG] UpdateDataSource called');
 
         try {
             // Validation request
@@ -324,6 +325,7 @@ case 'groups':
             });
 
         } catch (err) {
+            console.error(`[DataModelSave] ERROR in catch block: ${err.message}`);
             /* SDA CUSTOM */ // Log unexpected error in update datasource
             /* SDA CUSTOM */ const userMailCatch = (req as any).user && (req as any).user.email ? (req as any).user.email : 'unknown';
             /* SDA CUSTOM */ insertDataSourceServerLog(req, 'error', 'DataModelSaveFailed', userMailCatch, `catch--${err.message || err.toString()}`);
