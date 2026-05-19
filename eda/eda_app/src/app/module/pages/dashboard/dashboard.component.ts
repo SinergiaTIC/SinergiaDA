@@ -1338,18 +1338,29 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
         const { panel, sourcePanelId } = event;
         /*SDA CUSTOM*/ if (this.gFilter?.globalFilters) {
         /*SDA CUSTOM*/     this.gFilter.globalFilters
-        /*SDA CUSTOM*/         .filter((f: any) => f.isGlobal && f.pathList)
+        /*SDA CUSTOM*/         .filter((f: any) => f.isGlobal)
         /*SDA CUSTOM*/         .forEach((filter: any) => {
-        /*SDA CUSTOM*/             if (filter.pathList[sourcePanelId]) {
+        /*SDA CUSTOM*/             if (filter.pathList && filter.pathList[sourcePanelId]) {
         /*SDA CUSTOM*/                 filter.pathList[panel.id] = _.cloneDeep(filter.pathList[sourcePanelId]);
-        /*SDA CUSTOM*/                 if (filter.panelList.includes(sourcePanelId) && !filter.panelList.includes(panel.id)) {
-        /*SDA CUSTOM*/                     filter.panelList.push(panel.id);
-        /*SDA CUSTOM*/                 }
+        /*SDA CUSTOM*/             }
+        /*SDA CUSTOM*/             if (filter.panelList.includes(sourcePanelId) && !filter.panelList.includes(panel.id)) {
+        /*SDA CUSTOM*/                 filter.panelList.push(panel.id);
         /*SDA CUSTOM*/             }
         /*SDA CUSTOM*/         });
         /*SDA CUSTOM*/ }
                         this.panels.push(panel);
                         this.dashboardService._notSaved.next(true);
+        /*SDA CUSTOM*/ const _dupSub = this.edaPanels.changes.subscribe(() => {
+        /*SDA CUSTOM*/     _dupSub.unsubscribe();
+        /*SDA CUSTOM*/     const newPanel = this.edaPanels.toArray().find(p => p.panel.id === panel.id);
+        /*SDA CUSTOM*/     if (newPanel && this.gFilter?.globalFilters) {
+        /*SDA CUSTOM*/         const applicable = this.gFilter.globalFilters.filter((f: any) => f.isGlobal && f.panelList.includes(panel.id));
+        /*SDA CUSTOM*/         applicable.forEach((filter: any) => {
+        /*SDA CUSTOM*/             newPanel.assertGlobalFilter(this.globalFiltersService.formatFilter(filter));
+        /*SDA CUSTOM*/         });
+        /*SDA CUSTOM*/         if (applicable.length > 0) newPanel._pendingGlobalFilterReload = true;
+        /*SDA CUSTOM*/     }
+        /*SDA CUSTOM*/ });
     /*SDA CUSTOM*/}
 
     public onResetWidgets(): void {
