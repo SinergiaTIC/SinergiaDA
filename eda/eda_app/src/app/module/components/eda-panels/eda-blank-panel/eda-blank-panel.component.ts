@@ -185,6 +185,7 @@ export class EdaBlankPanelComponent implements OnInit {
     public selectedFilters: any[] = [];
     public globalFilters: any[] = [];
     public filterValue: any = {};
+    /*SDA CUSTOM*/ public _pendingGlobalFilterReload: boolean = false;
 
     public loadingNodes: boolean = false;
     public rootTable: any;
@@ -488,6 +489,11 @@ export class EdaBlankPanelComponent implements OnInit {
         if (this.panel.content) {
             this.display_v.minispinner = true;
 
+            /*SDA CUSTOM*/ if (this.panel._isDuplicate) {
+            /*SDA CUSTOM*/     this.buildGlobalconfiguration(panelContent);
+            /*SDA CUSTOM*/     return;
+            /*SDA CUSTOM*/ }
+
             try {
                 const response = await QueryUtils.switchAndRun(this, panelContent.query);
                 this.chartLabels = this.chartUtils.uniqueLabels(response[0]);
@@ -584,6 +590,16 @@ export class EdaBlankPanelComponent implements OnInit {
 
         const currentQueryCheck = this.currentQuery;
         this.atLeastThereIsOneWithAggregation = this.checkAtLeastOneWithAggregation(currentQueryCheck);
+        /*SDA CUSTOM*/ let _ranQuery = false;
+        /*SDA CUSTOM*/ if (this._pendingGlobalFilterReload) {
+        /*SDA CUSTOM*/     this._pendingGlobalFilterReload = false;
+        /*SDA CUSTOM*/     QueryUtils.runQuery(this, true);
+        /*SDA CUSTOM*/     _ranQuery = true;
+        /*SDA CUSTOM*/ }
+        /*SDA CUSTOM*/ if (this.panel._isDuplicate) {
+        /*SDA CUSTOM*/     delete this.panel._isDuplicate;
+        /*SDA CUSTOM*/     if (!_ranQuery) QueryUtils.runQuery(this, true);
+        /*SDA CUSTOM*/ }
     }
 
 
@@ -1698,10 +1714,12 @@ export class EdaBlankPanelComponent implements OnInit {
 
     /** duplicates a dashboard panel and positions it one point below the original one. */
     public duplicatePanel(): void {
-        let duplicatedPanel =   _.cloneDeep(this.panel, true);
+        /*SDA CUSTOM*/const sourcePanelId = this.panel.id;
+        let duplicatedPanel = _.cloneDeep(this.panel, true);
         duplicatedPanel.id = this.fileUtiles.generateUUID();
-        duplicatedPanel.y = duplicatedPanel.y+1;
-        this.duplicate.emit(duplicatedPanel);
+        /*SDA CUSTOM*/duplicatedPanel.y = duplicatedPanel.y + 1;
+        /*SDA CUSTOM*/duplicatedPanel._isDuplicate = true;
+        /*SDA CUSTOM*/this.duplicate.emit({ panel: duplicatedPanel, sourcePanelId });
     }
 
 
