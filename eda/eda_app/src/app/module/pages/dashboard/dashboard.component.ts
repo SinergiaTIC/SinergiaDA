@@ -1342,6 +1342,9 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
         /*SDA CUSTOM*/         .forEach((filter: any) => {
         /*SDA CUSTOM*/             if (filter.pathList[sourcePanelId]) {
         /*SDA CUSTOM*/                 filter.pathList[panel.id] = _.cloneDeep(filter.pathList[sourcePanelId]);
+        /*SDA CUSTOM*/                 if (filter.panelList.includes(sourcePanelId) && !filter.panelList.includes(panel.id)) {
+        /*SDA CUSTOM*/                     filter.panelList.push(panel.id);
+        /*SDA CUSTOM*/                 }
         /*SDA CUSTOM*/             }
         /*SDA CUSTOM*/         });
         /*SDA CUSTOM*/ }
