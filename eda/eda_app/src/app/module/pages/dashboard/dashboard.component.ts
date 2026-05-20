@@ -253,6 +253,17 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     /*SDA CUSTOM*/     });
     /*SDA CUSTOM*/ }
 
+    /*SDA CUSTOM*/ public onNewPanelRootTableCleared(panel: EdaPanel): void {
+    /*SDA CUSTOM*/     const globalFilters = this.gFilter?.globalFilters?.filter((f: any) => f.isGlobal) || [];
+    /*SDA CUSTOM*/
+    /*SDA CUSTOM*/     globalFilters.forEach((filter: any) => {
+    /*SDA CUSTOM*/         filter.panelList = filter.panelList?.filter((pid: string) => pid !== panel.id) || [];
+    /*SDA CUSTOM*/         if (filter.pathList?.[panel.id]) {
+    /*SDA CUSTOM*/             delete filter.pathList[panel.id];
+    /*SDA CUSTOM*/         }
+    /*SDA CUSTOM*/     });
+    /*SDA CUSTOM*/ }
+
     public ngOnDestroy() {
         this.stopRefresh = true;
 /* SDA CUSTOM */         this.stopContinuousZoom();

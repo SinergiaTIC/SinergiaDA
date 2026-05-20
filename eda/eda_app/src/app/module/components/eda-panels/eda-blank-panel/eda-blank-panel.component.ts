@@ -66,6 +66,7 @@ export class EdaBlankPanelComponent implements OnInit {
     @Output() action: EventEmitter<IPanelAction> = new EventEmitter<IPanelAction>();
     @Output() d3Action: EventEmitter<IPanelAction> = new EventEmitter<IPanelAction>();
     /*SDA CUSTOM*/ @Output() rootTableFirstSet = new EventEmitter<string>();
+    /*SDA CUSTOM*/ @Output() rootTableCleared = new EventEmitter<void>();
 
     /** properties that are injected into the dialogue with the specific properties of each chart. */
     public configController: EdaDialogController;
@@ -1685,6 +1686,11 @@ export class EdaBlankPanelComponent implements OnInit {
                                 }
                                 this.sortedFilters = []; // resets the values ​​because one or more filters were deleted
                             }
+/**SDA CUSTOM  */           // Last column of a new panel (query never executed): reset global filter config before utils runs
+/**SDA CUSTOM  */           if (currentQueryLength === 1 && _.isNil(this.panel.content)) {
+/**SDA CUSTOM  */               this.rootTableCleared.emit();
+/**SDA CUSTOM  */               this.globalFilters = [];
+/**SDA CUSTOM  */           }
                             PanelInteractionUtils.removeColumn(this, c, list);
                         }
 /**SDA CUSTOM  */       else {
