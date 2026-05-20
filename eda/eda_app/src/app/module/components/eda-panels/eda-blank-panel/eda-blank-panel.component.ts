@@ -65,6 +65,7 @@ export class EdaBlankPanelComponent implements OnInit {
     @Output() duplicate: EventEmitter<any> = new EventEmitter();
     @Output() action: EventEmitter<IPanelAction> = new EventEmitter<IPanelAction>();
     @Output() d3Action: EventEmitter<IPanelAction> = new EventEmitter<IPanelAction>();
+    /*SDA CUSTOM*/ @Output() rootTableFirstSet = new EventEmitter<string>();
 
     /** properties that are injected into the dialogue with the specific properties of each chart. */
     public configController: EdaDialogController;
@@ -1659,6 +1660,7 @@ export class EdaBlankPanelComponent implements OnInit {
 
         if (this.selectedQueryMode == 'EDA2' && this.currentQuery.length === 1) {
             PanelInteractionUtils.loadTableNodes(this);
+            /*SDA CUSTOM*/ this.rootTableFirstSet.emit(this.rootTable?.table_name);
        }
     }
 

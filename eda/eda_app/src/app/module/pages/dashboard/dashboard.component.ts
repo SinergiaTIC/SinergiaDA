@@ -228,6 +228,31 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
         });
     }
 
+    /*SDA CUSTOM*/ public onNewPanelRootTableSet(rootTableName: string, panel: EdaPanel): void {
+    /*SDA CUSTOM*/     if (!rootTableName) return;
+    /*SDA CUSTOM*/     const newPanelComp = this.edaPanels.find(p => p.panel.id === panel.id);
+    /*SDA CUSTOM*/     if (!newPanelComp) return;
+    /*SDA CUSTOM*/
+    /*SDA CUSTOM*/     const globalFilters = this.gFilter?.globalFilters?.filter((f: any) => f.isGlobal && f.pathList) || [];
+    /*SDA CUSTOM*/
+    /*SDA CUSTOM*/     globalFilters.forEach((filter: any) => {
+    /*SDA CUSTOM*/         if (!filter.panelList?.length) return;
+    /*SDA CUSTOM*/
+    /*SDA CUSTOM*/         // Buscar el primer panel activo en este filtro que tenga la misma rootTable
+    /*SDA CUSTOM*/         const matchingPanelId = filter.panelList.find((pid: string) => {
+    /*SDA CUSTOM*/             const existing = this.edaPanels.find(p => p.panel.id === pid);
+    /*SDA CUSTOM*/             return existing?.rootTable?.table_name === rootTableName;
+    /*SDA CUSTOM*/         });
+    /*SDA CUSTOM*/
+    /*SDA CUSTOM*/         if (matchingPanelId && filter.pathList[matchingPanelId]) {
+    /*SDA CUSTOM*/             filter.pathList[panel.id] = { ...filter.pathList[matchingPanelId] };
+    /*SDA CUSTOM*/             filter.panelList.push(panel.id);
+    /*SDA CUSTOM*/             const formatted = this.globalFiltersService.formatFilter(filter);
+    /*SDA CUSTOM*/             newPanelComp.assertGlobalFilter(formatted);
+    /*SDA CUSTOM*/         }
+    /*SDA CUSTOM*/     });
+    /*SDA CUSTOM*/ }
+
     public ngOnDestroy() {
         this.stopRefresh = true;
 /* SDA CUSTOM */         this.stopContinuousZoom();
