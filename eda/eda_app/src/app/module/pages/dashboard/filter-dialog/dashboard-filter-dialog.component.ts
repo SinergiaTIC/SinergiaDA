@@ -43,6 +43,11 @@ export class DashboardFilterDialogComponent extends EdaDialogAbstract {
         {label: $localize`:@@hidden:oculto`, value: `hidden` }
         ]; 
     public publicRoHiddenOption: any //valor per defecte del dropdown
+
+    /* SDA CUSTOM - Toggle mandatory filter */
+    public isMandatory: boolean = false;
+    public isMandatoryError: boolean = false;
+    /* END SDA CUSTOM */
     
     public rangeDates: Date[];
     public selectedRange : string = null;
@@ -51,7 +56,9 @@ export class DashboardFilterDialogComponent extends EdaDialogAbstract {
     public aliasValue : string = "";
     
     // Global filters vars
-    public filtersList: Array<{ table, column, panelList, data, selectedItems, selectedRange, id, isGlobal, applyToAll, visible }> = [];
+    /* SDA CUSTOM - Toggle mandatory filter */
+    public filtersList: Array<{ table, column, panelList, data, selectedItems, selectedRange, id, isGlobal, applyToAll, visible, isMandatory? }> = [];
+    /* END SDA CUSTOM */
 
     //strings
     public header1 : string = $localize`:@@aplyToAllPanelsH5:¿Aplica a todos los paneles?`;
@@ -184,6 +191,13 @@ export class DashboardFilterDialogComponent extends EdaDialogAbstract {
 
     public saveGlobalFilter() {
         let response: any;
+        /* SDA CUSTOM - Toggle mandatory filter */
+        if (this.isMandatory && (!this.selectedValues || this.selectedValues.length === 0)) {
+            this.isMandatoryError = true;
+            return this.alertService.addWarning($localize`:@@mandatoryFilterError:El filtro obligatorio debe tener al menos un valor seleccionado`);
+        }
+        this.isMandatoryError = false;
+        /* END SDA CUSTOM */
         if (this.params?.isnew) {
             if (this.panelstoFilter.length === 0 || !this.targetTable || !this.targetCol) {
                 return this.alertService.addWarning($localize`:@@mandatoryFields:Recuerde rellenar los campos obligatorios`);
@@ -193,6 +207,7 @@ export class DashboardFilterDialogComponent extends EdaDialogAbstract {
                 this.targetCol.label = this.aliasValue;
             }
             
+            /* SDA CUSTOM - Toggle mandatory filter */
             this.filtersList.push({
                 id: this.fileUtils.generateUUID(),
                 table: this.targetTable,
@@ -203,8 +218,10 @@ export class DashboardFilterDialogComponent extends EdaDialogAbstract {
                 selectedRange:this.selectedRange,
                 isGlobal: true,
                 applyToAll: !this.applyToAll,
-                visible: this.publicRoHiddenOption
+                visible: this.publicRoHiddenOption,
+                isMandatory: this.isMandatory
             });
+            /* END SDA CUSTOM */
     
             // this.loadGLobalFiltersData(this.filtersList[this.filtersList.length - 1]);
             response = {
@@ -225,6 +242,9 @@ export class DashboardFilterDialogComponent extends EdaDialogAbstract {
                 this.selectedFilter.selectedRange =this.selectedRange;
                 this.selectedFilter.applyToAll = !this.applyToAll;
                 this.selectedFilter.visible = this.publicRoHiddenOption;
+                /* SDA CUSTOM - Toggle mandatory filter */
+                this.selectedFilter.isMandatory = this.isMandatory;
+                /* END SDA CUSTOM */
                 //this.selectedFilter.filterMaker = this;
 
                 for (let filter of this.filtersList) {
@@ -299,6 +319,11 @@ export class DashboardFilterDialogComponent extends EdaDialogAbstract {
         if(this.datePicker){
             return this.targetCol && this.targetCol.value.column_type === 'date' && this.datePicker.active;
         }
+        /* SDA CUSTOM - Toggle mandatory filter */
+        if (this.isMandatory && (!this.selectedValues || this.selectedValues.length === 0)) {
+            return true;
+        }
+        /* END SDA CUSTOM */
        else return false;
     }
 
@@ -334,6 +359,10 @@ export class DashboardFilterDialogComponent extends EdaDialogAbstract {
         this.selectedRange = filter.selectedRange;
         this.selectedFilter = filter;
         this.publicRoHiddenOption = filter.visible;
+        /* SDA CUSTOM - Toggle mandatory filter */
+        this.isMandatory = filter.isMandatory || false;
+        this.isMandatoryError = false;
+        /* END SDA CUSTOM */
         if (filter.column.value.column_type === 'date') {
             this.loadDatesFromFilter(filter)
         }

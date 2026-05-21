@@ -1,5 +1,7 @@
+<!-- SDA CUSTOM - Toggle mandatory filter -->
 <eda-dialog2 [display]="display" [header]="dialogHeader" width="80vw" height="90vh" (apply)="onApply()"
     (close)="onClose()">
+<!-- END SDA CUSTOM -->
 
     <div content>
         <div class="row">
@@ -60,6 +62,22 @@
                             </p-dropdown>
                         </div>
                     </div>
+                    <!-- SDA CUSTOM - Mandatory filter toggle switch -->
+                    <div class="row mt-3">
+                        <div class="col-12 d-flex align-items-center">
+                            <span i18n="@@mandatoryFilter">¿Filtro obligatorio?</span>
+                            &nbsp;
+                            <p-inputSwitch [(ngModel)]="isMandatory" (onChange)="mandatoryFilterCheck()"
+                                [style]="{'vertical-align': 'middle'}">
+                            </p-inputSwitch>
+                        </div>
+                    </div>
+                    <div class="row mt-2" *ngIf="isMandatoryError">
+                        <div class="col-12">
+                            <small class="p-error" i18n="@@mandatoryFilterError">El filtro obligatorio debe tener al menos un valor seleccionado</small>
+                        </div>
+                    </div>
+                    <!-- END SDA CUSTOM -->
                 </p-card>
             </div>
         </div>

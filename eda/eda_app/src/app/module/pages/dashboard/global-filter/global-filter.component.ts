@@ -258,6 +258,9 @@ export class GlobalFilterComponent implements OnInit {
                     filter.type = this.globalFilter.type;
                     filter.isGlobal = this.globalFilter.isGlobal;
                     filter.visible = this.globalFilter.visible;
+                    /* SDA CUSTOM - Toggle mandatory filter */
+                    filter.isMandatory = this.globalFilter.isMandatory;
+                    /* END SDA CUSTOM */
 
                     for (const key in filter.pathList) {
                         if (filter.pathList[key]?.selectedTableNodes) {
@@ -336,6 +339,9 @@ export class GlobalFilterComponent implements OnInit {
 
                     if (existFilter) {
                         existFilter.selectedItems = filter.selectedItems;
+                        /* SDA CUSTOM - Toggle mandatory filter */
+                        existFilter.isMandatory = filter.isMandatory;
+                        /* END SDA CUSTOM */
                     } else {
                         this.globalFilters.push(filter);
                     }

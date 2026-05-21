@@ -383,7 +383,8 @@ export class GlobalFiltersService {
             filter_elements: this.assertGlobalFilterItems(globalFilter),
             isGlobal: true,
             applyToAll: globalFilter.applyToAll,
-            valueListSource: globalFilter.column.value.valueListSource
+            valueListSource: globalFilter.column.value.valueListSource,
+            /* SDA CUSTOM */ isMandatory: globalFilter.isMandatory || false
         }
 
         return formatedFilter;
@@ -420,6 +421,7 @@ export class GlobalFiltersService {
             joins: globalFilter.joins,
             computed_column: globalFilter.selectedColumn.computed_column,
             SQLexpression: globalFilter.selectedColumn.SQLexpression,
+            /* SDA CUSTOM */ isMandatory: globalFilter.isMandatory || false
         }
 
         return formatedFilter;

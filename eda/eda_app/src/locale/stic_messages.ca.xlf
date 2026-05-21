@@ -912,6 +912,16 @@
     <source>Download JSON</source>
     <target>Descarregar JSON</target>
   </trans-unit>
+  <!-- SDA CUSTOM - Toggle mandatory filter -->
+  <trans-unit id="mandatoryFilter">
+    <source>¿Filtro obligatorio?</source>
+    <target>Filtre obligatori?</target>
+  </trans-unit>
+  <trans-unit id="mandatoryFilterError">
+    <source>El filtro obligatorio debe tener al menos un valor seleccionado</source>
+    <target>El filtre obligatori ha de tenir almenys un valor seleccionat</target>
+  </trans-unit>
+  <!-- END SDA CUSTOM -->
 </body>
   </file>
 </xliff>

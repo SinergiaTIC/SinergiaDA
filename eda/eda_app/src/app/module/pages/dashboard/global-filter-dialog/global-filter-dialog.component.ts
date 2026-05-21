@@ -58,6 +58,11 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
     public datePickerConfigs: any = {};
     public aliasValue: string = "";
 
+    /* SDA CUSTOM - Toggle mandatory filter */
+    public isMandatory: boolean = false;
+    public isMandatoryError: boolean = false;
+    /* END SDA CUSTOM */
+
     constructor(
         private globalFilterService: GlobalFiltersService,
         private dashboardService: DashboardService,
@@ -91,6 +96,9 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
                 // selectedRange:this.selectedRange,
                 isGlobal: true,
                 visible: null,
+                /* SDA CUSTOM - Toggle mandatory filter */
+                isMandatory: false,
+                /* END SDA CUSTOM */
             };
 
             this.initPanels();
@@ -114,6 +122,9 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
             this.loadColumnValues();
             this.findPanelPathTables();
             this.aliasValue = display_name_alias;
+            /* SDA CUSTOM - Toggle mandatory filter */
+            this.isMandatory = this.globalFilter.isMandatory || false;
+            /* END SDA CUSTOM */
         }
 
         this.formReady = true;
@@ -444,6 +455,13 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
             }
         }
 
+        /* SDA CUSTOM - Toggle mandatory filter */
+        if (this.isMandatory) {
+            valid = this.globalFilter.selectedItems && this.globalFilter.selectedItems.length > 0;
+            this.isMandatoryError = !valid;
+        }
+        /* END SDA CUSTOM */
+
         return valid;
     }
 
@@ -536,5 +554,19 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
         this.display = false;
         this.close.emit(false);
     }
+
+    /* SDA CUSTOM - Toggle mandatory filter */
+    public mandatoryFilterCheck(): void {
+        // ngModel already updated isMandatory, just copy to globalFilter
+        this.globalFilter.isMandatory = this.isMandatory;
+        this.isMandatoryError = false;
+    }
+    /* END SDA CUSTOM */
+
+    /* SDA CUSTOM - Toggle mandatory filter */
+    public disableApply(): boolean {
+        return this.isMandatory && (!this.globalFilter.selectedItems || this.globalFilter.selectedItems.length === 0);
+    }
+    /* END SDA CUSTOM */
 
 }

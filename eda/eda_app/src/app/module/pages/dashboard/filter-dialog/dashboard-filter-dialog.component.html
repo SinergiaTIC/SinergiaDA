@@ -12,7 +12,7 @@
     <div footer>
         <div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix text-right">
             <!--SDA CUSTOM--><button id="saveFilterButton" type="submit" pButton (click)="saveGlobalFilter()" i18n-label="@@guardarButton"
-                label="Confirmar" icon="fa fa-check" class="p-button-raised p-button-success" [disabled]="confirmDisabled()"></button>
+                label="Confirmar" icon="fa fa-check" class="p-button-raised p-button-success"></button>
             <!--SDA CUSTOM--><button type="button" pButton (click)="closeDialog()" class="p-button-raised p-button-danger"
                 i18n-label="@@cancelarButton" label="Cancelar"></button>
         </div>
@@ -37,6 +37,15 @@
                         i18n-title="@@filterVisibleScope" title="Definir la visibilidad del filtro. Público: todos pueden usarlo.  Deshabilitado: El resto de usuarios pueden ver el filtro pero no pueden modificarlo.  Oculto: El resto de usuarios no pueden ver el filtro, pero se les aplica"
                         [options]="publicRoHidden" [(ngModel)]="publicRoHiddenOption" selected="publicRoHiddenOption" autoWidth="false"></p-dropdown>
                     </div>
+                    <!-- SDA CUSTOM - Toggle mandatory filter -->
+                    <div class="col-4">
+                        <div class="filterDialogTitles" i18n="@@mandatoryFilter">¿Filtro obligatorio?</div>
+                        <p-inputSwitch [(ngModel)]="isMandatory" (onChange)="isMandatoryError = false"></p-inputSwitch>
+                        <div *ngIf="isMandatoryError" class="p-error mt-2">
+                            <small i18n="@@mandatoryFilterError">El filtro obligatorio debe tener al menos un valor seleccionado</small>
+                        </div>
+                    </div>
+                    <!-- END SDA CUSTOM -->
                 </div>
             </div>
         </div>
