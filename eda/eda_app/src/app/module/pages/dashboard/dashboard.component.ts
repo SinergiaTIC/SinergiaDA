@@ -44,6 +44,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     public editStylesController: EdaDialogController;
     public urlsController: EdaDialogController;
     public applyToAllfilter: { present: boolean, refferenceTable: string, id: string };
+/* SDA CUSTOM */ public hoveredFilterPanelIds: string[] = [];
     public grups: IGroup[] = [];
     public toLitle: boolean = false;
     public toMedium: boolean = false;

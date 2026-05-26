@@ -374,6 +374,46 @@ app-dashboard {
 /* SDA CUSTOM */     transform-origin: top left;
 /* SDA CUSTOM */ }
 /* SDA CUSTOM */
+/* SDA CUSTOM */ ::ng-deep .panel-filter-dimmed::after {
+/* SDA CUSTOM */     content: '';
+/* SDA CUSTOM */     position: absolute;
+/* SDA CUSTOM */     inset: 0;
+/* SDA CUSTOM */     background-color: rgba(189, 25, 19, 0.15);
+/* SDA CUSTOM */     pointer-events: none;
+/* SDA CUSTOM */     z-index: 1;
+/* SDA CUSTOM */     border-radius: 4px;
+/* SDA CUSTOM */     transition: background-color 0.3s ease;
+/* SDA CUSTOM */ }
+/* SDA CUSTOM */
+/* SDA CUSTOM */ ::ng-deep .panel-filter-highlight {
+/* SDA CUSTOM */     outline: 4px solid #4CAF50 !important;
+/* SDA CUSTOM */     outline-offset: -2px;
+/* SDA CUSTOM */     box-shadow: 0 0 20px rgba(76, 175, 80, 0.6) !important;
+/* SDA CUSTOM */     transition: outline 0.25s ease, box-shadow 0.25s ease;
+/* SDA CUSTOM */ }
+/* SDA CUSTOM */
+/* SDA CUSTOM */ ::ng-deep .panel-filter-highlight::after {
+/* SDA CUSTOM */     content: '';
+/* SDA CUSTOM */     position: absolute;
+/* SDA CUSTOM */     inset: 0;
+/* SDA CUSTOM */     background-color: rgba(76, 175, 80, 0.2);
+/* SDA CUSTOM */     pointer-events: none;
+/* SDA CUSTOM */     z-index: 1;
+/* SDA CUSTOM */     border-radius: 4px;
+/* SDA CUSTOM */     transition: background-color 0.25s ease;
+/* SDA CUSTOM */ }
+/* SDA CUSTOM */
+/* SDA CUSTOM */ .filter-hover-active {
+/* SDA CUSTOM */     outline: 4px solid #4CAF50;
+/* SDA CUSTOM */     outline-offset: 2px;
+/* SDA CUSTOM */     box-shadow: 0 0 20px rgba(76, 175, 80, 0.6);
+/* SDA CUSTOM */     border-radius: 4px;
+/* SDA CUSTOM */     background-color: rgba(76, 175, 80, 0.1);
+/* SDA CUSTOM */     transition: outline 0.25s ease, box-shadow 0.25s ease, background-color 0.25s ease;
+/* SDA CUSTOM */     padding: 2px 4px;
+/* SDA CUSTOM */     margin: -2px -4px;
+/* SDA CUSTOM */ }
+/* SDA CUSTOM */
 /* SDA CUSTOM */ ::ng-deep .dashboard-grid ngx-gridster-item:not(.panel-locked) {
 /* SDA CUSTOM */     cursor: grab;
 /* SDA CUSTOM */ }
