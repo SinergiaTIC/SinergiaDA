@@ -21,3 +21,13 @@
       </p>
     </div>
 </ng-container>
+
+<!-- SDA CUSTOM - Toggle mandatory filter -->
+<ng-container *ngIf="MANDATORY_FILTER_REQUIRED">
+  <div class="d-flex justify-content-center">
+      <p class="alert alert-warning text-center" style="position: absolute; top: 50%; transform: translateY(-50%); font-size: 12px;">
+        <span i18n="@@mandatoryFilterRequired" class="ml-2">Seleccione un valor para el filtro obligatorio para ver los datos</span>
+      </p>
+    </div>
+</ng-container>
+<!-- END SDA CUSTOM -->

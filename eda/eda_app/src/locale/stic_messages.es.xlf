@@ -922,6 +922,10 @@
     <source>El filtro obligatorio debe tener al menos un valor seleccionado</source>
     <target>El filtro obligatorio debe tener al menos un valor seleccionado</target>
   </trans-unit>
+  <trans-unit id="mandatoryFilterRequired">
+    <source>Filtro obligatorio requerido</source>
+    <target>Seleccione un valor para el filtro obligatorio para ver los datos</target>
+  </trans-unit>
   <!-- END SDA CUSTOM -->
 </body>
   </file>

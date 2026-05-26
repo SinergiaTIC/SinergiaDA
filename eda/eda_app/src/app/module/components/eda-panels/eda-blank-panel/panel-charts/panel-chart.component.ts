@@ -64,6 +64,9 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
     public NO_DATA: boolean;
     public NO_DATA_ALLOWED: boolean;
     public NO_FILTER_ALLOWED: boolean;
+    /* SDA CUSTOM - Toggle mandatory filter */
+    public MANDATORY_FILTER_REQUIRED: boolean;
+    /* END SDA CUSTOM */
 
     /**Styles */
     public fontColor: string;
@@ -105,6 +108,9 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         this.NO_DATA = false;
         this.NO_DATA_ALLOWED = false;
         this.NO_FILTER_ALLOWED = false;
+        /* SDA CUSTOM - Toggle mandatory filter */
+        this.MANDATORY_FILTER_REQUIRED = false;
+        /* END SDA CUSTOM */
     }
 
     ngOnChanges(changes: SimpleChanges): void {
@@ -117,6 +123,9 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
 
             setTimeout(_ => {
                 this.NO_DATA = false;
+                /* SDA CUSTOM - Toggle mandatory filter */
+                this.MANDATORY_FILTER_REQUIRED = false;
+                /* END SDA CUSTOM */
             });
 
             this.changeChartType();
@@ -129,15 +138,31 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
             this.destroyComponent();
             setTimeout(_ => {
                 this.NO_DATA = true;
+                /* SDA CUSTOM - Toggle mandatory filter */
+                this.MANDATORY_FILTER_REQUIRED = false;
+                /* END SDA CUSTOM */
                 if( this.props.data?.labels[0]== "noDataAllowed") {
                     this.NO_DATA = false;
                     this.NO_DATA_ALLOWED = true;
                     this.NO_FILTER_ALLOWED = false;
+                    /* SDA CUSTOM - Toggle mandatory filter */
+                    this.MANDATORY_FILTER_REQUIRED = false;
+                    /* END SDA CUSTOM */
                 }else if( this.props.data?.labels[0]== "noFilterAllowed") {
                     this.NO_DATA = false;
                     this.NO_DATA_ALLOWED = false;
                     this.NO_FILTER_ALLOWED = true;
+                    /* SDA CUSTOM - Toggle mandatory filter */
+                    this.MANDATORY_FILTER_REQUIRED = false;
+                    /* END SDA CUSTOM */
+                /* SDA CUSTOM - Toggle mandatory filter */
+                }else if( this.props.data?.labels[0]== "mandatoryFilterRequired") {
+                    this.NO_DATA = false;
+                    this.NO_DATA_ALLOWED = false;
+                    this.NO_FILTER_ALLOWED = false;
+                    this.MANDATORY_FILTER_REQUIRED = true;
                 }
+                /* END SDA CUSTOM */
             })
 
         }

@@ -44,6 +44,20 @@ export const QueryUtils = {
    */
   switchAndRun: async (ebp: EdaBlankPanelComponent, query: Query) => {
     try {
+      /* SDA CUSTOM - Toggle mandatory filter */
+      // Check if there are mandatory global filters without values
+      const mandatoryFiltersEmpty = ebp.globalFilters?.some((filter: any) =>
+        filter.isMandatory === true &&
+        (!filter.filter_elements?.[0]?.value1 || filter.filter_elements[0].value1.length === 0)
+      );
+
+      if (mandatoryFiltersEmpty) {
+        // Return empty data when mandatory filters have no values
+        // Use ID instead of translated text - translation happens in HTML
+        return [["mandatoryFilterRequired"], []];
+      }
+      /* END SDA CUSTOM */
+
       if (ebp.selectedQueryMode != 'SQL') {
         const queryData = JSON.parse(JSON.stringify(query));
         queryData.query.filters = query.query.filters.filter((f) =>
