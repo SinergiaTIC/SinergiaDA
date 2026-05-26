@@ -371,6 +371,9 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
                     if (!this.globalFilter.panelList.includes(panel.id)) this.globalFilter.panelList.push(panel.id);
                 /*SDA CUSTOM*/} else {
                 /*SDA CUSTOM*/    this.tryAutoFillSingleHop(panel);
+                /*SDA CUSTOM*/    if (this.isEmpty(this.globalFilter.pathList[panel.id].selectedTableNodes)) {
+                /*SDA CUSTOM*/        this.tryCopyPathFromSiblingPanel(panel);
+                /*SDA CUSTOM*/    }
                 /*SDA CUSTOM*/}
             }
         }
@@ -412,6 +415,28 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
     /*SDA CUSTOM*/    this.globalFilter.pathList[panel.id].table_id = child_id;
     /*SDA CUSTOM*/    this.globalFilter.pathList[panel.id].path = joins;
     /*SDA CUSTOM*/    this.globalFilter.pathList[panel.id].selectedTableNodes = syntheticNode;
+    /*SDA CUSTOM*/
+    /*SDA CUSTOM*/    if (!this.globalFilter.panelList.includes(panel.id)) {
+    /*SDA CUSTOM*/        this.globalFilter.panelList.push(panel.id);
+    /*SDA CUSTOM*/    }
+    /*SDA CUSTOM*/}
+
+    /*SDA CUSTOM*/private tryCopyPathFromSiblingPanel(panel: any): void {
+    /*SDA CUSTOM*/    const rootTableName = panel.content.query.query.rootTable;
+    /*SDA CUSTOM*/
+    /*SDA CUSTOM*/    const sibling = this.filteredPanels.find((p: any) => {
+    /*SDA CUSTOM*/        if (p.id === panel.id) return false;
+    /*SDA CUSTOM*/        if (p.content.query.query.rootTable !== rootTableName) return false;
+    /*SDA CUSTOM*/        const siblingPath = this.globalFilter.pathList[p.id];
+    /*SDA CUSTOM*/        return siblingPath && !this.isEmpty(siblingPath.selectedTableNodes);
+    /*SDA CUSTOM*/    });
+    /*SDA CUSTOM*/
+    /*SDA CUSTOM*/    if (!sibling) return;
+    /*SDA CUSTOM*/
+    /*SDA CUSTOM*/    const siblingPath = this.globalFilter.pathList[sibling.id];
+    /*SDA CUSTOM*/    this.globalFilter.pathList[panel.id].table_id = siblingPath.table_id;
+    /*SDA CUSTOM*/    this.globalFilter.pathList[panel.id].path = (siblingPath.path || []).map((j: any[]) => [...j]);
+    /*SDA CUSTOM*/    this.globalFilter.pathList[panel.id].selectedTableNodes = _.cloneDeep(siblingPath.selectedTableNodes);
     /*SDA CUSTOM*/
     /*SDA CUSTOM*/    if (!this.globalFilter.panelList.includes(panel.id)) {
     /*SDA CUSTOM*/        this.globalFilter.panelList.push(panel.id);
