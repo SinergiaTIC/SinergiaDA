@@ -386,10 +386,8 @@ app-dashboard {
 /* SDA CUSTOM */ }
 /* SDA CUSTOM */
 /* SDA CUSTOM */ ::ng-deep .panel-filter-highlight {
-/* SDA CUSTOM */     outline: 4px solid #4CAF50 !important;
-/* SDA CUSTOM */     outline-offset: -2px;
 /* SDA CUSTOM */     box-shadow: 0 0 20px rgba(76, 175, 80, 0.6) !important;
-/* SDA CUSTOM */     transition: outline 0.8s ease, box-shadow 0.8s ease;
+/* SDA CUSTOM */     transition: box-shadow 0.8s ease;
 /* SDA CUSTOM */ }
 /* SDA CUSTOM */
 /* SDA CUSTOM */ ::ng-deep .panel-filter-highlight::after {
@@ -404,12 +402,10 @@ app-dashboard {
 /* SDA CUSTOM */ }
 /* SDA CUSTOM */
 /* SDA CUSTOM */ .filter-hover-active {
-/* SDA CUSTOM */     outline: 4px solid #4CAF50;
-/* SDA CUSTOM */     outline-offset: 2px;
 /* SDA CUSTOM */     box-shadow: 0 0 20px rgba(76, 175, 80, 0.6);
 /* SDA CUSTOM */     border-radius: 4px;
 /* SDA CUSTOM */     background-color: rgba(76, 175, 80, 0.1);
-/* SDA CUSTOM */     transition: outline 0.8s ease, box-shadow 0.8s ease, background-color 0.8s ease;
+/* SDA CUSTOM */     transition: box-shadow 0.8s ease, background-color 0.8s ease;
 /* SDA CUSTOM */     padding: 2px 4px;
 /* SDA CUSTOM */     margin: -2px -4px;
 /* SDA CUSTOM */ }
