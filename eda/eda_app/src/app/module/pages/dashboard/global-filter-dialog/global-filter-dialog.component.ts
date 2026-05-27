@@ -133,11 +133,6 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
         if (this.globalFilter.isnew) {
             for (const panel of this.allPanels) {
 
-                // Desactivando el panel en caso de que sea de modo SQL.
-                if(panel.content.query.query.queryMode === 'SQL') {
-                    panel.active = false;
-                }
-
                 this.globalFilter.pathList[panel.id] = {
                     selectedTableNodes: {},
                     path: []
@@ -199,9 +194,7 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
     public onAddPanelForFilter(panel: any) {
 
         if (panel.avaliable) {
-            if(panel.content.query.query.queryMode != 'SQL') { // los paneles SQL no se pueden activar
-                panel.active = !panel.active;
-            }
+            panel.active = !panel.active;
             this.filteredPanels = this.allPanels.filter((p: any) => p.avaliable && p.active);
 
             if (panel.active) {
