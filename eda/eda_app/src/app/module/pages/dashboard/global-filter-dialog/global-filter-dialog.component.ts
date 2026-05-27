@@ -357,6 +357,11 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
         for (const panel of this.filteredPanels) {
             panel.content.globalFilterPaths = this.globalFilterService.loadTablePaths(this.modelTables, panel);
 
+            /*SDA CUSTOM*/ if (this.isPathStaleForPanel(panel)) {
+            /*SDA CUSTOM*/     this.globalFilter.pathList[panel.id] = { selectedTableNodes: {}, path: [] };
+            /*SDA CUSTOM*/     this.globalFilter.panelList = this.globalFilter.panelList.filter((id: string) => id !== panel.id);
+            /*SDA CUSTOM*/ }
+
             if (this.globalFilter.pathList[panel.id] && this.isEmpty(this.globalFilter.pathList[panel.id].selectedTableNodes)) {
                 const panelQuery = panel.content.query.query;
                 const rootTable = panelQuery.rootTable;
@@ -378,6 +383,24 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
             }
         }
     }
+
+    /*SDA CUSTOM*/private isPathStaleForPanel(panel: any): boolean {
+    /*SDA CUSTOM*/    const pathEntry = this.globalFilter.pathList[panel.id];
+    /*SDA CUSTOM*/    if (!pathEntry || this.isEmpty(pathEntry.selectedTableNodes)) return false;
+    /*SDA CUSTOM*/
+    /*SDA CUSTOM*/    const currentRootTable = panel.content.query.query.rootTable;
+    /*SDA CUSTOM*/    if (!currentRootTable) return false; // paneles sin rootTable (ej. SQL): no validar
+    /*SDA CUSTOM*/
+    /*SDA CUSTOM*/    const path: any[] = pathEntry.path || [];
+    /*SDA CUSTOM*/
+    /*SDA CUSTOM*/    if (path.length === 0) {
+    /*SDA CUSTOM*/        // 0 saltos: el inicio está en selectedTableNodes.table_id
+    /*SDA CUSTOM*/        return pathEntry.selectedTableNodes?.table_id !== currentRootTable;
+    /*SDA CUSTOM*/    } else {
+    /*SDA CUSTOM*/        // 1+ saltos: el inicio está en la primera parte del primer join
+    /*SDA CUSTOM*/        return path[0][0]?.split('.')[0] !== currentRootTable;
+    /*SDA CUSTOM*/    }
+    /*SDA CUSTOM*/}
 
     /*SDA CUSTOM*/private tryAutoFillSingleHop(panel: any): void {
     /*SDA CUSTOM*/    const filterTableName = this.globalFilter.selectedTable?.table_name;
