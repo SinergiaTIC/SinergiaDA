@@ -990,18 +990,37 @@ export abstract class QueryBuilderService {
             /*SDA CUSTOM*/         const rawValues: any[] = (filter.valueListSource && filter.filter_codes?.[0]?.value1?.length > 0)
             /*SDA CUSTOM*/             ? filter.filter_codes[0].value1
             /*SDA CUSTOM*/             : (filter.filter_elements?.[0]?.value1 || []);
-            /*SDA CUSTOM*/         let valuesStr: string;
+            /*SDA CUSTOM*/         let valuesStr: string | null;
             /*SDA CUSTOM*/         if (colType === 'numeric') {
-            /*SDA CUSTOM*/             valuesStr = rawValues.map((v: any) => Number(v)).join(', ');
+            /*SDA CUSTOM*/             // Filter out 'emptyString' and other non-numeric sentinels before Number() conversion.
+            /*SDA CUSTOM*/             // Number('emptyString') = NaN which produces invalid SQL "in (NaN)".
+            /*SDA CUSTOM*/             const validNums: number[] = rawValues
+            /*SDA CUSTOM*/                 .filter((v: any) => v !== 'emptyString' && v !== null && v !== undefined && v !== '')
+            /*SDA CUSTOM*/                 .map((v: any) => Number(v))
+            /*SDA CUSTOM*/                 .filter((n: number) => !isNaN(n));
+            /*SDA CUSTOM*/             valuesStr = validNums.length > 0 ? validNums.join(', ') : null;
             /*SDA CUSTOM*/         } else {
             /*SDA CUSTOM*/             valuesStr = rawValues.map((v: any) => `'${String(v).replace(/'/g, "''")}'`).join(', ');
             /*SDA CUSTOM*/         }
-            /*SDA CUSTOM*/         // Build "tableName.filterCol in (values)" format so that sqlQuery's indexOf('.')
-            /*SDA CUSTOM*/         // always finds the table/column separator, not a decimal dot inside the values.
-            /*SDA CUSTOM*/         // filter_table may be a child_id ("table.col.col") — take only the first segment.
-            /*SDA CUSTOM*/         // The table name is replaced by the mark's alias anyway (arr[0] = subs in sqlQuery).
-            /*SDA CUSTOM*/         const tablePrefix: string = ((filter.filter_table as string) || filterCol).split('.')[0];
-            /*SDA CUSTOM*/         formatedFilters.push({ string: `${tablePrefix}.${filterCol} in (${valuesStr})`, type: filter.filter_type });
+            /*SDA CUSTOM*/         if (valuesStr !== null) {
+            /*SDA CUSTOM*/             // Build "tableName.filterCol in (values)" so that sqlQuery's indexOf('.')
+            /*SDA CUSTOM*/             // always finds the table/column separator, not a decimal dot inside the values.
+            /*SDA CUSTOM*/             // filter_table may be a child_id ("table.col.col") — take only the first segment.
+            /*SDA CUSTOM*/             const tablePrefix: string = ((filter.filter_table as string) || filterCol).split('.')[0];
+            /*SDA CUSTOM*/             formatedFilters.push({ string: `${tablePrefix}.${filterCol} in (${valuesStr})`, type: filter.filter_type });
+            /*SDA CUSTOM*/         } else {
+            /*SDA CUSTOM*/             // Only non-numeric sentinels selected (e.g. 'emptyString' = NULL).
+            /*SDA CUSTOM*/             // Substitute the matching mark directly with IS NULL in the query string.
+            /*SDA CUSTOM*/             // sqlQuery will try to replace the mark but won't find it → no-op.
+            /*SDA CUSTOM*/             // We do NOT call filterToString: it also can't handle 'emptyString' for SQL panels.
+            /*SDA CUSTOM*/             for (const mark of filterMarks) {
+            /*SDA CUSTOM*/                 const subs = mark.slice(mark.indexOf('{') + 1, mark.indexOf('}'));
+            /*SDA CUSTOM*/                 const markCol = subs.slice(subs.indexOf('.') + 1);
+            /*SDA CUSTOM*/                 if (markCol.toUpperCase() === filterCol.toUpperCase()) {
+            /*SDA CUSTOM*/                     query = query.replace(mark, `${subs} IS NULL`);
+            /*SDA CUSTOM*/                 }
+            /*SDA CUSTOM*/             }
+            /*SDA CUSTOM*/         }
             /*SDA CUSTOM*/     } else {
             /*SDA CUSTOM*/         formatedFilters.push({ string: this.filterToString(filter), type: filter.filter_type });
             /*SDA CUSTOM*/     }
