@@ -996,8 +996,12 @@ export abstract class QueryBuilderService {
             /*SDA CUSTOM*/         } else {
             /*SDA CUSTOM*/             valuesStr = rawValues.map((v: any) => `'${String(v).replace(/'/g, "''")}'`).join(', ');
             /*SDA CUSTOM*/         }
-            /*SDA CUSTOM*/         // Use filter_column only (no table prefix) so sqlQuery replaces it with the mark's alias.column
-            /*SDA CUSTOM*/         formatedFilters.push({ string: `${filterCol} in (${valuesStr})`, type: filter.filter_type });
+            /*SDA CUSTOM*/         // Build "tableName.filterCol in (values)" format so that sqlQuery's indexOf('.')
+            /*SDA CUSTOM*/         // always finds the table/column separator, not a decimal dot inside the values.
+            /*SDA CUSTOM*/         // filter_table may be a child_id ("table.col.col") — take only the first segment.
+            /*SDA CUSTOM*/         // The table name is replaced by the mark's alias anyway (arr[0] = subs in sqlQuery).
+            /*SDA CUSTOM*/         const tablePrefix: string = ((filter.filter_table as string) || filterCol).split('.')[0];
+            /*SDA CUSTOM*/         formatedFilters.push({ string: `${tablePrefix}.${filterCol} in (${valuesStr})`, type: filter.filter_type });
             /*SDA CUSTOM*/     } else {
             /*SDA CUSTOM*/         formatedFilters.push({ string: this.filterToString(filter), type: filter.filter_type });
             /*SDA CUSTOM*/     }
