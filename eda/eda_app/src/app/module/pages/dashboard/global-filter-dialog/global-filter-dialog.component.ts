@@ -130,12 +130,13 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
         this.allPanels = this.globalFilterService.filterPanels(this.modelTables, this.panels);
         this.allPanels = this.allPanels.sort(this.sortByTittle);
 
-        /*SDA CUSTOM*/ // Make SQL panels activatable: override avaliable=false set by filterPanels BFS
-        /*SDA CUSTOM*/ // (BFS excludes SQL panels because their origin tables may not be reachable from rootTable).
+        /*SDA CUSTOM*/ // Override filterPanels BFS result for SQL panels: set avaliable=true and active=true
+        /*SDA CUSTOM*/ // so they appear in the dialog exactly like tree panels (highlighted, treeSelect enabled).
+        /*SDA CUSTOM*/ // Panels without a valid path get deactivated later in findPanelPathTables.
         /*SDA CUSTOM*/ for (const panel of this.allPanels) {
         /*SDA CUSTOM*/     if (panel.content?.query?.query?.queryMode === 'SQL') {
         /*SDA CUSTOM*/         panel.avaliable = true;
-        /*SDA CUSTOM*/         panel.active = false;
+        /*SDA CUSTOM*/         panel.active = true;
         /*SDA CUSTOM*/     }
         /*SDA CUSTOM*/     if (panel.content && panel.content.globalFilterPaths === undefined) {
         /*SDA CUSTOM*/         panel.content.globalFilterPaths = [];
@@ -404,7 +405,13 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
                 const rootTable = panelQuery.rootTable;
 
                 /*SDA CUSTOM*/ if (panelQuery.queryMode === 'SQL') {
+                /*SDA CUSTOM*/     const panelListBefore = this.globalFilter.panelList.length;
                 /*SDA CUSTOM*/     this.tryAutoFillSqlPanel(panel);
+                /*SDA CUSTOM*/     // If no path found, deactivate (same as tree panels marked avaliable=false)
+                /*SDA CUSTOM*/     if (!this.globalFilter.panelList.includes(panel.id) && panelListBefore === this.globalFilter.panelList.length) {
+                /*SDA CUSTOM*/         panel.active = false;
+                /*SDA CUSTOM*/         this.filteredPanels = this.allPanels.filter((p: any) => p.avaliable && p.active);
+                /*SDA CUSTOM*/     }
                 /*SDA CUSTOM*/ } else
                 if (this.globalFilter.selectedTable.table_name == rootTable) {
                     const node = panel.content.globalFilterPaths[0];

@@ -214,19 +214,17 @@ export class GlobalFilterComponent implements OnInit {
     // Main Global Filter
     public onShowGlobalFilter(isnew: boolean, filter?: any): void {
         if (this.dashboard.validateDashboard('GLOBALFILTER')) {
-            const treeQueryMode = this.dashboard.edaPanels.some((panel) => panel.selectedQueryMode === 'EDA2');
-
-            if (treeQueryMode) {
-                if (isnew) this.globalFilter = { isnew: true };
-                else {
-                    filter.isnew = false;
-                    this.globalFilter = _.cloneDeep(filter);
-                }
-
-                this.dashboard.display_v.rightSidebar = false;
-            } else {
-                this.onFilterConfig(isnew, filter);
+            /*SDA CUSTOM*/ // Always open the new dialog (app-global-filter-dialog) with route support.
+            /*SDA CUSTOM*/ // Previously this checked for 'EDA2' panels and fell back to the legacy
+            /*SDA CUSTOM*/ // dashboard-filter-dialog for SQL-only dashboards. Now SQL panels are fully
+            /*SDA CUSTOM*/ // integrated into the new dialog so the legacy path is never needed.
+            if (isnew) this.globalFilter = { isnew: true };
+            else {
+                filter.isnew = false;
+                this.globalFilter = _.cloneDeep(filter);
             }
+
+            this.dashboard.display_v.rightSidebar = false;
         }
     }
 
