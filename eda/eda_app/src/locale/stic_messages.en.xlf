@@ -910,6 +910,24 @@
     <source>Download JSON</source>
     <target>Download JSON</target>
   </trans-unit>
+  <!-- SDA CUSTOM - Filter hover tooltip -->
+  <trans-unit id="filterHoverGreen">
+    <source>Verde</source>
+    <target>Green</target>
+  </trans-unit>
+  <trans-unit id="filterHoverRed">
+    <source>Rojo</source>
+    <target>Red</target>
+  </trans-unit>
+  <trans-unit id="filterHoverAffected">
+    <source>Paneles afectados por este filtro</source>
+    <target>Panels affected by this filter</target>
+  </trans-unit>
+  <trans-unit id="filterHoverNotAffected">
+    <source>Paneles no afectados por este filtro</source>
+    <target>Panels not affected by this filter</target>
+  </trans-unit>
+  <!-- END SDA CUSTOM -->
 </body>
   </file>
 </xliff>

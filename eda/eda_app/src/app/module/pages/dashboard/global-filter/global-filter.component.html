@@ -21,6 +21,7 @@
           <!-- SDA CUSTOM --> <span *ngIf="( isAdmin || isDashboardCreator || (['public', 'readOnly'].includes(filter.visible)   &&  (filter.selectedColumn?.visible || filter.column?.value?.visible)) )" class="filter-name filters-size">
                 {{getFilterLabel(filter)}}:
             </span>
+            <!-- SDA CUSTOM --> <span *ngIf="filterHoverActiveId === filter.id" class="filter-hover-tooltip" [innerHTML]="filterHoverTooltipHtml"></span>
 
             <!-- SDA CUSTOM  <ng-container -->
             <!-- SDA CUSTOM *ngIf="( isAdmin || isDashboardCreator ||   ['public', 'readOnly'].includes(filter.visible) ) &&  filter.selectedColumn.visible  " -->
