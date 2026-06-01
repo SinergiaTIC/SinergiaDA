@@ -31,10 +31,11 @@
 <!-- SDA CUSTOM -->         </button>
 <!-- SDA CUSTOM -->     </div>
 <!-- SDA CUSTOM --> </div>
-<!-- SDA CUSTOM -->     <div class="col-12" style="padding:2px">
+<!-- SDA CUSTOM -->     <div class="col-12 gridster-container" style="padding:2px; flex:1; display:flex; flex-direction:column; min-height:200px">
+<!-- SDA CUSTOM -->     <div class="gridster-wrapper" [style.height]="gridsterHeight">
         <gridster class="dashboard-grid" [options]="gridsterOptions"
             #gridster1>
-            <!-- Normal Size -->
+<!-- Normal Size -->
             <ng-container *ngIf="!toLitle && !toMedium" >
 <!-- SDA CUSTOM --> <gridster-item *ngFor="let panel of panels" [item]="panel" (itemChange)="itemChange($event, panel)" [class.panel-locked]="panel.locked">
                     <ng-container *ngTemplateOutlet="panelTemplate; context: {$implicit: panel}"></ng-container>
@@ -56,6 +57,7 @@
             </ng-container>
 
         </gridster>
+<!-- SDA CUSTOM -->     </div>
 <!-- SDA CUSTOM --> </div>
 
     <ng-template #panelTemplate let-panel>

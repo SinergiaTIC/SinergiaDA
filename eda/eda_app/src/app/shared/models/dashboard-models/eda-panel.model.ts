@@ -15,6 +15,8 @@ export class EdaPanel {
     public resizable: boolean = true;
     public x: number;
     public y: number;
+    public cols: number;
+    public rows: number;
     /* SDA CUSTOM */ public locked: boolean = false;
     public content: any[any];
     public inject: any = {};
@@ -27,11 +29,6 @@ export class EdaPanel {
     constructor(init?: Partial<EdaPanel>) {
         Object.assign(this, init);
     }
-
-    get cols(): number { return this.w; }
-    set cols(v: number) { this.w = v; }
-    get rows(): number { return this.h; }
-    set rows(v: number) { this.h = v; }
 }
 
 interface IMobileSizes {

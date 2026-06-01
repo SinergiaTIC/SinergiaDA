@@ -370,18 +370,42 @@ app-dashboard {
 /* SDA CUSTOM */     transition: none;
 /* SDA CUSTOM */ }
 /* SDA CUSTOM */
-/* SDA CUSTOM */ ::ng-deep .dashboard-grid ngx-gridster-item {
+/* SDA CUSTOM */ ::ng-deep .dashboard-grid gridster-item {
 /* SDA CUSTOM */     transform-origin: top left;
 /* SDA CUSTOM */ }
-/* SDA CUSTOM */
-/* SDA CUSTOM */ ::ng-deep .dashboard-grid ngx-gridster-item:not(.panel-locked) {
+
+/* SDA CUSTOM */ ::ng-deep .dashboard-grid gridster-item:not(.panel-locked) {
 /* SDA CUSTOM */     cursor: grab;
 /* SDA CUSTOM */ }
-/* SDA CUSTOM */
-/* SDA CUSTOM */ ::ng-deep .dashboard-grid ngx-gridster-item:not(.panel-locked):active {
+
+/* SDA CUSTOM */ ::ng-deep .dashboard-grid gridster-item:not(.panel-locked):active {
 /* SDA CUSTOM */     cursor: grabbing;
 /* SDA CUSTOM */ }
-/* SDA CUSTOM */
-/* SDA CUSTOM */ ::ng-deep ngx-gridster {
+
+/* SDA CUSTOM */ ::ng-deep gridster {
 /* SDA CUSTOM */     display: block;
+/* SDA CUSTOM */ }
+/* SDA CUSTOM */
+/* SDA CUSTOM */ ::ng-deep .dashboard-grid gridster-item:not(.panel-locked) {
+/* SDA CUSTOM */     cursor: grab;
+/* SDA CUSTOM */ }
+
+/* SDA CUSTOM */ ::ng-deep .dashboard-grid gridster-item:not(.panel-locked):active {
+/* SDA CUSTOM */     cursor: grabbing;
+/* SDA CUSTOM */ }
+
+/* SDA CUSTOM */ .gridster-wrapper {
+/* SDA CUSTOM */     display: block;
+/* SDA CUSTOM */     position: relative;
+/* SDA CUSTOM */ }
+
+/* SDA CUSTOM */ ::ng-deep .dashboard-grid {
+/* SDA CUSTOM */     overflow: visible !important;
+/* SDA CUSTOM */     background-color: transparent;
+/* SDA CUSTOM */ }
+
+/* SDA CUSTOM */ .gridster-container {
+/* SDA CUSTOM */     display: flex;
+/* SDA CUSTOM */     flex-direction: column;
+/* SDA CUSTOM */     min-height: 200px;
 /* SDA CUSTOM */ }

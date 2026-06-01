@@ -36,7 +36,6 @@
                 "build": {
                     "builder": "@angular-devkit/build-angular:browser",
                     "options": {
-                        "localize": true,
                         "outputPath": "dist/app-eda",
                         "index": "src/index.html",
                         "main": "src/main.ts",
@@ -92,6 +91,7 @@
                             ]
                         },
                         "production": {
+                            "localize": true,
                             "fileReplacements": [
                                 {
                                     "replace": "src/environments/environment.ts",
@@ -123,39 +123,36 @@
                 "serve": {
                     "builder": "@angular-devkit/build-angular:dev-server",
                     "options": {
-                        "browserTarget": "app-eda:build",
-                        "host": "0.0.0.0",
+                      "host": "0.0.0.0",
                         "proxyConfig": "proxy.conf.json",
-                        "port": 4200
+                        "port": 4200,
+                        "buildTarget": "app-eda:build"
                     },
                     "configurations": {
                         "production": {
-                            "browserTarget": "app-eda:build:production"
+                          "buildTarget": "app-eda:build:production"
                         },
                         "es": {
-                            "browserTarget": "app-eda:build"
+                          "buildTarget": "app-eda:build:es"
                         },
                         "en": {
-                            "browserTarget": "app-eda:build:en"
+                          "buildTarget": "app-eda:build:en"
                         },
                         "ca": {
-                            "browserTarget": "app-eda:build:ca"
+                          "buildTarget": "app-eda:build:ca"
                         },
                         "gl": {
-                            "browserTarget": "app-eda:build:gl"
-                        },
-                        "es": {
-                            "browserTarget": "app-eda:build:es"
+                          "buildTarget": "app-eda:build:gl"
                         },
                         "eda": {
-                            "browserTarget": "app-eda:build:eda"
+                          "buildTarget": "app-eda:build:eda"
                         }
                     }
                 },
                 "extract-i18n": {
                     "builder": "@angular-devkit/build-angular:extract-i18n",
                     "options": {
-                        "browserTarget": "app-eda:build"
+                      "buildTarget": "app-eda:build"
                     }
                 },
                 "test": {

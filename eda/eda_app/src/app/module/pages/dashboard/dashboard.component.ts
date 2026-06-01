@@ -65,6 +65,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     public lanes: number = 40;
     public gridsterOptions: GridsterConfig;
     public gridItemEvent: any;
+    public gridsterHeight: string;
 
     public getGridsterItemMid(panel: any): GridsterItem {
         return { x: panel.tamanyMig.x, y: panel.tamanyMig.y, cols: panel.tamanyMig.w, rows: panel.tamanyMig.h };
@@ -225,6 +226,8 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
 
             }, 0);
         });
+        // Recalcular cell size basado en DOM real
+        setTimeout(() => this.updateGridsterCellSize(), 0);
     }
 
     public ngOnDestroy() {
@@ -316,21 +319,25 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     private initializeGridsterOptions(): void {
 
         const dragResizeEnabled = window.innerWidth > 1000;
+        const initialCellSize = Math.max(30, Math.floor(window.innerWidth / this.lanes));
 
         this.gridsterOptions = {
-            gridType: GridType.Fit,
+            gridType: GridType.VerticalFixed,
+            fixedRowHeight: initialCellSize,
             compactType: CompactType.None,
             minCols: this.lanes,
             maxCols: this.lanes,
-            margin: 5,
+            minRows: 10,
+            maxRows: 300,
+            margin: 2,
             outerMargin: true,
             outerMarginTop: null,
             outerMarginRight: null,
             outerMarginBottom: null,
             outerMarginLeft: null,
             useTransformPositioning: true,
+            pushItems: true,
             mobileBreakpoint: 640,
-            rowHeightRatio: 1,
             maxItemCols: 40,
             maxItemRows: 200,
             minItemCols: 3,
@@ -354,8 +361,53 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
                 },
             },
             displayGrid: 'always',
+            itemChangeCallback: (item) => this.onGridsterItemChange(item),
+            itemResizeCallback: (item) => this.onGridsterItemChange(item),
         };
 
+    }
+
+    private updateGridsterCellSize(): void {
+        const container = document.querySelector('.dashboard-grid') as HTMLElement;
+        if (!container) return;
+        const cols = this.gridsterOptions.minCols || this.lanes;
+        const width = container.clientWidth;
+        const isMobile = width < (this.gridsterOptions.mobileBreakpoint || 640);
+        if (isMobile) {
+            this.gridsterOptions.fixedRowHeight = 100;
+        } else {
+            let cellSize = Math.floor(width / cols);
+            if (cellSize < 30) cellSize = 30;
+            this.gridsterOptions.fixedRowHeight = cellSize;
+        }
+        // Notify gridster of changes
+        if (this.gridsterOptions.api) {
+            this.gridsterOptions.api.optionsChanged();
+        }
+        this.recalcGridsterHeight();
+    }
+
+    private onGridsterItemChange(item: GridsterItem): void {
+        const panel = this.panels.find(p => p.id === (item as any).id);
+        if (panel) {
+            panel.w = item.cols;
+            panel.h = item.rows;
+        }
+        this.recalcGridsterHeight();
+    }
+
+    private recalcGridsterHeight(): void {
+        if (!this.panels || this.panels.length === 0) return;
+        const rowHeight = this.gridsterOptions.fixedRowHeight || 150;
+        let bottomMost = 0;
+        for (const panel of this.panels) {
+            const y = panel.y || 0;
+            const rows = panel.rows || panel.h || 6;
+            const bottom = y + rows;
+            if (bottom > bottomMost) bottomMost = bottom;
+        }
+        const heightPx = ((bottomMost + 4) * rowHeight) + 250;
+        this.gridsterHeight = heightPx + 'px';
     }
 
     private initializeForm(): void {
@@ -477,7 +529,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
 
                     } else {
                         // Si te panels els carrega
-                        me.panels = config.panel;
+                        me.panels = config.panel.map((p: any) => new EdaPanel(p));
                         // Check url for filters in params
                         this.gFilter.findGlobalFilterByUrlParams(this.queryParams);
                         this.gFilter.fillFiltersData();
@@ -504,6 +556,8 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
                     }
 
                     this.initializePanels();
+                    // Recalcular tamaños después de renderizar
+                    setTimeout(() => this.updateGridsterCellSize(), 100);
                     // Fem una copia de seguretat per en cas de desastre :D
                     me.panels.forEach(p => {
                         me.panelsCopy.push(p);
@@ -625,6 +679,12 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
 
     // Dashboard Panels
     private initializePanels(): void {
+        // Normalize cols/rows for angular-gridster2 v17
+        for (const panel of this.panels) {
+            panel.cols = panel.cols || panel.w;
+            panel.rows = panel.rows || panel.h;
+        }
+
         const user = localStorage.getItem('user');
         const userID = JSON.parse(user)._id;
 
@@ -850,6 +910,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
             minCols: this.lanes,
             maxCols: this.lanes,
         };
+        setTimeout(() => this.updateGridsterCellSize(), 50);
     }
 
 /* SDA CUSTOM */    // Zoom control methods
@@ -1640,6 +1701,9 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     // Podem agafar els events del panel
     public itemChange($event: any, panel): void {
         this.gridItemEvent = $event;
+        // SDA CUSTOM - Sync w/h with cols/rows after gridster modifies the item
+        panel.w = panel.cols;
+        panel.h = panel.rows;
         let found = this.edaPanels.filter(edaPanel => edaPanel.panel.id === panel.id)[0];
         if (
             found

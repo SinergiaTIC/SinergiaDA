@@ -36,7 +36,7 @@
 
         <div [ngClass]="{'hidden':dataModelService.model_id=='111111111111111111111111'}">
             <h5 class="title-datamodel" i18n="@@inputEsconderTabla">Esconder tabla</h5>
-            <p-inputSwitch (onChange)="toggle_table(tablePanel.visible)" [(ngModel)]="!tablePanel.visible">
+            <p-inputSwitch (onChange)="toggle_table(tablePanel.visible)" [ngModel]="!tablePanel.visible" (ngModelChange)="tablePanel.visible = $event">
             </p-inputSwitch>
         </div>
 
@@ -186,7 +186,7 @@
         <div *ngIf="columnPanel.computed_column === 'no'">
             <h5 class="title-datamodel" i18n="@@esconderColumna">Esconder columna</h5>
             <p>
-                <p-inputSwitch (onChange)="toggle_column(columnPanel.visible)" [(ngModel)]="!columnPanel.visible">
+                <p-inputSwitch (onChange)="toggle_column(columnPanel.visible)" [ngModel]="!columnPanel.visible" (ngModelChange)="columnPanel.visible = $event">
                 </p-inputSwitch>
             </p>
         </div>
