@@ -1,7 +1,7 @@
 # Migracion Angular 14 → 17 - SinergiaDA Workkit
 
-> **Ultima actualizacion:** 2026-06-01 13:18 UTC
-> **Estado:** PASO 0 EN CURSO — Entorno preparado, pendiente iniciar migracion 14→15
+> **Ultima actualizacion:** 2026-06-01 14:30 UTC
+> **Estado:** PASO 1 COMPLETADO — Angular 15, build exitoso. Pendiente Paso 2 (15→16)
 
 ---
 
@@ -167,33 +167,38 @@ pero es recomendable migrar a `FormGroup` tipado.
 - [x] Hacer commit del documento MIGRATION.md como baseline
 - [~] Branch ya existente: `enhancement/angular17`
 
-### [ ] PASO 1: Angular 14 → 15
-- [ ] Ejecutar `ng update @angular/core@15 @angular/cli@15 --allow-dirty`
-- [ ] **MANUAL:** Migrar `ComponentFactoryResolver` → `ViewContainerRef.createComponent()`
-- [ ] **MANUAL:** Convertir guards clase a funciones
-- [ ] **MANUAL:** Eliminar `relativeLinkResolution: 'legacy'`
-- [ ] **MANUAL:** Reemplazar `angular2gridster` por `angular-gridster2`
-- [ ] **MANUAL:** Actualizar PrimeNG 14.x → 15.x
-- [ ] **MANUAL:** Actualizar angular-gridster2 14.x → 15.x
-- [ ] **MANUAL:** Actualizar ng2-charts 4.1.1 → 5.x
-- [ ] **MANUAL:** Actualizar chart.js 3.9.1 → 4.x
-- [ ] **MANUAL:** Actualizar TypeScript a 4.8+
-- [ ] Ejecutar `ng build` y verificar compilacion
-- [ ] **COMMIT** despues de verificar
+### [x] PASO 1: Angular 14 → 15
+- [x] Ejecutar `ng update @angular/core@15 @angular/cli@15 --allow-dirty --force`
+- [~] **MANUAL:** Migrar `ComponentFactoryResolver` → DIFERIDO a Paso 2/3 (aun funciona en v15)
+- [~] **MANUAL:** Convertir guards clase a funciones → DIFERIDO a Paso 2/3 (deprecado pero funcional en v15)
+- [x] **MANUAL:** Eliminar `relativeLinkResolution: 'legacy'` (schematic automatico)
+- [x] **MANUAL:** Reemplazar `angular2gridster` por `angular-gridster2` - API migrada, template adaptado
+- [x] **MANUAL:** Actualizar PrimeNG 14.x → 15.4.28-lts
+- [x] **MANUAL:** Actualizar angular-gridster2 14.1.5 → 15.0.4
+- [x] **MANUAL:** Actualizar ng2-charts 4.1.1 → 5.0.4
+- [~] **MANUAL:** Actualizar chart.js 3.9.1 → 4.x → DIFERIDO a Paso 2/3
+- [x] **MANUAL:** Actualizar TypeScript a 4.9.5
+- [x] Ejecutar `ng build` y verificar compilacion (exitoso, solo warnings CommonJS)
+- [x] **COMMIT** despues de verificar
+
+> **Nota:** `angular2gridster` no tenia version para Angular 15+. Se reemplazo completamente por `angular-gridster2` (API diferente). Dashboard migrado a `<gridster>`/`<gridster-item>` con `[item]` binding en lugar de `[(w)]`/`[(h)]`/`[(x)]`/`[(y)]`.
 
 ### [ ] PASO 2: Angular 15 → 16
 - [ ] Ejecutar `ng update @angular/core@16 @angular/cli@16 --allow-dirty`
+- [ ] **MANUAL:** Migrar `ComponentFactoryResolver` → `ViewContainerRef.createComponent()` (se elimina en v17)
+- [ ] **MANUAL:** Convertir guards clase a funciones (deprecado en v15, eliminar en v17)
 - [ ] Actualizar TypeScript a 4.9.3+
 - [ ] **MANUAL:** Actualizar PrimeNG 15.x → 16.x
 - [ ] **MANUAL:** Actualizar angular-gridster2 15.x → 16.x
 - [ ] **MANUAL:** Actualizar ng2-charts 5.x → 6.x
+- [ ] **MANUAL:** Actualizar chart.js 3.9.1 → 4.x
 - [ ] Ejecutar `ng build` y verificar compilacion
 - [ ] **COMMIT** despues de verificar
 
 ### [ ] PASO 3: Angular 16 → 17
 - [ ] Ejecutar `ng update @angular/core@17 @angular/cli@17 --allow-dirty`
 - [ ] Actualizar TypeScript a 5.2+ (ideal 5.4.x)
-- [ ] **MANUAL:** Actualizar PrimeNG 16.x → 17.x (breaking changes mayores)
+- [ ] **MANUAL:** Actualizar PrimeNG 16.x → 17.x (breaking changes mayores: p-dropdown→p-select, p-calendar→p-datepicker, etc.)
 - [ ] **MANUAL:** Actualizar angular-gridster2 16.x → 17.x
 - [ ] **MANUAL:** Actualizar ng2-charts 6.x → 7.x+
 - [ ] **MANUAL:** Migrar build system (`browser` → `application` con esbuild/Vite)
@@ -212,12 +217,29 @@ pero es recomendable migrar a `FormGroup` tipado.
 
 ---
 
-## 6. Estado de Progreso
+## 6. Cambios Realizados en Paso 1
+
+| Archivo | Cambio |
+|---------|--------|
+| `package.json` | Angular 14→15, TypeScript 4.6.2→4.9.5, PrimeNG 14→15, ng2-charts 4→5, angular2gridster eliminado, angular-gridster2 14→15, @angular/cdk 14→15 |
+| `tsconfig.json` | target ES2022, useDefineForClassFields: false (schematic) |
+| `src/test.ts` | Actualizado por schematic |
+| `src/tsconfig.app.json` | Anadido `skipLibCheck: true` para compatibilidad ng2-charts |
+| `angular.json` | Anadido `cli.cache.path` para evitar cache owned by root |
+| `src/app/core/pages/core-pages.routes.ts` | Eliminado `relativeLinkResolution: 'legacy'` (schematic) |
+| `src/app/module/pages/pages.module.ts` | `angular2gridster` → `angular-gridster2`, `.forRoot()` quitado |
+| `src/app/module/pages/dashboard/dashboard.component.ts` | Import `angular2gridster` → `angular-gridster2` (GridsterConfig, GridsterItem, GridType, CompactType). `@ViewChild(GridsterComponent)` eliminado. `gridsterOptions` migrado a `GridsterConfig`. `gridsterDraggableOptions` eliminado. `itemOptions` eliminado. Metodos `setOption().reload()` reemplazados por asignacion directa de objeto. Anadidos helpers `getGridsterItemMid()`, `getGridsterItemMobile()`. |
+| `src/app/module/pages/dashboard/dashboard.component.html` | `<ngx-gridster>` → `<gridster>`, `[draggableOptions]` eliminado, `<ngx-gridster-item>` → `<gridster-item>`, bindings `[(w)]`/`[(h)]`/`[(x)]`/`[(y)]` → `[item]` |
+| `src/app/shared/models/dashboard-models/eda-panel.model.ts` | Anadidos getters/setters `cols`/`rows` que mapean a `w`/`h` |
+
+---
+
+## 7. Estado de Progreso
 
 | Fase | Estado | Fecha | Notas |
 |------|--------|-------|-------|
 | Paso 0: Preparacion | ✅ Completado | 2026-06-01 | Node 18.18.0 activo, build verificado, cache configurado |
-| Paso 1: 14→15 | ⬜ Pendiente | — | — |
+| Paso 1: 14→15 | ✅ Completado | 2026-06-01 | Angular 15.2.10, PrimeNG 15.4.28-lts, gridster migrado, build exitoso |
 | Paso 2: 15→16 | ⬜ Pendiente | — | — |
 | Paso 3: 16→17 | ⬜ Pendiente | — | — |
 | Paso 4: Post-migracion | ⬜ Pendiente | — | — |
