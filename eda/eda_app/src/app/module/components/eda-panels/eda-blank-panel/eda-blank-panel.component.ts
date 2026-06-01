@@ -1088,14 +1088,10 @@ export class EdaBlankPanelComponent implements OnInit {
 
     public rebootGlobalFilter(_filter: any){
 
-        if(this.sortedFilters.length !==0) {
-            this.alertService.addWarning($localize`:@@globalFilterSettingsReboot:La configuración de filtros del panel involucrado se ha reiniciado`);
-        }
-
-        if(this.sortedFilters.some((sortedFilter: any) => _filter.id === sortedFilter.filter_id)){
-            this.sortedFilters = [];
-            this.savePanel(); // Panel setting saved
-        }
+        /* SDA CUSTOM  */ const filterIndex = this.sortedFilters.findIndex((sortedFilter: any) => _filter.id === sortedFilter.filter_id);
+        /* SDA CUSTOM  */ if (filterIndex !== -1) {
+        /* SDA CUSTOM  */     this.sortedFilters.splice(filterIndex, 1);
+        /* SDA CUSTOM  */ }
 
     }
 

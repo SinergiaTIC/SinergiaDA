@@ -478,6 +478,10 @@ export class GlobalFilterComponent implements OnInit {
             globalFilter = this.globalFilter;
         }
 
+        /*SDA CUSTOM*/ if (!globalFilter || !this.globalFilters.find((gf: any) => gf.id == globalFilter.id)) {
+        /*SDA CUSTOM*/     return;
+        /*SDA CUSTOM*/ }
+
         let targetTable: string;
         let targetColumn: any;
 
@@ -508,9 +512,12 @@ export class GlobalFilterComponent implements OnInit {
             const res = await this.dashboardService.executeQuery(query).toPromise();
 
             if( res[0][0]=='noDataAllowed' || res[0][0]=='noFilterAllowed'){
-                this.globalFilters.find((gf: any) => gf.id == globalFilter.id).visible = 'hidden';
-                this.globalFilters.find((gf: any) => gf.id == globalFilter.id).data = false;
-                this.globalFilters;
+                /* SDA CUSTOM */ const restrictedFilter = this.globalFilters.find((gf: any) => gf.id == globalFilter.id);
+                /* SDA CUSTOM */ if (restrictedFilter) {
+                /* SDA CUSTOM */     restrictedFilter.visible = 'hidden';
+                /* SDA CUSTOM */     restrictedFilter.data = false;
+                /* SDA CUSTOM */ }
+                /* SDA CUSTOM */ return;
             }
 
             let data : any[] ;
@@ -552,7 +559,10 @@ export class GlobalFilterComponent implements OnInit {
                 })
 
 
-            this.globalFilters.find((gf: any) => gf.id == globalFilter.id).data = data;
+            /* SDA CUSTOM */ const filterRef = this.globalFilters.find((gf: any) => gf.id == globalFilter.id);
+            /* SDA CUSTOM */ if (filterRef) {
+            /* SDA CUSTOM */     filterRef.data = data;
+            /* SDA CUSTOM */ }
 
 
         } catch (err) {

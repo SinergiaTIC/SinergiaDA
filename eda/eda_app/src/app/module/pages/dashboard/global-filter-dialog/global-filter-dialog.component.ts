@@ -286,6 +286,8 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
             const query = this.queryBuilderService.normalQuery([this.globalFilter.selectedColumn], params);
             const response = await this.dashboardService.executeQuery(query).toPromise();
 
+            /*SDA CUSTOM*/ if (!this.globalFilter) return;
+
             // only if the value is a ValueListSource
             if(this.globalFilter.selectedColumn.valueListSource !== undefined) {
                 // Generate all the label and id values for the valueListSource filters.
