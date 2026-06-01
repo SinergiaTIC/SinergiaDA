@@ -910,7 +910,6 @@
     <source>Download JSON</source>
     <target>Download JSON</target>
   </trans-unit>
-  <!-- SDA CUSTOM - Filter hover tooltip -->
   <trans-unit id="filterHoverGreen">
     <source>Verde</source>
     <target>Green</target>
@@ -927,7 +926,6 @@
     <source>Paneles no afectados por este filtro</source>
     <target>Panels not affected by this filter</target>
   </trans-unit>
-  <!-- END SDA CUSTOM -->
 </body>
   </file>
 </xliff>
