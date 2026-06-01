@@ -1,17 +1,18 @@
-import { NgModule } from '@angular/core';
+import { NgModule, Provider } from '@angular/core';
 
 // Modules
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
 import { PrimengModule } from './primeng.module';
-import { NgChartsModule } from 'ng2-charts';
+import { BaseChartDirective, provideCharts, withDefaultRegisterables } from 'ng2-charts';
 
 @NgModule({
     imports: [
         CommonModule,
         FormsModule,
-        PrimengModule
+        PrimengModule,
+        BaseChartDirective,
     ],
     exports: [
         CommonModule,
@@ -19,7 +20,10 @@ import { NgChartsModule } from 'ng2-charts';
         ReactiveFormsModule,
         HttpClientModule,
         PrimengModule,
-        NgChartsModule,
+        BaseChartDirective,
+    ],
+    providers: [
+        provideCharts(withDefaultRegisterables()) as Provider,
     ],
 })
 

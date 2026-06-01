@@ -1,10 +1,10 @@
 import { Injectable } from '@angular/core';
-import { CanActivate, Router, ActivatedRouteSnapshot, RouterStateSnapshot, ActivatedRoute } from '@angular/router';
+import { Router, ActivatedRouteSnapshot, RouterStateSnapshot, ActivatedRoute } from '@angular/router';
 import { UserService } from '../api/user.service';
 /*SDA CUSTOM*/ import { DashboardService } from '../api/dashboard.service';
 /*SDA CUSTOM*/ import { User } from '@eda/models/model.index';
 @Injectable()
-export class LoginGuardGuard implements CanActivate {
+export class LoginGuardGuard  {
 
     constructor(
         public userService: UserService,
