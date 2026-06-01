@@ -1,7 +1,7 @@
 # Migracion Angular 14 → 17 - SinergiaDA Workkit
 
-> **Ultima actualizacion:** 2026-06-01
-> **Estado:** PLANEADO — Sin cambios iniciados
+> **Ultima actualizacion:** 2026-06-01 13:18 UTC
+> **Estado:** PASO 0 EN CURSO — Entorno preparado, pendiente iniciar migracion 14→15
 
 ---
 
@@ -159,11 +159,13 @@ pero es recomendable migrar a `FormGroup` tipado.
 
 ## 5. Plan de Trabajo por Pasos
 
-### [ ] PASO 0: Preparacion de Entorno
-- [ ] Actualizar Node.js a v18.13+ o v20.9+
-- [ ] Confirmar `npm` version 9+
-- [ ] Hacer commit completo del estado actual (`git stash` incluido)
-- [ ] Crear branch `migration/angular-17`
+### [x] PASO 0: Preparacion de Entorno
+- [x] Actualizar Node.js a v18.13+ o v20.9+ (usando nvm: v18.18.0)
+- [x] Confirmar `npm` version 9+ (npm 9.8.1)
+- [x] Verificar build compila con Node 18 (sin errores, solo warnings CommonJS)
+- [x] Solucionar cache `.angular/` owned by root (configurar `cli.cache.path` en angular.json)
+- [x] Hacer commit del documento MIGRATION.md como baseline
+- [~] Branch ya existente: `enhancement/angular17`
 
 ### [ ] PASO 1: Angular 14 → 15
 - [ ] Ejecutar `ng update @angular/core@15 @angular/cli@15 --allow-dirty`
@@ -214,7 +216,7 @@ pero es recomendable migrar a `FormGroup` tipado.
 
 | Fase | Estado | Fecha | Notas |
 |------|--------|-------|-------|
-| Paso 0: Preparacion | ⬜ Pendiente | — | — |
+| Paso 0: Preparacion | ✅ Completado | 2026-06-01 | Node 18.18.0 activo, build verificado, cache configurado |
 | Paso 1: 14→15 | ⬜ Pendiente | — | — |
 | Paso 2: 15→16 | ⬜ Pendiente | — | — |
 | Paso 3: 16→17 | ⬜ Pendiente | — | — |
