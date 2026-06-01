@@ -4,7 +4,7 @@ import { NgModule } from '@angular/core';
 import { CoreModule } from '../../core/core.module';
 import { SharedModule } from '../../shared/shared.module';
 import { ComponentsModule } from '../components/components.module';
-import { GridsterModule } from 'angular2gridster';
+import { GridsterModule } from 'angular-gridster2';
 
 // Components
 import { HomeComponent } from './home/home.component';
@@ -58,7 +58,7 @@ import { CalculatedColumnEditDialogComponent } from './data-sources/data-source-
 @NgModule({
     imports: [
         CoreModule,
-        GridsterModule.forRoot(),
+        GridsterModule,
         SharedModule,
         ComponentsModule,
         PAGES_ROUTES,

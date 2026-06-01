@@ -1,6 +1,6 @@
 import { DateUtils } from './../../../services/utils/date-utils.service';
 import { Component, OnInit, ViewChild, ViewChildren, QueryList, AfterViewInit, OnDestroy, HostListener } from '@angular/core';
-import { GridsterComponent, IGridsterOptions, IGridsterDraggableOptions } from 'angular2gridster';
+import { GridsterConfig, GridsterItem, GridType, CompactType } from 'angular-gridster2';
 import { UntypedFormGroup, UntypedFormBuilder, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Dashboard, EdaPanel, EdaTitlePanel, EdaPanelType, InjectEdaPanel } from '@eda/models/model.index';
@@ -26,8 +26,6 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     //@HostListener('window:resize', ['$event'])
 
     @ViewChild(GlobalFilterComponent, { static: false }) gFilter: GlobalFilterComponent;
-    // Gridster ViewChild
-    @ViewChild(GridsterComponent, { static: false }) gridster: GridsterComponent;
     @ViewChildren(EdaBlankPanelComponent) edaPanels: QueryList<EdaBlankPanelComponent>;
     private edaPanelsSubscription: Subscription;
 
@@ -65,16 +63,17 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     public panelsCopy: EdaPanel[] = [];
     public screen: number;
     public lanes: number = 40;
-    public gridsterOptions: IGridsterOptions;
-    public gridsterDraggableOptions: IGridsterDraggableOptions;
+    public gridsterOptions: GridsterConfig;
     public gridItemEvent: any;
-    public itemOptions = {
-        maxWidth: 40,
-        maxHeight: 200,
-        minWidth: 3,
-        minHeight: 1,
-        resizeHandles: { s: false, e: false, n: false, w: false, se: false, ne: false, sw: false, nw: false },
-    };
+
+    public getGridsterItemMid(panel: any): GridsterItem {
+        return { x: panel.tamanyMig.x, y: panel.tamanyMig.y, cols: panel.tamanyMig.w, rows: panel.tamanyMig.h };
+    }
+
+    public getGridsterItemMobile(panel: any): GridsterItem {
+        return { x: panel.tamanyMobil.x, y: panel.tamanyMobil.y, cols: panel.tamanyMobil.w, rows: panel.tamanyMobil.h };
+    }
+
   public tag: any;
   public tags: Array<any>;
   public selectedTags: any[];
@@ -316,34 +315,46 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
 
     private initializeGridsterOptions(): void {
 
+        const dragResizeEnabled = window.innerWidth > 1000;
+
         this.gridsterOptions = {
-            lanes: this.lanes,
-            direction: 'vertical',
-            floating: false,
-            dragAndDrop: window.innerWidth > 1000,
-            resizable: window.innerWidth > 1000,
-            resizeHandles: {
-                sw: true,
-                se: true,
+            gridType: GridType.Fit,
+            compactType: CompactType.None,
+            minCols: this.lanes,
+            maxCols: this.lanes,
+            margin: 5,
+            outerMargin: true,
+            outerMarginTop: null,
+            outerMarginRight: null,
+            outerMarginBottom: null,
+            outerMarginLeft: null,
+            useTransformPositioning: true,
+            mobileBreakpoint: 640,
+            rowHeightRatio: 1,
+            maxItemCols: 40,
+            maxItemRows: 200,
+            minItemCols: 3,
+            minItemRows: 1,
+            defaultItemCols: 6,
+            defaultItemRows: 6,
+            draggable: {
+                enabled: dragResizeEnabled,
             },
-            widthHeightRatio: 1,
-            lines: {
-                visible: true,
-                color: '#dbdbdb',
-                width: 1
+            resizable: {
+                enabled: dragResizeEnabled,
+                handles: {
+                    s: false,
+                    e: false,
+                    n: false,
+                    w: false,
+                    se: true,
+                    ne: false,
+                    sw: true,
+                    nw: false,
+                },
             },
-            tolerance: 'pointer',
-            shrink: true,
-            useCSSTransforms: true,
-            responsiveView: true, // turn on adopting items sizes on window resize and enable responsiveOptions
-            responsiveDebounce: 500, // window resize debounce time
-            responsiveSizes: true
+            displayGrid: 'always',
         };
-
-        this.gridsterDraggableOptions = {
-            /*keep for compatibility*/
-        };
-
 
     }
 
@@ -828,15 +839,17 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
             this.lanes = 40;
             this.toLitle = false;
             this.toMedium = false;
-            this.gridster.setOption('lanes', this.lanes).reload();
         } else {
             this.lanes = 10;
             this.toLitle = true;
             this.toMedium = false;
-            this.gridster.setOption('lanes', this.lanes).reload();
             this.initMobileSizes();
-
         }
+        this.gridsterOptions = {
+            ...this.gridsterOptions,
+            minCols: this.lanes,
+            maxCols: this.lanes,
+        };
     }
 
 /* SDA CUSTOM */    // Zoom control methods
@@ -924,18 +937,12 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
 /* SDA CUSTOM */        }
 /* SDA CUSTOM */
 /* SDA CUSTOM */        // Ensure drag and drop is enabled
-/* SDA CUSTOM */        if (this.gridster) {
-/* SDA CUSTOM */            const enableDragDrop = window.innerWidth > 1000;
-/* SDA CUSTOM */            this.gridster.setOption('dragAndDrop', enableDragDrop);
-/* SDA CUSTOM */            this.gridster.setOption('resizable', enableDragDrop);
-/* SDA CUSTOM */
-/* SDA CUSTOM */            const showGridLines = this.zoomLevel < 100;
-/* SDA CUSTOM */            this.gridster.setOption('lines', {
-/* SDA CUSTOM */                visible: showGridLines,
-/* SDA CUSTOM */                color: showGridLines ? '#929599' : '#dbdbdb',
-/* SDA CUSTOM */                width: showGridLines ? 2 : 1
-/* SDA CUSTOM */            }).reload();
-/* SDA CUSTOM */        }
+/* SDA CUSTOM */        const enableDragDrop = window.innerWidth > 1000;
+/* SDA CUSTOM */        this.gridsterOptions = {
+/* SDA CUSTOM */            ...this.gridsterOptions,
+/* SDA CUSTOM */            draggable: { enabled: enableDragDrop },
+/* SDA CUSTOM */            resizable: { enabled: enableDragDrop, handles: { s: false, e: false, n: false, w: false, se: true, ne: false, sw: true, nw: false } },
+/* SDA CUSTOM */        };
 /* SDA CUSTOM */
 /* SDA CUSTOM */        // Activate the global coordinate fix
 /* SDA CUSTOM */        this.setupZoomDragFix();
