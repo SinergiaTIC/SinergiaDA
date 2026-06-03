@@ -377,40 +377,9 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
         }
     }
 
-    // SDA CUSTOM — Auto-fill path for SQL panels: try 0-hop (same table) then BFS to filter table.
-    /*SDA CUSTOM*/ private tryAutoFillSqlPanel(panel: any): void {
-    /*SDA CUSTOM*/     const sqlOriginTableName: string = panel.content.query.query.fields?.[0]?.table_id;
-    /*SDA CUSTOM*/     const filterTableName: string = this.globalFilter.selectedTable?.table_name;
-    /*SDA CUSTOM*/     if (!sqlOriginTableName || !filterTableName) return;
-    /*SDA CUSTOM*/     if (sqlOriginTableName === filterTableName) {
-    /*SDA CUSTOM*/         // 0-hop: SQL origin IS the filter table — point directly to the root node
-    /*SDA CUSTOM*/         const rootNode = panel.content.globalFilterPaths[0];
-    /*SDA CUSTOM*/         if (!rootNode) return;
-    /*SDA CUSTOM*/         this.globalFilter.pathList[panel.id].table_id = rootNode.table_id;
-    /*SDA CUSTOM*/         this.globalFilter.pathList[panel.id].path = [];
-    /*SDA CUSTOM*/         this.globalFilter.pathList[panel.id].selectedTableNodes = rootNode;
-    /*SDA CUSTOM*/         if (!this.globalFilter.panelList.includes(panel.id)) this.globalFilter.panelList.push(panel.id);
-    /*SDA CUSTOM*/         return;
-    /*SDA CUSTOM*/     }
-    /*SDA CUSTOM*/     // Multi-hop: BFS from SQL origin to filter table
-    /*SDA CUSTOM*/     const result = this.globalFilterService.findShortestPath(sqlOriginTableName, filterTableName, this.modelTables);
-    /*SDA CUSTOM*/     if (result) {
-    /*SDA CUSTOM*/         this.globalFilter.pathList[panel.id].table_id = result.child_id;
-    /*SDA CUSTOM*/         this.globalFilter.pathList[panel.id].path = result.joins;
-    /*SDA CUSTOM*/         this.globalFilter.pathList[panel.id].selectedTableNodes = result;
-    /*SDA CUSTOM*/         if (!this.globalFilter.panelList.includes(panel.id)) this.globalFilter.panelList.push(panel.id);
-    /*SDA CUSTOM*/     }
-    /*SDA CUSTOM*/ }
-
     public findPanelPathTables() {
         for (const panel of this.filteredPanels) {
-            /*SDA CUSTOM*/ const sqlOrigin: string = panel.content.query.query.queryMode === 'SQL'
-            /*SDA CUSTOM*/     ? panel.content.query.query.fields?.[0]?.table_id
-            /*SDA CUSTOM*/     : null;
-
-            /*SDA CUSTOM*/ panel.content.globalFilterPaths = sqlOrigin
-            /*SDA CUSTOM*/     ? this.globalFilterService.loadTablePathsFromName(this.modelTables, sqlOrigin)
-            /*SDA CUSTOM*/     : this.globalFilterService.loadTablePaths(this.modelTables, panel);
+            panel.content.globalFilterPaths = this.globalFilterService.loadTablePaths(this.modelTables, panel);
 
             /*SDA CUSTOM*/ if (this.isPathStaleForPanel(panel)) {
             /*SDA CUSTOM*/     this.globalFilter.pathList[panel.id] = { selectedTableNodes: {}, path: [] };
@@ -421,15 +390,6 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
                 const panelQuery = panel.content.query.query;
                 const rootTable = panelQuery.rootTable;
 
-                /*SDA CUSTOM*/ if (panelQuery.queryMode === 'SQL') {
-                /*SDA CUSTOM*/     const panelListBefore = this.globalFilter.panelList.length;
-                /*SDA CUSTOM*/     this.tryAutoFillSqlPanel(panel);
-                /*SDA CUSTOM*/     // If no path found, deactivate (same as tree panels marked avaliable=false)
-                /*SDA CUSTOM*/     if (!this.globalFilter.panelList.includes(panel.id) && panelListBefore === this.globalFilter.panelList.length) {
-                /*SDA CUSTOM*/         panel.active = false;
-                /*SDA CUSTOM*/         this.filteredPanels = this.allPanels.filter((p: any) => p.avaliable && p.active);
-                /*SDA CUSTOM*/     }
-                /*SDA CUSTOM*/ } else
                 if (this.globalFilter.selectedTable.table_name == rootTable) {
                     const node = panel.content.globalFilterPaths[0];
 
