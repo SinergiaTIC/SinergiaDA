@@ -1606,7 +1606,7 @@
       </trans-unit>
       <trans-unit id="sqlModeFilterPathText">
         <source>En modo SQL, si necesita modificar la ruta, debe hacerlo en la consulta</source>
-        <target>En mode SQL, si necessita modificar la ruta, ha de fer-ho a la consulta.</target>
+        <target>En mode SQL, si necessiteu modificar la ruta, heu de fer-ho a la consulta.</target>
       </trans-unit>
       
       <!-- SECTION: SELECTOR DE FECHAS (DATEPICKER) -->
