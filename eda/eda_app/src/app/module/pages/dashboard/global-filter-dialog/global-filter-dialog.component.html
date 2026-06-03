@@ -25,7 +25,7 @@
                         <div class="col-3" >
                             <input class = "d-flex justify-content-center" type="text" pInputText id="aliasName"
                             [style]="{'vertical-align' : 'bottom', width: '100%' }"
-                            [(ngModel)]="aliasValue"  
+                            [(ngModel)]="aliasValue"
                             placeholder="Alias del filtro (opcional)"
                             i18n-placeholder="@@aliasValuePh">
                         </div>
@@ -89,7 +89,7 @@
 
                                         <ng-template pTemplate="value">
                          <!-- SDA CUSTOM --><ng-container *ngIf="panel.content?.query?.query?.queryMode === 'SQL'; else pathTpl">
-                         <!-- SDA CUSTOM -->    <span i18n="@@sqlModeFilterPathText" style="font-family: var(--DEFAULT_FONT_FAMILY); font-weight: bolder; font-size: 0.9rem; color: #495057;">En modo SQL, si necesita modificar la ruta, debe hacerlo en la consulta query</span>
+                         <!-- SDA CUSTOM -->    <span i18n="@@sqlModeFilterPathText" style="font-family: var(--DEFAULT_FONT_FAMILY); font-weight: bolder; font-size: 0.9rem; color: #495057;">En modo SQL, si necesita modificar la ruta, debe hacerlo en la consulta</span>
                          <!-- SDA CUSTOM --></ng-container>
                          <!-- SDA CUSTOM --><ng-template #pathTpl>
                          <!-- SDA CUSTOM -->    <span class="d-flex align-items-center" [innerHTML]="getDisplayPathStr(globalFilter.pathList[panel.id].selectedTableNodes)"></span>

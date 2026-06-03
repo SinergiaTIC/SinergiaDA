@@ -1604,7 +1604,11 @@
         <source>elementos seleccionados</source>
         <target>elements seleccionats</target>
       </trans-unit>
-
+      <trans-unit id="sqlModeFilterPathText">
+        <source>En modo SQL, si necesita modificar la ruta, debe hacerlo en la consulta</source>
+        <target>En mode SQL, si necessita modificar la ruta, ha de fer-ho a la consulta.</target>
+      </trans-unit>
+      
       <!-- SECTION: SELECTOR DE FECHAS (DATEPICKER) -->
       <trans-unit id="dates1">
         <source>AÑO</source>
@@ -2499,10 +2503,6 @@ Ingresa ahora<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;" />
 <target>
 <x id="INTERPOLATION" equiv-text="{{getDisplayName(userSelectedTable)}" />
 </target>
-</trans-unit>
-<trans-unit id="sqlModeFilterPathText">
-  <source>En modo SQL, si necesita modificar la ruta, debe hacerlo en la consulta query</source>
-  <target>En mode SQL, si necessita modificar la ruta, ha de fer-ho a la consulta query</target>
 </trans-unit>
 </body>
 </file>
