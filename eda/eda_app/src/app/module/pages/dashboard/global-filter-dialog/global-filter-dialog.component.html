@@ -85,15 +85,15 @@
                                     </button>
                                 </td>
                                 <td style="width: 60%;">
-                                    <p-treeSelect *ngIf="globalFilter.pathList[panel.id]" 
-                                        [(ngModel)]="globalFilter.pathList[panel.id].selectedTableNodes"
-                                        [options]="panel.content.globalFilterPaths"
-                                        (onNodeExpand)="onNodeExpand(panel, $event)"
-                                        (onNodeSelect)="onNodeSelect(panel, $event)" appendTo="body"
-                                        [disabled]="!panel.active || !panel.avaliable">
+             <!-- SDA CUSTOM --><p-treeSelect *ngIf="globalFilter.pathList[panel.id]" [(ngModel)]="globalFilter.pathList[panel.id].selectedTableNodes" [options]="panel.content.globalFilterPaths" (onNodeExpand)="onNodeExpand(panel, $event)" (onNodeSelect)="onNodeSelect(panel, $event)" appendTo="body" [disabled]="!panel.active || !panel.avaliable || panel.content?.query?.query?.queryMode === 'SQL'">
 
                                         <ng-template pTemplate="value">
-                                            <span class="d-flex align-items-center" [innerHTML]="getDisplayPathStr(globalFilter.pathList[panel.id].selectedTableNodes)"></span>
+                         <!-- SDA CUSTOM --><ng-container *ngIf="panel.content?.query?.query?.queryMode === 'SQL'; else pathTpl">
+                         <!-- SDA CUSTOM -->    <span i18n="@@sqlModeFilterPathText" style="font-family: var(--DEFAULT_FONT_FAMILY); font-weight: bolder; font-size: 0.9rem; color: #495057;">En modo SQL, si necesita modificar la ruta, debe hacerlo en la consulta query</span>
+                         <!-- SDA CUSTOM --></ng-container>
+                         <!-- SDA CUSTOM --><ng-template #pathTpl>
+                         <!-- SDA CUSTOM -->    <span class="d-flex align-items-center" [innerHTML]="getDisplayPathStr(globalFilter.pathList[panel.id].selectedTableNodes)"></span>
+                         <!-- SDA CUSTOM --></ng-template>
                                         </ng-template>
 
                                         <ng-template let-node pTemplate="child">

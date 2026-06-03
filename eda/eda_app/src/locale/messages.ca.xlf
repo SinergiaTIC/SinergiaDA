@@ -2500,6 +2500,10 @@ Ingresa ahora<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;" />
 <x id="INTERPOLATION" equiv-text="{{getDisplayName(userSelectedTable)}" />
 </target>
 </trans-unit>
+<trans-unit id="sqlModeFilterPathText">
+  <source>En modo SQL, si necesita modificar la ruta, debe hacerlo en la consulta query</source>
+  <target>En mode SQL, si necessita modificar la ruta, ha de fer-ho a la consulta query</target>
+</trans-unit>
 </body>
 </file>
 </xliff>
