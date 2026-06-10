@@ -1044,8 +1044,10 @@ export class EdaBlankPanelComponent implements OnInit {
         const globalFilter = _.cloneDeep(_filter);
 
         if (_filter.pathList && _filter.pathList[this.panel.id]) {
-            globalFilter.joins = _filter.pathList[this.panel.id].path
-            globalFilter.filter_table = _filter.pathList[this.panel.id].table_id;
+            /*SDA CUSTOM*/ globalFilter.joins = _filter.pathList[this.panel.id].path;
+            /*SDA CUSTOM*/ if (_filter.pathList[this.panel.id].table_id) {
+            /*SDA CUSTOM*/     globalFilter.filter_table = _filter.pathList[this.panel.id].table_id;
+            /*SDA CUSTOM*/ }
         }
         const filterInx = this.globalFilters.findIndex((gf: any) => gf.filter_id === globalFilter.filter_id)
 
@@ -1063,8 +1065,10 @@ export class EdaBlankPanelComponent implements OnInit {
         const globalFilter = _.cloneDeep(_filter);
 
         if (_filter.pathList && _filter.pathList[this.panel.id]) {
-            globalFilter.joins = _filter.pathList[this.panel.id].path
-            globalFilter.filter_table = _filter.pathList[this.panel.id].table_id;
+            /*SDA CUSTOM*/ globalFilter.joins = _filter.pathList[this.panel.id].path;
+            /*SDA CUSTOM*/ if (_filter.pathList[this.panel.id].table_id) {
+            /*SDA CUSTOM*/     globalFilter.filter_table = _filter.pathList[this.panel.id].table_id;
+            /*SDA CUSTOM*/ }
         }
         const filterInx = this.globalFilters.findIndex((gf: any) => gf.filter_id === globalFilter.filter_id)
 

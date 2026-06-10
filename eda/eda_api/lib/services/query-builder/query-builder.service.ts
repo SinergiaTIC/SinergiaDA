@@ -1000,7 +1000,8 @@ export abstract class QueryBuilderService {
             /*SDA CUSTOM*/                 .filter((n: number) => !isNaN(n));
             /*SDA CUSTOM*/             valuesStr = validNums.length > 0 ? validNums.join(', ') : null;
             /*SDA CUSTOM*/         } else {
-            /*SDA CUSTOM*/             valuesStr = rawValues.map((v: any) => `'${String(v).replace(/'/g, "''")}'`).join(', ');
+            /*SDA CUSTOM*/             const mappedVals = rawValues.map((v: any) => `'${String(v).replace(/'/g, "''")}'`);
+            /*SDA CUSTOM*/             valuesStr = mappedVals.length > 0 ? mappedVals.join(', ') : null;
             /*SDA CUSTOM*/         }
             /*SDA CUSTOM*/         if (valuesStr !== null) {
             /*SDA CUSTOM*/             // Build "tableName.filterCol in (values)" so that sqlQuery's indexOf('.')

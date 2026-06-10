@@ -207,7 +207,7 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
         /*SDA CUSTOM*/ // the tree-panel BFS (which returns an empty Map if any table is unreachable).
         /*SDA CUSTOM*/ for (const panel of this.allPanels) {
         /*SDA CUSTOM*/     if (panel.content?.query?.query?.queryMode !== 'SQL') continue;
-        /*SDA CUSTOM*/     const sqlOrigin: string = panel.content.query.query.fields?.[0]?.table_id;
+        /*SDA CUSTOM*/     const sqlOrigin: string = panel.content.query.query.fields?.[0]?.table_id?.split('.')[0];
         /*SDA CUSTOM*/     if (!sqlOrigin || excludedTables.includes(sqlOrigin)) continue;
         /*SDA CUSTOM*/     const sqlRelatedMap = this.globalFilterService.relatedTables([sqlOrigin], this.modelTables);
         /*SDA CUSTOM*/     sqlRelatedMap.forEach((value: any, key: string) => {
