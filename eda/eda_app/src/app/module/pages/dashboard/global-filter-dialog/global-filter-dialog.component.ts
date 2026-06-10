@@ -379,6 +379,12 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
 
     public findPanelPathTables() {
         for (const panel of this.filteredPanels) {
+            /*SDA CUSTOM*/ if (panel.content?.query?.query?.queryMode === 'SQL') {
+            /*SDA CUSTOM*/     if (!this.globalFilter.panelList.includes(panel.id)) {
+            /*SDA CUSTOM*/         this.globalFilter.panelList.push(panel.id);
+            /*SDA CUSTOM*/     }
+            /*SDA CUSTOM*/     continue;
+            /*SDA CUSTOM*/ }
             panel.content.globalFilterPaths = this.globalFilterService.loadTablePaths(this.modelTables, panel);
 
             /*SDA CUSTOM*/ if (this.isPathStaleForPanel(panel)) {
@@ -595,6 +601,8 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
 
         if (!this.globalFilter.isdeleted) {
             for (const key in this.globalFilter.pathList) {
+                /*SDA CUSTOM*/ const panel = this.filteredPanels.find((p: any) => p.id === key);
+                /*SDA CUSTOM*/ if (panel?.content?.query?.query?.queryMode === 'SQL') continue;
                 if (availablePanels.includes(key) && _.isEmpty(this.globalFilter.pathList[key].selectedTableNodes)) {
                     valid = false;
                 }
@@ -684,6 +692,7 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
             this.display = false;
             this.close.emit(true);
         } else {
+            console.log('hola 1')
             this.alertService.addWarning($localize`:@@IncorrectForm:Formulario incorrecto. Revise los campos obligatorios.`);
         }
     }
