@@ -168,7 +168,7 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
     }
 
     public initTablesForFilter() {
-                
+
         const queryTables = []; // si aparece
         const excludedTables = this.modelTables.filter((t: any) => t.visible === false).map((t: any) => t.table_name); // Si aparece
 
@@ -260,14 +260,14 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
     }
 
     public onChangeSelectedColumn(): void {
-        
+
         this.globalFilter.selectedItems = [];
         if (this.globalFilter.selectedColumn.column_type == 'date') {
             this.loadDatesFromFilter();
         } else {
             this.loadColumnValues();
         }
-        
+
         this.findPanelPathTables();
     }
 
@@ -311,12 +311,12 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
                 }
 
             } else {
-                
+
                 if (Array.isArray(response) && response.length > 1) {
                     const data = response[1];
                     this.columnValues = data.filter(item => !!item[0] || item[0] === '').map(item => ({ label: item[0], value: item[0] }));
                 }
-                
+
             }
 
         } catch (err) {
@@ -326,7 +326,7 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
     }
 
     onSelectedItemsChange(event: any) {
-        
+
         if(this.globalFilter.selectedColumn.valueListSource !== undefined) {
             this.globalFilter.selectedIdValues = event.map((e: any) => {
                 const value = this.totalValues.find(tv => e === tv[0]);
@@ -692,7 +692,6 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
             this.display = false;
             this.close.emit(true);
         } else {
-            console.log('hola 1')
             this.alertService.addWarning($localize`:@@IncorrectForm:Formulario incorrecto. Revise los campos obligatorios.`);
         }
     }
