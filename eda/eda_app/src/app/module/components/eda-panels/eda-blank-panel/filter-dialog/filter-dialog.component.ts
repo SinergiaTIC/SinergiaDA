@@ -80,6 +80,7 @@ export class FilterDialogComponent extends EdaDialogAbstract {
     public whereMessage: string = $localize`:@@whereMessage: Filtro sobre todos los registros`;
     public havingMessage: string = $localize`:@@havingMessage: Filtro sobre los resultados`;
     public textBetween: string = $localize`:@@textBetween:Entre`
+    /* SDA CUSTOM */    public isValueListSource: boolean = false;
 
 
     constructor(
@@ -117,7 +118,7 @@ export class FilterDialogComponent extends EdaDialogAbstract {
         /* SDA CUSTOM */ }
 
         this.carrega();
-
+        /* SDA CUSTOM */ if(this.selectedColumn.valueListSource) this.isValueListSource = true;
     }
 
     addFilter() {
@@ -327,6 +328,11 @@ export class FilterDialogComponent extends EdaDialogAbstract {
                 this.filterValue = {};
             }
 
+            /* SDA CUSTOM */ if(filter.value === "=" || filter.value === "!=") {
+            /* SDA CUSTOM */     this.loadDropDrownData();
+            /* SDA CUSTOM */     this.filter.switch = handler.switchBtn || this.isValueListSource;
+            /* SDA CUSTOM */ }
+
             if(['in', 'not_in', 'not_null', 'not_null_nor_empty', 'null_or_empty'].includes(filter.value)) {
                 this.whereHavingSwitch({
                     label: 'WHERE',
@@ -354,7 +360,7 @@ export class FilterDialogComponent extends EdaDialogAbstract {
         this.filterValue.value1 = null;
         this.filterValue.value2 = null;
 /* SDA CUSTOM*/ this.dropDownFields = [];
-        if (this.filter.switch) {
+        if (this.filter.switch || this.isValueListSource ) {  // SDA CUSTOM => this.isValueListSource
             const column = _.cloneDeep(this.selectedColumn);
             column.table_id = column.table_id.split('.')[0];
             column.joins = [];

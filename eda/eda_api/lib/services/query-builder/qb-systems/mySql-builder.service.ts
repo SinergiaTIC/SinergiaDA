@@ -210,7 +210,7 @@ export class MySqlBuilderService extends QueryBuilderService {
   }
 
   public normalQuery(columns: string[], origin: string, dest: any[], joinTree: any[], grouping: any[], filters: any[], havingFilters: any[], 
-    tables: Array<any>, limit: number,  joinType: string, valueListJoins: Array<any> ,schema: string, database: string, forSelector: any, sortedFilters: any[]) {
+    /* SDA CUSTOM */ tables: Array<any>, limit: number,  joinType: string, valueListJoins: Array<any>, groupByEnabled:boolean ,schema: string, database: string, forSelector: any, sortedFilters: any[]) {
 
     let o = tables.filter(table => table.name === origin).map(table => { return table.query ? table.query : table.name })[0];
     let myQuery = `SELECT ${columns.join(', ')} \nFROM ${o}`;
@@ -262,9 +262,9 @@ export class MySqlBuilderService extends QueryBuilderService {
     }
 
     // GroupBy
-    if (grouping.length > 0) {
-      myQuery += '\ngroup by ' + grouping.join(', ');
-    }
+    /* SDA CUSTOM */ if (grouping.length > 0 && ((groupByEnabled))) {
+    /* SDA CUSTOM */   myQuery += '\ngroup by ' + grouping.join(', ');
+    /* SDA CUSTOM */ }
 
     //HAVING 
     myQuery += this.getHavingFilters(havingFilters);
@@ -551,6 +551,11 @@ export class MySqlBuilderService extends QueryBuilderService {
 
       // variable to find filters with valueListSource
       let validador = (valueListSource !== undefined && valueListSource !== null);
+      /* SDA CUSTOM */ // SDA CUSTOM - Keep value-list filters on internal code column for nested AND/OR conditions
+      /* SDA CUSTOM */ const valueListFilterColumn = validador
+      /* SDA CUSTOM */   ? ((filter_codes?.length !== undefined && valueListSource.target_id_column) ? valueListSource.target_id_column : valueListSource.target_description_column)
+      /* SDA CUSTOM */   : filter_column;
+      /* SDA CUSTOM */ // END SDA CUSTOM
       // Result of the whole string 
 
       let resultado = '';
@@ -558,7 +563,7 @@ export class MySqlBuilderService extends QueryBuilderService {
       if(computed_column==='computed') {
         resultado = `${['null_or_empty', 'not_null_nor_empty'].includes(filter_type) || (filter_type==='in' && sqlOptional !== undefined) ? ' (' : ''} ${sqlOptional !== undefined ? sqlOptional : ''} (${SQLexpression}) ${filter_type_value}${filter_elements_value}`;
       } else {
-        resultado = `${['null_or_empty', 'not_null_nor_empty'].includes(filter_type) || (filter_type==='in' && sqlOptional !== undefined) ? ' (' : ''} ${sqlOptional !== undefined ? sqlOptional : ''} \`${ validador ? valueListSource.target_table : filter_table}\`.\`${ validador ? valueListSource.target_description_column : filter_column}\` ${filter_type_value}${filter_elements_value}`;
+        /* SDA CUSTOM */ resultado = `${['null_or_empty', 'not_null_nor_empty'].includes(filter_type) || (filter_type==='in' && sqlOptional !== undefined) ? ' (' : ''} ${sqlOptional !== undefined ? sqlOptional : ''} \`${ validador ? valueListSource.target_table : filter_table}\`.\`${valueListFilterColumn}\` ${filter_type_value}${filter_elements_value}`;
       }
 
 
@@ -567,7 +572,7 @@ export class MySqlBuilderService extends QueryBuilderService {
         if(computed_column==='computed') {
           resultado = `${resultado} (${SQLexpression}) != '')`;
         } else {
-          resultado = `${resultado} \`${ validador ? valueListSource.target_table : filter_table}\`.\`${ validador ? valueListSource.target_description_column : filter_column}\` != '')`;
+          /* SDA CUSTOM */ resultado = `${resultado} \`${ validador ? valueListSource.target_table : filter_table}\`.\`${valueListFilterColumn}\` != '')`;
         }
       }
 
@@ -576,7 +581,7 @@ export class MySqlBuilderService extends QueryBuilderService {
         if(computed_column==='computed') {
           resultado = `${resultado} (${SQLexpression}) = '')`;
         } else {
-          resultado = `${resultado} \`${ validador ? valueListSource.target_table : filter_table}\`.\`${ validador ? valueListSource.target_description_column : filter_column}\` = '')`;
+          /* SDA CUSTOM */ resultado = `${resultado} \`${ validador ? valueListSource.target_table : filter_table}\`.\`${valueListFilterColumn}\` = '')`;
         }
       }
 

@@ -24,7 +24,7 @@ interface FilterOptions {
 export class ColumnUtilsService {
     constructor(private fileUtiles: FileUtiles) { }
 
-    
+
     public setFilter(options: FilterOptions): object {
         /* SDA CUSTOM */ const { obj, table, column, column_type, type, selectedRange, dynamicValue, valueListSource, autorelation, joins, filterBeforeGrouping, aggregation_type, data, computed_column, SQLexpression } = options;
     
@@ -34,14 +34,19 @@ export class ColumnUtilsService {
             }
         }).filter(Boolean);
 
-        let valuesIds
-        // Adding the values Codes
-        if(data.length !== 0) {
-            valuesIds = [{value1: _.cloneDeep(values)[0].value1.map((e: any) => data.find((d: any) => d.value === e).id)}];
-        } else {
-            valuesIds = _.cloneDeep(values);
-        }
-    
+        /* SDA CUSTOM */ let valuesIds
+        /* SDA CUSTOM */ // Adding the values Codes
+        /* SDA CUSTOM */ if (Array.isArray(data) && data.length !== 0 && _.cloneDeep(values)[0]?.value1) {
+        /* SDA CUSTOM */     valuesIds = [{
+        /* SDA CUSTOM */         value1: _.cloneDeep(values)[0].value1.map((e: any) => {
+        /* SDA CUSTOM */             const match = data.find((d: any) => d.value === e);
+        /* SDA CUSTOM */             return !_.isNil(match?.id) ? match.id : e;
+        /* SDA CUSTOM */         })
+        /* SDA CUSTOM */     }];
+        /* SDA CUSTOM */ } else {
+        /* SDA CUSTOM */     valuesIds = _.cloneDeep(values);
+        /* SDA CUSTOM */ }
+
         const filterObject = {
             isGlobal: false,
             filter_id: this.fileUtiles.generateUUID(),
@@ -60,15 +65,15 @@ export class ColumnUtilsService {
             computed_column,
             SQLexpression
         };
-    
+
         if (valueListSource) {
             filterObject['valueListSource'] = valueListSource;
         }
-    
+
         return filterObject;
     }
 
-    
+
     public handleInputTypes(type: string) {
         let inputType;
         switch (type) {

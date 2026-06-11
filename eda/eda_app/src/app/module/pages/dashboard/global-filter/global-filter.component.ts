@@ -33,6 +33,9 @@ export class GlobalFilterComponent implements OnInit {
     /* SDA CUSTOM */ public displayDateFormatMap: { [filterId: string]: boolean } = {};
 
     public filtrar: string = $localize`:@@filterButtonDashboard:Filtrar`;
+    // SDA CUSTOM - Replace eliminated duplicate ID filterButtonDashboard with canonical filtrarH4
+/* SDA CUSTOM */    public filtrar: string = $localize`:@@filtrarH4:Filtrar`;
+    // END SDA CUSTOM
     /*SDA CUSTOM*/ public resumen: string = $localize`:@@filterSummary:Resumen de filtros`;
 /* SDA CUSTOM */ public selectedItemsLabel: string = $localize`:@@globalFilterSelectedItemsLabel:elementos seleccionados`;
 /*SDA CUSTOM*/ private tooltipHideTimeout: any;
@@ -218,19 +221,17 @@ export class GlobalFilterComponent implements OnInit {
     // Main Global Filter
     public onShowGlobalFilter(isnew: boolean, filter?: any): void {
         if (this.dashboard.validateDashboard('GLOBALFILTER')) {
-            const treeQueryMode = this.dashboard.edaPanels.some((panel) => panel.selectedQueryMode === 'EDA2');
-
-            if (treeQueryMode) {
-                if (isnew) this.globalFilter = { isnew: true };
-                else {
-                    filter.isnew = false;
-                    this.globalFilter = _.cloneDeep(filter);
-                }
-
-                this.dashboard.display_v.rightSidebar = false;
-            } else {
-                this.onFilterConfig(isnew, filter);
+            /*SDA CUSTOM*/ // Always open the new dialog (app-global-filter-dialog) with route support.
+            /*SDA CUSTOM*/ // Previously this checked for 'EDA2' panels and fell back to the legacy
+            /*SDA CUSTOM*/ // dashboard-filter-dialog for SQL-only dashboards. Now SQL panels are fully
+            /*SDA CUSTOM*/ // integrated into the new dialog so the legacy path is never needed.
+            if (isnew) this.globalFilter = { isnew: true };
+            else {
+                filter.isnew = false;
+                this.globalFilter = _.cloneDeep(filter);
             }
+
+            this.dashboard.display_v.rightSidebar = false;
         }
     }
 
@@ -497,6 +498,10 @@ export class GlobalFilterComponent implements OnInit {
             globalFilter = this.globalFilter;
         }
 
+        /*SDA CUSTOM*/ if (!globalFilter || !this.globalFilters.find((gf: any) => gf.id == globalFilter.id)) {
+        /*SDA CUSTOM*/     return;
+        /*SDA CUSTOM*/ }
+
         let targetTable: string;
         let targetColumn: any;
 
@@ -516,9 +521,9 @@ export class GlobalFilterComponent implements OnInit {
             dataSource: this.dashboard.dataSource._id,
             dashboard: '',
             panel: '',
+            /* SDA CUSTOM */ groupByEnabled: true,
             filters: []
         };
-
 
         try {
             const query = this.queryBuilderService.normalQuery([targetColumn], queryParams);
@@ -527,9 +532,12 @@ export class GlobalFilterComponent implements OnInit {
             const res = await this.dashboardService.executeQuery(query).toPromise();
 
             if( res[0][0]=='noDataAllowed' || res[0][0]=='noFilterAllowed'){
-                this.globalFilters.find((gf: any) => gf.id == globalFilter.id).visible = 'hidden';
-                this.globalFilters.find((gf: any) => gf.id == globalFilter.id).data = false;
-                this.globalFilters;
+                /* SDA CUSTOM */ const restrictedFilter = this.globalFilters.find((gf: any) => gf.id == globalFilter.id);
+                /* SDA CUSTOM */ if (restrictedFilter) {
+                /* SDA CUSTOM */     restrictedFilter.visible = 'hidden';
+                /* SDA CUSTOM */     restrictedFilter.data = false;
+                /* SDA CUSTOM */ }
+                /* SDA CUSTOM */ return;
             }
 
             let data : any[] ;
@@ -558,13 +566,23 @@ export class GlobalFilterComponent implements OnInit {
                      globalFilter.selectedIdValues = [];
                 }
 
+                // If selectedItems has values but selectedIdValues is empty, derive selectedIdValues from selectedItems
+                /* SDA CUSTOM */ if (globalFilter.selectedItems?.length > 0 && globalFilter.selectedIdValues.length === 0) {
+                /* SDA CUSTOM */     globalFilter.selectedIdValues = globalFilter.selectedItems
+                /* SDA CUSTOM */         .map((element: any) => data.find(d => d.label === element)?.id)
+                /* SDA CUSTOM */         .filter((id: any) => id !== undefined);
+                /* SDA CUSTOM */ }
+
                 globalFilter.selectedItems = globalFilter.selectedIdValues?.map(siv => {
                     const value = data.filter(d => d.id === siv);
-                    return value[0].value;
+                /*SDA CUSTOM*/      return value[0]?.value ?? siv;
                 })
 
 
-            this.globalFilters.find((gf: any) => gf.id == globalFilter.id).data = data;
+            /* SDA CUSTOM */ const filterRef = this.globalFilters.find((gf: any) => gf.id == globalFilter.id);
+            /* SDA CUSTOM */ if (filterRef) {
+            /* SDA CUSTOM */     filterRef.data = data;
+            /* SDA CUSTOM */ }
 
 
         } catch (err) {
@@ -618,6 +636,13 @@ export class GlobalFilterComponent implements OnInit {
 
                     if (columnName === paramColumn) {
                         filter.selectedItems = _.split(urlParams[param], '|');
+/*SDA CUSTOM*/          if (filter.selectedColumn?.valueListSource) {
+/*SDA CUSTOM*/          // IDs differ from labels: set nulls so loadGlobalFiltersData resolves labels → ids
+/*SDA CUSTOM*/              filter.selectedIdValues = [... _.split(urlParams[param], '|')];
+/*SDA CUSTOM*/          } else {
+/*SDA CUSTOM*/              // No valueListSource: label and id are the same value
+/*SDA CUSTOM*/              filter.selectedIdValues = [...filter.selectedItems];
+/*SDA CUSTOM*/          }
 
                         filter.panelList
                             .map(id => this.dashboard.panels.find(p => p.id === id))
@@ -633,11 +658,54 @@ export class GlobalFilterComponent implements OnInit {
                                 // Adding the joins of the filter that comes from the url
                                 formatedFilter.joins = pathList;
 
+                                // SDA CUSTOM - Fix: Also set filter_table from pathList for tree filters
+                                /* SDA CUSTOM */ if (formatedFilter.pathList && formatedFilter.pathList[panel.id] && formatedFilter.pathList[panel.id].table_id) {
+                                    /* SDA CUSTOM */ formatedFilter.filter_table = formatedFilter.pathList[panel.id].table_id;
+                                /* SDA CUSTOM */ }
+
                                 // Controlling the filters
                                 if( _.findIndex(panelFilter, (inx) => inx.filter_column === formatedFilter.filter_column) >=0 ){
                                     panelFilter.splice(_.findIndex(panelFilter, (inx) => inx.filter_column === formatedFilter.filter_column), 1);
                                 }
                                 panelFilter.push(formatedFilter);
+
+                                // SDA CUSTOM - Fix: Inject URL filter into sortedFilters when advanced filters exist
+                                /* SDA CUSTOM */ const sortedFilters = panel.content?.query?.query?.sortedFilters;
+                                /* SDA CUSTOM */ if (sortedFilters && sortedFilters.length > 0) {
+                                    /* SDA CUSTOM */     const existingIndex = sortedFilters.findIndex((sf: any) => sf.filter_id === formatedFilter.filter_id);
+                                    /* SDA CUSTOM */     if (existingIndex >= 0) {
+                                    /* SDA CUSTOM */         sortedFilters[existingIndex].filter_elements = formatedFilter.filter_elements;
+                                    /* SDA CUSTOM */         sortedFilters[existingIndex].filter_codes = formatedFilter.filter_codes;
+                                    /* SDA CUSTOM */         sortedFilters[existingIndex].joins = formatedFilter.joins;
+                                    /* SDA CUSTOM */         sortedFilters[existingIndex].filter_table = formatedFilter.filter_table;
+                                    /* SDA CUSTOM */     } else {
+                                    /* SDA CUSTOM */         const lastElement = sortedFilters[sortedFilters.length - 1];
+                                    /* SDA CUSTOM */         const newSortedFilter = {
+                                    /* SDA CUSTOM */             cols: 3,
+                                    /* SDA CUSTOM */             rows: 1,
+                                    /* SDA CUSTOM */             y: lastElement.y + 1,
+                                    /* SDA CUSTOM */             x: 0,
+                                    /* SDA CUSTOM */             filter_table: formatedFilter.filter_table,
+                                    /* SDA CUSTOM */             filter_column: formatedFilter.filter_column,
+                                    /* SDA CUSTOM */             filter_type: formatedFilter.filter_type,
+                                    /* SDA CUSTOM */             filter_column_type: formatedFilter.filter_column_type,
+                                    /* SDA CUSTOM */             filter_elements: formatedFilter.filter_elements,
+                                    /* SDA CUSTOM */             filter_codes: formatedFilter.filter_codes,
+                                    /* SDA CUSTOM */             filter_id: formatedFilter.filter_id,
+                                    /* SDA CUSTOM */             isGlobal: formatedFilter.isGlobal,
+                                    /* SDA CUSTOM */             value: "and",
+                                    /* SDA CUSTOM */             joins: formatedFilter.joins,
+                                    /* SDA CUSTOM */             pathList: formatedFilter.pathList,
+                                    /* SDA CUSTOM */             valueListSource: formatedFilter.valueListSource,
+                                    /* SDA CUSTOM */             filterBeforeGrouping: formatedFilter.filterBeforeGrouping ?? true,
+                                    /* SDA CUSTOM */             autorelation: formatedFilter.autorelation,
+                                    /* SDA CUSTOM */             computed_column: formatedFilter.computed_column,
+                                    /* SDA CUSTOM */             SQLexpression: formatedFilter.SQLexpression,
+                                    /* SDA CUSTOM */             applyToAll: formatedFilter.applyToAll,
+                                    /* SDA CUSTOM */         };
+                                    /* SDA CUSTOM */         sortedFilters.push(newSortedFilter);
+                                    /* SDA CUSTOM */     }
+                                /* SDA CUSTOM */ }
                             });
 
                     }
@@ -658,6 +726,37 @@ export class GlobalFilterComponent implements OnInit {
 /*SDA CUSTOM*/     this.setGlobalFilterItems(filter);
 /*SDA CUSTOM*/ }
 
+/* SDA CUSTOM */ public filterHoverTooltipHtml: string =
+/* SDA CUSTOM */     `<span class="tooltip-green">${$localize`:@@filterHoverGreen:Verde`}</span>: ${$localize`:@@filterHoverAffected:Paneles afectados por este filtro`}<br>` +
+/* SDA CUSTOM */     `<span class="tooltip-red">${$localize`:@@filterHoverRed:Rojo`}</span>: ${$localize`:@@filterHoverNotAffected:Paneles no afectados por este filtro`}`;
+
+/* SDA CUSTOM */ // Wait 2s before activating the filter hover effect
+/* SDA CUSTOM */ private filterHoverTimeout: any;
+/* SDA CUSTOM */ public filterHoverActiveId: string | null = null;
+/* SDA CUSTOM */
+/* SDA CUSTOM */ public onFilterHover(filter: any): void {
+/* SDA CUSTOM */     if (this.filterHoverTimeout) {
+/* SDA CUSTOM */         clearTimeout(this.filterHoverTimeout);
+/* SDA CUSTOM */     }
+/* SDA CUSTOM */     this.filterHoverActiveId = null;
+/* SDA CUSTOM */     this.filterHoverTimeout = setTimeout(() => {
+/* SDA CUSTOM */         this.dashboard.hoveredFilterPanelIds = filter.panelList || [];
+/* SDA CUSTOM */         this.dashboard.isFilterHoverActive = true;
+/* SDA CUSTOM */         this.filterHoverActiveId = filter.id;
+/* SDA CUSTOM */     }, 2000);
+/* SDA CUSTOM */ }
+/* SDA CUSTOM */
+/* SDA CUSTOM */ // Clears panel highlight immediately when mouse leaves
+/* SDA CUSTOM */ public onFilterLeave(): void {
+/* SDA CUSTOM */     if (this.filterHoverTimeout) {
+/* SDA CUSTOM */         clearTimeout(this.filterHoverTimeout);
+/* SDA CUSTOM */         this.filterHoverTimeout = null;
+/* SDA CUSTOM */     }
+/* SDA CUSTOM */     this.dashboard.hoveredFilterPanelIds = [];
+/* SDA CUSTOM */     this.dashboard.isFilterHoverActive = false;
+/* SDA CUSTOM */     this.filterHoverActiveId = null;
+/* SDA CUSTOM */ }
+/* SDA CUSTOM */
     public disableGlobalFilter(filter: any): boolean {
         let disabled = false;
 
@@ -672,9 +771,9 @@ export class GlobalFilterComponent implements OnInit {
 
 /*SDA CUSTOM*/ // Method to show the filter tooltip
 /*SDA CUSTOM*/  public showFilterTooltip(event: MouseEvent, op: any, filter?: any): void {
-/*SDA CUSTOM*/ // If the filter doesn't have selected values, the tooltip won't be shown    
+/*SDA CUSTOM*/ // If the filter doesn't have selected values, the tooltip won't be shown
 /*SDA CUSTOM*/      if (filter && (!filter.selectedIdValues || filter.selectedIdValues.length === 0)) return;
-/*SDA CUSTOM*/ // If there is some active timeout to hide the tooltip, it will be cleared 
+/*SDA CUSTOM*/ // If there is some active timeout to hide the tooltip, it will be cleared
 /*SDA CUSTOM*/      if (this.tooltipHideTimeout && this.lastPanel === filter.id) {
 /*SDA CUSTOM*/         clearTimeout(this.tooltipHideTimeout);
 /*SDA CUSTOM*/         this.tooltipHideTimeout = null;
@@ -786,4 +885,8 @@ export class GlobalFilterComponent implements OnInit {
 /* SDA CUSTOM */        };
 /* SDA CUSTOM */        return labels[op] || op;
 /* SDA CUSTOM */    }
+/*SDA CUSTOM*/ // Check if filter is read-only for current user
+/*SDA CUSTOM*/ public isFilterReadOnly(filter: any): boolean {
+/*SDA CUSTOM*/     return !this.isAdmin && !this.isDashboardCreator && filter.visible === 'readOnly';
+/*SDA CUSTOM*/ }
 }

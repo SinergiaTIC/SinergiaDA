@@ -1539,69 +1539,9 @@
         <source>Aplicar el filtro sobre los resultados</source>
         <target>Aplicar o filtro aos resultados</target>
       </trans-unit>
-      <trans-unit id="aggregationText">
-        <source>Agregación</source>
-        <target>Agregación</target>
-      </trans-unit>
-      <trans-unit id="ptooltipViewTextRanges">
-        <source>Al configurar un Rango las agregaciones quedarán bloqueadas, Ejemplo de un rango válido - 12:18:50:100</source>
-        <target>Ao configurar un rango, as agregacións bloquearanse. Exemplo dun rango válido: 12:18:50:100</target>
-      </trans-unit>
-      <trans-unit id="rangesExpresionH5">
-        <source>Rangos:</source>
-        <target>Rangos:</target>
-      </trans-unit>
-      <trans-unit id="addRange">
-        <source>Añadir Rango</source>
-        <target>Engadir Rango</target>
-      </trans-unit>
-      <trans-unit id="rangeDescriptionB">
-        <source>Rango</source>
-        <target>Rango</target>
-      </trans-unit>
-      <trans-unit id="rangeDescriptionNumberError">
-        <source>El correcto orden de los límites del rango van de menor a mayor</source>
-        <target>A orde correcta dos límites do rango é de menor a maior</target>
-      </trans-unit>
-      <trans-unit id="rangeDescriptionCharacterError">
-        <source>El último caracter del rango debe ser un número</source>
-        <target>O último carácter do rango debe ser un número</target>
-      </trans-unit>
-      <trans-unit id="ptooltipNotAvailableRanges">
-        <source>No es posible crear un rango nuevo por que ya existe uno configurado</source>
-        <target>Non é posible crear un novo rango porque xa existe un configurado.</target>
-      </trans-unit>
-      <trans-unit id="textBetween">
-        <source>Entre</source>
-        <target>Entre</target>
-      </trans-unit>
-      <trans-unit id="filterSettings">
-        <source>Configuración de filtros</source>
-        <target>Configuración do filtro</target>
-      </trans-unit>
-      <trans-unit id="descriptionFilterSettings">
-        <source>Configuración avanzada de los todos los filtros</source>
-        <target>Configuración avanzada para todos os filtros</target>
-      </trans-unit>
-      <trans-unit id="filterSettingsReboot">
-        <source>La configuración de filtros se ha reiniciado</source>
-        <target>Restableceuse a configuración do filtro</target>
-      </trans-unit>
-      <trans-unit id="globalFilterSettingsReboot">
-        <source>La configuración de filtros del panel involucrado se ha reiniciado</source>
-        <target>Restablecéronse a configuración do filtro para o panel implicado</target>
-      </trans-unit>
-      <trans-unit id="withoutFilters">
-        <source>Aún no has configurado filtros. Usa el panel de filtros o los filtros globales</source>
-        <target>Aínda non configuraches os filtros. Usar o panel de filtros ou os filtros globais</target>
-      </trans-unit>
-      <trans-unit id="filterSummary">
-        <source>Resumen de filtros</source>
-        <target>Resumo do filtro</target>
-      </trans-unit>
-      <trans-unit id="globalFilterSelectedItemsLabel">
-        <source>elementos seleccionados</source>
-        <target>elementos seleccionados</target>
+      <trans-unit id="EditSQLQuery">
+        <source>EDITAR CONSULTA SQL</source>
+        <target>EDITAR CONSULTA SQL</target>
       </trans-unit>
 
       <!-- SECTION: SELECTOR DE FECHAS (DATEPICKER) -->
@@ -1813,43 +1753,85 @@
         <source>Selecciona un rango</source>
         <target>Seleccione un rango</target>
       </trans-unit>
-      <trans-unit id="DatePickerCustomDate">
-        <source>Seleccionar fecha</source>
-        <target>Seleccionar fecha</target>
+
+      <trans-unit id="inputPuerto" datatype="html">
+        <source>Puerto </source>
+        <target>Puerto </target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">
+            app/module/pages/data-sources/data-source-detail/data-source-detail.component.html</context>
+          <context context-type="linenumber">181</context>
+        </context-group>
       </trans-unit>
 
-      <!-- SECTION: MAPAS Y GEOJSON -->
-      <trans-unit id="inputMapTables">
-        <source>Propiedades del mapa</source>
-        <target>Propiedades del mapa</target>
+      <trans-unit id="filterButtonDashboard">
+        <source>Filtrar</source>
+        <target>Filtrar</target>
       </trans-unit>
-      <trans-unit id="inputMapURL">
-        <source>Subir archivo GeoJson (JSON)</source>
-        <target>Subir archivo GeoJson (JSON)</target>
+
+      <trans-unit id="kpiAlertH6" datatype="html">
+        <source> Generar alerta </source>
+        <target> Generar alerta </target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">
+            app/module/components/eda-panels/eda-blank-panel/kpi-dialog/kpi-dialog.component.html</context>
+          <context context-type="linenumber">15</context>
+        </context-group>
       </trans-unit>
-      <trans-unit id="inputMapField">
-        <source>Campo a usar para vincular el modelo con el mapa</source>
-        <target>Campo a usar para vincular el modelo con el mapa</target>
+
+      <trans-unit id="DynamicTextColor" datatype="html">
+        <source> Cambiar Color </source>
+        <target> Cambiar Color </target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">
+            app/module/components/eda-panels/eda-blank-panel/dynamicText-dialog/dynamicText-dialog.component.html</context>
+          <context context-type="linenumber">11</context>
+        </context-group>
       </trans-unit>
-      <trans-unit id="inputMapName">
-        <source>Nombre del mapa</source>
-        <target>Nombre del mapa</target>
+
+      <trans-unit id="kpiGreatSmallEqualH6" datatype="html">
+        <source> Operador </source>
+        <target> Operador </target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">
+            app/module/components/eda-panels/eda-blank-panel/kpi-dialog/kpi-dialog.component.html</context>
+          <context context-type="linenumber">29</context>
+        </context-group>
       </trans-unit>
-      <trans-unit id="avaliableMaps">
-        <source>Mapas disponibles</source>
-        <target>Mapas disponibles</target>
+
+      <trans-unit id="colorKpiH6" datatype="html">
+        <source> Color </source>
+        <target> Color </target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">
+            app/module/components/eda-panels/eda-blank-panel/kpi-dialog/kpi-dialog.component.html</context>
+          <context context-type="linenumber">49</context>
+        </context-group>
       </trans-unit>
-      <trans-unit id="inputMapColumnsText">
-        <source>Vincular columnas al mapa</source>
-        <target>Vincular columnas al mapa</target>
+
+      <trans-unit id="kpiAlerts" datatype="html">
+        <source> Alertas </source>
+        <target> Alertas </target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">
+            app/module/components/eda-panels/eda-blank-panel/kpi-dialog/kpi-dialog.component.html</context>
+          <context context-type="linenumber">60</context>
+        </context-group>
       </trans-unit>
-      <trans-unit id="inputMapColumns">
-        <source>Columnas</source>
-        <target>Columnas</target>
-      </trans-unit>
-      <trans-unit id="addMap">
-        <source>Mapas</source>
-        <target>Mapas</target>
+
+      <trans-unit id="addAlert" datatype="html">
+        <source> Añadir alerta </source>
+        <target> Añadir alerta </target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">
+            app/module/components/eda-panels/eda-blank-panel/kpi-dialog/kpi-dialog.component.html</context>
+          <context context-type="linenumber">77</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">
+            app/module/components/eda-panels/eda-blank-panel/kpi-dialog/kpi-dialog.component.html</context>
+          <context context-type="linenumber">76</context>
+        </context-group>
       </trans-unit>
 
       <!-- SECTION: ALERTAS Y NOTIFICACIONES (EMAIL/KPI) -->
