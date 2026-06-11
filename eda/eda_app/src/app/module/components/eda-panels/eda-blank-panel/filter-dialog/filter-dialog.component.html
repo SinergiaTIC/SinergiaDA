@@ -47,7 +47,7 @@
 
 <!-- SDA CUSTOM -->                <!-- Selector de Fecha con Calendario -->
 <!-- SDA CUSTOM -->                <div *ngIf="showEdaDatePicker" class="date-picker-single">
-<!-- SDA CUSTOM -->                    <eda-date-picker [inject]="datePickerConfig" (onDatesChanges)="processInlineDatePickerEvent($event)" [filterSelected]="filterSelected" [selectionMode]="(filterSelected?.value === 'in' || filterSelected?.value === 'not_in') ? 'multiple' : 'single'" [showSelector]="false"></eda-date-picker>
+<!-- SDA CUSTOM -->                    <eda-date-picker [inject]="datePickerConfig" (onDatesChanges)="processInlineDatePickerEvent($event)" [filterSelected]="filterSelected" [selectionMode]="(filterSelected?.value === 'in' || filterSelected?.value === 'not_in') ? 'multiple' : 'range'" [showSelector]="false"></eda-date-picker>
 <!-- SDA CUSTOM -->                </div>
 
 <!-- SDA CUSTOM -->                <!-- Selector Single -->

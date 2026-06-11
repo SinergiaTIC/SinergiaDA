@@ -1170,7 +1170,11 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
 
     /* SDA CUSTOM */     const items = filtre.filter_elements;
     /* SDA CUSTOM */     if (items.length === 1 || !items[1]) {
-    /* SDA CUSTOM */         return fmt(items[0].value1);  // Only return the value, operator is shown separately
+    /* SDA CUSTOM */         const val = items[0].value1;
+    /* SDA CUSTOM */         if (Array.isArray(val)) {
+    /* SDA CUSTOM */             return val.map((v: string) => fmt(v)).join(', ');
+    /* SDA CUSTOM */         }
+    /* SDA CUSTOM */         return fmt(val);  // Only return the value, operator is shown separately
     /* SDA CUSTOM */     }
     /* SDA CUSTOM */     return `${fmt(items[0].value1)} - ${fmt(items[1].value2)}`;
     /* SDA CUSTOM */ }

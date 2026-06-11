@@ -32,7 +32,6 @@ export class GlobalFilterComponent implements OnInit {
 
     /* SDA CUSTOM */ public displayDateFormatMap: { [filterId: string]: boolean } = {};
 
-    public filtrar: string = $localize`:@@filterButtonDashboard:Filtrar`;
     // SDA CUSTOM - Replace eliminated duplicate ID filterButtonDashboard with canonical filtrarH4
 /* SDA CUSTOM */    public filtrar: string = $localize`:@@filtrarH4:Filtrar`;
     // END SDA CUSTOM
