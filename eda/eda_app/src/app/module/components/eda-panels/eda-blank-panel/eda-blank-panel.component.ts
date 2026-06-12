@@ -316,6 +316,7 @@ export class EdaBlankPanelComponent implements OnInit {
         });
 
         if(this.sortedFilters === undefined) this.sortedFilters = []; // if it is an old report, we define the report as empty
+        /* SDA CUSTOM */ this.normalizeLegacyDateFilters();
     }
 
 
@@ -571,6 +572,7 @@ export class EdaBlankPanelComponent implements OnInit {
         /*SDA CUSTOM*/ this.joinType = panelContent.query.query.joinType || 'inner';
         /* SDA CUSTOM */ this.groupByEnabled = groupByEnabled ?? true;
         PanelInteractionUtils.handleFilters(this, panelContent.query.query);
+        /* SDA CUSTOM */ this.normalizeLegacyDateFilters();
         PanelInteractionUtils.handleFilterColumns(this, panelContent.query.query.filters, panelContent.query.query.fields);
         this.chartForm.patchValue({chart: this.chartUtils.chartTypes.find(o => o.subValue === panelContent.edaChart)});
 
@@ -1683,10 +1685,9 @@ export class EdaBlankPanelComponent implements OnInit {
 /**SDA CUSTOM  */       if (isNotRootColumn || rootColumnElements > 1 || currentQueryLength === 1) {
 /**SDA CUSTOM  */           // We check if when deleting a field it has a filter at selectedFilters
 /**SDA CUSTOM  */           if (this.selectedFilters.some((sf: any) => sf.filter_column === c.column_name && sf.filter_table === c.table_id)) {
-                                if (this.sortedFilters.length !== 0) {
-                                    this.alertService.addWarning($localize`:@@filterSettingsReboot:La configuración de filtros se ha reiniciado`);
-                                }
-                                this.sortedFilters = []; // resets the values ​​because one or more filters were deleted
+                                /* SDA CUSTOM */ this.sortedFilters = this.sortedFilters.filter(
+                                /* SDA CUSTOM */     sf => !(sf.filter_column === c.column_name && sf.filter_table === c.table_id)
+                                /* SDA CUSTOM */ );
                             }
 /**SDA CUSTOM  */           // Last column of a new panel (query never executed): reset global filter config before utils runs
 /**SDA CUSTOM  */           if (currentQueryLength === 1 && _.isNil(this.panel.content)) {
@@ -2048,11 +2049,9 @@ export class EdaBlankPanelComponent implements OnInit {
             this.sortedFilters.push(newSortedFilter);
 
         } else {
-
-            if(this.sortedFilters.length !==0) {
-                this.alertService.addWarning($localize`:@@filterSettingsReboot:La configuración de filtros se ha reiniciado`);
-            }
-            this.sortedFilters = [];
+            /* SDA CUSTOM */ this.sortedFilters = this.sortedFilters.filter(
+            /* SDA CUSTOM */     sf => sf.filter_id !== e.filter.filter_id
+            /* SDA CUSTOM */ );
         }
     }
 
@@ -2084,12 +2083,21 @@ export class EdaBlankPanelComponent implements OnInit {
             this.sortedFilters.push(newSortedFilter);
 
         } else {
-
-            if(this.sortedFilters.length !==0) {
-                this.alertService.addWarning($localize`:@@filterSettingsReboot:La configuración de filtros se ha reiniciado`);
-            }
-            this.sortedFilters = [];
+            /* SDA CUSTOM */ this.sortedFilters = this.sortedFilters.filter(
+            /* SDA CUSTOM */     sf => sf.filter_id !== e.filter.filter_id
+            /* SDA CUSTOM */ );
         }
     }
+
+    /* SDA CUSTOM */ private normalizeLegacyDateFilters(): void {
+    /* SDA CUSTOM */     const normalize = (f: any) => {
+    /* SDA CUSTOM */         if (f.selectedRange && !f.dynamicValue) {
+    /* SDA CUSTOM */             f.dynamicValue = f.selectedRange;
+    /* SDA CUSTOM */         }
+    /* SDA CUSTOM */     };
+    /* SDA CUSTOM */     this.selectedFilters.forEach(normalize);
+    /* SDA CUSTOM */     this.globalFilters.forEach(normalize);
+    /* SDA CUSTOM */     this.sortedFilters.forEach(normalize);
+    /* SDA CUSTOM */ }
 
 }
