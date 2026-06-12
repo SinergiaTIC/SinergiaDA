@@ -35,13 +35,13 @@
 <!-- SDA CUSTOM -->            <div *ngIf="selectedColumn?.column_type === 'date'" class="col-12 d-flex align-items-center flex-wrap" style="gap: 10px;">
 <!-- SDA CUSTOM -->                <!-- Selector de Operador -->
 <!-- SDA CUSTOM -->                <span class="p-float-label" style="min-width: 180px;">
-<!-- SDA CUSTOM -->                    <p-dropdown id="dateOperatorTypes" [options]="dateFilterOperators" [(ngModel)]="filterSelected" optionLabel="label" [autoDisplayFirst]="false" [style]="{'width': '100%'}" [showClear]="true" (onChange)="handleDateFilterOperatorChange(filterSelected)"></p-dropdown>
+<!-- SDA CUSTOM -->                    <p-dropdown id="dateOperatorTypes" [options]="dateFilterOperators" [(ngModel)]="filterSelected" optionLabel="label" [autoDisplayFirst]="false" [style]="{'width': '100%'}" [showClear]="true" (onChange)="handleDateFilterOperatorChange($event.value)"></p-dropdown>
 <!-- SDA CUSTOM -->                    <label>Operador</label>
 <!-- SDA CUSTOM -->                </span>
 
 <!-- SDA CUSTOM -->                <!-- Selector de Rango -->
 <!-- SDA CUSTOM -->                <span *ngIf="showDateFormatSelecter && isDateFormatAvailable" class="p-float-label" style="min-width: 180px;">
-<!-- SDA CUSTOM -->                    <p-dropdown id="dateFormatSelection" [options]="rangeDateFormat" [(ngModel)]="dateFormatSelected" optionLabel="label" [autoDisplayFirst]="false" [style]="{'width': '100%'}" [showClear]="true" [disabled]="!isDateFormatAvailable" (onChange)="handleDateFilterFormatChange(dateFormatSelected)"></p-dropdown>
+<!-- SDA CUSTOM -->                    <p-dropdown id="dateFormatSelection" [options]="rangeDateFormat" [(ngModel)]="dateFormatSelected" optionLabel="label" [autoDisplayFirst]="false" [style]="{'width': '100%'}" [showClear]="true" [disabled]="!isDateFormatAvailable" (onChange)="handleDateFilterFormatChange($event.value)"></p-dropdown>
 <!-- SDA CUSTOM -->                    <label>Rango</label>
 <!-- SDA CUSTOM -->                </span>
 

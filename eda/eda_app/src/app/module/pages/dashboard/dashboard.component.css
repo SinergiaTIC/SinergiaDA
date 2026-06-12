@@ -459,3 +459,18 @@ app-dashboard {
 /* SDA CUSTOM */ ::ng-deep ngx-gridster {
 /* SDA CUSTOM */     display: block;
 /* SDA CUSTOM */ }
+
+/* SDA CUSTOM - Date filter controls in global filter dialog */
+/* SDA CUSTOM */ .date-filter-controls {
+/* SDA CUSTOM */     display: flex;
+/* SDA CUSTOM */     align-items: center;
+/* SDA CUSTOM */     gap: 8px;
+/* SDA CUSTOM */     flex-wrap: wrap;
+/* SDA CUSTOM */     width: 100%;
+/* SDA CUSTOM */     overflow: visible;
+/* SDA CUSTOM */ }
+/* SDA CUSTOM */ .date-filter-controls > p-dropdown,
+/* SDA CUSTOM */ .date-filter-controls > eda-date-picker,
+/* SDA CUSTOM */ .date-filter-controls > p-calendar {
+/* SDA CUSTOM */     flex-shrink: 0;
+/* SDA CUSTOM */ }

@@ -710,6 +710,7 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
     }
 
     carregarFilters() {
+        /* SDA CUSTOM */ this.filter.selecteds = [];
         this.controller.params.filters.forEach(filter => {
             this.filter.selecteds.push(filter);
         });

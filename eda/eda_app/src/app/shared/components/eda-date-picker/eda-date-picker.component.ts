@@ -20,6 +20,7 @@ export class EdaDatePickerComponent implements OnChanges {
 	/**SDA CUSTOM  */@Input() showSelector: boolean = true;
 	/**SDA CUSTOM  */@Input() filterSelected: any = {};
 	/**SDA CUSTOM  */@Input() selectionMode: string = "range";
+	/**SDA CUSTOM  */@Input() appendTo: string = 'body';
 	@Output() onDatesChanges = new EventEmitter<any>();
 	@Output() onRemove = new EventEmitter<void>();
 

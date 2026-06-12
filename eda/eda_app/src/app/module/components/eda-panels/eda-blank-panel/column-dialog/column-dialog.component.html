@@ -96,19 +96,19 @@
 <!-- SDA CUSTOM --> <div class="ml-2" *ngIf="selectedColumn?.column_type === 'date'" class="d-flex align-items-center flex-wrap" style="gap: 10px;">
 <!-- SDA CUSTOM -->     <!-- Selector de Operador -->
 <!-- SDA CUSTOM -->     <span class="p-float-label" style="min-width: 180px;">
-<!-- SDA CUSTOM -->         <p-dropdown id="dateOperatorTypes" [options]="dateFilterOperators" [(ngModel)]="filterSelected" optionLabel="label" [autoDisplayFirst]="false" [style]="{'width': '100%'}" [showClear]="true" (onChange)="handleDateFilterOperatorChange(filterSelected)"></p-dropdown>
+<!-- SDA CUSTOM -->         <p-dropdown id="dateOperatorTypes" [options]="dateFilterOperators" [(ngModel)]="filterSelected" optionLabel="label" [autoDisplayFirst]="false" [style]="{'width': '100%'}" [showClear]="true" (onChange)="handleDateFilterOperatorChange($event.value)"></p-dropdown>
 <!-- SDA CUSTOM -->         <label i18n="@@tiposFiltrosLabel" for="dateOperatorTypes">Operador</label>
 <!-- SDA CUSTOM -->     </span>
 
 <!-- SDA CUSTOM -->     <!-- Selector de Rango (solo para algunos operadores) -->
 <!-- SDA CUSTOM -->     <span *ngIf="showDateFormatSelecter && isDateFormatAvailable" class="p-float-label" style="min-width: 180px;">
-<!-- SDA CUSTOM -->         <p-dropdown id="dateFormatSelection" [options]="rangeDateFormat" [(ngModel)]="dateFormatSelected" optionLabel="label" [autoDisplayFirst]="false" [style]="{'width': '100%'}" [showClear]="true" [disabled]="!isDateFormatAvailable" (onChange)="handleDateFilterFormatChange(dateFormatSelected)"></p-dropdown>
+<!-- SDA CUSTOM -->         <p-dropdown id="dateFormatSelection" [options]="rangeDateFormat" [(ngModel)]="dateFormatSelected" optionLabel="label" [autoDisplayFirst]="false" [style]="{'width': '100%'}" [showClear]="true" [disabled]="!isDateFormatAvailable" (onChange)="handleDateFilterFormatChange($event.value)"></p-dropdown>
 <!-- SDA CUSTOM -->         <label i18n="@@dateRangeLabel" for="dateFormatSelection">Rango</label>
 <!-- SDA CUSTOM -->     </span>
 
 <!-- SDA CUSTOM -->     <!-- Selector de Fecha con Calendario (para custom date) -->
 <!-- SDA CUSTOM -->     <div *ngIf="showEdaDatePicker" class="date-picker-single">
-<!-- SDA CUSTOM -->         <eda-date-picker [inject]="datePickerConfig" (onDatesChanges)="processInlineDatePickerEvent($event)" [filterSelected]="filterSelected" [selectionMode]="(filterSelected?.value === 'in' || filterSelected?.value === 'not_in') ? 'multiple' : 'single'" [showSelector]="false"></eda-date-picker>
+<!-- SDA CUSTOM -->         <eda-date-picker [inject]="datePickerConfig" (onDatesChanges)="processInlineDatePickerEvent($event)" [filterSelected]="filterSelected" [selectionMode]="(filterSelected?.value === 'in' || filterSelected?.value === 'not_in') ? 'multiple' : ((filterSelected?.value === 'between' || filterSelected?.value === 'not_between') ? 'range' : 'single')" [showSelector]="false"></eda-date-picker>
 <!-- SDA CUSTOM -->     </div>
 
 <!-- SDA CUSTOM -->     <!-- Selector Single para operadores =, !=, >, <, >=, <= -->
@@ -429,7 +429,7 @@
 
                     <div *ngIf="filter.forDisplay.length !== 0" class="col-12 foot-card">
 
-                        <p-scrollPanel [style]="{width: '100%', height: '120px'}" styleClass="custombar1">
+                        <!-- SDA CUSTOM --><p-scrollPanel [style]="{width: '100%', height: '180px'}" styleClass="custombar1">
 
                             <ng-container *ngFor="let filtre of filter.forDisplay">
                                 <p *ngIf="filtre.filter_elements.length === 0" class="d-flex align-items-center">

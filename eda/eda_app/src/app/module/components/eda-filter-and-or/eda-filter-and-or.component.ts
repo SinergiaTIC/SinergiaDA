@@ -19,6 +19,7 @@ import {
 } from 'angular-gridster2';
 
 import _ from 'lodash';
+/* SDA CUSTOM */ import { rangeDateFormats } from '@eda/shared/components/date-dialog/date-format-dialog.index';
 
 
 @Component({
@@ -158,6 +159,8 @@ export class EdaFilterAndOrComponent implements OnInit {
 /* SDA CUSTOM */            filter_codes: sf.filter_codes,
             filter_id: sf.filter_id,
             isGlobal: sf.isGlobal,
+            /* SDA CUSTOM */ dynamicValue: sf.dynamicValue,
+            /* SDA CUSTOM */ selectedRange: sf.selectedRange,
             value: "and"
           }
         );
@@ -185,6 +188,8 @@ export class EdaFilterAndOrComponent implements OnInit {
 /* SDA CUSTOM */            filter_codes: gf.filter_codes,
             filter_id: gf.filter_id,
             isGlobal: gf.isGlobal,
+            /* SDA CUSTOM */ dynamicValue: gf.dynamicValue,
+            /* SDA CUSTOM */ selectedRange: gf.selectedRange,
             value: "and"
           }
         );
@@ -515,10 +520,14 @@ export class EdaFilterAndOrComponent implements OnInit {
             const tableName = table.display_name?.default;
             const columnName = table.columns.find((c) => c.column_name == item.filter_column)?.display_name?.default;
 
-            const values = item.filter_elements[0]?.value1;
-            const values2 = item.filter_elements[1]?.value2;
-
             let valueStr = '';
+
+            /* SDA CUSTOM */ if (item.dynamicValue) {
+            /* SDA CUSTOM */     const rangeLabel = rangeDateFormats.find((r: any) => r.value === item.dynamicValue)?.label || item.dynamicValue;
+            /* SDA CUSTOM */     valueStr = `"${rangeLabel}"`;
+            /* SDA CUSTOM */ } else {
+                const values = item.filter_elements[0]?.value1;
+                const values2 = item.filter_elements[1]?.value2;
 
             if (values) {
                 if (values.length == 1 && !['in', 'not_in'].includes(item.filter_type)) {
@@ -535,13 +544,18 @@ export class EdaFilterAndOrComponent implements OnInit {
                     }
                 }
             }
+            /* SDA CUSTOM */ }
 
-            let filterType = item.filter_type
-            if(filterType === 'between') filterType = this.textBetween;
+            /* SDA CUSTOM */ let filterType = '';
+            /* SDA CUSTOM */ if (valueStr) {
+                filterType = item.filter_type;
+                if (filterType === 'between') filterType = this.textBetween;
+                filterType = ` ${filterType} `;
+            }
 
             let filterDescription = item.isGlobal ? 'Filtro Global' : 'Filtro Panel';
 
-            str = `${tableName} [${columnName}] ${filterType} ${valueStr} > ${filterDescription}`;
+            /* SDA CUSTOM */ str = `${tableName} [${columnName}]${filterType}${valueStr} > ${filterDescription}`;
         }
 
         return str;
