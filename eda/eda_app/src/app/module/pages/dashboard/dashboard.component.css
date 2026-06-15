@@ -397,6 +397,12 @@ app-dashboard {
 /* SDA CUSTOM */     background-color: transparent !important;
 /* SDA CUSTOM */ }
 /* SDA CUSTOM */
+/* SDA CUSTOM - Remove shadow and border from gridster-item-inner in transparent text panels */
+/* SDA CUSTOM */ ::ng-deep .dashboard-grid ngx-gridster-item.background-transparent .gridster-item-inner {
+/* SDA CUSTOM */     box-shadow: none !important;
+/* SDA CUSTOM */     border: none !important;
+/* SDA CUSTOM */ }
+/* SDA CUSTOM */
 /* SDA CUSTOM */ ::ng-deep .dashboard-grid ngx-gridster-item.background-transparent .panel-heading {
 /* SDA CUSTOM */     background-color: transparent !important;
 /* SDA CUSTOM */ }

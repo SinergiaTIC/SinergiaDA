@@ -908,6 +908,10 @@
   </trans-unit>
   <!-- END SDA CUSTOM -->
   <!-- END SDA CUSTOM -->
+  <trans-unit id="opcionTitulo">
+    <source>NUEVO TEXTO</source>
+    <target>NUEVO PANEL DE TEXTO</target>
+  </trans-unit>
 </body>
 </file>
 </xliff>
