@@ -1,5 +1,5 @@
 import { DashboardService } from './../../../../services/api/dashboard.service';
-import { Component, OnInit, Input, Output, EventEmitter, ViewEncapsulation, ViewChild, ElementRef, AfterViewInit, OnDestroy } from "@angular/core";
+import { Component, OnInit, Input, Output, EventEmitter, ViewEncapsulation, ViewChild, ElementRef, AfterViewInit, OnDestroy, ChangeDetectorRef } from "@angular/core";
 import { InjectEdaPanel, EdaTitlePanel } from '@eda/models/model.index';
 import { EdaContextMenu, EdaContextMenuItem, EdaDialogCloseEvent, EdaDialogController } from '@eda/shared/components/shared-components.index';
 import { DomSanitizer } from '@angular/platform-browser'
@@ -35,8 +35,9 @@ export class EdaTitlePanelComponent implements OnInit, AfterViewInit, OnDestroy 
 /* SDA CUSTOM */    public unlockPanelTooltip: string = $localize`:@@unlockPanel:Unlock panel`;
 /* SDA CUSTOM */    private resizeObserver: ResizeObserver;
 /* SDA CUSTOM */    private readonly scaleTolerance = 0.05; // Tolerance to recalculate scale
+/* SDA CUSTOM */    public scaledTitle: string = '';
 
-    constructor(public sanitized: DomSanitizer, public dashboardService : DashboardService){}
+    constructor(public sanitized: DomSanitizer, public dashboardService : DashboardService, private cdr: ChangeDetectorRef){}
     
 
     ngOnInit(): void {
@@ -46,6 +47,10 @@ export class EdaTitlePanelComponent implements OnInit, AfterViewInit, OnDestroy 
 
 /* SDA CUSTOM */    ngAfterViewInit(): void {
 /* SDA CUSTOM */        this.initResizeObserver();
+/* SDA CUSTOM */        setTimeout(() => {
+/* SDA CUSTOM */            this.scaledTitle = this.computeScaledTitle();
+/* SDA CUSTOM */            this.cdr.detectChanges();
+/* SDA CUSTOM */        });
 /* SDA CUSTOM */    }
 
 /* SDA CUSTOM */    ngOnDestroy(): void {
@@ -58,9 +63,11 @@ export class EdaTitlePanelComponent implements OnInit, AfterViewInit, OnDestroy 
 /* SDA CUSTOM */        if (this.titleContainer && 'ResizeObserver' in window) {
 /* SDA CUSTOM */            this.resizeObserver = new ResizeObserver((entries) => {
 /* SDA CUSTOM */                for (const entry of entries) {
-/* SDA CUSTOM */                    // Force change detection when size changes
 /* SDA CUSTOM */                    if (this.panel.baseWidth && entry.contentRect.width > 0) {
-/* SDA CUSTOM */                        // Scale is calculated automatically in getTitleStyle()
+/* SDA CUSTOM */                        requestAnimationFrame(() => {
+/* SDA CUSTOM */                            this.scaledTitle = this.computeScaledTitle();
+/* SDA CUSTOM */                            this.cdr.detectChanges();
+/* SDA CUSTOM */                        });
 /* SDA CUSTOM */                    }
 /* SDA CUSTOM */                }
 /* SDA CUSTOM */            });
@@ -108,8 +115,7 @@ export class EdaTitlePanelComponent implements OnInit, AfterViewInit, OnDestroy 
 /* SDA CUSTOM */        return {
 /* SDA CUSTOM */            'display': 'flex',
 /* SDA CUSTOM */            'align-items': alignItems,
-/* SDA CUSTOM */            'transform-origin': 'left center',
-/* SDA CUSTOM */            'color': this.panel.textColor || 'inherit'
+/* SDA CUSTOM */            'transform-origin': 'left center'
 /* SDA CUSTOM */        };
 /* SDA CUSTOM */    }
 
@@ -150,12 +156,16 @@ export class EdaTitlePanelComponent implements OnInit, AfterViewInit, OnDestroy 
     /* SDA CUSTOM */            'border-right': showBorder ? `1px solid ${borderColor}` : 'none',
     /* SDA CUSTOM */            'border-radius': showBorder ? '4px' : '0',
     /* SDA CUSTOM */            'box-shadow': 'none',
-    /* SDA CUSTOM */            'background': backgroundTransparent ? 'transparent' : undefined
+    /* SDA CUSTOM */            'background': backgroundTransparent ? 'transparent' : (this.panel.backgroundColor || undefined)
     /* SDA CUSTOM */        };
     /* SDA CUSTOM */    }
 
 /* SDA CUSTOM */    // Processes the title HTML and adjusts font sizes according to scale factor
 /* SDA CUSTOM */    getScaledTitle(): string {
+/* SDA CUSTOM */        return this.scaledTitle || this.panel.title || '';
+/* SDA CUSTOM */    }
+
+/* SDA CUSTOM */    private computeScaledTitle(): string {
 /* SDA CUSTOM */        if (!this.panel.title) {
 /* SDA CUSTOM */            return '';
 /* SDA CUSTOM */        }
@@ -163,9 +173,7 @@ export class EdaTitlePanelComponent implements OnInit, AfterViewInit, OnDestroy 
 /* SDA CUSTOM */        if (scale === 1) {
 /* SDA CUSTOM */            return this.panel.title;
 /* SDA CUSTOM */        }
-/* SDA CUSTOM */        // Limit maximum scale to 1.3x to prevent text from becoming too large
 /* SDA CUSTOM */        const limitedScale = Math.min(scale, 1.3);
-/* SDA CUSTOM */        // Process HTML and adjust font sizes
 /* SDA CUSTOM */        return this.adjustFontSizes(this.panel.title, limitedScale);
 /* SDA CUSTOM */    }
 
@@ -240,11 +248,13 @@ export class EdaTitlePanelComponent implements OnInit, AfterViewInit, OnDestroy 
                         const baseWidth = this.panel.baseWidth || currentWidth;
 
                         this.editTittleController = new EdaDialogController({
-                        /* SDA CUSTOM */ params: { title: this.panel.title, backgroundTransparent: this.panel.backgroundTransparent, baseWidth: baseWidth, verticalAlign: this.panel.verticalAlign, textColor: this.panel.textColor, borderColor: this.panel.borderColor, showBorder: this.panel.showBorder },
+                        /* SDA CUSTOM */ params: { title: this.panel.title, backgroundTransparent: this.panel.backgroundTransparent, baseWidth: baseWidth, verticalAlign: this.panel.verticalAlign, borderColor: this.panel.borderColor, showBorder: this.panel.showBorder, backgroundColor: this.panel.backgroundColor },
                             close: (event, response) => {
                                 if(!_.isEqual(event, EdaDialogCloseEvent.NONE)){
                                     this.panel.title = response.title;
 /* SDA CUSTOM */ this.panel.backgroundTransparent = response.backgroundTransparent;
+/* SDA CUSTOM */                                    this.scaledTitle = '';
+/* SDA CUSTOM */                                    setTimeout(() => { this.scaledTitle = this.computeScaledTitle(); this.cdr.detectChanges(); });
                                     // SDA CUSTOM - Save base width for proportional scaling (only if new)
                                     if (!this.panel.baseWidth && response.baseWidth) {
                                         this.panel.baseWidth = response.baseWidth;
@@ -252,9 +262,10 @@ export class EdaTitlePanelComponent implements OnInit, AfterViewInit, OnDestroy 
                                     // SDA CUSTOM - Save vertical alignment
                                     this.panel.verticalAlign = response.verticalAlign || 'center';
                                     // SDA CUSTOM - Save appearance options
-                                    this.panel.textColor = response.textColor || '#000000';
                                     this.panel.borderColor = response.borderColor || '#d7dde6';
                                     this.panel.showBorder = response.showBorder !== false;
+                                    // SDA CUSTOM - Save background color
+                                    this.panel.backgroundColor = response.backgroundColor || '#ffffff';
                                     this.setPanelSize()
                                     this.dashboardService._notSaved.next(true);
                                 }
@@ -294,11 +305,13 @@ export class EdaTitlePanelComponent implements OnInit, AfterViewInit, OnDestroy 
 /* SDA CUSTOM */         const baseWidth = this.panel.baseWidth || currentWidth;
 /* SDA CUSTOM */
 /* SDA CUSTOM */         this.editTittleController = new EdaDialogController({
-/* SDA CUSTOM */             params: { title: this.panel.title, backgroundTransparent: this.panel.backgroundTransparent, baseWidth: baseWidth, verticalAlign: this.panel.verticalAlign, textColor: this.panel.textColor, borderColor: this.panel.borderColor, showBorder: this.panel.showBorder },
+/* SDA CUSTOM */             params: { title: this.panel.title, backgroundTransparent: this.panel.backgroundTransparent, baseWidth: baseWidth, verticalAlign: this.panel.verticalAlign, borderColor: this.panel.borderColor, showBorder: this.panel.showBorder, backgroundColor: this.panel.backgroundColor },
 /* SDA CUSTOM */             close: (event, response) => {
 /* SDA CUSTOM */                 if(!_.isEqual(event, EdaDialogCloseEvent.NONE)){
 /* SDA CUSTOM */                     this.panel.title = response.title;
 /* SDA CUSTOM */                     this.panel.backgroundTransparent = response.backgroundTransparent;
+/* SDA CUSTOM */                     this.scaledTitle = '';
+/* SDA CUSTOM */                     setTimeout(() => { this.scaledTitle = this.computeScaledTitle(); this.cdr.detectChanges(); });
 /* SDA CUSTOM */                     // Save base width for proportional scaling (only if new)
 /* SDA CUSTOM */                     if (!this.panel.baseWidth && response.baseWidth) {
 /* SDA CUSTOM */                         this.panel.baseWidth = response.baseWidth;
@@ -306,9 +319,10 @@ export class EdaTitlePanelComponent implements OnInit, AfterViewInit, OnDestroy 
 /* SDA CUSTOM */                     // Save vertical alignment
 /* SDA CUSTOM */                     this.panel.verticalAlign = response.verticalAlign || 'center';
 /* SDA CUSTOM */                     // Save appearance options
-/* SDA CUSTOM */                     this.panel.textColor = response.textColor || '#000000';
 /* SDA CUSTOM */                     this.panel.borderColor = response.borderColor || '#d7dde6';
 /* SDA CUSTOM */                     this.panel.showBorder = response.showBorder !== false;
+/* SDA CUSTOM */                     // Save background color
+/* SDA CUSTOM */                     this.panel.backgroundColor = response.backgroundColor || '#ffffff';
 /* SDA CUSTOM */                     this.setPanelSize()
 /* SDA CUSTOM */                     this.dashboardService._notSaved.next(true);
 /* SDA CUSTOM */                 }
@@ -321,7 +335,8 @@ export class EdaTitlePanelComponent implements OnInit, AfterViewInit, OnDestroy 
 /* SDA CUSTOM */        const duplicatedPanel = _.cloneDeep(this.panel, true);
 /* SDA CUSTOM */        duplicatedPanel.id = this.generateUUID();
 /* SDA CUSTOM */        duplicatedPanel.y = duplicatedPanel.y + 1;
-/* SDA CUSTOM */        this.duplicate.emit(duplicatedPanel);
+/* SDA CUSTOM */        const sourcePanelId = this.panel.id;
+/* SDA CUSTOM */        this.duplicate.emit({ panel: duplicatedPanel, sourcePanelId: sourcePanelId });
 /* SDA CUSTOM */    }
 
 /* SDA CUSTOM */    private generateUUID(): string {

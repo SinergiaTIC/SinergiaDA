@@ -933,6 +933,50 @@
     <source>Paneles no afectados por este filtro</source>
     <target>Panells no afectats per aquest filtre</target>
   </trans-unit>
+  <trans-unit id="opcionTitulo">
+    <source>NUEVO TEXTO</source>
+    <target>NOU PANELL DE TEXT</target>
+  </trans-unit>
+  <trans-unit id="titlePanelOptions">
+    <source>Panel Options</source>
+    <target>Opcions del panell</target>
+  </trans-unit>
+  <trans-unit id="titlePanelAppearance">
+    <source>Appearance</source>
+    <target>Aparença</target>
+  </trans-unit>
+  <trans-unit id="titlePanelRemoveBg">
+    <source>Remove panel background</source>
+    <target>Treure fons del panell</target>
+  </trans-unit>
+  <trans-unit id="titlePanelBgColor">
+    <source>Background color</source>
+    <target>Color de fons</target>
+  </trans-unit>
+  <trans-unit id="titlePanelShowBorder">
+    <source>Show border</source>
+    <target>Mostrar vora</target>
+  </trans-unit>
+  <trans-unit id="titlePanelBorderColor">
+    <source>Border color</source>
+    <target>Color de la vora</target>
+  </trans-unit>
+  <trans-unit id="titlePanelVerticalAlign">
+    <source>Vertical alignment</source>
+    <target>Alineació vertical</target>
+  </trans-unit>
+  <trans-unit id="titlePanelAlignTop">
+    <source>Top</source>
+    <target>A dalt</target>
+  </trans-unit>
+  <trans-unit id="titlePanelAlignCenter">
+    <source>Center</source>
+    <target>Centre</target>
+  </trans-unit>
+  <trans-unit id="titlePanelAlignBottom">
+    <source>Bottom</source>
+    <target>A baix</target>
+  </trans-unit>
 </body>
   </file>
 </xliff>

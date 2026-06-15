@@ -1357,7 +1357,8 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
             resizable: true,
             dragAndDrop: true,
             fontsize: '22px',
-            color: '#000000'
+            color: '#000000',
+            backgroundColor: '#ffffff'
         });
         this.setPanelSizes(panel);
         this.display_v.rightSidebar = false;

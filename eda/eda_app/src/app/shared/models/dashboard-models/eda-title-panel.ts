@@ -11,6 +11,7 @@ export class EdaTitlePanel extends EdaPanel {
 /* SDA CUSTOM */    textColor?: string; // Text color of the title
 /* SDA CUSTOM */    borderColor?: string; // Border color of the panel
 /* SDA CUSTOM */    showBorder?: boolean; // Show/hide panel border
+/* SDA CUSTOM */    backgroundColor?: string; // Panel background color
 
     constructor(init?: Partial<EdaTitlePanel>) {
         super(init);

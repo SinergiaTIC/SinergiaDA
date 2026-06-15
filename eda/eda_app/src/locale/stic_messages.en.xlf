@@ -931,6 +931,50 @@
     <source>Paneles no afectados por este filtro</source>
     <target>Panels not affected by this filter</target>
   </trans-unit>
+  <trans-unit id="opcionTitulo">
+    <source>NUEVO TEXTO</source>
+    <target>NEW TEXT PANEL</target>
+  </trans-unit>
+  <trans-unit id="titlePanelOptions">
+    <source>Panel Options</source>
+    <target>Panel Options</target>
+  </trans-unit>
+  <trans-unit id="titlePanelAppearance">
+    <source>Appearance</source>
+    <target>Appearance</target>
+  </trans-unit>
+  <trans-unit id="titlePanelRemoveBg">
+    <source>Remove panel background</source>
+    <target>Remove panel background</target>
+  </trans-unit>
+  <trans-unit id="titlePanelBgColor">
+    <source>Background color</source>
+    <target>Background color</target>
+  </trans-unit>
+  <trans-unit id="titlePanelShowBorder">
+    <source>Show border</source>
+    <target>Show border</target>
+  </trans-unit>
+  <trans-unit id="titlePanelBorderColor">
+    <source>Border color</source>
+    <target>Border color</target>
+  </trans-unit>
+  <trans-unit id="titlePanelVerticalAlign">
+    <source>Vertical alignment</source>
+    <target>Vertical alignment</target>
+  </trans-unit>
+  <trans-unit id="titlePanelAlignTop">
+    <source>Top</source>
+    <target>Top</target>
+  </trans-unit>
+  <trans-unit id="titlePanelAlignCenter">
+    <source>Center</source>
+    <target>Center</target>
+  </trans-unit>
+  <trans-unit id="titlePanelAlignBottom">
+    <source>Bottom</source>
+    <target>Bottom</target>
+  </trans-unit>
 </body>
   </file>
 </xliff>

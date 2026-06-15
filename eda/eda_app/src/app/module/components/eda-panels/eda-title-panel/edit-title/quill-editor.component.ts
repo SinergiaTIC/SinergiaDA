@@ -1,4 +1,5 @@
 import { Component, ViewChild } from '@angular/core';
+import { OverlayPanel } from 'primeng/overlaypanel';
 import { EdaDialog, EdaDialogAbstract, EdaDialogCloseEvent } from '@eda/shared/components/shared-components.index';
 import { Editor } from 'primeng/editor';
 import { DomSanitizer } from '@angular/platform-browser';
@@ -233,6 +234,85 @@ Quill.register(Size, true);
 			border: 1px solid #d9e0ea;
 			border-radius: 4px;
 		}
+
+		/* SDA CUSTOM - Toolbar icon next to color pickers */
+		.ql-toolbar-icon {
+			width: 18px;
+			height: 18px;
+			display: inline-block;
+			vertical-align: middle;
+			margin-right: 2px;
+		}
+
+		.ql-toolbar-icon .ql-stroke {
+			stroke: #444;
+		}
+
+		.ql-toolbar-icon .ql-fill {
+			fill: #444;
+		}
+
+		/* SDA CUSTOM - Style p-colorPicker to blend with Quill toolbar */
+		:host ::ng-deep .ql-formats .ql-toolbar-picker {
+			width: 28px;
+			height: 24px;
+			display: inline-flex;
+			align-items: center;
+			justify-content: center;
+			vertical-align: middle;
+			padding: 3px 5px;
+		}
+
+		:host ::ng-deep .ql-formats .ql-toolbar-picker .p-colorpicker-preview {
+			width: 18px;
+			height: 18px;
+			border-radius: 3px;
+			border: 1px solid rgba(0, 0, 0, 0.2);
+		}
+
+		.ql-custom-color-btn {
+			height: 24px;
+			width: 28px;
+			padding: 3px 5px;
+			border: none;
+			background: transparent;
+			cursor: pointer;
+			display: inline-flex;
+			align-items: center;
+			justify-content: center;
+			vertical-align: middle;
+		}
+
+		.ql-custom-color-btn svg {
+			width: 18px;
+			height: 18px;
+		}
+
+		.ql-custom-color-btn:hover .ql-stroke {
+			stroke: #06c;
+		}
+
+		.ql-custom-color-btn:hover .ql-fill {
+			fill: #06c;
+		}
+
+		.ql-overlay-picker {
+			display: flex;
+			flex-direction: column;
+			gap: 8px;
+			align-items: center;
+			padding: 4px;
+		}
+
+		.ql-hex-input-popup {
+			width: 200px;
+			padding: 4px 8px;
+			font-size: 12px;
+			font-family: monospace;
+			border: 1px solid #d9e0ea;
+			border-radius: 4px;
+			text-align: center;
+		}
 	`]
 	// END SDA CUSTOM
 })
@@ -246,9 +326,13 @@ export class TitleDialogComponent extends EdaDialogAbstract {
 /* SDA CUSTOM */	public verticalAlign: VerticalAlign = 'center'; // Vertical alignment of the title
 /* SDA CUSTOM */	public isAppearanceExpanded: boolean = true; // State of the Appearance section
 /* SDA CUSTOM */	public isAlignmentExpanded: boolean = true; // State of the Alignment section
-/* SDA CUSTOM */	public textColor: string = '#000000'; // Text color of the title
 /* SDA CUSTOM */	public borderColor: string = '#d7dde6'; // Border color of the panel
 /* SDA CUSTOM */	public showBorder: boolean = true; // Show/hide panel border
+/* SDA CUSTOM */	public backgroundColor: string = '#ffffff'; // Panel background color
+/* SDA CUSTOM */	public customTextColor: string = '#000000'; // Custom text color from Quill toolbar color picker
+/* SDA CUSTOM */	public customTextBgColor: string = '#ffffff'; // Custom text background color from Quill toolbar
+/* SDA CUSTOM */	public showTextColorPicker: boolean = false;
+/* SDA CUSTOM */	public showTextBgColorPicker: boolean = false;
 	constructor(private sanitizer: DomSanitizer) {
 		super();
 		this.dialog = new EdaDialog({
@@ -265,9 +349,9 @@ export class TitleDialogComponent extends EdaDialogAbstract {
 /* SDA CUSTOM */		this.backgroundTransparent = this.controller.params.backgroundTransparent || false;
 /* SDA CUSTOM */		this.baseWidth = this.controller.params.baseWidth;
 /* SDA CUSTOM */		this.verticalAlign = this.controller.params.verticalAlign || 'center';
-/* SDA CUSTOM */		this.textColor = this.controller.params.textColor || '#000000';
 /* SDA CUSTOM */		this.borderColor = this.controller.params.borderColor || '#d7dde6';
 /* SDA CUSTOM */		this.showBorder = this.controller.params.showBorder !== false; // default true
+/* SDA CUSTOM */		this.backgroundColor = this.controller.params.backgroundColor || '#ffffff';
 		const urlImage = document.querySelector('#qlUrlImage');
 		urlImage.addEventListener('click', ($event) => this.urlImageHandler(event));
 	}
@@ -277,7 +361,7 @@ export class TitleDialogComponent extends EdaDialogAbstract {
 	}
 
 	public saveChartConfig(): void {
-/* SDA CUSTOM */		this.onClose(EdaDialogCloseEvent.UPDATE, { title: this.title, backgroundTransparent: this.backgroundTransparent, baseWidth: this.baseWidth, verticalAlign: this.verticalAlign, textColor: this.textColor, borderColor: this.borderColor, showBorder: this.showBorder });
+/* SDA CUSTOM */		this.onClose(EdaDialogCloseEvent.UPDATE, { title: this.title, backgroundTransparent: this.backgroundTransparent, baseWidth: this.baseWidth, verticalAlign: this.verticalAlign, borderColor: this.borderColor, showBorder: this.showBorder, backgroundColor: this.backgroundColor });
 	}
 
 	public urlImageHandler(event?: any): void {
@@ -318,6 +402,44 @@ export class TitleDialogComponent extends EdaDialogAbstract {
 	public closeChartConfig(): void {
 		this.onClose(EdaDialogCloseEvent.NONE);
 	}
+
+/* SDA CUSTOM */	private savedRange: any = null;
+
+/* SDA CUSTOM */	public openColorOverlay(event: Event, overlay: OverlayPanel): void {
+/* SDA CUSTOM */		if (this.editor) {
+/* SDA CUSTOM */			const quill = this.editor.getQuill();
+/* SDA CUSTOM */			this.savedRange = quill.getSelection();
+/* SDA CUSTOM */		}
+/* SDA CUSTOM */		overlay.toggle(event);
+/* SDA CUSTOM */		event.stopPropagation();
+/* SDA CUSTOM */	}
+
+/* SDA CUSTOM */	public onOverlayShow(type: string): void {
+/* SDA CUSTOM */		setTimeout(() => {
+/* SDA CUSTOM */			if (type === 'textColor') this.showTextColorPicker = true;
+/* SDA CUSTOM */			else this.showTextBgColorPicker = true;
+/* SDA CUSTOM */		}, 50);
+/* SDA CUSTOM */	}
+
+/* SDA CUSTOM */	private applySavedFormat(format: string, value: string): void {
+/* SDA CUSTOM */		if (!this.editor || !value) return;
+/* SDA CUSTOM */		const quill = this.editor.getQuill();
+/* SDA CUSTOM */		if (this.savedRange && this.savedRange.length > 0) {
+/* SDA CUSTOM */			quill.formatText(this.savedRange.index, this.savedRange.length, format, value);
+/* SDA CUSTOM */			quill.setSelection(this.savedRange.index, this.savedRange.length, 'silent');
+/* SDA CUSTOM */		} else {
+/* SDA CUSTOM */			quill.format(format, value);
+/* SDA CUSTOM */		}
+/* SDA CUSTOM */		this.title = quill.root.innerHTML;
+/* SDA CUSTOM */	}
+
+/* SDA CUSTOM */	public onTextColorLive(value: string): void {
+/* SDA CUSTOM */		this.applySavedFormat('color', value);
+/* SDA CUSTOM */	}
+
+/* SDA CUSTOM */	public onTextBgColorLive(value: string): void {
+/* SDA CUSTOM */		this.applySavedFormat('background', value);
+/* SDA CUSTOM */	}
 
 /* SDA CUSTOM */	// Toggles expansion/collapse of a section
 /* SDA CUSTOM */	toggleSection(section: 'appearance' | 'alignment'): void {
