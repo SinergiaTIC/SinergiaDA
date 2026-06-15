@@ -907,11 +907,32 @@
     <target>Fallo en actualización do modelo</target>
   </trans-unit>
   <!-- END SDA CUSTOM -->
-  <!-- END SDA CUSTOM -->
   <trans-unit id="opcionTitulo">
     <source>NUEVO TEXTO</source>
     <target>NUEVO PANEL DE TEXTO</target>
   </trans-unit>
+<!-- END SDA CUSTOM -->
+  <!-- SDA CUSTOM - Download JSON title -->
+  <trans-unit id="downloadJsonTitle">
+    <source>Download JSON</source>
+    <target>Descargar JSON</target>
+  </trans-unit>
+  <trans-unit id="filterHoverGreen">
+    <source>Verde</source>
+    <target>Verde</target>
+  </trans-unit>
+  <trans-unit id="filterHoverRed">
+    <source>Rojo</source>
+    <target>Vermello</target>
+  </trans-unit>
+  <trans-unit id="filterHoverAffected">
+    <source>Paneles afectados por este filtro</source>
+    <target>Paneis afectados por este filtro</target>
+  </trans-unit>
+  <trans-unit id="filterHoverNotAffected">
+    <source>Paneles no afectados por este filtro</source>
+    <target>Paneis non afectados por este filtro</target>
+  </trans-unit>
 </body>
-</file>
+  </file>
 </xliff>

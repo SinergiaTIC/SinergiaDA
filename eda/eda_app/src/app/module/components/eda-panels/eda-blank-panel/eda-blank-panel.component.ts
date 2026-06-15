@@ -65,6 +65,8 @@ export class EdaBlankPanelComponent implements OnInit {
     @Output() duplicate: EventEmitter<any> = new EventEmitter();
     @Output() action: EventEmitter<IPanelAction> = new EventEmitter<IPanelAction>();
     @Output() d3Action: EventEmitter<IPanelAction> = new EventEmitter<IPanelAction>();
+    /*SDA CUSTOM*/ @Output() rootTableFirstSet = new EventEmitter<string>();
+    /*SDA CUSTOM*/ @Output() rootTableCleared = new EventEmitter<void>();
 
     /** properties that are injected into the dialogue with the specific properties of each chart. */
     public configController: EdaDialogController;
@@ -185,6 +187,7 @@ export class EdaBlankPanelComponent implements OnInit {
     public selectedFilters: any[] = [];
     public globalFilters: any[] = [];
     public filterValue: any = {};
+    /*SDA CUSTOM*/ public _pendingGlobalFilterReload: boolean = false;
 
     public loadingNodes: boolean = false;
     public rootTable: any;
@@ -397,6 +400,15 @@ export class EdaBlankPanelComponent implements OnInit {
         return (userName !== 'edaanonim' && !this.inject.isObserver);
     }
 
+/* SDA CUSTOM */    public isAnonymousUser(): boolean {
+/* SDA CUSTOM */        const user = localStorage.getItem('user');
+/* SDA CUSTOM */        if (!user) {
+/* SDA CUSTOM */            return false;
+/* SDA CUSTOM */        }
+/* SDA CUSTOM */        const userName = JSON.parse(user).name;
+/* SDA CUSTOM */        return userName === 'edaanonim';
+/* SDA CUSTOM */    }
+
     public showWhatIfSection(): boolean {
         return this.currentQuery.some((query: any) => query.whatif_column);
     }
@@ -478,6 +490,11 @@ export class EdaBlankPanelComponent implements OnInit {
     async loadChartsData(panelContent: any) {
         if (this.panel.content) {
             this.display_v.minispinner = true;
+
+            /*SDA CUSTOM*/ if (this.panel._isDuplicate) {
+            /*SDA CUSTOM*/     this.buildGlobalconfiguration(panelContent);
+            /*SDA CUSTOM*/     return;
+            /*SDA CUSTOM*/ }
 
             try {
                 const response = await QueryUtils.switchAndRun(this, panelContent.query);
@@ -575,6 +592,16 @@ export class EdaBlankPanelComponent implements OnInit {
 
         const currentQueryCheck = this.currentQuery;
         this.atLeastThereIsOneWithAggregation = this.checkAtLeastOneWithAggregation(currentQueryCheck);
+        /*SDA CUSTOM*/ let _ranQuery = false;
+        /*SDA CUSTOM*/ if (this._pendingGlobalFilterReload) {
+        /*SDA CUSTOM*/     this._pendingGlobalFilterReload = false;
+        /*SDA CUSTOM*/     QueryUtils.runQuery(this, true);
+        /*SDA CUSTOM*/     _ranQuery = true;
+        /*SDA CUSTOM*/ }
+        /*SDA CUSTOM*/ if (this.panel._isDuplicate) {
+        /*SDA CUSTOM*/     delete this.panel._isDuplicate;
+        /*SDA CUSTOM*/     if (!_ranQuery) QueryUtils.runQuery(this, true);
+        /*SDA CUSTOM*/ }
     }
 
 
@@ -1017,8 +1044,10 @@ export class EdaBlankPanelComponent implements OnInit {
         const globalFilter = _.cloneDeep(_filter);
 
         if (_filter.pathList && _filter.pathList[this.panel.id]) {
-            globalFilter.joins = _filter.pathList[this.panel.id].path
-            globalFilter.filter_table = _filter.pathList[this.panel.id].table_id;
+            /*SDA CUSTOM*/ globalFilter.joins = _filter.pathList[this.panel.id].path;
+            /*SDA CUSTOM*/ if (_filter.pathList[this.panel.id].table_id) {
+            /*SDA CUSTOM*/     globalFilter.filter_table = _filter.pathList[this.panel.id].table_id;
+            /*SDA CUSTOM*/ }
         }
         const filterInx = this.globalFilters.findIndex((gf: any) => gf.filter_id === globalFilter.filter_id)
 
@@ -1036,8 +1065,10 @@ export class EdaBlankPanelComponent implements OnInit {
         const globalFilter = _.cloneDeep(_filter);
 
         if (_filter.pathList && _filter.pathList[this.panel.id]) {
-            globalFilter.joins = _filter.pathList[this.panel.id].path
-            globalFilter.filter_table = _filter.pathList[this.panel.id].table_id;
+            /*SDA CUSTOM*/ globalFilter.joins = _filter.pathList[this.panel.id].path;
+            /*SDA CUSTOM*/ if (_filter.pathList[this.panel.id].table_id) {
+            /*SDA CUSTOM*/     globalFilter.filter_table = _filter.pathList[this.panel.id].table_id;
+            /*SDA CUSTOM*/ }
         }
         const filterInx = this.globalFilters.findIndex((gf: any) => gf.filter_id === globalFilter.filter_id)
 
@@ -1079,14 +1110,10 @@ export class EdaBlankPanelComponent implements OnInit {
 
     public rebootGlobalFilter(_filter: any){
 
-        if(this.sortedFilters.length !==0) {
-            this.alertService.addWarning($localize`:@@globalFilterSettingsReboot:La configuración de filtros del panel involucrado se ha reiniciado`);
-        }
-
-        if(this.sortedFilters.some((sortedFilter: any) => _filter.id === sortedFilter.filter_id)){
-            this.sortedFilters = [];
-            this.savePanel(); // Panel setting saved
-        }
+        /* SDA CUSTOM  */ const filterIndex = this.sortedFilters.findIndex((sortedFilter: any) => _filter.id === sortedFilter.filter_id);
+        /* SDA CUSTOM  */ if (filterIndex !== -1) {
+        /* SDA CUSTOM  */     this.sortedFilters.splice(filterIndex, 1);
+        /* SDA CUSTOM  */ }
 
     }
 
@@ -1634,6 +1661,7 @@ export class EdaBlankPanelComponent implements OnInit {
 
         if (this.selectedQueryMode == 'EDA2' && this.currentQuery.length === 1) {
             PanelInteractionUtils.loadTableNodes(this);
+            /*SDA CUSTOM*/ this.rootTableFirstSet.emit(this.rootTable?.table_name);
        }
     }
 
@@ -1658,6 +1686,11 @@ export class EdaBlankPanelComponent implements OnInit {
                                 }
                                 this.sortedFilters = []; // resets the values ​​because one or more filters were deleted
                             }
+/**SDA CUSTOM  */           // Last column of a new panel (query never executed): reset global filter config before utils runs
+/**SDA CUSTOM  */           if (currentQueryLength === 1 && _.isNil(this.panel.content)) {
+/**SDA CUSTOM  */               this.rootTableCleared.emit();
+/**SDA CUSTOM  */               this.globalFilters = [];
+/**SDA CUSTOM  */           }
                             PanelInteractionUtils.removeColumn(this, c, list);
                         }
 /**SDA CUSTOM  */       else {
@@ -1689,10 +1722,12 @@ export class EdaBlankPanelComponent implements OnInit {
 
     /** duplicates a dashboard panel and positions it one point below the original one. */
     public duplicatePanel(): void {
-        let duplicatedPanel =   _.cloneDeep(this.panel, true);
+        /*SDA CUSTOM*/const sourcePanelId = this.panel.id;
+        let duplicatedPanel = _.cloneDeep(this.panel, true);
         duplicatedPanel.id = this.fileUtiles.generateUUID();
-        duplicatedPanel.y = duplicatedPanel.y+1;
-        this.duplicate.emit(duplicatedPanel);
+        /*SDA CUSTOM*/duplicatedPanel.y = duplicatedPanel.y + 1;
+        /*SDA CUSTOM*/duplicatedPanel._isDuplicate = true;
+        /*SDA CUSTOM*/this.duplicate.emit({ panel: duplicatedPanel, sourcePanelId });
     }
 
 

@@ -16,11 +16,12 @@
         </button>
 
 
-        <div *ngFor="let filter of globalFilters" class="filter-set d-flex align-items-center">
+       <!-- SDA CUSTOM -->  <div *ngFor="let filter of globalFilters" class="filter-set d-flex align-items-center" [class.filter-hover-active]="filterHoverActiveId === filter.id" (mouseenter)="onFilterHover(filter)" (mouseleave)="onFilterLeave()">
           <!-- SDA CUSTOM <span *ngIf="( isAdmin || isDashboardCreator || ['public', 'readOnly'].includes(filter.visible) )  &&  filter.selectedColumn.visible " class="filter-name filters-size"> -->
           <!-- SDA CUSTOM --> <span *ngIf="( isAdmin || isDashboardCreator || (['public', 'readOnly'].includes(filter.visible)   &&  (filter.selectedColumn?.visible || filter.column?.value?.visible)) )" class="filter-name filters-size">
                 {{getFilterLabel(filter)}}:
             </span>
+            <!-- SDA CUSTOM --> <span *ngIf="filterHoverActiveId === filter.id" class="filter-hover-tooltip" [innerHTML]="filterHoverTooltipHtml"></span>
 
             <!-- SDA CUSTOM  <ng-container -->
             <!-- SDA CUSTOM *ngIf="( isAdmin || isDashboardCreator ||   ['public', 'readOnly'].includes(filter.visible) ) &&  filter.selectedColumn.visible  " -->
@@ -79,12 +80,12 @@
 <!--SDA CUSTOM-->                   <div (mouseenter)="showFilterTooltip($event, op, filter)" (mouseleave)="hideFilterTooltip(op)">
 <!--SDA CUSTOM-->                       <div class="filter-tooltip-header">
 <!--SDA CUSTOM-->                           <span class="filters-size filter-tooltip-header-title">{{ resumen }}</span>
-<!--SDA CUSTOM-->                           <button type="button" class="pi pi-trash filter-tooltip-remove-all" (click)="removeAllFilterItems(filter)"></button>
+<!--SDA CUSTOM-->                           <button *ngIf="!isFilterReadOnly(filter)" type="button" class="pi pi-trash filter-tooltip-remove-all" (click)="removeAllFilterItems(filter)"></button>
 <!--SDA CUSTOM-->                       </div>
 <!--SDA CUSTOM-->                       <div class="filter-tooltip-items">
 <!--SDA CUSTOM-->                           <div *ngFor="let item of filter.selectedItems" class="filter-tooltip-chip">
 <!--SDA CUSTOM-->                               <span class="customMultiselect filters-size filter-tooltip-chip-text">{{ item }}</span>
-<!--SDA CUSTOM-->                               <button type="button" class="pi pi-times filter-tooltip-button" (click)="removeFilterItem(filter, item)"></button>
+<!--SDA CUSTOM-->                               <button *ngIf="!isFilterReadOnly(filter)" type="button" class="pi pi-times filter-tooltip-button" (click)="removeFilterItem(filter, item)"></button>
 <!--SDA CUSTOM-->                           </div>
 <!--SDA CUSTOM-->                       </div>
 <!--SDA CUSTOM-->                   </div>
