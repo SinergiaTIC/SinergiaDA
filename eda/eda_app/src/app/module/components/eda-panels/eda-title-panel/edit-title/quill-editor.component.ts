@@ -321,7 +321,7 @@ export class TitleDialogComponent extends EdaDialogAbstract {
 	@ViewChild('Editor') editor: Editor;
 	public dialog: EdaDialog;
 	public title: string;
-/* SDA CUSTOM */	public backgroundTransparent: boolean = false;
+/* SDA CUSTOM */	public showPanelBackground: boolean = true;
 /* SDA CUSTOM */	public baseWidth: number; // Base width of the panel for proportional scaling
 /* SDA CUSTOM */	public verticalAlign: VerticalAlign = 'center'; // Vertical alignment of the title
 /* SDA CUSTOM */	public isAppearanceExpanded: boolean = true; // State of the Appearance section
@@ -346,7 +346,7 @@ export class TitleDialogComponent extends EdaDialogAbstract {
 
 	public onShow(): void {
 		this.title = this.controller.params.title;
-/* SDA CUSTOM */		this.backgroundTransparent = this.controller.params.backgroundTransparent || false;
+/* SDA CUSTOM */		this.showPanelBackground = this.controller.params.backgroundTransparent !== true;
 /* SDA CUSTOM */		this.baseWidth = this.controller.params.baseWidth;
 /* SDA CUSTOM */		this.verticalAlign = this.controller.params.verticalAlign || 'center';
 /* SDA CUSTOM */		this.borderColor = this.controller.params.borderColor || '#d7dde6';
@@ -361,7 +361,7 @@ export class TitleDialogComponent extends EdaDialogAbstract {
 	}
 
 	public saveChartConfig(): void {
-/* SDA CUSTOM */		this.onClose(EdaDialogCloseEvent.UPDATE, { title: this.title, backgroundTransparent: this.backgroundTransparent, baseWidth: this.baseWidth, verticalAlign: this.verticalAlign, borderColor: this.borderColor, showBorder: this.showBorder, backgroundColor: this.backgroundColor });
+/* SDA CUSTOM */		this.onClose(EdaDialogCloseEvent.UPDATE, { title: this.title, backgroundTransparent: !this.showPanelBackground, baseWidth: this.baseWidth, verticalAlign: this.verticalAlign, borderColor: this.borderColor, showBorder: this.showBorder, backgroundColor: this.backgroundColor });
 	}
 
 	public urlImageHandler(event?: any): void {

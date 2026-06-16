@@ -937,9 +937,9 @@
     <source>Appearance</source>
     <target>Aparença</target>
   </trans-unit>
-  <trans-unit id="titlePanelRemoveBg">
-    <source>Remove panel background</source>
-    <target>Treure fons del panell</target>
+  <trans-unit id="titlePanelShowBg">
+    <source>Show panel background</source>
+    <target>Mostrar fons del panell</target>
   </trans-unit>
   <trans-unit id="titlePanelBgColor">
     <source>Background color</source>

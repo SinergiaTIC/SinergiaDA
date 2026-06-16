@@ -115,14 +115,14 @@
 						<div class="title-section-content" *ngIf="isAppearanceExpanded">
 							<!-- SDA CUSTOM - Transparent background toggle with i18n -->
 <!-- SDA CUSTOM -->							<div class="config-row chart-color-row chart-color-row--spaced">
-<!-- SDA CUSTOM -->								<span class="chart-color-label" i18n="@@titlePanelRemoveBg">Remove panel background</span>
+<!-- SDA CUSTOM -->								<span class="chart-color-label" i18n="@@titlePanelShowBg">Show panel background</span>
 								<span class="chart-color-controls">
-									<p-inputSwitch [(ngModel)]="backgroundTransparent" inputId="bgTransparent"></p-inputSwitch>
+									<p-inputSwitch [(ngModel)]="showPanelBackground" inputId="showPanelBackground"></p-inputSwitch>
 								</span>
 							</div>
 
-							<!-- SDA CUSTOM - Panel background color (only if not transparent) -->
-<!-- SDA CUSTOM -->							<div class="config-row chart-color-row chart-color-row--spaced" *ngIf="!backgroundTransparent">
+							<!-- SDA CUSTOM - Panel background color (only if showPanelBackground is true) -->
+<!-- SDA CUSTOM -->							<div class="config-row chart-color-row chart-color-row--spaced" *ngIf="showPanelBackground">
 <!-- SDA CUSTOM -->								<span class="chart-color-label" i18n="@@titlePanelBgColor">Background color</span>
 								<span class="chart-color-controls">
 									<input type="text" [(ngModel)]="backgroundColor" pInputText class="chart-color-input" />
