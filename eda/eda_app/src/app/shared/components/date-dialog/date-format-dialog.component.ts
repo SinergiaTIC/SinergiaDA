@@ -118,6 +118,8 @@
 /* SDA CUSTOM */      this.handleDateFormatChange(this.dateFormatSelected);
 /* SDA CUSTOM */      // Load the custom date values into the picker
 /* SDA CUSTOM */      this.loadCustomDateValues(filter);
+/* SDA CUSTOM */      // Refresh picker config with the loaded date values
+/* SDA CUSTOM */      this.initDatePickerConfig();
 /* SDA CUSTOM */    }
 /* SDA CUSTOM */  }
 /* SDA CUSTOM */
