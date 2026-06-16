@@ -339,7 +339,7 @@ export class TitleDialogComponent extends EdaDialogAbstract {
 			show: () => this.onShow(),
 			hide: () => this.onClose(EdaDialogCloseEvent.NONE),
 			// SDA CUSTOM - Title updated to reflect panel options
-			title: $localize`:@@PanelOptions:PANEL OPTIONS`
+/* SDA CUSTOM */			title: $localize`:@@PanelOptions:PANEL OPTIONS`
 		});
 		this.dialog.style = { width: '80%', height: '70%', top: "-4em", left: '1em' };
 	}
@@ -429,6 +429,15 @@ export class TitleDialogComponent extends EdaDialogAbstract {
 /* SDA CUSTOM */			quill.setSelection(this.savedRange.index, this.savedRange.length, 'silent');
 /* SDA CUSTOM */		} else {
 /* SDA CUSTOM */			quill.format(format, value);
+/* SDA CUSTOM */		}
+/* SDA CUSTOM */		this.title = quill.root.innerHTML;
+/* SDA CUSTOM */	}
+
+/* SDA CUSTOM */	public removeTextFormat(format: string): void {
+/* SDA CUSTOM */		if (!this.editor) return;
+/* SDA CUSTOM */		const quill = this.editor.getQuill();
+/* SDA CUSTOM */		if (this.savedRange && this.savedRange.length > 0) {
+/* SDA CUSTOM */			quill.removeFormat(this.savedRange.index, this.savedRange.length);
 /* SDA CUSTOM */		}
 /* SDA CUSTOM */		this.title = quill.root.innerHTML;
 /* SDA CUSTOM */	}

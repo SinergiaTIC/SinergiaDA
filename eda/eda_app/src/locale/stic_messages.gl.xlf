@@ -513,7 +513,6 @@
     <source>Máximo de etiquetas</source>
     <target>Máximo de etiquetas</target>
   </trans-unit>
-  <!-- SDA CUSTOM - KPI/chart option labels -->
   <trans-unit id="showChartLabels">
     <source>Mostrar etiquetas del gráfico</source>
     <target>Mostrar etiquetas do gráfico</target>
@@ -554,8 +553,6 @@
     <source>Fondo de etiquetas</source>
     <target>Fondo das etiquetas</target>
   </trans-unit>
-  <!-- END SDA CUSTOM -->
-  <!-- SDA CUSTOM - Logs viewer labels -->
   <trans-unit id="LogsViewer" datatype="html">
     <source>Visor de logs</source>
     <target>Visor de rexistros</target>
@@ -684,7 +681,6 @@
     <source>Mostrar accesos a informes</source>
     <target>Mostrar accesos aos informes</target>
   </trans-unit>
-  <!-- SDA CUSTOM - Logs action labels i18n -->
   <trans-unit id="LogsActionAccess">
     <source>Access</source>
     <target>Acceso</target>
@@ -797,7 +793,6 @@
     <source>Login</source>
     <target>Inicio de sesión</target>
   </trans-unit>
-  <!-- SDA CUSTOM - Logs action column labels i18n -->
   <trans-unit id="LogsActionNewLogin">
     <source>Login</source>
     <target>Inicio de sesión</target>
@@ -906,13 +901,10 @@
     <source>Update Model Failed</source>
     <target>Fallo en actualización do modelo</target>
   </trans-unit>
-  <!-- END SDA CUSTOM -->
   <trans-unit id="opcionTitulo">
     <source>NUEVO TEXTO</source>
     <target>NUEVO PANEL DE TEXTO</target>
   </trans-unit>
-<!-- END SDA CUSTOM -->
-  <!-- SDA CUSTOM - Download JSON title -->
   <trans-unit id="downloadJsonTitle">
     <source>Download JSON</source>
     <target>Descargar JSON</target>
@@ -976,6 +968,10 @@
   <trans-unit id="titlePanelAlignBottom">
     <source>Bottom</source>
     <target>Abaixo</target>
+  </trans-unit>
+  <trans-unit id="duplicatePanel">
+    <source>Duplicate panel</source>
+    <target>Duplicar panel</target>
   </trans-unit>
 </body>
   </file>

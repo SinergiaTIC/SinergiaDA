@@ -244,8 +244,8 @@ export class EdaTitlePanelComponent implements OnInit, AfterViewInit, OnDestroy 
                         this.contextMenu.hideContextMenu();
 
                         // SDA CUSTOM - Get current container width for proportional scaling
-                        const currentWidth = this.titleContainer?.nativeElement?.offsetWidth || 0;
-                        const baseWidth = this.panel.baseWidth || currentWidth;
+/* SDA CUSTOM */                        const currentWidth = this.titleContainer?.nativeElement?.offsetWidth || 0;
+/* SDA CUSTOM */                        const baseWidth = this.panel.baseWidth || currentWidth;
 
                         this.editTittleController = new EdaDialogController({
                         /* SDA CUSTOM */ params: { title: this.panel.title, backgroundTransparent: this.panel.backgroundTransparent, baseWidth: baseWidth, verticalAlign: this.panel.verticalAlign, borderColor: this.panel.borderColor, showBorder: this.panel.showBorder, backgroundColor: this.panel.backgroundColor },
@@ -256,16 +256,16 @@ export class EdaTitlePanelComponent implements OnInit, AfterViewInit, OnDestroy 
 /* SDA CUSTOM */                                    this.scaledTitle = '';
 /* SDA CUSTOM */                                    setTimeout(() => { this.scaledTitle = this.computeScaledTitle(); this.cdr.detectChanges(); });
                                     // SDA CUSTOM - Save base width for proportional scaling (only if new)
-                                    if (!this.panel.baseWidth && response.baseWidth) {
-                                        this.panel.baseWidth = response.baseWidth;
+/* SDA CUSTOM */                                    if (!this.panel.baseWidth && response.baseWidth) {
+/* SDA CUSTOM */                                        this.panel.baseWidth = response.baseWidth;
                                     }
                                     // SDA CUSTOM - Save vertical alignment
-                                    this.panel.verticalAlign = response.verticalAlign || 'center';
+/* SDA CUSTOM */                                    this.panel.verticalAlign = response.verticalAlign || 'center';
                                     // SDA CUSTOM - Save appearance options
-                                    this.panel.borderColor = response.borderColor || '#d7dde6';
-                                    this.panel.showBorder = response.showBorder !== false;
+/* SDA CUSTOM */                                    this.panel.borderColor = response.borderColor || '#d7dde6';
+/* SDA CUSTOM */                                    this.panel.showBorder = response.showBorder !== false;
                                     // SDA CUSTOM - Save background color
-                                    this.panel.backgroundColor = response.backgroundColor || '#ffffff';
+/* SDA CUSTOM */                                    this.panel.backgroundColor = response.backgroundColor || '#ffffff';
                                     this.setPanelSize()
                                     this.dashboardService._notSaved.next(true);
                                 }

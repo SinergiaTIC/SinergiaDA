@@ -190,12 +190,14 @@
 <!-- SDA CUSTOM -->		<div *ngIf="showTextColorPicker" class="ql-overlay-picker">
 <!-- SDA CUSTOM -->			<p-colorPicker [(ngModel)]="customTextColor" (ngModelChange)="onTextColorLive($event)" inline="true" format="hex"></p-colorPicker>
 <!-- SDA CUSTOM -->			<input type="text" [(ngModel)]="customTextColor" (keydown.enter)="onTextColorLive(customTextColor)" class="ql-hex-input-popup" placeholder="#000000" maxlength="7" />
+<!-- SDA CUSTOM -->			<button type="button" pButton (click)="removeTextFormat('color'); textColorOL.hide()" label="Clear" class="p-button-sm p-button-outlined p-button-secondary" style="width:100%; margin-top:4px;"></button>
 <!-- SDA CUSTOM -->		</div>
 <!-- SDA CUSTOM -->	</p-overlayPanel>
 <!-- SDA CUSTOM -->	<p-overlayPanel #textBgColorOL (onShow)="onOverlayShow('textBgColor')" (onHide)="showTextBgColorPicker = false">
 <!-- SDA CUSTOM -->		<div *ngIf="showTextBgColorPicker" class="ql-overlay-picker">
 <!-- SDA CUSTOM -->			<p-colorPicker [(ngModel)]="customTextBgColor" (ngModelChange)="onTextBgColorLive($event)" inline="true" format="hex"></p-colorPicker>
 <!-- SDA CUSTOM -->			<input type="text" [(ngModel)]="customTextBgColor" (keydown.enter)="onTextBgColorLive(customTextBgColor)" class="ql-hex-input-popup" placeholder="#ffffff" maxlength="7" />
+<!-- SDA CUSTOM -->			<button type="button" pButton (click)="removeTextFormat('background'); textBgColorOL.hide()" label="Clear" class="p-button-sm p-button-outlined p-button-secondary" style="width:100%; margin-top:4px;"></button>
 <!-- SDA CUSTOM -->		</div>
 <!-- SDA CUSTOM -->	</p-overlayPanel>
 

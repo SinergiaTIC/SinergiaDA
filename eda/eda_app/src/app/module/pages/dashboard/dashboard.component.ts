@@ -1387,7 +1387,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
         /*SDA CUSTOM*/             }
         /*SDA CUSTOM*/         });
         /*SDA CUSTOM*/ }
-                        this.panels.push(panel);
+        /*SDA CUSTOM*/        this.panels.push(panel);
                         this.dashboardService._notSaved.next(true);
         /*SDA CUSTOM*/ const _dupSub = this.edaPanels.changes.subscribe(() => {
         /*SDA CUSTOM*/     _dupSub.unsubscribe();

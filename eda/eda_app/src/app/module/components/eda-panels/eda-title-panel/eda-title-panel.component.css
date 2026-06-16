@@ -30,15 +30,15 @@
   border-bottom: none !important;
 }
 
-/* Ensure no extra padding in minimalist mode */
-.title-panel-minimal .panel-heading,
-.title-panel-minimal .justify-content-between {
-  background: transparent !important;
-  border: none !important;
-  box-shadow: none !important;
-  outline: none !important;
-  border-bottom: none !important;
-  border-left: none !important;
+/* SDA CUSTOM - Ensure no extra padding in minimalist mode */
+/* SDA CUSTOM */ .title-panel-minimal .panel-heading,
+/* SDA CUSTOM */ .title-panel-minimal .justify-content-between {
+/* SDA CUSTOM */   background: transparent !important;
+/* SDA CUSTOM */   border: none !important;
+/* SDA CUSTOM */   box-shadow: none !important;
+/* SDA CUSTOM */   outline: none !important;
+/* SDA CUSTOM */   border-bottom: none !important;
+/* SDA CUSTOM */   border-left: none !important;
 }
 
 /* SDA CUSTOM - Force removal of any border on the internal container */
@@ -81,33 +81,18 @@
   border-left: none !important;
 }
 
-.eda-title-panel p,
-.eda-title-panel h1,
-.eda-title-panel h2,
-.eda-title-panel div {
-  margin: 0;            /* Remove margins that waste space */
-  padding: 0;
-  width: 100%;
-}
-
-/* Ensure images don't overflow vertically */
-.eda-title-panel img {
-  max-height: 100%;     /* Images don't overflow vertically */
-  max-width: 100%;
-  object-fit: contain;
-}
-
-.eda-title-panel p,
-.eda-title-panel h1,
-.eda-title-panel h2,
-.eda-title-panel div {
+/* SDA CUSTOM - Remove margins that waste space in text panel elements */
+/* SDA CUSTOM */ .eda-title-panel p,
+/* SDA CUSTOM */ .eda-title-panel h1,
+/* SDA CUSTOM */ .eda-title-panel h2,
+/* SDA CUSTOM */ .eda-title-panel div {
   margin: 0;
   padding: 0;
   width: 100%;
 }
 
-/* Ensure images don't overflow vertically */
-.eda-title-panel img {
+/* SDA CUSTOM - Ensure images don't overflow vertically in text panels */
+/* SDA CUSTOM */ .eda-title-panel img {
   max-height: 100%;
   max-width: 100%;
   object-fit: contain;
