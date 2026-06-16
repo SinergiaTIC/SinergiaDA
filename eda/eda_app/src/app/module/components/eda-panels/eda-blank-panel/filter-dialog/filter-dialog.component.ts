@@ -278,7 +278,10 @@ export class FilterDialogComponent extends EdaDialogAbstract {
 
         this.updateSortedFiltersFilterDialog.emit(addToSortedFilters); // Emitting an event to the eda-blank-panel component
 
-        this.filter.selecteds.find(f => _.startsWith(f.filter_id, item.filter_id) ).removed = true;
+        /* SDA CUSTOM */ const matched = this.filter.selecteds.find(f => _.startsWith(f.filter_id, item.filter_id));
+        /* SDA CUSTOM */ if (matched) {
+        /* SDA CUSTOM */     matched.removed = true;
+        /* SDA CUSTOM */ }
 
         this.filter.forDisplay = this.filter.selecteds.filter(f => {
             return _.startsWith(f.filter_table, this.selectedColumn.table_id) &&
@@ -520,6 +523,8 @@ export class FilterDialogComponent extends EdaDialogAbstract {
     /* SDA CUSTOM */     const noDateNeeded = ['not_null', 'not_null_nor_empty', 'null_or_empty'];
     /* SDA CUSTOM */     if (noDateNeeded.includes(operator.value)) {
     /* SDA CUSTOM */         this.display.filterButton = false;
+    /* SDA CUSTOM */         this.showDateFormatSelecter = false;
+    /* SDA CUSTOM */         this.isDateFormatAvailable = false;
     /* SDA CUSTOM */         return;
     /* SDA CUSTOM */     }
 
@@ -540,6 +545,8 @@ export class FilterDialogComponent extends EdaDialogAbstract {
     /* SDA CUSTOM */         this.dateFormatSelected = { label: $localize`:@@DatePickerCustomDate:Seleccionar fecha`, value: 'customDate' };
     /* SDA CUSTOM */         this.showDateFormatSelecter = false;
     /* SDA CUSTOM */         this.showEdaDatePicker = true;
+    /* SDA CUSTOM */         this.display.between = true;
+    /* SDA CUSTOM */         this.filterValue = {};
     /* SDA CUSTOM */         this.initInlineDatePickerConfig();
     /* SDA CUSTOM */         return;
     /* SDA CUSTOM */     }
@@ -662,9 +669,13 @@ export class FilterDialogComponent extends EdaDialogAbstract {
     /* SDA CUSTOM */         if (Array.isArray(val)) {
     /* SDA CUSTOM */             return val.map((v: string) => fmt(v)).join(', ');
     /* SDA CUSTOM */         }
-    /* SDA CUSTOM */         return fmt(val);  // Only return the value, operator is shown separately
+    /* SDA CUSTOM */         return fmt(val);
     /* SDA CUSTOM */     }
-    /* SDA CUSTOM */     return `${fmt(items[0].value1)} - ${fmt(items[1].value2)}`;
+    /* SDA CUSTOM */     const v1 = items[0].value1;
+    /* SDA CUSTOM */     const v2 = items[1].value2;
+    /* SDA CUSTOM */     const s1 = Array.isArray(v1) ? fmt(v1[0]) : fmt(v1);
+    /* SDA CUSTOM */     const s2 = Array.isArray(v2) ? fmt(v2[0]) : fmt(v2);
+    /* SDA CUSTOM */     return `${s1} - ${s2}`;
     /* SDA CUSTOM */ }
 
     /* SDA CUSTOM */ public getRangeLabel(value: string): string {
@@ -677,7 +688,9 @@ export class FilterDialogComponent extends EdaDialogAbstract {
     /* SDA CUSTOM */     if (noDateNeeded.includes(this.filterSelected.value)) return false;
     /* SDA CUSTOM */     if (this.dateFormatSelected == null) return true;
     /* SDA CUSTOM */     if (this.dateFormatSelected?.value === 'customDate') {
-    /* SDA CUSTOM */         return !this.filterValue?.value1;
+    /* SDA CUSTOM */         const hasValue1 = !this.filterValue?.value1;
+    /* SDA CUSTOM */         const isBetween = this.filterSelected?.value === 'between';
+    /* SDA CUSTOM */         return isBetween ? (hasValue1 || !this.filterValue?.value2) : hasValue1;
     /* SDA CUSTOM */     }
     /* SDA CUSTOM */     return false;
     /* SDA CUSTOM */ }

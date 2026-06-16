@@ -2,6 +2,8 @@ import {
   ChangeDetectionStrategy,
   Component,
   OnInit,
+  /* SDA CUSTOM */ OnChanges,
+  /* SDA CUSTOM */ SimpleChanges,
   ViewEncapsulation,
   Input,
   Output,
@@ -29,7 +31,7 @@ import _ from 'lodash';
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None
 })
-export class EdaFilterAndOrComponent implements OnInit {
+export class EdaFilterAndOrComponent implements OnInit, OnChanges {
 
   private static previousDashboard: GridsterItem[] | null = null;
 
@@ -135,6 +137,24 @@ export class EdaFilterAndOrComponent implements OnInit {
     }
 
   }
+
+  /* SDA CUSTOM */ ngOnChanges(changes: SimpleChanges): void {
+  /* SDA CUSTOM */     if (!changes.sortedFilters || !this.dashboard) return;
+  /* SDA CUSTOM */     const updated = changes.sortedFilters.currentValue;
+  /* SDA CUSTOM */     if (!updated) return;
+  /* SDA CUSTOM */     for (const item of this.dashboard) {
+  /* SDA CUSTOM */         const match = updated.find((sf: any) => sf.filter_id === item.filter_id);
+  /* SDA CUSTOM */         if (!match) continue;
+  /* SDA CUSTOM */         item.filter_elements = match.filter_elements;
+  /* SDA CUSTOM */         item.filter_codes = match.filter_codes;
+  /* SDA CUSTOM */         item.filter_type = match.filter_type;
+  /* SDA CUSTOM */         item.filter_column_type = match.filter_column_type;
+  /* SDA CUSTOM */         item.dynamicValue = match.dynamicValue;
+  /* SDA CUSTOM */         item.selectedRange = match.selectedRange;
+  /* SDA CUSTOM */     }
+  /* SDA CUSTOM */     this.dashboardClone = _.cloneDeep(this.dashboard);
+  /* SDA CUSTOM */     this.creacionQueryFiltros(this.dashboard);
+  /* SDA CUSTOM */ }
 
   initAndOrFilters () {
 

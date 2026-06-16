@@ -468,9 +468,26 @@ app-dashboard {
 /* SDA CUSTOM */     flex-wrap: wrap;
 /* SDA CUSTOM */     width: 100%;
 /* SDA CUSTOM */     overflow: visible;
+/* SDA CUSTOM */     position: relative;
 /* SDA CUSTOM */ }
 /* SDA CUSTOM */ .date-filter-controls > p-dropdown,
 /* SDA CUSTOM */ .date-filter-controls > eda-date-picker,
 /* SDA CUSTOM */ .date-filter-controls > p-calendar {
 /* SDA CUSTOM */     flex-shrink: 0;
+/* SDA CUSTOM */ }
+/* SDA CUSTOM */ .date-filter-controls > p-dropdown {
+/* SDA CUSTOM */     display: block;
+/* SDA CUSTOM */     width: 100%;
+/* SDA CUSTOM */     max-width: 100%;
+/* SDA CUSTOM */     min-width: 0;
+/* SDA CUSTOM */ }
+/* SDA CUSTOM */ .date-filter-controls > p-dropdown ::ng-deep .p-dropdown {
+/* SDA CUSTOM */     width: 100%;
+/* SDA CUSTOM */     max-width: 100%;
+/* SDA CUSTOM */ }
+/* SDA CUSTOM */ .date-filter-controls > p-dropdown ::ng-deep .p-dropdown-label {
+/* SDA CUSTOM */     white-space: nowrap;
+/* SDA CUSTOM */     overflow: hidden;
+/* SDA CUSTOM */     text-overflow: ellipsis;
+/* SDA CUSTOM */     max-width: 100%;
 /* SDA CUSTOM */ }

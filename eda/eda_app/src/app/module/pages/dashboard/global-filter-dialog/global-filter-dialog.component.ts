@@ -380,10 +380,14 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
                 const items: string[] = Array.isArray(filter.selectedItems[0])
                     ? filter.selectedItems[0]
                     : filter.selectedItems;
-                const firstDate = items[0];
-                const lastDate = items[items.length - 1];
-                config.dateRange.push(new Date(firstDate.replace(/-/g, '/')));
-                config.dateRange.push(new Date(lastDate.replace(/-/g, '/')));
+                /* SDA CUSTOM */ if (filter.dateFilterType === 'in' || filter.dateFilterType === 'not_in') {
+                /* SDA CUSTOM */     config.dateRange = items.map((d: string) => new Date(d.replace(/-/g, '/')));
+                /* SDA CUSTOM */ } else {
+                    const firstDate = items[0];
+                    const lastDate = items[items.length - 1];
+                    config.dateRange.push(new Date(firstDate.replace(/-/g, '/')));
+                    config.dateRange.push(new Date(lastDate.replace(/-/g, '/')));
+                /* SDA CUSTOM */ }
             }
         }
 
@@ -884,6 +888,7 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
 
     /* SDA CUSTOM */     const noDateNeeded = ['not_null', 'not_null_nor_empty', 'null_or_empty'];
     /* SDA CUSTOM */     if (noDateNeeded.includes(dateFilterType)) {
+    /* SDA CUSTOM */         this.isDateFormatAvailable = false;
     /* SDA CUSTOM */         return;
     /* SDA CUSTOM */     }
 
@@ -972,6 +977,10 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
 
     /* SDA CUSTOM */     const noDateNeeded = ['not_null', 'not_null_nor_empty', 'null_or_empty'];
     /* SDA CUSTOM */     if (noDateNeeded.includes(operator.value)) {
+    /* SDA CUSTOM */         this.isDateFormatAvailable = false;
+    /* SDA CUSTOM */         this.showEdaDatePicker = false;
+    /* SDA CUSTOM */         this.showEdaDatePickerSingleSelection = false;
+    /* SDA CUSTOM */         this.showEdaDatePickerMultipleSelection = false;
     /* SDA CUSTOM */         return;
     /* SDA CUSTOM */     }
 
@@ -1030,10 +1039,14 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
 
     /* SDA CUSTOM */     if (filter.selectedItems?.length > 0) {
     /* SDA CUSTOM */         const items = Array.isArray(filter.selectedItems[0]) ? filter.selectedItems[0] : filter.selectedItems;
-    /* SDA CUSTOM */         const firstDate = items[0];
-    /* SDA CUSTOM */         const lastDate = items[items.length - 1];
-    /* SDA CUSTOM */         if (firstDate) config.dateRange.push(new Date(firstDate.replace(/-/g, '/')));
-    /* SDA CUSTOM */         if (lastDate) config.dateRange.push(new Date(lastDate.replace(/-/g, '/')));
+    /* SDA CUSTOM */         /* SDA CUSTOM */ if (this.filterSelected?.value === 'in' || this.filterSelected?.value === 'not_in') {
+    /* SDA CUSTOM */             /* SDA CUSTOM */ config.dateRange = items.map((d: string) => new Date(d.replace(/-/g, '/')));
+    /* SDA CUSTOM */         } else {
+    /* SDA CUSTOM */             const firstDate = items[0];
+    /* SDA CUSTOM */             const lastDate = items[items.length - 1];
+    /* SDA CUSTOM */             if (firstDate) config.dateRange.push(new Date(firstDate.replace(/-/g, '/')));
+    /* SDA CUSTOM */             if (lastDate) config.dateRange.push(new Date(lastDate.replace(/-/g, '/')));
+    /* SDA CUSTOM */         }
     /* SDA CUSTOM */     }
     /* SDA CUSTOM */ }
 
@@ -1061,6 +1074,10 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
     /* SDA CUSTOM */             return `${ye}-${mo}-${da}`;
     /* SDA CUSTOM */         };
     /* SDA CUSTOM */         this.globalFilter.selectedItems = [toStr(dates[0]), toStr(dates[1])];
+    /* SDA CUSTOM */     } else {
+    /* SDA CUSTOM */         // Static date selected via inline picker: clear dynamic values
+    /* SDA CUSTOM */         this.globalFilter.selectedRange = null;
+    /* SDA CUSTOM */         this.globalFilter.dynamicValue = null;
     /* SDA CUSTOM */     }
     /* SDA CUSTOM */ }
 
@@ -1073,8 +1090,20 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
     /* SDA CUSTOM */         const [{ value: mo }, , { value: da }, , { value: ye }] = dtf.formatToParts(date);
     /* SDA CUSTOM */         return `${ye}-${mo}-${da}`;
     /* SDA CUSTOM */     });
-    /* SDA CUSTOM */     this.globalFilter.selectedItems = stringRange;
-    /* SDA CUSTOM */     this.globalFilter.selectedRange = event.range;
+    /* SDA CUSTOM */     const singleValueOps = ['=', '!=', '>', '<', '>=', '<='];
+    /* SDA CUSTOM */     const multiValueOps = ['in', 'not_in'];
+    /* SDA CUSTOM */     if (singleValueOps.includes(this.filterSelected?.value)) {
+    /* SDA CUSTOM */         this.globalFilter.selectedItems = [stringRange[0]];
+    /* SDA CUSTOM */         this.globalFilter.selectedRange = 'customDate';
+    /* SDA CUSTOM */         this.globalFilter.dynamicValue = null;
+    /* SDA CUSTOM */     } else if (multiValueOps.includes(this.filterSelected?.value)) {
+    /* SDA CUSTOM */         this.globalFilter.selectedItems = [stringRange];
+    /* SDA CUSTOM */         this.globalFilter.selectedRange = 'customDate';
+    /* SDA CUSTOM */         this.globalFilter.dynamicValue = null;
+    /* SDA CUSTOM */     } else {
+    /* SDA CUSTOM */         this.globalFilter.selectedItems = stringRange;
+    /* SDA CUSTOM */         this.globalFilter.selectedRange = event.range;
+    /* SDA CUSTOM */     }
     /* SDA CUSTOM */ }
 
     /* SDA CUSTOM */ public onSingleDateSelected(date: Date): void {
