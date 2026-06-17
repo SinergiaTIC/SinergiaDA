@@ -899,10 +899,6 @@
     <source>Update Model Failed</source>
     <target>Model update failed</target>
   </trans-unit>
-  <trans-unit id="opcionTitulo">
-    <source>NUEVO PANEL DE TEXTO</source>
-    <target>NEW TEXT PANEL</target>
-  </trans-unit>
   <trans-unit id="downloadJsonTitle">
     <source>Download JSON</source>
     <target>Download JSON</target>
@@ -924,7 +920,7 @@
     <target>Panels not affected by this filter</target>
   </trans-unit>
   <trans-unit id="opcionTitulo">
-    <source>NUEVO PANEL DE TEXTO</source>
+    <source>NUEVO TEXTO</source>
     <target>NEW TEXT PANEL</target>
   </trans-unit>
   <trans-unit id="titlePanelOptions">

@@ -901,10 +901,6 @@
     <source>Update Model Failed</source>
     <target>Error en actualització del model</target>
   </trans-unit>
-  <trans-unit id="opcionTitulo">
-    <source>NUEVO PANEL DE TEXTO</source>
-    <target>NOU PANELL DE TEXT</target>
-  </trans-unit>
   <trans-unit id="downloadJsonTitle">
     <source>Download JSON</source>
     <target>Descarregar JSON</target>
@@ -926,7 +922,7 @@
     <target>Panells no afectats per aquest filtre</target>
   </trans-unit>
   <trans-unit id="opcionTitulo">
-    <source>NUEVO PANEL DE TEXTO</source>
+    <source>NUEVO TEXTO</source>
     <target>NOU PANELL DE TEXT</target>
   </trans-unit>
   <trans-unit id="titlePanelOptions">
