@@ -902,7 +902,7 @@
     <target>Fallo en actualización del modelo</target>
   </trans-unit>
   <trans-unit id="opcionTitulo">
-    <source>NUEVO TEXTO</source>
+    <source>NUEVO PANEL DE TEXTO</source>
     <target>NUEVO PANEL DE TEXTO</target>
   </trans-unit>
   <trans-unit id="downloadJsonTitle">
@@ -926,51 +926,51 @@
     <target>Paneles no afectados por este filtro</target>
   </trans-unit>
   <trans-unit id="opcionTitulo">
-    <source>NUEVO TEXTO</source>
+    <source>NUEVO PANEL DE TEXTO</source>
     <target>NUEVO PANEL DE TEXTO</target>
   </trans-unit>
   <trans-unit id="titlePanelOptions">
-    <source>Panel Options</source>
+    <source>Opciones del panel</source>
     <target>Opciones del panel</target>
   </trans-unit>
   <trans-unit id="titlePanelAppearance">
-    <source>Appearance</source>
+    <source>Apariencia</source>
     <target>Apariencia</target>
   </trans-unit>
   <trans-unit id="titlePanelShowBg">
-    <source>Show panel background</source>
+    <source>Mostrar fondo del panel</source>
     <target>Mostrar fondo del panel</target>
   </trans-unit>
   <trans-unit id="titlePanelBgColor">
-    <source>Background color</source>
+    <source>Color de fondo</source>
     <target>Color de fondo</target>
   </trans-unit>
   <trans-unit id="titlePanelShowBorder">
-    <source>Show border</source>
+    <source>Mostrar borde</source>
     <target>Mostrar borde</target>
   </trans-unit>
   <trans-unit id="titlePanelBorderColor">
-    <source>Border color</source>
+    <source>Color del borde</source>
     <target>Color del borde</target>
   </trans-unit>
   <trans-unit id="titlePanelVerticalAlign">
-    <source>Vertical alignment</source>
+    <source>Alineación vertical</source>
     <target>Alineación vertical</target>
   </trans-unit>
   <trans-unit id="titlePanelAlignTop">
-    <source>Top</source>
+    <source>Arriba</source>
     <target>Arriba</target>
   </trans-unit>
   <trans-unit id="titlePanelAlignCenter">
-    <source>Center</source>
+    <source>Centro</source>
     <target>Centro</target>
   </trans-unit>
   <trans-unit id="titlePanelAlignBottom">
-    <source>Bottom</source>
+    <source>Abajo</source>
     <target>Abajo</target>
   </trans-unit>
   <trans-unit id="duplicatePanel">
-    <source>Duplicate panel</source>
+    <source>Duplicar panel</source>
     <target>Duplicar panel</target>
   </trans-unit>
 </body>

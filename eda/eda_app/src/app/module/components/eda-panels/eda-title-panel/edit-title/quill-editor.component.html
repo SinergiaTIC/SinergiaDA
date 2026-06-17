@@ -98,7 +98,7 @@
 		<div class="col-4">
 			<div class="title-options-shell">
 				<div class="title-options-shell__header">
-<!-- SDA CUSTOM -->					<h5 class="title-options-title" i18n="@@titlePanelOptions">Panel Options</h5>
+<!-- SDA CUSTOM -->					<h5 class="title-options-title" i18n="@@titlePanelOptions">Opciones del panel</h5>
 				</div>
 				<div class="title-config-panel">
 					<!-- Section: Appearance -->
@@ -107,7 +107,7 @@
 							(click)="toggleSection('appearance')"
 							(keydown.enter)="toggleSection('appearance')"
 							(keydown.space)="toggleSection('appearance')">
-<!-- SDA CUSTOM -->							<h6 i18n="@@titlePanelAppearance">Appearance</h6>
+<!-- SDA CUSTOM -->							<h6 i18n="@@titlePanelAppearance">Apariencia</h6>
 							<div class="title-section-actions">
 								<i class="pi" [ngClass]="isAppearanceExpanded ? 'pi-chevron-up' : 'pi-chevron-down'"></i>
 							</div>
@@ -115,7 +115,7 @@
 						<div class="title-section-content" *ngIf="isAppearanceExpanded">
 							<!-- SDA CUSTOM - Transparent background toggle with i18n -->
 <!-- SDA CUSTOM -->							<div class="config-row chart-color-row chart-color-row--spaced">
-<!-- SDA CUSTOM -->								<span class="chart-color-label" i18n="@@titlePanelShowBg">Show panel background</span>
+<!-- SDA CUSTOM -->								<span class="chart-color-label" i18n="@@titlePanelShowBg">Mostrar fondo del panel</span>
 								<span class="chart-color-controls">
 									<p-inputSwitch [(ngModel)]="showPanelBackground" inputId="showPanelBackground"></p-inputSwitch>
 								</span>
@@ -123,7 +123,7 @@
 
 							<!-- SDA CUSTOM - Panel background color (only if showPanelBackground is true) -->
 <!-- SDA CUSTOM -->							<div class="config-row chart-color-row chart-color-row--spaced" *ngIf="showPanelBackground">
-<!-- SDA CUSTOM -->								<span class="chart-color-label" i18n="@@titlePanelBgColor">Background color</span>
+<!-- SDA CUSTOM -->								<span class="chart-color-label" i18n="@@titlePanelBgColor">Color de fondo</span>
 								<span class="chart-color-controls">
 									<input type="text" [(ngModel)]="backgroundColor" pInputText class="chart-color-input" />
 									<span class="chart-color-picker">
@@ -134,7 +134,7 @@
 
 							<!-- SDA CUSTOM - Show panel border -->
 <!-- SDA CUSTOM -->							<div class="config-row chart-color-row chart-color-row--spaced">
-<!-- SDA CUSTOM -->								<span class="chart-color-label" i18n="@@titlePanelShowBorder">Show border</span>
+<!-- SDA CUSTOM -->								<span class="chart-color-label" i18n="@@titlePanelShowBorder">Mostrar borde</span>
 								<span class="chart-color-controls">
 									<p-inputSwitch [(ngModel)]="showBorder" inputId="showBorder"></p-inputSwitch>
 								</span>
@@ -142,7 +142,7 @@
 
 							<!-- SDA CUSTOM - Border color (only if showBorder is true) -->
 <!-- SDA CUSTOM -->							<div class="config-row chart-color-row chart-color-row--spaced" *ngIf="showBorder">
-<!-- SDA CUSTOM -->								<span class="chart-color-label" i18n="@@titlePanelBorderColor">Border color</span>
+<!-- SDA CUSTOM -->								<span class="chart-color-label" i18n="@@titlePanelBorderColor">Color del borde</span>
 								<span class="chart-color-controls">
 									<input type="text" [(ngModel)]="borderColor" pInputText class="chart-color-input" />
 									<span class="chart-color-picker">
@@ -159,7 +159,7 @@
 							(click)="toggleSection('alignment')"
 							(keydown.enter)="toggleSection('alignment')"
 							(keydown.space)="toggleSection('alignment')">
-<!-- SDA CUSTOM -->							<h6 i18n="@@titlePanelVerticalAlign">Vertical alignment</h6>
+<!-- SDA CUSTOM -->							<h6 i18n="@@titlePanelVerticalAlign">Alineación vertical</h6>
 							<div class="title-section-actions">
 								<i class="pi" [ngClass]="isAlignmentExpanded ? 'pi-chevron-up' : 'pi-chevron-down'"></i>
 							</div>
@@ -167,15 +167,15 @@
 						<div class="title-section-content" *ngIf="isAlignmentExpanded">
 							<div class="config-row">
 								<p-radioButton name="verticalAlign" value="top" [(ngModel)]="verticalAlign" inputId="alignTop"></p-radioButton>
-<!-- SDA CUSTOM -->								<label for="alignTop" i18n="@@titlePanelAlignTop">Top</label>
+<!-- SDA CUSTOM -->								<label for="alignTop" i18n="@@titlePanelAlignTop">Arriba</label>
 							</div>
 							<div class="config-row">
 								<p-radioButton name="verticalAlign" value="center" [(ngModel)]="verticalAlign" inputId="alignCenter"></p-radioButton>
-<!-- SDA CUSTOM -->								<label for="alignCenter" i18n="@@titlePanelAlignCenter">Center</label>
+<!-- SDA CUSTOM -->								<label for="alignCenter" i18n="@@titlePanelAlignCenter">Centro</label>
 							</div>
 							<div class="config-row">
 								<p-radioButton name="verticalAlign" value="bottom" [(ngModel)]="verticalAlign" inputId="alignBottom"></p-radioButton>
-<!-- SDA CUSTOM -->								<label for="alignBottom" i18n="@@titlePanelAlignBottom">Bottom</label>
+<!-- SDA CUSTOM -->								<label for="alignBottom" i18n="@@titlePanelAlignBottom">Abajo</label>
 							</div>
 						</div>
 					</div>

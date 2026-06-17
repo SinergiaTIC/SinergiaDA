@@ -275,7 +275,7 @@ export class EdaTitlePanelComponent implements OnInit, AfterViewInit, OnDestroy 
                     }
                 }),
 /* SDA CUSTOM */                new EdaContextMenuItem({
-/* SDA CUSTOM */                    label: $localize`:@@duplicatePanel:Duplicate panel`,
+/* SDA CUSTOM */                    label: $localize`:@@duplicatePanel:Duplicar panel`,
 /* SDA CUSTOM */                    icon: 'fa fa-copy',
 /* SDA CUSTOM */                    command: () => {
 /* SDA CUSTOM */                        this.contextMenu.hideContextMenu();
