@@ -935,15 +935,15 @@
   </trans-unit>
   <trans-unit id="titlePanelShowBg">
     <source>Mostrar fondo del panel</source>
-    <target>Mostrar fons del panell</target>
+    <target>Mostra el fons del panell</target>
   </trans-unit>
   <trans-unit id="titlePanelBgColor">
     <source>Color de fondo</source>
-    <target>Color de fons</target>
+    <target>Color del fons</target>
   </trans-unit>
   <trans-unit id="titlePanelShowBorder">
     <source>Mostrar borde</source>
-    <target>Mostrar vora</target>
+    <target>Mostra la vora</target>
   </trans-unit>
   <trans-unit id="titlePanelBorderColor">
     <source>Color del borde</source>
@@ -959,7 +959,7 @@
   </trans-unit>
   <trans-unit id="titlePanelAlignCenter">
     <source>Centro</source>
-    <target>Centre</target>
+    <target>Al centre</target>
   </trans-unit>
   <trans-unit id="titlePanelAlignBottom">
     <source>Abajo</source>
@@ -967,7 +967,7 @@
   </trans-unit>
   <trans-unit id="duplicatePanel">
     <source>Duplicar panel</source>
-    <target>Duplicar panell</target>
+    <target>Duplica el panell</target>
   </trans-unit>
 </body>
   </file>
