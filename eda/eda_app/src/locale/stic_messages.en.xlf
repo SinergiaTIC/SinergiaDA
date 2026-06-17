@@ -925,7 +925,7 @@
   </trans-unit>
   <trans-unit id="titlePanelOptions">
     <source>Opciones del panel</source>
-    <target>Panel Options</target>
+    <target>Panel options</target>
   </trans-unit>
   <trans-unit id="titlePanelAppearance">
     <source>Apariencia</source>
@@ -957,7 +957,7 @@
   </trans-unit>
   <trans-unit id="titlePanelAlignCenter">
     <source>Centro</source>
-    <target>Center</target>
+    <target>Middle</target>
   </trans-unit>
   <trans-unit id="titlePanelAlignBottom">
     <source>Abajo</source>
