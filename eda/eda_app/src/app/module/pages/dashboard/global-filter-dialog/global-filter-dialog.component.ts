@@ -21,7 +21,7 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
 
     public allPanels: any[] = [];
     public filteredPanels: any[] = [];
-    /*SDA CUSTOM*/ private _pathBackup: { [panelId: string]: any } = {};
+    /* SDA CUSTOM */ private _pathBackup: { [panelId: string]: any } = {};
 
     @Output() close: EventEmitter<any> = new EventEmitter<any>();
     @Output() globalFilterChange: EventEmitter<any> = new EventEmitter<any>();
@@ -157,18 +157,18 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
         this.allPanels = this.globalFilterService.filterPanels(this.modelTables, this.panels);
         this.allPanels = this.allPanels.sort(this.sortByTittle);
 
-        /*SDA CUSTOM*/ // Override filterPanels BFS result for SQL panels: set avaliable=true and active=true
-        /*SDA CUSTOM*/ // so they appear in the dialog exactly like tree panels (highlighted, treeSelect enabled).
-        /*SDA CUSTOM*/ // Panels without a valid path get deactivated later in findPanelPathTables.
-        /*SDA CUSTOM*/ for (const panel of this.allPanels) {
-        /*SDA CUSTOM*/     if (panel.content?.query?.query?.queryMode === 'SQL') {
-        /*SDA CUSTOM*/         panel.avaliable = true;
-        /*SDA CUSTOM*/         panel.active = true;
-        /*SDA CUSTOM*/     }
-        /*SDA CUSTOM*/     if (panel.content && panel.content.globalFilterPaths === undefined) {
-        /*SDA CUSTOM*/         panel.content.globalFilterPaths = [];
-        /*SDA CUSTOM*/     }
-        /*SDA CUSTOM*/ }
+        /* SDA CUSTOM */ // Override filterPanels BFS result for SQL panels: set avaliable=true and active=true
+        /* SDA CUSTOM */ // so they appear in the dialog exactly like tree panels (highlighted, treeSelect enabled).
+        /* SDA CUSTOM */ // Panels without a valid path get deactivated later in findPanelPathTables.
+        /* SDA CUSTOM */ for (const panel of this.allPanels) {
+        /* SDA CUSTOM */     if (panel.content?.query?.query?.queryMode === 'SQL') {
+        /* SDA CUSTOM */         panel.avaliable = true;
+        /* SDA CUSTOM */         panel.active = true;
+        /* SDA CUSTOM */     }
+        /* SDA CUSTOM */     if (panel.content && panel.content.globalFilterPaths === undefined) {
+        /* SDA CUSTOM */         panel.content.globalFilterPaths = [];
+        /* SDA CUSTOM */     }
+        /* SDA CUSTOM */ }
 
         if (this.globalFilter.isnew) {
             for (const panel of this.allPanels) {
@@ -201,7 +201,7 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
        // filteredPanels list is empty because all panels are disabled.
         if(this.filteredPanels.length===0){
             for (const panel of this.allPanels) {
-                /*SDA CUSTOM*/ if (panel.content?.query?.query?.queryMode === 'SQL') continue; // SQL panels handled separately below
+                /* SDA CUSTOM */ if (panel.content?.query?.query?.queryMode === 'SQL') continue; // SQL panels handled separately below
                 const panelQuery = panel.content.query.query;
 
                 for (const field of panelQuery.fields) {
@@ -211,7 +211,7 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
             }
         } else {
             for (const panel of this.filteredPanels) {
-                /*SDA CUSTOM*/ if (panel.content?.query?.query?.queryMode === 'SQL') continue; // SQL panels handled separately below
+                /* SDA CUSTOM */ if (panel.content?.query?.query?.queryMode === 'SQL') continue; // SQL panels handled separately below
                 const panelQuery = panel.content.query.query;
 
                 for (const field of panelQuery.fields) {
@@ -228,20 +228,20 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
             }
         });
 
-        /*SDA CUSTOM*/ // Add tables reachable from each SQL panel's origin table (BFS from that origin).
-        /*SDA CUSTOM*/ // We run a separate relatedTables call per SQL panel so SQL origins never contaminate
-        /*SDA CUSTOM*/ // the tree-panel BFS (which returns an empty Map if any table is unreachable).
-        /*SDA CUSTOM*/ for (const panel of this.allPanels) {
-        /*SDA CUSTOM*/     if (panel.content?.query?.query?.queryMode !== 'SQL') continue;
-        /*SDA CUSTOM*/     const sqlOrigin: string = panel.content.query.query.fields?.[0]?.table_id?.split('.')[0];
-        /*SDA CUSTOM*/     if (!sqlOrigin || excludedTables.includes(sqlOrigin)) continue;
-        /*SDA CUSTOM*/     const sqlRelatedMap = this.globalFilterService.relatedTables([sqlOrigin], this.modelTables);
-        /*SDA CUSTOM*/     sqlRelatedMap.forEach((value: any, key: string) => {
-        /*SDA CUSTOM*/         if (!excludedTables.includes(key) && !this.tables.some((t: any) => t.table_name === key)) {
-        /*SDA CUSTOM*/             this.tables.push(value);
-        /*SDA CUSTOM*/         }
-        /*SDA CUSTOM*/     });
-        /*SDA CUSTOM*/ }
+        /* SDA CUSTOM */ // Add tables reachable from each SQL panel's origin table (BFS from that origin).
+        /* SDA CUSTOM */ // We run a separate relatedTables call per SQL panel so SQL origins never contaminate
+        /* SDA CUSTOM */ // the tree-panel BFS (which returns an empty Map if any table is unreachable).
+        /* SDA CUSTOM */ for (const panel of this.allPanels) {
+        /* SDA CUSTOM */     if (panel.content?.query?.query?.queryMode !== 'SQL') continue;
+        /* SDA CUSTOM */     const sqlOrigin: string = panel.content.query.query.fields?.[0]?.table_id?.split('.')[0];
+        /* SDA CUSTOM */     if (!sqlOrigin || excludedTables.includes(sqlOrigin)) continue;
+        /* SDA CUSTOM */     const sqlRelatedMap = this.globalFilterService.relatedTables([sqlOrigin], this.modelTables);
+        /* SDA CUSTOM */     sqlRelatedMap.forEach((value: any, key: string) => {
+        /* SDA CUSTOM */         if (!excludedTables.includes(key) && !this.tables.some((t: any) => t.table_name === key)) {
+        /* SDA CUSTOM */             this.tables.push(value);
+        /* SDA CUSTOM */         }
+        /* SDA CUSTOM */     });
+        /* SDA CUSTOM */ }
 
         // this.tables = this.tables.slice();
         this.tables.sort((a, b) => a.display_name.default.localeCompare(b.display_name.default));
@@ -250,19 +250,19 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
     public onAddPanelForFilter(panel: any) {
 
         if (panel.avaliable) {
-            panel.active = !panel.active; /*SDA CUSTOM*/ // SQL panels are now activatable
+            panel.active = !panel.active; /* SDA CUSTOM */ // SQL panels are now activatable
             this.filteredPanels = this.allPanels.filter((p: any) => p.avaliable && p.active);
 
             if (panel.active) {
-                /*SDA CUSTOM*/ if (this._pathBackup[panel.id]) {
-                /*SDA CUSTOM*/     this.globalFilter.pathList[panel.id] = _.cloneDeep(this._pathBackup[panel.id]);
-                /*SDA CUSTOM*/     delete this._pathBackup[panel.id];
-                /*SDA CUSTOM*/ }
-                /*SDA CUSTOM*/ if (this.globalFilter.pathList[panel.id] && !this.isEmpty(this.globalFilter.pathList[panel.id].selectedTableNodes)) {
-                /*SDA CUSTOM*/     if (!this.globalFilter.panelList.includes(panel.id)) {
-                /*SDA CUSTOM*/         this.globalFilter.panelList.push(panel.id);
-                /*SDA CUSTOM*/     }
-                /*SDA CUSTOM*/ }
+                /* SDA CUSTOM */ if (this._pathBackup[panel.id]) {
+                /* SDA CUSTOM */     this.globalFilter.pathList[panel.id] = _.cloneDeep(this._pathBackup[panel.id]);
+                /* SDA CUSTOM */     delete this._pathBackup[panel.id];
+                /* SDA CUSTOM */ }
+                /* SDA CUSTOM */ if (this.globalFilter.pathList[panel.id] && !this.isEmpty(this.globalFilter.pathList[panel.id].selectedTableNodes)) {
+                /* SDA CUSTOM */     if (!this.globalFilter.panelList.includes(panel.id)) {
+                /* SDA CUSTOM */         this.globalFilter.panelList.push(panel.id);
+                /* SDA CUSTOM */     }
+                /* SDA CUSTOM */ }
                 this.initTablesForFilter();
                 this.findPanelPathTables();
             }
@@ -322,7 +322,7 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
             const query = this.queryBuilderService.normalQuery([this.globalFilter.selectedColumn], params);
             const response = await this.dashboardService.executeQuery(query).toPromise();
 
-            /*SDA CUSTOM*/ if (!this.globalFilter) return;
+            /* SDA CUSTOM */ if (!this.globalFilter) return;
 
             // only if the value is a ValueListSource
             if(this.globalFilter.selectedColumn.valueListSource !== undefined) {
@@ -414,18 +414,18 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
 
     public findPanelPathTables() {
         for (const panel of this.filteredPanels) {
-            /*SDA CUSTOM*/ if (panel.content?.query?.query?.queryMode === 'SQL') {
-            /*SDA CUSTOM*/     if (!this.globalFilter.panelList.includes(panel.id)) {
-            /*SDA CUSTOM*/         this.globalFilter.panelList.push(panel.id);
-            /*SDA CUSTOM*/     }
-            /*SDA CUSTOM*/     continue;
-            /*SDA CUSTOM*/ }
+            /* SDA CUSTOM */ if (panel.content?.query?.query?.queryMode === 'SQL') {
+            /* SDA CUSTOM */     if (!this.globalFilter.panelList.includes(panel.id)) {
+            /* SDA CUSTOM */         this.globalFilter.panelList.push(panel.id);
+            /* SDA CUSTOM */     }
+            /* SDA CUSTOM */     continue;
+            /* SDA CUSTOM */ }
             panel.content.globalFilterPaths = this.globalFilterService.loadTablePaths(this.modelTables, panel);
 
-            /*SDA CUSTOM*/ if (this.isPathStaleForPanel(panel)) {
-            /*SDA CUSTOM*/     this.globalFilter.pathList[panel.id] = { selectedTableNodes: {}, path: [] };
-            /*SDA CUSTOM*/     this.globalFilter.panelList = this.globalFilter.panelList.filter((id: string) => id !== panel.id);
-            /*SDA CUSTOM*/ }
+            /* SDA CUSTOM */ if (this.isPathStaleForPanel(panel)) {
+            /* SDA CUSTOM */     this.globalFilter.pathList[panel.id] = { selectedTableNodes: {}, path: [] };
+            /* SDA CUSTOM */     this.globalFilter.panelList = this.globalFilter.panelList.filter((id: string) => id !== panel.id);
+            /* SDA CUSTOM */ }
 
             if (this.globalFilter.pathList[panel.id] && this.isEmpty(this.globalFilter.pathList[panel.id].selectedTableNodes)) {
                 const panelQuery = panel.content.query.query;
@@ -439,130 +439,130 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
                     this.globalFilter.pathList[panel.id].selectedTableNodes = node;
 
                     if (!this.globalFilter.panelList.includes(panel.id)) this.globalFilter.panelList.push(panel.id);
-                /*SDA CUSTOM*/} else {
-                /*SDA CUSTOM*/    this.tryAutoFillSingleHop(panel);
-                /*SDA CUSTOM*/    if (this.isEmpty(this.globalFilter.pathList[panel.id].selectedTableNodes)) {
-                /*SDA CUSTOM*/        this.tryCopyPathFromSiblingPanel(panel);
-                /*SDA CUSTOM*/    }
-                /*SDA CUSTOM*/}
+                /* SDA CUSTOM */} else {
+                /* SDA CUSTOM */    this.tryAutoFillSingleHop(panel);
+                /* SDA CUSTOM */    if (this.isEmpty(this.globalFilter.pathList[panel.id].selectedTableNodes)) {
+                /* SDA CUSTOM */        this.tryCopyPathFromSiblingPanel(panel);
+                /* SDA CUSTOM */    }
+                /* SDA CUSTOM */}
             }
         }
     }
 
-    /*SDA CUSTOM*/private isPathStaleForPanel(panel: any): boolean {
-    /*SDA CUSTOM*/    const pathEntry = this.globalFilter.pathList[panel.id];
-    /*SDA CUSTOM*/    if (!pathEntry || this.isEmpty(pathEntry.selectedTableNodes)) return false;
-    /*SDA CUSTOM*/
-    /*SDA CUSTOM*/    const currentRootTable = panel.content.query.query.rootTable;
-    /*SDA CUSTOM*/    if (!currentRootTable) return false; // paneles sin rootTable (ej. SQL): no validar
-    /*SDA CUSTOM*/
-    /*SDA CUSTOM*/    const path: any[] = pathEntry.path || [];
-    /*SDA CUSTOM*/
-    /*SDA CUSTOM*/    if (path.length === 0) {
-    /*SDA CUSTOM*/        // 0 saltos: el inicio está en selectedTableNodes.table_id
-    /*SDA CUSTOM*/        return pathEntry.selectedTableNodes?.table_id !== currentRootTable;
-    /*SDA CUSTOM*/    } else {
-    /*SDA CUSTOM*/        // 1+ saltos: el inicio está en la primera parte del primer join
-    /*SDA CUSTOM*/        return path[0][0]?.split('.')[0] !== currentRootTable;
-    /*SDA CUSTOM*/    }
-    /*SDA CUSTOM*/}
+    /* SDA CUSTOM */private isPathStaleForPanel(panel: any): boolean {
+    /* SDA CUSTOM */    const pathEntry = this.globalFilter.pathList[panel.id];
+    /* SDA CUSTOM */    if (!pathEntry || this.isEmpty(pathEntry.selectedTableNodes)) return false;
+    /* SDA CUSTOM */
+    /* SDA CUSTOM */    const currentRootTable = panel.content.query.query.rootTable;
+    /* SDA CUSTOM */    if (!currentRootTable) return false; // paneles sin rootTable (ej. SQL): no validar
+    /* SDA CUSTOM */
+    /* SDA CUSTOM */    const path: any[] = pathEntry.path || [];
+    /* SDA CUSTOM */
+    /* SDA CUSTOM */    if (path.length === 0) {
+    /* SDA CUSTOM */        // 0 saltos: el inicio está en selectedTableNodes.table_id
+    /* SDA CUSTOM */        return pathEntry.selectedTableNodes?.table_id !== currentRootTable;
+    /* SDA CUSTOM */    } else {
+    /* SDA CUSTOM */        // 1+ saltos: el inicio está en la primera parte del primer join
+    /* SDA CUSTOM */        return path[0][0]?.split('.')[0] !== currentRootTable;
+    /* SDA CUSTOM */    }
+    /* SDA CUSTOM */}
 
-    /*SDA CUSTOM*/private tryAutoFillSingleHop(panel: any): void {
-    /*SDA CUSTOM*/    const filterTableName = this.globalFilter.selectedTable?.table_name;
-    /*SDA CUSTOM*/    const rootTableName = panel.content.query.query.rootTable;
-    /*SDA CUSTOM*/
-    /*SDA CUSTOM*/    if (!filterTableName || !rootTableName || filterTableName === rootTableName) return;
-    /*SDA CUSTOM*/
-    /*SDA CUSTOM*/    const rootTable = this.modelTables.find((t: any) => t.table_name === rootTableName);
-    /*SDA CUSTOM*/    if (!rootTable) return;
-    /*SDA CUSTOM*/
-    /*SDA CUSTOM*/    // Mirror onNodeExpand: exclude only bridge and autorelation (visible is not a filter in the tree).
-    /*SDA CUSTOM*/    const directRelations = (rootTable.relations || []).filter((rel: any) =>
-    /*SDA CUSTOM*/        !rel.bridge && !rel.autorelation && rel.target_table === filterTableName
-    /*SDA CUSTOM*/    );
-    /*SDA CUSTOM*/
-    /*SDA CUSTOM*/    // If multiple relations exist to the same table, use the first primary; user can override manually.
-    /*SDA CUSTOM*/    if (directRelations.length === 0) return;
-    /*SDA CUSTOM*/
-    /*SDA CUSTOM*/    const rel = directRelations[0];
-    /*SDA CUSTOM*/    const sourceJoin = `${rel.source_table || rootTableName}.${rel.source_column[0]}`;
-    /*SDA CUSTOM*/    const joinChildId = `${rel.target_table}.${rel.target_column[0]}`;
-    /*SDA CUSTOM*/    const child_id = `${joinChildId}.${rel.source_column[0]}`;
-    /*SDA CUSTOM*/    const joins: any[] = [[sourceJoin, joinChildId]];
-    /*SDA CUSTOM*/
-    /*SDA CUSTOM*/    const childLabel = rel.display_name?.default || `${rel.source_column[0]} - ${rel.target_table}`;
-    /*SDA CUSTOM*/
-    /*SDA CUSTOM*/    const syntheticNode = {
-    /*SDA CUSTOM*/        child_id,
-    /*SDA CUSTOM*/        type: 'child',
-    /*SDA CUSTOM*/        label: childLabel,
-    /*SDA CUSTOM*/        autorelation: false,
-    /*SDA CUSTOM*/        joins
-    /*SDA CUSTOM*/    };
-    /*SDA CUSTOM*/
-    /*SDA CUSTOM*/    this.globalFilter.pathList[panel.id].table_id = child_id;
-    /*SDA CUSTOM*/    this.globalFilter.pathList[panel.id].path = joins;
-    /*SDA CUSTOM*/    this.globalFilter.pathList[panel.id].selectedTableNodes = syntheticNode;
-    /*SDA CUSTOM*/
-    /*SDA CUSTOM*/    if (!this.globalFilter.panelList.includes(panel.id)) {
-    /*SDA CUSTOM*/        this.globalFilter.panelList.push(panel.id);
-    /*SDA CUSTOM*/    }
-    /*SDA CUSTOM*/}
+    /* SDA CUSTOM */private tryAutoFillSingleHop(panel: any): void {
+    /* SDA CUSTOM */    const filterTableName = this.globalFilter.selectedTable?.table_name;
+    /* SDA CUSTOM */    const rootTableName = panel.content.query.query.rootTable;
+    /* SDA CUSTOM */
+    /* SDA CUSTOM */    if (!filterTableName || !rootTableName || filterTableName === rootTableName) return;
+    /* SDA CUSTOM */
+    /* SDA CUSTOM */    const rootTable = this.modelTables.find((t: any) => t.table_name === rootTableName);
+    /* SDA CUSTOM */    if (!rootTable) return;
+    /* SDA CUSTOM */
+    /* SDA CUSTOM */    // Mirror onNodeExpand: exclude only bridge and autorelation (visible is not a filter in the tree).
+    /* SDA CUSTOM */    const directRelations = (rootTable.relations || []).filter((rel: any) =>
+    /* SDA CUSTOM */        !rel.bridge && !rel.autorelation && rel.target_table === filterTableName
+    /* SDA CUSTOM */    );
+    /* SDA CUSTOM */
+    /* SDA CUSTOM */    // If multiple relations exist to the same table, use the first primary; user can override manually.
+    /* SDA CUSTOM */    if (directRelations.length === 0) return;
+    /* SDA CUSTOM */
+    /* SDA CUSTOM */    const rel = directRelations[0];
+    /* SDA CUSTOM */    const sourceJoin = `${rel.source_table || rootTableName}.${rel.source_column[0]}`;
+    /* SDA CUSTOM */    const joinChildId = `${rel.target_table}.${rel.target_column[0]}`;
+    /* SDA CUSTOM */    const child_id = `${joinChildId}.${rel.source_column[0]}`;
+    /* SDA CUSTOM */    const joins: any[] = [[sourceJoin, joinChildId]];
+    /* SDA CUSTOM */
+    /* SDA CUSTOM */    const childLabel = rel.display_name?.default || `${rel.source_column[0]} - ${rel.target_table}`;
+    /* SDA CUSTOM */
+    /* SDA CUSTOM */    const syntheticNode = {
+    /* SDA CUSTOM */        child_id,
+    /* SDA CUSTOM */        type: 'child',
+    /* SDA CUSTOM */        label: childLabel,
+    /* SDA CUSTOM */        autorelation: false,
+    /* SDA CUSTOM */        joins
+    /* SDA CUSTOM */    };
+    /* SDA CUSTOM */
+    /* SDA CUSTOM */    this.globalFilter.pathList[panel.id].table_id = child_id;
+    /* SDA CUSTOM */    this.globalFilter.pathList[panel.id].path = joins;
+    /* SDA CUSTOM */    this.globalFilter.pathList[panel.id].selectedTableNodes = syntheticNode;
+    /* SDA CUSTOM */
+    /* SDA CUSTOM */    if (!this.globalFilter.panelList.includes(panel.id)) {
+    /* SDA CUSTOM */        this.globalFilter.panelList.push(panel.id);
+    /* SDA CUSTOM */    }
+    /* SDA CUSTOM */}
 
-    /*SDA CUSTOM*/private tryCopyPathFromSiblingPanel(panel: any): void {
-    /*SDA CUSTOM*/    const rootTableName = panel.content.query.query.rootTable;
-    /*SDA CUSTOM*/
-    /*SDA CUSTOM*/    const sibling = this.filteredPanels.find((p: any) => {
-    /*SDA CUSTOM*/        if (p.id === panel.id) return false;
-    /*SDA CUSTOM*/        if (p.content.query.query.rootTable !== rootTableName) return false;
-    /*SDA CUSTOM*/        const siblingPath = this.globalFilter.pathList[p.id];
-    /*SDA CUSTOM*/        return siblingPath && !this.isEmpty(siblingPath.selectedTableNodes);
-    /*SDA CUSTOM*/    });
-    /*SDA CUSTOM*/
-    /*SDA CUSTOM*/    if (!sibling) return;
-    /*SDA CUSTOM*/
-    /*SDA CUSTOM*/    const siblingPath = this.globalFilter.pathList[sibling.id];
-    /*SDA CUSTOM*/    this.globalFilter.pathList[panel.id].table_id = siblingPath.table_id;
-    /*SDA CUSTOM*/    this.globalFilter.pathList[panel.id].path = (siblingPath.path || []).map((j: any[]) => [...j]);
-    /*SDA CUSTOM*/    this.globalFilter.pathList[panel.id].selectedTableNodes = _.cloneDeep(siblingPath.selectedTableNodes);
-    /*SDA CUSTOM*/
-    /*SDA CUSTOM*/    if (!this.globalFilter.panelList.includes(panel.id)) {
-    /*SDA CUSTOM*/        this.globalFilter.panelList.push(panel.id);
-    /*SDA CUSTOM*/    }
-    /*SDA CUSTOM*/}
+    /* SDA CUSTOM */private tryCopyPathFromSiblingPanel(panel: any): void {
+    /* SDA CUSTOM */    const rootTableName = panel.content.query.query.rootTable;
+    /* SDA CUSTOM */
+    /* SDA CUSTOM */    const sibling = this.filteredPanels.find((p: any) => {
+    /* SDA CUSTOM */        if (p.id === panel.id) return false;
+    /* SDA CUSTOM */        if (p.content.query.query.rootTable !== rootTableName) return false;
+    /* SDA CUSTOM */        const siblingPath = this.globalFilter.pathList[p.id];
+    /* SDA CUSTOM */        return siblingPath && !this.isEmpty(siblingPath.selectedTableNodes);
+    /* SDA CUSTOM */    });
+    /* SDA CUSTOM */
+    /* SDA CUSTOM */    if (!sibling) return;
+    /* SDA CUSTOM */
+    /* SDA CUSTOM */    const siblingPath = this.globalFilter.pathList[sibling.id];
+    /* SDA CUSTOM */    this.globalFilter.pathList[panel.id].table_id = siblingPath.table_id;
+    /* SDA CUSTOM */    this.globalFilter.pathList[panel.id].path = (siblingPath.path || []).map((j: any[]) => [...j]);
+    /* SDA CUSTOM */    this.globalFilter.pathList[panel.id].selectedTableNodes = _.cloneDeep(siblingPath.selectedTableNodes);
+    /* SDA CUSTOM */
+    /* SDA CUSTOM */    if (!this.globalFilter.panelList.includes(panel.id)) {
+    /* SDA CUSTOM */        this.globalFilter.panelList.push(panel.id);
+    /* SDA CUSTOM */    }
+    /* SDA CUSTOM */}
 
-    /*SDA CUSTOM*/private propagatePathToSimilarPanels(sourcePanelId: string, table_id: string, node: any): void {
-    /*SDA CUSTOM*/    const sourcePanel = this.filteredPanels.find((p: any) => p.id === sourcePanelId);
-    /*SDA CUSTOM*/    if (!sourcePanel) return;
-    /*SDA CUSTOM*/
-    /*SDA CUSTOM*/    const sourceRootTable = sourcePanel.content.query.query.rootTable;
-    /*SDA CUSTOM*/
-    /*SDA CUSTOM*/    const nodeSnapshot = {
-    /*SDA CUSTOM*/        child_id: node.child_id,
-    /*SDA CUSTOM*/        table_id: node.table_id,
-    /*SDA CUSTOM*/        type: node.type,
-    /*SDA CUSTOM*/        label: node.label,
-    /*SDA CUSTOM*/        autorelation: node.autorelation,
-    /*SDA CUSTOM*/        joins: (node.joins || []).map((j: any[]) => [...j])
-    /*SDA CUSTOM*/    };
-    /*SDA CUSTOM*/
-    /*SDA CUSTOM*/    for (const panel of this.filteredPanels) {
-    /*SDA CUSTOM*/        if (panel.id === sourcePanelId) continue;
-    /*SDA CUSTOM*/
-    /*SDA CUSTOM*/        const panelRootTable = panel.content.query.query.rootTable;
-    /*SDA CUSTOM*/        const panelPath = this.globalFilter.pathList[panel.id];
-    /*SDA CUSTOM*/
-    /*SDA CUSTOM*/        if (panelRootTable === sourceRootTable && panelPath && this.isEmpty(panelPath.selectedTableNodes)) {
-    /*SDA CUSTOM*/            panelPath.table_id = table_id;
-    /*SDA CUSTOM*/            panelPath.path = (node.joins || []).map((j: any[]) => [...j]);
-    /*SDA CUSTOM*/            panelPath.selectedTableNodes = { ...nodeSnapshot };
-    /*SDA CUSTOM*/
-    /*SDA CUSTOM*/            if (!this.globalFilter.panelList.includes(panel.id)) {
-    /*SDA CUSTOM*/                this.globalFilter.panelList.push(panel.id);
-    /*SDA CUSTOM*/            }
-    /*SDA CUSTOM*/        }
-    /*SDA CUSTOM*/    }
-    /*SDA CUSTOM*/}
+    /* SDA CUSTOM */private propagatePathToSimilarPanels(sourcePanelId: string, table_id: string, node: any): void {
+    /* SDA CUSTOM */    const sourcePanel = this.filteredPanels.find((p: any) => p.id === sourcePanelId);
+    /* SDA CUSTOM */    if (!sourcePanel) return;
+    /* SDA CUSTOM */
+    /* SDA CUSTOM */    const sourceRootTable = sourcePanel.content.query.query.rootTable;
+    /* SDA CUSTOM */
+    /* SDA CUSTOM */    const nodeSnapshot = {
+    /* SDA CUSTOM */        child_id: node.child_id,
+    /* SDA CUSTOM */        table_id: node.table_id,
+    /* SDA CUSTOM */        type: node.type,
+    /* SDA CUSTOM */        label: node.label,
+    /* SDA CUSTOM */        autorelation: node.autorelation,
+    /* SDA CUSTOM */        joins: (node.joins || []).map((j: any[]) => [...j])
+    /* SDA CUSTOM */    };
+    /* SDA CUSTOM */
+    /* SDA CUSTOM */    for (const panel of this.filteredPanels) {
+    /* SDA CUSTOM */        if (panel.id === sourcePanelId) continue;
+    /* SDA CUSTOM */
+    /* SDA CUSTOM */        const panelRootTable = panel.content.query.query.rootTable;
+    /* SDA CUSTOM */        const panelPath = this.globalFilter.pathList[panel.id];
+    /* SDA CUSTOM */
+    /* SDA CUSTOM */        if (panelRootTable === sourceRootTable && panelPath && this.isEmpty(panelPath.selectedTableNodes)) {
+    /* SDA CUSTOM */            panelPath.table_id = table_id;
+    /* SDA CUSTOM */            panelPath.path = (node.joins || []).map((j: any[]) => [...j]);
+    /* SDA CUSTOM */            panelPath.selectedTableNodes = { ...nodeSnapshot };
+    /* SDA CUSTOM */
+    /* SDA CUSTOM */            if (!this.globalFilter.panelList.includes(panel.id)) {
+    /* SDA CUSTOM */                this.globalFilter.panelList.push(panel.id);
+    /* SDA CUSTOM */            }
+    /* SDA CUSTOM */        }
+    /* SDA CUSTOM */    }
+    /* SDA CUSTOM */}
 
     public onNodeExpand(panel: any, event: any): void {
         const node = event?.node;
@@ -594,7 +594,7 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
                 this.globalFilter.panelList.push(panel.id);
             }
 
-            /*SDA CUSTOM*/ this.propagatePathToSimilarPanels(panel.id, table_id, node);
+            /* SDA CUSTOM */ this.propagatePathToSimilarPanels(panel.id, table_id, node);
         }
     }
 
@@ -636,8 +636,8 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
 
         if (!this.globalFilter.isdeleted) {
             for (const key in this.globalFilter.pathList) {
-                /*SDA CUSTOM*/ const panel = this.filteredPanels.find((p: any) => p.id === key);
-                /*SDA CUSTOM*/ if (panel?.content?.query?.query?.queryMode === 'SQL') continue;
+                /* SDA CUSTOM */ const panel = this.filteredPanels.find((p: any) => p.id === key);
+                /* SDA CUSTOM */ if (panel?.content?.query?.query?.queryMode === 'SQL') continue;
                 if (availablePanels.includes(key) && _.isEmpty(this.globalFilter.pathList[key].selectedTableNodes)) {
                     valid = false;
                 }
@@ -661,10 +661,10 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
     private clearFilterPaths(clearPanel?: any) {
         if (clearPanel) {
             this.globalFilter.panelList = this.globalFilter.panelList.filter((p) => p !== clearPanel.id);
-            /*SDA CUSTOM*/ const current = this.globalFilter.pathList[clearPanel.id];
-            /*SDA CUSTOM*/ if (current && !this.isEmpty(current.selectedTableNodes)) {
-            /*SDA CUSTOM*/     this._pathBackup[clearPanel.id] = _.cloneDeep(current);
-            /*SDA CUSTOM*/ }
+            /* SDA CUSTOM */ const current = this.globalFilter.pathList[clearPanel.id];
+            /* SDA CUSTOM */ if (current && !this.isEmpty(current.selectedTableNodes)) {
+            /* SDA CUSTOM */     this._pathBackup[clearPanel.id] = _.cloneDeep(current);
+            /* SDA CUSTOM */ }
             this.globalFilter.pathList[clearPanel.id] = {
                 selectedTableNodes: {},
                 path: []
@@ -673,7 +673,7 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
         } else {
             this.globalFilter.panelList = [];
             this.globalFilter.pathList = {};
-            /*SDA CUSTOM*/ this._pathBackup = {};
+            /* SDA CUSTOM */ this._pathBackup = {};
 
             for (const panel of this.allPanels) {
                 panel.content.globalFilterPaths = [];
@@ -704,22 +704,22 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
         return this.modelTables.find((table: any) => table.table_name === tableName);
     }
 
-    /*SDA CUSTOM*/public getDisplayPathStr(node: any): string {
-    /*SDA CUSTOM*/    if (!node) return '&nbsp';
+    /* SDA CUSTOM */public getDisplayPathStr(node: any): string {
+    /* SDA CUSTOM */    if (!node) return '&nbsp';
 
-    /*SDA CUSTOM*/    if ((node.joins || []).length > 0) {
-    /*SDA CUSTOM*/        let str = '';
-    /*SDA CUSTOM*/        for (const join of node.joins) {
-    /*SDA CUSTOM*/            const table = this.findTable(join[0]?.split('.')[0]);
-    /*SDA CUSTOM*/            if (table) {
-    /*SDA CUSTOM*/                str += `<strong>${table.display_name.default}</strong>&nbsp;<i class="pi pi-angle-right"></i>&nbsp;`;
-    /*SDA CUSTOM*/            }
+    /* SDA CUSTOM */    if ((node.joins || []).length > 0) {
+    /* SDA CUSTOM */        let str = '';
+    /* SDA CUSTOM */        for (const join of node.joins) {
+    /* SDA CUSTOM */            const table = this.findTable(join[0]?.split('.')[0]);
+    /* SDA CUSTOM */            if (table) {
+    /* SDA CUSTOM */                str += `<strong>${table.display_name.default}</strong>&nbsp;<i class="pi pi-angle-right"></i>&nbsp;`;
+    /* SDA CUSTOM */            }
             }
-    /*SDA CUSTOM*/        return str + `<strong>${node.label}</strong>`;
-    /*SDA CUSTOM*/    }
+    /* SDA CUSTOM */        return str + `<strong>${node.label}</strong>`;
+    /* SDA CUSTOM */    }
 
-    /*SDA CUSTOM*/    return `<strong>${node.label}</strong>`;
-    /*SDA CUSTOM*/}
+    /* SDA CUSTOM */    return `<strong>${node.label}</strong>`;
+    /* SDA CUSTOM */}
 
     public onApply(): void {
         if (this.globalFilter.selectedColumn?.column_type === 'date') {

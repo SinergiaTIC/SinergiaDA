@@ -35,9 +35,9 @@ export class GlobalFilterComponent implements OnInit {
     // SDA CUSTOM - Replace eliminated duplicate ID filterButtonDashboard with canonical filtrarH4
 /* SDA CUSTOM */    public filtrar: string = $localize`:@@filtrarH4:Filtrar`;
     // END SDA CUSTOM
-    /*SDA CUSTOM*/ public resumen: string = $localize`:@@filterSummary:Resumen de filtros`;
+    /* SDA CUSTOM */ public resumen: string = $localize`:@@filterSummary:Resumen de filtros`;
 /* SDA CUSTOM */ public selectedItemsLabel: string = $localize`:@@globalFilterSelectedItemsLabel:elementos seleccionados`;
-/*SDA CUSTOM*/ private tooltipHideTimeout: any;
+/* SDA CUSTOM */ private tooltipHideTimeout: any;
 
 
     constructor(
@@ -220,10 +220,10 @@ export class GlobalFilterComponent implements OnInit {
     // Main Global Filter
     public onShowGlobalFilter(isnew: boolean, filter?: any): void {
         if (this.dashboard.validateDashboard('GLOBALFILTER')) {
-            /*SDA CUSTOM*/ // Always open the new dialog (app-global-filter-dialog) with route support.
-            /*SDA CUSTOM*/ // Previously this checked for 'EDA2' panels and fell back to the legacy
-            /*SDA CUSTOM*/ // dashboard-filter-dialog for SQL-only dashboards. Now SQL panels are fully
-            /*SDA CUSTOM*/ // integrated into the new dialog so the legacy path is never needed.
+            /* SDA CUSTOM */ // Always open the new dialog (app-global-filter-dialog) with route support.
+            /* SDA CUSTOM */ // Previously this checked for 'EDA2' panels and fell back to the legacy
+            /* SDA CUSTOM */ // dashboard-filter-dialog for SQL-only dashboards. Now SQL panels are fully
+            /* SDA CUSTOM */ // integrated into the new dialog so the legacy path is never needed.
             if (isnew) this.globalFilter = { isnew: true };
             else {
                 filter.isnew = false;
@@ -395,9 +395,6 @@ export class GlobalFilterComponent implements OnInit {
 
     public removeGlobalFilter(filter: any, reload?: boolean): void {
 
-        console.log('filter: ', filter);
-        console.log('reload: ', reload);
-
         const formatedFilter = filter;
 
         // Remove 'applytoall' filter if it's the same fitler
@@ -434,9 +431,6 @@ export class GlobalFilterComponent implements OnInit {
      * @param filter
      */
     public processPickerEvent(event: any, filter: any): void {
-
-        console.log('event ---> ', event);
-        console.log('filter ---> ', filter);
 
         if (event.dates) {
             const dtf = new Intl.DateTimeFormat('en', { year: 'numeric', month: '2-digit', day: '2-digit' });
@@ -497,9 +491,9 @@ export class GlobalFilterComponent implements OnInit {
             globalFilter = this.globalFilter;
         }
 
-        /*SDA CUSTOM*/ if (!globalFilter || !this.globalFilters.find((gf: any) => gf.id == globalFilter.id)) {
-        /*SDA CUSTOM*/     return;
-        /*SDA CUSTOM*/ }
+        /* SDA CUSTOM */ if (!globalFilter || !this.globalFilters.find((gf: any) => gf.id == globalFilter.id)) {
+        /* SDA CUSTOM */     return;
+        /* SDA CUSTOM */ }
 
         let targetTable: string;
         let targetColumn: any;
@@ -574,7 +568,7 @@ export class GlobalFilterComponent implements OnInit {
 
                 globalFilter.selectedItems = globalFilter.selectedIdValues?.map(siv => {
                     const value = data.filter(d => d.id === siv);
-                /*SDA CUSTOM*/      return value[0]?.value ?? siv;
+                /* SDA CUSTOM */      return value[0]?.value ?? siv;
                 })
 
 
@@ -635,13 +629,13 @@ export class GlobalFilterComponent implements OnInit {
 
                     if (columnName === paramColumn) {
                         filter.selectedItems = _.split(urlParams[param], '|');
-/*SDA CUSTOM*/          if (filter.selectedColumn?.valueListSource) {
-/*SDA CUSTOM*/          // IDs differ from labels: set nulls so loadGlobalFiltersData resolves labels → ids
-/*SDA CUSTOM*/              filter.selectedIdValues = [... _.split(urlParams[param], '|')];
-/*SDA CUSTOM*/          } else {
-/*SDA CUSTOM*/              // No valueListSource: label and id are the same value
-/*SDA CUSTOM*/              filter.selectedIdValues = [...filter.selectedItems];
-/*SDA CUSTOM*/          }
+/* SDA CUSTOM */          if (filter.selectedColumn?.valueListSource) {
+/* SDA CUSTOM */          // IDs differ from labels: set nulls so loadGlobalFiltersData resolves labels → ids
+/* SDA CUSTOM */              filter.selectedIdValues = [... _.split(urlParams[param], '|')];
+/* SDA CUSTOM */          } else {
+/* SDA CUSTOM */              // No valueListSource: label and id are the same value
+/* SDA CUSTOM */              filter.selectedIdValues = [...filter.selectedItems];
+/* SDA CUSTOM */          }
 
                         filter.panelList
                             .map(id => this.dashboard.panels.find(p => p.id === id))
@@ -713,17 +707,17 @@ export class GlobalFilterComponent implements OnInit {
         }
     }
 
-/*SDA CUSTOM*/ // This method have the same functionality as the chip in global filter, but this one is for the tooltip
-/*SDA CUSTOM*/ public removeFilterItem(filter: any, item: any): void {
-/*SDA CUSTOM*/     filter.selectedItems = filter.selectedItems.filter((i: any) => i !== item);
-/*SDA CUSTOM*/     this.setGlobalFilterItems(filter);
-/*SDA CUSTOM*/ }
+/* SDA CUSTOM */ // This method have the same functionality as the chip in global filter, but this one is for the tooltip
+/* SDA CUSTOM */ public removeFilterItem(filter: any, item: any): void {
+/* SDA CUSTOM */     filter.selectedItems = filter.selectedItems.filter((i: any) => i !== item);
+/* SDA CUSTOM */     this.setGlobalFilterItems(filter);
+/* SDA CUSTOM */ }
 
-/*SDA CUSTOM*/ // Removes all selected items from a filter
-/*SDA CUSTOM*/ public removeAllFilterItems(filter: any): void {
-/*SDA CUSTOM*/     filter.selectedItems = [];
-/*SDA CUSTOM*/     this.setGlobalFilterItems(filter);
-/*SDA CUSTOM*/ }
+/* SDA CUSTOM */ // Removes all selected items from a filter
+/* SDA CUSTOM */ public removeAllFilterItems(filter: any): void {
+/* SDA CUSTOM */     filter.selectedItems = [];
+/* SDA CUSTOM */     this.setGlobalFilterItems(filter);
+/* SDA CUSTOM */ }
 
 /* SDA CUSTOM */ public filterHoverTooltipHtml: string =
 /* SDA CUSTOM */     `<span class="tooltip-green">${$localize`:@@filterHoverGreen:Verde`}</span>: ${$localize`:@@filterHoverAffected:Paneles afectados por este filtro`}<br>` +
@@ -768,26 +762,26 @@ export class GlobalFilterComponent implements OnInit {
         return disabled;
     }
 
-/*SDA CUSTOM*/ // Method to show the filter tooltip
-/*SDA CUSTOM*/  public showFilterTooltip(event: MouseEvent, op: any, filter?: any): void {
-/*SDA CUSTOM*/ // If the filter doesn't have selected values, the tooltip won't be shown
-/*SDA CUSTOM*/      if (filter && (!filter.selectedIdValues || filter.selectedIdValues.length === 0)) return;
-/*SDA CUSTOM*/ // If there is some active timeout to hide the tooltip, it will be cleared
-/*SDA CUSTOM*/      if (this.tooltipHideTimeout && this.lastPanel === filter.id) {
-/*SDA CUSTOM*/         clearTimeout(this.tooltipHideTimeout);
-/*SDA CUSTOM*/         this.tooltipHideTimeout = null;
-/*SDA CUSTOM*/      }
-/*SDA CUSTOM*/      this.lastPanel = filter.id;
-/*SDA CUSTOM*/      op?.show(event);
-/*SDA CUSTOM*/  }
-/*SDA CUSTOM*/ // Method to hide the filter tooltip
-/*SDA CUSTOM*/  public hideFilterTooltip(op: any): void {
-/*SDA CUSTOM*/ // A timeout is set to avoid the tooltip to be hidden when the user is moving the mouse from the filter item to the tooltip
-/*SDA CUSTOM*/      this.tooltipHideTimeout = setTimeout(() => {
-/*SDA CUSTOM*/          op?.hide();
-/*SDA CUSTOM*/          this.tooltipHideTimeout = null;
-/*SDA CUSTOM*/      }, 150);
-/*SDA CUSTOM*/  }
+/* SDA CUSTOM */ // Method to show the filter tooltip
+/* SDA CUSTOM */  public showFilterTooltip(event: MouseEvent, op: any, filter?: any): void {
+/* SDA CUSTOM */ // If the filter doesn't have selected values, the tooltip won't be shown
+/* SDA CUSTOM */      if (filter && (!filter.selectedIdValues || filter.selectedIdValues.length === 0)) return;
+/* SDA CUSTOM */ // If there is some active timeout to hide the tooltip, it will be cleared
+/* SDA CUSTOM */      if (this.tooltipHideTimeout && this.lastPanel === filter.id) {
+/* SDA CUSTOM */         clearTimeout(this.tooltipHideTimeout);
+/* SDA CUSTOM */         this.tooltipHideTimeout = null;
+/* SDA CUSTOM */      }
+/* SDA CUSTOM */      this.lastPanel = filter.id;
+/* SDA CUSTOM */      op?.show(event);
+/* SDA CUSTOM */  }
+/* SDA CUSTOM */ // Method to hide the filter tooltip
+/* SDA CUSTOM */  public hideFilterTooltip(op: any): void {
+/* SDA CUSTOM */ // A timeout is set to avoid the tooltip to be hidden when the user is moving the mouse from the filter item to the tooltip
+/* SDA CUSTOM */      this.tooltipHideTimeout = setTimeout(() => {
+/* SDA CUSTOM */          op?.hide();
+/* SDA CUSTOM */          this.tooltipHideTimeout = null;
+/* SDA CUSTOM */      }, 150);
+/* SDA CUSTOM */  }
 
     /* SDA CUSTOM */
     public onOpenDateFormatDialog(filter: any): void {
@@ -884,8 +878,8 @@ export class GlobalFilterComponent implements OnInit {
 /* SDA CUSTOM */        };
 /* SDA CUSTOM */        return labels[op] || op;
 /* SDA CUSTOM */    }
-/*SDA CUSTOM*/ // Check if filter is read-only for current user
-/*SDA CUSTOM*/ public isFilterReadOnly(filter: any): boolean {
-/*SDA CUSTOM*/     return !this.isAdmin && !this.isDashboardCreator && filter.visible === 'readOnly';
-/*SDA CUSTOM*/ }
+/* SDA CUSTOM */ // Check if filter is read-only for current user
+/* SDA CUSTOM */ public isFilterReadOnly(filter: any): boolean {
+/* SDA CUSTOM */     return !this.isAdmin && !this.isDashboardCreator && filter.visible === 'readOnly';
+/* SDA CUSTOM */ }
 }

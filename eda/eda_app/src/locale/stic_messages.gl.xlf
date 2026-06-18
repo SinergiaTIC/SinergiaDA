@@ -928,6 +928,38 @@
     <source>Paneles no afectados por este filtro</source>
     <target>Paneis non afectados por este filtro</target>
   </trans-unit>
+  <trans-unit id="DatePickerCustomDate">
+    <source>Seleccionar fecha</source>
+    <target>Seleccionar data</target>
+  </trans-unit>
+  <trans-unit id="filterSummary">
+    <source>Resumen de filtros</source>
+    <target>Resumo de filtros</target>
+  </trans-unit>
+  <trans-unit id="globalFilterSelectedItemsLabel">
+    <source>elementos seleccionados</source>
+    <target>elementos seleccionados</target>
+  </trans-unit>
+  <trans-unit id="sqlModeFilterPathText">
+    <source>En modo SQL, si necesita modificar la ruta, debe hacerlo en la consulta</source>
+    <target>En modo SQL, se necesita modificar a ruta, debe facelo na consulta</target>
+  </trans-unit>
+  <trans-unit id="dateFormatDialogTextHeader">
+    <source>Filtro</source>
+    <target>Filtro</target>
+  </trans-unit>
+  <trans-unit id="filterOperatorSelectionText">
+    <source>Selección de operador del filtro:</source>
+    <target>Selección de operador do filtro:</target>
+  </trans-unit>
+  <trans-unit id="dateSelectionText">
+    <source>Selección de fecha:</source>
+    <target>Selección de data:</target>
+  </trans-unit>
+  <trans-unit id="calendarSelectionText">
+    <source>Selección en calendario:</source>
+    <target>Selección en calendario:</target>
+  </trans-unit>
 </body>
   </file>
 </xliff>

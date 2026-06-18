@@ -1675,34 +1675,34 @@ export class EdaBlankPanelComponent implements OnInit {
 
     public loadColumns = (table: any) => PanelInteractionUtils.loadColumns(this, table);
 
-/**SDA CUSTOM  */   public removeColumn = (c: Column, list?: string) => {
-/**SDA CUSTOM  */       // rootTableName To have the principal table => conditions to check if we can delete the column
-/**SDA CUSTOM  */       const rootTableName = this.rootTable?.table_name;
-/**SDA CUSTOM  */       // joins is reliable when interacting on the app; table_id comparison is the fallback after save and reload when joins may be empty
-/**SDA CUSTOM  */       const isNotRootColumn = !!c?.joins?.length || (!!rootTableName && c?.table_id !== rootTableName);
-/**SDA CUSTOM  */       const rootColumnElements = this.currentQuery.filter(col => !col?.joins?.length && (!rootTableName || col?.table_id === rootTableName)).length;
-/**SDA CUSTOM  */       const currentQueryLength = this.currentQuery.length;
+/* SDA CUSTOM */   public removeColumn = (c: Column, list?: string) => {
+/* SDA CUSTOM */       // rootTableName To have the principal table => conditions to check if we can delete the column
+/* SDA CUSTOM */       const rootTableName = this.rootTable?.table_name;
+/* SDA CUSTOM */       // joins is reliable when interacting on the app; table_id comparison is the fallback after save and reload when joins may be empty
+/* SDA CUSTOM */       const isNotRootColumn = !!c?.joins?.length || (!!rootTableName && c?.table_id !== rootTableName);
+/* SDA CUSTOM */       const rootColumnElements = this.currentQuery.filter(col => !col?.joins?.length && (!rootTableName || col?.table_id === rootTableName)).length;
+/* SDA CUSTOM */       const currentQueryLength = this.currentQuery.length;
 
-/**SDA CUSTOM  */       // We just proceed if it is not the last column of the root table
-/**SDA CUSTOM  */       if (isNotRootColumn || rootColumnElements > 1 || currentQueryLength === 1) {
-/**SDA CUSTOM  */           // We check if when deleting a field it has a filter at selectedFilters
-/**SDA CUSTOM  */           if (this.selectedFilters.some((sf: any) => sf.filter_column === c.column_name && sf.filter_table === c.table_id)) {
+/* SDA CUSTOM */       // We just proceed if it is not the last column of the root table
+/* SDA CUSTOM */       if (isNotRootColumn || rootColumnElements > 1 || currentQueryLength === 1) {
+/* SDA CUSTOM */           // We check if when deleting a field it has a filter at selectedFilters
+/* SDA CUSTOM */           if (this.selectedFilters.some((sf: any) => sf.filter_column === c.column_name && sf.filter_table === c.table_id)) {
                                 /* SDA CUSTOM */ this.sortedFilters = this.sortedFilters.filter(
                                 /* SDA CUSTOM */     sf => !(sf.filter_column === c.column_name && sf.filter_table === c.table_id)
                                 /* SDA CUSTOM */ );
                             }
-/**SDA CUSTOM  */           // Last column of a new panel (query never executed): reset global filter config before utils runs
-/**SDA CUSTOM  */           if (currentQueryLength === 1 && _.isNil(this.panel.content)) {
-/**SDA CUSTOM  */               this.rootTableCleared.emit();
-/**SDA CUSTOM  */               this.globalFilters = [];
-/**SDA CUSTOM  */           }
+/* SDA CUSTOM */           // Last column of a new panel (query never executed): reset global filter config before utils runs
+/* SDA CUSTOM */           if (currentQueryLength === 1 && _.isNil(this.panel.content)) {
+/* SDA CUSTOM */               this.rootTableCleared.emit();
+/* SDA CUSTOM */               this.globalFilters = [];
+/* SDA CUSTOM */           }
                             PanelInteractionUtils.removeColumn(this, c, list);
                         }
-/**SDA CUSTOM  */       else {
-/**SDA CUSTOM  */       // We stop the event propagation to not open the attribute panel
-/**SDA CUSTOM  */           event.stopPropagation();
-/**SDA CUSTOM  */           this.alertService.addError($localize`:@@cannotRemoveLastColumn:No se puede eliminar todas las columnas de la tabla raíz sin eliminar las columnas dependientes.`);
-/**SDA CUSTOM  */       }
+/* SDA CUSTOM */       else {
+/* SDA CUSTOM */       // We stop the event propagation to not open the attribute panel
+/* SDA CUSTOM */           event.stopPropagation();
+/* SDA CUSTOM */           this.alertService.addError($localize`:@@cannotRemoveLastColumn:No se puede eliminar todas las columnas de la tabla raíz sin eliminar las columnas dependientes.`);
+/* SDA CUSTOM */       }
 
 /* SDA CUSTOM  */       const currenQuery = this.currentQuery;
 /* SDA CUSTOM  */       this.atLeastThereIsOneWithAggregation = this.checkAtLeastOneWithAggregation(currenQuery);
@@ -1906,12 +1906,12 @@ export class EdaBlankPanelComponent implements OnInit {
             // Aggregate of internationalisation of the between
             let filterType = filter.filter_type
 
-/**SDA CUSTOM  */        if(filterType === 'between') filterType = this.chartUtils.filterTypesLabels.find((value: any) => value.value === 'between').label;
-/**SDA CUSTOM  */        if(filterType === 'in') filterType = this.chartUtils.filterTypesLabels.find((value: any) => value.value === 'in').label;
-/**SDA CUSTOM  */        if(filterType === 'not_in') filterType = this.chartUtils.filterTypesLabels.find((value: any) => value.value === 'not_in').label;
-/**SDA CUSTOM  */        if(filterType === 'not_null') filterType = this.chartUtils.filterTypesLabels.find((value: any) => value.value === 'not_null').label;
-/**SDA CUSTOM  */        if(filterType === 'not_null_nor_empty') filterType = this.chartUtils.filterTypesLabels.find((value: any) => value.value === 'not_null_nor_empty').label;
-/**SDA CUSTOM  */        if(filterType === 'null_or_empty') filterType = this.chartUtils.filterTypesLabels.find((value: any) => value.value === 'null_or_empty').label;
+/* SDA CUSTOM */        if(filterType === 'between') filterType = this.chartUtils.filterTypesLabels.find((value: any) => value.value === 'between').label;
+/* SDA CUSTOM */        if(filterType === 'in') filterType = this.chartUtils.filterTypesLabels.find((value: any) => value.value === 'in').label;
+/* SDA CUSTOM */        if(filterType === 'not_in') filterType = this.chartUtils.filterTypesLabels.find((value: any) => value.value === 'not_in').label;
+/* SDA CUSTOM */        if(filterType === 'not_null') filterType = this.chartUtils.filterTypesLabels.find((value: any) => value.value === 'not_null').label;
+/* SDA CUSTOM */        if(filterType === 'not_null_nor_empty') filterType = this.chartUtils.filterTypesLabels.find((value: any) => value.value === 'not_null_nor_empty').label;
+/* SDA CUSTOM */        if(filterType === 'null_or_empty') filterType = this.chartUtils.filterTypesLabels.find((value: any) => value.value === 'null_or_empty').label;
 
             str = `<strong>${tableName}</strong>&nbsp[${columnName}]&nbsp<strong>${filterType}</strong>&nbsp${valueStr}  &nbsp<strong>${filterBeforeGroupingText}</strong>&nbsp - ${this.aggregationText}: &nbsp<strong>${aggregationLabel}</strong>&nbsp`;
         }

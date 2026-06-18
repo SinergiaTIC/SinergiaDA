@@ -453,17 +453,17 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
             this.display.switchButton = _.isEqual(filter.value, 'not_null') || _.isEqual(filter.value, 'not_null_nor_empty') || _.isEqual(filter.value, 'null_or_empty'); // se usa para deshabilitar el boton que da las opciones en el selector.
             this.display.filterButton = filter.value == 'not_null' || filter.value == 'not_null_nor_empty' || filter.value == 'null_or_empty' ? false : true ;
             this.limitSelectionFields = handler.limitFields === 1 ? 1 : 50;
-            /**SDA CUSTOM  */ if(['in', 'not_in'].includes(filter.value) && this.selectedColumn.column_type === 'date') {
-            /**SDA CUSTOM  */     this.filter.switch = false;
-            /**SDA CUSTOM  */ } else {
-            /**SDA CUSTOM  */     this.filter.switch = handler.switchBtn;
-            /**SDA CUSTOM  */ }
+            /* SDA CUSTOM */ if(['in', 'not_in'].includes(filter.value) && this.selectedColumn.column_type === 'date') {
+            /* SDA CUSTOM */     this.filter.switch = false;
+            /* SDA CUSTOM */ } else {
+            /* SDA CUSTOM */     this.filter.switch = handler.switchBtn;
+            /* SDA CUSTOM */ }
 
             if (handler.switchBtn) {
                 this.loadDropDrownData();
                 this.display.switchButton = true;
-            } /**SDA CUSTOM  */ else {
-              /**SDA CUSTOM  */  this.dropDownFields = [];
+            } /* SDA CUSTOM */ else {
+              /* SDA CUSTOM */  this.dropDownFields = [];
             }
 
             if (!_.isEqual(filter.value, 'between')) {
@@ -791,50 +791,50 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
         }
     }
 
-/**SDA CUSTOM  */    getFilterText(value) {
-/**SDA CUSTOM  */        if(value.filter_type === 'between') return this.chartUtils.filterTypesLabels.find((value: any) => value.value === 'between').label;
-/**SDA CUSTOM  */        if(value.filter_type === 'in') return this.chartUtils.filterTypesLabels.find((value: any) => value.value === 'in').label;
-/**SDA CUSTOM  */        if(value.filter_type === 'not_in') return this.chartUtils.filterTypesLabels.find((value: any) => value.value === 'not_in').label;
-/**SDA CUSTOM  */        if(value.filter_type === 'not_null') return this.chartUtils.filterTypesLabels.find((value: any) => value.value === 'not_null').label;
-/**SDA CUSTOM  */        if(value.filter_type === 'not_null_nor_empty') return this.chartUtils.filterTypesLabels.find((value: any) => value.value === 'not_null_nor_empty').label;
-/**SDA CUSTOM  */        if(value.filter_type === 'null_or_empty') return this.chartUtils.filterTypesLabels.find((value: any) => value.value === 'null_or_empty').label;
-/**SDA CUSTOM  */        return value.filter_type;
-/**SDA CUSTOM  */    }
+/* SDA CUSTOM */    getFilterText(value) {
+/* SDA CUSTOM */        if(value.filter_type === 'between') return this.chartUtils.filterTypesLabels.find((value: any) => value.value === 'between').label;
+/* SDA CUSTOM */        if(value.filter_type === 'in') return this.chartUtils.filterTypesLabels.find((value: any) => value.value === 'in').label;
+/* SDA CUSTOM */        if(value.filter_type === 'not_in') return this.chartUtils.filterTypesLabels.find((value: any) => value.value === 'not_in').label;
+/* SDA CUSTOM */        if(value.filter_type === 'not_null') return this.chartUtils.filterTypesLabels.find((value: any) => value.value === 'not_null').label;
+/* SDA CUSTOM */        if(value.filter_type === 'not_null_nor_empty') return this.chartUtils.filterTypesLabels.find((value: any) => value.value === 'not_null_nor_empty').label;
+/* SDA CUSTOM */        if(value.filter_type === 'null_or_empty') return this.chartUtils.filterTypesLabels.find((value: any) => value.value === 'null_or_empty').label;
+/* SDA CUSTOM */        return value.filter_type;
+/* SDA CUSTOM */    }
 
     processPickerEvent(event) {
-        /**SDA CUSTOM  */ this.dropDownFields = [];
+        /* SDA CUSTOM */ this.dropDownFields = [];
         if (event.dates) {
             const dtf = new Intl.DateTimeFormat('en', { year: 'numeric', month: '2-digit', day: '2-digit' });
             const dates = Array.isArray(event.dates) ? event.dates : [event.dates, event.dates];
-            /**SDA CUSTOM  */ if (!dates[1]) {
-            /**SDA CUSTOM  */     dates[1] = dates[0];
-            /**SDA CUSTOM  */ }
+            /* SDA CUSTOM */ if (!dates[1]) {
+            /* SDA CUSTOM */     dates[1] = dates[0];
+            /* SDA CUSTOM */ }
 
-            /**SDA CUSTOM  */ this.filter.range = event.range;
+            /* SDA CUSTOM */ this.filter.range = event.range;
 
-            /**SDA CUSTOM  */ const isInFilter = this.filterSelected?.value === 'in' || this.filterSelected?.value === 'not_in';
-            /**SDA CUSTOM  */ if (isInFilter) {
-            /**SDA CUSTOM  */     const allDates = [];
-            /**SDA CUSTOM  */     const start = new Date(dates[0]);
-            /**SDA CUSTOM  */     const end = new Date(dates[1]);
-            /**SDA CUSTOM  */     start.setHours(0, 0, 0, 0);
-            /**SDA CUSTOM  */     end.setHours(0, 0, 0, 0);
-            /**SDA CUSTOM  */     for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
-            /**SDA CUSTOM  */         const [{ value: mo }, , { value: da }, , { value: ye }] = dtf.formatToParts(new Date(d));
-            /**SDA CUSTOM  */         allDates.push(`${ye}-${mo}-${da}`);
-            /**SDA CUSTOM  */     }
-            /**SDA CUSTOM  */     this.filterValue.value1 = allDates;
-            /**SDA CUSTOM  */ } else {
-            /**SDA CUSTOM  */     const stringRange = [dates[0], dates[1]].map(date => {
-            /**SDA CUSTOM  */         const [{ value: mo }, , { value: da }, , { value: ye }] = dtf.formatToParts(date);
-            /**SDA CUSTOM  */         return `${ye}-${mo}-${da}`;
-            /**SDA CUSTOM  */     });
-            /**SDA CUSTOM  */     this.filterValue.value1 = stringRange[0];
-            /**SDA CUSTOM  */     if (this.display.between) {
-            /**SDA CUSTOM  */         this.filterValue.value2 = stringRange[1];
-            /**SDA CUSTOM  */     }
-            /**SDA CUSTOM  */ }
-            /**SDA CUSTOM  */ this.display.filterButton = false;
+            /* SDA CUSTOM */ const isInFilter = this.filterSelected?.value === 'in' || this.filterSelected?.value === 'not_in';
+            /* SDA CUSTOM */ if (isInFilter) {
+            /* SDA CUSTOM */     const allDates = [];
+            /* SDA CUSTOM */     const start = new Date(dates[0]);
+            /* SDA CUSTOM */     const end = new Date(dates[1]);
+            /* SDA CUSTOM */     start.setHours(0, 0, 0, 0);
+            /* SDA CUSTOM */     end.setHours(0, 0, 0, 0);
+            /* SDA CUSTOM */     for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
+            /* SDA CUSTOM */         const [{ value: mo }, , { value: da }, , { value: ye }] = dtf.formatToParts(new Date(d));
+            /* SDA CUSTOM */         allDates.push(`${ye}-${mo}-${da}`);
+            /* SDA CUSTOM */     }
+            /* SDA CUSTOM */     this.filterValue.value1 = allDates;
+            /* SDA CUSTOM */ } else {
+            /* SDA CUSTOM */     const stringRange = [dates[0], dates[1]].map(date => {
+            /* SDA CUSTOM */         const [{ value: mo }, , { value: da }, , { value: ye }] = dtf.formatToParts(date);
+            /* SDA CUSTOM */         return `${ye}-${mo}-${da}`;
+            /* SDA CUSTOM */     });
+            /* SDA CUSTOM */     this.filterValue.value1 = stringRange[0];
+            /* SDA CUSTOM */     if (this.display.between) {
+            /* SDA CUSTOM */         this.filterValue.value2 = stringRange[1];
+            /* SDA CUSTOM */     }
+            /* SDA CUSTOM */ }
+            /* SDA CUSTOM */ this.display.filterButton = false;
         }
     }
                     // Function to rename the column in the query when the user changes the name in the dialog, also updates the title of the dialog

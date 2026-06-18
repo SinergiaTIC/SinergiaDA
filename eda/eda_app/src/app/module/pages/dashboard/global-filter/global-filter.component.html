@@ -70,24 +70,24 @@
                             </button>
                         </p-footer>
                     </p-multiSelect>
-<!--SDA CUSTOM-->      <p-overlayPanel #op appendTo="body" [style]="{'margin-top': '2.25vh'}">
-<!--SDA CUSTOM-->          <ng-template pTemplate>
-<!--SDA CUSTOM-->               <div style="max-height: 30vh; overflow: auto; min-width: 20vw; max-width: 30vw;">
-<!--SDA CUSTOM-->                   <div (mouseenter)="showFilterTooltip($event, op, filter)" (mouseleave)="hideFilterTooltip(op)">
-<!--SDA CUSTOM-->                       <div class="filter-tooltip-header">
-<!--SDA CUSTOM-->                           <span class="filters-size filter-tooltip-header-title">{{ resumen }}</span>
-<!--SDA CUSTOM-->                           <button *ngIf="!isFilterReadOnly(filter)" type="button" class="pi pi-trash filter-tooltip-remove-all" (click)="removeAllFilterItems(filter)"></button>
-<!--SDA CUSTOM-->                       </div>
-<!--SDA CUSTOM-->                       <div class="filter-tooltip-items">
-<!--SDA CUSTOM-->                           <div *ngFor="let item of filter.selectedItems" class="filter-tooltip-chip">
-<!--SDA CUSTOM-->                               <span class="customMultiselect filters-size filter-tooltip-chip-text">{{ item }}</span>
-<!--SDA CUSTOM-->                               <button *ngIf="!isFilterReadOnly(filter)" type="button" class="pi pi-times filter-tooltip-button" (click)="removeFilterItem(filter, item)"></button>
-<!--SDA CUSTOM-->                           </div>
-<!--SDA CUSTOM-->                       </div>
-<!--SDA CUSTOM-->                   </div>
-<!--SDA CUSTOM-->               </div>
-<!--SDA CUSTOM-->          </ng-template>
-<!--SDA CUSTOM-->      </p-overlayPanel>
+<!-- SDA CUSTOM -->      <p-overlayPanel #op appendTo="body" [style]="{'margin-top': '2.25vh'}">
+<!-- SDA CUSTOM -->          <ng-template pTemplate>
+<!-- SDA CUSTOM -->               <div style="max-height: 30vh; overflow: auto; min-width: 20vw; max-width: 30vw;">
+<!-- SDA CUSTOM -->                   <div (mouseenter)="showFilterTooltip($event, op, filter)" (mouseleave)="hideFilterTooltip(op)">
+<!-- SDA CUSTOM -->                       <div class="filter-tooltip-header">
+<!-- SDA CUSTOM -->                           <span class="filters-size filter-tooltip-header-title">{{ resumen }}</span>
+<!-- SDA CUSTOM -->                           <button *ngIf="!isFilterReadOnly(filter)" type="button" class="pi pi-trash filter-tooltip-remove-all" (click)="removeAllFilterItems(filter)"></button>
+<!-- SDA CUSTOM -->                       </div>
+<!-- SDA CUSTOM -->                       <div class="filter-tooltip-items">
+<!-- SDA CUSTOM -->                           <div *ngFor="let item of filter.selectedItems" class="filter-tooltip-chip">
+<!-- SDA CUSTOM -->                               <span class="customMultiselect filters-size filter-tooltip-chip-text">{{ item }}</span>
+<!-- SDA CUSTOM -->                               <button *ngIf="!isFilterReadOnly(filter)" type="button" class="pi pi-times filter-tooltip-button" (click)="removeFilterItem(filter, item)"></button>
+<!-- SDA CUSTOM -->                           </div>
+<!-- SDA CUSTOM -->                       </div>
+<!-- SDA CUSTOM -->                   </div>
+<!-- SDA CUSTOM -->               </div>
+<!-- SDA CUSTOM -->          </ng-template>
+<!-- SDA CUSTOM -->      </p-overlayPanel>
                 </div>
             </ng-container>
         </div>
