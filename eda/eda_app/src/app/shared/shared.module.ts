@@ -21,7 +21,7 @@ import {
     EdaDatePickerComponent,
     CreateDashboardComponent,
     EdaFieldComponent,
-    /**SDA CUSTOM  */ DateFormatDialogComponent,
+    /* SDA CUSTOM */ DateFormatDialogComponent,
 } from './components/shared-components.index';
 
 @NgModule({
@@ -39,7 +39,7 @@ import {
         CreateDashboardComponent,
         EdaFieldComponent,
         OnlySignsAndNumbersDirective,
-        /**SDA CUSTOM  */DateFormatDialogComponent
+        /* SDA CUSTOM */DateFormatDialogComponent
     ],
     imports: [
         CoreModule,
@@ -60,7 +60,7 @@ import {
         EdaDatePickerComponent,
         CreateDashboardComponent,
         EdaFieldComponent,
-        /**SDA CUSTOM  */DateFormatDialogComponent
+        /* SDA CUSTOM */DateFormatDialogComponent
     ]
 })
 export class SharedModule {}
