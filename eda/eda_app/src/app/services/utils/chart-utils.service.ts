@@ -85,11 +85,11 @@ export class ChartUtilsService {
 
 /** SDA CUSTOM */    public filterTypesLabels: FilterTypeLabels[] = [
 /** SDA CUSTOM */        { label: $localize`:@@filtersLabel1:=`, value: '=' },
-/** SDA CUSTOM */        { label: $localize`:@@filtersLabel2:!=`, value: '!=' },
+/** SDA CUSTOM */        { label: $localize`:@@filtersLabel2:≠`, value: '!=' },
 /** SDA CUSTOM */        { label: $localize`:@@filtersLabel3:>`, value: '>' },
 /** SDA CUSTOM */        { label: $localize`:@@filtersLabel4:<`, value: '<' },
-/** SDA CUSTOM */        { label: $localize`:@@filtersLabel5:>=`, value: '>=' },
-/** SDA CUSTOM */        { label: $localize`:@@filtersLabel6:<=`, value: '<=' },
+/** SDA CUSTOM */        { label: $localize`:@@filtersLabel5:≥`, value: '>=' },
+/** SDA CUSTOM */        { label: $localize`:@@filtersLabel6:≤`, value: '<=' },
 /** SDA CUSTOM */        { label: $localize`:@@filtersLabel7:Entre`, value: 'between' },
 /** SDA CUSTOM */        { label: $localize`:@@filtersLabel8:Dentro de`, value: 'in' },
 /** SDA CUSTOM */        { label: $localize`:@@filtersLabel9:Fuera de`, value: 'not_in' },

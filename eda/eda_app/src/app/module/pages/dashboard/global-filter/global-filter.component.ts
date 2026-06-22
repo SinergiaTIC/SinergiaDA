@@ -863,12 +863,52 @@ export class GlobalFilterComponent implements OnInit {
 /* SDA CUSTOM */        return `${this.getOperatorLabel(op)} : ${fmt(items[0])} - ${fmt(items[1])}`;
 /* SDA CUSTOM */    }
 
+/* SDA CUSTOM */    public isDynamicDateRange(filter: any): boolean {
+/* SDA CUSTOM */        return !!(filter.dynamicValue);
+/* SDA CUSTOM */    }
+/* SDA CUSTOM */
+/* SDA CUSTOM */    public getDateFilterOperatorText(filter: any): string {
+/* SDA CUSTOM */        const op = filter.dateFilterType;
+/* SDA CUSTOM */        if (!op) return '';
+/* SDA CUSTOM */        return this.getOperatorLabel(op);
+/* SDA CUSTOM */    }
+/* SDA CUSTOM */
+/* SDA CUSTOM */    public getDateFilterValueText(filter: any): string {
+/* SDA CUSTOM */        const op = filter.dateFilterType;
+/* SDA CUSTOM */        if (!op) return '';
+/* SDA CUSTOM */
+/* SDA CUSTOM */        const noValueTypes = ['not_null', 'not_null_nor_empty', 'null_or_empty'];
+/* SDA CUSTOM */        if (noValueTypes.includes(op)) return '';
+/* SDA CUSTOM */
+/* SDA CUSTOM */        const fmt = (s: string) => {
+/* SDA CUSTOM */            if (!s) return '';
+/* SDA CUSTOM */            const [ye, mo, da] = s.split('-');
+/* SDA CUSTOM */            return `${da}-${mo}-${ye.slice(2)}`;
+/* SDA CUSTOM */        };
+/* SDA CUSTOM */
+/* SDA CUSTOM */        if (filter.dynamicValue) {
+/* SDA CUSTOM */            return this.getRangeLabel(filter.dynamicValue);
+/* SDA CUSTOM */        }
+/* SDA CUSTOM */
+/* SDA CUSTOM */        const items = filter.selectedItems;
+/* SDA CUSTOM */        if (!items || items.length === 0) return $localize`:@@DateFilterPlaceholder:Fecha`;
+/* SDA CUSTOM */        if (Array.isArray(items[0])) return (items[0] as string[]).map(fmt).join(', ');
+/* SDA CUSTOM */        if (items.length === 1 || !items[1]) return fmt(items[0]);
+/* SDA CUSTOM */        return `${fmt(items[0])} - ${fmt(items[1])}`;
+/* SDA CUSTOM */    }
+/* SDA CUSTOM */
 /* SDA CUSTOM */    private getRangeLabel(value: string): string {
 /* SDA CUSTOM */        return rangeDateFormats.find((r: any) => r.value === value)?.label || value;
 /* SDA CUSTOM */    }
 
 /* SDA CUSTOM */    private getOperatorLabel(op: string): string {
 /* SDA CUSTOM */        const labels: Record<string, string> = {
+/* SDA CUSTOM */            '=':                  this.chartUtilsService.filterTypesLabels.find((value: any) => value.value === '=').label,
+/* SDA CUSTOM */            '!=':                 this.chartUtilsService.filterTypesLabels.find((value: any) => value.value === '!=').label,
+/* SDA CUSTOM */            '>':                  this.chartUtilsService.filterTypesLabels.find((value: any) => value.value === '>').label,
+/* SDA CUSTOM */            '<':                  this.chartUtilsService.filterTypesLabels.find((value: any) => value.value === '<').label,
+/* SDA CUSTOM */            '>=':                 this.chartUtilsService.filterTypesLabels.find((value: any) => value.value === '>=').label,
+/* SDA CUSTOM */            '<=':                 this.chartUtilsService.filterTypesLabels.find((value: any) => value.value === '<=').label,
 /* SDA CUSTOM */            'between':            this.chartUtilsService.filterTypesLabels.find((value: any) => value.value === 'between').label,
 /* SDA CUSTOM */            'in':                 this.chartUtilsService.filterTypesLabels.find((value: any) => value.value === 'in').label,
 /* SDA CUSTOM */            'not_in':             this.chartUtilsService.filterTypesLabels.find((value: any) => value.value === 'not_in').label,
