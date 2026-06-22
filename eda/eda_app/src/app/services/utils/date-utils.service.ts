@@ -304,7 +304,7 @@ export class DateUtils {
 
     public setNext120(): Array<Date> {
         const start = moment().add(1, 'day').startOf('day').toDate();
-        const end   = moment().add(90, 'day').endOf('day').toDate();
+        const end   = moment().add(120, 'day').endOf('day').toDate();
         return [start, end];
     }
 
