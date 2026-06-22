@@ -41,7 +41,7 @@
                             </p-multiSelect>
                             <!-- SDA CUSTOM: inline date filter selectors -->
                             <div *ngIf="globalFilter.selectedColumn?.column_type === 'date'" class="date-filter-controls">
-                                <p-dropdown *ngIf="showDateFormatSelecter" [(ngModel)]="filterSelected"
+                                <p-dropdown [(ngModel)]="filterSelected"
                                     [options]="dateFilterOperators" optionLabel="label" [style]="{'min-width': '130px'}"
                                     placeholder="Operador" (onChange)="handleDateFilterOperatorChange($event.value)">
                                 </p-dropdown>
