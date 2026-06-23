@@ -960,6 +960,22 @@
     <source>Selección en calendario:</source>
     <target>Selección en calendario:</target>
   </trans-unit>
+  <trans-unit id="filters2">
+    <source>NO IGUAL A (!=)</source>
+    <target>NON IGUAL A (≠)</target>
+  </trans-unit>
+  <trans-unit id="filters5">
+    <source>MAYOR o IGUAL A (&gt;=)</source>
+    <target>MAIOR o IGUAL A (≥)</target>
+  </trans-unit>
+  <trans-unit id="filters6">
+    <source>MENOR o IGUAL A (&lt;=)</source>
+    <target>MENOR o IGUAL A (≤)</target>
+  </trans-unit>
+  <trans-unit id="filters13">
+    <source>VALORES NO NULOS NI VACÍOS (not null and != '')</source>
+    <target>VALORES NON NULOS OU BALEIROS (not null and ≠ '')</target>
+  </trans-unit>
 </body>
   </file>
 </xliff>

@@ -88,11 +88,11 @@ export class EdaDatePickerComponent implements OnChanges {
 	constructor(
 		private dateUtilsService: DateUtils) {
 		const url = window.location.href;
-		let lan_ca = new RegExp('\/ca\/', 'i');
-		let lan_es = new RegExp('\/es\/', 'i');
-		this.locale = lan_ca.test(url) ? locales.ca : lan_es.test(url) ? locales.es : locales.en;
-		//this.firstDayOfWeek = lan_es.test(url) || lan_ca.test(url) ? 1 : 0;
-		this.firstDayOfWeek = lan_es.test(url) || lan_ca.test(url) ? 1 : 1;
+		/* SDA CUSTOM */ let lan_gl = new RegExp('\/gl\/', 'i');
+		/* SDA CUSTOM */ let lan_ca = new RegExp('\/ca\/', 'i');
+		/* SDA CUSTOM */ let lan_es = new RegExp('\/es\/', 'i');
+		/* SDA CUSTOM */ this.locale = lan_ca.test(url) ? locales.ca : lan_gl.test(url) ? locales.gl : lan_es.test(url) ? locales.es : locales.en;
+		/* SDA CUSTOM */ this.firstDayOfWeek = 1;
 		/* SDA CUSTOM */this._allRanges = [...this.ranges];
 	}
 
