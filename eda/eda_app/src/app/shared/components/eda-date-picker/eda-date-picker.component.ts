@@ -80,7 +80,7 @@ export class EdaDatePickerComponent implements OnChanges {
 	];
 
 	public selectedRange: SelectItem;
-	public rangePlaceholder: string = $localize`:@@DateSelectRange:Selecciona un rango`;
+	public rangePlaceholder: string = '';
 	public rangeDates: any;
 
 	/* SDA CUSTOM */ private _allRanges: Array<SelectItem>;
