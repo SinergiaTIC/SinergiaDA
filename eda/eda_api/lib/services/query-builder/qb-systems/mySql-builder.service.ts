@@ -563,7 +563,11 @@ export class MySqlBuilderService extends QueryBuilderService {
       if(computed_column==='computed') {
         resultado = `${['null_or_empty', 'not_null_nor_empty'].includes(filter_type) || (filter_type==='in' && sqlOptional !== undefined) ? ' (' : ''} ${sqlOptional !== undefined ? sqlOptional : ''} (${SQLexpression}) ${filter_type_value}${filter_elements_value}`;
       } else {
-        /* SDA CUSTOM */ resultado = `${['null_or_empty', 'not_null_nor_empty'].includes(filter_type) || (filter_type==='in' && sqlOptional !== undefined) ? ' (' : ''} ${sqlOptional !== undefined ? sqlOptional : ''} \`${ validador ? valueListSource.target_table : filter_table}\`.\`${valueListFilterColumn}\` ${filter_type_value}${filter_elements_value}`;
+        /* SDA CUSTOM */ const rawColRef = `\`${validador ? valueListSource.target_table : filter_table}\`.\`${valueListFilterColumn}\``;
+        /* SDA CUSTOM */ const dateFilterColRef = (filter_column_type === 'date' && !['between', 'not_between'].includes(filter_type) && !(dynamicValue && (filter_type === 'in' || filter_type === 'not_in')))
+        /* SDA CUSTOM */   ? `STR_TO_DATE(${rawColRef}, '%Y-%m-%d')`
+        /* SDA CUSTOM */   : rawColRef;
+        /* SDA CUSTOM */ resultado = `${['null_or_empty', 'not_null_nor_empty'].includes(filter_type) || (filter_type==='in' && sqlOptional !== undefined) ? ' (' : ''} ${sqlOptional !== undefined ? sqlOptional : ''} ${dateFilterColRef} ${filter_type_value}${filter_elements_value}`;
       }
 
 
@@ -1066,7 +1070,8 @@ export class MySqlBuilderService extends QueryBuilderService {
       column.joins = filterObject.joins || [];
       column.valueListSource = filterObject.valueListSource;
       const colname=this.getFilterColname(column, filterObject.filter_codes?.length !== undefined  ,  filterObject.valueListSource !== undefined );
-      
+      /* SDA CUSTOM */ const dateColname = colType === 'date' ? `STR_TO_DATE(${colname}, '%Y-%m-%d')` : colname;
+       
 /* SDA CUSTOM *//* SDA CUSTOM */      switch (this.setFilterType(filterObject.filter_type, filterObject.dynamicValue)) {
         case 0:
           if (filterObject.filter_type === '!=') { filterObject.filter_type = '<>' }
@@ -1089,9 +1094,9 @@ export class MySqlBuilderService extends QueryBuilderService {
           }   
           /** if i have the lovely code i use the code */
           if( filterObject.filter_codes?.length !== undefined  &&  filterObject.valueListSource !== undefined ){
-              return `${colname}  ${filterObject.filter_type} ${this.processFilter(filterObject.filter_codes[0].value1, colType)} `;
+              return `${dateColname}  ${filterObject.filter_type} ${this.processFilter(filterObject.filter_codes[0].value1, colType)} `;
           }else{
-              return `${colname}  ${filterObject.filter_type} ${this.processFilter(filterObject.filter_elements[0].value1, colType)} `;
+              return `${dateColname}  ${filterObject.filter_type} ${this.processFilter(filterObject.filter_elements[0].value1, colType)} `;
           }
           
           // in values
@@ -1099,9 +1104,9 @@ export class MySqlBuilderService extends QueryBuilderService {
           if (filterObject.filter_type === 'not_in') { filterObject.filter_type = 'not in' }
             /** if i have the lovely code i use the code */
             if( filterObject.filter_codes?.length !== undefined  &&  filterObject.valueListSource !== undefined ){
-                return `${colname}  ${filterObject.filter_type} (${this.processFilter(filterObject.filter_codes[0].value1, colType)}) `;
+                return `${dateColname}  ${filterObject.filter_type} (${this.processFilter(filterObject.filter_codes[0].value1, colType)}) `;
             }else{
-                return `${colname}  ${filterObject.filter_type} (${this.processFilter(filterObject.filter_elements[0].value1, colType)}) `;
+                return `${dateColname}  ${filterObject.filter_type} (${this.processFilter(filterObject.filter_elements[0].value1, colType)}) `;
             }
           
         case 2:
