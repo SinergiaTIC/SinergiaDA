@@ -84,7 +84,7 @@
 <!-- SDA CUSTOM -->                       <div class="filter-tooltip-items">
 <!-- SDA CUSTOM -->                           <div *ngFor="let item of filter.selectedItems" class="filter-tooltip-chip">
 <!-- SDA CUSTOM -->                               <span class="customMultiselect filters-size filter-tooltip-chip-text">{{ item }}</span>
-<!-- SDA CUSTOM -->                               <button *ngIf="!isFilterReadOnly(filter)" type="button" class="pi pi-times filter-tooltip-button" (click)="removeFilterItem(filter, item)"></button>
+<!-- SDA CUSTOM -->                               <span *ngIf="!isFilterReadOnly(filter)" class="p-multiselect-token-icon pi pi-times-circle" (click)="removeFilterItem(filter, item)" style="cursor: pointer;"></span>
 <!-- SDA CUSTOM -->                           </div>
 <!-- SDA CUSTOM -->                       </div>
 <!-- SDA CUSTOM -->                   </div>
