@@ -565,7 +565,7 @@ export class MySqlBuilderService extends QueryBuilderService {
       } else {
         /* SDA CUSTOM */ const rawColRef = `\`${validador ? valueListSource.target_table : filter_table}\`.\`${valueListFilterColumn}\``;
         /* SDA CUSTOM */ const dateFilterColRef = (filter_column_type === 'date' && !['between', 'not_between'].includes(filter_type) && !(dynamicValue && (filter_type === 'in' || filter_type === 'not_in')))
-        /* SDA CUSTOM */   ? `STR_TO_DATE(${rawColRef}, '%Y-%m-%d')`
+        /* SDA CUSTOM */   ? `DATE_FORMAT(${rawColRef}, '%Y-%m-%d')`
         /* SDA CUSTOM */   : rawColRef;
         /* SDA CUSTOM */ resultado = `${['null_or_empty', 'not_null_nor_empty'].includes(filter_type) || (filter_type==='in' && sqlOptional !== undefined) ? ' (' : ''} ${sqlOptional !== undefined ? sqlOptional : ''} ${dateFilterColRef} ${filter_type_value}${filter_elements_value}`;
       }
@@ -1070,7 +1070,7 @@ export class MySqlBuilderService extends QueryBuilderService {
       column.joins = filterObject.joins || [];
       column.valueListSource = filterObject.valueListSource;
       const colname=this.getFilterColname(column, filterObject.filter_codes?.length !== undefined  ,  filterObject.valueListSource !== undefined );
-      /* SDA CUSTOM */ const dateColname = colType === 'date' ? `STR_TO_DATE(${colname}, '%Y-%m-%d')` : colname;
+        /* SDA CUSTOM */ const dateColname = colType === 'date' ? `DATE_FORMAT(${colname}, '%Y-%m-%d')` : colname;
        
 /* SDA CUSTOM *//* SDA CUSTOM */      switch (this.setFilterType(filterObject.filter_type, filterObject.dynamicValue)) {
         case 0:
