@@ -60,6 +60,7 @@
                         class="customMultiselect filters-size"
                         [style]="{'max-width': '250px', 'min-width':'200px', 'font-family':'var(--eda-filters-font-family)'}"
                         [Show]="dropdownFiltersSize(filter)"
+                        appendTo="body"
                         (onChange)="setGlobalFilterItems(filter)"
                         (mouseenter)="showFilterTooltip($event, op, filter)"
                         (mouseleave)="hideFilterTooltip(op)"

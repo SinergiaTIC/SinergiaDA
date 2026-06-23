@@ -11,7 +11,7 @@
                                 [(ngModel)]="globalFilter.selectedTable" filter="true"
                                 optionLabel="display_name.default" [style]="{'width': '100%'}"
                                 i18n-placeholder="@@placeholderTables" placeholder="Entidades"
-                                (onChange)="onChangeSelectedTable()">
+                                (onChange)="onChangeSelectedTable()" appendTo="body">
                             </p-dropdown>
                         </div>
                         <div class="col-3">
@@ -19,7 +19,7 @@
                                 [(ngModel)]="globalFilter.selectedColumn" filter="true"
                                 optionLabel="display_name.default" [style]="{'width': '100%'}"
                                 i18n-placeholder="@@placeholderColumns" placeholder="Atributos"
-                                (onChange)="onChangeSelectedColumn()">
+                                (onChange)="onChangeSelectedColumn()" appendTo="body">
                             </p-dropdown>
                         </div>
                         <div class="col-3" >
