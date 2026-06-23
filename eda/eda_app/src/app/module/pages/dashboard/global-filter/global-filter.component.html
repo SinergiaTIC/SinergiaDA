@@ -32,7 +32,7 @@
 
                     <!-- Botón que muestra el valor configurado y abre el date-format-dialog -->
 <!-- SDA CUSTOM --><button pButton pRipple type="button" [disabled]="disableGlobalFilter(filter)" (click)="onOpenDateFormatDialog(filter)" class="filters-size date-filter-btn" [style]="{'min-width': '160px', 'height': '26px'}">
-<!-- SDA CUSTOM -->    <span class="date-filter-operator">{{ getDateFilterOperatorText(filter) }}</span>
+<!-- SDA CUSTOM -->    <span *ngIf="filter.dateFilterType" class="date-filter-operator">{{ getDateFilterOperatorText(filter) }}</span>
 <!-- SDA CUSTOM -->    <span class="date-filter-value p-button-label" [ngClass]="{'date-filter-value--dynamic': isDynamicDateRange(filter)}">{{ getDateFilterValueText(filter) }}</span>
 <!-- SDA CUSTOM --></button>
 
