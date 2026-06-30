@@ -2051,9 +2051,9 @@ export class EdaBlankPanelComponent implements OnInit {
             this.sortedFilters.push(newSortedFilter);
 
         } else {
-            /* SDA CUSTOM */ this.sortedFilters = this.sortedFilters.filter(
-            /* SDA CUSTOM */     sf => sf.filter_id !== e.filter.filter_id
-            /* SDA CUSTOM */ );
+            // SDA CUSTOM - When deleting a filter, reset all advanced filters and show warning
+            /* SDA CUSTOM */ this.sortedFilters = [];
+            /* SDA CUSTOM */ this.alertService.addWarning($localize`:@@filterSettingsReboot:La configuración de filtros se ha reiniciado`);
         }
     }
 
@@ -2085,9 +2085,9 @@ export class EdaBlankPanelComponent implements OnInit {
             this.sortedFilters.push(newSortedFilter);
 
         } else {
-            /* SDA CUSTOM */ this.sortedFilters = this.sortedFilters.filter(
-            /* SDA CUSTOM */     sf => sf.filter_id !== e.filter.filter_id
-            /* SDA CUSTOM */ );
+            // SDA CUSTOM - When deleting a filter, reset all advanced filters and show warning
+            /* SDA CUSTOM */ this.sortedFilters = [];
+            /* SDA CUSTOM */ this.alertService.addWarning($localize`:@@filterSettingsReboot:La configuración de filtros se ha reiniciado`);
         }
     }
 
