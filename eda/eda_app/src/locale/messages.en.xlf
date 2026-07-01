@@ -1817,10 +1817,6 @@
         <source>Selecciona un rango</source>
         <target>Select range</target>
       </trans-unit>
-      <trans-unit id="DatePickerCustomDate">
-        <source>Seleccionar fecha</source>
-        <target>Select date</target>
-      </trans-unit>
 
       <!-- SECTION: MAPAS Y GEOJSON -->
       <trans-unit id="inputMapTables">
