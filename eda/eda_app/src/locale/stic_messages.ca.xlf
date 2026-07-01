@@ -923,11 +923,11 @@
   </trans-unit>
   <trans-unit id="sqlModeFilterPathText">
     <source>En modo SQL, si necesita modificar la ruta, debe hacerlo en la consulta</source>
-    <target>En mode SQL, si necessita modificar la ruta, ha de fer-ho a la consulta</target>
+    <target>En mode SQL, si necessiteu modificar la ruta heu de fer-ho a la consulta</target>
   </trans-unit>
   <trans-unit id="DatePickerCustomDate">
     <source>Seleccionar fecha</source>
-    <target>Seleccionar data</target>
+    <target>Seleccioneu la data</target>
   </trans-unit>
   <trans-unit id="dateFormatDialogTextHeader">
     <source>Filtro</source>
@@ -939,7 +939,7 @@
   </trans-unit>
   <trans-unit id="dateSelectionText">
     <source>Selección de fecha:</source>
-    <target>Selecció de data:</target>
+    <target>Selecció de la data:</target>
   </trans-unit>
   <trans-unit id="calendarSelectionText">
     <source>Selección en calendario:</source>
@@ -951,15 +951,15 @@
   </trans-unit>
   <trans-unit id="filters5">
     <source>MAYOR o IGUAL A (&gt;=)</source>
-    <target>MAJOR o IGUAL A (≥)</target>
+    <target>MAJOR o IGUAL QUE (≥)</target>
   </trans-unit>
   <trans-unit id="filters6">
     <source>MENOR o IGUAL A (&lt;=)</source>
-    <target>MENOR o IGUAL A (≤)</target>
+    <target>MENOR o IGUAL QUE (≤)</target>
   </trans-unit>
   <trans-unit id="filters13">
     <source>VALORES NO NULOS NI VACÍOS (not null and != '')</source>
-    <target>NOT NULL NOR EMPTY (not null and ≠ '')</target>
+    <target>VALORS NO NULS NI BUITS (not null and ≠ '')</target>
   </trans-unit>
 </body>
   </file>
