@@ -921,7 +921,7 @@
   </trans-unit>
   <trans-unit id="sqlModeFilterPathText">
     <source>En modo SQL, si necesita modificar la ruta, debe hacerlo en la consulta</source>
-    <target>In SQL mode, if you need to modify the path, you must do it in the query.</target>
+    <target>In SQL mode, path modification must be done in the query.</target>
   </trans-unit>
   <trans-unit id="DatePickerCustomDate">
     <source>Seleccionar fecha</source>
@@ -949,15 +949,15 @@
   </trans-unit>
   <trans-unit id="filters5">
     <source>MAYOR o IGUAL A (&gt;=)</source>
-    <target>BIGGER OR EQUAL TO (≥)</target>
+    <target>GREATER THAN OR EQUAL (≥)</target>
   </trans-unit>
   <trans-unit id="filters6">
     <source>MENOR o IGUAL A (&lt;=)</source>
-    <target>SMALLER OR EQUAL TO (≤)</target>
+    <target>LESS THAN OR EQUAL (≤)</target>
   </trans-unit>
   <trans-unit id="filters13">
     <source>VALORES NO NULOS NI VACÍOS (not null and != '')</source>
-    <target>NOT NULL NOR EMPTY (not null and ≠ '')</target>
+    <target>NEITHER NULL NOR EMPTY VALUES (not null and ≠ '')</target>
   </trans-unit>
 </body>
   </file>
