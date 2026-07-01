@@ -511,7 +511,6 @@
     <source>Máximo de etiquetas</source>
     <target>Maximum labels</target>
   </trans-unit>
-  <!-- SDA CUSTOM - KPI/chart option labels -->
   <trans-unit id="showChartLabels">
     <source>Mostrar etiquetas del gráfico</source>
     <target>Show chart labels</target>
@@ -552,8 +551,6 @@
     <source>Fondo de etiquetas</source>
     <target>Label background</target>
   </trans-unit>
-  <!-- END SDA CUSTOM -->
-  <!-- SDA CUSTOM - Logs viewer labels -->
   <trans-unit id="LogsViewer" datatype="html">
     <source>Visor de logs</source>
     <target>Logs viewer</target>
@@ -682,7 +679,6 @@
     <source>Mostrar accesos a informes</source>
     <target>Show report accesses</target>
   </trans-unit>
-  <!-- SDA CUSTOM - Logs action labels i18n -->
   <trans-unit id="LogsActionAccess">
     <source>Access</source>
     <target>Access</target>
@@ -795,7 +791,6 @@
     <source>Login</source>
     <target>Login</target>
   </trans-unit>
-  <!-- SDA CUSTOM - Logs action column labels i18n -->
   <trans-unit id="LogsActionNewLogin">
     <source>Login</source>
     <target>Login</target>
@@ -904,8 +899,6 @@
     <source>Update Model Failed</source>
     <target>Model update failed</target>
   </trans-unit>
-<!-- END SDA CUSTOM -->
-  <!-- SDA CUSTOM - Download JSON title -->
   <trans-unit id="downloadJsonTitle">
     <source>Download JSON</source>
     <target>Download JSON</target>
@@ -925,14 +918,6 @@
   <trans-unit id="filterHoverNotAffected">
     <source>Paneles no afectados por este filtro</source>
     <target>Panels not affected by this filter</target>
-  </trans-unit>
-  <trans-unit id="filterSummary">
-    <source>Resumen de filtros</source>
-    <target>Filter summary</target>
-  </trans-unit>
-  <trans-unit id="globalFilterSelectedItemsLabel">
-    <source>elementos seleccionados</source>
-    <target>selected items</target>
   </trans-unit>
   <trans-unit id="sqlModeFilterPathText">
     <source>En modo SQL, si necesita modificar la ruta, debe hacerlo en la consulta</source>

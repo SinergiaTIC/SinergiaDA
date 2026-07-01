@@ -513,7 +513,6 @@
     <source>Máximo de etiquetas</source>
     <target>Màxim d'etiquetes</target>
   </trans-unit>
-  <!-- SDA CUSTOM - KPI/chart option labels -->
   <trans-unit id="showChartLabels">
     <source>Mostrar etiquetas del gráfico</source>
     <target>Mostra les etiquetes del gràfic</target>
@@ -554,8 +553,6 @@
     <source>Fondo de etiquetas</source>
     <target>Fons de les etiquetes</target>
   </trans-unit>
-  <!-- END SDA CUSTOM -->
-  <!-- SDA CUSTOM - Logs viewer labels -->
   <trans-unit id="LogsViewer" datatype="html">
     <source>Visor de logs</source>
     <target>Visor de registres</target>
@@ -684,7 +681,6 @@
     <source>Mostrar accesos a informes</source>
     <target>Mostrar accessos als informes</target>
   </trans-unit>
-  <!-- SDA CUSTOM - Logs action labels i18n -->
   <trans-unit id="LogsActionAccess">
     <source>Access</source>
     <target>Accés</target>
@@ -797,7 +793,6 @@
     <source>Login</source>
     <target>Inici de sessió</target>
   </trans-unit>
-  <!-- SDA CUSTOM - Logs action column labels i18n -->
   <trans-unit id="LogsActionNewLogin">
     <source>Login</source>
     <target>Inici de sessió</target>
@@ -906,8 +901,6 @@
     <source>Update Model Failed</source>
     <target>Error en actualització del model</target>
   </trans-unit>
-<!-- END SDA CUSTOM -->
-  <!-- SDA CUSTOM - Download JSON title -->
   <trans-unit id="downloadJsonTitle">
     <source>Download JSON</source>
     <target>Descarregar JSON</target>
@@ -928,21 +921,13 @@
     <source>Paneles no afectados por este filtro</source>
     <target>Panells no afectats per aquest filtre</target>
   </trans-unit>
-  <trans-unit id="DatePickerCustomDate">
-    <source>Seleccionar fecha</source>
-    <target>Seleccionar data</target>
-  </trans-unit>
-  <trans-unit id="filterSummary">
-    <source>Resumen de filtros</source>
-    <target>Resum de filtres</target>
-  </trans-unit>
-  <trans-unit id="globalFilterSelectedItemsLabel">
-    <source>elementos seleccionados</source>
-    <target>elements seleccionats</target>
-  </trans-unit>
   <trans-unit id="sqlModeFilterPathText">
     <source>En modo SQL, si necesita modificar la ruta, debe hacerlo en la consulta</source>
     <target>En mode SQL, si necessita modificar la ruta, ha de fer-ho a la consulta</target>
+  </trans-unit>
+  <trans-unit id="DatePickerCustomDate">
+    <source>Seleccionar fecha</source>
+    <target>Seleccionar data</target>
   </trans-unit>
   <trans-unit id="dateFormatDialogTextHeader">
     <source>Filtro</source>

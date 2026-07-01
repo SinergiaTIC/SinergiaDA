@@ -906,8 +906,6 @@
     <source>Update Model Failed</source>
     <target>Fallo en actualización do modelo</target>
   </trans-unit>
-<!-- END SDA CUSTOM -->
-  <!-- SDA CUSTOM - Download JSON title -->
   <trans-unit id="downloadJsonTitle">
     <source>Download JSON</source>
     <target>Descargar JSON</target>
@@ -932,21 +930,13 @@
     <source>Seleccionar fecha</source>
     <target>Seleccionar data</target>
   </trans-unit>
-  <trans-unit id="filterSummary">
-    <source>Resumen de filtros</source>
-    <target>Resumo de filtros</target>
-  </trans-unit>
-  <trans-unit id="globalFilterSelectedItemsLabel">
-    <source>elementos seleccionados</source>
-    <target>elementos seleccionados</target>
+  <trans-unit id="dateFormatDialogTextHeader">
+    <source>Filtro</source>
+    <target>Filtro</target>
   </trans-unit>
   <trans-unit id="sqlModeFilterPathText">
     <source>En modo SQL, si necesita modificar la ruta, debe hacerlo en la consulta</source>
     <target>En modo SQL, se necesita modificar a ruta, debe facelo na consulta</target>
-  </trans-unit>
-  <trans-unit id="dateFormatDialogTextHeader">
-    <source>Filtro</source>
-    <target>Filtro</target>
   </trans-unit>
   <trans-unit id="filterOperatorSelectionText">
     <source>Selección de operador del filtro:</source>
