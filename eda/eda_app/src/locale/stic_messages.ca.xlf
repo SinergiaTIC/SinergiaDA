@@ -949,11 +949,11 @@
   </trans-unit>
   <trans-unit id="filters5">
     <source>MAYOR o IGUAL A (&gt;=)</source>
-    <target>MAJOR O IGUAL QUE (≥)</target>
+    <target>MÉS GRAN O IGUAL QUE (≥)</target>
   </trans-unit>
   <trans-unit id="filters6">
     <source>MENOR o IGUAL A (&lt;=)</source>
-    <target>MENOR O IGUAL QUE (≤)</target>
+    <target>MÉS PETIT O IGUAL QUE (≤)</target>
   </trans-unit>
   <trans-unit id="filters13">
     <source>VALORES NO NULOS NI VACÍOS (not null and != '')</source>
