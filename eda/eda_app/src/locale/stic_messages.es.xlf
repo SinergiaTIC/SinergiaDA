@@ -943,21 +943,61 @@
     <source>Selección en calendario:</source>
     <target>Selección en calendario:</target>
   </trans-unit>
+  <trans-unit id="filters1">
+    <source>IGUAL A (=)</source>
+    <target>Igual a (=)</target>
+  </trans-unit>
   <trans-unit id="filters2">
     <source>NO IGUAL A (!=)</source>
-    <target>NO IGUAL A (≠)</target>
+    <target>No igual a (≠)</target>
+  </trans-unit>
+  <trans-unit id="filters3">
+    <source>MAYOR A (&gt;)</source>
+    <target>Mayor que (&gt;)</target>
+  </trans-unit>
+  <trans-unit id="filters4">
+    <source>MENOR A (&lt;)</source>
+    <target>Menor que (&lt;)</target>
   </trans-unit>
   <trans-unit id="filters5">
     <source>MAYOR o IGUAL A (&gt;=)</source>
-    <target>MAYOR O IGUAL QUE (≥)</target>
+    <target>Mayor o igual que (≥)</target>
   </trans-unit>
   <trans-unit id="filters6">
     <source>MENOR o IGUAL A (&lt;=)</source>
-    <target>MENOR O IGUAL QUE (≤)</target>
+    <target>Menor o igual que (≤)</target>
+  </trans-unit>
+  <trans-unit id="filters7">
+    <source>ENTRE (between)</source>
+    <target>Entre</target>
+  </trans-unit>
+  <trans-unit id="filters8">
+    <source>DENTRO DE (in)</source>
+    <target>Dentro de</target>
+  </trans-unit>
+  <trans-unit id="filters9">
+    <source>FUERA DE (not in)</source>
+    <target>Fuera de</target>
+  </trans-unit>
+  <trans-unit id="filters10">
+    <source>PARECIDO A (like)</source>
+    <target>Parecido a</target>
+  </trans-unit>
+  <trans-unit id="filters11">
+    <source>NO PARECIDO A (not like)</source>
+    <target>No parecido a</target>
+  </trans-unit>
+  <trans-unit id="filters12">
+    <source>VALORES NO NULOS (not null)</source>
+    <target>Valores no nulos</target>
   </trans-unit>
   <trans-unit id="filters13">
     <source>VALORES NO NULOS NI VACÍOS (not null and != '')</source>
-    <target>VALORES NO NULOS NI VACÍOS (not null and ≠ '')</target>
+    <target>Valores no nulos ni vacíos (not null and ≠ '')</target>
+  </trans-unit>
+  <trans-unit id="filters14">
+    <source>VALORES NULOS O VACÍOS (null or = '')</source>
+    <target>Valores nulos o vacíos (null or = '')</target>
   </trans-unit>
 </body>
   </file>
