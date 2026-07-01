@@ -1115,9 +1115,10 @@ export class EdaBlankPanelComponent implements OnInit {
 
     public rebootGlobalFilter(_filter: any){
 
-        /* SDA CUSTOM  */ const filterIndex = this.sortedFilters.findIndex((sortedFilter: any) => _filter.id === sortedFilter.filter_id);
-        /* SDA CUSTOM  */ if (filterIndex !== -1) {
-        /* SDA CUSTOM  */     this.sortedFilters.splice(filterIndex, 1);
+        // SDA CUSTOM - Consistent with updateSortedFiltersColumnDialogFunction/updateSortedFiltersFilterDialogFunction: removing a filter used in the and/or config resets it entirely
+        /* SDA CUSTOM  */ if (this.sortedFilters.some((sortedFilter: any) => _filter.id === sortedFilter.filter_id)) {
+        /* SDA CUSTOM  */     this.sortedFilters = [];
+        /* SDA CUSTOM  */     this.alertService.addWarning($localize`:@@filterSettingsReboot:La configuración de filtros se ha reiniciado`);
         /* SDA CUSTOM  */ }
 
     }
