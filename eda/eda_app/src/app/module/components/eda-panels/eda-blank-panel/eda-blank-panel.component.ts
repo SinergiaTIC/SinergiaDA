@@ -1685,11 +1685,11 @@ export class EdaBlankPanelComponent implements OnInit {
 
 /* SDA CUSTOM */       // We just proceed if it is not the last column of the root table
 /* SDA CUSTOM */       if (isNotRootColumn || rootColumnElements > 1 || currentQueryLength === 1) {
-/* SDA CUSTOM */           // We check if when deleting a field it has a filter at selectedFilters
-/* SDA CUSTOM */           if (this.selectedFilters.some((sf: any) => sf.filter_column === c.column_name && sf.filter_table === c.table_id)) {
-                                /* SDA CUSTOM */ this.sortedFilters = this.sortedFilters.filter(
-                                /* SDA CUSTOM */     sf => !(sf.filter_column === c.column_name && sf.filter_table === c.table_id)
-                                /* SDA CUSTOM */ );
+/* SDA CUSTOM */           // We check if the removed column's filter is part of the advanced (and/or) filter configuration
+/* SDA CUSTOM */           if (this.sortedFilters.some((sf: any) => sf.filter_column === c.column_name && sf.filter_table === c.table_id)) {
+                                /* SDA CUSTOM */ // Consistent with updateSortedFiltersColumnDialogFunction/updateSortedFiltersFilterDialogFunction: removing a filter used in the and/or config resets it entirely
+                                /* SDA CUSTOM */ this.sortedFilters = [];
+                                /* SDA CUSTOM */ this.alertService.addWarning($localize`:@@filterSettingsReboot:La configuración de filtros se ha reiniciado`);
                             }
 /* SDA CUSTOM */           // Last column of a new panel (query never executed): reset global filter config before utils runs
 /* SDA CUSTOM */           if (currentQueryLength === 1 && _.isNil(this.panel.content)) {
@@ -2027,28 +2027,31 @@ export class EdaBlankPanelComponent implements OnInit {
 
         if(e.add){
 
-            /* SDA CUSTOM */ const lastElement = this.sortedFilters.length !== 0
-            /* SDA CUSTOM */     ? this.sortedFilters[this.sortedFilters.length-1]
-            /* SDA CUSTOM */     : null;
+            // SDA CUSTOM - Only append to an already configured and/or setup; if empty (not configured yet),
+            // leave it empty so it gets fully rebuilt from selectedFilters/globalFilters next time the dialog opens
+            /* SDA CUSTOM */ if (this.sortedFilters.length !== 0) {
 
-            /* SDA CUSTOM */ const newSortedFilter = {
-                cols: 3,
-                rows: 1,
-                y: lastElement ? lastElement.y+1 : 0,
-                x: 0,
-                filter_table: e.filter.filter_table,
-                filter_column: e.filter.filter_column,
-                filter_type: e.filter.filter_type,
-                filter_column_type: e.filter.filter_column_type,
-                filter_elements: e.filter.filter_elements,
-                filter_codes: e.filter.filter_codes,
-                filter_id: e.filter.filter_id,
-                /* SDA CUSTOM */ selectedRange: e.filter.selectedRange,
-                /* SDA CUSTOM */ dynamicValue: e.filter.dynamicValue,
-                value: "and",
-            }
+            /* SDA CUSTOM */     const lastElement = this.sortedFilters[this.sortedFilters.length-1];
 
-            this.sortedFilters.push(newSortedFilter);
+            /* SDA CUSTOM */     const newSortedFilter = {
+                    cols: 3,
+                    rows: 1,
+                    y: lastElement.y+1,
+                    x: 0,
+                    filter_table: e.filter.filter_table,
+                    filter_column: e.filter.filter_column,
+                    filter_type: e.filter.filter_type,
+                    filter_column_type: e.filter.filter_column_type,
+                    filter_elements: e.filter.filter_elements,
+                    filter_codes: e.filter.filter_codes,
+                    filter_id: e.filter.filter_id,
+                    /* SDA CUSTOM */ selectedRange: e.filter.selectedRange,
+                    /* SDA CUSTOM */ dynamicValue: e.filter.dynamicValue,
+                    value: "and",
+                }
+
+            /* SDA CUSTOM */     this.sortedFilters.push(newSortedFilter);
+            /* SDA CUSTOM */ }
 
         } else {
             // SDA CUSTOM - When deleting a filter, reset all advanced filters and show warning
@@ -2061,28 +2064,31 @@ export class EdaBlankPanelComponent implements OnInit {
 
         if(e.add){
 
-            /* SDA CUSTOM */ const lastElement = this.sortedFilters.length !== 0
-            /* SDA CUSTOM */     ? this.sortedFilters[this.sortedFilters.length-1]
-            /* SDA CUSTOM */     : null;
+            // SDA CUSTOM - Only append to an already configured and/or setup; if empty (not configured yet),
+            // leave it empty so it gets fully rebuilt from selectedFilters/globalFilters next time the dialog opens
+            /* SDA CUSTOM */ if (this.sortedFilters.length !== 0) {
 
-            /* SDA CUSTOM */ const newSortedFilter = {
-                cols: 3,
-                rows: 1,
-                y: lastElement ? lastElement.y+1 : 0,
-                x: 0,
-                filter_table: e.filter.filter_table,
-                filter_column: e.filter.filter_column,
-                filter_type: e.filter.filter_type,
-                filter_column_type: e.filter.filter_column_type,
-                filter_elements: e.filter.filter_elements,
-                filter_codes: e.filter.filter_codes,
-                filter_id: e.filter.filter_id,
-                /* SDA CUSTOM */ selectedRange: e.filter.selectedRange,
-                /* SDA CUSTOM */ dynamicValue: e.filter.dynamicValue,
-                value: "and",
-            }
+            /* SDA CUSTOM */     const lastElement = this.sortedFilters[this.sortedFilters.length-1];
 
-            this.sortedFilters.push(newSortedFilter);
+            /* SDA CUSTOM */     const newSortedFilter = {
+                    cols: 3,
+                    rows: 1,
+                    y: lastElement.y+1,
+                    x: 0,
+                    filter_table: e.filter.filter_table,
+                    filter_column: e.filter.filter_column,
+                    filter_type: e.filter.filter_type,
+                    filter_column_type: e.filter.filter_column_type,
+                    filter_elements: e.filter.filter_elements,
+                    filter_codes: e.filter.filter_codes,
+                    filter_id: e.filter.filter_id,
+                    /* SDA CUSTOM */ selectedRange: e.filter.selectedRange,
+                    /* SDA CUSTOM */ dynamicValue: e.filter.dynamicValue,
+                    value: "and",
+                }
+
+            /* SDA CUSTOM */     this.sortedFilters.push(newSortedFilter);
+            /* SDA CUSTOM */ }
 
         } else {
             // SDA CUSTOM - When deleting a filter, reset all advanced filters and show warning

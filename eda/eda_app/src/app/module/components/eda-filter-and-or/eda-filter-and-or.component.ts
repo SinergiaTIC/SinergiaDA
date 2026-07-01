@@ -162,35 +162,7 @@ export class EdaFilterAndOrComponent implements OnInit, OnChanges {
     this.dashboard = [];
     let k = 0; // y value, start
 
-    // Adding Panel Filters
-    this.selectedFilters.forEach((sf, j) => {
-      if(sf.filterBeforeGrouping) {
-        this.dashboard.push(
-          {
-            cols: 3,
-            rows:1,
-            y: k,
-            x:0,
-            filter_table: sf.filter_table,
-            filter_column: sf.filter_column,
-            filter_type: sf.filter_type,
-            filter_column_type: sf.filter_column_type,
-            filter_elements: sf.filter_elements,
-/* SDA CUSTOM */            filter_codes: sf.filter_codes,
-            filter_id: sf.filter_id,
-            isGlobal: sf.isGlobal,
-            /* SDA CUSTOM */ dynamicValue: sf.dynamicValue,
-            /* SDA CUSTOM */ selectedRange: sf.selectedRange,
-            value: "and"
-          }
-        );
-        k++;
-      }
-    });
-
-    const temporalLength = k;
-    k = 0; // reset to zero
-
+    // SDA CUSTOM - Global filters go first so newly added panel filters land at the end
     // Adding Global Filters
     this.globalFilters.forEach((gf, i) => {
       if(gf.filterBeforeGrouping) {
@@ -198,7 +170,7 @@ export class EdaFilterAndOrComponent implements OnInit, OnChanges {
           {
             cols: 3,
             rows:1,
-            y: k + temporalLength,
+            y: k,
             x: 0,
             filter_table: gf.filter_table,
             filter_column: gf.filter_column,
@@ -210,6 +182,35 @@ export class EdaFilterAndOrComponent implements OnInit, OnChanges {
             isGlobal: gf.isGlobal,
             /* SDA CUSTOM */ dynamicValue: gf.dynamicValue,
             /* SDA CUSTOM */ selectedRange: gf.selectedRange,
+            value: "and"
+          }
+        );
+        k++;
+      }
+    });
+
+    const temporalLength = k;
+    k = 0; // reset to zero
+
+    // Adding Panel Filters
+    this.selectedFilters.forEach((sf, j) => {
+      if(sf.filterBeforeGrouping) {
+        this.dashboard.push(
+          {
+            cols: 3,
+            rows:1,
+            y: k + temporalLength,
+            x:0,
+            filter_table: sf.filter_table,
+            filter_column: sf.filter_column,
+            filter_type: sf.filter_type,
+            filter_column_type: sf.filter_column_type,
+            filter_elements: sf.filter_elements,
+/* SDA CUSTOM */            filter_codes: sf.filter_codes,
+            filter_id: sf.filter_id,
+            isGlobal: sf.isGlobal,
+            /* SDA CUSTOM */ dynamicValue: sf.dynamicValue,
+            /* SDA CUSTOM */ selectedRange: sf.selectedRange,
             value: "and"
           }
         );
