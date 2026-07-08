@@ -1,0 +1,65 @@
+.zoom-controls-simple {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    padding: 2px 6px;
+    border-radius: 8px;
+    background-color: rgba(0, 0, 0, 0.04);
+}
+
+.zoom-btn-simple {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2rem;
+    height: 2rem;
+    padding: 0;
+}
+
+.zoom-step-btn {
+    width: 2.6rem;
+    border-radius: 9999px !important;
+    position: relative;
+}
+
+/* The button itself is a wide pill, but the focus indicator should stay a
+   soft, blurred circle centered on it instead of following the pill outline.
+   PrimeNG applies its ring box-shadow on both :focus and :focus-visible, so
+   both need to be neutralized here. */
+.zoom-step-btn:focus,
+.zoom-step-btn:focus-visible {
+    box-shadow: none !important;
+}
+
+.zoom-step-btn:focus::after,
+.zoom-step-btn:focus-visible::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 2.2rem;
+    height: 2.2rem;
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    box-shadow: 0 0 12px 6px #BFDBFE;
+    pointer-events: none;
+}
+
+.zoom-value {
+    min-width: 2.5rem;
+    text-align: center;
+    font-size: 0.85rem;
+    font-weight: 600;
+    user-select: none;
+}
+
+.zoom-divider {
+    width: 1px;
+    height: 1.25rem;
+    margin: 0 2px;
+    background-color: rgba(0, 0, 0, 0.15);
+}
+
+.reset-btn {
+    opacity: 0.8;
+}
