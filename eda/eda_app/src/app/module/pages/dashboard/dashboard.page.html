@@ -24,19 +24,20 @@
       </div>
 
       <!-- Filters Section -->
-      <div class="relative">
-        <app-v2-global-filter #globalFilter [dashboard]="this"></app-v2-global-filter>
+      <div class="relative flex items-start">
+        <div class="flex-1">
+          <app-v2-global-filter #globalFilter [dashboard]="this"></app-v2-global-filter>
+        </div>
+
+        <zoom-sda [dashboard]="this"></zoom-sda>
 
         @if (notSaved) {
           <div class="absolute -top-12 right-16 z-50">
             <p-message severity="warn" i18n-text="@@notSavedChanges" text="Hay cambios sin guardar..." styleClass="whitespace-nowrap"></p-message>
           </div>
         }
-
-        <div class="absolute right-0 top-1/2 -translate-y-1/2">
-          <zoom-sda [dashboard]="this"></zoom-sda>
-        </div>
       </div>
+
     </div>
 
 
