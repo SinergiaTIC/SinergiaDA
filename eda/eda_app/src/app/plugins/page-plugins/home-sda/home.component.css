@@ -57,13 +57,45 @@
 #report-table td:first-child:hover { text-decoration: underline; font-weight: 600; }
 #report-table td { color: hsl(var(--foreground)); font-size: 0.95rem; font-weight: 500; }
 
-/* ---- Report type indicator dot ---- */
+/* ---- Report type column: dot, label and edit button in one horizontal row ---- */
+.type-row {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  white-space: nowrap;
+}
+
 .type-indicator {
   display: inline-block;
   width: 10px;
   height: 10px;
   border-radius: 50%;
-  margin-right: 5px;
+  flex-shrink: 0;
+}
+
+.type-label {
+  flex-shrink: 0;
+}
+
+/* ---- Inline type editor (p-dropdown) ---- */
+.type-edit-container ::ng-deep .p-dropdown-label {
+  display: flex;
+  align-items: center;
+  padding: 0.25rem 0.5rem;
+  font-size: 0.875rem;
+}
+.type-edit-container ::ng-deep .p-dropdown-trigger {
+  width: 1.75rem;
+}
+
+/* Type editor's overlay panel (appendTo="body") */
+::ng-deep .type-edit-panel .p-dropdown-item {
+  padding: 0.35rem 0.75rem;
+}
+
+/* Locks the "Tipo" column width */
+#report-table .type-container {
+  width: 240px;
 }
 
 /* ---- Title / inline editing ---- */
@@ -103,8 +135,8 @@
 .report-card { border-left-width: 6px; transition: box-shadow 0.2s, transform 0.15s; }
 .report-card:hover { box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); }
 .report-card:active { transform: scale(0.99); }
-.card-border-public  { border-left-color: #add8e7; }
-.card-border-shared  { border-left-color: #b4bc32; }
+.card-border-open    { border-left-color: #b4bc32; }
+.card-border-common  { border-left-color: #add8e7; }
 .card-border-group   { border-left-color: #ffd971; }
 .card-border-private  { border-left-color: #ee4e36; }
 

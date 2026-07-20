@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, ChangeDetectorRef, NgZone } from "@angular/core";
+import { Component, OnInit, OnDestroy, ChangeDetectorRef, NgZone, ViewChildren, QueryList } from "@angular/core";
 import { CommonModule } from "@angular/common";
 import { FormsModule } from "@angular/forms";
 import { Router } from "@angular/router";
@@ -8,13 +8,15 @@ import { AlertService, DashboardService, GroupService, IGroup, SidebarService, S
 import { CreateDashboardService } from "@eda/services/utils/create-dashboard.service";
 import { IconComponent } from "@eda/shared/components/icon/icon.component";
 import { TooltipModule } from "primeng/tooltip";
+import { DropdownModule, Dropdown } from "primeng/dropdown";
 import Swal from "sweetalert2";
 import * as _ from "lodash";
+import { ALLOW_NON_ADMIN_MANAGE_PUBLIC_REPORTS } from "@eda/configs/customizable/customizable_default";
 
 @Component({
   standalone: true,
   selector: "home-sda",
-  imports: [CommonModule, FormsModule, TooltipModule, IconComponent],
+  imports: [CommonModule, FormsModule, TooltipModule, IconComponent, DropdownModule],
   templateUrl: "./home.component.html",
   styleUrls: ["./home.component.css"]
 })
@@ -74,7 +76,7 @@ export class HomeSdaComponent implements OnInit, OnDestroy {
     color: string;
   }> = [
     {
-      type: "public",
+      type: "open",
       label: $localize`:@@Public:Público`,
       icon: "fa-circle",
       color: "#add8e7"
@@ -100,14 +102,14 @@ export class HomeSdaComponent implements OnInit, OnDestroy {
     color: string;
   }> = [
     {
-      type: "shared",
-      label: $localize`:@@Common:Común`,
+      type: "open",
+      label: $localize`:@@Public:Público`,
       icon: "fa-circle",
       color: "#b4bc32"
     },
     {
-      type: "public",
-      label: $localize`:@@Public:Público`,
+      type: "common",
+      label: $localize`:@@Common:Común`,
       icon: "fa-circle",
       color: "#add8e7"
     },
@@ -132,8 +134,8 @@ export class HomeSdaComponent implements OnInit, OnDestroy {
 
   // Dashboard Type Translations
   public dashboardTypeTranslations = {
-    public: $localize`:@@Public:Público`,
-    shared: $localize`:@@Common:Común`,
+    open: $localize`:@@Public:Público`,
+    common: $localize`:@@Common:Común`,
     group: $localize`:@@Group:Grupo`,
     private: $localize`:@@Private:Privado`
   };
@@ -147,6 +149,7 @@ export class HomeSdaComponent implements OnInit, OnDestroy {
     [key: string]: boolean;
   } = {};
   public editingTypeId: string | null = null;
+  @ViewChildren(Dropdown) private typeDropdowns!: QueryList<Dropdown>;
 
   constructor(
     // Services for managing dashboards and related operations
@@ -174,13 +177,9 @@ export class HomeSdaComponent implements OnInit, OnDestroy {
   }
 
   private initDashboardTypes(): void {
-    this.dashboardTypes = this.defaultDashboardTypes.filter(type => {
-      if (type.type === 'shared') {
-        return this.isAdmin;
-      }
-      return true;
-    });
-
+    this.dashboardTypes = this.defaultDashboardTypes.filter(
+      type => type.type !== 'open' || this.isAdmin || ALLOW_NON_ADMIN_MANAGE_PUBLIC_REPORTS
+    );
     this.filteredTypes = [...this.dashboardTypes];
   }
 
@@ -214,9 +213,14 @@ export class HomeSdaComponent implements OnInit, OnDestroy {
     this.outsideClickSub = fromEvent<MouseEvent>(document, "click")
       .pipe(filter(e => {
         const target = e.target as HTMLElement;
-        return !target.closest(".filter-dropdown-panel") && !target.closest(".filter-dropdown-toggle");
+        const insideFilter = target.closest(".filter-dropdown-panel") || target.closest(".filter-dropdown-toggle");
+        const insideTypeEdit = target.closest(".type-edit-container");
+        return !insideFilter && !insideTypeEdit;
       }))
-      .subscribe(() => { this.openFilter = null; });
+      .subscribe(() => {
+        this.openFilter = null;
+        this.editingTypeId = null;
+      });
   }
 
   /**
@@ -276,10 +280,10 @@ export class HomeSdaComponent implements OnInit, OnDestroy {
     this.dashboardService.getDashboards().subscribe(
       res => {
         this.allDashboards = [
-          ...res.publics.map(d => this.normalizeDashboard(d, "public")),
-          ...res.shared.map(d => this.normalizeDashboard(d, "shared")),
+          ...res.open.map(d => this.normalizeDashboard(d, "open")),
+          ...res.common.map(d => this.normalizeDashboard(d, "common")),
           ...res.group.map(d => this.normalizeDashboard(d, "group")),
-          ...res.dashboards.map(d => this.normalizeDashboard(d, "private"))
+          ...res.private.map(d => this.normalizeDashboard(d, "private"))
         ].sort((a, b) => (a.config.title > b.config.title ? 1 : b.config.title > a.config.title ? -1 : 0));
 
         this.groups = _.map(_.uniqBy(res.group, "group._id"), "group");
@@ -808,7 +812,7 @@ public filterGroups() {
    * @param dashboard The dashboard whose URL to copy
    */
   public copyUrl(dashboard: any): void {
-    if (dashboard.type === "shared") {
+    if (dashboard.type === "open") {
       const href = location.href;
       const baseURL = href.slice(0, href.indexOf('#'));
 
@@ -905,9 +909,15 @@ public filterGroups() {
   /**
    * Starts the editing mode for a dashboard type
    * @param dashboard The dashboard to edit
+   * @param event The originating click event
    */
-  public startEditingType(dashboard: any): void {
+  public startEditingType(dashboard: any, event: Event): void {
+    event.stopPropagation();
     this.editingTypeId = dashboard._id;
+    setTimeout(() => {
+      const dd = this.typeDropdowns?.find(d => d.inputId === "type-dd-" + dashboard._id);
+      dd?.show();
+    });
   }
 
   /**
@@ -917,6 +927,7 @@ public filterGroups() {
    */
   public updateDashboardType(dashboard: any, newType: string): void {
     const oldType = dashboard.type;
+    const oldVisible = dashboard.config.visible;
     dashboard.type = newType;
     dashboard.config.visible = newType;
 
@@ -935,7 +946,7 @@ public filterGroups() {
         error => {
           this.alertService.addError($localize`:@@ErrorUpdatingDashboardType:Error al actualizar el tipo de informe.`);
           dashboard.type = oldType;
-          dashboard.config.visible = oldType;
+          dashboard.config.visible = oldVisible;
           console.error("Error updating dashboard type:", error);
         }
       );
@@ -954,8 +965,8 @@ public filterGroups() {
    */
   public toggleDashboardActive(dashboard: any): void {
     const newStatus = !dashboard.active;
-    /* Confirm deactivation of shared reports */
-    if (!newStatus && (dashboard.config.visible === "shared")) {
+    /* Confirm deactivation of public reports */
+    if (!newStatus && (dashboard.config.visible === "open")) {
       Swal.fire({
         title: $localize`:@@Sure:Are you sure?`,
         text: $localize`:@@deactivatePublicDashboardWarning:Si desactiva este informe público, la URL pública dejará de estar disponible y el informe ya no podrá visualizarse.`,
