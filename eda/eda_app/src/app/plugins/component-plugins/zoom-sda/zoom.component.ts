@@ -90,9 +90,9 @@ export class ZoomSdaComponent implements OnInit, OnDestroy {
         target.style.transformOrigin = 'top left';
 
         if (this.zoomLevel < 100) {
-            target.style.setProperty('outline', '1px solid rgba(126, 165, 238, 0.65)', 'important');
-            target.style.setProperty('outline-offset', '1px', 'important');
-            target.style.setProperty('box-shadow', '0 0 20px 1px rgba(143, 182, 244, 0.55)', 'important');
+            target.style.setProperty('outline', '0.5px solid rgba(168, 195, 244, 0.65)', 'important');
+            target.style.setProperty('outline-offset', '0.5px', 'important');
+            target.style.setProperty('box-shadow', '0 0 20px 1px rgba(168, 195, 244, 0.65)', 'important');
         } else {
             target.style.removeProperty('outline');
             target.style.removeProperty('outline-offset');
