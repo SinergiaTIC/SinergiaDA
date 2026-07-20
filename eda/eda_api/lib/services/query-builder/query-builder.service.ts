@@ -1,5 +1,6 @@
 import * as _ from 'lodash';
 import Group from '../../module/admin/groups/model/group.model';
+const eda_api_config = require('../../../config/eda_api_config');
 class TreeNode {
     public value: string;
     public child: Array<TreeNode>
@@ -92,7 +93,11 @@ export abstract class QueryBuilderService {
         const modelPermissions = this.dataModel.ds.metadata.model_granted_roles;
 
         /** Check dels permisos de columna, si hi ha permisos es posen als filtres PERMISOS RECURSIVOS */
-        /*EDA*/ this.permissions = this.getPermissions(modelPermissions, this.tables, origin ,  this.queryTODO);
+        if (eda_api_config.custom_behaviour.USE_FLAT_PERMISSIONS) {
+            this.permissions = this.getPermissions(modelPermissions, this.tables, origin, this.queryTODO);
+        } else {
+            this.permissions = this.getTreePermissions(modelPermissions, this.queryTODO);
+        }
         
         // SI USUARIO ES ADMIN VACIAR EL ARRAY PERMISSIONS
         
