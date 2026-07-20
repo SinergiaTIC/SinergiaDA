@@ -85,8 +85,18 @@ export class ZoomSdaComponent implements OnInit, OnDestroy {
     private applyZoom(): void {
         const target = document.querySelector<HTMLElement>(ZOOM_TARGET_SELECTOR);
         if (!target) return;
-        target.style.transition = 'transform 0.9s cubic-bezier(0.19, 1, 0.22, 1)';
+        target.style.transition = 'transform 0.9s cubic-bezier(0.19, 1, 0.22, 1), box-shadow 0.2s, outline-color 0.2s';
         target.style.transform = `scale(${this.zoomLevel / 100})`;
         target.style.transformOrigin = 'top left';
+
+        if (this.zoomLevel < 100) {
+            target.style.setProperty('outline', '1px solid rgba(126, 165, 238, 0.65)', 'important');
+            target.style.setProperty('outline-offset', '1px', 'important');
+            target.style.setProperty('box-shadow', '0 0 20px 1px rgba(143, 182, 244, 0.55)', 'important');
+        } else {
+            target.style.removeProperty('outline');
+            target.style.removeProperty('outline-offset');
+            target.style.removeProperty('box-shadow');
+        }
     }
 }
