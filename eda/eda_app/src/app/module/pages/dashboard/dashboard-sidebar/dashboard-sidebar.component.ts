@@ -1,4 +1,5 @@
 import { AfterViewInit, Component, EventEmitter, inject, Input, Output, ViewChild } from "@angular/core";
+import { animate, style, transition, trigger } from "@angular/animations";
 import { FormsModule } from "@angular/forms";
 import { OverlayModule } from "primeng/overlay";
 import { OverlayPanel, OverlayPanelModule } from "primeng/overlaypanel";
@@ -30,6 +31,8 @@ import { DependentFilters } from "../../../components/dependent-filters/dependen
 import { DashboardVisibleModal } from "../../../components/dashboard-visible/dashboard-visible.modal";
 import { GlobalFilterDialogComponent } from "../../../pages/dashboard/global-filter-dialog/global-filter-dialog.component";
 import { GlobalFilterComponent } from "@eda/components/global-filter/global-filter.component";
+import { ZoomSdaComponent } from "../zoom-sda/zoom.component";
+import { SHOW_ZOOM_IN_SIDEBAR } from "@eda/configs/customizable/customizable_default";
 
 const STANDALONE_COMPONENTS = [
     DashboardSaveAsDialog,
@@ -41,8 +44,9 @@ const STANDALONE_COMPONENTS = [
     ImportPanelDialog,
     DependentFilters,
     GlobalFilterDialogComponent,
-    GlobalFilterComponent
-] 
+    GlobalFilterComponent,
+    ZoomSdaComponent
+]
 
 const ANGULAR_MODULES = [
   OverlayModule,
@@ -59,6 +63,18 @@ const ANGULAR_MODULES = [
   imports: [ STANDALONE_COMPONENTS, ANGULAR_MODULES],
   styleUrl: './dashboard-sidebar.component.css',
   templateUrl: './dashboard-sidebar.component.html',
+  animations: [
+    trigger('slideDown', [
+      transition(':enter', [
+        style({ height: 0, opacity: 0, overflow: 'hidden' }),
+        animate('220ms cubic-bezier(0.19, 1, 0.22, 1)', style({ height: '*', opacity: 1 }))
+      ]),
+      transition(':leave', [
+        style({ overflow: 'hidden' }),
+        animate('160ms ease-in', style({ height: 0, opacity: 0 }))
+      ])
+    ])
+  ],
   styles: `
     .overlay-backdrop {
         position: fixed;
@@ -120,6 +136,8 @@ export class DashboardSidebarComponent implements AfterViewInit {
   isDependentFiltersVisible = false;
   editingTitle: boolean = false;
   editableTitle: string = '';
+  showZoomControls: boolean = false;
+  public readonly showZoomInSidebar = SHOW_ZOOM_IN_SIDEBAR;
 
   sidebarItems: any[] = [];
 
@@ -364,6 +382,7 @@ export class DashboardSidebarComponent implements AfterViewInit {
     this.mostrarOpciones = false;
     this.mostrarFiltros = false;
     this.mostrarDescargas = false;
+    this.showZoomControls = false;
   }
 
   public onAddGlobalFilter(): void {

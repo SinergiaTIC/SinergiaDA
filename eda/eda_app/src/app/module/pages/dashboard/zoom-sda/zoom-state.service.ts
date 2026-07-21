@@ -1,9 +1,4 @@
-import { Component, Input, OnDestroy, OnInit } from '@angular/core';
-
-import { FormsModule } from '@angular/forms';
-import { CommonModule } from '@angular/common';
-import { ButtonModule } from 'primeng/button';
-import { TooltipModule } from 'primeng/tooltip';
+import { Injectable, OnDestroy } from '@angular/core';
 
 const ZOOM_STORAGE_KEY = 'dashboardZoomLevel';
 const ZOOM_MIN = 25;
@@ -13,39 +8,28 @@ const ZOOM_STEP = 5;
 // the header and filters above it must stay static.
 const ZOOM_TARGET_SELECTOR = 'gridster.dashboard-grid';
 
-@Component({
-    standalone: true,
-    selector: 'zoom-sda',
-    imports: [CommonModule, FormsModule, ButtonModule, TooltipModule],
-    templateUrl: './zoom.component.html',
-    styleUrls: ["./zoom.component.css"]
-})
-
-export class ZoomSdaComponent implements OnInit, OnDestroy {
-
-    // Host dashboard page (passed as `[dashboard]="this"`), used to read
-    // dashboard state such as edit permissions.
-    @Input() dashboard: any;
+/**
+ * Owns the zoom level and the side effect of scaling the dashboard grid.
+ * Provided at DashboardPage level so the zoom stays applied for as long as a
+ * dashboard is open, independent of whether any zoom-sda control UI is
+ * currently mounted (e.g. the sidebar variant only mounts on hover).
+ */
+@Injectable()
+export class ZoomStateService implements OnDestroy {
 
     public zoomLevel: number = 100;
     private zoomInterval: any;
 
-    constructor() { }
-
-    ngOnInit() {
+    public init(): void {
         const saved = Number(localStorage.getItem(ZOOM_STORAGE_KEY));
         if (saved >= ZOOM_MIN && saved <= ZOOM_MAX) {
             this.zoomLevel = saved;
-            this.applyZoom();
         }
+        this.applyZoom();
     }
 
     ngOnDestroy() {
         this.stopContinuousZoom();
-    }
-
-    public canIedit(): boolean {
-        return !!this.dashboard?.canIedit?.();
     }
 
     public zoomIn(): void {

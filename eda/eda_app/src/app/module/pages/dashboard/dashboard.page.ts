@@ -18,7 +18,9 @@ import { FocusOnShowDirective } from '@eda/shared/directives/autofocus.directive
 import { CommonModule } from '@angular/common';
 import { AssistantService } from '@eda/services/api/assistant.service';
 import { EdaTitlePanelComponent, EdaTabsPanelComponent } from '@eda/components/component.index';
-import { ZoomSdaComponent } from '../../../plugins/component-plugins/zoom-sda/zoom.component';
+import { ZoomSdaComponent } from './zoom-sda/zoom.component';
+import { ZoomStateService } from './zoom-sda/zoom-state.service';
+import { SHOW_ZOOM_IN_SIDEBAR } from '@eda/configs/customizable/customizable_default';
 
 // Sidebar imports
 import { DashboardSidebarService } from '@eda/services/shared/dashboard-sidebar.service';
@@ -74,6 +76,7 @@ const STANDALONE_COMPONENTS = [
   standalone: true,
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   imports: [STANDALONE_COMPONENTS, ANGULAR_MODULES, GRIDSTER_MODULES, PRIMENG_MODULES],
+  providers: [ZoomStateService],
 
   templateUrl: './dashboard.page.html',
   styleUrls: ['./dashboard.page.css'],
@@ -93,6 +96,7 @@ export class DashboardPage implements OnInit {
   private chartUtils = inject(ChartUtilsService);
   private dateUtilsService = inject(DateUtils);
   private userService = inject(UserService);
+  private zoomState = inject(ZoomStateService);
 
   public title: string = $localize`:@@loading:Cargando informe...`;
   public styles: DashboardStyles;
@@ -115,6 +119,7 @@ export class DashboardPage implements OnInit {
   public queryParams: any = {};
   public hideWheel: boolean = false;
   public panelMode: boolean = false;
+  public readonly showZoomInSidebar = SHOW_ZOOM_IN_SIDEBAR;
   public connectionProperties: any;
 
 
@@ -179,6 +184,8 @@ export class DashboardPage implements OnInit {
 
   /* Set applyToAllFilters for new panel when it's created */
       public ngAfterViewInit(): void {
+          this.zoomState.init();
+
           this.edaPanelsSubscription = this.edaPanels.changes.subscribe((comps: QueryList<EdaBlankPanelComponent>) => {
               const globalFilters = this.globalFilter?.globalFilters.filter(filter => filter.isGlobal === true);
               const unsetPanels = this.edaPanels.filter(panel => _.isNil(panel.panel.content));
