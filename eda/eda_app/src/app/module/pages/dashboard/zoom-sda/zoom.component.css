@@ -4,37 +4,6 @@
     z-index: 10;
 }
 
-:host(.zoom-sidebar) {
-    float: none;
-    display: flex;
-    justify-content: center;
-    width: 100%;
-}
-
-:host(.zoom-sidebar) .zoom-controls-simple {
-    gap: 6px;
-    padding: 4px 10px;
-}
-
-:host(.zoom-sidebar) .zoom-step-btn {
-    width: 2.9rem !important;
-    height: 2.7rem !important;
-}
-
-:host(.zoom-sidebar) .zoom-btn-simple i {
-    font-size: 1rem;
-}
-
-:host(.zoom-sidebar) .zoom-value {
-    min-width: 3.25rem;
-    font-size: 1.05rem;
-}
-
-:host(.zoom-sidebar) .zoom-divider {
-    height: 1.75rem;
-    margin: 0 4px;
-}
-
 .zoom-controls-simple {
     display: flex;
     align-items: center;
@@ -55,20 +24,10 @@
 }
 
 .zoom-step-btn {
-    width: 2.5rem !important;
-    height: 2.25rem !important;
+    width: 3rem !important;
+    height: 2.75rem !important;
     border-radius: 9999px !important;
     position: relative;
-    transition: background-color 0.15s, color 0.15s;
-}
-
-.zoom-step-btn:not(:disabled):hover {
-    background-color: rgba(var(--corporate-primary-rgb), 0.1) !important;
-}
-
-.zoom-step-btn:not(:disabled):active {
-    background-color: rgba(var(--corporate-primary-rgb), 0.22) !important;
-    color: var(--corporate-primary) !important;
 }
 
 /* The button itself is a wide pill, but the focus indicator should stay a
@@ -86,10 +45,11 @@
     position: absolute;
     top: 50%;
     left: 50%;
-    width: 2.4rem;
-    height: 2.4rem;
+    width: 2.9rem;
+    height: 2.9rem;
     border-radius: 50%;
     transform: translate(-50%, -50%);
+    box-shadow: 0 0 12px 6px #BFDBFE;
     pointer-events: none;
 }
 
@@ -109,15 +69,73 @@
 }
 
 .reset-btn {
+    opacity: 0.8;
+}
+
+/* ---------------------------------------------------------------------
+   Sidebar layout — only used when SHOW_ZOOM_IN_SIDEBAR is true (see
+   ZoomSdaComponent `layout` input). Everything below is exclusive to that
+   variant and leaves the toolbar control above untouched.
+   --------------------------------------------------------------------- */
+
+:host(.zoom-sidebar) {
+    float: none;
+    display: flex;
+    justify-content: center;
+    width: 100%;
+}
+
+:host(.zoom-sidebar) .zoom-controls-simple {
+    gap: 6px;
+    padding: 4px 10px;
+}
+
+:host(.zoom-sidebar) .zoom-step-btn {
+    width: 2.9rem !important;
+    height: 2.7rem !important;
+    transition: background-color 0.15s, color 0.15s;
+}
+
+:host(.zoom-sidebar) .zoom-btn-simple i {
+    font-size: 1rem;
+}
+
+:host(.zoom-sidebar) .zoom-value {
+    min-width: 3.25rem;
+    font-size: 1.05rem;
+}
+
+:host(.zoom-sidebar) .zoom-divider {
+    height: 1.75rem;
+    margin: 0 4px;
+}
+
+:host(.zoom-sidebar) .zoom-step-btn:not(:disabled):hover {
+    background-color: rgba(var(--corporate-primary-rgb), 0.1) !important;
+}
+
+:host(.zoom-sidebar) .zoom-step-btn:not(:disabled):active {
+    background-color: rgba(var(--corporate-primary-rgb), 0.22) !important;
+    color: var(--corporate-primary) !important;
+}
+
+:host(.zoom-sidebar) .zoom-step-btn:focus::after,
+:host(.zoom-sidebar) .zoom-step-btn:focus-visible::after {
+    width: 2.4rem;
+    height: 2.4rem;
+    box-shadow: none;
+}
+
+:host(.zoom-sidebar) .reset-btn {
     color: #000;
     opacity: 1;
     transition: opacity 0.15s, background-color 0.15s;
 }
 
-.reset-btn:disabled {
+:host(.zoom-sidebar) .reset-btn:disabled {
     opacity: 0.35;
 }
 
-.reset-btn:not(:disabled):hover {
+:host(.zoom-sidebar) .reset-btn:not(:disabled):hover {
     background-color: rgba(var(--corporate-primary-rgb), 0.1) !important;
 }
