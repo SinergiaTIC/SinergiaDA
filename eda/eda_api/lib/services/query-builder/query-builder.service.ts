@@ -104,6 +104,26 @@ export abstract class QueryBuilderService {
         if (this.groups.includes("135792467811111111111110")) {
             this.permissions = [];
         }
+
+        /** A "" in a numeric "in" filter means null. IN doesn't match NULL in SQL,
+         *  so split it into a separate is_null filter to avoid invalid SQL. */
+        this.queryTODO.filters.forEach(e => {
+            if (e.filter_column_type == 'numeric' &&
+                e.filter_type == 'in' &&
+                e.filter_elements[0].value1.includes('')) {
+                let ee = JSON.parse(JSON.stringify(e));
+                ee.filter_id = ee.filter_id.split('-')[0];
+                ee.filter_type = 'is_null';
+                e.filter_elements[0].value1 = e.filter_elements[0].value1.filter(obj => obj !== '');
+
+                this.queryTODO.filters.push(ee);
+                // Original filter is now useless if no values are left (in () is invalid)
+                if (e.filter_elements[0].value1.length == 0) {
+                    this.queryTODO.filters = this.queryTODO.filters.filter(obj => obj !== e);
+                }
+            }
+        });
+
         /** joins per els value list */
         let valueListJoins = [];
 
