@@ -8,6 +8,8 @@ import { DataSourceDetailComponent as BaseDataSourceDetailComponent } from '../d
 import { COMPONENT_PLUGINS } from '../../../../plugins/component-plugins/component-plugin-registry';
 import { PrimengModule } from 'app/core/primeng.module';
 import { DatasourceSaveAsDialog } from '../data-source-save-as/datasource-save-as.dialog';
+import { SDA_SYNC_MODEL_ID } from '@eda/configs/customizable/customizable_default';
+
 
 import * as _ from 'lodash';
 
@@ -30,6 +32,7 @@ export class DataSourceListComponent implements OnInit, AfterViewInit, OnDestroy
     // (parsable). It is created manually with ViewContainerRef in ngAfterViewInit instead.
     @ViewChild('dataSourceDetailHost', { read: ViewContainerRef, static: true })
     dataSourceDetailHost: ViewContainerRef;
+    public sdaSyncModelId = SDA_SYNC_MODEL_ID;
     private dataSourceDetailRef: ComponentRef<InstanceType<typeof DataSourceDetailComponent>>;
 
     public treeData: any[] = [];
