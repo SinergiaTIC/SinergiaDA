@@ -7027,6 +7027,14 @@ Une fois configurée, vous pouvez l'activer à tout moment à partir du bouton.<
         <source>Fuente de datos</source>
         <target>Source de données</target>
       </trans-unit>
+      <trans-unit id="partialEditDataSourceNotice">
+        <source>Algunas áreas de la configuración de la fuente de datos SinergiaCRM se encuentran desactivadas porque se configuran automáticamente durante el proceso de sincronización de datos con SinergiaCRM.</source>
+        <target>Certaines zones de la configuration de la source de données SinergiaCRM sont désactivées car elles sont configurées automatiquement pendant le processus de synchronisation des données avec SinergiaCRM.</target>
+      </trans-unit>
+      <trans-unit id="deleteDuckdbTable">
+        <source>Eliminar tabla CSV</source>
+        <target>Supprimer la table CSV</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>

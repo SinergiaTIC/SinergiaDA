@@ -1,0 +1,837 @@
+@if(dataModelService.model_id === SDA_SYNC_MODEL_ID){
+  <div id="deleteModel" class="alert alert-primary flex" role="alert">
+    <i class="mdi mdi-information-outline" style="font-size: 24px"></i>
+    <div i18n="@@partialEditDataSourceNotice" style="margin-left:10px;">Algunas áreas de la configuración de la fuente de datos SinergiaCRM se encuentran desactivadas porque se configuran automáticamente durante el proceso de sincronización de datos con SinergiaCRM.
+    </div>
+  </div>
+}
+
+@if(typePanel==='tabla' && tablePanel.technical_name){
+  <div class="w-full mx-auto px-6">
+    <div class="bg-card rounded-lg border shadow-sm">
+      <div class="flex items-center justify-between p-6 border-b">
+        <h3 class="text-2xl font-semibold leading-none tracking-tight" i18n="@@editModelHeaders">{{tablePanel.type ? tablePanel.name : ''}}</h3>
+        <div class="flex items-center gap-2" [ngClass]="{'sda-disabled': dataModelService.model_id === SDA_SYNC_MODEL_ID}">
+          <span class="relative group text-xs font-medium text-gray-500 cursor-default select-none">
+            <span i18n="@@mcpVisibilityLabel">Visibilidad MCP</span>
+            <span class="absolute top-full left-1/2 -translate-x-1/2 mt-2 w-64 rounded-md bg-gray-800 text-white text-xs px-3 py-2 text-center shadow-lg pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-150 z-50"
+                  i18n="@@mcpVisibilityTooltipTableModel">
+              Controla si el agente de IA tiene acceso a esta información: Full permite acceso completo, None lo excluye totalmente.
+            </span>
+          </span>
+          <div class="flex p-1 rounded-lg bg-gray-200">
+            @for (opt of iaVisibilityOptionsSimple; track opt.value) {
+              <button type="button"
+                (click)="tablePanel.ia_visibility = opt.value; update()"
+                class="px-3 py-1 rounded-md text-xs font-medium transition-all"
+                [ngClass]="{'bg-white shadow text-foreground': tablePanel.ia_visibility === opt.value, 'text-gray-500': tablePanel.ia_visibility !== opt.value}">
+                {{ opt.label }}
+              </button>
+            }
+          </div>
+        </div>
+      </div>
+      <div class="p-6 space-y-6">
+        <div class="grid gap-4">
+          <div class="grid gap-2" [ngClass]="{'hidden': dataModelService.model_id === SDA_SYNC_MODEL_ID}">
+            <label for="name"
+              i18n="@@inputNombre"
+              class="font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+            >
+              Nombre <span class="text-red-500">*</span>
+            </label>
+            <input id="name" value="Customers"
+              [(ngModel)]="tablePanel.name" (keyup)="update()"
+              class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 ring-offset-background file:border-0 file:bg-transparent file:file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+            />
+          </div>
+          <div class="grid gap-2">
+            <label for="technical-name"
+              i18n="@@inputNombreTecnico"
+              class="font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+            >
+              Nombre técnico
+            </label>
+            <input id="technical-name" value="{{tablePanel.technical_name}}" readonly
+              class="flex h-10 w-full rounded-md border border-input bg-muted/50 px-3 py-2 ring-offset-background file:border-0 file:bg-transparent file:file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+            />
+          </div>
+
+          <div class="grid gap-2" [ngClass]="{'hidden': dataModelService.model_id === SDA_SYNC_MODEL_ID}">
+            <label
+              for="description"
+              i18n="@@inputDescripcion"
+              class="font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+            >
+              Descripción
+            </label>
+            <textarea id="description"
+              [(ngModel)]="tablePanel.description" (keyup)="update()"
+              class="flex min-h-[60px] w-full rounded-md border border-input bg-background px-3 py-2 ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50">
+            </textarea>
+          </div>
+
+          <div class="flex items-center space-x-2" [ngClass]="{'hidden': dataModelService.model_id === SDA_SYNC_MODEL_ID}">
+            <button type="button" role="switch"
+              [attr.aria-checked]="!tablePanel.visible" (click)="toggle_table(tablePanel.visible)"
+              class="peer inline-flex h-6 w-11 shrink-0 cursor-pointer items-center rounded-full border-2 border-transparent transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+              [ngClass]="{'toggle-active': !tablePanel.visible, 'bg-input': tablePanel.visible}">
+              <span
+                class="pointer-events-none block h-5 w-5 rounded-full bg-background shadow-lg ring-0 transition-transform data-[state=checked]:translate-x-5 data-[state=unchecked]:translate-x-0"
+                [ngClass]="{'translate-x-5': !tablePanel.visible, 'translate-x-0': tablePanel.visible}">
+              </span>
+            </button>
+            <label i18n="@@inputEsconderTabla"
+              class="font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+              Ocultar tabla
+            </label>
+          </div>
+
+          @if(tablePanel.query){
+            <div [ngClass]="{'hidden': dataModelService.model_id === SDA_SYNC_MODEL_ID}">
+              <label for="description" class="block font-medium text-gray-700 mb-1" i18n="@@viewLabel"> Vista </label>
+              <textarea readonly id="description"
+                [(ngModel)]="tablePanel.query" (keyup)="update()"
+                class="flex min-h-[20vh] w-full rounded-md border border-input bg-background px-3 py-2 ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50">
+              </textarea>
+            </div>
+          }
+
+          @if(tablePanel.query){
+            <div style="margin-bottom: 1rem;">
+              <button type="button" pButton (click)="viewEdition()" 
+                  class="inline-flex items-center justify-center whitespace-nowrap rounded-md font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 btn-corporate-primary h-10 px-4 py-2"
+                  i18n-label='@@viewEdition' label="Edición de la vista"></button>
+            </div>
+          }
+        </div>
+
+        
+        <div class="h-px bg-border"></div>
+        
+        <!-- Relations section -->
+        <div class="space-y-4" [ngClass]="{'hidden': dataModelService.model_id === SDA_SYNC_MODEL_ID}">
+          <h3 class="text-lg font-medium" i18n="@@listRelations">Relaciones</h3>
+          <eda-table [inject]="relationsTable"></eda-table>
+        </div>
+        
+        @if(!SDA_SYNC_MODEL_ID) {
+          <div class="h-px bg-border"></div>
+        }
+        
+        <!-- Table visibility section -->
+        <div class="space-y-4">
+          <h3 class="text-lg font-medium" i18n="@@rolesPermisosTabla">Visibilidad de tabla</h3>
+          <eda-table [inject]="permissionTable"></eda-table>
+        </div>
+        
+        <div class="flex flex-wrap gap-2 pt-4">
+          @if(tablePanel.query){
+            <button class="inline-flex items-center justify-center whitespace-nowrap rounded-md font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-[#FF0000] text-primary-foreground hover:bg-[#FF0000]/90 h-10 px-4 py-2"
+              (click)="deleteView(tablePanel.technical_name)">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"> <rect x="6" y="7" width="12" height="14" rx="2"/> <path d="M5 7h14"/> <path d="M9 7V4h6v3"/> <line x1="10" y1="11" x2="10" y2="17"/> <line x1="14" y1="11" x2="14" y2="17"/> </svg>
+              {{deleteViewString}}
+            </button>
+          }
+          @if(selectedTipoBD?.value === 'duckdb' && !tablePanel.query){
+            <button class="inline-flex items-center justify-center whitespace-nowrap rounded-md font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-[#FF0000] text-primary-foreground hover:bg-[#FF0000]/90 h-10 px-4 py-2"
+              (click)="deleteDuckdbTable(tablePanel.technical_name)">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2"> <rect x="6" y="7" width="12" height="14" rx="2"/> <path d="M5 7h14"/> <path d="M9 7V4h6v3"/> <line x1="10" y1="11" x2="10" y2="17"/> <line x1="14" y1="11" x2="14" y2="17"/> </svg>
+              <ng-container i18n="@@deleteDuckdbTable">Eliminar tabla CSV</ng-container>
+            </button>
+          }
+          <button class="inline-flex items-center justify-center whitespace-nowrap rounded-md font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 btn-corporate-primary h-10 px-4 py-2"
+            (click)="openTablePermissionsDialog()">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"  width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4 mr-2">
+              <path d="M12 5v14M5 12h14"></path>
+            </svg>
+            {{addPermission}}
+          </button>
+          <!-- SDA CUSTOM: en SinergiaDA no se admite crear relaciones manualmente ni el
+               ocultado masivo de columnas desde aquí, quedan permanentemente ocultos. -->
+          <span class="hidden">
+            <button class="inline-flex items-center justify-center whitespace-nowrap rounded-md font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 btn-corporate-primary h-10 px-4 py-2"
+              (click)="openTableRelationDialog()">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4 mr-2"><path d="M12 5v14M5 12h14"/></svg>
+              {{addRelation}}
+            </button>
+            <button
+              class="inline-flex items-center justify-center whitespace-nowrap rounded-md font-medium
+                    ring-offset-background transition-colors focus-visible:outline-none
+                    focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2
+                    disabled:pointer-events-none disabled:opacity-50 h-10 px-4 py-2 border"
+              [ngClass]="{
+                'btn-corporate-primaryborder-transparent': columnsHidden,
+                'bg-white hover:bg-gray-100 text-gray-800 border-gray-300': !columnsHidden
+              }"
+              (click)="hideAllColumns(tablePanel)"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4 mr-2"
+              >
+                <path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"/>
+                <path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"/>
+                <path d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61"/>
+                <line x1="2" x2="22" y1="2" y2="22"/>
+              </svg>
+
+              {{ hideColumnsString }}
+            </button>
+          </span>
+          @if(selectedTableType !== 'view'){
+            <button class="inline-flex items-center justify-center whitespace-nowrap rounded-md font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 btn-corporate-primary h-10 px-4 py-2"
+              (click)="openNewColDialog()">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4 mr-2"><path d="M12 5v14M5 12h14"/></svg>
+              {{addCalculatedCol}}
+            </button>
+          }
+        </div>
+      </div>
+    </div>
+  </div>
+}
+
+
+
+@if(typePanel==='columna' && columnPanel.technical_name){
+  <div class="w-full mx-auto px-6" [ngClass]="{'sda-disabled': dataModelService.model_id === SDA_SYNC_MODEL_ID && columnPanel.computed_column === 'no'}">
+    <div class="bg-card rounded-lg border shadow-sm">
+      <div class="flex items-center justify-between p-6 border-b">
+        <h3 class="text-2xl font-semibold leading-none tracking-tight" i18n="@@editModelHeaders">{{columnPanel.type ? columnPanel.name : ''}}</h3>
+        <div class="flex items-center gap-2">
+          <span class="relative group text-xs font-medium text-gray-500 cursor-default select-none">
+            <span i18n="@@mcpVisibilityLabel">Visibilidad MCP</span>
+            <span class="absolute top-full left-1/2 -translate-x-1/2 mt-2 w-72 rounded-md bg-gray-800 text-white text-xs px-3 py-2 text-center shadow-lg pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-150 z-50"
+                  i18n="@@mcpVisibilityTooltipCol">
+              Controla si el agente de IA tiene acceso a esta información: Full permite acceso completo, Declaration expone solo nombre y tipo, None lo excluye totalmente.
+            </span>
+          </span>
+          <div class="flex p-1 rounded-lg bg-gray-200">
+            @for (opt of iaVisibilityOptions; track opt.value) {
+              <button type="button"
+                (click)="columnPanel.ia_visibility = opt.value; update()"
+                class="px-3 py-1 rounded-md text-xs font-medium transition-all"
+                [ngClass]="{'bg-white shadow text-foreground': columnPanel.ia_visibility === opt.value, 'text-gray-500': columnPanel.ia_visibility !== opt.value}">
+                {{ opt.label }}
+              </button>
+            }
+          </div>
+        </div>
+      </div>
+      
+      <div class="p-6 space-y-6">
+        <!-- Name Field -->
+        <div class="mb-4">
+          <label for="name" class="block font-medium text-gray-700 mb-1" i18n="@@inputNombre">
+            Nombre <span class="text-red-500">*</span>
+          </label>
+          <input
+            id="name"
+            [(ngModel)]="columnPanel.name"
+            (keyup)="update()"
+            [disabled]="columnPanel.computed_column === 'computed'"
+            class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 ring-offset-background file:border-0 file:bg-transparent file:file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+          />
+        </div>
+        
+        <!-- Technical Name Field -->
+        <div class="mb-4">
+          <label for="technical-name" class="block font-medium text-gray-700 mb-1" i18n="@@inputNombreTecnico">
+            Nombre técnico
+          </label>
+          <div class="text-gray-600 mb-1">{{ columnPanel.technical_name }}</div>
+        </div>
+        
+        <!-- Description Field -->
+        <div class="mb-4">
+          <label for="description" class="block font-medium text-gray-700 mb-1" i18n="@@inputDescripcion">
+            Descripción
+          </label>
+          <input
+            id="description"
+            [(ngModel)]="columnPanel.description"
+            (keyup)="update()"
+            [disabled]="columnPanel.computed_column === 'computed'"
+            class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 ring-offset-background file:border-0 file:bg-transparent file:file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+          />
+        </div>
+
+        <!-- ComputedColumn -->
+        @if (columnPanel.computed_column !== 'no') {
+          <div class="mb-4">
+            <label for="sqlExpression" class="block font-medium text-gray-700 mb-1" i18n="@@sqlExpColumn">
+              Expresión SQL
+            </label>
+            <input
+              id="sqlExpression"
+              [(ngModel)]="columnPanel.SQLexpression"
+              (keyup)="update()"
+              [disabled]="columnPanel.computed_column === 'computed'"
+              class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 ring-offset-background file:border-0 file:bg-transparent file:file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+            />
+          </div>
+        }
+        
+        <!-- Column Type -->
+        <div class="mb-4">
+          <label class="block font-medium text-gray-700 mb-2" i18n="@@inputTipoColumna">
+            Tipo de columna
+          </label>
+          <div class="flex flex-wrap gap-2">
+            @for (type of columnTypes; track type.value) {
+              <button
+                type="button"
+                (click)="updateColumnType(type.value)"
+                [disabled]="columnPanel.computed_column === 'computed'"
+                class="px-4 py-2 font-medium rounded-md border transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                [ngClass]="columnPanel.column_type === type.value ? 'btn-type-active' : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-100'"
+              >
+                {{ type.label }}
+              </button>
+            }
+          </div>
+        </div>
+        
+        <!-- Aggregation -->
+        <div class="mb-4">
+          <label class="block font-medium text-gray-700 mb-2" i18n="@@agregacionh5">
+            Agregación
+          </label>
+          <div class="flex flex-wrap gap-2">
+            @for (type of aggTypes; track type.value) {
+              <button 
+                type="button" 
+                (click)="updateAgg(type.value)" 
+                class="px-4 py-2 font-medium rounded-md border transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2" 
+                [ngClass]="columnPanel.aggregation_type.includes(type.value) ? 'btn-type-active' : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-100'"
+              >
+                {{ type.label }}
+              </button>
+            }
+          </div>
+        </div>
+
+        
+        <!-- Decimal Places -->
+        @if (selectedcolumnType === 'numeric') {
+          <div class="mb-6">
+            <label for="decimal-places" class="block font-medium text-gray-700 mb-1" i18n="@@inputFormat">
+              Número de decimales
+            </label>
+            <input
+              id="decimal-places"
+              type="number"
+              [(ngModel)]="columnPanel.minimumFractionDigits"
+              (input)="update()"
+              class="flex h-10 w-full max-w-[240px] rounded-md border border-input bg-background px-3 py-2 ring-offset-background file:border-0 file:bg-transparent file:file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+            />
+          </div>
+        }
+
+        @if(columnPanel.valueListSource){
+        <h3 class="text-lg font-medium text-gray-700 mb-3" i18n="@@rolesPermisos">Valores para filtro</h3>
+        
+        <div class="border rounded-lg">
+          <table class="w-full border-collapse rounded-lg overflow-hidden shadow-sm">
+            <thead class="bg-gray-100 text-gray-700 uppercase text-sm">
+              <tr>
+                <th class="p-3 text-left">Tabla</th>
+                <th class="p-3 text-left">Columna ID</th>
+                <th class="p-3 text-left">Columna descripción</th>
+                <th class="p-3 text-right" i18n="@@urlAction">Acciones</th>
+              </tr>
+            </thead>
+        
+            <tbody class="bg-white divide-y divide-gray-200 font-medium text-gray-800">
+              <tr class="hover:bg-gray-50 transition">
+                <td class="p-3">
+                  <label class="block w-full rounded-md p-2 text-gray-800 font-medium">
+                    {{ columnPanel.valueListSource.target_table || '—' }}
+                  </label>
+        
+                </td>
+        
+                <td class="p-3">
+        
+                  <label class="block w-full rounded-md p-2 text-gray-800 font-medium">
+                    {{ columnPanel.valueListSource.target_id_column || '—' }}
+                  </label>
+                </td>
+        
+                <td class="p-3">
+                  <label class="block w-full rounded-md p-2 text-gray-800 font-medium">
+                    {{ columnPanel.valueListSource.target_description_column || '—' }}
+                  </label>
+                </td>
+        
+              <td class="p-3 text-right">
+                <button pButton type="button" icon="pi pi-trash" class="p-button-rounded p-button-danger p-button-text" 
+                title="Eliminar valor" (click)="deleteValuesList(columnPanel)">
+                </button>
+              </td>
+
+              </tr>
+            </tbody>
+          </table>
+        
+        </div>
+        }
+
+        
+
+      <div class="mb-6">
+        <h3 class="text-lg font-medium text-gray-700 mb-3" i18n="@@rolesPermisos">Roles y permisos de fila</h3>
+        <eda-table [inject]="permissionsColumn"></eda-table>
+      </div>
+
+        
+
+          <!-- Action Buttons -->
+          <div class="flex flex-wrap gap-2 mb-6">
+            <button class="inline-flex items-center justify-center whitespace-nowrap rounded-md font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 btn-corporate-primary h-10 px-4 py-2"
+              (click)="openValueListDialog()">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2"><path d="M12 5v14M5 12h14"/></svg>
+              {{addValueList}}
+            </button>
+            <button class="inline-flex items-center justify-center whitespace-nowrap rounded-md font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 btn-corporate-primary h-10 px-4 py-2"
+              (click)="openPermissionsRelationDialog()">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2"><path d="M12 5v14M5 12h14"/></svg>
+              {{addPermission}}
+            </button>
+          </div>
+
+        @if (columnPanel.computed_column === 'no') {
+          <!-- Hide Column Toggle -->
+          <div class="flex items-center space-x-2">
+            <label class="font-medium" i18n="@@esconderColumna">Esconder columna</label>
+            <button
+              type="button"
+              role="switch"
+              [attr.aria-checked]="!columnPanel.visible"
+              (click)="toggle_column(columnPanel.visible)"
+              class="peer inline-flex h-6 w-11 shrink-0 cursor-pointer items-center rounded-full border-2 border-transparent transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+              [ngClass]="{'toggle-active': !columnPanel.visible, 'bg-input': columnPanel.visible}"
+            >
+              <span
+                class="pointer-events-none block h-5 w-5 rounded-full bg-background shadow-lg ring-0 transition-transform"
+                [ngClass]="{'translate-x-5': !columnPanel.visible, 'translate-x-0': columnPanel.visible}"
+              ></span>
+            </button>
+          </div>
+
+        } @else {
+          <button class="inline-flex items-center mr-2 justify-center whitespace-nowrap rounded-md font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-red-600 text-white hover:bg-red-700 h-10 px-4 py-2"
+            i18n="@@borrar"  
+            (click)="deleteCalculatedCol(columnPanel)">
+            Borrar
+          </button>
+        }
+
+        @if (columnPanel.computed_column !== 'no') {
+          <button class="inline-flex items-center justify-center whitespace-nowrap rounded-md font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 btn-corporate-primary h-10 px-4 py-2"
+            (click)="editCalculatedField(columnPanel)" i18n="@@editCalculatedField">
+            Edición de campo calculado
+          </button>
+        }
+      </div>
+    </div>
+  </div>
+}
+
+
+
+@if(typePanel==='root' && modelPanel.metadata){
+  <div class="w-full mx-auto px-6">
+    <div class="bg-card rounded-lg border shadow-sm">
+      <div class="flex items-center justify-between p-6 border-b">
+        <h2 class="text-2xl font-semibold" i18n="@@editModelHeaders">Editar {{modelPanel.type ? modelPanel.metadata.model_name : ''}}</h2>
+        
+        <div class="flex items-center gap-2" [ngClass]="{'sda-disabled': dataModelService.model_id === SDA_SYNC_MODEL_ID}">
+          <span class="relative group text-xs font-medium text-gray-500 cursor-default select-none">
+            <span i18n="@@mcpVisibilityLabel">Visibilidad MCP</span>
+            <span class="absolute top-full left-1/2 -translate-x-1/2 mt-2 w-64 rounded-md bg-gray-800 text-white text-xs px-3 py-2 text-center shadow-lg pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-150 z-50"
+                  i18n="@@mcpVisibilityTooltipTableModel">
+              Controla si el agente de IA tiene acceso a esta información: Full permite acceso completo, None lo excluye totalmente.
+            </span>
+          </span>
+          <div class="flex p-1 rounded-lg bg-gray-200">
+            @for (opt of iaVisibilityOptionsSimple; track opt.value) {
+              <button type="button"
+                (click)="$any(modelPanel.metadata).ia_visibility = opt.value; update()"
+                class="px-3 py-1 rounded-md text-xs font-medium transition-all"
+                [ngClass]="{'bg-white shadow text-foreground': $any(modelPanel.metadata).ia_visibility === opt.value, 'text-gray-500': $any(modelPanel.metadata).ia_visibility !== opt.value}">
+                {{ opt.label }}
+              </button>
+            }
+          </div>
+        </div>
+        
+      </div>
+      <div class="p-6 space-y-6">
+        <!-- Metadata Section -->
+        <div class="mb-8" [ngClass]="{'hidden': dataModelService.model_id === SDA_SYNC_MODEL_ID}">
+          <h3 class="text-lg font-medium text-gray-700 mb-4 border-b pb-2" i18n="@@metadata">Metadata</h3>
+          <div class="grid gap-4">
+            <div class="grid gap-2">
+              <label for="name" class="font-medium" i18n="@@inputNombre">
+                Nombre <span class="text-red-500">*</span>
+              </label>
+              <input
+                id="name"
+                [(ngModel)]="modelPanel.metadata.model_name"
+                (keyup)="update()"
+                class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 ring-offset-background file:border-0 file:bg-transparent file:file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+              />
+            </div>
+            <div class="grid gap-2">
+              <label for="model_description" class="font-medium" i18n="@@inputDescripcionModelo">Descripción</label>
+              <textarea
+                id="model_description"
+                [(ngModel)]="$any(modelPanel.metadata).model_description"
+                (keyup)="update()"
+                rows="3"
+                class="flex w-full rounded-md border border-input bg-background px-3 py-2 ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 resize-none"
+                i18n-placeholder="@@placeholderDescripcionModelo"
+                placeholder="Describe el propósito y contenido de este modelo de datos..."
+              ></textarea>
+            </div>
+          </div>
+        </div>
+
+        <!-- Connection Section -->
+        <div class="mb-8">
+          <h3 class="text-lg font-medium text-gray-700 mb-4 border-b pb-2" i18n="@@conexionh4">Conexión</h3>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div class="grid gap-2" [ngClass]="{'sda-disabled': dataModelService.model_id === SDA_SYNC_MODEL_ID}">
+              <label for="type" class="font-medium" i18n="@@type">Tipo</label>
+              <p-dropdown inputId="type" [(ngModel)]="selectedTipoBD"
+                [options]="tiposBD" optionLabel="label"
+                appendTo="body" [style]="{'width':'100%'}">
+              </p-dropdown>
+            </div>
+
+            @if (!['bigquery', 'excel', 'csv', 'duckdb'].includes(selectedTipoBD?.value)) {
+              <div class="grid gap-2" [ngClass]="{'sda-disabled': dataModelService.model_id === SDA_SYNC_MODEL_ID}">
+                @if (selectedTipoBD?.value === 'snowflake') {
+                  <label for="host" class="font-medium" i18n="@@account">Cuenta</label>
+                } @else {
+                  <label for="host" class="font-medium" i18n="@@inputHost">Host</label>
+                }
+                <input
+                  id="host"
+                  [(ngModel)]="modelPanel.connection.host"
+                  (keyup)="update()"
+                  class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 ring-offset-background file:border-0 file:bg-transparent file:file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                />
+              </div>
+            }
+            <div class="grid gap-2" [ngClass]="{'sda-disabled': dataModelService.model_id === SDA_SYNC_MODEL_ID}">
+              <label for="database" class="font-medium" i18n="@@inputNombreDB">Base de datos</label>
+              <input
+                id="database"
+                [(ngModel)]="modelPanel.connection.database"
+                (keyup)="update()"
+                class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 ring-offset-background file:border-0 file:bg-transparent file:file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+              />
+            </div>
+            @if (!['bigquery', 'excel', 'csv', 'duckdb'].includes(selectedTipoBD?.value)) {
+              <div class="grid gap-2" [ngClass]="{'sda-disabled': dataModelService.model_id === SDA_SYNC_MODEL_ID}">
+                <label for="port" class="font-medium" i18n="@@port">Puerto</label>
+                <input
+                  id="port"
+                  [(ngModel)]="modelPanel.connection.port"
+                  (keyup)="update()"
+                  class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 ring-offset-background file:border-0 file:bg-transparent file:file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                />
+              </div>
+
+              <div class="grid gap-2" [ngClass]="{'sda-disabled': dataModelService.model_id === SDA_SYNC_MODEL_ID}">
+                <label for="schema" class="font-medium" i18n="@@schema">Esquema</label>
+                <input
+                  id="schema"
+                  [(ngModel)]="modelPanel.connection.schema"
+                  (keyup)="update()"
+                  class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 ring-offset-background file:border-0 file:bg-transparent file:file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                />
+              </div>
+            }
+            @if (selectedTipoBD?.value === 'mysql') {
+              <div class="grid gap-2" [ngClass]="{'sda-disabled': dataModelService.model_id === SDA_SYNC_MODEL_ID}">
+                <label for="poolLimit" class="font-medium">Pool Limit</label>
+                <input
+                  id="poolLimit"
+                  [(ngModel)]="modelPanel.connection.poolLimit"
+                  (keyup)="update()"
+                  class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 ring-offset-background file:border-0 file:bg-transparent file:file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                />
+              </div>
+            }
+
+            @if (selectedTipoBD?.value === 'snowflake') {
+              <div class="grid gap-2" [ngClass]="{'sda-disabled': dataModelService.model_id === SDA_SYNC_MODEL_ID}">
+                <label for="warehouse" class="font-medium">Warehouse</label>
+                <input
+                  id="warehouse"
+                  [(ngModel)]="modelPanel.connection.warehouse"
+                  (keyup)="update()"
+                  class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 ring-offset-background file:border-0 file:bg-transparent file:file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                />
+              </div>
+            }
+
+            @if (!['bigquery', 'excel', 'csv', 'duckdb'].includes(selectedTipoBD?.value)) {
+              <div class="grid gap-2" [ngClass]="{'sda-disabled': dataModelService.model_id === SDA_SYNC_MODEL_ID}">
+                <label for="user" class="font-medium" i18n="@@placeholderInputUsuario">Usuario</label>
+                <input
+                  id="user"
+                  [(ngModel)]="modelPanel.connection.user"
+                  (keyup)="update()"
+                  class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 ring-offset-background file:border-0 file:bg-transparent file:file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                />
+              </div>
+
+              <div class="grid gap-2" [ngClass]="{'sda-disabled': dataModelService.model_id === SDA_SYNC_MODEL_ID}">
+                <label for="password" class="font-medium" i18n="password@@inputPassword">
+                  Password <span class="text-red-500">*</span>
+                </label>
+                <input
+                  id="password"
+                  type="password"
+                  [(ngModel)]="modelPanel.connection.password"
+                  (keyup)="update()"
+                  autocomplete="new-password"
+                  class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 ring-offset-background file:border-0 file:bg-transparent file:file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                />
+              </div>
+            }
+            
+            <div class="grid gap-2" [ngClass]="{'sda-disabled': dataModelService.model_id === SDA_SYNC_MODEL_ID}">
+              <label for="filters" class="font-medium" i18n="@@filters">Filtros</label>
+              <input 
+                id="filters" 
+                class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 ring-offset-background file:border-0 file:bg-transparent file:file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50" 
+                [(ngModel)]="modelPanel.metadata.filter"
+                (keyup)="update()"
+              />
+            </div>
+
+            @if(['oracle'].includes(selectedTipoBD?.value)) {
+              <div class="grid gap-2">
+                <label for="sid" class="font-medium">SID / Service Name</label>
+                <p-dropdown inputId="sid" [(ngModel)]="selectedSID"
+                  [options]="SID_Types" optionLabel="label"
+                  appendTo="body" [style]="{'width':'100%'}">
+                </p-dropdown>
+              </div>
+            }
+          </div>
+          
+          @if (['mysql', 'postgres', 'sqlserver', 'clickhouse'].includes(selectedTipoBD?.value) && !SDA_SYNC_MODEL_ID) {
+            <div class="mt-4 flex items-center space-x-2">
+              <button 
+                type="button" 
+                role="switch" 
+                [attr.aria-checked]="modelPanel.connection.ssl" 
+                (click)="modelPanel.connection.ssl = !modelPanel.connection.ssl"
+                class="peer inline-flex h-6 w-11 shrink-0 cursor-pointer items-center rounded-full border-2 border-transparent transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50" 
+                [ngClass]="{'toggle-active': modelPanel.connection.ssl, 'bg-input': !modelPanel.connection.ssl}"
+              >
+                <span 
+                  class="pointer-events-none block h-5 w-5 rounded-full bg-background shadow-lg ring-0 transition-transform" 
+                  [ngClass]="{'translate-x-5': modelPanel.connection.ssl, 'translate-x-0': !modelPanel.connection.ssl}"
+                ></span>
+              </button>
+
+              <label class="font-medium">
+                {{ modelPanel.connection.ssl ? 'Conexión mediante SSL' : 'Conexión sin SSL' }}
+              </label>
+            </div>
+          }
+
+          <div class="mt-4">
+            <button 
+              (click)="checkConection()" 
+              class="inline-flex items-center justify-center whitespace-nowrap rounded-md font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 btn-corporate-primary h-10 px-4 py-2"
+              i18n='@@checkConnection'
+            >
+              Comprobar conexión
+            </button>
+          </div>
+        </div>
+        
+        <!-- Extend Model Section -->
+        <div class="mb-8">
+          <h3 class="text-lg font-medium text-gray-700 mb-4 border-b pb-2">{{functionalities}}</h3>
+          <div class="flex flex-wrap gap-2">
+            <button class="inline-flex items-center justify-center whitespace-nowrap rounded-md font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 btn-corporate-primary h-10 px-4 py-2"
+              (click)="openNewMapDialog()">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><line x1="3" x2="21" y1="9" y2="9"/><line x1="3" x2="21" y1="15" y2="15"/><line x1="9" x2="9" y1="3" y2="21"/><line x1="15" x2="15" y1="3" y2="21"/></svg>
+              {{addMap}}
+            </button>
+            @if(selectedTipoBD?.value !== 'mongodb' && !SDA_SYNC_MODEL_ID){
+              <button class="inline-flex items-center justify-center whitespace-nowrap rounded-md font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 btn-corporate-primary h-10 px-4 py-2"
+                (click)="openNewViewDialog()">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2"><path d="M12 5v14M5 12h14"/></svg>
+                {{addView}}
+              </button>
+              @if(selectedTipoBD?.value !== 'duckdb'){
+                <button class="inline-flex items-center justify-center whitespace-nowrap rounded-md font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 btn-corporate-primary h-10 px-4 py-2"
+                  (click)="openCSVDialog()">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2"><path d="M12 5v14M5 12h14"/></svg>
+                  {{addCSV}}
+                </button>
+              }
+            }
+            @if(selectedTipoBD?.value === 'duckdb'){
+              <button class="inline-flex items-center justify-center whitespace-nowrap rounded-md font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 btn-corporate-primary h-10 px-4 py-2"
+                (click)="openAddDuckdbTableDialog()">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2"><path d="M12 5v14M5 12h14"/></svg>
+                <ng-container i18n="@@addDuckdbTable">Añadir tabla CSV</ng-container>
+              </button>
+            }
+            @if(!SDA_SYNC_MODEL_ID){
+              <button class="inline-flex items-center justify-center whitespace-nowrap rounded-md font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 btn-corporate-primary h-10 px-4 py-2"
+                (click)="openTagDialog()">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2"><path d="M12 5v14M5 12h14"/></svg>
+                {{addTagDataSource}}
+              </button>
+            }
+          </div>
+        </div>
+        
+        <!-- Utilities Section -->
+        <div class="mb-8">
+          <h3 class="text-lg font-medium text-gray-700 mb-4 border-b pb-2">{{utilities}}</h3>
+          <div class="grid grid-cols-3 gap-2">
+            <button class="inline-flex items-center justify-center whitespace-nowrap rounded-md font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 btn-corporate-primary h-10 px-4 py-2"
+              (click)="openCacheDialog()">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2"><circle cx="12" cy="12" r="10"/><path d="m4.93 4.93 14.14 14.14"/></svg>
+              {{addCacheConfig}}
+            </button>
+            @if(!SDA_SYNC_MODEL_ID){
+              <button class="inline-flex items-center justify-center whitespace-nowrap rounded-md font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 btn-corporate-primary h-10 px-4 py-2"
+                (click)="openModelPermissionsDialog()">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2"><path d="M12 5v14M5 12h14"/></svg>
+                {{addPermission}}
+              </button>
+            }
+            <button class="inline-flex items-center justify-center whitespace-nowrap rounded-md font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 btn-corporate-primary h-10 px-4 py-2"
+              (click)="openSecurityDialog()">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
+              {{viewsecurity}}
+            </button>
+
+            @if(!SDA_SYNC_MODEL_ID){
+              <button
+                class="inline-flex items-center justify-center whitespace-nowrap rounded-md font-medium
+                      ring-offset-background transition-colors focus-visible:outline-none
+                      focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2
+                      disabled:pointer-events-none disabled:opacity-50 h-10 px-4 py-2"
+                [ngClass]="{
+                  'btn-corporate-primary': tablesHidden,
+                  'bg-white hover:bg-gray-100 text-gray-800 border border-gray-300': !tablesHidden
+                }"
+                (click)="hideAllTables()"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                  stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2"
+                >
+                  <path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"/>
+                  <path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"/>
+                  <path d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61"/>
+                  <line x1="2" x2="22" y1="2" y2="22"/>
+                </svg>
+  
+                {{ hideTablesString }}
+              </button>
+  
+              <button
+                class="inline-flex items-center justify-center whitespace-nowrap rounded-md font-medium
+                      ring-offset-background transition-colors focus-visible:outline-none
+                      focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2
+                      disabled:pointer-events-none disabled:opacity-50 h-10 px-4 py-2"
+                [ngClass]="{
+                  'btn-corporate-primary': relationsHidden,
+                  'bg-white hover:bg-gray-100 text-gray-800 border border-gray-300': !relationsHidden
+                }"
+                (click)="hideAllRelations()"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                  stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2"
+                >
+                  <path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"/>
+                  <path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"/>
+                  <path d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61"/>
+                  <line x1="2" x2="22" y1="2" y2="22"/>
+                </svg>
+                {{ hideAllRelationsString }}
+              </button>
+            }
+          </div>
+        </div>
+        
+        <!-- Model-level visibility Section -->
+        <div class="mb-8">
+          <h3 class="text-lg font-medium text-gray-700 mb-4 border-b pb-2" i18n="@@rolesPermisosModelo">Visibilidad a nivel de modelo</h3>
+          <eda-table [inject]="permissionModel"></eda-table>
+        </div>
+      </div>
+    </div>
+  </div>
+}
+
+
+<!-- Looks Good -->
+@if(selectedRelation){
+  <app-table-edit-relations-dialog [controller]="relationController" [relation]="selectedRelation"></app-table-edit-relations-dialog>
+}
+
+@if(valueListController){
+  <app-column-value-list-dialog [controller]="valueListController"></app-column-value-list-dialog>
+}
+@if(relationController){
+  <app-table-relations-dialog [controller]="relationController"></app-table-relations-dialog>
+}
+@if(permissionsController){
+  <app-column-permission-dialog [table]="tablePanel" [column]="columnPanel" [controller]="permissionsController"></app-column-permission-dialog>
+}
+@if(newColController){
+  <app-calculated-column-dialog [controller]="newColController"></app-calculated-column-dialog>
+}
+
+<!-- V2 -->
+@if(showMapDialog){
+  <app-map-dialog (close)="closeMapDialog($event)"></app-map-dialog>
+} 
+@if(showModelPermissionDialog){
+  <app-model-permission-dialog (close)="closeModelPermissionsDialog($event)"></app-model-permission-dialog>
+}
+@if(showCacheDialog){
+  <eda-cache-dialog [model_id]="dataModelService.model_id" [config]="modelPanel.metadata.cache_config" (close)="onCloseCacheDialog($event)"></eda-cache-dialog>
+}
+@if(showSecurityDialog){
+  <eda-security-dialog [model]="modelPanel" (close)="showSecurityDialog=false;"></eda-security-dialog>
+}
+@if(showCsvDialog){
+  <app-add-csv-dialog [model_id]="dataModelService.model_id" (close)="closeCSVDialog($event)"></app-add-csv-dialog>
+}
+@if(showAddDuckdbTableDialog){
+  <app-add-duckdb-table-dialog [datasourceId]="dataModelService.model_id" (close)="onCloseDuckdbTableDialog($event)"></app-add-duckdb-table-dialog>
+}
+@if(showTablePermissionsDialog){
+  <app-table-permission-dialog [table]="tablePanel" (close)="closeTablePermissionsDialog($event)"></app-table-permission-dialog>
+}
+@if(showViewDialog){
+  <app-view-dialog [model_id]="dataModelService.model_id" [user]="user" (close)="onCloseViewDialog($event)"></app-view-dialog>
+}
+@if(viewDialogEdition){
+  <app-view-dialog-edition [viewInEdition]="viewInEdition" (close)="onCloseViewEditionDialog($event)"></app-view-dialog-edition>
+}
+@if(showAddTagDialog){
+  <app-add-tag-dialog [model_id]="dataModelService.model_id" [tagArray]="modelPanel.metadata.tags" (close)="onCloseTagDialog($event)"></app-add-tag-dialog>
+}
+@if(calculatedColumnEditController){
+  <app-calculated-column-edit-dialog [column]="columnPanel" (close)="onCloseCalculatedColumnEdit()" (newColum)="newColumnEdited($event)"></app-calculated-column-edit-dialog>
+}
+
+

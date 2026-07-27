@@ -6692,6 +6692,14 @@ Po skonfigurowaniu możesz go wywołać w dowolnym momencie za pomocą przycisku
         <source>Fuente de datos</source>
         <target>Źródło danych</target>
       </trans-unit>
+      <trans-unit id="partialEditDataSourceNotice">
+        <source>Algunas áreas de la configuración de la fuente de datos SinergiaCRM se encuentran desactivadas porque se configuran automáticamente durante el proceso de sincronización de datos con SinergiaCRM.</source>
+        <target>Niektóre obszary konfiguracji źródła danych SinergiaCRM są wyłączone, ponieważ są konfigurowane automatycznie podczas procesu synchronizacji danych z SinergiaCRM.</target>
+      </trans-unit>
+      <trans-unit id="deleteDuckdbTable">
+        <source>Eliminar tabla CSV</source>
+        <target>Usuń tabelę CSV</target>
+      </trans-unit>
 </body>
 </file>
 </xliff>

@@ -1,0 +1,1068 @@
+import { EdaTable, EdaColumnText, EdaColumnContextMenu, EdaTableComponent } from '@eda/components/component.index';
+import { Component, OnInit, OnDestroy, EventEmitter, Output, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+import { Router, NavigationEnd } from '@angular/router';
+import { UntypedFormGroup } from '@angular/forms';
+import { MenuItem, SelectItem, TreeNode } from 'primeng/api';
+import { AlertService, DataSourceService, QueryParams, QueryBuilderService, SpinnerService } from '@eda/services/service.index';
+import { EditTablePanel, EditColumnPanel, EditModelPanel, ValueListSource, Relation } from '@eda/models/data-source-model/data-source-models';
+import { EdaDialogController, EdaDialogCloseEvent, EdaContextMenu, EdaContextMenuItem } from '@eda/shared/components/shared-components.index';
+import { AGG_TYPES } from '@eda/configs/customizable/customizable_default';
+import { EdaColumnFunction } from '@eda/components/eda-table/eda-columns/eda-column-function';
+import * as _ from 'lodash';
+import { EdaColumnEditable } from '@eda/components/eda-table/eda-columns/eda-column-editable';
+import Swal from 'sweetalert2';
+import { PrimengModule } from 'app/core/primeng.module';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+
+
+// SDA CUSTOM: los diálogos no son específicos de SDA, se reutilizan directamente
+// desde el componente base en vez de duplicarlos dentro del plugin.
+import { TableEditRelationsDialogComponent } from '../../../module/pages/data-sources/data-source-detail/table-edit-relations-dialog/table-edit-relations-dialog.component';
+import { ColumnValueListDialogComponent } from '../../../module/pages/data-sources/data-source-detail/column-value-list-dialog/column-value-list-dialog.component';
+import { TableRelationsDialogComponent } from '../../../module/pages/data-sources/data-source-detail/table-relations-dialog/table-relations-dialog.component';
+// SDA CUSTOM: en SinergiaDA los permisos de columna solo se gestionan por grupo (no hay
+// permisos por usuario individual), por eso este diálogo sí vive dentro del plugin.
+import { ColumnPermissionDialogComponent } from './column-permissions-dialog/column-permission-dialog.component';
+import { CalculatedColumnDialogComponent } from '../../../module/pages/data-sources/data-source-detail/calculatedColumn-dialog/calculated-column-dialog.component';
+import { MapDialogComponent } from '../../../module/pages/data-sources/data-source-detail/mapsDialog/maps-dialog.component';
+import { ModelPermissionDialogComponent } from '../../../module/pages/data-sources/data-source-detail/model-permissions-dialog/model-permission-dialog.component';
+import { CacheDialogComponent } from '../../../module/pages/data-sources/data-source-detail/cache-dialog/cache-dialog.component';
+import { SecurityDialogComponent } from '../../../module/pages/data-sources/data-source-detail/security-dialog/security-dialog.component';
+import { AddCsvComponent } from '../../../module/pages/data-sources/data-source-list/addCSV/add-csv.component';
+// SDA CUSTOM: en SinergiaDA los permisos de tabla solo se gestionan por grupo (no hay
+// permisos por usuario individual), por eso este diálogo sí vive dentro del plugin.
+import { TablePermissionDialogComponent } from './table-permissions-dialog/table-permission-dialog.component';
+import { ViewDialogEditionComponent } from '../../../module/pages/data-sources/data-source-detail/view-dialog-edition/view-dialog-edition.component';
+import { DATASOURCE_PLUGINS } from '../../datasource-plugins/datasource-plugin-registry';
+import { ViewDialogComponent } from '../../../module/pages/data-sources/data-source-detail/view-dialog/view-dialog.component';
+import { AddTagComponent } from '../../../module/pages/data-sources/data-source-list/add-tag/add-tag.component';
+import { CalculatedColumnEditDialogComponent } from '../../../module/pages/data-sources/data-source-detail/calculated-column-edit-dialog/calculated-column-edit-dialog.component';
+import { AddDuckdbTableDialogComponent } from '../../../module/pages/data-sources/data-source-detail/add-duckdb-table-dialog/add-duckdb-table-dialog.component';
+import { AGG_COMPUTED } from './aggregationConstants';
+
+// Angular Modules
+const ANGULAR_MODULES = [
+  FormsModule,
+  ReactiveFormsModule,
+  PrimengModule
+];
+
+// Standalone Components
+const STANDALONE_COMPONENTS = [  
+  TableEditRelationsDialogComponent,
+  ColumnValueListDialogComponent,
+  TableRelationsDialogComponent,
+  ColumnPermissionDialogComponent,
+  CalculatedColumnDialogComponent,
+  MapDialogComponent,
+  ModelPermissionDialogComponent,
+  CacheDialogComponent,
+  TablePermissionDialogComponent,
+  AddCsvComponent,
+  SecurityDialogComponent,
+  ViewDialogComponent,
+  ViewDialogEditionComponent,
+  AddTagComponent,
+  EdaTableComponent,
+  CalculatedColumnEditDialogComponent,
+  AddDuckdbTableDialogComponent
+];
+
+@Component({
+  standalone: true,
+  selector: 'app-data-source-detail',
+  templateUrl: './data-source-detail.component.html',
+  styleUrls: ['../../../module/pages/data-sources/data-source-list/data-source-list.component.css', './data-source-detail.component.css'],
+  schemas: [CUSTOM_ELEMENTS_SCHEMA],
+
+  imports: [ANGULAR_MODULES, STANDALONE_COMPONENTS]
+})
+export class DataSourceDetailComponent implements OnInit, OnDestroy {
+    @Output() onTableCreated: EventEmitter<any> = new EventEmitter();
+
+    // SDA CUSTOM: Reserved ID of the model that is automatically synchronized from SinergiaCRM.
+    // Several fields in the model/table/column are locked or hidden for this model because
+    // they are configured automatically during synchronization.
+    public readonly SDA_SYNC_MODEL_ID = '111111111111111111111111';
+
+    public form: UntypedFormGroup;
+    public permissionsColumn: EdaTable;
+    public permissionTable: EdaTable;
+    public permissionModel: EdaTable;
+    public relationsTable: EdaTable;
+    public navigationSubscription: any;
+    // Properties
+    public tablePanel: EditTablePanel;
+    public columnPanel: EditColumnPanel;
+    public modelPanel: EditModelPanel;
+    public typePanel: string;
+    public relationController: EdaDialogController;
+    public valueListController: EdaDialogController;
+    public permissionsController: EdaDialogController;
+
+    public tablePermissionsController: EdaDialogController;
+    public showTablePermissionsDialog: boolean = false;
+
+    public modelPermissionsController: EdaDialogController;
+    public showModelPermissionDialog: boolean = false;
+
+    public newColController: EdaDialogController;
+
+    public mapController: EdaDialogController;
+    public showMapDialog: boolean = false;
+    
+    public tagController: EdaDialogController;
+    public showAddTagDialog: boolean = false;
+
+    public viewController: EdaDialogController;
+    public showViewDialog: boolean = false;
+
+    public csvPanelController: EdaDialogController;
+    public showCsvDialog: boolean = false;
+
+    public showAddDuckdbTableDialog: boolean = false;
+
+    public cacheController : EdaDialogController;
+    public showCacheDialog: boolean = false;
+    
+    public securityController : EdaDialogController;
+    public showSecurityDialog: boolean = false;
+
+    public calculatedColumnEditController = false;
+
+    public items: MenuItem[];
+    public user: any;
+    
+    // State control variables
+    public tablesHidden: boolean = false;
+    public relationsHidden : boolean = false;
+    public columnsHidden: boolean = false;
+
+    public viewDialogEdition: boolean = false;
+    public viewInEdition: any
+
+
+
+    /**Strings */
+    public functionalities: string = $localize`:@@functionalities:Extender el modelo`;
+    public utilities: string = $localize`:@@utilities:Utilidades`;
+    public hideTablesString: string = $localize`:@@hideTables:Ocultar todas las tablas`;
+    public hideColumnsString: string = $localize`:@@hideColumns:Ocultar todas las columnas`;
+    public deleteViewString: string = $localize`:@@inputBorrarVista:Borrar vista`;
+    public hideAllRelationsString: string = $localize`:@@hideAllRelations: Ocultar todas las relaciones`;
+    public addCacheConfig:string = $localize`:@@addCacheConfig:Configurar Caché`;
+    public viewsecurity:string = $localize`:@@viewsecurity:Ver configuración de seguridad`;
+    public addMap:string = $localize`:@@addMap:Mapas`;
+    public addView:string = $localize`:@@addView:Añadir vista`;
+    public addTagDataSource:string = $localize`:@@addTagDataSource: Añadir Tag`;
+    public addCSV:string = $localize`:@@addCSV:Añadir tabla desde csv`;
+    public addRelation:string = $localize`:@@addRelation:Añadir relación`;
+    public addCalculatedCol:string = $localize`:@@addCalculatedCol:Añadir columna  calculada`;
+    public addPermission:string = $localize`:@@addPermission:Añadir permiso`;
+    public addValueList:string = $localize`:@@addValueList:Añadir lista de valores posibles`;
+    public si = $localize`:@@si:Si`;
+    public no = $localize`:@@no:No`;
+    public valueListSourceHeader = $localize`:@@valueListSourceHeader:Tabla que contiene los valores posibles para el filtro asociado a esta columna`;
+    public valueListSourceTabla = $localize`:@@valueListSourceTabla:Tabla relacionada`;
+    public valueListSourceID = $localize`:@@valueListSourceID:Id de la columna relacionada`;
+    public valueListSourceDescripcion = $localize`:@@valueListSourceDescripcion:Descripción dfe la columna relacionada`;
+    public possibleValueList = $localize`:@@possibleValuesList: Tabla y columna asociadas `
+    public possibleValueListTable = $localize`:@@possibleValuesListTable: Tabla `
+    public possibleValuesListID =  $localize`:@@possibleValuesListID: Id de la columna`
+    public possibleValuesListDescription = $localize`:@@possibleValuesListDescription: Descripción de la columna`
+
+    // Types
+    public columnTypes: SelectItem[] = [
+        { label: 'text', value: 'text' },
+        { label: 'numeric', value: 'numeric' },
+        { label: 'date', value: 'date' },
+        { label: 'coordinate', value: 'coordinate' },
+        { label: 'html', value: 'html' }
+    ];
+    public selectedcolumnType: any;
+
+    public dimensionLabel: string = $localize`:@@dimensionLabel:Dimension`;
+    public factLabel: string = $localize`:@@factLabel:Fact`;
+    public viewLabel: string = $localize`:@@viewLabel:View`;
+
+    public tableTypes: SelectItem[] = [{ label: this.dimensionLabel, value: 'dimension' }, { label: this.factLabel, value: 'fact' }, { label: this.viewLabel, value: 'view' }];
+    public selectedTableType: string;
+
+    public iaVisibilityOptions = [
+        { value: 'FULL', label: 'Full' },
+        { value: 'DECLARATION', label: 'Declaration' },
+        { value: 'NONE', label: 'None' },
+    ];
+
+    public iaVisibilityOptionsSimple = [
+        { value: 'FULL', label: 'Full' },
+        { value: 'NONE', label: 'None' },
+    ];
+
+    // Aggregation Types
+    public selectedAggType: any;
+    public aggTypes: SelectItem[] = AGG_TYPES;
+
+    // Relations
+    public tmpRelations: any = [];
+
+    // DB types[]
+    public tiposBD: SelectItem[] = [
+        { label: 'Postgres', value: 'postgres' },
+        { label: 'ClickHouse', value: 'clickhouse' },
+        { label: 'Sql Server', value: 'sqlserver' },
+        { label: 'MySQL', value: 'mysql' },
+        { label: 'Vertica', value: 'vertica' },
+        // SDA CUSTOM: se quita el conector de Oracle, no hay conexiones a Oracle en SinergiaDA
+        { label: 'BigQuery', value: 'bigquery' },
+        { label: 'SnowFlake', value: 'snowflake'},
+        { label: 'JsonWebService', value: 'jsonwebservice'},
+
+        { label: 'Excel', value: 'excel'},
+        { label: 'Csv', value: 'csv'},
+        { label: 'DuckDB (CSV)', value: 'duckdb'},
+        // Los tipos de plugin (Odoo, Google Analytics 4, Holded, ...) se agregan solos
+        // desde el plugin.meta.ts de cada carpeta en datasource-plugins.
+        ...DATASOURCE_PLUGINS.map((p) => ({ label: p.label, value: p.type })),
+    ];
+
+    public SID_Types: SelectItem[] = [
+        { label: 'SID', value: "0" },
+        { label: 'SERVICE_NAME', value: "1" }
+    ]
+
+    public selectedTipoBD: SelectItem;
+    public selectedSID: SelectItem;
+
+    // table permissions
+    public permissions: Array<any>;
+
+    // model permissions
+    public modelPermissions: Array<any>;
+    public selectedRelation: Relation;
+
+    constructor(public dataModelService: DataSourceService,
+        private alertService: AlertService,
+        private queryBuilderService: QueryBuilderService,
+        private spinnerService: SpinnerService,
+        private router: Router) {
+        this.user = sessionStorage.getItem('user');
+        this.navigationSubscription = this.router.events.subscribe(
+            (res: any) => {
+                if (res instanceof NavigationEnd) {
+                    this.tablePanel = new EditTablePanel();
+                    this.modelPanel = new EditModelPanel();
+                    this.columnPanel = new EditColumnPanel();
+                }
+            }, err => {
+                this.alertService.addError(err);
+            }
+        );
+
+        this.permissionsColumn = new EdaTable({
+            contextMenu: new EdaContextMenu({
+                contextMenuItems: [
+                    new EdaContextMenuItem({
+                        label: 'ELIMINAR', command: () => {
+                            let tmpPermissions = [];
+                            const row = this.permissionsColumn.getContextMenuRow();
+                            const table = this.dataModelService.getTable(this.columnPanel);
+
+                            if (row.user) {
+                                // Delete user permission
+                                const usersTmp = row._id;
+                                const mdgTmp = this.modelPanel.metadata.model_granted_roles.find(
+                                    r => r.table === table.table_name &&
+                                         r.column === this.columnPanel.technical_name &&
+                                         r.users === usersTmp
+                                );
+                                tmpPermissions = this.modelPanel.metadata.model_granted_roles.filter(a => a !== mdgTmp);
+                            } else if (row.group) {
+                                // Delete group permission
+                                const groupTmp = row._id;
+                                const mdgTmp = this.modelPanel.metadata.model_granted_roles.find(
+                                    r => r.table === table.table_name &&
+                                         r.column === this.columnPanel.technical_name &&
+                                         r.groups === groupTmp
+                                );
+                                tmpPermissions = this.modelPanel.metadata.model_granted_roles.filter(a => a !== mdgTmp);
+                            }
+
+                            this.modelPanel.metadata.model_granted_roles = tmpPermissions;
+                            this.update();
+                            this.permissionsColumn._hideContexMenu();
+                        }
+                    })
+                ]
+            }),
+            cols: [
+                new EdaColumnContextMenu(),
+                new EdaColumnText({ field: 'user', header: $localize`:@@userTable:USUARIO` }),
+                new EdaColumnText({ field: 'group', header: $localize`:@@groupTable:GRUPO` }),
+                new EdaColumnText({ field: 'value', header: $localize`:@@valueTable:VALOR` }),
+            ]
+        });
+
+
+        this.permissionTable = new EdaTable({
+            contextMenu: new EdaContextMenu({
+                contextMenuItems: [
+                    new EdaContextMenuItem({
+                        label: 'ELIMINAR', command: () => {                            
+                            let users = [];
+                            let groups = [];
+
+                            if (this.permissionTable.getContextMenuRow().user) {
+                                const usersTmp = this.permissionTable.getContextMenuRow()._id;
+                                const table = this.tablePanel.technical_name;
+                                const mdgTmp = this.modelPanel.metadata.model_granted_roles.filter(r => r.table === table && r.users === usersTmp);
+                                users = this.modelPanel.metadata.model_granted_roles.filter(a => a != mdgTmp[0]);
+                                
+
+                            } else if (this.permissionTable.getContextMenuRow().group) {
+                                const groupTmp = this.permissionTable.getContextMenuRow()._id;
+                                const table = this.tablePanel.technical_name;
+                                const mdgTmpG = this.modelPanel.metadata.model_granted_roles.filter(r => r.table === table && r.groups === groupTmp)
+                                groups = this.modelPanel.metadata.model_granted_roles.filter(a => a != mdgTmpG[0]);
+                            }
+                            let tmpPermissions = [];
+                            users.forEach(user => tmpPermissions.push(user));
+                            groups.forEach(group => tmpPermissions.push(group));
+                            this.modelPanel.metadata.model_granted_roles = tmpPermissions;
+                            this.update();
+                            this.permissionTable._hideContexMenu();
+                        }
+                    })
+                ]
+            }),
+            cols: [
+                new EdaColumnContextMenu(),
+                new EdaColumnText({ field: 'user', header: $localize`:@@userTable:USUARIO` }),
+                new EdaColumnText({ field: 'group', header: $localize`:@@groupTable:GRUPO` }),
+                new EdaColumnText({ field: 'permission', header:"permission" }),
+            ]
+        });
+
+
+
+        this.permissionModel = new EdaTable({
+            contextMenu: new EdaContextMenu({
+                contextMenuItems: [
+                    new EdaContextMenuItem({
+                        label: 'ELIMINAR', command: () => {
+                            const elem = this.permissionModel.getContextMenuRow()._id.reduce((a, b)=> a + b) ;
+                            const users = this.modelPanel.metadata.model_granted_roles.filter(r => r.users !== undefined)
+                            .filter(r => { if(r.users.length !== 0) r.users.reduce((a, b)=> a + b) !== elem;})
+                            const groups = this.modelPanel.metadata.model_granted_roles.filter(r => r.groups !== undefined)
+                            .filter(r =>{ if(r.groups.length !== 0) r.groups.reduce((a, b)=> a + b) !== elem});
+                            let tmpPermissions = [];
+                            groups.forEach(group => tmpPermissions.push(group));
+                            users.forEach(user => tmpPermissions.push(user));
+                            this.modelPanel.metadata.model_granted_roles = tmpPermissions;
+                            this.update();
+                            this.permissionModel._hideContexMenu();
+                        }
+                    })
+                ]
+            }),
+            cols: [
+                new EdaColumnContextMenu(),
+                new EdaColumnText({ field: 'user', header: $localize`:@@userTable:USUARIO` }),
+                new EdaColumnText({ field: 'group', header: $localize`:@@groupTable:GRUPO` }),
+                new EdaColumnText({ field: 'permission', header:"permission" }), //Fixme
+            ]
+        });
+
+
+        this.relationsTable = new EdaTable({
+            contextMenu: new EdaContextMenu({
+                contextMenuItems: [
+                    new EdaContextMenuItem({
+                        label: 'ELIMINAR', command: () => {
+                            this.deleteRelation(this.relationsTable.getContextMenuRow()._id);
+                            this.relationsTable._hideContexMenu();
+                        }
+                    })
+                ]
+            }),
+            cols: [
+                new EdaColumnText({ field: 'origin', header: $localize`:@@originRel:Origen` }),
+                new EdaColumnText({ field: 'dest', header: $localize`:@@targetRel:Destino` }),
+                new EdaColumnText({ field: 'name', header: $localize`:@@name:Nombre` }),
+                new EdaColumnEditable({ field: 'modify', click: (relation) => this.updateRelation(relation._id)}),
+                new EdaColumnFunction({ field: 'delete', click: (relation) => this.deleteRelation(relation._id)}),
+            ]
+        })
+    }
+
+    ngOnInit() {
+        this.carregarPanels();
+        this.items = [
+            {
+                label: 'Options',
+                items: [{
+                    label: 'Update',
+                    icon: 'pi pi-refresh',
+                    command: () => {
+                        //this.update();
+                    }
+                },
+                {
+                    label: 'Delete',
+                    icon: 'pi pi-times',
+                    command: () => {
+                        // this.delete();
+                    }
+                }
+                ]
+            },
+            {
+                label: 'Navigate',
+                items: [{
+                    label: 'Angular Website',
+                    icon: 'pi pi-external-link',
+                    url: 'http://angular.io'
+                },
+                {
+                    label: 'Router',
+                    icon: 'pi pi-upload',
+                    routerLink: '/fileupload'
+                }
+                ]
+            }
+        ];
+    }
+
+    ngOnDestroy(): void {
+        this.typePanel = '';
+        this.dataModelService.ngOnDestroy();
+        this.navigationSubscription.unsubscribe();
+        this.navigationSubscription.complete();
+    }
+
+    carregarPanels() {
+        // Model
+        this.dataModelService.currentModelPanel.subscribe(
+            modelPanel => {
+                this.modelPanel = modelPanel;
+                this.permissions = this.modelPanel.metadata ? this.modelPanel.metadata.model_granted_roles : [];
+                 // Model permissions
+                this.permissionModel.value = [];
+                this.permissions.forEach(permission => {
+                    if (  permission.table === "fullModel" && permission.column === "fullModel" ) {
+                        this.permissionModel.value.push(
+                            {
+                                user: permission.usersName,
+                                group: permission.groupsName,
+                                permission: permission.permission?this.si:this.no,
+                                _id: permission.users || permission.groups
+                            }
+                        );
+                    }
+                });
+
+            }, err => {
+                this.alertService.addError(err);
+            }
+        );
+
+        // Table
+        this.dataModelService.currentTablePanel.subscribe(
+            tablePanel => {
+                this.tablePanel = tablePanel;
+                this.tmpRelations = tablePanel.relations.filter(r => r.visible === true);
+                this.relationsTable.value = []
+                this.permissions = this.modelPanel.metadata ? this.modelPanel.metadata.model_granted_roles : [];
+                this.permissionTable.value = [];
+                // Table permissions
+                this.permissions.forEach(permission => {
+                    if (this.tablePanel.technical_name === permission.table&&permission.column === "fullTable") {
+                        this.permissionTable.value.push(
+                            {
+                                user: permission.usersName,
+                                group: permission.groupsName,
+                                permission: permission.permission?this.si:this.no,
+                                _id: permission.users || permission.groups
+                            }
+                        );
+                    }
+                });
+                tablePanel.relations.filter(r => r.visible === true).forEach(relation => {
+                    const row = {
+                        origin: relation.source_column,
+                        dest: `${relation.target_table}.${relation.target_column}`,
+                        name: relation.display_name !== undefined && relation.display_name !== null ? relation.display_name['default'] : relation.target_table + ' - ' + relation.target_column,
+                        _id: relation
+                    };
+                    if (!this.relationsTable.value.map(value => value.dest).includes(row.dest) ) {
+                        this.relationsTable.value.push(row);
+                    } else if(!this.relationsTable.value.map(value => value.origin).includes(relation.source_column)){
+                        this.relationsTable.value.push(row);
+                    }
+                });
+                //Update to contain only actual values
+                this.relationsTable.value = this.relationsTable.value.filter(table => this.tmpRelations.includes(table._id))
+                this.selectedTableType = tablePanel.table_type;
+            }, err => {
+                this.alertService.addError(err);
+            }
+        );
+
+        // Column
+        this.dataModelService.currentColumnPanel.subscribe(
+            columnPanel => {
+
+                this.columnPanel = columnPanel;
+                this.selectedcolumnType = this.columnPanel.column_type;
+                this.selectedAggType = this.columnPanel.aggregation_type;
+
+                this.permissions = this.modelPanel.metadata ? this.modelPanel.metadata.model_granted_roles : [];
+                this.permissionsColumn.value = [];
+                this.permissions.forEach(permission => {
+
+                    const table = this.dataModelService.getTable(this.columnPanel);
+                    if (this.columnPanel.technical_name === permission.column && table.table_name === permission.table && permission.column != "fullTable" ) {
+                        // Format the value to display it correctly
+                        let displayValue = '';
+                        if (permission.value && Array.isArray(permission.value)) {
+                            if (permission.value[0] === '(~ => All)') {
+                                displayValue = 'Todos';
+                            } else if (permission.value[0] === '(x => None)') {
+                                displayValue = 'Ninguno';
+                            } else if (permission.dynamic) {
+                                displayValue = 'Dinámico: ' + permission.value[0];
+                            } else {
+                                displayValue = permission.value.join(', ');
+                            }
+                        }
+
+                        this.permissionsColumn.value.push(
+                            {
+                                user: permission.usersName,
+                                group: permission.groupsName,
+                                value: displayValue,
+                                _id: permission.users || permission.groups
+                            }
+                        );
+                    }
+                });
+            }, err => {
+                this.alertService.addError(err);
+            }
+        );
+
+
+
+        this.dataModelService.currentTypePanel.subscribe(
+            typePanel => {
+                this.typePanel = typePanel;
+            }, err => this.alertService.addError(err)
+        );
+
+        this.dataModelService.currentModelPanel.subscribe(
+            modelPanel => {
+                this.modelPanel = modelPanel;
+                this.selectedTipoBD = this.tiposBD.filter(type => type?.value === modelPanel.connection?.type)[0];
+
+                // SID selection
+                this.selectedSID = this.SID_Types.find(type => type?.value === this.modelPanel.connection?.sid); 
+            }, err => this.alertService.addError(err)
+        );
+
+
+    }
+
+
+    update() {
+        switch (this.typePanel) {
+            case 'tabla': this.updateTable(); break;
+            case 'columna': this.updateColumn(); break;
+            case 'root': this.updateModel(); break;
+        }
+    }
+
+    updateModel() {
+        if (this.modelPanel.type) {
+            this.dataModelService.changeModel(this.modelPanel);
+        }
+    }
+
+    updateTable() {
+        if (this.tablePanel.technical_name) {
+            this.dataModelService.changeTablePanel(this.tablePanel);
+        }
+    }
+
+    updateColumn() {
+        if (this.columnPanel.technical_name) {
+            if (this.columnPanel.computed_column === 'computed') {
+                switch (this.columnPanel.column_type) {
+                    case 'text': this.columnPanel.aggregation_type = AGG_COMPUTED.AGG_TEXT; break;
+                    case 'date': this.columnPanel.aggregation_type = AGG_COMPUTED.AGG_DATE; break;
+                    case 'numeric': this.columnPanel.aggregation_type = AGG_COMPUTED.AGG_NUMERIC; break;
+                    default: this.columnPanel.aggregation_type = AGG_COMPUTED.AGG_COORDINATE; break;
+                }
+            }
+            this.dataModelService.changeColumnPanel(this.columnPanel);
+        }
+    }
+
+    toggle_table(visible: boolean) {
+        this.tablePanel.visible = visible ? false : true;
+        this.update();
+    }
+
+    toggle_column(visible: boolean) {
+        this.columnPanel.visible = visible ? false : true;
+        this.update();
+    }
+
+    updateColumnType(type?: any) {
+        this.columnPanel.column_type = type;
+        this.update();
+    }
+
+    updateTableType(type?: any) {
+        // this.tablePanel.table_type = this.selectedTableType;
+        this.tablePanel.table_type = type;
+        this.update();
+    }
+
+    updateAgg(type?: any) {
+        const inx = this.columnPanel.aggregation_type.indexOf(type);
+        if (inx != -1) {
+            this.columnPanel.aggregation_type.splice(inx,1);
+        } else {
+            this.columnPanel.aggregation_type.push(type);
+        }
+        this.update();
+    }
+
+    setDbType() {
+        this.modelPanel.connection.type = this.selectedTipoBD.value;
+        this.update();
+    }
+
+    updateRelation(relation: Relation) {  
+        this.selectedRelation = relation;
+        this.relationController = new EdaDialogController({
+            params: { table: this.tablePanel},
+            close: (event, response) => {
+                if (!_.isEqual(event, EdaDialogCloseEvent.NONE)) {
+                    this.dataModelService.updateRelation(relation,response);
+                }
+                this.relationController = undefined;
+                this.selectedRelation = null;
+            }
+        });
+    }
+
+    deleteRelation(relation) {
+        this.dataModelService.deleteRelation(relation);
+    }
+    deleteCalculatedCol(columnPanel: EditColumnPanel) {
+        Swal.fire({
+            title: $localize`:@@Sure:¿Estás seguro?`,
+            text: $localize`:@@deleteCalculatedColumn:Si, Eliminar el campo calculado!`,
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: $localize`:@@ConfirmDeleteModel:Si, ¡Eliminalo!`,
+            cancelButtonText: $localize`:@@DeleteGroupCancel:Cancelar`
+        }).then(async (borrado) => {
+            if (borrado.value) {
+                try {
+                    this.dataModelService.deleteCalculatedCol(columnPanel);
+                    this.typePanel = 'tabla';
+                    this.update();
+                    Swal.fire($localize`:@@Deleted:¡Eliminado!`, $localize`:@@deleteCalculatedColumnConfirmation:Campo calculado eliminado correctamente. Debera guardar cambios en el modelo de datos para que la eliminación sea permanente`, 'success');
+                } catch (err) {
+                    this.alertService.addError(err);
+                    throw err;
+                }
+            }
+        });
+    }
+    deleteView(tableName: string) {
+        this.dataModelService.deleteView(tableName);
+        this.typePanel = 'root';
+        this.update();
+    }
+
+    deleteDuckdbTable(tableName: string) {
+        Swal.fire({
+            title: $localize`:@@Sure:¿Estás seguro?`,
+            text: $localize`:@@deleteDuckdbTable:Se eliminará la tabla y su archivo CSV del disco.`,
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: $localize`:@@ConfirmDeleteModel:Si, ¡Eliminalo!`,
+            cancelButtonText: $localize`:@@DeleteGroupCancel:Cancelar`
+        }).then((result) => {
+            if (result.value) {
+                const id = this.dataModelService.model_id;
+                this.spinnerService.on();
+                this.dataModelService.deleteDuckDbCsv(id, tableName).subscribe(
+                    () => {
+                        this.dataModelService.deleteView(tableName);
+                        this.typePanel = 'root';
+                        this.dataModelService.sendModel();
+                        this.spinnerService.off();
+                    },
+                    err => {
+                        this.alertService.addError(err);
+                        this.spinnerService.off();
+                    }
+                );
+            }
+        });
+    }
+
+
+    deleteValuesList(columnPanel: EditColumnPanel){
+        this.columnPanel.valueListSource = null;
+        this.dataModelService.deleteValuesList(columnPanel);
+        this.update();
+    }
+
+    editCalculatedField(columnPanel: EditColumnPanel) {
+        this.calculatedColumnEditController = true;
+    }
+
+    onCloseCalculatedColumnEdit() {
+        this.calculatedColumnEditController = false;
+    }
+
+    newColumnEdited(column: any) {
+        this.columnPanel = _.cloneDeep(column);
+        this.dataModelService.changeColumnPanel(this.columnPanel);
+    }
+
+    checkConection() {
+        this.spinnerService.on();
+        let connection = this.modelPanel.connection;
+        
+        let id = this.dataModelService.model_id;
+        this.dataModelService.testStoredConnection(connection, id).subscribe(
+            res => { this.alertService.addSuccess($localize`:@@EstablishedConnections:Conexión establecida`); this.spinnerService.off() },
+            err => { this.alertService.addError($localize`:@@IncorrectConnectionData:Datos de conexión incorrectos`); this.spinnerService.off() }
+        );
+    }
+
+    openTableRelationDialog() {
+        this.relationController = new EdaDialogController({
+            params: { table: this.tablePanel },
+            close: (event, response) => {
+
+                if (!_.isEqual(event, EdaDialogCloseEvent.NONE)) {
+                    this.dataModelService.addRelation(response);
+                }
+
+                this.relationController = undefined;
+            }
+        });
+    }
+
+    openNewColDialog() {
+        this.newColController = new EdaDialogController({
+            params: { table: this.tablePanel },
+            close: (event, response) => {
+                if (!_.isEqual(event, EdaDialogCloseEvent.NONE)) {
+                    const column = response.column;
+
+                    let aggregation_type = [];
+                    switch (column.column_type) {
+                        case 'text': aggregation_type = AGG_COMPUTED.AGG_TEXT_VALUE_DISPLAY; break;
+                        case 'date': aggregation_type = AGG_COMPUTED.AGG_DATE_VALUE_DISPLAY; break;
+                        case 'numeric': aggregation_type = AGG_COMPUTED.AGG_NUMERIC_VALUE_DISPLAY; break;
+                        default: aggregation_type = AGG_COMPUTED.AGG_COORDINATE_VALUE_DISPLAY; break;
+                    }
+                    if (column.computed_column === 'computed') { response.column.aggregation_type = aggregation_type; }
+
+                    this.dataModelService.addCalculatedColumn(response);
+                    this.update();
+                    this.typePanel = 'columna';
+                    const node: TreeNode = this.dataModelService.getTreeColumn(this.tablePanel.name,
+                        this.tablePanel.columns[this.tablePanel.columns.length - 1]);
+                    this.dataModelService.editColumn(node);
+                    this.dataModelService.expandNode(node);
+                }
+
+                this.newColController = undefined;
+            }
+        })
+    }
+
+
+   /* openNewViewDialog() {
+        this.viewController = new EdaDialogController({
+            params: { user: localStorage.getItem('user'), model_id: this.dataModelService.model_id },
+            close: (event, response) => {
+                if (!_.isEqual(event, EdaDialogCloseEvent.NONE)) {
+                    this.dataModelService.addView(response);
+
+                }
+                this.viewController = undefined;
+            }
+        })
+    }*/
+    openNewViewDialog() {
+        this.showViewDialog = true;
+    }
+        onCloseViewDialog(response?: any) {
+        this.showViewDialog = false;
+        if (response) {
+            this.dataModelService.addView(response);
+        }}
+
+    openNewMapDialog() {
+        this.showMapDialog = true;
+
+        // this.mapController = new EdaDialogController({
+        //     params: {},
+        //     close: (event, response) => {
+        //         if (!_.isEqual(event, EdaDialogCloseEvent.NONE)) {
+        //             if (response.newMap) {
+        //                 this.dataModelService.addLinkedToMapColumns(response.linkedColumns, response.mapID);
+        //             }
+        //             this.dataModelService.updateMaps(response.serverMaps);
+        //         }
+        //         this.mapController = undefined;
+        //     }
+        // })
+    }
+
+    closeMapDialog(response?: any) {
+        if (response) {
+            if (response.newMap) {
+                this.dataModelService.addLinkedToMapColumns(response.linkedColumns, response.mapID);
+            }
+            
+            this.dataModelService.updateMaps(response.serverMaps);
+        }
+
+        this.showMapDialog = false;
+    }
+
+    openAddDuckdbTableDialog() {
+        this.showAddDuckdbTableDialog = true;
+    }
+
+    onCloseDuckdbTableDialog(newTable: any) {
+        this.showAddDuckdbTableDialog = false;
+        if (newTable) {
+            this.dataModelService.addTableToModel(newTable);
+        }
+    }
+
+    openCSVDialog() {
+        this.showCsvDialog = true;
+        // this.csvPanelController = new EdaDialogController({
+        //     params: { model_id: this.dataModelService.model_id },
+        //     close: (event, response) => {
+        //         if (response) {
+        //             this.onTableCreated.emit();
+        //         }
+        //         this.csvPanelController = undefined;
+        //     }
+        // })
+    }
+
+    closeCSVDialog(response?: any) {
+        if (response) {
+            this.onTableCreated.emit();
+        }
+
+        this.showCsvDialog = false;
+    }
+    
+    openTagDialog() {
+        this.showAddTagDialog = true;
+    }
+
+    onCloseTagDialog(response?: any) {
+        this.showAddTagDialog = false;
+
+        if (response) {
+            this.dataModelService.addTags(response);
+            this.update();
+        }
+    }
+
+    openCacheDialog() {
+        this.showCacheDialog = true;
+        
+        // this.cacheController = new EdaDialogController({
+        //     params: { model_id: this.dataModelService.model_id, config:this.modelPanel.metadata.cache_config },
+        //     close: (event, response) => {
+        //         if (response) {
+        //             this.dataModelService.addCacheConfig(response);
+        //         }
+        //         this.cacheController = undefined;
+        //     }
+        // })
+    }
+
+    onCloseCacheDialog(response?: any) {
+        if (response) {
+            this.dataModelService.addCacheConfig(response);
+        }
+
+        this.showCacheDialog = false;
+    }
+
+    openSecurityDialog(){
+        this.showSecurityDialog = true;
+        // this.securityController = new EdaDialogController({
+        //     params: { model: this.modelPanel },
+        //     close: (event) => {
+        //         this.securityController = undefined;
+        //     }
+        // })
+    }
+
+    openValueListDialog() {
+        const table = this.dataModelService.getTable(this.columnPanel);
+        this.valueListController = new EdaDialogController({
+            params: { column: this.columnPanel, table: table },
+            close: (event, response) => {
+                if (!_.isEqual(event, EdaDialogCloseEvent.NONE)) {
+
+                    const display_name = {
+                        default: "xx-bridge",
+                        localized: [],
+                    }
+
+                    const originRelation: Relation = {
+                        target_table: response.target_table,
+                        target_column: response.target_id_column,
+                        source_table: response.source_table,
+                        source_column: response.source_column,
+                        display_name: display_name,
+                        visible: true
+                    }
+
+                    this.dataModelService.addRelation(originRelation);
+                    this.dataModelService.addValueListSource(response);
+                    this.updateColumn();
+                }
+
+                this.valueListController = undefined;
+            }
+        });
+    }
+    openPermissionsRelationDialog() {
+        const table = this.dataModelService.getTable(this.columnPanel);
+        this.permissionsController = new EdaDialogController({
+            params: { column: this.columnPanel, table: table },
+            close: (event, response) => {
+                if (!_.isEqual(event, EdaDialogCloseEvent.NONE)) {
+                    this.dataModelService.addPermission(response);
+                    this.updateColumn();
+                }
+
+                this.permissionsController = undefined;
+            }
+        });
+    }
+
+
+    openTablePermissionsDialog() {
+        this.showTablePermissionsDialog = true;
+
+        // this.tablePermissionsController = new EdaDialogController({
+        //     params: { table: this.tablePanel },
+        //     close: (event, response) => {
+        //         if (!_.isEqual(event, EdaDialogCloseEvent.NONE)) {
+        //             this.dataModelService.addPermission(response);
+        //             this.update();
+        //         }
+        //         this.tablePermissionsController = undefined;
+        //     }
+        // });
+    }
+
+    closeTablePermissionsDialog(response: any) {
+        if (response) {
+            this.dataModelService.addPermission(response);
+            this.update();
+        }
+
+        this.showTablePermissionsDialog = false;
+    }
+
+    openModelPermissionsDialog() {
+        this.showModelPermissionDialog = true;
+        // this.modelPermissionsController = new EdaDialogController({
+        //     params: {   },
+        //     close: (event, response) => {
+        //         if (!_.isEqual(event, EdaDialogCloseEvent.NONE)) {
+        //             this.dataModelService.addPermission(response);
+        //             this.update();
+        //         }
+        //         this.modelPermissionsController = undefined;
+        //     }
+        // });
+    }
+
+    closeModelPermissionsDialog(response: any) {
+        if (response) {
+            this.dataModelService.addPermission(response);
+            this.update();
+        }
+
+        this.showModelPermissionDialog = false;
+    }
+
+
+    hideAllTables() {
+        this.tablesHidden = !this.tablesHidden;
+        this.dataModelService.hideAllTables();
+    }
+
+    hideAllColumns(tablePanel: any) {
+        this.columnsHidden = !this.columnsHidden;
+        this.dataModelService.hideAllColumns(tablePanel);
+    }
+
+    hideAllRelations() {
+        this.relationsHidden = !this.relationsHidden;
+        this.dataModelService.hideAllRelations();
+    }
+
+    viewEdition() {
+        Swal.fire({
+            title: $localize`:@@viewEditionTitle:Edición de la Vista`,
+            text: $localize`:@@viewEditionDescription:La edición de la vista permite modificar únicamente la consulta (query), pero no debe cambiar los nombres de las columnas.`,
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonText: $localize`:@@ContinueTablaQuality:Continuar`,
+            cancelButtonText: $localize`:@@cancelarBtn:Cancelar`,
+        }).then( (borrado) => {
+            if(borrado.value){
+                // Finding the view to edit:
+                let myViewInEdition;
+                let allViews = this.dataModelService.allViews();
+                myViewInEdition = allViews.find(e => e.table_name === this.tablePanel.technical_name && e.query === this.tablePanel.query && e.table_type === 'view')
+                this.viewInEdition = myViewInEdition;
+                this.viewDialogEdition = true;
+            } else {
+                console.log('No se hace ningun cambio: ', borrado)
+            }
+        })
+
+    }
+
+    public onCloseViewEditionDialog(event) {
+        if(event === 'cancel') {
+            this.viewDialogEdition = false;
+            return
+        }
+
+        // Changes will be made here
+        this.viewDialogEdition = false;
+        this.tablePanel.query = event.query;
+        this.tablePanel.columns = event.columns;
+        this.dataModelService.editView(this.tablePanel);
+    }
+}
+
+

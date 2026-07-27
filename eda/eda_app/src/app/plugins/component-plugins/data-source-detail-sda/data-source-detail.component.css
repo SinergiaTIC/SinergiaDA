@@ -1,0 +1,6 @@
+/* SDA CUSTOM: used to visually lock fields that configure themselves
+   during synchronization with SinergiaCRM (see SDA_SYNC_MODEL_ID in the .ts file) */
+.sda-disabled {
+  opacity: .5;
+  pointer-events: none;
+}

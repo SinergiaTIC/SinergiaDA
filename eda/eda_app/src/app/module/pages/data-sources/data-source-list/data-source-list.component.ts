@@ -1,23 +1,37 @@
 import { SpinnerService } from '../../../../services/shared/spinner.service';
 import { TreeNode } from 'primeng/api';
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { AfterViewInit, Component, ComponentRef, OnInit, OnDestroy, ViewChild, ViewContainerRef } from '@angular/core';
 import { ActivatedRoute, Router, NavigationEnd } from '@angular/router';
 import { AlertService, DataSourceService } from '@eda/services/service.index';
 import Swal, { SweetAlertOptions } from 'sweetalert2';
-import { DataSourceDetailComponent } from '../data-source-detail/data-source-detail.component';
+import { DataSourceDetailComponent as BaseDataSourceDetailComponent } from '../data-source-detail/data-source-detail.component';
+import { COMPONENT_PLUGINS } from '../../../../plugins/component-plugins/component-plugin-registry';
 import { PrimengModule } from 'app/core/primeng.module';
 import { DatasourceSaveAsDialog } from '../data-source-save-as/datasource-save-as.dialog';
 
 import * as _ from 'lodash';
 
+// SDA CUSTOM: If there is a registered plugin for 'app-data-source-detail' (e.g.
+// component-plugins/data-source-detail-sda, with the restrictions specific to SinergiaDA
+// via SDA_SYNC_MODEL_ID) that one is used; otherwise, it falls to the base component without breaking the build.
+const DataSourceDetailComponent =
+    COMPONENT_PLUGINS.find(p => p.selector === 'app-data-source-detail')?.component ?? BaseDataSourceDetailComponent;
+
 @Component({
     standalone: true,
     selector: 'app-data-source-list',
     templateUrl: './data-source-list.component.html',
-    imports: [ PrimengModule, DataSourceDetailComponent, DatasourceSaveAsDialog ],
+    imports: [ PrimengModule, DatasourceSaveAsDialog ],
     styleUrls: ['./data-source-list.component.css']
 })
-export class DataSourceListComponent implements OnInit, OnDestroy {
+export class DataSourceListComponent implements OnInit, AfterViewInit, OnDestroy {
+    // SDA CUSTOM: DataSourceDetailComponent is resolved dynamically (see the `const` above),
+    // Therefore, it cannot be declared in the `imports` array of @Component (it must be statically imported).
+    // (parsable). It is created manually with ViewContainerRef in ngAfterViewInit instead.
+    @ViewChild('dataSourceDetailHost', { read: ViewContainerRef, static: true })
+    dataSourceDetailHost: ViewContainerRef;
+    private dataSourceDetailRef: ComponentRef<InstanceType<typeof DataSourceDetailComponent>>;
+
     public treeData: any[] = [];
     public selectedFile: TreeNode;
     public id: string;
@@ -88,11 +102,17 @@ export class DataSourceListComponent implements OnInit, OnDestroy {
         this.dataModelService.getModelById(this.id);
     }
 
+    ngAfterViewInit(): void {
+        this.dataSourceDetailRef = this.dataSourceDetailHost.createComponent(DataSourceDetailComponent);
+        this.dataSourceDetailRef.instance.onTableCreated.subscribe(() => this.reLoadModelFromDb());
+    }
+
     ngOnDestroy(): void {
         if (this.navigationSubscription) {
             this.navigationSubscription.unsubscribe();
             this.navigationSubscription.complete();
         }
+        this.dataSourceDetailRef?.destroy();
     }
 
     getDataSourceId() {
