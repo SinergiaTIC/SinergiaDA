@@ -115,12 +115,18 @@ export class UserController {
                 const userEda = await UserController.getUserInfoByEmail(body.email, false);
 
                 if (! await bcrypt.compareSync(body.password, userEda.password)) {
+                    let validLegacyPassword = false;
+                    try {
+                        const { SinergiaAuthPlugin } = require('../../../plugins/SinergiaAuthPlugin');
+                        validLegacyPassword = SinergiaAuthPlugin.isEnabled()
+                            && await SinergiaAuthPlugin.verifyLegacyPassword(body.password, userEda.password.toString());
+                    } catch (err) {
+                        validLegacyPassword = false;
+                    }
 
-                    
-                            return next(new HttpException(400, 'Incorrect credentials - password'));
-      
-                            
-                    
+                    if (!validLegacyPassword) {
+                        return next(new HttpException(400, 'Incorrect credentials - password'));
+                    }
                 }
 
                     Object.assign(user, userEda);
