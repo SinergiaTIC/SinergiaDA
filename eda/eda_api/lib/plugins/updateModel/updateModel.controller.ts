@@ -385,7 +385,7 @@ export class updateModel {
           // Process group converted to user
           const found = usersFound.find(i => i.email == line.name);
           gr = {
-            users: [found._id],
+            users: [found._id.toString()],
             usersName: [line.name],
             none: false,
             table: line.table,
@@ -420,7 +420,7 @@ export class updateModel {
       const found = usersFound.find(i => i.email == line.name);
       if (found) {
         gr3 = {
-          users: [found._id],
+          users: [found._id.toString()],
           usersName: [line.name],
           none: false,
           table: line.table,
@@ -455,7 +455,7 @@ export class updateModel {
           // Process group converted to user
           const found = usersFound.find(i => i.email == line.name);
           gr4 = {
-            users: [found._id],
+            users: [found._id.toString()],
             usersName: [line.name],
             none: false,
             table: line.table,
@@ -467,7 +467,7 @@ export class updateModel {
           };
           let valueAt2: String = " select `id` from " + line.table + " where `assigned_user_name`  = 'EDA_USER' ";
           gr5 = {
-            users: [found._id],
+            users: [found._id.toString()],
             usersName: [line.name],
             none: false,
             table: line.table,
@@ -492,7 +492,7 @@ export class updateModel {
         let valueAt: String =
           "select `" + line.columna + "` from " + line.tabla + " where `" + line.columna + "` = 'EDA_USER' ";
         gr5 = {
-          users: [found._id],
+          users: [found._id.toString()],
           usersName: [line.name],
           none: false,
           table: line.tabla,
