@@ -18,8 +18,8 @@ import { FocusOnShowDirective } from '@eda/shared/directives/autofocus.directive
 import { CommonModule } from '@angular/common';
 import { AssistantService } from '@eda/services/api/assistant.service';
 import { EdaTitlePanelComponent, EdaTabsPanelComponent } from '@eda/components/component.index';
-import { ZoomSdaComponent } from './zoom-sda/zoom.component';
-import { ZoomStateService } from './zoom-sda/zoom-state.service';
+import { ZoomSdaComponent } from './zoom-control/zoom.component';
+import { ZoomStateService } from './zoom-control/zoom-state.service';
 import { SHOW_ZOOM_IN_SIDEBAR } from '@eda/configs/customizable/customizable_default';
 
 // Sidebar imports
@@ -184,7 +184,7 @@ export class DashboardPage implements OnInit {
 
   /* Set applyToAllFilters for new panel when it's created */
       public ngAfterViewInit(): void {
-          this.zoomState.init();
+          this.zoomState.init(this.route.snapshot.paramMap.get('id'));
 
           this.edaPanelsSubscription = this.edaPanels.changes.subscribe((comps: QueryList<EdaBlankPanelComponent>) => {
               const globalFilters = this.globalFilter?.globalFilters.filter(filter => filter.isGlobal === true);

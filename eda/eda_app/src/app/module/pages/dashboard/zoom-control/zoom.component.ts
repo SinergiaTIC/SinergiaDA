@@ -8,7 +8,7 @@ import { ZoomStateService } from './zoom-state.service';
 
 @Component({
     standalone: true,
-    selector: 'zoom-sda',
+    selector: 'zoom-control',
     imports: [CommonModule, FormsModule, ButtonModule, TooltipModule],
     templateUrl: './zoom.component.html',
     styleUrls: ["./zoom.component.css"],
@@ -25,7 +25,7 @@ export class ZoomSdaComponent {
     // position) or 'sidebar' (dashboard sidebar popover) — controls layout only.
     @Input() layout: 'toolbar' | 'sidebar' = 'toolbar';
 
-    // Shared with any other zoom-sda instance on the same dashboard page — the
+    // Shared with any other zoom-control instance on the same dashboard page — the
     // zoom effect is owned by DashboardPage (see its `providers`) and stays
     // active regardless of whether this control UI is mounted.
     public readonly zoomState = inject(ZoomStateService);

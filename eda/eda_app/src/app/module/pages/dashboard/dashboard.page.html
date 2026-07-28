@@ -26,7 +26,7 @@
       <!-- Filters Section -->
       <div class="relative flow-root">
         @if (!showZoomInSidebar) {
-          <zoom-sda [dashboard]="this"></zoom-sda>
+          <zoom-control [dashboard]="this"></zoom-control>
         }
         <app-v2-global-filter #globalFilter [dashboard]="this"></app-v2-global-filter>
 

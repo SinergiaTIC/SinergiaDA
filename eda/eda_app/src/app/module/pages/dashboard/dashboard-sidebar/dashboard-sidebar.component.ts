@@ -31,7 +31,7 @@ import { DependentFilters } from "../../../components/dependent-filters/dependen
 import { DashboardVisibleModal } from "../../../components/dashboard-visible/dashboard-visible.modal";
 import { GlobalFilterDialogComponent } from "../../../pages/dashboard/global-filter-dialog/global-filter-dialog.component";
 import { GlobalFilterComponent } from "@eda/components/global-filter/global-filter.component";
-import { ZoomSdaComponent } from "../zoom-sda/zoom.component";
+import { ZoomSdaComponent } from "../zoom-control/zoom.component";
 import { SHOW_ZOOM_IN_SIDEBAR } from "@eda/configs/customizable/customizable_default";
 
 const STANDALONE_COMPONENTS = [

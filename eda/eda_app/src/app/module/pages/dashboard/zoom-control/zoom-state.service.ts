@@ -1,6 +1,6 @@
 import { Injectable, OnDestroy } from '@angular/core';
 
-const ZOOM_STORAGE_KEY = 'dashboardZoomLevel';
+const ZOOM_STORAGE_KEY_PREFIX = 'dashboardZoomLevel';
 const ZOOM_MIN = 25;
 const ZOOM_MAX = 100;
 const ZOOM_STEP = 5;
@@ -11,7 +11,7 @@ const ZOOM_TARGET_SELECTOR = 'gridster.dashboard-grid';
 /**
  * Owns the zoom level and the side effect of scaling the dashboard grid.
  * Provided at DashboardPage level so the zoom stays applied for as long as a
- * dashboard is open, independent of whether any zoom-sda control UI is
+ * dashboard is open, independent of whether any zoom-control control UI is
  * currently mounted (e.g. the sidebar variant only mounts on hover).
  */
 @Injectable()
@@ -19,9 +19,11 @@ export class ZoomStateService implements OnDestroy {
 
     public zoomLevel: number = 100;
     private zoomInterval: any;
+    private storageKey: string = ZOOM_STORAGE_KEY_PREFIX;
 
-    public init(): void {
-        const saved = Number(localStorage.getItem(ZOOM_STORAGE_KEY));
+    public init(dashboardId: string): void {
+        this.storageKey = `${ZOOM_STORAGE_KEY_PREFIX}_${dashboardId}`;
+        const saved = Number(sessionStorage.getItem(this.storageKey));
         if (saved >= ZOOM_MIN && saved <= ZOOM_MAX) {
             this.zoomLevel = saved;
         }
@@ -63,7 +65,7 @@ export class ZoomStateService implements OnDestroy {
         if (clamped === this.zoomLevel) return;
         this.zoomLevel = clamped;
         this.applyZoom();
-        localStorage.setItem(ZOOM_STORAGE_KEY, String(this.zoomLevel));
+        sessionStorage.setItem(this.storageKey, String(this.zoomLevel));
     }
 
     private applyZoom(): void {
