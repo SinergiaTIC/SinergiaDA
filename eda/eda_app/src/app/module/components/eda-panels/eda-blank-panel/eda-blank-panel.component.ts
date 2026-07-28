@@ -15,7 +15,7 @@ import { ConfirmationService, SharedModule } from 'primeng/api';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { TreeModule } from 'primeng/tree';
 // Eda config
-import { AGG_TYPES, NULL_VALUE, EMPTY_VALUE, SHOW_LOCK_IN_PANEL_HEADER, SHOW_HIDDEN_FIELDS_BUTTON, SHOW_HIDDEN_FIELDS_BUTTON_ADMIN_ONLY } from '@eda/configs/customizable/customizable_default';
+import { AGG_TYPES, NULL_VALUE, EMPTY_VALUE, SHOW_LOCK_IN_PANEL_HEADER, SHOW_HIDDEN_FIELDS } from '@eda/configs/customizable/customizable_default';
 import {Column, EdaPanel, InjectEdaPanel } from '@eda/models/model.index';
 
 import { PanelChart } from './panel-charts/panel-chart';
@@ -342,8 +342,8 @@ export class EdaBlankPanelComponent implements OnInit {
     public promptAvailable = computed(() => this.iaFormStateService.formData().AVAILABLE);
 
     readonly showLockInHeader = SHOW_LOCK_IN_PANEL_HEADER;
-    readonly showHiddenFieldsButton = SHOW_HIDDEN_FIELDS_BUTTON;
-    readonly showHiddenFieldsButtonAdminOnly = SHOW_HIDDEN_FIELDS_BUTTON_ADMIN_ONLY;
+    readonly showHiddenFieldsButton = SHOW_HIDDEN_FIELDS !== 'disabled';
+    readonly showHiddenFieldsButtonAdminOnly = SHOW_HIDDEN_FIELDS === 'admin-only';
     public showHiddenColumn: boolean = false;
 
 
