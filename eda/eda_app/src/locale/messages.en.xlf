@@ -6752,6 +6752,10 @@ OR<ph id="5"/>
   <source>Fuente de datos</source>
   <target>Data source</target>
 </trans-unit>
+<trans-unit id="ResetZoom">
+  <source>Restablecer (100%)</source>
+  <target>Reset (100%)</target>
+</trans-unit>
 </body>
 </file>
 </xliff>

@@ -7027,6 +7027,10 @@ Une fois configurée, vous pouvez l'activer à tout moment à partir du bouton.<
         <source>Fuente de datos</source>
         <target>Source de données</target>
       </trans-unit>
+      <trans-unit id="ResetZoom">
+        <source>Restablecer (100%)</source>
+        <target>Réinitialiser (100%)</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>
