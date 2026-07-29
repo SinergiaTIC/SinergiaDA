@@ -90,6 +90,7 @@ export class DashboardController {
       // 'private' por defecto — se incluye en la query para no perder dashboards antiguos sin ese campo.
       const dashboards = await DashboardController.findAllDashboardsWithMeta({
         user: req.user._id,
+        'config.active': { $ne: false },
         $or: [{ 'config.visible': 'private' }, { 'config.visible': null }, { 'config.visible': '' }]
       })
       const privateDashboards = []
@@ -151,7 +152,7 @@ export class DashboardController {
       }).exec();
 
 
-      const dashboards = await DashboardController.findAllDashboardsWithMeta({ group: { $in: userGroups.map(g => g._id) } });
+      const dashboards = await DashboardController.findAllDashboardsWithMeta({ group: { $in: userGroups.map(g => g._id) }, 'config.active': { $ne: false } });
       const groupDashboards = []
       for (let i = 0, n = dashboards.length; i < n; i += 1) {
         const dashboard = dashboards[i]
@@ -228,7 +229,7 @@ export class DashboardController {
       }
       // 'shared' es el valor legacy que normalizeVisibility traduce a 'open' — se incluye en la
       // query para no perder dashboards antiguos aún no migrados.
-      const dashboards = await DashboardController.findAllDashboardsWithMeta({ 'config.visible': { $in: ['open', 'shared'] } });
+      const dashboards = await DashboardController.findAllDashboardsWithMeta({ 'config.visible': { $in: ['open', 'shared'] }, 'config.active': { $ne: false } });
       const openDashboards = []
       for (const dashboard of dashboards) {
         // Normalize legacy visibility values
@@ -284,7 +285,7 @@ export class DashboardController {
     try {
       // 'public' es el valor legacy que normalizeVisibility traduce a 'common' — se incluye en la
       // query para no perder dashboards antiguos aún no migrados.
-      const dashboards = await DashboardController.findAllDashboardsWithMeta({ 'config.visible': { $in: ['common', 'public'] } })
+      const dashboards = await DashboardController.findAllDashboardsWithMeta({ 'config.visible': { $in: ['common', 'public'] }, 'config.active': { $ne: false } })
       const commonDashboards = []
       for (const dashboard of dashboards) {
         // Normalize legacy visibility values
@@ -568,6 +569,10 @@ export class DashboardController {
 
         if (visibilityCheck && roleCheck) {
           return next(new HttpException(500, "You don't have permission"));
+        }
+
+        if (dashboard.config.active === false && !userRoles.includes('EDA_ADMIN')) {
+          return next(new HttpException(403, 'This dashboard is currently inactive'));
         }
 
         // Obtener el datasource asociado
