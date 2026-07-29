@@ -1025,14 +1025,36 @@ export class DashboardPage implements OnInit {
     const standardQueryMode = this.panels.some((p) => p.content?.query?.query?.queryMode === 'EDA');
 
     for (const panel of this.edaPanels) {
+      const ownMode = normalizeQueryMode(panel.panel?.content?.query?.query?.queryMode);
+      let allowedModes = [...QUERY_MODE];
+
       if (treeQueryMode) {
-        panel.queryModes = QUERY_MODE.filter(v => v !== 'EDA').map(v => QUERY_MODE_LABELS.find(l => l.value === v));
-        panel.selectedQueryMode = 'TREE';
+        allowedModes = allowedModes.filter(v => v !== 'EDA');
       } else if (standardQueryMode) {
-        panel.queryModes = QUERY_MODE.filter(v => v !== 'TREE').map(v => QUERY_MODE_LABELS.find(l => l.value === v));
+        allowedModes = allowedModes.filter(v => v !== 'TREE');
       }
+
+      // Brand-new panels (no saved mode yet) default to the first mode still
+      // allowed after the family exclusion above, instead of the raw QUERY_MODE[0].
+      if (!ownMode && allowedModes.length > 0) {
+        panel.selectedQueryMode = allowedModes[0];
+      }
+
+      // Keep offering a panel's own already-saved mode even if it's no longer
+      // configured in QUERY_MODE, so legacy panels stay visible/selectable
+      // without letting new panels be created in a retired mode.
+      if (ownMode && !allowedModes.includes(ownMode)) {
+        allowedModes = [...allowedModes, ownMode];
+      }
+
       if (((!standardQueryMode && !treeQueryMode) || this.edaPanels.length === 1) && this.globalFilter.globalFilters.length === 0) {
-        panel.queryModes = QUERY_MODE.map(v => QUERY_MODE_LABELS.find(l => l.value === v));
+        allowedModes = ownMode && !QUERY_MODE.includes(ownMode) ? [...QUERY_MODE, ownMode] : [...QUERY_MODE];
+      }
+
+      panel.queryModes = allowedModes.map(v => QUERY_MODE_LABELS.find(l => l.value === v));
+
+      if (treeQueryMode) {
+        panel.selectedQueryMode = 'TREE';
       }
     }
   }
