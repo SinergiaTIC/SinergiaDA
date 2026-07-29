@@ -314,12 +314,16 @@ export class GlobalFiltersService {
             filter_column_type: columnType,
             filter_type: isDate ? 'between' : 'in',
             filter_elements: this.assertGlobalFilterItems(globalFilter),
+            filter_codes: this.assertGlobalFilterCodes(globalFilter),
             isGlobal: true,
             isAutocompleted: globalFilter.isAutocompleted,
             applyToAll: globalFilter.applyToAll,
             valueListSource: valueListSource,
-            computed_column: globalFilter.selectedColumn?.computed_column,
-            SQLexpression: globalFilter.selectedColumn?.SQLexpression,
+            autorelation: globalFilter.autorelation,
+            joins: globalFilter.joins,
+            filterBeforeGrouping: true,
+            computed_column: globalFilter.column?.value?.computed_column ?? globalFilter.selectedColumn?.computed_column,
+            SQLexpression: globalFilter.column?.value?.SQLexpression ?? globalFilter.selectedColumn?.SQLexpression,
             fromChart: globalFilter.fromChart ?? false,  // <-- añadir esto
         }
 
@@ -384,7 +388,7 @@ export class GlobalFiltersService {
 
         return isDate
             ? [{ value1: globalFilter.selectedItems[0] ? [globalFilter.selectedItems[0]] : [] }, { value2: globalFilter.selectedItems[1] ? [globalFilter.selectedItems[1]] : [] }]
-            : [{ value1: globalFilter.selectedIdValues }];
+            : [{ value1: globalFilter.selectedIdValues ?? globalFilter.selectedItems }];
     }
 
     public assertGlobalFilterItems(globalFilter: any) {

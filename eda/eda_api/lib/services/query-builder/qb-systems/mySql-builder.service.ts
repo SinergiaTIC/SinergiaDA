@@ -440,7 +440,7 @@ export class MySqlBuilderService extends QueryBuilderService {
     sortedFilters.sort((a: any, b: any) => a.y - b.y); 
 
     // Calculating global filters and they are empty.
-    const nullSortedFilters  =  sortedFilters.filter((f: any) => ((f.isGlobal===true) && (f.filter_elements[0].value1.length === 0)));
+    const nullSortedFilters  =  sortedFilters.filter((f: any) => ((f.isGlobal===true) && (f.filter_elements?.length > 0 && f.filter_elements[0]?.value1?.length === 0)));
 
     // If we have empty values in the filters we define a new sortedFilters
     if(nullSortedFilters.length !==0){
@@ -460,7 +460,7 @@ export class MySqlBuilderService extends QueryBuilderService {
       }  )
   
       // Order in the y axis
-      const newSortedFilters = sortedFilters.filter((f: any) => !((f.isGlobal===true) && (f.filter_elements[0].value1.length === 0)));
+      const newSortedFilters = sortedFilters.filter((f: any) => !((f.isGlobal===true) && (f.filter_elements?.length > 0 && f.filter_elements[0]?.value1?.length === 0)));
       newSortedFilters.forEach( (f,i) => f.y=i );
 
       sortedFilters = _.cloneDeep(newSortedFilters);
@@ -468,7 +468,7 @@ export class MySqlBuilderService extends QueryBuilderService {
 
     // If we have a global filter with only one empty value selected
     filters.forEach(filter => {
-      if(filter.isGlobal && (filter.filter_type === 'null_or_empty') && (filter.filter_elements[0].value1[0]==='emptyString')) {
+      if(filter.isGlobal && (filter.filter_type === 'null_or_empty') && (filter.filter_elements?.length > 0 && filter.filter_elements[0]?.value1?.[0]==='emptyString')) {
         const selectedFilter = sortedFilters.find(sf => sf.filter_id === filter.filter_id);
 
         if(selectedFilter) {
@@ -517,10 +517,12 @@ export class MySqlBuilderService extends QueryBuilderService {
       // recursive item
       const { cols, rows, y, x, filter_table, filter_column, filter_type, filter_column_type, filter_elements, filter_codes, value, valueListSource, sqlOptional, computed_column, SQLexpression } = item;
 
-      ////////////////////////////////////////////////// filter_type ////////////////////////////////////////////////// 
+      ////////////////////////////////////////////////// filter_type //////////////////////////////////////////////////
       let filter_type_value = '';
       if(filter_type === 'not_in'){
         filter_type_value = 'not in';
+      } else if(filter_type === 'not_between'){
+        filter_type_value = 'not between';
       } else {
         if(filter_type === 'not_like') {
           filter_type_value = 'not like';
@@ -561,7 +563,7 @@ export class MySqlBuilderService extends QueryBuilderService {
 
           // Numeric type value
           if(filter_column_type === 'numeric'){
-            if(filter_type === 'between') {
+            if(filter_type === 'between' || filter_type === 'not_between') {
               filter_elements_value = filter_elements_value + ` ${Number(filter_codes[0].value1[0])} and ${Number(filter_codes[1].value2[0])}`;
             } else {
               if(filter_type === 'in' || filter_type === 'not_in') {
@@ -574,7 +576,7 @@ export class MySqlBuilderService extends QueryBuilderService {
 
           // Date type value
           if(filter_column_type === 'date'){
-            if(filter_type === 'between'){
+            if(filter_type === 'between' || filter_type === 'not_between'){
               filter_elements_value = filter_elements_value + ` STR_TO_DATE(\'${filter_codes[0].value1[0]}\',\'%Y-%m-%d\')` + ' and ' + `STR_TO_DATE(\'${filter_codes[1].value2[0]} 23:59:59\',\'%Y-%m-%d %H:%i:%S\')`;
             } else {
               if(filter_type==='in' || filter_type==='not_in') {
@@ -625,14 +627,18 @@ export class MySqlBuilderService extends QueryBuilderService {
 
       // variable to find filters with valueListSource
       let validador = (valueListSource !== undefined && valueListSource !== null);
-      // Result of the whole string 
+      // Keep value-list filters on the internal code column when we have codes to compare against (nested AND/OR conditions)
+      const valueListFilterColumn = validador
+        ? ((filter_codes?.length !== undefined && valueListSource.target_id_column) ? valueListSource.target_id_column : valueListSource.target_description_column)
+        : filter_column;
+      // Result of the whole string
 
       let resultado = '';
 
       if(computed_column==='computed') {
         resultado = `${['null_or_empty', 'not_null_nor_empty'].includes(filter_type) || (filter_type==='in' && sqlOptional !== undefined) ? ' (' : ''} ${sqlOptional !== undefined ? sqlOptional : ''} (${SQLexpression}) ${filter_type_value}${filter_elements_value}`;
       } else {
-        resultado = `${['null_or_empty', 'not_null_nor_empty'].includes(filter_type) || (filter_type==='in' && sqlOptional !== undefined) ? ' (' : ''} ${sqlOptional !== undefined ? sqlOptional : ''} \`${ validador ? valueListSource.target_table : filter_table}\`.\`${ validador ? valueListSource.target_description_column : filter_column}\` ${filter_type_value}${filter_elements_value}`;
+        resultado = `${['null_or_empty', 'not_null_nor_empty'].includes(filter_type) || (filter_type==='in' && sqlOptional !== undefined) ? ' (' : ''} ${sqlOptional !== undefined ? sqlOptional : ''} \`${ validador ? valueListSource.target_table : filter_table}\`.\`${valueListFilterColumn}\` ${filter_type_value}${filter_elements_value}`;
       }
 
 
@@ -641,7 +647,7 @@ export class MySqlBuilderService extends QueryBuilderService {
         if(computed_column==='computed') {
           resultado = `${resultado} (${SQLexpression}) != '')`;
         } else {
-          resultado = `${resultado} \`${ validador ? valueListSource.target_table : filter_table}\`.\`${ validador ? valueListSource.target_description_column : filter_column}\` != '')`;
+          resultado = `${resultado} \`${ validador ? valueListSource.target_table : filter_table}\`.\`${valueListFilterColumn}\` != '')`;
         }
       }
 
@@ -650,7 +656,7 @@ export class MySqlBuilderService extends QueryBuilderService {
         if(computed_column==='computed') {
           resultado = `${resultado} (${SQLexpression}) = '')`;
         } else {
-          resultado = `${resultado} \`${ validador ? valueListSource.target_table : filter_table}\`.\`${ validador ? valueListSource.target_description_column : filter_column}\` = '')`;
+          resultado = `${resultado} \`${ validador ? valueListSource.target_table : filter_table}\`.\`${valueListFilterColumn}\` = '')`;
         }
       }
 
