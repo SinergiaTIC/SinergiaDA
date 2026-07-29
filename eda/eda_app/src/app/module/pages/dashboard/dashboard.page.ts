@@ -2,6 +2,8 @@ import { ChangeDetectorRef, Component, CUSTOM_ELEMENTS_SCHEMA, inject, OnInit, Q
 import { ActivatedRoute } from '@angular/router';
 import { lastValueFrom, Subscription } from 'rxjs';
 import { DateUtils } from '@eda/services/utils/date-utils.service';
+import { normalizeQueryMode } from '@eda/shared/utils/query-mode.util';
+import { QUERY_MODE } from '@eda/configs/customizable/customizable_default';
 import * as _ from 'lodash';
 import { ButtonModule } from 'primeng/button';
 import { DropdownModule } from 'primeng/dropdown';
@@ -12,7 +14,7 @@ import { AlertService, DashboardService, FileUtiles, GlobalFiltersService, Style
 import { EdaPanel, EdaPanelType, InjectEdaPanel } from '@eda/models/model.index';
 import { DashboardSidebarComponent } from './dashboard-sidebar/dashboard-sidebar.component';
 import { GlobalFilterComponent } from '@eda/components/global-filter/global-filter.component'; 
-import { EdaBlankPanelComponent, IPanelAction } from '@eda/components/eda-panels/eda-blank-panel/eda-blank-panel.component';
+import { EdaBlankPanelComponent, IPanelAction, QUERY_MODE_LABELS } from '@eda/components/eda-panels/eda-blank-panel/eda-blank-panel.component';
 import { FormsModule } from '@angular/forms';
 import { FocusOnShowDirective } from '@eda/shared/directives/autofocus.directive';
 import { CommonModule } from '@angular/common';
@@ -184,7 +186,7 @@ export class DashboardPage implements OnInit {
               this.setPanelsQueryMode();
   
               setTimeout(() => {
-                  const treeQueryMode = this.edaPanels.some((panel) => panel.selectedQueryMode === 'EDA2');
+                  const treeQueryMode = this.edaPanels.some((panel) => panel.selectedQueryMode === 'TREE');
   
                   unsetPanels.forEach(panel => {
                       globalFilters.forEach(filter => {
@@ -805,7 +807,7 @@ export class DashboardPage implements OnInit {
   private checkFiltersVisibility(filters, tables) {
     if (filters && filters.length > 0) {
       filters.forEach((f) => {
-        // Check if the filter was created in EDA2 mode (tree mode)
+        // Check if the filter was created in TREE mode
         if (f.selectedColumn && f.selectedTable) {
           f.selectedColumn.visible = (
             (tables.filter((t) => t.table_name == f.selectedTable.table_name)[0]?.visible == true) &&
@@ -1019,28 +1021,18 @@ export class DashboardPage implements OnInit {
 
   /** Selects the mode in which queries will be allowed. EDA and Tree type queries cannot be mixed in the same report. */
   private setPanelsQueryMode(): void {
-    const treeQueryMode = this.panels.some((p) => p.content?.query?.query?.queryMode === 'EDA2');
+    const treeQueryMode = this.panels.some((p) => normalizeQueryMode(p.content?.query?.query?.queryMode) === 'TREE');
     const standardQueryMode = this.panels.some((p) => p.content?.query?.query?.queryMode === 'EDA');
 
     for (const panel of this.edaPanels) {
       if (treeQueryMode) {
-        panel.queryModes = [
-          { label: $localize`:@@PanelModeSelectorTree:Modo Árbol`, value: 'EDA2' },
-          { label: $localize`:@@PanelModeSelectorSQL:Modo SQL`, value: 'SQL' },
-        ];
-        panel.selectedQueryMode = 'EDA2';
+        panel.queryModes = QUERY_MODE.filter(v => v !== 'EDA').map(v => QUERY_MODE_LABELS.find(l => l.value === v));
+        panel.selectedQueryMode = 'TREE';
       } else if (standardQueryMode) {
-        panel.queryModes = [
-          { label: $localize`:@@PanelModeSelectorEDA:Modo EDA`, value: 'EDA' },
-          { label: $localize`:@@PanelModeSelectorSQL:Modo SQL`, value: 'SQL' },
-        ];
+        panel.queryModes = QUERY_MODE.filter(v => v !== 'TREE').map(v => QUERY_MODE_LABELS.find(l => l.value === v));
       }
       if (((!standardQueryMode && !treeQueryMode) || this.edaPanels.length === 1) && this.globalFilter.globalFilters.length === 0) {
-        panel.queryModes = [
-          { label: $localize`:@@PanelModeSelectorEDA:Modo EDA`, value: 'EDA' },
-          { label: $localize`:@@PanelModeSelectorSQL:Modo SQL`, value: 'SQL' },
-          { label: $localize`:@@PanelModeSelectorTree:Modo Árbol`, value: 'EDA2' }
-        ];
+        panel.queryModes = QUERY_MODE.map(v => QUERY_MODE_LABELS.find(l => l.value === v));
       }
     }
   }
