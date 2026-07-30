@@ -1034,12 +1034,6 @@ export class DashboardPage implements OnInit {
         allowedModes = allowedModes.filter(v => v !== 'TREE');
       }
 
-      // Brand-new panels (no saved mode yet) default to the first mode still
-      // allowed after the family exclusion above, instead of the raw QUERY_MODE[0].
-      if (!ownMode && allowedModes.length > 0) {
-        panel.selectedQueryMode = allowedModes[0];
-      }
-
       // Keep offering a panel's own already-saved mode even if it's no longer
       // configured in QUERY_MODE, so legacy panels stay visible/selectable
       // without letting new panels be created in a retired mode.
@@ -1053,8 +1047,13 @@ export class DashboardPage implements OnInit {
 
       panel.queryModes = allowedModes.map(v => QUERY_MODE_LABELS.find(l => l.value === v));
 
-      if (treeQueryMode) {
-        panel.selectedQueryMode = 'TREE';
+      // Only correct the live selection when it is no longer a valid option
+      // (e.g. another panel just locked the report into the TREE/EDA family).
+      // Never overwrite a mode the user just picked in the dropdown while it
+      // is still allowed - doing so unconditionally used to snap SQL/EDA
+      // selections back to TREE right after the dropdown change was made.
+      if (allowedModes.length > 0 && !allowedModes.includes(panel.selectedQueryMode)) {
+        panel.selectedQueryMode = allowedModes[0];
       }
     }
   }
