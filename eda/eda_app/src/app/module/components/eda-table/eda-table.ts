@@ -13,6 +13,7 @@ import { EventEmitter } from '@angular/core';
 import { EdaColumnChart } from './eda-columns/eda-column-chart';
 import { ToastModule } from 'primeng/toast';
 import { values } from 'd3';
+import { USE_EDA_TABLE_TOTALS_LOGIC } from '@eda/configs/customizable/customizable_default';
 
 interface PivotTableSerieParams {
     mainCol: any, // Main dynamic column
@@ -511,6 +512,14 @@ export class EdaTable {
                     const pct = (!Number.isNaN(value) && !Number.isNaN(total) && total !== 0)
                         ? ((value / total) * 100).toFixed(2) + '%' : ' ~ ';
                     this.partialTotalsRow.push({ data: pct, style: "right", class: "sub-total-row", border: '', type: col.type });
+                } else if (!USE_EDA_TABLE_TOTALS_LOGIC) {
+                    // SDA logic: sum each row's own % value for this page/group instead of recomputing the ratio, capped at 100%
+                    const lastValue = Math.min(offset + this.initRows, this._value.length);
+                    const percentageSum = this._value.slice(offset, lastValue).reduce((sum, row) => {
+                        const val = parseFloat(String(row[col.field]).replace('%', ''));
+                        return sum + (isNaN(val) ? 0 : val);
+                    }, 0);
+                    this.partialTotalsRow.push({ data: Math.min(100, percentageSum).toFixed(2) + '%', style: "right", class: "sub-total-row", border: '', type: col.type });
                 } else {
                     const globalSum = this._value.reduce((acc, row) => acc + (row[numericField] === '' ? 0 : parseFloat(row[numericField]) || 0), 0);
                     const pageSum = partialRow[numericField] || 0;
@@ -551,33 +560,74 @@ export class EdaTable {
         const keys = this.cols.map(col => col.field);
 
 
-        for (let i = 0; i < values.length; i++) {
-            for (let j = 0; j < keys.length; j++) {
-                if (i < values.length) {
-                    const currentCol = this.cols.filter(col => col.field === keys[j])[0];
-                    if (currentCol.type === "EdaColumnNumber") {
+        if (USE_EDA_TABLE_TOTALS_LOGIC) {
+            // EDA (current) logic: rounds on every partial sum
+            for (let i = 0; i < values.length; i++) {
+                for (let j = 0; j < keys.length; j++) {
+                    if (i < values.length) {
+                        const currentCol = this.cols.filter(col => col.field === keys[j])[0];
+                        if (currentCol.type === "EdaColumnNumber") {
 
-                        let decimalplaces = 0;
-                        try{
-                            let c =  <EdaColumnNumber>currentCol;
-                            decimalplaces =  c.decimals;  /** done to adjust decimal places because 3.1+2.5 may give 5.600004 */
-                        }catch(e){
-                            console.log('error getting decimal places');
-                            console.log(e);
-                         }
+                            let decimalplaces = 0;
+                            try{
+                                let c =  <EdaColumnNumber>currentCol;
+                                decimalplaces =  c.decimals;  /** done to adjust decimal places because 3.1+2.5 may give 5.600004 */
+                            }catch(e){
+                                console.log('error getting decimal places');
+                                console.log(e);
+                             }
 
-                        if(values[i][keys[j]]===''){
-                            row[keys[j]] = parseFloat(row[keys[j]] ) + 0;
-                            row[keys[j]] = row[keys[j]].toFixed(decimalplaces );
+                            if(values[i][keys[j]]===''){
+                                row[keys[j]] = parseFloat(row[keys[j]] ) + 0;
+                                row[keys[j]] = row[keys[j]].toFixed(decimalplaces );
+                            }
+                            else {
+                                row[keys[j]] = parseFloat(row[keys[j]] ) + parseFloat(values[i][keys[j]]);
+                                row[keys[j]] = row[keys[j]].toFixed(decimalplaces );
+                            }
+
+                        } else {
+                            row[keys[j]] = NaN;
                         }
-                        else {
-                            row[keys[j]] = parseFloat(row[keys[j]] ) + parseFloat(values[i][keys[j]]);
-                            row[keys[j]] = row[keys[j]].toFixed(decimalplaces );
-                        }
-
-                    } else {
-                        row[keys[j]] = NaN;
                     }
+                }
+            }
+        } else {
+            // SDA logic: accumulate raw sums first, round once at the end to avoid compounding rounding errors (e.g. 3.1+2.5 giving 5.600004 and getting truncated mid-sum)
+            for (let i = 0; i < values.length; i++) {
+                for (let j = 0; j < keys.length; j++) {
+                    if (i < values.length) {
+                        const currentCol = this.cols.filter(col => col.field === keys[j])[0];
+                        if (currentCol.type === "EdaColumnNumber") {
+                            if (values[i][keys[j]] === '') {
+                                row[keys[j]] = parseFloat(row[keys[j]]) + 0;
+                            } else {
+                                row[keys[j]] = parseFloat(row[keys[j]]) + parseFloat(values[i][keys[j]]);
+                            }
+                        } else {
+                            row[keys[j]] = NaN;
+                        }
+                    }
+                }
+            }
+
+            // Apply rounding once after all rows are accumulated to avoid mid-sum rounding errors
+            for (let j = 0; j < keys.length; j++) {
+                const currentCol = this.cols.filter(col => col.field === keys[j])[0];
+                if (currentCol.type === "EdaColumnNumber") {
+                    let decimalplaces: number = (currentCol as any).decimals;
+                    // If decimals is not a valid positive integer, detect from actual data values
+                    if (!Number.isInteger(decimalplaces) || decimalplaces <= 0) {
+                        decimalplaces = 0;
+                        for (let i = 0; i < values.length; i++) {
+                            const strVal = String(values[i][keys[j]]);
+                            const dotIndex = strVal.indexOf('.');
+                            if (dotIndex !== -1) {
+                                decimalplaces = Math.max(decimalplaces, strVal.length - dotIndex - 1);
+                            }
+                        }
+                    }
+                    row[keys[j]] = parseFloat(row[keys[j]]).toFixed(decimalplaces);
                 }
             }
         }
@@ -605,7 +655,9 @@ export class EdaTable {
                         ? ((value / total) * 100).toFixed(2) + '%' : ' ~ ';
                     this.totalsRow.push({ data: pct, style: "right", class: "total-row", border: '', type: col.type });
                 } else {
-                    this.totalsRow.push({ data: "100.00%", style: "right", class: "total-row", border: '', type: col.type });
+                    // EDA (current) logic: "100.00%" | SDA logic: "100%" (grand total / grand total by definition, avoids rounding errors)
+                    const total = USE_EDA_TABLE_TOTALS_LOGIC ? "100.00%" : "100%";
+                    this.totalsRow.push({ data: total, style: "right", class: "total-row", border: '', type: col.type });
                 }
             } else {
                 if (firstNonNumericRow) {
