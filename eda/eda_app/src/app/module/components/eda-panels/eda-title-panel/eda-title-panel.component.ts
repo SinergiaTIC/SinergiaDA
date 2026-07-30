@@ -115,6 +115,7 @@ export class EdaTitlePanelComponent implements OnInit {
                     item.icon = 'pi pi-lock';
                 }
                 this.inject.gridsterOptions?.api?.optionsChanged();
+                this.dashboardService.setNotSaved(true);
             }
         });
         return item;
