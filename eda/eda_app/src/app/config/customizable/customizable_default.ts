@@ -194,6 +194,7 @@ export const DEFAULT_FONT_COLOR: string = '#000000'
 /** Table header background color (header: high opacity, banding: low opacity) */
 export const DEFAULT_TABLE_HEADER_COLOR: string = '#249daa';
 export const DEFAULT_TABLE_BANDING_COLOR: string = '#31bece'; // Same color as the header but with reduced opacity for row banding
+export const DEFAULT_TABLE_TOTAL_COLOR: string = '#5ba38b8c'; // Fixed background for the "row totals" column 
 export const DEFAULT_FONT_FAMILY: string = 'Montserrat';  /* THIS MUST BE SET ALSO IN  \eda_app\src\assets\sass\css\custom.css */
 export const DEFAULT_FONT_SIZE: number = 0;
 export const DEFAULT_TITLE_ALIGN: string = 'flex-start';
