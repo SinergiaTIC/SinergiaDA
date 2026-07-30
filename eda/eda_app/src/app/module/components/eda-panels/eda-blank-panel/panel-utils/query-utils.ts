@@ -161,6 +161,38 @@ export const QueryUtils = {
       }
     }
 
+    /** When advanced (AND/OR) filters are configured, filters/global filters added afterwards
+     * (e.g. from the global filter bar) are not part of the saved tree yet. Append them here
+     * as top-level AND conditions so running the query from outside the panel picks them up,
+     * mirroring EdaFilterAndOrComponent.addMissingFilters() which only runs when the dialog opens. */
+    if (ebp.sortedFilters.length !== 0) {
+      const existingIds = new Set(ebp.sortedFilters.map((sf: any) => sf.filter_id));
+
+      const missing = [
+        ...ebp.selectedFilters.filter((sf: any) => sf.filterBeforeGrouping !== false),
+        ...ebp.globalFilters.filter((gf: any) => gf.filterBeforeGrouping !== false),
+      ].filter((f: any) => !existingIds.has(f.filter_id));
+
+      if (missing.length > 0) {
+        const maxY = Math.max(...ebp.sortedFilters.map((sf: any) => sf.y)) + 1;
+
+        missing.forEach((f: any, i: number) => {
+          ebp.sortedFilters.push({
+            cols: 3, rows: 1, y: maxY + i, x: 0,
+            filter_table: f.filter_table,
+            filter_column: f.filter_column,
+            filter_type: f.filter_type,
+            filter_column_type: f.filter_column_type,
+            filter_elements: f.filter_elements,
+            filter_codes: f.filter_codes,
+            filter_id: f.filter_id,
+            isGlobal: f.isGlobal,
+            value: 'and',
+          });
+        });
+      }
+    }
+
     /** Handle duplicate columns. If two columns have the same name add suffix _1, _2, _3.... etc */
     let dup = [];
     let cont = 0;
