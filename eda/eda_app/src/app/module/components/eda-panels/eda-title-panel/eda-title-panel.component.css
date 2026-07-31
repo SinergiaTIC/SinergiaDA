@@ -11,6 +11,26 @@
   color: #13427d !important;
 }
 
+/* Optimal use of vertical space, compact line height for scaled titles */
+.eda-title-panel {
+  width: 100%;
+  line-height: 1.2;
+}
+
+.eda-title-panel p,
+.eda-title-panel h1,
+.eda-title-panel h2,
+.eda-title-panel div {
+  margin: 0;
+  padding: 0;
+}
+
+.eda-title-panel img {
+  max-height: 100%;
+  max-width: 100%;
+  object-fit: contain;
+}
+
 
 
 

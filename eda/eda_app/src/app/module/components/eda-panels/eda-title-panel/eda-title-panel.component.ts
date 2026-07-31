@@ -8,9 +8,10 @@ import {SafeUrlPipe} from './urlSanitizer.pipe'
 import * as _ from 'lodash';
 import { environment } from 'environments/environment';
 import { EdaContextMenuComponent } from '@eda/shared/components/shared-components.index';
-import { FormsModule } from '@angular/forms'; 
+import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { TitleDialogComponent } from './edit-title/quill-editor.component';
+import { FileUtiles } from '@eda/services/service.index';
 @Component({
     standalone: true,
     selector: 'eda-title-panel',
@@ -25,6 +26,7 @@ export class EdaTitlePanelComponent implements OnInit {
     @Input() panel: EdaTitlePanel;
     @Input() inject: InjectEdaPanel;
     @Output() remove: EventEmitter<any> = new EventEmitter();
+    @Output() duplicate: EventEmitter<any> = new EventEmitter();
 
     titleClick: boolean = false;
     contextMenu: EdaContextMenu;
@@ -36,12 +38,49 @@ export class EdaTitlePanelComponent implements OnInit {
     public urlPipe : SafeUrlPipe
 
 
-    constructor(public sanitized: DomSanitizer, public dashboardService : DashboardService){}
-    
+    constructor(public sanitized: DomSanitizer, public dashboardService : DashboardService, private fileUtiles: FileUtiles){}
+
 
     ngOnInit(): void {
         this.initContextMenu()
         this.setEditMode();
+    }
+
+    // Style for the title content wrapper: applies the selected vertical alignment
+    getTitleStyle(): any {
+        const align = this.panel.verticalAlign || 'center';
+        let alignItems = 'center';
+        if (align === 'top') alignItems = 'flex-start';
+        else if (align === 'bottom') alignItems = 'flex-end';
+
+        return {
+            'display': 'flex',
+            'align-items': alignItems
+        };
+    }
+
+    // Style for the panel wrapper: border/background according to panel config
+    getPanelStyle(): any {
+        const showBorder = this.panel.showBorder !== false; // default true
+        const borderColor = this.panel.borderColor || '#d7dde6';
+        const backgroundTransparent = this.panel.backgroundTransparent;
+
+        if (!showBorder && backgroundTransparent) {
+            return {
+                'border': 'none',
+                'border-radius': '0',
+                'box-shadow': 'none',
+                'background': 'transparent',
+                'padding': '0'
+            };
+        }
+
+        return {
+            'border': showBorder ? `1px solid ${borderColor}` : 'none',
+            'border-radius': showBorder ? '0.5rem' : '0',
+            'box-shadow': 'none',
+            'background': backgroundTransparent ? 'transparent' : (this.panel.backgroundColor || undefined)
+        };
     }
 
     public setTitle(): void {
@@ -65,23 +104,18 @@ export class EdaTitlePanelComponent implements OnInit {
             contextMenuItems: [
                 new EdaContextMenuItem({
                     label: $localize`:@@panelOptions2:Editar opciones del gráfico`,
-                    icon: 'mdi mdi-wrench', 
+                    icon: 'mdi mdi-wrench',
                     command: () => {
-                        
                         this.contextMenu.hideContextMenu();
-
-                        this.editTittleController = new EdaDialogController({
-                            params: { title: this.panel.title },
-                            close: (event, response) => {
-                                if(!_.isEqual(event, EdaDialogCloseEvent.NONE)){
-                                    this.panel.title = response.title;
-                                    this.setPanelSize()
-                                    this.dashboardService.setNotSaved(true);
-                                }
-                                this.editTittleController = null;
-                                // this.setPanelSize()
-                            }
-                          });
+                        this.openEditDialog();
+                    }
+                }),
+                new EdaContextMenuItem({
+                    label: $localize`:@@duplicatePanel:Duplicar panel`,
+                    icon: 'fa fa-copy',
+                    command: () => {
+                        this.contextMenu.hideContextMenu();
+                        this.duplicatePanel();
                     }
                 }),
                 this._buildToggleLockItem(),
@@ -95,6 +129,39 @@ export class EdaTitlePanelComponent implements OnInit {
                 })
             ]
         });
+    }
+
+    public openEditDialog(): void {
+        this.editTittleController = new EdaDialogController({
+            params: {
+                title: this.panel.title,
+                backgroundTransparent: this.panel.backgroundTransparent,
+                verticalAlign: this.panel.verticalAlign,
+                borderColor: this.panel.borderColor,
+                showBorder: this.panel.showBorder,
+                backgroundColor: this.panel.backgroundColor
+            },
+            close: (event, response) => {
+                if(!_.isEqual(event, EdaDialogCloseEvent.NONE)){
+                    this.panel.title = response.title;
+                    this.panel.backgroundTransparent = response.backgroundTransparent;
+                    this.panel.verticalAlign = response.verticalAlign || 'center';
+                    this.panel.borderColor = response.borderColor || '#d7dde6';
+                    this.panel.showBorder = response.showBorder !== false;
+                    this.panel.backgroundColor = response.backgroundColor || '#ffffff';
+                    this.setPanelSize()
+                    this.dashboardService.setNotSaved(true);
+                }
+                this.editTittleController = null;
+            }
+          });
+    }
+
+    public duplicatePanel(): void {
+        const duplicatedPanel = _.cloneDeep(this.panel, true);
+        duplicatedPanel.id = this.fileUtiles.generateUUID();
+        duplicatedPanel.y = duplicatedPanel.y + 1;
+        this.duplicate.emit(duplicatedPanel);
     }
 
     private _buildToggleLockItem(): EdaContextMenuItem {

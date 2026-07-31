@@ -21,6 +21,13 @@
   overflow: auto; /* (Optional) Adds scroll if the content is too large */
 }
 
+/* Transparent background for text panels (type=1) configured without background/border */
+.gridster-item.background-transparent {
+  background-color: transparent !important;
+  box-shadow: none !important;
+  transition: none !important;
+}
+
 
 @media (max-width: 640px) {
   /* Gridster collapses its own height; the wrapper div controls the scroll */
