@@ -31,7 +31,7 @@ export class GetSdaInfoController {
 
     // SinergiaDA version, stamped at deploy time.
     try {
-      const versions = require('../../../../SdaVersion.js');
+      const versions = require('./SdaVersion.js');
       info.sinergiaDaVersion = versions.SdaVersion;
     } catch (error) {
       console.error('[getSdaInfo] Could not read SdaVersion.js', error);
