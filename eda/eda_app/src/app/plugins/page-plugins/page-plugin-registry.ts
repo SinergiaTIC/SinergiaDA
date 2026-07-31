@@ -4,6 +4,11 @@
 
 export const PLUGIN_ROUTES = [
     {
+        path: 'about',
+        loadComponent: () => import('./about-sda/about.component').then(m => m.AboutSdaComponent),
+        data: { label: 'Acerca de' , menuIcon: 'info-circle' , menuSection: 'main' },
+    },
+    {
         path: 'home',
         loadComponent: () => import('./home-sda/home.component').then(m => m.HomeSdaComponent),
         data: { label: 'Home' , menuIcon: 'home' , menuSection: 'main' },
