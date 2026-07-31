@@ -6692,6 +6692,65 @@ Po skonfigurowaniu możesz go wywołać w dowolnym momencie za pomocą przycisku
         <source>Fuente de datos</source>
         <target>Źródło danych</target>
       </trans-unit>
+<trans-unit id="duplicatePanel">
+<source>Duplicar panel</source>
+<target>Duplikuj panel</target>
+</trans-unit>
+
+<trans-unit id="PanelOptions">
+<source>PANEL OPTIONS</source>
+<target>OPCJE PANELU</target>
+</trans-unit>
+
+<trans-unit id="titlePanelOptions">
+<source>Opciones del panel</source>
+<target>Opcje panelu</target>
+</trans-unit>
+
+<trans-unit id="titlePanelAppearance">
+<source>Apariencia</source>
+<target>Wygląd</target>
+</trans-unit>
+
+<trans-unit id="titlePanelShowBg">
+<source>Mostrar fondo del panel</source>
+<target>Pokaż tło panelu</target>
+</trans-unit>
+
+<trans-unit id="titlePanelBgColor">
+<source>Color de fondo</source>
+<target>Kolor tła</target>
+</trans-unit>
+
+<trans-unit id="titlePanelShowBorder">
+<source>Mostrar borde</source>
+<target>Pokaż obramowanie</target>
+</trans-unit>
+
+<trans-unit id="titlePanelBorderColor">
+<source>Color del borde</source>
+<target>Kolor obramowania</target>
+</trans-unit>
+
+<trans-unit id="titlePanelVerticalAlign">
+<source>Alineación vertical</source>
+<target>Wyrównanie pionowe</target>
+</trans-unit>
+
+<trans-unit id="titlePanelAlignTop">
+<source>Arriba</source>
+<target>Góra</target>
+</trans-unit>
+
+<trans-unit id="titlePanelAlignCenter">
+<source>Centro</source>
+<target>Środek</target>
+</trans-unit>
+
+<trans-unit id="titlePanelAlignBottom">
+<source>Abajo</source>
+<target>Dół</target>
+</trans-unit>
 </body>
 </file>
 </xliff>

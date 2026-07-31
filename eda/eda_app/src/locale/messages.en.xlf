@@ -6752,6 +6752,66 @@ OR<ph id="5"/>
   <source>Fuente de datos</source>
   <target>Data source</target>
 </trans-unit>
+
+<trans-unit id="duplicatePanel">
+<source>Duplicar panel</source>
+<target>Duplicate panel</target>
+</trans-unit>
+
+<trans-unit id="PanelOptions">
+<source>PANEL OPTIONS</source>
+<target>PANEL OPTIONS</target>
+</trans-unit>
+
+<trans-unit id="titlePanelOptions">
+<source>Opciones del panel</source>
+<target>Panel options</target>
+</trans-unit>
+
+<trans-unit id="titlePanelAppearance">
+<source>Apariencia</source>
+<target>Appearance</target>
+</trans-unit>
+
+<trans-unit id="titlePanelShowBg">
+<source>Mostrar fondo del panel</source>
+<target>Show panel background</target>
+</trans-unit>
+
+<trans-unit id="titlePanelBgColor">
+<source>Color de fondo</source>
+<target>Background color</target>
+</trans-unit>
+
+<trans-unit id="titlePanelShowBorder">
+<source>Mostrar borde</source>
+<target>Show border</target>
+</trans-unit>
+
+<trans-unit id="titlePanelBorderColor">
+<source>Color del borde</source>
+<target>Border color</target>
+</trans-unit>
+
+<trans-unit id="titlePanelVerticalAlign">
+<source>Alineación vertical</source>
+<target>Vertical alignment</target>
+</trans-unit>
+
+<trans-unit id="titlePanelAlignTop">
+<source>Arriba</source>
+<target>Top</target>
+</trans-unit>
+
+<trans-unit id="titlePanelAlignCenter">
+<source>Centro</source>
+<target>Middle</target>
+</trans-unit>
+
+<trans-unit id="titlePanelAlignBottom">
+<source>Abajo</source>
+<target>Bottom</target>
+</trans-unit>
 </body>
 </file>
 </xliff>

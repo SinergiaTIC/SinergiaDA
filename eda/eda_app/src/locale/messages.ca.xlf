@@ -7059,6 +7059,54 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
         <source>Fuente de datos</source>
         <target>Font de dades</target>
       </trans-unit>
+      <trans-unit id="duplicatePanel">
+        <source>Duplicar panel</source>
+        <target>Duplica el panell</target>
+      </trans-unit>
+      <trans-unit id="PanelOptions">
+        <source>PANEL OPTIONS</source>
+        <target>OPCIONS DEL PANELL</target>
+      </trans-unit>
+      <trans-unit id="titlePanelOptions">
+        <source>Opciones del panel</source>
+        <target>Opcions del panell</target>
+      </trans-unit>
+      <trans-unit id="titlePanelAppearance">
+        <source>Apariencia</source>
+        <target>Aparença</target>
+      </trans-unit>
+      <trans-unit id="titlePanelShowBg">
+        <source>Mostrar fondo del panel</source>
+        <target>Mostra el fons del panell</target>
+      </trans-unit>
+      <trans-unit id="titlePanelBgColor">
+        <source>Color de fondo</source>
+        <target>Color del fons</target>
+      </trans-unit>
+      <trans-unit id="titlePanelShowBorder">
+        <source>Mostrar borde</source>
+        <target>Mostra la vora</target>
+      </trans-unit>
+      <trans-unit id="titlePanelBorderColor">
+        <source>Color del borde</source>
+        <target>Color de la vora</target>
+      </trans-unit>
+      <trans-unit id="titlePanelVerticalAlign">
+        <source>Alineación vertical</source>
+        <target>Alineació vertical</target>
+      </trans-unit>
+      <trans-unit id="titlePanelAlignTop">
+        <source>Arriba</source>
+        <target>A dalt</target>
+      </trans-unit>
+      <trans-unit id="titlePanelAlignCenter">
+        <source>Centro</source>
+        <target>Al centre</target>
+      </trans-unit>
+      <trans-unit id="titlePanelAlignBottom">
+        <source>Abajo</source>
+        <target>A baix</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>

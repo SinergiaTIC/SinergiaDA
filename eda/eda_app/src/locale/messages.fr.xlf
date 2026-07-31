@@ -7027,6 +7027,54 @@ Une fois configurée, vous pouvez l'activer à tout moment à partir du bouton.<
         <source>Fuente de datos</source>
         <target>Source de données</target>
       </trans-unit>
+      <trans-unit id="duplicatePanel">
+        <source>Duplicar panel</source>
+        <target>Dupliquer le panneau</target>
+      </trans-unit>
+      <trans-unit id="PanelOptions">
+        <source>PANEL OPTIONS</source>
+        <target>OPTIONS DU PANNEAU</target>
+      </trans-unit>
+      <trans-unit id="titlePanelOptions">
+        <source>Opciones del panel</source>
+        <target>Options du panneau</target>
+      </trans-unit>
+      <trans-unit id="titlePanelAppearance">
+        <source>Apariencia</source>
+        <target>Apparence</target>
+      </trans-unit>
+      <trans-unit id="titlePanelShowBg">
+        <source>Mostrar fondo del panel</source>
+        <target>Afficher le fond du panneau</target>
+      </trans-unit>
+      <trans-unit id="titlePanelBgColor">
+        <source>Color de fondo</source>
+        <target>Couleur de fond</target>
+      </trans-unit>
+      <trans-unit id="titlePanelShowBorder">
+        <source>Mostrar borde</source>
+        <target>Afficher la bordure</target>
+      </trans-unit>
+      <trans-unit id="titlePanelBorderColor">
+        <source>Color del borde</source>
+        <target>Couleur de la bordure</target>
+      </trans-unit>
+      <trans-unit id="titlePanelVerticalAlign">
+        <source>Alineación vertical</source>
+        <target>Alignement vertical</target>
+      </trans-unit>
+      <trans-unit id="titlePanelAlignTop">
+        <source>Arriba</source>
+        <target>Haut</target>
+      </trans-unit>
+      <trans-unit id="titlePanelAlignCenter">
+        <source>Centro</source>
+        <target>Milieu</target>
+      </trans-unit>
+      <trans-unit id="titlePanelAlignBottom">
+        <source>Abajo</source>
+        <target>Bas</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>
