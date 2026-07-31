@@ -148,6 +148,9 @@ export class DashboardPage implements OnInit {
     id: string
   };
 
+  public hoveredFilterPanelIds: string[] = [];
+  public isFilterHoverActive: boolean = false;
+
   public urls: any[] = [];
   public sendViaMailConfig: any = { enabled: false};
 

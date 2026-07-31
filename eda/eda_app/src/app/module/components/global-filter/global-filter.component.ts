@@ -74,6 +74,15 @@ export class GlobalFilterComponent implements OnInit {
     public filtrar: string = $localize`:@@filtrarH4:Filtrar`;
     public resumen: string = $localize`:@@filterSummary:Resumen de filtros`;
     public selectedItemsLabel: string = $localize`:@@globalFilterSelectedItemsLabel:elementos seleccionados`;
+
+    public filterHoverTooltipHtml: string =
+        `<span class="tooltip-green">${$localize`:@@filterHoverGreen:Verde`}</span>: ${$localize`:@@filterHoverAffected:Paneles afectados por este filtro`}<br>` +
+        `<span class="tooltip-red">${$localize`:@@filterHoverRed:Rojo`}</span>: ${$localize`:@@filterHoverNotAffected:Paneles no afectados por este filtro`}`;
+
+    // Wait 2s before activating the filter hover effect
+    private filterHoverTimeout: any;
+    public filterHoverActiveId: string | null = null;
+
     private tooltipHideTimeout: any;
     // Flag to view last panel
     private lastPanel: any;
@@ -1091,6 +1100,29 @@ export class GlobalFilterComponent implements OnInit {
             op?.hide();
             this.tooltipHideTimeout = null;
         }, 150);
+    }
+
+    public onFilterHover(filter: any): void {
+        if (this.filterHoverTimeout) {
+            clearTimeout(this.filterHoverTimeout);
+        }
+        this.filterHoverActiveId = null;
+        this.filterHoverTimeout = setTimeout(() => {
+            this.dashboard.hoveredFilterPanelIds = filter.panelList || [];
+            this.dashboard.isFilterHoverActive = true;
+            this.filterHoverActiveId = filter.id;
+        }, 2000);
+    }
+
+    // Clears panel highlight immediately when mouse leaves
+    public onFilterLeave(): void {
+        if (this.filterHoverTimeout) {
+            clearTimeout(this.filterHoverTimeout);
+            this.filterHoverTimeout = null;
+        }
+        this.dashboard.hoveredFilterPanelIds = [];
+        this.dashboard.isFilterHoverActive = false;
+        this.filterHoverActiveId = null;
     }
 
     get filterButtonPosition(): string {
