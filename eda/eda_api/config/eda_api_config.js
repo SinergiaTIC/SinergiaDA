@@ -17,6 +17,6 @@ module.exports = {
     error_log_file: "XXXXXXXXXXXXXXXXXX", // server error log
     custom_behaviour:{
       ALLOW_NON_ADMIN_MANAGE_PUBLIC_REPORTS: false, // true -> Non-admin users can manage "open" dashboards.
-      USE_FLAT_PERMISSIONS: false // true -> QueryBuilderService.builder() getPermissions (EDA). false -> with getTreePermissions (SDA).
+      USE_RECURSIVE_PERMISSIONS: false // true -> QueryBuilderService.builder() getPermissions (EDA). false -> with getTreePermissions (SDA).
     }
   }
