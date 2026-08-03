@@ -124,12 +124,12 @@
   white-space: nowrap;
 }
 
-.tooltip-green {
+::ng-deep .tooltip-green {
   color: #4CAF50;
   font-weight: 600;
 }
 
-.tooltip-red {
+::ng-deep .tooltip-red {
   color: #bd1913;
   font-weight: 600;
 }
