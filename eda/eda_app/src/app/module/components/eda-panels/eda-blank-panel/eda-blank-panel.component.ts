@@ -152,6 +152,8 @@ export class EdaBlankPanelComponent implements OnInit {
     @Output() duplicate: EventEmitter<any> = new EventEmitter();
     @Output() action: EventEmitter<IPanelAction> = new EventEmitter<IPanelAction>();
     @Output() panelConfigChanged: EventEmitter<any> = new EventEmitter<IPanelAction>();
+    @Output() rootTableFirstSet: EventEmitter<string> = new EventEmitter<string>();
+    @Output() rootTableCleared: EventEmitter<void> = new EventEmitter<void>();
 
     /** Properties injected into the dialog with chart-specific properties. */
     public configController: EdaDialogController;
@@ -2069,6 +2071,12 @@ public tableNodeExpand(event: any): void {
     public moveItem = (column: any) => {
         PanelInteractionUtils.moveItem(this, column);
 
+        // First column of a new panel (query never executed): let the dashboard try to
+        // inherit an existing TREE global filter's path for this rootTable.
+        if (this.selectedQueryMode === 'TREE' && this.currentQuery.length === 1 && _.isNil(this.panel.content) && this.rootTable) {
+            this.rootTableFirstSet.emit(this.rootTable.table_name);
+        }
+
         const sortingMatch = this.resultSortingColumns.find(
             c => c.column_name === column.column_name && c.table_id === column.table_id
         );
@@ -2100,6 +2108,13 @@ public tableNodeExpand(event: any): void {
 
         if (!isTreeMode || isNotRootColumn || rootColumnElements > 1 || currentQueryLength === 1) {
             const columnHadFilter = this.selectedFilters.some((sf: any) => sf.filter_column === c.column_name);
+
+            // Last column of a new panel (query never executed): reset global filter config before utils runs.
+            if (currentQueryLength === 1 && _.isNil(this.panel.content)) {
+                this.rootTableCleared.emit();
+                this.globalFilters = [];
+            }
+
             const removed = PanelInteractionUtils.removeColumn(this, c, list);
             if (removed !== false) {
                 // We check whether a field being removed had a filter in selectedFilters (this is verified before removeColumn deletes it).

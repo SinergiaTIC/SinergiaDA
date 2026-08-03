@@ -62,6 +62,7 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
     public filteredPanels: any[] = [];
     public loading: boolean = true;
     public multipleSelection: boolean = true;
+    private _pathBackup: { [panelId: string]: any } = {};
 
     @Output() close: EventEmitter<any> = new EventEmitter<any>();
     @Output() globalFilterChange: EventEmitter<any> = new EventEmitter<any>();
@@ -339,9 +340,18 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
             this.filteredPanels = this.allPanels.filter((p: any) => p.avaliable && p.active);
 
             if (panel.active) {
+                if (this._pathBackup[panel.id]) {
+                    this.globalFilter.pathList[panel.id] = _.cloneDeep(this._pathBackup[panel.id]);
+                    delete this._pathBackup[panel.id];
+                }
+                if (this.globalFilter.pathList[panel.id] && !this.isEmpty(this.globalFilter.pathList[panel.id].selectedTableNodes)) {
+                    if (!this.globalFilter.panelList.includes(panel.id)) {
+                        this.globalFilter.panelList.push(panel.id);
+                    }
+                }
                 this.initTablesForFilter();
                 this.findPanelPathTables();
-            } 
+            }
             else this.clearFilterPaths(panel);
         }
 
@@ -452,7 +462,14 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
         if (this.globalFilter.queryMode !== 'TREE') return;
 
         for (const panel of this.filteredPanels) {
+            if (panel.content?.query?.query?.queryMode === 'SQL') continue;
+
             panel.content.globalFilterPaths = this.globalFilterService.loadTablePaths(this.modelTables, panel);
+
+            if (this.isPathStaleForPanel(panel)) {
+                this.globalFilter.pathList[panel.id] = { selectedTableNodes: {}, path: [] };
+                this.globalFilter.panelList = this.globalFilter.panelList.filter((id: string) => id !== panel.id);
+            }
 
             if (this.globalFilter.pathList[panel.id] && this.isEmpty(this.globalFilter.pathList[panel.id].selectedTableNodes)) {
                 const panelQuery = panel.content.query.query;
@@ -466,6 +483,141 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
                     this.globalFilter.pathList[panel.id].selectedTableNodes = node;
 
                     if (!this.globalFilter.panelList.includes(panel.id)) this.globalFilter.panelList.push(panel.id);
+                } else {
+                    this.tryAutoFillSingleHop(panel);
+                    if (this.isEmpty(this.globalFilter.pathList[panel.id].selectedTableNodes)) {
+                        this.tryCopyPathFromSiblingPanel(panel);
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * A previously-saved path is stale when the panel's rootTable no longer matches
+     * the table the path was built from (e.g. the user changed the panel's root table
+     * after the global filter's path was set).
+     */
+    private isPathStaleForPanel(panel: any): boolean {
+        const pathEntry = this.globalFilter.pathList[panel.id];
+        if (!pathEntry || this.isEmpty(pathEntry.selectedTableNodes)) return false;
+
+        const currentRootTable = panel.content.query.query.rootTable;
+        if (!currentRootTable) return false;
+
+        const path: any[] = pathEntry.path || [];
+
+        if (path.length === 0) {
+            return pathEntry.selectedTableNodes?.table_id !== currentRootTable;
+        } else {
+            return path[0][0]?.split('.')[0] !== currentRootTable;
+        }
+    }
+
+    /**
+     * Auto-completes the path when the filtered table is a single relation hop away
+     * from the panel's root table, so the user doesn't have to configure it manually.
+     */
+    private tryAutoFillSingleHop(panel: any): void {
+        const filterTableName = this.globalFilter.selectedTable?.table_name;
+        const rootTableName = panel.content.query.query.rootTable;
+
+        if (!filterTableName || !rootTableName || filterTableName === rootTableName) return;
+
+        const rootTable = this.modelTables.find((t: any) => t.table_name === rootTableName);
+        if (!rootTable) return;
+
+        // Mirror onNodeExpand: exclude only bridge and autorelation (visible is not a filter in the tree).
+        const directRelations = (rootTable.relations || []).filter((rel: any) =>
+            !rel.bridge && !rel.autorelation && rel.target_table === filterTableName
+        );
+
+        // If multiple relations exist to the same table, use the first; user can override manually.
+        if (directRelations.length === 0) return;
+
+        const rel = directRelations[0];
+        const sourceJoin = `${rel.source_table || rootTableName}.${rel.source_column[0]}`;
+        const joinChildId = `${rel.target_table}.${rel.target_column[0]}`;
+        const child_id = `${joinChildId}.${rel.source_column[0]}`;
+        const joins: any[] = [[sourceJoin, joinChildId]];
+
+        const childLabel = rel.display_name?.default || `${rel.source_column[0]} - ${rel.target_table}`;
+
+        const syntheticNode = {
+            child_id,
+            type: 'child',
+            label: childLabel,
+            autorelation: false,
+            joins
+        };
+
+        this.globalFilter.pathList[panel.id].table_id = child_id;
+        this.globalFilter.pathList[panel.id].path = joins;
+        this.globalFilter.pathList[panel.id].selectedTableNodes = syntheticNode;
+
+        if (!this.globalFilter.panelList.includes(panel.id)) {
+            this.globalFilter.panelList.push(panel.id);
+        }
+    }
+
+    /**
+     * If another panel sharing the same root table already has a valid path configured,
+     * replicate it so the report stays consistent (e.g. after duplicating a panel).
+     */
+    private tryCopyPathFromSiblingPanel(panel: any): void {
+        const rootTableName = panel.content.query.query.rootTable;
+
+        const sibling = this.filteredPanels.find((p: any) => {
+            if (p.id === panel.id) return false;
+            if (p.content.query.query.rootTable !== rootTableName) return false;
+            const siblingPath = this.globalFilter.pathList[p.id];
+            return siblingPath && !this.isEmpty(siblingPath.selectedTableNodes);
+        });
+
+        if (!sibling) return;
+
+        const siblingPath = this.globalFilter.pathList[sibling.id];
+        this.globalFilter.pathList[panel.id].table_id = siblingPath.table_id;
+        this.globalFilter.pathList[panel.id].path = (siblingPath.path || []).map((j: any[]) => [...j]);
+        this.globalFilter.pathList[panel.id].selectedTableNodes = _.cloneDeep(siblingPath.selectedTableNodes);
+
+        if (!this.globalFilter.panelList.includes(panel.id)) {
+            this.globalFilter.panelList.push(panel.id);
+        }
+    }
+
+    /**
+     * Replicates a manually-selected path to other panels that share the same root table
+     * and don't have a path defined yet, to keep the report consistent.
+     */
+    private propagatePathToSimilarPanels(sourcePanelId: string, table_id: string, node: any): void {
+        const sourcePanel = this.filteredPanels.find((p: any) => p.id === sourcePanelId);
+        if (!sourcePanel) return;
+
+        const sourceRootTable = sourcePanel.content.query.query.rootTable;
+
+        const nodeSnapshot = {
+            child_id: node.child_id,
+            table_id: node.table_id,
+            type: node.type,
+            label: node.label,
+            autorelation: node.autorelation,
+            joins: (node.joins || []).map((j: any[]) => [...j])
+        };
+
+        for (const panel of this.filteredPanels) {
+            if (panel.id === sourcePanelId) continue;
+
+            const panelRootTable = panel.content.query.query.rootTable;
+            const panelPath = this.globalFilter.pathList[panel.id];
+
+            if (panelRootTable === sourceRootTable && panelPath && this.isEmpty(panelPath.selectedTableNodes)) {
+                panelPath.table_id = table_id;
+                panelPath.path = (node.joins || []).map((j: any[]) => [...j]);
+                panelPath.selectedTableNodes = { ...nodeSnapshot };
+
+                if (!this.globalFilter.panelList.includes(panel.id)) {
+                    this.globalFilter.panelList.push(panel.id);
                 }
             }
         }
@@ -500,6 +652,8 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
             if (!this.globalFilter.panelList.includes(panel.id)) {
                 this.globalFilter.panelList.push(panel.id);
             }
+
+            this.propagatePathToSimilarPanels(panel.id, table_id, node);
 
             // const existsPath = pathList.find((path: any) => path.panel_id == panel.id);
             // pathList.push({ panel_id: panel.id, path: node.joins || [] });
@@ -685,6 +839,10 @@ public async loadFilterAutoComplete(event: any, filtro: any) {
 
         if (clearPanel) {
             this.globalFilter.panelList = this.globalFilter.panelList.filter((p) => p !== clearPanel.id);
+            const current = this.globalFilter.pathList[clearPanel.id];
+            if (current && !this.isEmpty(current.selectedTableNodes)) {
+                this._pathBackup[clearPanel.id] = _.cloneDeep(current);
+            }
             this.globalFilter.pathList[clearPanel.id] = {
                 selectedTableNodes: {},
                 path: []
@@ -693,6 +851,7 @@ public async loadFilterAutoComplete(event: any, filtro: any) {
         } else {
             this.globalFilter.panelList = [];
             this.globalFilter.pathList = {};
+            this._pathBackup = {};
 
             for (const panel of this.allPanels) {
                 panel.content.globalFilterPaths = [];

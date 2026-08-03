@@ -200,8 +200,55 @@ export class DashboardPage implements OnInit {
   
               }, 0);
           });
-  
+
       }
+
+  /**
+   * When a brand-new (non-duplicated) TREE panel gets its root table set for the first time,
+   * replicate the path of an existing TREE global filter that already targets a sibling panel
+   * sharing that same root table, so the new panel is filtered immediately without having to
+   * reopen the global filter dialog.
+   */
+  public onNewPanelRootTableSet(rootTableName: string, panel: EdaPanel): void {
+      if (!rootTableName) return;
+      const newPanelComp = this.edaPanels.find(p => p.panel.id === panel.id);
+      if (!newPanelComp) return;
+
+      const globalFilters = this.globalFilter?.globalFilters?.filter((f: any) => f.isGlobal && f.queryMode === 'TREE' && f.pathList) || [];
+
+      globalFilters.forEach((filter: any) => {
+          if (!filter.panelList?.length) return;
+
+          // Find the first active panel in this filter that shares the same rootTable
+          const matchingPanelId = filter.panelList.find((pid: string) => {
+              const existing = this.edaPanels.find(p => p.panel.id === pid);
+              return existing?.rootTable?.table_name === rootTableName;
+          });
+
+          if (matchingPanelId && filter.pathList[matchingPanelId]) {
+              filter.pathList[panel.id] = { ...filter.pathList[matchingPanelId] };
+              filter.panelList.push(panel.id);
+              const formatted = this.globalFiltersService.formatFilter(filter);
+              newPanelComp.assertGlobalFilter(formatted);
+          }
+      });
+  }
+
+  /**
+   * When a TREE panel loses its root table (all columns removed), it can no longer be a valid
+   * target for any global filter path, so we drop it from panelList/pathList to keep the
+   * global filters consistent.
+   */
+  public onNewPanelRootTableCleared(panel: EdaPanel): void {
+      const globalFilters = this.globalFilter?.globalFilters?.filter((f: any) => f.isGlobal && f.queryMode === 'TREE') || [];
+
+      globalFilters.forEach((filter: any) => {
+          filter.panelList = filter.panelList?.filter((pid: string) => pid !== panel.id) || [];
+          if (filter.pathList?.[panel.id]) {
+              delete filter.pathList[panel.id];
+          }
+      });
+  }
 
   ngOnDestroy() {
     // Reset styles to defaults
