@@ -50,6 +50,7 @@
               @if (panel.type===0) {
                 <eda-blank-panel #edaPanel [dashboard]="this" [panel]="panel" [inject]="injectEdaPanel" [panelContent]="panelContent" [panelText]="panelTitle"
                   (remove)="onRemovePanel($event)" (action)="onPanelAction($event)" (duplicate)="onDuplicatePanel($event)"
+                  (rootTableFirstSet)="onNewPanelRootTableSet($event, panel)" (rootTableCleared)="onNewPanelRootTableCleared(panel)"
                   [availableChatGpt]="availableChatGpt">
                 </eda-blank-panel>
               }

@@ -966,10 +966,78 @@ export class DashboardPage implements OnInit {
     });
   }
 
-  public onDuplicatePanel(panel: any) {
+  public onDuplicatePanel(event: { panel: any, sourcePanelId: string }): void {
+    const { panel, sourcePanelId } = event;
+
+    if (this.globalFilter?.globalFilters) {
+      this.globalFilter.globalFilters
+        .filter((f: any) => f.isGlobal)
+        .forEach((filter: any) => {
+          if (filter.pathList && filter.pathList[sourcePanelId]) {
+            filter.pathList[panel.id] = _.cloneDeep(filter.pathList[sourcePanelId]);
+          }
+          if (filter.panelList.includes(sourcePanelId) && !filter.panelList.includes(panel.id)) {
+            filter.panelList.push(panel.id);
+          }
+        });
+    }
+
     this.panels.push(panel);
     this.dashboardService.setNotSaved(true);
     this.stylesProviderService.loadedPanels++;
+
+    const _dupSub = this.edaPanels.changes.subscribe(() => {
+      _dupSub.unsubscribe();
+      const newPanel = this.edaPanels.toArray().find(p => p.panel.id === panel.id);
+      if (newPanel && this.globalFilter?.globalFilters) {
+        const applicable = this.globalFilter.globalFilters.filter((f: any) => f.isGlobal && f.panelList.includes(panel.id));
+        applicable.forEach((filter: any) => {
+          newPanel.assertGlobalFilter(this.globalFiltersService.formatFilter(filter));
+        });
+        // By this point the panel's own ngOnInit (and its _isDuplicate query run) has
+        // already completed, so trigger the query run directly instead of relying on a
+        // flag nothing else re-checks.
+        if (applicable.length > 0) newPanel.runQueryFromDashboard(true);
+      }
+    });
+  }
+
+  /** When a brand-new (non-duplicated) panel gets its root table for the first time,
+   * auto-attach it to global filters that already apply to sibling panels sharing that root table. */
+  public onNewPanelRootTableSet(rootTableName: string, panel: EdaPanel): void {
+    if (!rootTableName) return;
+    const newPanelComp = this.edaPanels.find(p => p.panel.id === panel.id);
+    if (!newPanelComp) return;
+
+    const globalFilters = this.globalFilter?.globalFilters?.filter((f: any) => f.isGlobal && f.pathList) || [];
+
+    globalFilters.forEach((filter: any) => {
+      if (!filter.panelList?.length) return;
+
+      // Find the first active panel in this filter that has the same rootTable
+      const matchingPanelId = filter.panelList.find((pid: string) => {
+        const existing = this.edaPanels.find(p => p.panel.id === pid);
+        return existing?.rootTable?.table_name === rootTableName;
+      });
+
+      if (matchingPanelId && filter.pathList[matchingPanelId]) {
+        filter.pathList[panel.id] = { ...filter.pathList[matchingPanelId] };
+        filter.panelList.push(panel.id);
+        const formatted = this.globalFiltersService.formatFilter(filter);
+        newPanelComp.assertGlobalFilter(formatted);
+      }
+    });
+  }
+
+  public onNewPanelRootTableCleared(panel: EdaPanel): void {
+    const globalFilters = this.globalFilter?.globalFilters?.filter((f: any) => f.isGlobal) || [];
+
+    globalFilters.forEach((filter: any) => {
+      filter.panelList = filter.panelList?.filter((pid: string) => pid !== panel.id) || [];
+      if (filter.pathList?.[panel.id]) {
+        delete filter.pathList[panel.id];
+      }
+    });
   }
 
   async onGlobalFilter(data: any) {
