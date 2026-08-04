@@ -90,7 +90,6 @@ export class DashboardController {
       // 'private' por defecto — se incluye en la query para no perder dashboards antiguos sin ese campo.
       const dashboards = await DashboardController.findAllDashboardsWithMeta({
         user: req.user._id,
-        'config.active': { $ne: false },
         $or: [{ 'config.visible': 'private' }, { 'config.visible': null }, { 'config.visible': '' }]
       })
       const privateDashboards = []
@@ -152,7 +151,7 @@ export class DashboardController {
       }).exec();
 
 
-      const dashboards = await DashboardController.findAllDashboardsWithMeta({ group: { $in: userGroups.map(g => g._id) }, 'config.active': { $ne: false } });
+      const dashboards = await DashboardController.findAllDashboardsWithMeta({ group: { $in: userGroups.map(g => g._id) } });
       const groupDashboards = []
       for (let i = 0, n = dashboards.length; i < n; i += 1) {
         const dashboard = dashboards[i]
@@ -229,7 +228,7 @@ export class DashboardController {
       }
       // 'shared' es el valor legacy que normalizeVisibility traduce a 'open' — se incluye en la
       // query para no perder dashboards antiguos aún no migrados.
-      const dashboards = await DashboardController.findAllDashboardsWithMeta({ 'config.visible': { $in: ['open', 'shared'] }, 'config.active': { $ne: false } });
+      const dashboards = await DashboardController.findAllDashboardsWithMeta({ 'config.visible': { $in: ['open', 'shared'] } });
       const openDashboards = []
       for (const dashboard of dashboards) {
         // Normalize legacy visibility values
@@ -285,7 +284,7 @@ export class DashboardController {
     try {
       // 'public' es el valor legacy que normalizeVisibility traduce a 'common' — se incluye en la
       // query para no perder dashboards antiguos aún no migrados.
-      const dashboards = await DashboardController.findAllDashboardsWithMeta({ 'config.visible': { $in: ['common', 'public'] }, 'config.active': { $ne: false } })
+      const dashboards = await DashboardController.findAllDashboardsWithMeta({ 'config.visible': { $in: ['common', 'public'] } })
       const commonDashboards = []
       for (const dashboard of dashboards) {
         // Normalize legacy visibility values
@@ -333,13 +332,22 @@ export class DashboardController {
 
   
   /**
-   * Get dashboards metadata
+   * Get dashboards metadata.
+   * By default, dashboards with config.active === false are excluded.
+   * Pass includeInactive: true to include them (used by admin listing).
    * @param filter filter to apply
+   * @param options.includeInactive include inactive dashboards (default false)
    */
-    private static async findAllDashboardsWithMeta(filter: Record<string, any> = {}) {
+  private static async findAllDashboardsWithMeta(
+    filter: Record<string, any> = {},
+    options: { includeInactive?: boolean } = {}
+  ) {
+    if (!options.includeInactive) {
+      filter['config.active'] = { $ne: false };
+    }
     return Dashboard.find(
       filter,
-      'config.title config.visible config.tag config.onlyIcanEdit config.author config.createdAt config.modifiedAt config.description config.createdAt config.modifiedAt config.active config.ds user group'
+      'config.title config.visible config.tag config.onlyIcanEdit config.author config.createdAt config.modifiedAt config.description config.createdAt config.modifiedAt config.active config.ds user group config.external'
     ).populate('user', 'name').exec();
   }
 
@@ -420,8 +428,8 @@ export class DashboardController {
     try {
       //si no lleva filtro, pasamos directamente a recuperarlos todos
       const dashboards = JSON.stringify(filter) !== '{}' ?
-        await Dashboard.find({ $or: Object.entries(filter).map(([clave, valor]) => ({ [clave]: valor })) }, 'config.title config.visible config.tag config.onlyIcanEdit config.author config.createdAt config.modifiedAt config.description config.createdAt config.modifiedAt config.active config.ds user group config.external').populate('user', 'name').exec() :
-        await Dashboard.find({}, 'config.title config.visible config.tag config.onlyIcanEdit config.author config.createdAt config.modifiedAt config.description config.createdAt config.modifiedAt config.active config.ds user group config.external').populate('user', 'name').exec();
+        await DashboardController.findAllDashboardsWithMeta({ $or: Object.entries(filter).map(([clave, valor]) => ({ [clave]: valor })) }, { includeInactive: true }) :
+        await DashboardController.findAllDashboardsWithMeta({}, { includeInactive: true });
       const openDashboards = [];
       const privateDashboards = [];
       const groupDashboards = [];
