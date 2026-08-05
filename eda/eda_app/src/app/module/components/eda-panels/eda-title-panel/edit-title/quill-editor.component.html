@@ -29,12 +29,12 @@
 							<button class="ql-strike" [pTooltip]="tooltipStrike" tooltipPosition="bottom"></button>
 						</span>
 						<span class="ql-formats">
-							<span class="ql-color-tooltip-wrap" [pTooltip]="tooltipTextColor" tooltipPosition="bottom">
-								<select class="ql-color"></select>
-							</span>
-							<span class="ql-color-tooltip-wrap" [pTooltip]="tooltipTextBgColor" tooltipPosition="bottom">
-								<select class="ql-background"></select>
-							</span>
+							<button type="button" class="custom-color-btn" (click)="openColorOverlay($event, textColorOL)" [pTooltip]="tooltipTextColor" tooltipPosition="bottom">
+								<svg viewBox="0 0 18 18"><line class="ql-color-label ql-stroke ql-transparent" x1="3" x2="15" y1="15" y2="15"></line><polyline class="ql-stroke" points="5.5 11 9 3 12.5 11"></polyline><line class="ql-stroke" x1="11.63" x2="6.38" y1="9" y2="9"></line></svg>
+							</button>
+							<button type="button" class="custom-color-btn" (click)="openColorOverlay($event, textBgColorOL)" [pTooltip]="tooltipTextBgColor" tooltipPosition="bottom">
+								<svg viewBox="0 0 18 18"><g class="ql-fill ql-color-label"><polygon points="6 6.868 6 6 5 6 5 7 5.942 7 6 6.868"></polygon><rect height="1" width="1" x="4" y="4"></rect><polygon points="6.817 5 6 5 6 6 6.38 6 6.817 5"></polygon></g><polyline class="ql-stroke" points="5.5 13 9 5 12.5 13"></polyline><line class="ql-stroke" x1="11.63" x2="6.38" y1="11" y2="11"></line></svg>
+							</button>
 						</span>
 						<span class="ql-formats">
 							<button class="ql-script" value="sub" [pTooltip]="tooltipSub" tooltipPosition="bottom"></button>
@@ -154,4 +154,19 @@
 
 		</div>
 	</div>
+
+	<p-overlayPanel #textColorOL appendTo="body" styleClass="ql-color-overlay" (onShow)="onOverlayShow('textColor')" (onHide)="showTextColorPicker = false">
+		<div *ngIf="showTextColorPicker" class="ql-overlay-picker">
+			<p-colorPicker [(ngModel)]="customTextColor" (ngModelChange)="onTextColorLive($event)" inline="true" format="hex"></p-colorPicker>
+			<input type="text" pInputText [(ngModel)]="customTextColor" (keydown.enter)="onTextColorLive(customTextColor)" class="ql-hex-input-popup" placeholder="#000000" maxlength="7" />
+			<button type="button" pButton (click)="removeTextFormat('color'); textColorOL.hide()" [label]="labelClearColor" class="p-button-sm p-button-outlined p-button-secondary" style="width:100%; margin-top:4px;"></button>
+		</div>
+	</p-overlayPanel>
+	<p-overlayPanel #textBgColorOL appendTo="body" styleClass="ql-color-overlay" (onShow)="onOverlayShow('textBgColor')" (onHide)="showTextBgColorPicker = false">
+		<div *ngIf="showTextBgColorPicker" class="ql-overlay-picker">
+			<p-colorPicker [(ngModel)]="customTextBgColor" (ngModelChange)="onTextBgColorLive($event)" inline="true" format="hex"></p-colorPicker>
+			<input type="text" pInputText [(ngModel)]="customTextBgColor" (keydown.enter)="onTextBgColorLive(customTextBgColor)" class="ql-hex-input-popup" placeholder="#ffffff" maxlength="7" />
+			<button type="button" pButton (click)="removeTextFormat('background'); textBgColorOL.hide()" [label]="labelClearColor" class="p-button-sm p-button-outlined p-button-secondary" style="width:100%; margin-top:4px;"></button>
+		</div>
+	</p-overlayPanel>
 </eda-dialog2>

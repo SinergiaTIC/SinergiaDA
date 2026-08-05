@@ -11,6 +11,8 @@ import { ColorPickerModule } from 'primeng/colorpicker';
 import { InputSwitchModule } from 'primeng/inputswitch';
 import { InputTextModule } from 'primeng/inputtext';
 import { TooltipModule } from 'primeng/tooltip';
+import { OverlayPanel, OverlayPanelModule } from 'primeng/overlaypanel';
+import { ButtonModule } from 'primeng/button';
 import { VerticalAlign } from '@eda/models/dashboard-models/eda-title-panel';
 
 import { FormsModule } from '@angular/forms';
@@ -77,49 +79,57 @@ Quill.register(Size, true);
 			fill: var(--corporate-primary);
 		}
 
-		/* Wrapper so pTooltip still shows even though Quill replaces the <select> below it */
-		.ql-color-tooltip-wrap {
-			display: inline-block;
+		.custom-color-btn {
+			height: 24px;
+			width: 28px;
+			padding: 3px 5px;
+			border: none;
+			background: transparent;
+			cursor: pointer;
+			display: inline-flex;
+			align-items: center;
+			justify-content: center;
 			vertical-align: middle;
 		}
 
-		/* Modern restyle of Quill's native text-color / background-color swatch picker */
-		:host ::ng-deep .ql-color-picker .ql-picker-options,
-		:host ::ng-deep .ql-background .ql-picker-options {
-			border: 1px solid #e2e8f0;
-			border-radius: 0.5rem;
-			box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
-			padding: 8px;
-			width: auto;
-		}
-
-		:host ::ng-deep .ql-color-picker .ql-picker-item {
+		.custom-color-btn svg {
 			width: 18px;
 			height: 18px;
-			margin: 3px;
+		}
+
+		.custom-color-btn:hover .ql-stroke {
+			stroke: var(--corporate-primary);
+		}
+
+		.custom-color-btn:hover .ql-fill {
+			fill: var(--corporate-primary);
+		}
+
+		.ql-overlay-picker {
+			display: flex;
+			flex-direction: column;
+			gap: 8px;
+			align-items: center;
+			padding: 4px;
+		}
+
+		.ql-hex-input-popup {
+			width: 200px;
+			padding: 4px 8px;
+			font-size: 12px;
+			font-family: monospace;
+			border: 1px solid #d9e0ea;
 			border-radius: 4px;
-			border: 1px solid rgba(0, 0, 0, 0.08);
-			transition: transform 0.1s ease;
+			text-align: center;
 		}
 
-		:host ::ng-deep .ql-color-picker .ql-picker-item:hover,
-		:host ::ng-deep .ql-color-picker .ql-picker-item.ql-selected {
-			transform: scale(1.15);
-			border-color: var(--corporate-primary);
-		}
-
-		:host ::ng-deep .ql-color-picker .ql-picker-label,
-		:host ::ng-deep .ql-background .ql-picker-label {
-			border-radius: 4px;
-		}
-
-		:host ::ng-deep .ql-color-picker .ql-picker-label.ql-active,
-		:host ::ng-deep .ql-background .ql-picker-label.ql-active {
-			background: rgba(var(--corporate-primary-rgb), 0.1);
+		/* Renders above the modal dialog's own z-index; scoped to .ql-color-overlay only */
+		::ng-deep .p-overlaypanel.ql-color-overlay {
+			z-index: 999999 !important;
 		}
 	`],
 	imports: [FormsModule, CommonModule, DialogModule, EdaDialog2Component, PanelChartComponent, EdaContextMenuComponent, EditorModule,
-		ColorPickerModule, InputSwitchModule, InputTextModule, TooltipModule]
+		ColorPickerModule, InputSwitchModule, InputTextModule, TooltipModule, OverlayPanelModule, ButtonModule]
 })
 
 export class TitleDialogComponent{
@@ -132,6 +142,13 @@ export class TitleDialogComponent{
 	public borderColor: string = '#d7dde6';
 	public showBorder: boolean = true;
 	public backgroundColor: string = '#ffffff';
+
+	// Free-pick text color / highlight color (not limited to Quill's predefined swatch list)
+	public customTextColor: string = '#000000';
+	public customTextBgColor: string = '#ffffff';
+	public showTextColorPicker: boolean = false;
+	public showTextBgColorPicker: boolean = false;
+	private savedRange: any = null;
 
 	// Quill toolbar tooltips
 	public tooltipSize = $localize`:@@qlTooltipSize:Tamaño de letra`;
@@ -156,6 +173,7 @@ export class TitleDialogComponent{
 	public tooltipVideo = $localize`:@@qlTooltipVideo:Insertar vídeo`;
 	public tooltipUrlImage = $localize`:@@qlTooltipUrlImage:Insertar imagen desde una URL`;
 	public tooltipClean = $localize`:@@qlTooltipClean:Quitar formato`;
+	public labelClearColor = $localize`:@@qlLabelClearColor:Quitar`;
 
 	constructor(private sanitizer: DomSanitizer) {}
 
@@ -212,6 +230,51 @@ export class TitleDialogComponent{
 
 	public closeChartConfig(): void {
 		this.onClose(EdaDialogCloseEvent.NONE);
+	}
+
+	public openColorOverlay(event: Event, overlay: OverlayPanel): void {
+		if (this.editor) {
+			const quill = this.editor.getQuill();
+			this.savedRange = quill.getSelection();
+		}
+		overlay.toggle(event);
+		event.stopPropagation();
+	}
+
+	public onOverlayShow(type: string): void {
+		setTimeout(() => {
+			if (type === 'textColor') this.showTextColorPicker = true;
+			else this.showTextBgColorPicker = true;
+		}, 50);
+	}
+
+	private applySavedFormat(format: string, value: string): void {
+		if (!this.editor || !value) return;
+		const quill = this.editor.getQuill();
+		if (this.savedRange && this.savedRange.length > 0) {
+			quill.formatText(this.savedRange.index, this.savedRange.length, format, value);
+			quill.setSelection(this.savedRange.index, this.savedRange.length, 'silent');
+		} else {
+			quill.format(format, value);
+		}
+		this.title = quill.root.innerHTML;
+	}
+
+	public removeTextFormat(format: string): void {
+		if (!this.editor) return;
+		const quill = this.editor.getQuill();
+		if (this.savedRange && this.savedRange.length > 0) {
+			quill.removeFormat(this.savedRange.index, this.savedRange.length);
+		}
+		this.title = quill.root.innerHTML;
+	}
+
+	public onTextColorLive(value: string): void {
+		this.applySavedFormat('color', value);
+	}
+
+	public onTextBgColorLive(value: string): void {
+		this.applySavedFormat('background', value);
 	}
 
 	public setVerticalAlign(align: VerticalAlign): void {
