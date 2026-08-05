@@ -15,7 +15,7 @@ import { ConfirmationService, SharedModule } from 'primeng/api';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { TreeModule } from 'primeng/tree';
 // Eda config
-import { AGG_TYPES, NULL_VALUE, EMPTY_VALUE, SHOW_LOCK_IN_PANEL_HEADER } from '@eda/configs/customizable/customizable_default';
+import { AGG_TYPES, NULL_VALUE, EMPTY_VALUE, SHOW_LOCK_IN_PANEL_HEADER, SHOW_WHAT_IF } from '@eda/configs/customizable/customizable_default';
 import {Column, EdaPanel, InjectEdaPanel } from '@eda/models/model.index';
 
 import { PanelChart } from './panel-charts/panel-chart';
@@ -539,6 +539,7 @@ public tableNodeExpand(event: any): void {
     }
 
     readonly showLockInHeader = SHOW_LOCK_IN_PANEL_HEADER;
+    readonly showWhatIf = SHOW_WHAT_IF;
 
     isPanelLocked(): boolean {
         return (this.panel as any).dragEnabled === false;
