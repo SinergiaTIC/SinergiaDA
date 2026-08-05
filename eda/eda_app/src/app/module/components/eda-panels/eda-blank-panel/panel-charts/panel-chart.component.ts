@@ -578,6 +578,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
             chartConfig.sufix = kpiCfg?.sufix || '';
             chartConfig.alertLimits = alertLimits;
             chartConfig.modifiedFontPoints = kpiCfg?.modifiedFontPoints || 0;
+            chartConfig.fontScale = kpiCfg?.fontScale || 1;
             chartConfig.edaChart = kpiCfg?.edaChart;
             chartConfig.backgroundColor = kpiCfg?.backgroundColor || '';
             chartConfig.kpiColor = kpiCfg?.kpiColor || '';
@@ -586,6 +587,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
             chartConfig.sufix = '';
             chartConfig.alertLimits = [];
             chartConfig.modifiedFontPoints = 0;
+            chartConfig.fontScale = 1;
             chartConfig.backgroundColor = '';
             chartConfig.kpiColor = '';
             chartConfig.prefixImage = '';
@@ -596,7 +598,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
 
     /**
      * creates a kpiComponent
-     * @param inject 
+     * @param inject
     */
     private createEdaKpiComponent(inject: any) {
         this.entry.clear();
@@ -607,6 +609,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
                 sufix: data.sufix,
                 alertLimits: inject.alertLimits,
                 modifiedFontPoints: inject.modifiedFontPoints || 0,
+                fontScale: data.fontScale ?? inject.fontScale ?? 1,
                 backgroundColor: inject.backgroundColor || '',
                 kpiColor: inject.kpiColor || '',
                 prefixImage: inject.prefixImage || '',
@@ -623,14 +626,32 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
     const chartType = this.props.chartType.split('kpi')[1];
     const chartSubType = this.props.edaChart.split('kpi')[1];
     const cfg: any = this.props.config.getConfig();
-    
+    const edaCfg: any = cfg.edaChart || {};
+    const supportsTrendCompare = chartType === 'line' || chartType === 'area';
+
     const chartConfig: any = {};
     const dataDescription = this.chartUtils.describeData(this.props.query, this.props.data.labels);
     const dataTypes = this.props.query.map((column: any) => column.column_type);
 
     let values = _.cloneDeep(this.props.data.values);
 
-    const chartData = this.chartUtils.transformDataQuery(chartType, chartSubType, values, dataTypes, dataDescription, false, cfg.numberOfColumns);
+    // COMPARISONS (kpiline / kpiarea only) - same pattern as renderEdaChart()
+    if (supportsTrendCompare && !!edaCfg.addComparative
+        && this.props.query.length === 2
+        && this.props.query.filter((f: any) => f.column_type === 'date').length > 0
+        && ['month', 'week', 'day'].includes(this.props.query.filter((f: any) => f.column_type === 'date')[0].format)) {
+
+        values = this.chartUtils.comparePeriods(this.props.data, this.props.query);
+        let types = this.props.query.map((f: any) => f.column_type);
+        let dateIndex = types.indexOf('date');
+        dataTypes.splice(dateIndex, 0, 'date');
+        let dateCol = dataDescription.otherColumns.filter((c: any) => c.index === dateIndex)[0];
+        let newCol = { name: dateCol.name + '_newDate', index: dateCol.index + 1 };
+        dataDescription.otherColumns.push(newCol);
+        dataDescription.totalColumns++;
+    }
+
+    const chartData = this.chartUtils.transformDataQuery(chartType, chartSubType, values, dataTypes, dataDescription, false, edaCfg.numberOfColumns);
 
     if (chartData.length == 0) {
         chartData.push([], []);
@@ -645,7 +666,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         fontSize: this.fontSize,
         fontColor: this.fontColor
     }
-    
+
     const dimensions = this.getDimensions();
     dimensions.height = !dimensions.height ? 255 : dimensions.height;
     dimensions.width = !dimensions.width ? 1300 : dimensions.width;
@@ -662,8 +683,14 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
     const chartOptions = this.chartUtils.initChartOptions(
         chartType, dataDescription.numericColumns[0]?.name,
         dataDescription.otherColumns, manySeries, false, dimensions, null,
-        minMax, styles, cfg.showLabels, cfg.showLabelsPercent, cfg.showPointLines, cfg.showPredictionLines, cfg.numberOfColumns, chartSubType, ticksOptions, false, cfg.showGridLines ?? true, this.styleProviderService
+        minMax, styles, edaCfg.showLabels || false, edaCfg.showLabelsPercent || false, edaCfg.showPointLines || false, false, edaCfg.numberOfColumns, chartSubType, ticksOptions, false, edaCfg.showGridLines ?? true, this.styleProviderService
     );
+
+    // TREND (kpiline / kpiarea only) - same pattern as renderEdaChart()
+    if (supportsTrendCompare && edaCfg.addTrend && chartData[1]?.length > 0) {
+        const trends = chartData[1].map((serie: any) => this.chartUtils.getTrend(serie));
+        trends.forEach(trend => chartData[1].push(trend));
+    }
 
     // Initialize chartConfig
     chartConfig.edaChart = {}
@@ -674,7 +701,36 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
     chartConfig.edaChart.chartDataset = chartData[1];
     chartConfig.edaChart.chartOptions = chartOptions.chartOptions;
     chartConfig.edaChart.chartColors = []; // Initialize chartColors
-    chartConfig.edaChart.chartLegend = false;
+    // Carry the display options themselves onto the live edaChart object too (not just apply
+    // them below) - this is what ChartsConfigUtils.setConfig() and the onNotify round-trip read
+    // back to persist the dialog's choices; without this they're silently lost on save.
+    chartConfig.edaChart.chartLegend = edaCfg.chartLegend ?? true;
+    chartConfig.edaChart.showGridLines = edaCfg.showGridLines ?? true;
+    chartConfig.edaChart.useGradient = edaCfg.useGradient ?? true;
+    chartConfig.edaChart.useRoundedBars = edaCfg.useRoundedBars ?? true;
+    chartConfig.edaChart.chartAnimation = edaCfg.chartAnimation ?? true;
+    chartConfig.edaChart.showLabels = edaCfg.showLabels ?? false;
+    chartConfig.edaChart.showLabelsPercent = edaCfg.showLabelsPercent ?? false;
+    chartConfig.edaChart.labelColorMode = edaCfg.labelColorMode ?? 'series';
+    chartConfig.edaChart.labelCustomColor = edaCfg.labelCustomColor ?? '#000000';
+    if (supportsTrendCompare) {
+        chartConfig.edaChart.showPointLines = edaCfg.showPointLines ?? false;
+        chartConfig.edaChart.addTrend = edaCfg.addTrend ?? false;
+        chartConfig.edaChart.addComparative = edaCfg.addComparative ?? false;
+        chartConfig.edaChart.lineWidth = edaCfg.lineWidth ?? 2;
+        chartConfig.edaChart.lineStyle = edaCfg.lineStyle || 'solid';
+    }
+    chartConfig.edaChart.showXAxis = edaCfg.showXAxis ?? true;
+    chartConfig.edaChart.showXAxisLabels = edaCfg.showXAxisLabels ?? true;
+    chartConfig.edaChart.xAxisLabelCount = edaCfg.xAxisLabelCount || 0;
+    chartConfig.edaChart.labelBackgroundColor = edaCfg.labelBackgroundColor || '';
+
+    // Animation on/off + data-label color mode/background (kpiline / kpiarea / kpibar)
+    this.applyKpiChartDisplayOptions(chartConfig.edaChart.chartOptions, edaCfg);
+    // Axis show/hide + label thinning (kpiline / kpiarea / kpibar) - no-op unless customized, so
+    // the chart's original auto-skip/rotation behavior (set by initChartOptions' own
+    // ticksOptions) is left untouched by default.
+    this.applyKpiChartAxisSettings(chartConfig.edaChart.chartOptions, edaCfg, chartConfig.edaChart.chartLabels);
 
     // Load assignedColors or use default colors
     const existingColors = cfg['assignedColors'] || [];
@@ -685,9 +741,9 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         assignedColors = existingColors;
     } else {
         // Create default colors from dataset
-        const paletteColor = this.styleProviderService?.ActualChartPalette?.['paleta']?.[0] || 
+        const paletteColor = this.styleProviderService?.ActualChartPalette?.['paleta']?.[0] ||
                             this.styleProviderService?.DEFAULT_PALETTE_COLOR?.['paleta']?.[0];
-        
+
         assignedColors = chartData[1].map((dataset, index) => ({
             value: dataset.label || `Series ${index + 1}`,
             color: this.paletaActual[index % this.paletaActual.length] || paletteColor
@@ -697,22 +753,35 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         cfg['assignedColors'] = assignedColors;
     }
 
-    // Apply colors to the dataset
-    for (let i = 0; i < chartData[1].length; i++) {
-        const colorConfig = assignedColors[i];
-        if (colorConfig) {
-            chartConfig.edaChart.chartDataset[i] = {
-                ...chartConfig.edaChart.chartDataset[i],
-                backgroundColor: colorConfig.color,
-                borderColor: colorConfig.color
-            };
-            
-            chartConfig.edaChart.chartColors.push({
-                backgroundColor: colorConfig.color,
-                borderColor: colorConfig.color
-            });
+    chartConfig.edaChart.chartColors = this.chartUtils.generateChartColorsFromAssignedColors(assignedColors, this.props.chartType);
+
+    // Apply colors to the dataset: solid color, with opacity for kpiarea (same as renderEdaChart's
+    // "Mode 3"), optionally replaced by a Chart.js-native gradient when useGradient is on, and
+    // rounded tips for kpibar when useRoundedBars is on.
+    const isAreaType = chartType === 'area';
+    const useGradient = edaCfg.useGradient ?? true;
+    const useRoundedBars = edaCfg.useRoundedBars ?? true;
+    // Only override the chart's own default line width/dash when the user actually changed them
+    // from their defaults (2 / 'solid'); otherwise leave the chart.js defaults untouched.
+    const lineWidth = edaCfg.lineWidth ?? 2;
+    const lineStyle = edaCfg.lineStyle || 'solid';
+    const customizeLine = supportsTrendCompare && (lineWidth !== 2 || lineStyle !== 'solid');
+    const lineDash = this.getKpiLineDash(lineStyle);
+    chartData[1].forEach((dataset: any, i: number) => {
+        const solidColor = chartConfig.edaChart.chartColors[i]?.borderColor || this.paletaActual[i % this.paletaActual.length];
+        const seriesOpacity: number = assignedColors[i]?.opacity ?? 100;
+        const fillColor = isAreaType ? this.chartUtils.hexToRgba(solidColor, seriesOpacity) : solidColor;
+        dataset.backgroundColor = useGradient ? this.buildKpiGradientColor(solidColor, chartType) : fillColor;
+        dataset.borderColor = solidColor;
+        dataset.pointBackgroundColor = solidColor;
+        if (chartType === 'bar') {
+            dataset.borderRadius = useRoundedBars ? 6 : 0;
         }
-    }
+        if (customizeLine) {
+            dataset.borderWidth = lineWidth;
+            dataset.borderDash = lineDash;
+        }
+    });
 
     // KPI Config
     let kpiValue: number;
@@ -739,20 +808,144 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         chartConfig.sufix = kpiCfgChart?.sufix || '';
         chartConfig.alertLimits = alertLimits;
         chartConfig.modifiedFontPoints = kpiCfgChart?.modifiedFontPoints || 0;
+        chartConfig.fontScale = kpiCfgChart?.fontScale || 1;
         chartConfig.backgroundColor = kpiCfgChart?.backgroundColor || '';
         chartConfig.kpiColor = kpiCfgChart?.kpiColor || '';
         chartConfig.prefixImage = kpiCfgChart?.prefixImage || '';
+        chartConfig.assignedColors = kpiCfgChart?.assignedColors || [];
     } else {
         chartConfig.sufix = '';
         chartConfig.alertLimits = [];
         chartConfig.modifiedFontPoints = 0;
+        chartConfig.fontScale = 1;
         chartConfig.backgroundColor = '';
         chartConfig.kpiColor = '';
         chartConfig.prefixImage = '';
+        chartConfig.assignedColors = [];
     }
 
     this.createEdaKpiChartComponent(chartConfig);
 }
+
+    /**
+     * Applies the KPI chart's own display toggles that aren't already handled by
+     * initChartOptions()'s own parameters: disabling animation, and forcing a fixed data-label
+     * color when labelColorMode is 'custom' (the 'series' default needs no override - it already
+     * matches initChartOptions' own per-series default datalabel color).
+     */
+    private applyKpiChartDisplayOptions(chartOptions: any, edaCfg: any): void {
+        if (!chartOptions) return;
+
+        if (edaCfg.chartAnimation === false) {
+            chartOptions.animation = false;
+        }
+
+        if (edaCfg.showLabels || edaCfg.showLabelsPercent) {
+            if (edaCfg.labelColorMode === 'custom' || edaCfg.labelBackgroundColor) {
+                chartOptions.plugins = chartOptions.plugins || {};
+                chartOptions.plugins.datalabels = chartOptions.plugins.datalabels || {};
+                if (edaCfg.labelColorMode === 'custom') {
+                    chartOptions.plugins.datalabels.color = edaCfg.labelCustomColor || '#000000';
+                }
+                if (edaCfg.labelBackgroundColor) {
+                    chartOptions.plugins.datalabels.backgroundColor = edaCfg.labelBackgroundColor;
+                }
+            }
+        }
+    }
+
+    /**
+     * Applies X axis show/hide + label thinning settings to a KPI chart's chartOptions (kpiline / kpiarea / kpibar).
+     * No-op when nothing was customized in the dialog, so the chart's original auto-skip/rotation
+     * behavior (set by initChartOptions' own ticksOptions) is left untouched by default.
+     */
+    private applyKpiChartAxisSettings(chartOptions: any, edaCfg: any, chartLabels: any[]): void {
+        if (!chartOptions) return;
+        const showXAxis = edaCfg.showXAxis ?? true;
+        const showXAxisLabels = edaCfg.showXAxisLabels ?? true;
+        const xAxisLabelCount: number = edaCfg.xAxisLabelCount || 0;
+
+        if (showXAxis && showXAxisLabels && xAxisLabelCount <= 0) {
+            return;
+        }
+
+        chartOptions.scales = chartOptions.scales || {};
+        chartOptions.scales.x = chartOptions.scales.x || {};
+        chartOptions.scales.x.ticks = chartOptions.scales.x.ticks || {};
+        chartOptions.scales.x.grid = chartOptions.scales.x.grid || {};
+
+        chartOptions.scales.x.display = showXAxis || showXAxisLabels;
+        chartOptions.scales.x.grid.drawBorder = showXAxis;
+        chartOptions.scales.x.ticks.display = showXAxisLabels;
+
+        // Only override the chart's own auto-skip strategy when an explicit label count was chosen.
+        if (xAxisLabelCount > 0) {
+            const labelsLength = chartLabels?.length || 0;
+            chartOptions.scales.x.ticks.maxTicksLimit = Math.min(xAxisLabelCount, labelsLength) || undefined;
+            chartOptions.scales.x.ticks.autoSkip = false;
+            chartOptions.scales.x.ticks.callback = this.buildKpiXAxisTickCallback(labelsLength, xAxisLabelCount, chartLabels);
+        }
+    }
+
+    private buildKpiXAxisTickCallback(labelsLength: number, labelCount: number, chartLabels: any[]): ((value: any, index: number) => string) | undefined {
+        if (labelsLength === 0) return undefined;
+
+        const resolveLabel = (value: any, index: number) => {
+            const label = Array.isArray(chartLabels) ? (chartLabels[index] ?? chartLabels[value]) : value;
+            return `${label ?? ''}`;
+        };
+
+        const maxCount = Math.min(labelCount, labelsLength);
+        if (maxCount <= 1) {
+            return (value, index) => index === 0 ? resolveLabel(value, index) : '';
+        }
+        const indices = this.getKpiAxisLabelIndices(labelsLength, maxCount);
+        return (value, index) => indices.has(index) ? resolveLabel(value, index) : '';
+    }
+
+    private getKpiAxisLabelIndices(labelsLength: number, labelCount: number): Set<number> {
+        const indices = new Set<number>();
+        if (labelsLength <= 0) return indices;
+        if (labelCount <= 1) {
+            indices.add(0);
+            return indices;
+        }
+        const steps = labelCount - 1;
+        for (let i = 0; i < labelCount; i++) {
+            indices.add(Math.round((i * (labelsLength - 1)) / steps));
+        }
+        indices.add(0);
+        indices.add(labelsLength - 1);
+        return indices;
+    }
+
+    private getKpiLineDash(style: string): number[] {
+        switch (style) {
+            case 'dashed': return [8, 4];
+            case 'dotted': return [2, 4];
+            default: return [];
+        }
+    }
+
+    /**
+     * Chart.js-native gradient approximation (top-to-bottom for bar, bottom-to-top for line/area)
+     * of a solid series color, used when useGradient is on.
+     */
+    private buildKpiGradientColor(hexColor: string, chartType: string): any {
+        return (context: any) => {
+            const chart = context?.chart;
+            const chartArea = chart?.chartArea;
+            if (!chartArea) return hexColor;
+            const light = this.chartUtils.hexToRgba(hexColor, 35);
+            const solid = this.chartUtils.hexToRgba(hexColor, 100);
+            const gradient = chartType === 'bar'
+                ? chart.ctx.createLinearGradient(0, chartArea.bottom, 0, chartArea.top)
+                : chart.ctx.createLinearGradient(0, chartArea.top, 0, chartArea.bottom);
+            gradient.addColorStop(0, chartType === 'bar' ? solid : light);
+            gradient.addColorStop(1, chartType === 'bar' ? light : solid);
+            return gradient;
+        };
+    }
     /**
      * count the decimal places in the numbers.
      */
@@ -775,11 +968,15 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
             const kpiConfig = new KpiConfig({
                 sufix: data.sufix,
                 alertLimits: inject.alertLimits || [],
+                // inject.edaChart already carries every chart-specific setting (trend/comparative,
+                // legend, grid, gradient, rounded bars, animation, labels, colors)
                 edaChart: inject.edaChart,
                 modifiedFontPoints: inject.modifiedFontPoints || 0,
+                fontScale: data.fontScale ?? inject.fontScale ?? 1,
                 backgroundColor: inject.backgroundColor || '',
                 kpiColor: inject.kpiColor || '',
                 prefixImage: inject.prefixImage || '',
+                assignedColors: inject.assignedColors || [],
             });
             (<KpiConfig><unknown>this.props.config.setConfig(kpiConfig));
         })
