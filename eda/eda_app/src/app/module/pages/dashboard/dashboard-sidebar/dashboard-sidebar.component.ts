@@ -30,6 +30,7 @@ import { DependentFilters } from "../../../components/dependent-filters/dependen
 import { DashboardVisibleModal } from "../../../components/dashboard-visible/dashboard-visible.modal";
 import { GlobalFilterDialogComponent } from "../../../pages/dashboard/global-filter-dialog/global-filter-dialog.component";
 import { GlobalFilterComponent } from "@eda/components/global-filter/global-filter.component";
+import { SHOW_CUSTOM_ACTION } from "@eda/configs/customizable/customizable_default";
 
 const STANDALONE_COMPONENTS = [
     DashboardSaveAsDialog,
@@ -339,7 +340,7 @@ export class DashboardSidebarComponent implements AfterViewInit {
           this.hidePopover();
         }
       },
-      {
+      ...(SHOW_CUSTOM_ACTION ? [{
         id: 'customAction',
         label: $localize`:@@dashboardSidebarCustomAction: Acción personalizada`,
         icon: "pi pi-cog",
@@ -347,7 +348,7 @@ export class DashboardSidebarComponent implements AfterViewInit {
           this.isCustomActionDialogVisible = true;
           this.hidePopover();
         }
-      },
+      }] : []),
     ]
   }
 
