@@ -159,14 +159,16 @@
 		<div *ngIf="showTextColorPicker" class="ql-overlay-picker">
 			<p-colorPicker [(ngModel)]="customTextColor" (ngModelChange)="onTextColorLive($event)" inline="true" format="hex"></p-colorPicker>
 			<input type="text" pInputText [(ngModel)]="customTextColor" (keydown.enter)="onTextColorLive(customTextColor)" class="ql-hex-input-popup" placeholder="#000000" maxlength="7" />
-			<button type="button" pButton (click)="removeTextFormat('color'); textColorOL.hide()" [label]="labelClearColor" class="p-button-sm p-button-outlined p-button-secondary" style="width:100%; margin-top:4px;"></button>
+			<button type="button" (click)="removeTextFormat('color'); textColorOL.hide()"
+				class="w-full mt-1 px-3 py-1.5 text-sm font-medium rounded-md border border-[var(--corporate-primary)] text-[var(--corporate-primary)] bg-white hover:bg-[var(--corporate-primary)] hover:text-white transition-colors">{{ labelClearColor }}</button>
 		</div>
 	</p-overlayPanel>
 	<p-overlayPanel #textBgColorOL appendTo="body" styleClass="ql-color-overlay" (onShow)="onOverlayShow('textBgColor')" (onHide)="showTextBgColorPicker = false">
 		<div *ngIf="showTextBgColorPicker" class="ql-overlay-picker">
 			<p-colorPicker [(ngModel)]="customTextBgColor" (ngModelChange)="onTextBgColorLive($event)" inline="true" format="hex"></p-colorPicker>
 			<input type="text" pInputText [(ngModel)]="customTextBgColor" (keydown.enter)="onTextBgColorLive(customTextBgColor)" class="ql-hex-input-popup" placeholder="#ffffff" maxlength="7" />
-			<button type="button" pButton (click)="removeTextFormat('background'); textBgColorOL.hide()" [label]="labelClearColor" class="p-button-sm p-button-outlined p-button-secondary" style="width:100%; margin-top:4px;"></button>
+			<button type="button" (click)="removeTextFormat('background'); textBgColorOL.hide()"
+				class="w-full mt-1 px-3 py-1.5 text-sm font-medium rounded-md border border-[var(--corporate-primary)] text-[var(--corporate-primary)] bg-white hover:bg-[var(--corporate-primary)] hover:text-white transition-colors">{{ labelClearColor }}</button>
 		</div>
 	</p-overlayPanel>
 </eda-dialog2>

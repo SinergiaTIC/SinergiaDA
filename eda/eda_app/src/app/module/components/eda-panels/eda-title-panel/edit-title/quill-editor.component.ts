@@ -12,7 +12,6 @@ import { InputSwitchModule } from 'primeng/inputswitch';
 import { InputTextModule } from 'primeng/inputtext';
 import { TooltipModule } from 'primeng/tooltip';
 import { OverlayPanel, OverlayPanelModule } from 'primeng/overlaypanel';
-import { ButtonModule } from 'primeng/button';
 import { VerticalAlign } from '@eda/models/dashboard-models/eda-title-panel';
 
 import { FormsModule } from '@angular/forms';
@@ -129,7 +128,7 @@ Quill.register(Size, true);
 		}
 	`],
 	imports: [FormsModule, CommonModule, DialogModule, EdaDialog2Component, PanelChartComponent, EdaContextMenuComponent, EditorModule,
-		ColorPickerModule, InputSwitchModule, InputTextModule, TooltipModule, OverlayPanelModule, ButtonModule]
+		ColorPickerModule, InputSwitchModule, InputTextModule, TooltipModule, OverlayPanelModule]
 })
 
 export class TitleDialogComponent{
