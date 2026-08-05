@@ -15,7 +15,7 @@ import { ConfirmationService, SharedModule } from 'primeng/api';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { TreeModule } from 'primeng/tree';
 // Eda config
-import { AGG_TYPES, NULL_VALUE, EMPTY_VALUE, SHOW_LOCK_IN_PANEL_HEADER } from '@eda/configs/customizable/customizable_default';
+import { AGG_TYPES, NULL_VALUE, EMPTY_VALUE, SHOW_LOCK_IN_PANEL_HEADER, ALLOWED_JOIN_TYPES } from '@eda/configs/customizable/customizable_default';
 import {Column, EdaPanel, InjectEdaPanel } from '@eda/models/model.index';
 
 import { PanelChart } from './panel-charts/panel-chart';
@@ -294,9 +294,9 @@ export class EdaBlankPanelComponent implements OnInit {
         { icon: 'pi pi-align-left', label: 'Left', joinType: 'left' },
         { icon: 'pi pi-align-center', label: 'Inner', joinType: 'inner' },
         { icon: 'pi pi-align-right', label: 'Right', joinType: 'right' }
-    ];
+    ].filter(option => ALLOWED_JOIN_TYPES.includes(option.joinType));
 
-    public joinType = this.joinTypeOptions[1].joinType; // default init in Inner
+    public joinType = (this.joinTypeOptions.find(o => o.joinType === 'inner') ?? this.joinTypeOptions[0])?.joinType; // default init in Inner, or first allowed type
 
     
     /**panel chart component configuration */
