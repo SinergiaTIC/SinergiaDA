@@ -15,7 +15,7 @@ import { ConfirmationService, SharedModule } from 'primeng/api';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { TreeModule } from 'primeng/tree';
 // Eda config
-import { AGG_TYPES, NULL_VALUE, EMPTY_VALUE, SHOW_LOCK_IN_PANEL_HEADER, QUERY_MODE } from '@eda/configs/customizable/customizable_default';
+import { AGG_TYPES, NULL_VALUE, EMPTY_VALUE, SHOW_LOCK_IN_PANEL_HEADER, ALLOWED_QUERY_MODES } from '@eda/configs/customizable/customizable_default';
 import { normalizeQueryMode } from '@eda/shared/utils/query-mode.util';
 import {Column, EdaPanel, InjectEdaPanel } from '@eda/models/model.index';
 
@@ -115,7 +115,7 @@ const STANDALONE_COMPONENTS = [
     IconComponent, FocusOnShowDirective, PromptComponent,
     FilterAndOrDialogComponent,
 ]
-// Label for each possible query mode value. Not client-configurable — QUERY_MODE (customizable_default.ts) decides which values are enabled and in what order.
+// Label for each possible query mode value. Not client-configurable — ALLOWED_QUERY_MODES (customizable_default.ts) decides which values are enabled and in what order.
 export const QUERY_MODE_LABELS: any[] = [
     { label: $localize`:@@PanelModeSelectorEDA:Modo EDA`, value: 'EDA' },
     { label: $localize`:@@PanelModeSelectorSQL:Modo SQL`, value: 'SQL' },
@@ -251,9 +251,9 @@ export class EdaBlankPanelComponent implements OnInit {
     public groupByEnabled: boolean = true;
     public dynamicFilters: boolean = true;
 
-    public queryModes: any[] = QUERY_MODE.map(v => QUERY_MODE_LABELS.find(l => l.value === v));
+    public queryModes: any[] = ALLOWED_QUERY_MODES.map(v => QUERY_MODE_LABELS.find(l => l.value === v));
 
-    public selectedQueryMode: string = QUERY_MODE[0];
+    public selectedQueryMode: string = ALLOWED_QUERY_MODES[0];
 
     // Depreacted use selectedQueryMode instead of
     // public modeSQL: boolean;
