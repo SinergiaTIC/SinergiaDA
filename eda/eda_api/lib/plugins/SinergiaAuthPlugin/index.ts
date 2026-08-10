@@ -1,5 +1,6 @@
 import * as path from 'path';
 import * as fs from 'fs';
+import { IAuthPlugin } from '../plugin.interface';
 
 const bcrypt = require('bcryptjs');
 const crypto = require('crypto');
@@ -11,7 +12,10 @@ const CONFIG_PATH = path.resolve(__dirname, '../../../config/sinergiacrm.config.
  * are stored as raw MD5 or PHP bcrypt ($2y$) hashes instead of Node bcryptjs ($2a$) ones.
  * Only active when config/sinergiacrm.config.js is present (SinergiaDA deployments).
  */
-export const SinergiaAuthPlugin = {
+export const SinergiaAuthPlugin: IAuthPlugin = {
+    kind: 'auth',
+    type: 'sinergia-legacy-auth',
+
     isEnabled(): boolean {
         return fs.existsSync(CONFIG_PATH);
     },
