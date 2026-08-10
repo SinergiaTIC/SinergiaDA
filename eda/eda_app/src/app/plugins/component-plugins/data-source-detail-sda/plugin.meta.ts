@@ -1,4 +1,4 @@
-import { ComponentPluginMeta } from '../plugin-component.interface';
+import { ComponentPluginMeta } from '../component-plugin.interface';
 
 /**
  * Meta-data for the component plugin "data-source-detail-sda".
