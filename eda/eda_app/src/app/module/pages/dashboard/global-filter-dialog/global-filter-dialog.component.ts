@@ -96,6 +96,8 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
     public selectedColumn: any;
 
     public columnValues: any[] = [];
+    /** SDA CUSTOM - raw [label, id] rows behind columnValues, used to resolve selectedIdValues in onSelectedItemsChange */
+    public totalValues: any[] = [];
     public tableNodes: any[] = [];
     public autoCompleteValues: string[];
     private itemJustSelected = false;
@@ -413,6 +415,7 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
 
             if (Array.isArray(response) && response.length > 1) {
                 const data = response[1];
+                this.totalValues = data;
                 this.columnValues = data.filter(item => !!item[0] || item[0] === '').map(item => ({ label: item[0], value: item[0] }));
             }
         } catch (err) {
@@ -420,6 +423,21 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
             throw err;
         }
         this.loading = false;
+    }
+
+    /**
+     * Resolves the internal code (id) behind each selected label, so the filter can be
+     * compared against the internal code column instead of the label when USE_VALUE_LIST_CODE_FOR_FILTERS
+     * is enabled. Harmless to compute unconditionally: assertGlobalFilterCodes() decides whether to use it.
+     */
+    public onSelectedItemsChange(values: any[]): void {
+        if (this.globalFilter.selectedColumn?.valueListSource === undefined) return;
+
+        this.globalFilter.selectedIdValues = (values || []).map((value: any) => {
+            const match = this.totalValues.find((tv: any) => tv[0] === value);
+            if (match) return match[1];
+            return value === 'emptyString' ? '' : undefined;
+        });
     }
 
     private loadDatesFromFilter() {

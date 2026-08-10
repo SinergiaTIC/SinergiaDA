@@ -145,14 +145,15 @@
                     [style]="{ width: '100%', height:'100%', alignItems:'center'}" [panelStyle]="{minWidth:'15em'}"
                     [maxSelectedLabels]="1" i18n-defaultLabel="@@defaultValueLabel" defaultLabel="Valor por defecto" [loading]="loading"
                     display="chip" appendTo="body"
-                    (onChange)="onSingleSelectChange()">
+                    (onChange)="onSingleSelectChange(); onSelectedItemsChange($event.value)">
                   </p-multiSelect>
                   } @else {
                   <p-multiSelect id="selectFilterValue" class='eda-filter-multiselect' [options]="columnValues"
                     [(ngModel)]="globalFilter.selectedItems" [virtualScroll]="true" [itemSize]="30"
                     [style]="{ width: '100%', height:'100%', alignItems:'center'}" [panelStyle]="{minWidth:'15em'}"
                     [maxSelectedLabels]="1" i18n-defaultLabel="@@defaultValueLabel" defaultLabel="Valor por defecto" [loading]="loading"
-                    display="chip" appendTo="body">
+                    display="chip" appendTo="body"
+                    (onChange)="onSelectedItemsChange($event.value)">
                   </p-multiSelect>
                   }
                 }@else{

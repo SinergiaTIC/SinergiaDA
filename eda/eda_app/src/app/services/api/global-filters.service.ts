@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { EdaPanel } from '@eda/models/model.index';
+import { USE_VALUE_LIST_CODE_FOR_FILTERS } from '@eda/configs/customizable/customizable_default';
 import * as _ from 'lodash';
 
 @Injectable()
@@ -386,9 +387,12 @@ export class GlobalFiltersService {
             }
         }
 
+        // false (EDA) -> compare against the raw selected values | true (SinergiaDA) -> compare against the internal codes
+        const useCodes = USE_VALUE_LIST_CODE_FOR_FILTERS && globalFilter.selectedIdValues;
+
         return isDate
             ? [{ value1: globalFilter.selectedItems[0] ? [globalFilter.selectedItems[0]] : [] }, { value2: globalFilter.selectedItems[1] ? [globalFilter.selectedItems[1]] : [] }]
-            : [{ value1: globalFilter.selectedIdValues ?? globalFilter.selectedItems }];
+            : [{ value1: useCodes ? globalFilter.selectedIdValues : globalFilter.selectedItems }];
     }
 
     public assertGlobalFilterItems(globalFilter: any) {
