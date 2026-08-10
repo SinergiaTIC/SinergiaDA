@@ -57,7 +57,7 @@ export class AboutSdaComponent implements OnInit {
     this.lang = lang || "es";
 
     // Fetches information from the backend and updates component properties accordingly.
-    this.http.get<InfoResponse>("/edapi/getsdainfo/getinfo").subscribe({
+    this.http.get<InfoResponse>(`/edapi/getsdainfo/getinfo?token=${this.userService.getToken()}`).subscribe({
       next: data => {
         this.sinergiaDaVersion = data.info.sinergiaDaVersion;
         this.edaApiVersion = data.info.edaApiVersion;

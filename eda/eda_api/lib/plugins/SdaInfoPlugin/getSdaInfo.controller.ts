@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import * as fs from 'fs';
 import * as path from 'path';
 import { createConnection } from 'mysql2/promise';
+import Group from '../../module/admin/groups/model/group.model';
 
 const sinergiaDatabase = require('../../../config/sinergiacrm.config');
 
@@ -20,7 +21,7 @@ function formatDate(date: Date): string {
  * doesn't prevent the rest of the info from being returned.
  */
 export class GetSdaInfoController {
-  public static async getinfo(_req: Request, res: Response) {
+  public static async getinfo(req: Request, res: Response) {
     const info: Record<string, string> = {
       sinergiaDaVersion: 'N/D',
       edaApiVersion: 'N/D',
@@ -85,8 +86,13 @@ export class GetSdaInfoController {
       console.error('[getSdaInfo] Error querying SinergiaCRM', error);
     }
 
-    info.sinergiaCRMDatabaseName =
-      `${sinergiaDatabase.sinergiaConn.host}:${sinergiaDatabase.sinergiaConn.port}/${sinergiaDatabase.sinergiaConn.database}`;
+    // Connection details are only relevant to admins.
+    const groups = await Group.find({ users: { $in: req.user._id } }).exec();
+    const isAdmin = groups.filter(g => g.role === 'EDA_ADMIN_ROLE').length > 0;
+    if (isAdmin) {
+      info.sinergiaCRMDatabaseName =
+        `${sinergiaDatabase.sinergiaConn.host}:${sinergiaDatabase.sinergiaConn.port}/${sinergiaDatabase.sinergiaConn.database}`;
+    }
 
     res.json({ info });
   }

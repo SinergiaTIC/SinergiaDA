@@ -18,7 +18,6 @@ export const updateModelGuard = async function (req: Request, _res: Response, ne
     console.log('\x1b[33m=====\x1b[0m \x1b[1;34mStarting Update Model\x1b[0m \x1b[33m=====\x1b[0m');
 
     token = crypto.createHash('md5').update(token).digest("hex");
-    console.log('MD5 token: ' +  token );
 
     if ( updateToken == token ) {
             next();
