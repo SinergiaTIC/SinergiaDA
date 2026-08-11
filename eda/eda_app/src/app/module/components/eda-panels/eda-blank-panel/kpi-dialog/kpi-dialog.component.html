@@ -41,20 +41,36 @@
           <div class="grid gap-6">
 
             <!-- Size -->
-            <div class="bg-gradient-to-r from-slate-50 to-slate-100 rounded-lg border overflow-hidden">
-              <div class="px-4 py-1.5 border-b bg-white">
-                <h3 class="font-medium text-slate-800 flex items-center gap-2">
-                  <span class="inline-flex items-center justify-center w-5 h-5 rounded-full bg-slate-100 text-slate-600 text-xs">1</span>
-                  <span i18n="@@kpiSize">Modificar el tamaño del KPI</span>
-                </h3>
+            @if (!useHoverResize) {
+              <div class="bg-gradient-to-r from-slate-50 to-slate-100 rounded-lg border overflow-hidden">
+                <div class="px-4 py-1.5 border-b bg-white">
+                  <h3 class="font-medium text-slate-800 flex items-center gap-2">
+                    <span class="inline-flex items-center justify-center w-5 h-5 rounded-full bg-slate-100 text-slate-600 text-xs">1</span>
+                    <span i18n="@@kpiSize">Modificar el tamaño del KPI</span>
+                  </h3>
+                </div>
+                <div class="p-4 inline-flex w-full gap-4 items-center justify-between">
+                  <span i18n="@@increaseKpiSize">Incrementar el tamaño del KPI</span>
+                  <input type="number" [ngModel]="modifiedFontPoints" min="-90" max="300"
+                    (ngModelChange)="modifyKpiSize($event)"
+                    class="w-1/2 px-3 py-2 border rounded-md bg-white text-center" />
+                </div>
               </div>
-              <div class="p-4 inline-flex w-full gap-4 items-center justify-between">
-                <span i18n="@@increaseKpiSize">Incrementar el tamaño del KPI</span>
-                <input type="number" [ngModel]="modifiedFontPoints" min="-90" max="300"
-                  (ngModelChange)="modifyKpiSize($event)"
-                  class="w-1/2 px-3 py-2 border rounded-md bg-white text-center" />
+            } @else {
+              <div class="bg-gradient-to-r from-slate-50 to-slate-100 rounded-lg border overflow-hidden">
+                <div class="px-4 py-1.5 border-b bg-white">
+                  <h3 class="font-medium text-slate-800 flex items-center gap-2">
+                    <span class="inline-flex items-center justify-center w-5 h-5 rounded-full bg-slate-100 text-slate-600 text-xs">1</span>
+                    <span i18n="@@kpiSizeHover">Tamaño del KPI</span>
+                  </h3>
+                </div>
+                <div class="p-4">
+                  <span class="text-sm text-slate-500" i18n="@@kpiSizeHoverHint">
+                    Pasa el ratón por encima del KPI para ver los botones que permiten ajustar su tamaño.
+                  </span>
+                </div>
               </div>
-            </div>
+            }
 
             <!-- KPI colors -->
             <div class="bg-gradient-to-r from-slate-50 to-slate-100 rounded-lg border overflow-hidden">

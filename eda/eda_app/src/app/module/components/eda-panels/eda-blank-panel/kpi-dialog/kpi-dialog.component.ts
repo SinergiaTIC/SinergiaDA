@@ -10,6 +10,7 @@ import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { ColorPickerModule } from 'primeng/colorpicker';
 import { DropdownModule } from 'primeng/dropdown';
+import { USE_EDA_KPI_SIZE_LOGIC } from '@eda/configs/customizable/customizable_default';
 
 @Component({
     standalone: true,
@@ -40,6 +41,8 @@ export class KpiEditDialogComponent implements OnInit, AfterViewInit, AfterViewC
     public ptooltipViewAlerts: string = $localize`:@@ptooltipViewAlerts:Configurar alertas`;
 
     public modifiedFontPoints: number = 0;
+    /** true → EDA mode (numeric input below) | false → SDA mode (hover +/- buttons on the KPI itself) */
+    public readonly useHoverResize: boolean = !USE_EDA_KPI_SIZE_LOGIC;
     public panelBaseResultSize: number = 0;
     public previewAspectRatio: string = '4/3';
     public previewBoxStyle: any = {};
@@ -157,6 +160,10 @@ export class KpiEditDialogComponent implements OnInit, AfterViewInit, AfterViewC
             this.applyColorsToChart();
         }
 
+        const kpiInject = this.panelChartComponent?.componentRef?.instance?.inject;
+        const savedConfig: any = this.panelChartConfig?.config?.getConfig?.() || {};
+        const fontScale = kpiInject?.fontScale ?? savedConfig.fontScale ?? 1;
+
         this.onClose(EdaDialogCloseEvent.UPDATE, {
             alerts: this.alerts,
             sufix: this.panelChartComponent.componentRef.instance.inject.sufix || '',
@@ -165,6 +172,7 @@ export class KpiEditDialogComponent implements OnInit, AfterViewInit, AfterViewC
             chartSubType: this.panelChartConfig.edaChart,
             assignedColors: [...this.assignedColors],
             modifiedFontPoints: this.modifiedFontPoints,
+            fontScale,
             backgroundColor: this.kpiBackgroundColor,
             kpiColor: this.kpiTextColor,
             prefixImage: this.prefixImage,

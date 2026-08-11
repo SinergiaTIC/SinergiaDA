@@ -6,6 +6,8 @@ export class KpiConfig {
     alertLimits: any[] = [];
     edaChart: ChartJsConfig;
     modifiedFontPoints: number = 0;
+    /** Multiplicative font-size factor used in SDA mode (hover +/- buttons). Only applies when USE_EDA_KPI_SIZE_LOGIC is false. */
+    fontScale: number = 1;
     backgroundColor: string = '';
     kpiColor: string = '';
     prefixImage: string = '';

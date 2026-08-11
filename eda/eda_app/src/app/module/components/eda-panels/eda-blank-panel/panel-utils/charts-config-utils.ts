@@ -69,6 +69,7 @@ export const ChartsConfigUtils = {
         alertLimits: ebp.panelChart.componentRef.instance.inject.alertLimits,
         assignedColors: ebp.panelChart.props.config?.getConfig()?.['assignedColors'] || null,
         modifiedFontPoints: ebp.panelChart.componentRef.instance.inject.modifiedFontPoints || 0,
+        fontScale: ebp.panelChart.componentRef.instance.inject.fontScale || 1,
         backgroundColor: ebp.panelChart.componentRef.instance.inject.backgroundColor || '',
         kpiColor: ebp.panelChart.componentRef.instance.inject.kpiColor || '',
         prefixImage: ebp.panelChart.componentRef.instance.inject.prefixImage || '',
