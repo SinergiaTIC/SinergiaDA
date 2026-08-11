@@ -54,7 +54,8 @@ export class MySqlBuilderService extends QueryBuilderService {
           joinTree,
           joinType,
           schema,
-          valueListJoins
+          valueListJoins,
+          dest.length
         );
         joinString = responseJoins.joinString;
         alias = responseJoins.aliasTables;
@@ -65,7 +66,8 @@ export class MySqlBuilderService extends QueryBuilderService {
           tables,
           joinType,
           valueListJoins,
-          schema
+          schema,
+          dest.length
         );
       }
       
@@ -239,12 +241,12 @@ export class MySqlBuilderService extends QueryBuilderService {
     // joined == TREE
     if (this.queryTODO.joined) {
       /**tree */
-      const responseJoins = this.setJoins(joinTree, joinType, schema, valueListJoins);
+      const responseJoins = this.setJoins(joinTree, joinType, schema, valueListJoins, dest.length);
       joinString = responseJoins.joinString;
       alias = responseJoins.aliasTables;
     } else {
       /*EDA Normal*/
-      joinString = this.getJoins(joinTree, dest, tables, joinType,  valueListJoins, schema);
+      joinString = this.getJoins(joinTree, dest, tables, joinType,  valueListJoins, schema, dest.length);
     }
 
     joinString.forEach(x => {
@@ -712,7 +714,7 @@ export class MySqlBuilderService extends QueryBuilderService {
     return stringQuery;
   }
 
-  public getJoins(joinTree: any[], dest: any[], tables: Array<any>, joinType:string, valueListJoins:Array<any>, schema:string): any {
+  public getJoins(joinTree: any[], dest: any[], tables: Array<any>, joinType:string, valueListJoins:Array<any>, schema:string, destLongitud?: any): any {
 
     let joins = [];
     let joined = [];
@@ -739,44 +741,56 @@ export class MySqlBuilderService extends QueryBuilderService {
           let t = tables.filter(table => table.name === e[j]).map(table => { return table.query ? table.query : `\`${table.name}\`` })[0];
 
           if( valueListJoins.includes(e[j])   ){
-            myJoin = 'left'; // Si es una tabla que ve del multivaluelist aleshores els joins son left per que la consulta tingui sentit.
+            myJoin = 'left'; // If it is a table that sees the multivaluelist, the joins are left so the query is not sent.
           }else{
-            myJoin = joinType; 
+            myJoin = joinType;
           }
+
+          // Security: If the joined table has permissions, they are added as an extra condition for ON.
+          // (Just like getFilters() applies them when the table is the source: each rule with AND)
+          let agregadoPermisos: any = '';
+          if (destLongitud > 0) {
+            this.permissions.forEach((p: any) => {
+              if (p.filter_table == e[j]) {
+                agregadoPermisos += ` and (${this.filterToString(p)})`;
+              }
+            });
+          }
+
           //Version compatibility string//array
           if (typeof joinColumns[0] === 'string') {
-              // pero también puede ser que sea una columna calculada
+              // but it could also be a calculated column
               if(joinColumns[2] && joinColumns[2] === 'source' ){
-                //si la columna calculada es el source
-                joinString.push(` ${myJoin} join ${t} on ${joinColumns[1]}  = \`${e[i]}\`.\`${joinColumns[0]}\``);
+                //if the calculated column is the source
+                joinString.push(` ${myJoin} join ${t} on ${joinColumns[1]}  = \`${e[i]}\`.\`${joinColumns[0]}\` ${agregadoPermisos}`);
               }else  if(joinColumns[2] && joinColumns[2] === 'target' ){
-                // Si la columna calculada es el target
-                joinString.push(` ${myJoin} join ${t} on \`${e[j]}\`.\`${joinColumns[1]}\` =  ${joinColumns[0]}`);
-              }else{       
-                // Si no es una columna calculada  
-                joinString.push(` ${myJoin} join ${t} on \`${e[j]}\`.\`${joinColumns[1]}\` = \`${e[i]}\`.\`${joinColumns[0]}\``);
-              } 
+                // If the calculated column is the target
+                joinString.push(` ${myJoin} join ${t} on \`${e[j]}\`.\`${joinColumns[1]}\` =  ${joinColumns[0]} ${agregadoPermisos}`);
+              }else{
+                // If it is not a calculated column
+                joinString.push(` ${myJoin} join ${t} on \`${e[j]}\`.\`${joinColumns[1]}\` = \`${e[i]}\`.\`${joinColumns[0]}\` ${agregadoPermisos}`);
+              }
           } else {
 
             let join = ` ${myJoin} join ${t} on`;
 
             joinColumns[0].forEach((_, x) => {
-              //  pero también puede ser que sea una columna calculada
+              //  but it could also be a calculated column
               if(joinColumns[2] && joinColumns[2] === 'source' ){
-                // Si la columna calculada es el source
+                // If the calculated column is the source
                 join += `  ${joinColumns[1][x]}  = \`${e[i]}\`.\`${joinColumns[0][x]}\` and`;
               }else  if(joinColumns[2] && joinColumns[2] === 'target' ){
-                // Si la columna calculada es el source
+                // If the calculated column is the source
                 join += ` \`${e[j]}\`.\`${joinColumns[1][x]}\` =  ${joinColumns[0][x]}  and`;
-              }else{   
-                 // Si no es una columna calculada         
+              }else{
+                 // If it is not a calculated column
                 join += ` \`${e[j]}\`.\`${joinColumns[1][x]}\` = \`${e[i]}\`.\`${joinColumns[0][x]}\` and`;
               }
 
             });
 
             join = join.slice(0, join.length - 'and'.length);
-            joinString.push(join);
+            joinString.push(join + agregadoPermisos);
 
           }
 
@@ -792,13 +806,19 @@ export class MySqlBuilderService extends QueryBuilderService {
 
 
   
-  public setJoins(joinTree: any[], joinType: string, schema: string, valueListJoins: string[]) {
+  public setJoins(joinTree: any[], joinType: string, schema: string, valueListJoins: string[], destLongitud?: any) {
     // Inicialización de variables
     const joinExists = new Set();
     const aliasTables = {};
     const joinString = [];
     const targetTableJoin = [];
 
+    // If there are no joins, all permissions must be applied by another method (getSqlPermissionsExpression in getSortedFilters)
+    if (joinTree.length == 0) {
+      this.permissions.forEach((p: any) => {
+        p.toBeUsed = true;
+      });
+    }
 
     for (const join of joinTree) {
 
@@ -855,6 +875,19 @@ export class MySqlBuilderService extends QueryBuilderService {
             // Si la join no se ha incluido ya, se añade al array
             if (!joinString.includes(joinStr)) {
                 targetTableJoin.push(aliasTargetTable || targetTable);
+
+                if (destLongitud > 0) {
+                  // The permissions of the destination table of this join are added to the ON (with AND, just like getFilters());
+                  // The rest are marked toBeUsed so that they are applied by another method (getSqlPermissionsExpression)
+                  this.permissions.forEach((p: any) => {
+                    if (p.filter_table == targetTable) {
+                      joinStr += ` and (${this.filterToString(p)})`;
+                    } else {
+                      p.toBeUsed = true;
+                    }
+                  });
+                }
+
                 joinString.push(joinStr);
             }
         }
