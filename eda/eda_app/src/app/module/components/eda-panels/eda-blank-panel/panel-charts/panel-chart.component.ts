@@ -665,7 +665,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
     const chartOptions = this.chartUtils.initChartOptions(
         chartType, dataDescription.numericColumns[0]?.name,
         dataDescription.otherColumns, manySeries, false, dimensions, null,
-        minMax, styles, cfg.showLabels, cfg.showLabelsPercent, cfg.showPointLines, cfg.showPredictionLines, cfg.numberOfColumns, chartSubType, ticksOptions, false, cfg.showGridLines ?? true, this.styleProviderService
+        minMax, styles, cfg.edaChart?.showLabels, cfg.edaChart?.showLabelsPercent, cfg.showPointLines, cfg.showPredictionLines, cfg.numberOfColumns, chartSubType, ticksOptions, false, cfg.showGridLines ?? true, this.styleProviderService
     );
 
     // Initialize chartConfig
@@ -717,6 +717,65 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         }
     }
 
+    // --- Independent border/fill color overrides (develop's chartLineColor/chartFillColor),
+    //     on top of the series color above — only applied when explicitly set. ---
+    const chartLineColorOverride = cfg.edaChart?.chartLineColor || '';
+    const chartFillColorOverride = cfg.edaChart?.chartFillColor || '';
+    if (chartConfig.edaChart.chartDataset[0]) {
+        if (['bar', 'area'].includes(chartType) && chartLineColorOverride) {
+            const borderColor = this.chartUtils.hexToRgba(chartLineColorOverride, 100);
+            chartConfig.edaChart.chartDataset[0].borderColor = borderColor;
+            if (chartConfig.edaChart.chartColors[0]) {
+                chartConfig.edaChart.chartColors[0].borderColor = borderColor;
+            }
+        }
+        if (chartType === 'area' && chartFillColorOverride) {
+            const fillColor = this.chartUtils.hexToRgba(chartFillColorOverride, 90);
+            chartConfig.edaChart.chartDataset[0].backgroundColor = fillColor;
+            chartConfig.edaChart.chartDataset[0].fill = true;
+            if (chartConfig.edaChart.chartColors[0]) {
+                chartConfig.edaChart.chartColors[0].backgroundColor = fillColor;
+            }
+        }
+    }
+    chartConfig.edaChart.chartLineColor = chartLineColorOverride;
+    chartConfig.edaChart.chartFillColor = chartFillColorOverride;
+
+    // --- KPI+chart options ported from develop: line style, X axis, value labels ---
+    const chartOpts: any = chartConfig.edaChart.chartOptions;
+    const lineWidth = cfg.edaChart?.lineWidth ?? 2;
+    const lineStyle = cfg.edaChart?.lineStyle || 'solid';
+    if (['line', 'area'].includes(chartType)) {
+        this.applyKpiLineStyle(chartConfig.edaChart.chartDataset, lineWidth, lineStyle);
+    }
+    chartConfig.edaChart.lineWidth = lineWidth;
+    chartConfig.edaChart.lineStyle = lineStyle;
+
+    const showXAxis = cfg.edaChart?.showXAxis ?? true;
+    const showXAxisLabels = cfg.edaChart?.showXAxisLabels ?? true;
+    const xAxisLabelCount = cfg.edaChart?.xAxisLabelCount || 0;
+    const showAllXAxisLabels = cfg.edaChart?.showAllXAxisLabels ?? true;
+    this.applyKpiXAxisOptions(chartOpts, showXAxis, showXAxisLabels, xAxisLabelCount, chartConfig.edaChart.chartLabels, showAllXAxisLabels);
+    chartConfig.edaChart.showXAxis = showXAxis;
+    chartConfig.edaChart.showXAxisLabels = showXAxisLabels;
+    chartConfig.edaChart.xAxisLabelCount = xAxisLabelCount;
+    chartConfig.edaChart.showAllXAxisLabels = showAllXAxisLabels;
+
+    const labelColor = cfg.edaChart?.labelColor || '#000000';
+    const labelBackgroundColor = cfg.edaChart?.labelBackgroundColor || '';
+    if (!chartOpts.plugins) chartOpts.plugins = {};
+    if (!chartOpts.plugins.datalabels) chartOpts.plugins.datalabels = {};
+    chartOpts.plugins.datalabels.color = labelColor;
+    chartOpts.plugins.datalabels.backgroundColor = labelBackgroundColor || null;
+    if (chartType === 'bar') {
+        chartOpts.plugins.datalabels.borderRadius = 4;
+    }
+    chartConfig.edaChart.labelColor = labelColor;
+    chartConfig.edaChart.labelBackgroundColor = labelBackgroundColor;
+    chartConfig.edaChart.showLabels = cfg.edaChart?.showLabels ?? false;
+    chartConfig.edaChart.showLabelsPercent = cfg.edaChart?.showLabelsPercent ?? false;
+    // --- END KPI+chart options ---
+
     // KPI Config
     let kpiValue: number;
     let kpiLabel = this.props.query.find((c: any) => c.column_type == 'numeric')?.display_name?.default;
@@ -763,7 +822,102 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
      */
     private countDecimals (value) {
         if(Math.floor(value) === value) return 0;
-        return value.toString().split(".")[1].length || 0; 
+        return value.toString().split(".")[1].length || 0;
+    }
+
+    /** Applies border width/dash to every dataset of a KPI+chart (kpiline/kpiarea). */
+    private applyKpiLineStyle(datasets: any[], lineWidth: number, lineStyle: string): void {
+        if (!Array.isArray(datasets)) return;
+        const dash = this.getKpiLineDash(lineStyle);
+        datasets.forEach(dataset => {
+            dataset.borderWidth = lineWidth;
+            dataset.borderDash = dash;
+        });
+    }
+
+    private getKpiLineDash(style: string): number[] {
+        switch (style) {
+            case 'dashed': return [8, 4];
+            case 'dotted': return [2, 4];
+            case 'solid':
+            default: return [];
+        }
+    }
+
+    /** Applies X axis visibility/label-thinning options to a KPI+chart's Chart.js options object. */
+    private applyKpiXAxisOptions(chartOptions: any, showAxis: boolean, showLabels: boolean, labelCount: number, chartLabels: any[], showAllLabels: boolean = false): void {
+        if (!chartOptions) return;
+        const labelsLength = Array.isArray(chartLabels) ? chartLabels.length : 0;
+
+        if (!chartOptions.scales) chartOptions.scales = {};
+        if (!chartOptions.scales.x) chartOptions.scales.x = {};
+        if (!chartOptions.scales.x.ticks) chartOptions.scales.x.ticks = {};
+        if (!chartOptions.scales.x.grid) chartOptions.scales.x.grid = {};
+
+        chartOptions.scales.x.display = showAxis || showLabels;
+        // This app hardcodes grid.display=false for the X axis in the base bar/line/area styles
+        // (no vertical gridlines by design) — grid.display also gates drawing the border in
+        // Chart.js 3, so it must be toggled here too, not just drawBorder, or "show axis" is a no-op.
+        chartOptions.scales.x.grid.display = showAxis;
+        chartOptions.scales.x.grid.drawBorder = showAxis;
+        chartOptions.scales.x.ticks.display = showLabels;
+
+        if (showAllLabels) {
+            // Explicit "mostrar todas las etiquetas" (like develop) — force every label to render
+            // unskipped, even if that overlaps with many categories. Off by default.
+            chartOptions.scales.x.ticks.maxTicksLimit = labelsLength;
+            chartOptions.scales.x.ticks.autoSkip = false;
+            chartOptions.scales.x.ticks.callback = this.buildKpiXAxisTickCallback(true, labelsLength, labelCount, chartLabels);
+        } else if (labelCount > 0) {
+            // Explicit label count — take over tick selection ourselves.
+            chartOptions.scales.x.ticks.maxTicksLimit = labelCount;
+            chartOptions.scales.x.ticks.autoSkip = false;
+            chartOptions.scales.x.ticks.callback = this.buildKpiXAxisTickCallback(false, labelsLength, labelCount, chartLabels);
+        }
+        // Neither flag set (the default/untouched state) — leave Chart.js's own smart auto-skip
+        // (maxTicksLimit/autoSkip from ticksOptions in initChartOptions) alone, instead of forcing
+        // every label unskipped, which overlaps into an unreadable mess with many categories.
+    }
+
+    private buildKpiXAxisTickCallback(useAll: boolean, labelsLength: number, labelCount: number, chartLabels: any[]): ((value: any, index: number) => string) | undefined {
+        if (labelsLength === 0) return undefined;
+        if (useAll || !labelCount || labelCount <= 0) {
+            return (value, index) => {
+                const label = Array.isArray(chartLabels) ? (chartLabels[index] ?? chartLabels[value]) : value;
+                return `${label ?? ''}`;
+            };
+        }
+        const maxCount = Math.min(labelCount, labelsLength);
+        if (maxCount <= 1) {
+            return (value, index) => {
+                if (index !== 0) return '';
+                const label = Array.isArray(chartLabels) ? (chartLabels[index] ?? chartLabels[value]) : value;
+                return `${label ?? ''}`;
+            };
+        }
+        const indices = this.getKpiXAxisLabelIndices(labelsLength, maxCount);
+        return (value, index) => {
+            if (!indices.has(index)) return '';
+            const label = Array.isArray(chartLabels) ? (chartLabels[index] ?? chartLabels[value]) : value;
+            return `${label ?? ''}`;
+        };
+    }
+
+    private getKpiXAxisLabelIndices(labelsLength: number, labelCount: number): Set<number> {
+        const indices = new Set<number>();
+        if (labelsLength <= 0) return indices;
+        if (labelCount <= 1) {
+            indices.add(0);
+            return indices;
+        }
+        const steps = labelCount - 1;
+        for (let i = 0; i < labelCount; i += 1) {
+            const index = Math.round((i * (labelsLength - 1)) / steps);
+            indices.add(index);
+        }
+        indices.add(0);
+        indices.add(labelsLength - 1);
+        return indices;
     }
 
 

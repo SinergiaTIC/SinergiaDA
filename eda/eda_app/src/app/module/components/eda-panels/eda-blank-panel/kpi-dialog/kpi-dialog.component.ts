@@ -55,6 +55,36 @@ export class KpiEditDialogComponent implements OnInit, AfterViewInit, AfterViewC
     public kpiTextColor: string = '';
     public prefixImage: string = '';
 
+    // --- KPI+chart options (kpibar/kpiline/kpiarea only) ---
+    public lineWidth: number = 2;
+    public lineStyle: 'solid' | 'dashed' | 'dotted' = 'solid';
+    public lineStyleOptions = [
+        { label: $localize`:@@lineStyleSolid:Sólida`, value: 'solid' },
+        { label: $localize`:@@lineStyleDashed:Discontinua`, value: 'dashed' },
+        { label: $localize`:@@lineStyleDotted:Punteada`, value: 'dotted' }
+    ];
+    public showXAxis: boolean = true;
+    public showXAxisLabels: boolean = true;
+    public xAxisLabelCount: number = 0;
+    public showAllXAxisLabels: boolean = true;
+    private axisTicksOverrideWasActive: boolean = false;
+    public showLabels: boolean = false;
+    public showLabelsPercent: boolean = false;
+    public labelColor: string = '#000000';
+    public labelBackgroundColor: string = '';
+    public showLineSettings: boolean = false;
+    public showAxisAndLabelSettings: boolean = false;
+    /** Independent border color for kpibar/kpiarea, on top of "Color de la serie". */
+    public chartLineColor: string = '';
+    public showChartLineColor: boolean = false;
+    /** Independent fill color for kpiarea, on top of the border color. */
+    public chartFillColor: string = '';
+    public showChartFillColor: boolean = false;
+    private initialLineState: { lineWidth: number, lineStyle: 'solid' | 'dashed' | 'dotted', chartLineColor: string, chartFillColor: string } = null;
+    private initialAxisState: { showXAxis: boolean, showXAxisLabels: boolean, showAllXAxisLabels: boolean, xAxisLabelCount: number } = null;
+    private initialLabelsState: { showLabels: boolean, showLabelsPercent: boolean, labelColor: string, labelBackgroundColor: string } = null;
+    // --- END KPI+chart options ---
+
     public currentAlert = null;
     public canIRunAlerts: boolean = false;
     public edaChart: any;
@@ -139,6 +169,31 @@ export class KpiEditDialogComponent implements OnInit, AfterViewInit, AfterViewC
         this.isKpiDeviation = this.panelChartConfig.chartType === 'kpideviation';
         this.activeTab = 'aspecto';
 
+        // --- KPI+chart options (kpibar/kpiline/kpiarea only) ---
+        this.showLineSettings = ['kpiline', 'kpiarea'].includes(this.panelChartConfig.chartType);
+        this.showAxisAndLabelSettings = !['kpi', 'kpitrend', 'kpideviation'].includes(this.panelChartConfig.chartType);
+        this.lineWidth = config.edaChart?.lineWidth ?? 2;
+        this.lineStyle = config.edaChart?.lineStyle || 'solid';
+        this.showXAxis = config.edaChart?.showXAxis ?? true;
+        this.showXAxisLabels = config.edaChart?.showXAxisLabels ?? true;
+        this.xAxisLabelCount = config.edaChart?.xAxisLabelCount || 0;
+        this.showAllXAxisLabels = config.edaChart?.showAllXAxisLabels ?? true;
+        this.axisTicksOverrideWasActive = this.showAllXAxisLabels || this.xAxisLabelCount > 0;
+        this.showLabels = config.edaChart?.showLabels ?? false;
+        this.showLabelsPercent = config.edaChart?.showLabelsPercent ?? false;
+        this.labelColor = config.edaChart?.labelColor || '#000000';
+        this.labelBackgroundColor = config.edaChart?.labelBackgroundColor || '';
+        this.showChartLineColor = ['kpibar', 'kpiarea'].includes(this.panelChartConfig.chartType);
+        this.chartLineColor = config.edaChart?.chartLineColor || this.getKpiChartLineColor();
+        this.showChartFillColor = this.panelChartConfig.chartType === 'kpiarea';
+        this.chartFillColor = config.edaChart?.chartFillColor || this.getKpiChartFillColor();
+
+        // Snapshot for the per-section "Restaurar" buttons
+        this.initialLineState = { lineWidth: this.lineWidth, lineStyle: this.lineStyle, chartLineColor: this.chartLineColor, chartFillColor: this.chartFillColor };
+        this.initialAxisState = { showXAxis: this.showXAxis, showXAxisLabels: this.showXAxisLabels, showAllXAxisLabels: this.showAllXAxisLabels, xAxisLabelCount: this.xAxisLabelCount };
+        this.initialLabelsState = { showLabels: this.showLabels, showLabelsPercent: this.showLabelsPercent, labelColor: this.labelColor, labelBackgroundColor: this.labelBackgroundColor };
+        // --- END KPI+chart options ---
+
         if (this.panelBaseResultSize > 0) {
         setTimeout(() => {
             const kpiInstance = this.panelChartComponent?.componentRef?.instance;
@@ -167,7 +222,10 @@ export class KpiEditDialogComponent implements OnInit, AfterViewInit, AfterViewC
         this.onClose(EdaDialogCloseEvent.UPDATE, {
             alerts: this.alerts,
             sufix: this.panelChartComponent.componentRef.instance.inject.sufix || '',
-            edaChart: this.edaChart,
+            // Bug fix: this used to emit `this.edaChart` (the chart subtype string, e.g. 'bar'),
+            // but the close handler (onCloseKpiProperties) expects an object with chartColors/chartType/etc.
+            // `this.chartContent` is the real chart-options object (inject.edaChart).
+            edaChart: this.chartContent,
             chartType: this.panelChartConfig.chartType,
             chartSubType: this.panelChartConfig.edaChart,
             assignedColors: [...this.assignedColors],
@@ -211,10 +269,10 @@ export class KpiEditDialogComponent implements OnInit, AfterViewInit, AfterViewC
     }
 
     applyColorsToChart() {
-        if (!this.chartContent) return;
-        if (!this.panelChartComponent?.componentRef?.instance?.inject?.edaChart) return;
+        const chartContent = this.getLiveChartContent();
+        if (!chartContent) return;
 
-        const dataset = this.chartContent.chartDataset;
+        const dataset = chartContent.chartDataset;
 
         for (let i = 0; i < dataset.length; i++) {
             const colorConfig = this.assignedColors.find(c => c.value === dataset[i].label);
@@ -222,16 +280,320 @@ export class KpiEditDialogComponent implements OnInit, AfterViewInit, AfterViewC
             if (colorConfig) {
                 dataset[i].backgroundColor = this.hex2rgb(colorConfig.color, 90);
                 dataset[i].borderColor = this.hex2rgb(colorConfig.color, 100);
-                this.chartContent.chartColors[i] = {
+                chartContent.chartColors[i] = {
                     backgroundColor: dataset[i].backgroundColor,
                     borderColor: dataset[i].borderColor
                 };
             }
         }
 
-        this.panelChartComponent.componentRef.instance.inject.edaChart.chartDataset = [...dataset];
-        this.panelChartComponent.componentRef.instance.updateChart();
+        chartContent.chartDataset = [...dataset];
+        this.commitChartContentChange();
     }
+
+    // --- KPI+chart options (kpibar/kpiline/kpiarea only) ---
+
+    /**
+     * `this.chartContent` is only captured once (in ngAfterViewChecked) and can end up stale —
+     * always re-fetch the actually-rendered instance's chart object before mutating it, or edits
+     * can silently land on a disconnected/no-longer-rendered object (invisible in the preview,
+     * but still correctly picked up on "Confirmar" since that always does a full fresh re-render).
+     */
+    private getLiveChartContent(): any {
+        const live = this.panelChartComponent?.componentRef?.instance?.inject?.edaChart;
+        if (live) {
+            this.chartContent = live;
+        }
+        return this.chartContent;
+    }
+
+    /**
+     * Reassigns inject.edaChart to a new top-level object reference (not just mutating nested
+     * properties in place) so Angular's Input binding — and ng2-charts' own change-driven sync —
+     * actually notices the change, in addition to the direct Chart.js update() call below.
+     */
+    private commitChartContentChange(): void {
+        const instance = this.panelChartComponent?.componentRef?.instance;
+        if (!instance?.inject || !this.chartContent) return;
+        instance.inject.edaChart = { ...this.chartContent };
+        this.chartContent = instance.inject.edaChart;
+        instance.updateChart?.();
+    }
+
+    applyLineStyle(): void {
+        const chartContent = this.getLiveChartContent();
+        if (!chartContent?.chartDataset) return;
+        const dash = this.getLineDash(this.lineStyle);
+        chartContent.chartDataset.forEach(dataset => {
+            dataset.borderWidth = this.lineWidth;
+            dataset.borderDash = dash;
+        });
+        chartContent.lineWidth = this.lineWidth;
+        chartContent.lineStyle = this.lineStyle;
+        this.commitChartContentChange();
+    }
+
+    private getLineDash(style: string): number[] {
+        switch (style) {
+            case 'dashed': return [8, 4];
+            case 'dotted': return [2, 4];
+            case 'solid':
+            default: return [];
+        }
+    }
+
+    toggleAllXAxisLabels(): void {
+        if (this.showAllXAxisLabels) {
+            this.xAxisLabelCount = 0;
+        } else if (!this.xAxisLabelCount || this.xAxisLabelCount <= 0) {
+            this.xAxisLabelCount = Math.min(5, this.chartContent?.chartLabels?.length || 5);
+        }
+        this.applyXAxisSettings();
+    }
+
+    handleXAxisLabelCountInput(): void {
+        if (this.xAxisLabelCount && this.xAxisLabelCount > 0) {
+            this.showAllXAxisLabels = false;
+        }
+        this.applyXAxisSettings();
+    }
+
+    applyXAxisSettings(): void {
+        const chartContent = this.getLiveChartContent();
+        if (!chartContent?.chartOptions) return;
+        const chartLabels = chartContent.chartLabels || [];
+        const labelsLength = chartLabels.length || 0;
+
+        // Shallow-clone chartOptions too (not just the top-level edaChart object committed below)
+        // so Chart.js's own scale-recalculation reliably picks up the change.
+        const opts = { ...chartContent.chartOptions, scales: { ...chartContent.chartOptions.scales } };
+        opts.scales.x = { ...opts.scales.x, ticks: { ...opts.scales.x?.ticks }, grid: { ...opts.scales.x?.grid } };
+
+        opts.scales.x.display = this.showXAxis || this.showXAxisLabels;
+        // grid.display is hardcoded false in this app's base bar/line/area styles (no vertical
+        // gridlines by design), and it also gates the axis border draw in Chart.js 3 — must be
+        // toggled here too, not just drawBorder, or the "mostrar eje X" switch is a no-op.
+        opts.scales.x.grid.display = this.showXAxis;
+        opts.scales.x.grid.drawBorder = this.showXAxis;
+        opts.scales.x.ticks.display = this.showXAxisLabels;
+
+        if (this.showAllXAxisLabels) {
+            // Explicit "mostrar todas las etiquetas" (like develop) — force every label to render
+            // unskipped, even if that overlaps with many categories. Off by default.
+            opts.scales.x.ticks.maxTicksLimit = labelsLength;
+            opts.scales.x.ticks.autoSkip = false;
+            opts.scales.x.ticks.callback = this.buildXAxisTickCallback(true, labelsLength, this.xAxisLabelCount, chartLabels);
+            this.axisTicksOverrideWasActive = true;
+        } else if (this.xAxisLabelCount > 0) {
+            // Explicit label count — take over tick selection ourselves.
+            opts.scales.x.ticks.maxTicksLimit = this.xAxisLabelCount;
+            opts.scales.x.ticks.autoSkip = false;
+            opts.scales.x.ticks.callback = this.buildXAxisTickCallback(false, labelsLength, this.xAxisLabelCount, chartLabels);
+            this.axisTicksOverrideWasActive = true;
+        } else if (this.axisTicksOverrideWasActive) {
+            // Neither flag set now — only reset back to Chart.js's smart defaults if an override
+            // was actually active before, otherwise leave whatever initChartOptions() set alone.
+            opts.scales.x.ticks.maxTicksLimit = undefined;
+            opts.scales.x.ticks.autoSkip = true;
+            opts.scales.x.ticks.callback = undefined;
+            this.axisTicksOverrideWasActive = false;
+        }
+
+        chartContent.chartOptions = opts;
+        chartContent.showXAxis = this.showXAxis;
+        chartContent.showXAxisLabels = this.showXAxisLabels;
+        chartContent.xAxisLabelCount = this.xAxisLabelCount;
+        chartContent.showAllXAxisLabels = this.showAllXAxisLabels;
+        this.commitChartContentChange();
+    }
+
+    private buildXAxisTickCallback(useAll: boolean, labelsLength: number, labelCount: number, chartLabels: any[]): ((value: any, index: number) => string) | undefined {
+        if (labelsLength === 0) return undefined;
+        if (useAll || !labelCount || labelCount <= 0) {
+            return (value, index) => {
+                const label = Array.isArray(chartLabels) ? (chartLabels[index] ?? chartLabels[value]) : value;
+                return `${label ?? ''}`;
+            };
+        }
+        const maxCount = Math.min(labelCount, labelsLength);
+        if (maxCount <= 1) {
+            return (value, index) => {
+                if (index !== 0) return '';
+                const label = Array.isArray(chartLabels) ? (chartLabels[index] ?? chartLabels[value]) : value;
+                return `${label ?? ''}`;
+            };
+        }
+        const indices = this.getXAxisLabelIndices(labelsLength, maxCount);
+        return (value, index) => {
+            if (!indices.has(index)) return '';
+            const label = Array.isArray(chartLabels) ? (chartLabels[index] ?? chartLabels[value]) : value;
+            return `${label ?? ''}`;
+        };
+    }
+
+    private getXAxisLabelIndices(labelsLength: number, labelCount: number): Set<number> {
+        const indices = new Set<number>();
+        if (labelsLength <= 0) return indices;
+        if (labelCount <= 1) {
+            indices.add(0);
+            return indices;
+        }
+        const steps = labelCount - 1;
+        for (let i = 0; i < labelCount; i += 1) {
+            const index = Math.round((i * (labelsLength - 1)) / steps);
+            indices.add(index);
+        }
+        indices.add(0);
+        indices.add(labelsLength - 1);
+        return indices;
+    }
+
+    applyLabelStyle(): void {
+        const chartContent = this.getLiveChartContent();
+        if (!chartContent?.chartOptions) return;
+        const opts = { ...chartContent.chartOptions, plugins: { ...chartContent.chartOptions.plugins, datalabels: { ...chartContent.chartOptions.plugins?.datalabels } } };
+        opts.plugins.datalabels.color = this.labelColor;
+        opts.plugins.datalabels.backgroundColor = this.labelBackgroundColor || null;
+        chartContent.chartOptions = opts;
+        chartContent.labelColor = this.labelColor;
+        chartContent.labelBackgroundColor = this.labelBackgroundColor;
+        this.commitChartContentChange();
+    }
+
+    applyChartLineColor(): void {
+        const chartContent = this.getLiveChartContent();
+        if (!this.showChartLineColor || !chartContent?.chartDataset) return;
+        const borderColor = this.hex2rgb(this.chartLineColor, 100);
+        chartContent.chartDataset = chartContent.chartDataset.map(dataset => ({
+            ...dataset,
+            borderColor,
+            borderWidth: dataset.borderWidth ?? 2,
+        }));
+        if (Array.isArray(chartContent.chartColors)) {
+            chartContent.chartColors = chartContent.chartColors.map(c => ({ backgroundColor: c.backgroundColor, borderColor }));
+        }
+        chartContent.chartLineColor = this.chartLineColor;
+        this.commitChartContentChange();
+    }
+
+    applyChartFillColor(): void {
+        const chartContent = this.getLiveChartContent();
+        if (!this.showChartFillColor || !chartContent?.chartDataset) return;
+        const fillColor = this.hex2rgb(this.chartFillColor, 90);
+        chartContent.chartDataset = chartContent.chartDataset.map(dataset => ({
+            ...dataset,
+            backgroundColor: fillColor,
+            fill: true,
+        }));
+        if (Array.isArray(chartContent.chartColors)) {
+            chartContent.chartColors = chartContent.chartColors.map(c => ({ backgroundColor: fillColor, borderColor: c.borderColor }));
+        }
+        chartContent.chartFillColor = this.chartFillColor;
+        this.commitChartContentChange();
+    }
+
+    private getKpiChartLineColor(): string {
+        const chartColors = this.chartContent?.chartColors || this.controller?.params?.edaChart?.chartColors || [];
+        const border = chartColors[0]?.borderColor || this.chartContent?.chartDataset?.[0]?.borderColor || this.controller?.params?.edaChart?.chartDataset?.[0]?.borderColor;
+        return this.normalizeHexColor(border, '');
+    }
+
+    private getKpiChartFillColor(): string {
+        const chartColors = this.chartContent?.chartColors || this.controller?.params?.edaChart?.chartColors || [];
+        const background = chartColors[0]?.backgroundColor || this.chartContent?.chartDataset?.[0]?.backgroundColor || this.controller?.params?.edaChart?.chartDataset?.[0]?.backgroundColor;
+        return this.normalizeHexColor(background, '');
+    }
+
+    private normalizeHexColor(color: any, fallback: string = ''): string {
+        const resolvedColor = Array.isArray(color) ? color[0] : color;
+        if (typeof resolvedColor !== 'string') return fallback;
+        const trimmed = resolvedColor.trim();
+        const shortHexMatch = /^#([0-9a-fA-F]{3})$/.exec(trimmed);
+        if (shortHexMatch) {
+            const [r, g, b] = shortHexMatch[1].split('');
+            return `#${r}${r}${g}${g}${b}${b}`;
+        }
+        if (/^#([0-9a-fA-F]{6})$/.test(trimmed)) return trimmed;
+        if (/^rgba?\(/i.test(trimmed)) return this.rgb2hex(trimmed) || fallback;
+        return fallback;
+    }
+
+    /**
+     * showLabels/showLabelsPercent change which datalabels formatter Chart.js uses (not just a
+     * display flag), so unlike the other KPI+chart options this needs a full rebuild of the
+     * preview chart instead of an in-place mutation.
+     */
+    setShowLabels(): void {
+        this.rebuildChartPreview();
+    }
+
+    setShowLabelsPercent(): void {
+        this.rebuildChartPreview();
+    }
+
+    private rebuildChartPreview(): void {
+        const config: any = this.panelChartConfig?.config?.getConfig?.();
+        if (!config) return;
+        if (!config.edaChart) config.edaChart = {};
+        config.edaChart.lineWidth = this.lineWidth;
+        config.edaChart.lineStyle = this.lineStyle;
+        config.edaChart.showXAxis = this.showXAxis;
+        config.edaChart.showXAxisLabels = this.showXAxisLabels;
+        config.edaChart.xAxisLabelCount = this.xAxisLabelCount;
+        config.edaChart.showAllXAxisLabels = this.showAllXAxisLabels;
+        config.edaChart.labelColor = this.labelColor;
+        config.edaChart.labelBackgroundColor = this.labelBackgroundColor;
+        config.edaChart.showLabels = this.showLabels;
+        config.edaChart.showLabelsPercent = this.showLabelsPercent;
+        config.edaChart.chartLineColor = this.chartLineColor;
+        config.edaChart.chartFillColor = this.chartFillColor;
+        // Preserve any color edits made in this dialog session that haven't been saved yet,
+        // so the rebuild doesn't visually revert them.
+        if (this.assignedColors.length > 0) {
+            config['assignedColors'] = [...this.assignedColors];
+        }
+        this.panelChartComponent?.changeChartType();
+        const nextEdaChart = this.panelChartComponent?.componentRef?.instance?.inject?.edaChart;
+        if (nextEdaChart) {
+            this.chartContent = nextEdaChart;
+        }
+    }
+
+    resetLineSection(): void {
+        if (!this.initialLineState) return;
+        this.lineWidth = this.initialLineState.lineWidth;
+        this.lineStyle = this.initialLineState.lineStyle;
+        this.chartLineColor = this.initialLineState.chartLineColor;
+        this.chartFillColor = this.initialLineState.chartFillColor;
+        this.applyLineStyle();
+        if (this.showChartLineColor) this.applyChartLineColor();
+        if (this.showChartFillColor) this.applyChartFillColor();
+    }
+
+    resetAxisSection(): void {
+        if (!this.initialAxisState) return;
+        this.showXAxis = this.initialAxisState.showXAxis;
+        this.showXAxisLabels = this.initialAxisState.showXAxisLabels;
+        this.showAllXAxisLabels = this.initialAxisState.showAllXAxisLabels;
+        this.xAxisLabelCount = this.initialAxisState.xAxisLabelCount;
+        this.applyXAxisSettings();
+    }
+
+    resetLabelsSection(): void {
+        if (!this.initialLabelsState) return;
+        const labelsChanged = this.showLabels !== this.initialLabelsState.showLabels || this.showLabelsPercent !== this.initialLabelsState.showLabelsPercent;
+        this.showLabels = this.initialLabelsState.showLabels;
+        this.showLabelsPercent = this.initialLabelsState.showLabelsPercent;
+        this.labelColor = this.initialLabelsState.labelColor;
+        this.labelBackgroundColor = this.initialLabelsState.labelBackgroundColor;
+        if (labelsChanged) {
+            this.rebuildChartPreview();
+        } else {
+            this.applyLabelStyle();
+        }
+    }
+
+    // --- END KPI+chart options ---
 
     onClose(event: EdaDialogCloseEvent, response?: any): void {
         return this.controller.close(event, response);

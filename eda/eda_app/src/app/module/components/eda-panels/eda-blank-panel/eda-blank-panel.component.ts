@@ -1899,6 +1899,18 @@ public tableNodeExpand(event: any): void {
                 response.assignedColors,  //  Pass assignedColors from the response, not from edaChart.
                 response.edaChart.showPointLines,
                 response.edaChart.showPredictionLines,
+                response.edaChart.chartLegend ?? true,
+                response.edaChart.showGridLines ?? true,
+                response.edaChart.lineWidth ?? 2,
+                response.edaChart.lineStyle || 'solid',
+                response.edaChart.showXAxis ?? true,
+                response.edaChart.showXAxisLabels ?? true,
+                response.edaChart.xAxisLabelCount || 0,
+                response.edaChart.labelColor || '#000000',
+                response.edaChart.labelBackgroundColor || '',
+                response.edaChart.chartLineColor || '',
+                response.edaChart.chartFillColor || '',
+                response.edaChart.showAllXAxisLabels ?? true,
             );
         }
 

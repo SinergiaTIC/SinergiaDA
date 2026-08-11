@@ -23,6 +23,18 @@ export class KpiConfig {
             init?.edaChart?.assignedColors || [],
             init?.edaChart?.showPointLines || false,
             init?.edaChart?.showPredictionLines || false,
+            init?.edaChart?.chartLegend ?? true,
+            init?.edaChart?.showGridLines ?? true,
+            init?.edaChart?.lineWidth ?? 2,
+            init?.edaChart?.lineStyle || 'solid',
+            init?.edaChart?.showXAxis ?? true,
+            init?.edaChart?.showXAxisLabels ?? true,
+            init?.edaChart?.xAxisLabelCount || 0,
+            init?.edaChart?.labelColor || '#000000',
+            init?.edaChart?.labelBackgroundColor || '',
+            init?.edaChart?.chartLineColor || '',
+            init?.edaChart?.chartFillColor || '',
+            init?.edaChart?.showAllXAxisLabels ?? true,
         );
         
         Object.assign(this, init);
