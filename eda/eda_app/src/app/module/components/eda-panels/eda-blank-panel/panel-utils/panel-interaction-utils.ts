@@ -29,8 +29,11 @@ export const PanelInteractionUtils = {
         return !matcher && tableColumn.visible === true;
     });
 
+    // Hide columns marked as hidden unless the user toggled them visible via the eye button
+    const visibleColumns = filteredColumns.filter((tableColumn: Column) => ebp.showHiddenColumn || !tableColumn.hidden);
+
     // Sort columns by default display name
-    ebp.columns = filteredColumns.sort((a, b) => a.display_name.default.localeCompare(b.display_name.default));
+    ebp.columns = visibleColumns.sort((a, b) => a.display_name.default.localeCompare(b.display_name.default));
 
     // Reload Inputs when call func from select table 
     if(reloadInputs){ ebp.columnInput = ''; }
@@ -550,7 +553,7 @@ export const PanelInteractionUtils = {
   * Sets tables and tablesToShow when column is selected
   */
   searchRelations: (ebp: EdaBlankPanelComponent, c: Column, event?: CdkDragDrop<string[]>) => {
-    if (ebp.selectedQueryMode !== 'EDA2') {
+    if (ebp.selectedQueryMode !== 'TREE') {
       // Check to drag & drop only to correct container
       if (!_.isNil(event) && event.container.id === event.previousContainer.id) {
         return;
@@ -822,7 +825,7 @@ export const PanelInteractionUtils = {
     ebp.disableBtnSave();
     // Search index in array, remove the column and do it
     if (list === 'select') {
-      if (ebp.selectedQueryMode == 'EDA2') {
+      if (ebp.selectedQueryMode == 'TREE') {
 
         const rootTable = ebp.rootTable.table_name;
 

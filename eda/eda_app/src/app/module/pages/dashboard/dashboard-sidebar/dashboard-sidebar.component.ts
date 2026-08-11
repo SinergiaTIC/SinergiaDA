@@ -596,6 +596,7 @@ export class DashboardSidebarComponent implements AfterViewInit {
   public saveCustomAction(url: any) {
     this.isCustomActionDialogVisible = false;
     this.dashboard.dashboard.config.urls = url;
+    this.dashboardService.setNotSaved(true);
   }
 
   public closeStyles() {
