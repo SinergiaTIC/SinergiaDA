@@ -15,7 +15,7 @@ import { ConfirmationService, SharedModule } from 'primeng/api';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { TreeModule } from 'primeng/tree';
 // Eda config
-import { AGG_TYPES, NULL_VALUE, EMPTY_VALUE, SHOW_LOCK_IN_PANEL_HEADER, ALLOWED_QUERY_MODES, SHOW_HIDDEN_FIELDS } from '@eda/configs/customizable/customizable_default';
+import { AGG_TYPES, NULL_VALUE, EMPTY_VALUE, SHOW_LOCK_IN_PANEL_HEADER, ALLOWED_QUERY_MODES, SHOW_HIDDEN_FIELDS, SHOW_WHAT_IF } from '@eda/configs/customizable/customizable_default';
 import { normalizeQueryMode } from '@eda/shared/utils/query-mode.util';
 import {Column, EdaPanel, InjectEdaPanel } from '@eda/models/model.index';
 
@@ -553,6 +553,7 @@ public tableNodeExpand(event: any): void {
         const selectedTable = this.getUserSelectedTable();
         this.loadColumns(selectedTable);
     }
+    readonly showWhatIf = SHOW_WHAT_IF;
 
     isPanelLocked(): boolean {
         return (this.panel as any).dragEnabled === false;
