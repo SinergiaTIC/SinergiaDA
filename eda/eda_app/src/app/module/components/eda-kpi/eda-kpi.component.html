@@ -16,26 +16,6 @@
 }
 
 <ng-template #kpiValueContainer>
-  @if (useHoverResize) {
-    <div style="position: relative; width: 100%; height: 100%;"
-         (mouseenter)="onMouseEnter()" (mouseleave)="onMouseLeave()">
-      @if (shouldShowControls()) {
-        <div style="position: absolute; top: 4px; right: 4px; display: flex; gap: 6px; align-items: center; z-index: 1;">
-          <button type="button" (click)="decreaseFont()" title="Reducir tamaño"
-                  style="width: 24px; height: 24px; border: 1px solid #ccc; background: #fff; border-radius: 4px; line-height: 20px;">-</button>
-          <button type="button" (click)="increaseFont()" title="Aumentar tamaño"
-                  style="width: 24px; height: 24px; border: 1px solid #ccc; background: #fff; border-radius: 4px; line-height: 20px;">+</button>
-        </div>
-      }
-      <ng-container *ngTemplateOutlet="kpiValueContent;"></ng-container>
-    </div>
-  } @else {
-    <ng-container *ngTemplateOutlet="kpiValueContent;"></ng-container>
-  }
-</ng-template>
-
-<!-- EDA mode (default): exactly the original markup, no extra wrapper -->
-<ng-template #kpiValueContent>
     <div #sufixContainer class="pointer" title="Añadir unidades"
          style="max-width: 100%; overflow: hidden;">
         <span [ngStyle]="getStyle()" (click)="setSufix()"

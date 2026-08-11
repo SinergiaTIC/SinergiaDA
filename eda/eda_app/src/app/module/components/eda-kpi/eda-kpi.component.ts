@@ -4,9 +4,8 @@ import { registerLocaleData } from '@angular/common';
 import { EdaKpi } from './eda-kpi';
 import es from '@angular/common/locales/es';
 import { EdaChartComponent } from '../eda-chart/eda-chart.component';
-import { USE_EDA_KPI_SIZE_LOGIC } from '@eda/configs/customizable/customizable_default';
 
-import { FormsModule } from '@angular/forms';
+import { FormsModule } from '@angular/forms'; 
 import { CommonModule } from '@angular/common';
 
 @Component({
@@ -38,15 +37,6 @@ export class EdaKpiComponent implements OnInit, AfterViewInit {
     baseResultSize: number = 0;
     showChart: boolean = true;
 
-    // Feature flag: EDA mode = dialog input (modifiedFontPoints) | SDA mode = hover +/- resize controls (fontScale)
-    readonly useHoverResize: boolean = !USE_EDA_KPI_SIZE_LOGIC;
-    private readonly minFontScale = 0.6;
-    private readonly maxFontScale = 2.0;
-    private readonly fontScaleStep = 0.1;
-    private readonly scaleTolerance = 0.15;
-    private baseWidth: number | undefined;
-    public isHovered = false;
-
     constructor(private styleProviderService : StyleProviderService, private cdr: ChangeDetectorRef) { }
 
     ngAfterViewInit() {
@@ -58,10 +48,6 @@ export class EdaKpiComponent implements OnInit, AfterViewInit {
     ngOnInit() {
         try {
             registerLocaleData(es);
-
-            if (this.useHoverResize && typeof this.inject?.fontScale !== 'number') {
-                this.inject.fontScale = 1;
-            }
 
             if (this.inject.kpiColor) {
                 this.defaultColor = this.inject.kpiColor;
@@ -104,9 +90,6 @@ export class EdaKpiComponent implements OnInit, AfterViewInit {
             if (widthKpiContainer > 0) {
                 this.containerHeight = heightKpiContainer;
                 this.containerWidth = widthKpiContainer;
-                if (this.useHoverResize && !this.baseWidth) {
-                    this.baseWidth = widthKpiContainer;
-                }
             }
 
             // Auto margin
@@ -134,53 +117,7 @@ export class EdaKpiComponent implements OnInit, AfterViewInit {
 
     setSufix(): void {
         this.sufixClick = !this.sufixClick;
-        this.onNotify.emit(this.useHoverResize
-            ? { sufix: this.inject.sufix, fontScale: this.inject.fontScale }
-            : { sufix: this.inject.sufix });
-    }
-
-    onMouseEnter(): void {
-        this.isHovered = true;
-    }
-
-    onMouseLeave(): void {
-        this.isHovered = false;
-    }
-
-    shouldShowControls(): boolean {
-        return this.useHoverResize && this.isHovered;
-    }
-
-    increaseFont(): void {
-        this.updateFontScale(this.fontScaleStep);
-    }
-
-    decreaseFont(): void {
-        this.updateFontScale(-this.fontScaleStep);
-    }
-
-    private updateFontScale(delta: number): void {
-        const current = typeof this.inject.fontScale === 'number' ? this.inject.fontScale : 1;
-        const next = this.clampFontScale(current + delta);
-        this.inject.fontScale = next;
-        if (this.containerWidth > 0) {
-            this.baseWidth = this.containerWidth;
-        }
-        this.onNotify.emit({ sufix: this.inject.sufix, fontScale: this.inject.fontScale });
-    }
-
-    private clampFontScale(value: number): number {
-        return Math.max(this.minFontScale, Math.min(this.maxFontScale, value));
-    }
-
-    private getEffectiveScale(): number {
-        const scale = typeof this.inject.fontScale === 'number' ? this.inject.fontScale : 1;
-        if (!this.baseWidth || this.baseWidth <= 0 || this.containerWidth <= 0) {
-            return scale;
-        }
-        const ratio = this.containerWidth / this.baseWidth;
-        const withinTolerance = ratio >= (1 - this.scaleTolerance) && ratio <= (1 + this.scaleTolerance);
-        return withinTolerance ? scale : 1;
+        this.onNotify.emit({ sufix: this.inject.sufix })
     }
 
     getStyle(): any {
@@ -242,9 +179,7 @@ export class EdaKpiComponent implements OnInit, AfterViewInit {
         if(isMobile) {
             resultSize = 40;
         }
-        if (this.useHoverResize) {
-            resultSize = resultSize * this.getEffectiveScale();
-        } else if (this.inject.modifiedFontPoints) {
+        if (this.inject.modifiedFontPoints) {
             resultSize += this.inject.modifiedFontPoints;
         }
         return resultSize.toFixed().toString() + 'px';

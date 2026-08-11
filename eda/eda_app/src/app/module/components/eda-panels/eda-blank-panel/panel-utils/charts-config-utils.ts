@@ -69,7 +69,6 @@ export const ChartsConfigUtils = {
         alertLimits: ebp.panelChart.componentRef.instance.inject.alertLimits,
         assignedColors: ebp.panelChart.props.config?.getConfig()?.['assignedColors'] || null,
         modifiedFontPoints: ebp.panelChart.componentRef.instance.inject.modifiedFontPoints || 0,
-        fontScale: ebp.panelChart.componentRef.instance.inject.fontScale || 1,
         backgroundColor: ebp.panelChart.componentRef.instance.inject.backgroundColor || '',
         kpiColor: ebp.panelChart.componentRef.instance.inject.kpiColor || '',
         prefixImage: ebp.panelChart.componentRef.instance.inject.prefixImage || '',
@@ -80,27 +79,6 @@ export const ChartsConfigUtils = {
         config.edaChart.colors = kpiChart.chartColors;
         config.edaChart.chartType = ebp.panelChart.props.chartType;
         config.edaChart.assignedColors = ebp.panelChart.props.config?.getConfig()?.['assignedColors'] || null;  // ambién en edaChart
-        // Chart display options (kpiline/kpiarea/kpibar's "Gráfico" tab) - setConfig() rebuilds
-        // edaChart from scratch from the live inject on every save, so these must be copied
-        // through explicitly or they're silently dropped.
-        config.edaChart.chartLegend = kpiChart.chartLegend ?? true;
-        config.edaChart.showGridLines = kpiChart.showGridLines ?? true;
-        config.edaChart.useGradient = kpiChart.useGradient ?? true;
-        config.edaChart.useRoundedBars = kpiChart.useRoundedBars ?? true;
-        config.edaChart.chartAnimation = kpiChart.chartAnimation ?? true;
-        config.edaChart.showLabels = kpiChart.showLabels ?? false;
-        config.edaChart.showLabelsPercent = kpiChart.showLabelsPercent ?? false;
-        config.edaChart.labelColorMode = kpiChart.labelColorMode ?? 'series';
-        config.edaChart.labelCustomColor = kpiChart.labelCustomColor ?? '#000000';
-        config.edaChart.showPointLines = kpiChart.showPointLines ?? false;
-        config.edaChart.addTrend = kpiChart.addTrend ?? false;
-        config.edaChart.addComparative = kpiChart.addComparative ?? false;
-        config.edaChart.lineWidth = kpiChart.lineWidth ?? 2;
-        config.edaChart.lineStyle = kpiChart.lineStyle ?? 'solid';
-        config.edaChart.showXAxis = kpiChart.showXAxis ?? true;
-        config.edaChart.showXAxisLabels = kpiChart.showXAxisLabels ?? true;
-        config.edaChart.xAxisLabelCount = kpiChart.xAxisLabelCount ?? 0;
-        config.edaChart.labelBackgroundColor = kpiChart.labelBackgroundColor ?? '';
       }
     } else if (ebp.panelChart.componentRef && ebp.panelChart.props.chartType === 'dynamicText') {
       const dtInstance = ebp.panelChart.componentRef.instance;

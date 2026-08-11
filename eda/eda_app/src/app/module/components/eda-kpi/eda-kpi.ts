@@ -13,6 +13,4 @@ export class EdaKpi {
     backgroundColor: string;
     kpiColor: string;
     prefixImage: string;
-    /** Used only when USE_EDA_KPI_SIZE_LOGIC is false (SDA mode) */
-    fontScale?: number;
 }

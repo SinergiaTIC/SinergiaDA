@@ -1848,32 +1848,36 @@ public tableNodeExpand(event: any): void {
 
         // Usar spread operator para mantener el config existente
         // Use the spread operator to preserve the existing config.
-        // KPI-level options only; the embedded chart's own options live in `edaChart` below.
         this.panel.content.query.output.config = {
             ...this.panel.content.query.output.config,
             assignedColors: response.assignedColors,
             alertLimits: response.alerts,
             sufix: response.sufix,
             modifiedFontPoints: response.modifiedFontPoints || 0,
-            fontScale: response.fontScale || 1,
             backgroundColor: response.backgroundColor || '',
             kpiColor: response.kpiColor || '',
             prefixImage: response.prefixImage || '',
         };
 
+        let layout: any;
         if (response.edaChart) {
+            this.panel.content.query.output.config.colors = response.edaChart.chartColors;
             this.panel.content.query.output.config.chartType = response.chartType;
             this.panel.content.query.output.config.chartSubType = response.chartSubType;
-        }
 
-        // graphOptions is only present for kpibar/kpiline/kpiarea (see kpi-dialog.component.ts's
-        // showGraphTab) - the compact mini-chart's own bar/line/area options tab.
-        const graphOptions = response.graphOptions;
-        const layout: any = graphOptions ? {
-            chartType: response.chartSubType,
-            assignedColors: response.assignedColors,
-            ...graphOptions,
-        } : undefined;
+            layout = new ChartJsConfig(
+                response.edaChart.chartColors,
+                response.edaChart.chartType,
+                response.edaChart.addTrend,
+                response.edaChart.addComparative,
+                response.edaChart.showLabels,
+                response.edaChart.showLabelsPercent,
+                response.edaChart.numberOfColumns,
+                response.assignedColors,  //  Pass assignedColors from the response, not from edaChart.
+                response.edaChart.showPointLines,
+                response.edaChart.showPredictionLines,
+            );
+        }
 
         const config = new ChartConfig(
             new KpiConfig({
@@ -1882,7 +1886,6 @@ public tableNodeExpand(event: any): void {
                 edaChart: layout,
                 assignedColors: response.assignedColors,
                 modifiedFontPoints: response.modifiedFontPoints || 0,
-                fontScale: response.fontScale || 1,
                 backgroundColor: response.backgroundColor || '',
                 kpiColor: response.kpiColor || '',
                 prefixImage: response.prefixImage || '',
