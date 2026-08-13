@@ -223,12 +223,12 @@
                 </div>
                 <div class="p-4 grid gap-4 md:grid-cols-2">
                   <div class="space-y-2">
-                    <label class="text-sm font-medium" i18n="@@kpiLineWidth">Grosor</label>
+                    <label class="text-sm font-medium" i18n="@@widthLabelLine">Grosor de línea</label>
                     <input type="number" [(ngModel)]="lineWidth" (ngModelChange)="applyLineStyle()" min="1" max="10"
                       class="w-full px-3 py-2 border rounded-md bg-white text-center" />
                   </div>
                   <div class="space-y-2">
-                    <label class="text-sm font-medium" i18n="@@kpiLineStyle">Estilo</label>
+                    <label class="text-sm font-medium" i18n="@@lineStyleLabel">Tipo de línea</label>
                     <p-dropdown [(ngModel)]="lineStyle" [options]="lineStyleOptions" optionLabel="label" optionValue="value"
                       (ngModelChange)="applyLineStyle()" [style]="{'width':'100%'}" appendTo="body">
                     </p-dropdown>
@@ -250,26 +250,26 @@
 
                   <!-- Eje X -->
                   <div class="flex items-center justify-between">
-                    <span class="text-xs font-semibold uppercase text-slate-500" i18n="@@kpiAxisSubsection">Eje X</span>
+                    <span class="text-xs font-semibold uppercase text-slate-500" i18n="@@axisScaleH6">Ejes y escala</span>
                     <button type="button" (click)="resetAxisSection()"
                       class="text-xs text-slate-500 hover:text-slate-800 underline" i18n="@@resetSectionButton">Restaurar</button>
                   </div>
                   <div class="flex items-center justify-between">
-                    <span class="text-sm font-medium" i18n="@@kpiShowXAxis">Mostrar eje X</span>
+                    <span class="text-sm font-medium" i18n="@@xAxisShowLabel">Mostrar eje X</span>
                     <label class="relative inline-flex items-center cursor-pointer">
                       <input type="checkbox" class="sr-only peer" [(ngModel)]="showXAxis" (ngModelChange)="applyXAxisSettings()">
                       <div class="w-9 h-5 bg-gray-200 rounded-full peer peer-checked:bg-[#00BFB3] peer-focus:outline-none after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:after:translate-x-4"></div>
                     </label>
                   </div>
                   <div class="flex items-center justify-between">
-                    <span class="text-sm font-medium" i18n="@@kpiShowXAxisLabels">Mostrar etiquetas del eje X</span>
+                    <span class="text-sm font-medium" i18n="@@xAxisLabelsLabel">Mostrar etiquetas del eje X</span>
                     <label class="relative inline-flex items-center cursor-pointer">
                       <input type="checkbox" class="sr-only peer" [(ngModel)]="showXAxisLabels" (ngModelChange)="applyXAxisSettings()">
                       <div class="w-9 h-5 bg-gray-200 rounded-full peer peer-checked:bg-[#00BFB3] peer-focus:outline-none after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:after:translate-x-4"></div>
                     </label>
                   </div>
                   <div class="flex items-center justify-between gap-4" [class.opacity-50]="!showXAxisLabels">
-                    <span class="text-sm font-medium" i18n="@@kpiShowAllXAxisLabels">Mostrar todas las etiquetas</span>
+                    <span class="text-sm font-medium" i18n="@@xAxisAllLabelsLabel">Mostrar todas las etiquetas</span>
                     <label class="relative inline-flex items-center" [class.cursor-pointer]="showXAxisLabels" [class.cursor-not-allowed]="!showXAxisLabels">
                       <input type="checkbox" class="sr-only peer" [(ngModel)]="showAllXAxisLabels" (ngModelChange)="toggleAllXAxisLabels()" [disabled]="!showXAxisLabels">
                       <div class="w-9 h-5 bg-gray-200 rounded-full peer peer-checked:bg-[#00BFB3] peer-focus:outline-none after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:after:translate-x-4"></div>
@@ -277,7 +277,7 @@
                   </div>
                   @if (!showAllXAxisLabels) {
                     <div class="flex items-center justify-between gap-4" [class.opacity-50]="!showXAxisLabels">
-                      <span class="text-sm font-medium" i18n="@@kpiXAxisLabelCount">Número de etiquetas</span>
+                      <span class="text-sm font-medium" i18n="@@xAxisLabelCountLabel">Máximo de etiquetas</span>
                       <input type="number" [(ngModel)]="xAxisLabelCount" (ngModelChange)="handleXAxisLabelCountInput()" min="1"
                         [disabled]="!showXAxisLabels" class="w-24 px-3 py-2 border rounded-md bg-white text-center" />
                     </div>
@@ -287,19 +287,19 @@
 
                   <!-- Etiquetas de valor -->
                   <div class="flex items-center justify-between">
-                    <span class="text-xs font-semibold uppercase text-slate-500" i18n="@@kpiLabelsSubsection">Etiquetas de valor</span>
+                    <span class="text-xs font-semibold uppercase text-slate-500" i18n="@@labelsValuesH6">Etiquetas y valores</span>
                     <button type="button" (click)="resetLabelsSection()"
                       class="text-xs text-slate-500 hover:text-slate-800 underline" i18n="@@resetSectionButton">Restaurar</button>
                   </div>
                   <div class="flex items-center justify-between">
-                    <span class="text-sm font-medium" i18n="@@kpiShowLabels">Mostrar valores</span>
+                    <span class="text-sm font-medium" i18n="@@showValueLabelsLabel">Mostrar valores en el gráfico</span>
                     <label class="relative inline-flex items-center cursor-pointer">
                       <input type="checkbox" class="sr-only peer" [(ngModel)]="showLabels" (ngModelChange)="setShowLabels()">
                       <div class="w-9 h-5 bg-gray-200 rounded-full peer peer-checked:bg-[#00BFB3] peer-focus:outline-none after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:after:translate-x-4"></div>
                     </label>
                   </div>
                   <div class="flex items-center justify-between">
-                    <span class="text-sm font-medium" i18n="@@kpiShowLabelsPercent">Mostrar porcentaje</span>
+                    <span class="text-sm font-medium" i18n="@@showValuePercentLabel">Mostrar valores en porcentaje</span>
                     <label class="relative inline-flex items-center cursor-pointer">
                       <input type="checkbox" class="sr-only peer" [(ngModel)]="showLabelsPercent" (ngModelChange)="setShowLabelsPercent()">
                       <div class="w-9 h-5 bg-gray-200 rounded-full peer peer-checked:bg-[#00BFB3] peer-focus:outline-none after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:after:translate-x-4"></div>
@@ -307,7 +307,7 @@
                   </div>
                   <div class="grid gap-4 md:grid-cols-2">
                     <div class="space-y-2">
-                      <label class="text-sm font-medium" i18n="@@kpiLabelColor">Color del texto</label>
+                      <label class="text-sm font-medium" i18n="@@labelColorLabel">Color del texto de etiquetas</label>
                       <div class="flex items-center gap-3">
                         <input type="text" [(ngModel)]="labelColor" (ngModelChange)="applyLabelStyle()"
                           placeholder="#000000" class="flex-1 px-3 py-2 border rounded-md font-mono bg-white text-sm" />
@@ -316,7 +316,7 @@
                       </div>
                     </div>
                     <div class="space-y-2">
-                      <label class="text-sm font-medium" i18n="@@kpiLabelBackgroundColor">Color de fondo</label>
+                      <label class="text-sm font-medium" i18n="@@labelBackgroundColorLabel">Fondo de etiquetas</label>
                       <div class="flex items-center gap-3">
                         <input type="text" [(ngModel)]="labelBackgroundColor" (ngModelChange)="applyLabelStyle()"
                           placeholder="#ffffff" class="flex-1 px-3 py-2 border rounded-md font-mono bg-white text-sm" />

@@ -6692,6 +6692,214 @@ Po skonfigurowaniu możesz go wywołać w dowolnym momencie za pomocą przycisku
         <source>Fuente de datos</source>
         <target>Źródło danych</target>
       </trans-unit>
+<trans-unit id="kpiSizeHover" datatype="html">
+        <source>Tamaño del KPI</source>
+        <target>Rozmiar KPI</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/module/components/eda-panels/eda-blank-panel/kpi-dialog/kpi-dialog.component.html</context>
+          <context context-type="linenumber">64,65</context>
+        </context-group>
+      </trans-unit>
+<trans-unit id="kpiSizeHoverHint" datatype="html">
+        <source> Pasa el ratón por encima del KPI para ver los botones que permiten ajustar su tamaño. </source>
+        <target> Najedź kursorem na KPI, aby zobaczyć przyciski umożliwiające zmianę jego rozmiaru. </target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/module/components/eda-panels/eda-blank-panel/kpi-dialog/kpi-dialog.component.html</context>
+          <context context-type="linenumber">69,70</context>
+        </context-group>
+      </trans-unit>
+<trans-unit id="colorChartBorderLabel" datatype="html">
+        <source>Color del borde</source>
+        <target>Kolor obramowania</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/module/components/eda-panels/eda-blank-panel/kpi-dialog/kpi-dialog.component.html</context>
+          <context context-type="linenumber">168,170</context>
+        </context-group>
+      </trans-unit>
+<trans-unit id="colorLabelLine" datatype="html">
+        <source>Color de línea</source>
+        <target>Kolor linii</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/module/components/eda-panels/eda-blank-panel/kpi-dialog/kpi-dialog.component.html</context>
+          <context context-type="linenumber">187,188</context>
+        </context-group>
+      </trans-unit>
+<trans-unit id="colorLabelArea" datatype="html">
+        <source>Color de área</source>
+        <target>Kolor obszaru</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/module/components/eda-panels/eda-blank-panel/kpi-dialog/kpi-dialog.component.html</context>
+          <context context-type="linenumber">198,199</context>
+        </context-group>
+      </trans-unit>
+<trans-unit id="kpiLineSettings" datatype="html">
+        <source>Línea</source>
+        <target>Linia</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/module/components/eda-panels/eda-blank-panel/kpi-dialog/kpi-dialog.component.html</context>
+          <context context-type="linenumber">219,220</context>
+        </context-group>
+      </trans-unit>
+<trans-unit id="resetSectionButton" datatype="html">
+        <source>Restaurar</source>
+        <target>Przywróć</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/module/components/eda-panels/eda-blank-panel/kpi-dialog/kpi-dialog.component.html</context>
+          <context context-type="linenumber">222,223</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/module/components/eda-panels/eda-blank-panel/kpi-dialog/kpi-dialog.component.html</context>
+          <context context-type="linenumber">255,256</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/module/components/eda-panels/eda-blank-panel/kpi-dialog/kpi-dialog.component.html</context>
+          <context context-type="linenumber">292,293</context>
+        </context-group>
+      </trans-unit>
+<trans-unit id="widthLabelLine" datatype="html">
+        <source>Grosor de línea</source>
+        <target>Grubość linii</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/module/components/eda-panels/eda-blank-panel/kpi-dialog/kpi-dialog.component.html</context>
+          <context context-type="linenumber">226,227</context>
+        </context-group>
+      </trans-unit>
+<trans-unit id="lineStyleLabel" datatype="html">
+        <source>Tipo de línea</source>
+        <target>Typ linii</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/module/components/eda-panels/eda-blank-panel/kpi-dialog/kpi-dialog.component.html</context>
+          <context context-type="linenumber">231,232</context>
+        </context-group>
+      </trans-unit>
+<trans-unit id="kpiAxisAndLabels" datatype="html">
+        <source>Eje X y etiquetas de valor</source>
+        <target>Oś X i etykiety wartości</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/module/components/eda-panels/eda-blank-panel/kpi-dialog/kpi-dialog.component.html</context>
+          <context context-type="linenumber">246,247</context>
+        </context-group>
+      </trans-unit>
+<trans-unit id="axisScaleH6" datatype="html">
+        <source>Ejes y escala</source>
+        <target>Osie i skala</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/module/components/eda-panels/eda-blank-panel/kpi-dialog/kpi-dialog.component.html</context>
+          <context context-type="linenumber">253,254</context>
+        </context-group>
+      </trans-unit>
+<trans-unit id="xAxisShowLabel" datatype="html">
+        <source>Mostrar eje X</source>
+        <target>Pokaż oś X</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/module/components/eda-panels/eda-blank-panel/kpi-dialog/kpi-dialog.component.html</context>
+          <context context-type="linenumber">258,259</context>
+        </context-group>
+      </trans-unit>
+<trans-unit id="xAxisLabelsLabel" datatype="html">
+        <source>Mostrar etiquetas del eje X</source>
+        <target>Pokaż etykiety osi X</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/module/components/eda-panels/eda-blank-panel/kpi-dialog/kpi-dialog.component.html</context>
+          <context context-type="linenumber">265,266</context>
+        </context-group>
+      </trans-unit>
+<trans-unit id="xAxisAllLabelsLabel" datatype="html">
+        <source>Mostrar todas las etiquetas</source>
+        <target>Pokaż wszystkie etykiety</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/module/components/eda-panels/eda-blank-panel/kpi-dialog/kpi-dialog.component.html</context>
+          <context context-type="linenumber">272,273</context>
+        </context-group>
+      </trans-unit>
+<trans-unit id="xAxisLabelCountLabel" datatype="html">
+        <source>Máximo de etiquetas</source>
+        <target>Maksymalna liczba etykiet</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/module/components/eda-panels/eda-blank-panel/kpi-dialog/kpi-dialog.component.html</context>
+          <context context-type="linenumber">280,281</context>
+        </context-group>
+      </trans-unit>
+<trans-unit id="labelsValuesH6" datatype="html">
+        <source>Etiquetas y valores</source>
+        <target>Etykiety i wartości</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/module/components/eda-panels/eda-blank-panel/kpi-dialog/kpi-dialog.component.html</context>
+          <context context-type="linenumber">290,291</context>
+        </context-group>
+      </trans-unit>
+<trans-unit id="showValueLabelsLabel" datatype="html">
+        <source>Mostrar valores en el gráfico</source>
+        <target>Pokaż wartości na wykresie</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/module/components/eda-panels/eda-blank-panel/kpi-dialog/kpi-dialog.component.html</context>
+          <context context-type="linenumber">295,296</context>
+        </context-group>
+      </trans-unit>
+<trans-unit id="showValuePercentLabel" datatype="html">
+        <source>Mostrar valores en porcentaje</source>
+        <target>Pokaż wartości w procentach</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/module/components/eda-panels/eda-blank-panel/kpi-dialog/kpi-dialog.component.html</context>
+          <context context-type="linenumber">302,303</context>
+        </context-group>
+      </trans-unit>
+<trans-unit id="labelColorLabel" datatype="html">
+        <source>Color del texto de etiquetas</source>
+        <target>Kolor tekstu etykiet</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/module/components/eda-panels/eda-blank-panel/kpi-dialog/kpi-dialog.component.html</context>
+          <context context-type="linenumber">310,311</context>
+        </context-group>
+      </trans-unit>
+<trans-unit id="labelBackgroundColorLabel" datatype="html">
+        <source>Fondo de etiquetas</source>
+        <target>Tło etykiet</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/module/components/eda-panels/eda-blank-panel/kpi-dialog/kpi-dialog.component.html</context>
+          <context context-type="linenumber">319,320</context>
+        </context-group>
+      </trans-unit>
+<trans-unit id="kpiAspecto" datatype="html">
+        <source>Aspecto</source>
+        <target>Wygląd</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/module/components/eda-panels/eda-blank-panel/kpi-dialog/kpi-dialog.component.html</context>
+          <context context-type="linenumber">22</context>
+        </context-group>
+      </trans-unit>
+<trans-unit id="kpiVisualStyle" datatype="html">
+        <source>Estilo visual del KPI</source>
+        <target>Styl wizualny KPI</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/module/components/eda-panels/eda-blank-panel/kpi-dialog/kpi-dialog.component.html</context>
+          <context context-type="linenumber">80</context>
+        </context-group>
+      </trans-unit>
+<trans-unit id="kpiBgColor" datatype="html">
+        <source>Color de fondo</source>
+        <target>Kolor tła</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/module/components/eda-panels/eda-blank-panel/kpi-dialog/kpi-dialog.component.html</context>
+          <context context-type="linenumber">87</context>
+        </context-group>
+      </trans-unit>
+<trans-unit id="kpiTextColor" datatype="html">
+        <source>Color del texto</source>
+        <target>Kolor tekstu</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/module/components/eda-panels/eda-blank-panel/kpi-dialog/kpi-dialog.component.html</context>
+          <context context-type="linenumber">107</context>
+        </context-group>
+      </trans-unit>
+<trans-unit id="kpiPrefixImage" datatype="html">
+        <source>Imagen prefijo</source>
+        <target>Obraz prefiksu</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/module/components/eda-panels/eda-blank-panel/kpi-dialog/kpi-dialog.component.html</context>
+          <context context-type="linenumber">127</context>
+        </context-group>
+      </trans-unit>
 </body>
 </file>
 </xliff>
