@@ -273,7 +273,7 @@ export class DashboardSidebarComponent implements AfterViewInit {
           this.hidePopover();
         }
       },
-      {
+      ...(this.dashboard.dynamicFiltersAvailable() ? [{
         id: 'enableFilters',
         label: this.clickFiltersEnabled ? $localize`:@@enableFilters: Click en filtros habilitado`
           : $localize`:@@disableFilters:Click en filtros deshabilitado`,
@@ -281,7 +281,7 @@ export class DashboardSidebarComponent implements AfterViewInit {
         command: () => {
           this.toggleClickFilters();
         }
-      },
+      }] : []),
       {
         id: 'enablePanelLock',
         label: this.clickPanelLockButton ? $localize`:@@enablePanelLockButton: Bloquear los paneles`
