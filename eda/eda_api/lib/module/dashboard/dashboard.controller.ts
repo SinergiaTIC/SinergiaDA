@@ -333,13 +333,22 @@ export class DashboardController {
 
   
   /**
-   * Get dashboards metadata
+   * Get dashboards metadata.
+   * By default, dashboards with config.active === false are excluded.
+   * Pass includeInactive: true to include them (used by admin listing).
    * @param filter filter to apply
+   * @param options.includeInactive include inactive dashboards (default false)
    */
-    private static async findAllDashboardsWithMeta(filter: Record<string, any> = {}) {
+  private static async findAllDashboardsWithMeta(
+    filter: Record<string, any> = {},
+    options: { includeInactive?: boolean } = {}
+  ) {
+    if (!options.includeInactive) {
+      filter['config.active'] = { $ne: false };
+    }
     return Dashboard.find(
       filter,
-      'config.title config.visible config.tag config.onlyIcanEdit config.author config.createdAt config.modifiedAt config.description config.createdAt config.modifiedAt config.active config.ds user group'
+      'config.title config.visible config.tag config.onlyIcanEdit config.author config.createdAt config.modifiedAt config.description config.createdAt config.modifiedAt config.active config.ds user group config.external'
     ).populate('user', 'name').exec();
   }
 
@@ -420,8 +429,8 @@ export class DashboardController {
     try {
       //si no lleva filtro, pasamos directamente a recuperarlos todos
       const dashboards = JSON.stringify(filter) !== '{}' ?
-        await Dashboard.find({ $or: Object.entries(filter).map(([clave, valor]) => ({ [clave]: valor })) }, 'config.title config.visible config.tag config.onlyIcanEdit config.author config.createdAt config.modifiedAt config.description config.createdAt config.modifiedAt config.active config.ds user group config.external').populate('user', 'name').exec() :
-        await Dashboard.find({}, 'config.title config.visible config.tag config.onlyIcanEdit config.author config.createdAt config.modifiedAt config.description config.createdAt config.modifiedAt config.active config.ds user group config.external').populate('user', 'name').exec();
+        await DashboardController.findAllDashboardsWithMeta({ $or: Object.entries(filter).map(([clave, valor]) => ({ [clave]: valor })) }, { includeInactive: true }) :
+        await DashboardController.findAllDashboardsWithMeta({}, { includeInactive: true });
       const openDashboards = [];
       const privateDashboards = [];
       const groupDashboards = [];
@@ -569,6 +578,10 @@ export class DashboardController {
 
         if (visibilityCheck && roleCheck) {
           return next(new HttpException(500, "You don't have permission"));
+        }
+
+        if (dashboard.config.active === false && !userRoles.includes('EDA_ADMIN')) {
+          return next(new HttpException(403, 'This dashboard is currently inactive'));
         }
 
         // Obtener el datasource asociado
