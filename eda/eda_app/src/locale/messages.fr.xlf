@@ -7042,6 +7042,9 @@ Une fois configurée, vous pouvez l'activer à tout moment à partir du bouton.<
       <trans-unit id="filterHoverNotAffected">
         <source>Paneles no afectados por este filtro</source>
         <target>Panneaux non affectés par ce filtre</target>
+      <trans-unit id="ResetZoom">
+        <source>Restablecer (100%)</source>
+        <target>Réinitialiser (100%)</target>
       </trans-unit>
     </body>
   </file>
