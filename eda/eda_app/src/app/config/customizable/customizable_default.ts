@@ -221,3 +221,4 @@ export const SHOW_HIDDEN_FIELDS: 'disabled' | 'admin-only' | 'all' = 'admin-only
 export const ALLOWED_QUERY_MODES: string[] = ['EDA', 'SQL', 'TREE']; // ALLOWED_QUERY_MODES Order matters; the first value "ALLOWED_QUERY_MODES[0]" is considered the default query mode
 export const SHOW_WHAT_IF: boolean = true; // true → "What If?" scenarios button visible | false → hidden
 export const ALLOWED_JOIN_TYPES: string[] = ['left', 'inner', 'right']; // subset of 'left' | 'inner' | 'right' shown as join type options
+export const SHOW_CUSTOM_ACTION: boolean = true; // true → "Acción personalizada" visible en el menú del informe | false → oculta
