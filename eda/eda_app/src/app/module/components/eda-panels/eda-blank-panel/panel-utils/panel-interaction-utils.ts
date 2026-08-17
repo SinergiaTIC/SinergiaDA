@@ -470,6 +470,7 @@ export const PanelInteractionUtils = {
   },
 
   handleCurrentQuery2: (ebp: EdaBlankPanelComponent): void => {
+    ebp.currentQuery = []; // Reset currentQuery to load it with the columns from panelContent, which is the source of truth (same fix as handleCurrentQuery, since this is also called twice per load).
     if (ebp.panel.content) {
       const fields = ebp.panel.content.query.query.fields;
 

@@ -1096,14 +1096,37 @@ export class DashboardPage implements OnInit {
     const standardQueryMode = this.panels.some((p) => p.content?.query?.query?.queryMode === 'EDA');
 
     for (const panel of this.edaPanels) {
+      const ownMode = normalizeQueryMode(panel.panel?.content?.query?.query?.queryMode);
+      let allowedModes = [...ALLOWED_QUERY_MODES];
+
       if (treeQueryMode) {
-        panel.queryModes = ALLOWED_QUERY_MODES.filter(v => v !== 'EDA').map(v => QUERY_MODE_LABELS.find(l => l.value === v));
-        panel.selectedQueryMode = 'TREE';
+
+        allowedModes = allowedModes.filter(v => v !== 'EDA');
       } else if (standardQueryMode) {
-        panel.queryModes = ALLOWED_QUERY_MODES.filter(v => v !== 'TREE').map(v => QUERY_MODE_LABELS.find(l => l.value === v));
+        allowedModes = allowedModes.filter(v => v !== 'TREE');
       }
+
+      // Keep offering a panel's own already-saved mode even if it's no longer
+      // configured in QUERY_MODE, so legacy panels stay visible/selectable
+      // without letting new panels be created in a retired mode.
+      if (ownMode && !allowedModes.includes(ownMode)) {
+        allowedModes = [...allowedModes, ownMode];
+      }
+
       if (((!standardQueryMode && !treeQueryMode) || this.edaPanels.length === 1) && this.globalFilter.globalFilters.length === 0) {
-        panel.queryModes = ALLOWED_QUERY_MODES.map(v => QUERY_MODE_LABELS.find(l => l.value === v));
+
+        allowedModes = ownMode && !ALLOWED_QUERY_MODES.includes(ownMode) ? [...ALLOWED_QUERY_MODES, ownMode] : [...ALLOWED_QUERY_MODES];
+      }
+
+      panel.queryModes = allowedModes.map(v => QUERY_MODE_LABELS.find(l => l.value === v));
+
+      // Only correct the live selection when it is no longer a valid option
+      // (e.g. another panel just locked the report into the TREE/EDA family).
+      // Never overwrite a mode the user just picked in the dropdown while it
+      // is still allowed - doing so unconditionally used to snap SQL/EDA
+      // selections back to TREE right after the dropdown change was made.
+      if (allowedModes.length > 0 && !allowedModes.includes(panel.selectedQueryMode)) {
+        panel.selectedQueryMode = allowedModes[0];
       }
     }
   }
