@@ -222,4 +222,4 @@ export const ALLOWED_QUERY_MODES: string[] = ['EDA', 'SQL', 'TREE']; // ALLOWED_
 export const SHOW_WHAT_IF: boolean = true; // true → "What If?" scenarios button visible | false → hidden
 export const ALLOWED_JOIN_TYPES: string[] = ['left', 'inner', 'right']; // subset of 'left' | 'inner' | 'right' shown as join type options
 export const SHOW_CUSTOM_ACTION: boolean = true; // true → "Acción personalizada" visible en el menú del informe | false → oculta
-export const SHOW_ZOOM_IN_SIDEBAR: boolean = false; // true → zoom control lives inside the dashboard sidebar | false → zoom control lives in the filters bar
+export const SHOW_ZOOM_IN_SIDEBAR: boolean = true; // true → zoom control lives inside the dashboard sidebar | false → zoom control lives in the filters bar
