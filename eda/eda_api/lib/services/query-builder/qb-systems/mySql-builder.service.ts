@@ -353,18 +353,25 @@ export class MySqlBuilderService extends QueryBuilderService {
     return myQuery;
   };
 
-  public getFilters(filters, destLongitud, pTable): any { 
+  public getFilters(filters, destLongitud, pTable): any {
 
-    /** If We Have permissions And No Destination I Add To Filters */
+    /** If We Have permissions And No Destination I Apply Them As A Separate Grouped Condition
+     * (OR'd within the same table, AND'd across tables) instead of mixing them into `filters`,
+     * where each entry gets ANDed individually and would wrongly exclude rows that satisfy one
+     * security rule (e.g. security group) but not another (e.g. assigned user). */
+    const applicablePermissions = (this.permissions.length > 0 && destLongitud == 0)
+      ? this.permissions
+      : this.permissions.filter(permission => permission.filter_table === pTable);
 
-    if ( this.permissions.length > 0 && destLongitud == 0) this.permissions.forEach( permission => { filters.push(permission); });
-    else { this.permissions.forEach( permission => { if( permission.filter_table === pTable ) filters.push(permission);})}
-
-    if (filters.length) {
+    if (filters.length || applicablePermissions.length) {
 
       let equalfilters = this.getEqualFilters(filters);
       filters = filters.filter(f => !equalfilters.toRemove.includes(f.filter_id));
       let filtersString = `\nwhere 1 = 1 `;
+
+      if (applicablePermissions.length) {
+        filtersString += `\nand (${this.buildPermissionsSqlExpresion(applicablePermissions)}) `;
+      }
 
       filters.forEach(f => {
         const column = this.findColumn(f.filter_table, f.filter_column);
@@ -399,32 +406,36 @@ export class MySqlBuilderService extends QueryBuilderService {
   public getSqlPermissionsExpresion(permissions: any) {
     let sql = '';
     if(!permissions.some((p: any) => p.toBeUsed)) return sql;
-    
+
     permissions = permissions.filter(p => p.toBeUsed);
 
-    const generarExpresionSQL = (permissions) => {
-      const grupos = {};
+    return this.buildPermissionsSqlExpresion(permissions);
+  }
 
-      for (const filtro of permissions) {
-        const tabla = filtro.filter_table;
-        const columna = filtro.filter_column;
-        const valor = filtro.filter_elements[0].value1[0];
+  /**
+   * Groups permission filters by table (OR within the same table, AND across tables) and
+   * turns each one into SQL via filterToString, so multi-value / dynamic permission rules
+   * (security groups, assigned user, etc.) are rendered consistently wherever permissions
+   * are combined into a WHERE clause.
+   */
+  public buildPermissionsSqlExpresion(permissions: any) {
+    const grupos = {};
 
-        if (!grupos[tabla]) {
-          grupos[tabla] = [];
-        }
+    for (const filtro of permissions) {
+      const tabla = filtro.filter_table;
 
-        grupos[tabla].push(`\`${tabla}\`.\`${columna}\` in (${valor})`);
+      if (!grupos[tabla]) {
+        grupos[tabla] = [];
       }
 
-      const gruposOR = Object.values(grupos).map((columnas: any) => {
-        return `( ${columnas.join(' OR ')} )`;
-      });
-
-      return gruposOR.join(' AND ');
+      grupos[tabla].push(this.filterToString(filtro));
     }
 
-    return generarExpresionSQL(permissions);
+    const gruposOR = Object.values(grupos).map((condiciones: any) => {
+      return `( ${condiciones.join(' OR ')} )`;
+    });
+
+    return gruposOR.join(' AND ');
   }
 
   public getSortedFilters(sortedFilters: any[], filters: any[]): any {
