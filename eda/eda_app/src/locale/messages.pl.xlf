@@ -6692,6 +6692,26 @@ Po skonfigurowaniu możesz go wywołać w dowolnym momencie za pomocą przycisku
         <source>Fuente de datos</source>
         <target>Źródło danych</target>
       </trans-unit>
+      <trans-unit id="filterHoverGreen">
+        <source>Verde</source>
+        <target>Zielony</target>
+      </trans-unit>
+      <trans-unit id="filterHoverRed">
+        <source>Rojo</source>
+        <target>Czerwony</target>
+      </trans-unit>
+      <trans-unit id="filterHoverAffected">
+        <source>Paneles afectados por este filtro</source>
+        <target>Panele objęte tym filtrem</target>
+      </trans-unit>
+      <trans-unit id="filterHoverNotAffected">
+        <source>Paneles no afectados por este filtro</source>
+        <target>Panele nieobjęte tym filtrem</target>
+      </trans-unit>
+      <trans-unit id="ResetZoom">
+        <source>Restablecer (100%)</source>
+        <target>Resetuj (100%)</target>
+      </trans-unit>
 </body>
 </file>
 </xliff>

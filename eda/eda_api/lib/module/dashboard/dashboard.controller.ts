@@ -13,6 +13,7 @@ import { TimeFormatService } from '../../services/time-format/time-format.servic
 import { QueryOptions } from 'mongoose'
 import ServerLogService from '../../services/server-log/server-log.service'
 import { DateUtil } from '../../utils/date.util'
+import { QueryModeUtil } from '../../utils/query-mode.util'
 import _ from 'lodash'
 const cache_config = require('../../../config/cache.config')
 const eda_api_config = require('../../../config/eda_api_config');
@@ -332,13 +333,22 @@ export class DashboardController {
 
   
   /**
-   * Get dashboards metadata
+   * Get dashboards metadata.
+   * By default, dashboards with config.active === false are excluded.
+   * Pass includeInactive: true to include them (used by admin listing).
    * @param filter filter to apply
+   * @param options.includeInactive include inactive dashboards (default false)
    */
-    private static async findAllDashboardsWithMeta(filter: Record<string, any> = {}) {
+  private static async findAllDashboardsWithMeta(
+    filter: Record<string, any> = {},
+    options: { includeInactive?: boolean } = {}
+  ) {
+    if (!options.includeInactive) {
+      filter['config.active'] = { $ne: false };
+    }
     return Dashboard.find(
       filter,
-      'config.title config.visible config.tag config.onlyIcanEdit config.author config.createdAt config.modifiedAt config.description config.createdAt config.modifiedAt config.active config.ds user group'
+      'config.title config.visible config.tag config.onlyIcanEdit config.author config.createdAt config.modifiedAt config.description config.createdAt config.modifiedAt config.active config.ds user group config.external'
     ).populate('user', 'name').exec();
   }
 
@@ -419,8 +429,8 @@ export class DashboardController {
     try {
       //si no lleva filtro, pasamos directamente a recuperarlos todos
       const dashboards = JSON.stringify(filter) !== '{}' ?
-        await Dashboard.find({ $or: Object.entries(filter).map(([clave, valor]) => ({ [clave]: valor })) }, 'config.title config.visible config.tag config.onlyIcanEdit config.author config.createdAt config.modifiedAt config.description config.createdAt config.modifiedAt config.active config.ds user group config.external').populate('user', 'name').exec() :
-        await Dashboard.find({}, 'config.title config.visible config.tag config.onlyIcanEdit config.author config.createdAt config.modifiedAt config.description config.createdAt config.modifiedAt config.active config.ds user group config.external').populate('user', 'name').exec();
+        await DashboardController.findAllDashboardsWithMeta({ $or: Object.entries(filter).map(([clave, valor]) => ({ [clave]: valor })) }, { includeInactive: true }) :
+        await DashboardController.findAllDashboardsWithMeta({}, { includeInactive: true });
       const openDashboards = [];
       const privateDashboards = [];
       const groupDashboards = [];
@@ -568,6 +578,10 @@ export class DashboardController {
 
         if (visibilityCheck && roleCheck) {
           return next(new HttpException(500, "You don't have permission"));
+        }
+
+        if (dashboard.config.active === false && !userRoles.includes('EDA_ADMIN')) {
+          return next(new HttpException(403, 'This dashboard is currently inactive'));
         }
 
         // Obtener el datasource asociado
@@ -1439,8 +1453,8 @@ static  convertColumnToForbiddenColumn(columns: any[], sample: any): any[] {
           mylabels.push(req.body.query.fields[c].column_name)
         }
       }
-      myQuery.queryMode = req.body.query.queryMode ? req.body.query.queryMode : 'EDA'; /** lo añado siempre */
-      myQuery.rootTable = myQuery.queryMode == 'EDA2' && req.body.query.rootTable ? req.body.query.rootTable : ''; /** lo añado siempre  pero solo para las consulas EDA2*/
+      myQuery.queryMode = QueryModeUtil.normalize(req.body.query.queryMode ? req.body.query.queryMode : 'EDA');
+      myQuery.rootTable = myQuery.queryMode == 'TREE' && req.body.query.rootTable ? req.body.query.rootTable : '';
       myQuery.simple = req.body.query.simple;
       myQuery.queryLimit = req.body.query.queryLimit;
       myQuery.joinType = req.body.query.joinType ? req.body.query.joinType : 'inner';
