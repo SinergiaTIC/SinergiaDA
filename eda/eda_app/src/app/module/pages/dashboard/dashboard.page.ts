@@ -308,8 +308,8 @@ export class DashboardPage implements OnInit {
       this.sortPanelsForMobile();
       this.styles = dashboard.config.styles || this.stylesProviderService.generateDefaultStyles();
       this.getUrlParams();
-      this.globalFilter.findGlobalFilterByUrlParams(this.queryParams);
-      this.globalFilter.fillFiltersData();
+      this.globalFilter?.findGlobalFilterByUrlParams(this.queryParams);
+      this.globalFilter?.fillFiltersData();
       
       if (this.styles.palette !== undefined) {
         this.chartUtils.MyPaletteColors = this.styles.palette['paleta'];
@@ -549,6 +549,11 @@ export class DashboardPage implements OnInit {
     result = this.userService.isAdmin;
     // if not admin...
     if (!result) {
+        // Dashboard data hasn't loaded yet (child components can render/query
+        // this before the async fetch in ngOnInit resolves) — default to no edit access.
+        if (!this.dashboard) {
+            return false;
+        }
         if (this.dashboard.onlyIcanEdit) {
             result = this.userService.user._id === this.dashboard.user
         } else {

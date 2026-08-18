@@ -143,7 +143,9 @@ export class DashboardSidebarComponent implements AfterViewInit {
   sidebarItems: any[] = [];
 
   ngOnInit(): void {
-    this.hayFiltros = this.dashboard.globalFilter.globalFilters.length > 0;
+    // dashboard.globalFilter is a ViewChild on the host DashboardPage — it may not have
+    // resolved yet if the sidebar's own ngOnInit runs before the parent's view finishes.
+    this.hayFiltros = (this.dashboard.globalFilter?.globalFilters.length ?? 0) > 0;
     this.refreshTime = this.dashboard.dashboard.config.refreshTime || null;
     this.clickFiltersEnabled = this.dashboard.dashboard.config.clickFiltersEnabled ?? true;
     this.onlyIcanEdit = this.dashboard.dashboard.config.onlyIcanEdit ?? true;
