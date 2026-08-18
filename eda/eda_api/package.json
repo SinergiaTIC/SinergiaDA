@@ -10,10 +10,10 @@
         "start:pm2": "npm run build && pm2 start ./dist/server.js --log-date-format 'YYYY-MM-DD HH:mm:ss'  -i max  --name eda3   ",
         "edalitics": "npm run build && pm2 start ./dist/server.js --log-date-format 'YYYY-MM-DD HH:mm:ss'  --name eda3   ",
         "edapi": "forever start -c node ./dist/server.js",
-        "build": "tsc && npm run movejpgs",
+        "build": "tsc && npm run movefiles",
         "dev": "ts-node ./lib/server.ts",
         "test": "echo \"Error: no test specified\" && exit 1",
-        "movejpgs": "copyfiles -u 4 -a -E lib/module/uploads/users/* dist/module/uploads/users && copyfiles -u 2 -a lib/assets/* dist/assets && copyfiles -u 1 lib/plugins/SdaInfoPlugin/SdaVersion.js dist"
+        "movefiles": "copyfiles -u 4 -a -E lib/module/uploads/users/* dist/module/uploads/users && copyfiles -u 2 -a lib/assets/* dist/assets && copyfiles -u 1 lib/plugins/SdaInfoPlugin/SdaVersion.js dist"
     },
     "author": "",
     "license": "ISC",
