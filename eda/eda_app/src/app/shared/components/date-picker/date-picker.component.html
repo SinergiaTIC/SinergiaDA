@@ -10,7 +10,7 @@
 			<div>
 				<label class="block text-sm mb-1" i18n="@@filterOperatorSelectionText">Selección de operador del filtro:</label>
 				<p-dropdown [options]="filterTypesOptions" [(ngModel)]="filterTypeSelected" optionLabel="label"
-					[autoDisplayFirst]="false" [style]="{'width':'100%'}" [showClear]="true"
+					[autoDisplayFirst]="false" [style]="{'width':'100%'}" [showClear]="true" scrollHeight="230px"
 					(onChange)="handleFilterChange(filterTypeSelected)">
 				</p-dropdown>
 			</div>
@@ -19,7 +19,7 @@
 				<div>
 					<label class="block text-sm mb-1" i18n="@@dateSelectionText">Selección de fecha:</label>
 					<p-dropdown [options]="ranges" [(ngModel)]="selectedRange" [placeholder]="rangePlaceholder"
-						[style]="{'width':'100%'}" [disabled]="!filterTypeSelected" (onChange)="getRange()">
+						[style]="{'width':'100%'}" [disabled]="!filterTypeSelected" scrollHeight="230px" (onChange)="getRange()">
 					</p-dropdown>
 				</div>
 			}
@@ -28,7 +28,7 @@
 
 	<p-footer>
 
-		<div class="flex items-center justify-between w-full" style="gap: 10px;" (mousedown)="$event.stopPropagation()">
+		<div class="flex items-center justify-between w-full pt-3 pb-3 pr-2 pl-2" style="gap: 10px;" (mousedown)="$event.stopPropagation()">
 			<div class="flex items-center" style="gap: 10px;">
 				@if(autoRemove || autoClear){
 					<ng-content select="[footer]"></ng-content>
