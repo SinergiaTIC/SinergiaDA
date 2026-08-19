@@ -21,12 +21,28 @@
 }
 
 /* Date picker - wrapper and input both constrained to same height as multiselect */
-::ng-deep eda-date-picker {
+/* ::ng-deep eda-date-picker {
   display: block;
   height: 32px;
 }
 
 ::ng-deep eda-date-picker input {
+  height: 32px;
+  width: 100%;
+  padding: 0.25rem 0.75rem;
+  border-radius: 0.5rem;
+  border: 1px solid #d1d5db;
+  box-sizing: border-box;
+  font-size: 0.9rem;
+} */
+
+/* Date picker - wrapper and input both constrained to same height as multiselect */
+::ng-deep date-picker {
+  display: block;
+  height: 32px;
+}
+
+::ng-deep date-picker input {
   height: 32px;
   width: 100%;
   padding: 0.25rem 0.75rem;

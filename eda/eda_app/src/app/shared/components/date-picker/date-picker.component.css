@@ -1,0 +1,11 @@
+.calendar-container ::ng-deep p-calendar .ui-datepicker {
+  width: auto !important;
+}
+
+::ng-deep .date-picker-panel {
+  width: 320px;
+}
+
+::ng-deep .hide-calendar-grid .p-datepicker-group-container {
+  display: none;
+}

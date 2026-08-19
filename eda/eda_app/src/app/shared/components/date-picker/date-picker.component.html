@@ -1,0 +1,65 @@
+<p-calendar class='eda-filter-multiselect' [locale]="locale" [(ngModel)]="rangeDates" dateFormat="dd.mm.yy"
+	[selectionMode]="selectionMode" [readonlyInput]="true" [monthNavigator]="true" [yearNavigator]="true" yearRange="1984:2030"
+	[hideOnDateTimeSelect]="false"
+	[firstDayOfWeek]="firstDayOfWeek" [placeholder]="rangePlaceholder" (onClickOutside)="handleOutsideClick($event)"
+	(onClose)="resetConfig()" (onFocus)="activate()" appendTo="body" [style]="{width:'100%'}"
+	[panelStyleClass]="hideCalendarGrid ? 'date-picker-panel hide-calendar-grid' : 'date-picker-panel'">
+
+	<p-header>
+		<div class="flex flex-col gap-2 p-2" (mousedown)="$event.stopPropagation()">
+			<div>
+				<label class="block text-sm mb-1" i18n="@@filterOperatorSelectionText">Selección de operador del filtro:</label>
+				<p-dropdown [options]="filterTypesOptions" [(ngModel)]="filterTypeSelected" optionLabel="label"
+					[autoDisplayFirst]="false" [style]="{'width':'100%'}" [showClear]="true"
+					(onChange)="handleFilterChange(filterTypeSelected)">
+				</p-dropdown>
+			</div>
+
+			@if(showDateFormatSelecter){
+				<div>
+					<label class="block text-sm mb-1" i18n="@@dateSelectionText">Selección de fecha:</label>
+					<p-dropdown [options]="ranges" [(ngModel)]="selectedRange" [placeholder]="rangePlaceholder"
+						[style]="{'width':'100%'}" [disabled]="!filterTypeSelected" (onChange)="getRange()">
+					</p-dropdown>
+				</div>
+			}
+		</div>
+	</p-header>
+
+	<p-footer>
+
+		<div class="flex items-center justify-between w-full" style="gap: 10px;" (mousedown)="$event.stopPropagation()">
+			<div class="flex items-center" style="gap: 10px;">
+				@if(autoRemove || autoClear){
+					<ng-content select="[footer]"></ng-content>
+		
+					@if(autoRemove){
+						<button
+							pButton pRipple type="button"
+							icon="fa fa-trash"
+							(click)="remove()"
+							class="p-button-danger p-button-rounded p-button-outlined">
+						</button>
+					}
+					
+					@if(autoClear){
+						<button
+							pButton pRipple type="button"
+							label="Clean" icon="pi pi-undo"
+							(click)="clean()"
+							class="p-button-rounded p-button-outlined">
+						</button>
+					}
+				}
+			</div>
+
+			<button
+				pButton pRipple type="button"
+				label="Confirmar" icon="pi pi-check"
+				(click)="confirm()"
+				[disabled]="!isReadyForConfirmation"
+				class="p-button-rounded">
+			</button>
+		</div>
+	</p-footer>
+</p-calendar>

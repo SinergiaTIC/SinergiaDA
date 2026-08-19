@@ -29,9 +29,14 @@
               </span>
 
               @if (getFilterType(filter) == 'date') {
-              <eda-date-picker [autoClear]="true" [inject]="datePickerConfigs[filter.id]"
+
+
+
+              <date-picker [autoClear]="true" [inject]="datePickerConfigs[filter.id]"
                 (onRemove)="removeGlobalFilter(filter, true)" (onDatesChanges)="processPickerEvent($event, filter)">
-              </eda-date-picker>
+              </date-picker>
+
+
               } @else if (filter.multipleSelection === false) {
               <p-multiSelect
                 [style]="styleButton"
