@@ -784,17 +784,22 @@ export class GlobalFilterComponent implements OnInit {
 
         if (event.dates) {
             const dtf = new Intl.DateTimeFormat('en', { year: 'numeric', month: '2-digit', day: '2-digit' });
-            if (!event.dates[1]) {
-                event.dates[1] = event.dates[0];
+            const toStr = (date: Date) => {
+                const [{ value: mo }, , { value: da }, , { value: ye }] = dtf.formatToParts(date);
+                return `${ye}-${mo}-${da}`;
+            };
+
+            const isStaticInNotIn = ['in', 'not_in'].includes(event.operator) && !event.range;
+            if (isStaticInNotIn) {
+                // Discrete, individually picked dates — kept as a single nested list, not a start/end pair
+                filter.selectedItems = [event.dates.filter((d: any) => d != null).map(toStr)];
+            } else {
+                if (!event.dates[1]) {
+                    event.dates[1] = event.dates[0];
+                }
+                filter.selectedItems = [event.dates[0], event.dates[1]].map(toStr);
             }
 
-            let stringRange = [event.dates[0], event.dates[1]]
-                .map(date => {
-                    let [{ value: mo }, , { value: da }, , { value: ye }] = dtf.formatToParts(date);
-                    return `${ye}-${mo}-${da}`
-                });
-
-            filter.selectedItems = stringRange;
             filter.selectedRange = event.range;
             filter.dynamicValue = event.range;
             this.loadDatesFromFilter(filter);
@@ -824,8 +829,10 @@ export class GlobalFilterComponent implements OnInit {
         config.filter = filter;
         if (filter.selectedItems.length > 0) {
             if (!filter.selectedRange) {
-                let firstDate = filter.selectedItems[0];
-                let lastDate = filter.selectedItems[filter.selectedItems.length - 1];
+                // Static in/not_in stores its discrete dates nested as selectedItems[0]
+                const items = Array.isArray(filter.selectedItems[0]) ? filter.selectedItems[0] : filter.selectedItems;
+                let firstDate = items[0];
+                let lastDate = items[items.length - 1];
                 config.dateRange.push(new Date(firstDate.replace(/-/g, '/')));
                 config.dateRange.push(new Date(lastDate.replace(/-/g, '/')));
             }
