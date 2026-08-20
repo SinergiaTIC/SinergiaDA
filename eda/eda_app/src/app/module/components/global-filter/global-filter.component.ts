@@ -676,13 +676,13 @@ export class GlobalFilterComponent implements OnInit {
         return label;
     }
 
-    /** Human readable summary of a date filter's operator + value, e.g. "= Hoy" */
-    public getDateFilterLabel(filter: any): string {
+    /** Just the value part of the summary, e.g. "Hoy" or "05-08-26 - 08-08-26" — the operator lives in its own badge */
+    public getDateFilterValueText(filter: any): string {
         const op = filter.dateFilterType;
         if (!op) return '';
 
         const noValueTypes = ['not_null', 'not_null_nor_empty', 'null_or_empty'];
-        if (noValueTypes.includes(op)) return this.getOperatorLabel(op);
+        if (noValueTypes.includes(op)) return '';
 
         const fmt = (s: string) => {
             if (!s) return '';
@@ -691,14 +691,19 @@ export class GlobalFilterComponent implements OnInit {
         };
 
         if (filter.dynamicValue) {
-            return `${this.getOperatorLabel(op)} ${this.getRangeLabel(filter.dynamicValue)}`;
+            return this.getRangeLabel(filter.dynamicValue);
         }
 
         const items = filter.selectedItems;
         if (!items || items.length === 0) return '';
-        if (Array.isArray(items[0])) return `${this.getOperatorLabel(op)} ${(items[0] as string[]).map(fmt).join(', ')}`;
-        if (items.length === 1 || !items[1]) return `${this.getOperatorLabel(op)} ${fmt(items[0])}`;
-        return `${this.getOperatorLabel(op)} ${fmt(items[0])} - ${fmt(items[1])}`;
+        if (Array.isArray(items[0])) return (items[0] as string[]).map(fmt).join(', ');
+        if (items.length === 1 || !items[1]) return fmt(items[0]);
+        return `${fmt(items[0])} - ${fmt(items[1])}`;
+    }
+
+    /** Just the operator part of the summary, e.g. "=" or "Entre" — rendered as a badge */
+    public getDateFilterOperatorText(filter: any): string {
+        return filter.dateFilterType ? this.getOperatorLabel(filter.dateFilterType) : '';
     }
 
     public isDynamicDateRange(filter: any): boolean {

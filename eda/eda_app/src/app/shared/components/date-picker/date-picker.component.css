@@ -9,3 +9,27 @@
 ::ng-deep .hide-calendar-grid .p-datepicker-group-container {
   display: none;
 }
+
+:host {
+  position: relative;
+  display: block;
+}
+
+.summary-operator-badge {
+  position: absolute;
+  left: 0.39rem;
+  top: 50%;
+  transform: translateY(-50%);
+  padding: 1px 4px;
+  border-radius: 9999px;
+  border: 1px solid #93c5fd;
+  background: #eff6ff;
+  color: #2563eb;
+  font-size: 0.7rem;
+  pointer-events: none;
+  white-space: nowrap;
+}
+
+::ng-deep p-calendar input {
+  text-indent: 2.55rem;
+}

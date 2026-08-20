@@ -30,7 +30,8 @@
 
               @if (getFilterType(filter) == 'date') {
 
-              <date-picker [autoClear]="true" [inject]="datePickerConfigs[filter.id]" [summaryLabel]="getDateFilterLabel(filter)"
+              <date-picker [autoClear]="true" [inject]="datePickerConfigs[filter.id]" [summaryLabel]="getDateFilterValueText(filter)"
+                [summaryOperator]="getDateFilterOperatorText(filter)"
                 (onRemove)="removeGlobalFilter(filter, true)" (onDatesChanges)="processPickerEvent($event, filter)">
               </date-picker>
 
