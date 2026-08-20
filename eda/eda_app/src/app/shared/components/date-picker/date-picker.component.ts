@@ -71,13 +71,25 @@ export class DatePickerComponent implements OnChanges {
 	}
 
 	ngOnChanges(changes: SimpleChanges): void {
-		if (this.inject) {
-			if (!this.selectedRange && this.inject.range) {
-				this.selectedRange = this.ranges.filter(r => r.value === this.inject.range)[0].value;
-				this.getRange();
-			} else if (this.inject.dateRange.length > 0) {
-				this.rangeDates = this.inject.dateRange;
-			}
+		this.restoreFromInject();
+	}
+
+	private restoreFromInject(): void {
+		if (!this.inject || this.filterTypeSelected) return;
+
+		const operator = this.filterTypesOptions.find(f => f.value === this.inject.dateFilterType);
+		if (!operator) return;
+
+		this.filterTypeSelected = operator;
+		this.handleFilterChange(operator);
+
+		if (this.inject.range) {
+			this.selectedRange = this.ranges.find(r => r.value === this.inject.range)?.value ?? null;
+			if (this.selectedRange) this.getRange();
+		} else if (this.inject.dateRange?.length > 0) {
+			this.selectedRange = <any>'customDate';
+			this.hideCalendarGrid = false;
+			this.rangeDates = this.inject.dateRange;
 		}
 	}
 
@@ -171,6 +183,7 @@ export class DatePickerComponent implements OnChanges {
 
 	public activate() {
 		this.active = true;
+		this.restoreFromInject();
 	}
 
 	public getRange() {

@@ -827,6 +827,7 @@ export class GlobalFilterComponent implements OnInit {
         config.dateRange = [];
         config.range = filter.selectedRange;
         config.filter = filter;
+        config.dateFilterType = filter.dateFilterType;
         if (filter.selectedItems.length > 0) {
             if (!filter.selectedRange) {
                 // Static in/not_in stores its discrete dates nested as selectedItems[0]
