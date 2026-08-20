@@ -802,7 +802,6 @@ export class GlobalFilterComponent implements OnInit {
 
             filter.selectedRange = event.range;
             filter.dynamicValue = event.range;
-            this.loadDatesFromFilter(filter);
         }
 
         if (!event.dates) {
@@ -814,6 +813,7 @@ export class GlobalFilterComponent implements OnInit {
             filter.dynamicValue = null;
         }
 
+        this.loadDatesFromFilter(filter);
         this.applyGlobalFilter(filter);
     }
 
