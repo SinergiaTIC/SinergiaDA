@@ -1071,6 +1071,7 @@ export class MySqlBuilderService extends QueryBuilderService {
             return `${colname}  ${filterObject.filter_type} (${this.processFilter(filterValues[0].value1, colType)}) `;
           }
         case 2:
+          if (filterObject.filter_type === 'not_between') { filterObject.filter_type = 'not between' }
           return `${colname}  ${filterObject.filter_type}
                       ${this.processFilter(filterValues[0].value1, colType)} and ${this.processFilterEndRange(filterValues[1].value2, colType)}`;
         case 3:
@@ -1246,7 +1247,8 @@ public getHavingColname(column: any){
         if (filterObject.filter_type === 'not_in') { filterObject.filter_type = 'not in' }
         return `${colname}  ${filterObject.filter_type} (${this.processFilter(filterObject.filter_elements[0].value1, colType)}) `;
       case 2:
-        return `${colname}  ${filterObject.filter_type} 
+        if (filterObject.filter_type === 'not_between') { filterObject.filter_type = 'not between' }
+        return `${colname}  ${filterObject.filter_type}
                     ${this.processFilter(filterObject.filter_elements[0].value1, colType)} and ${this.processFilterEndRange(filterObject.filter_elements[1].value2, colType)}`;
       case 3:
         return `${colname} is not null`;

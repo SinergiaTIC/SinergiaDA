@@ -319,6 +319,19 @@ export class GlobalFiltersService {
         }
     }
 
+    /**
+     * The backend never learned to treat a value1/value2 range as an "in"/"not_in" clause —
+     * it only ever reads value1, silently dropping the range's end. A dynamic in/not_in range
+     * (e.g. "Dentro de Esta semana") must be sent as between/not_between so the backend actually
+     * ranges over it instead of matching a single date.
+     */
+    private wireFilterType(dateFilterType: string, isDate: boolean, dynamicValue: any): string {
+        if (isDate && dynamicValue && ['in', 'not_in'].includes(dateFilterType)) {
+            return dateFilterType === 'in' ? 'between' : 'not_between';
+        }
+        return dateFilterType;
+    }
+
     private formatGlobalFilter(globalFilter: any) {
         const columnType = globalFilter.column?.value?.column_type || globalFilter.selectedColumn?.column_type;
         const filterTable = globalFilter.table?.value || globalFilter.selectedTable?.table_name;
@@ -332,7 +345,7 @@ export class GlobalFiltersService {
             filter_table: filterTable,
             filter_column: filterColumn,
             filter_column_type: columnType,
-            filter_type: dateFilterType,
+            filter_type: this.wireFilterType(dateFilterType, isDate, globalFilter.dynamicValue),
             filter_elements: this.assertGlobalFilterItems(globalFilter, dateFilterType),
             filter_codes: this.assertGlobalFilterCodes(globalFilter, dateFilterType),
             isGlobal: true,
@@ -370,7 +383,7 @@ export class GlobalFiltersService {
             filter_table: globalFilter.table_id || globalFilter.selectedTable.table_name,
             filter_column: globalFilter.selectedColumn.column_name,
             filter_column_type: columnType,
-            filter_type: dateFilterType,
+            filter_type: this.wireFilterType(dateFilterType, isDate, globalFilter.dynamicValue),
             filter_elements: this.assertGlobalFilterItems(globalFilter, dateFilterType),
             filter_codes: this.assertGlobalFilterCodes(globalFilter, dateFilterType),
             pathList: pathList,
