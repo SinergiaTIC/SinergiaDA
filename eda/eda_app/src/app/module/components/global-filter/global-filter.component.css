@@ -53,7 +53,7 @@
 }
 
 ::ng-deep date-picker input::placeholder {
-  color: #111827;
+  color: #000000;
   opacity: 1;
 }
 
