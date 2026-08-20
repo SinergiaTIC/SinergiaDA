@@ -1,5 +1,6 @@
 import { Component, inject, Input, OnInit, ChangeDetectorRef } from "@angular/core";
-import { AlertService, DashboardService, GlobalFiltersService, QueryBuilderService, UserService } from "@eda/services/service.index";
+import { AlertService, ChartUtilsService, DashboardService, GlobalFiltersService, QueryBuilderService, UserService } from "@eda/services/service.index";
+import { rangeDateFormats } from "@eda/shared/components/date-picker/date-picker.index";
 import { EdaDatePickerConfig } from "@eda/shared/components/eda-date-picker/datePickerConfig";
 import { EdaDialogController } from "@eda/shared/components/shared-components.index";
 import { EdaBlankPanelComponent } from "@eda/components/eda-panels/eda-blank-panel/eda-blank-panel.component";
@@ -93,6 +94,7 @@ export class GlobalFilterComponent implements OnInit {
         private userService: UserService,
         private destroyRef: DestroyRef,
         private cdr: ChangeDetectorRef,
+        private chartUtils: ChartUtilsService,
     ) { }
 
     public ngOnInit(): void {
@@ -238,8 +240,8 @@ export class GlobalFilterComponent implements OnInit {
                     const filterApplied = ebp.globalFilters.find((gf: any) => gf.filter_id === filter.id);
 
                     if (filterApplied) {
-                        filterApplied.filter_elements = this.globalFilterService.assertGlobalFilterItems(filter);
-                        filterApplied.filter_codes = this.globalFilterService.assertGlobalFilterCodes(filter);
+                        filterApplied.filter_elements = this.globalFilterService.assertGlobalFilterItems(filter, filter.dateFilterType);
+                        filterApplied.filter_codes = this.globalFilterService.assertGlobalFilterCodes(filter, filter.dateFilterType);
                     } else {
                         const formatedFilter = this.globalFilterService.formatFilter(filter);
                         ebp.assertGlobalFilter(formatedFilter);
@@ -674,6 +676,43 @@ export class GlobalFilterComponent implements OnInit {
         return label;
     }
 
+    /** Human readable summary of a date filter's operator + value, e.g. "= Hoy" */
+    public getDateFilterLabel(filter: any): string {
+        const op = filter.dateFilterType;
+        if (!op) return '';
+
+        const noValueTypes = ['not_null', 'not_null_nor_empty', 'null_or_empty'];
+        if (noValueTypes.includes(op)) return this.getOperatorLabel(op);
+
+        const fmt = (s: string) => {
+            if (!s) return '';
+            const [ye, mo, da] = s.split('-');
+            return `${da}-${mo}-${ye.slice(2)}`;
+        };
+
+        if (filter.dynamicValue) {
+            return `${this.getOperatorLabel(op)} ${this.getRangeLabel(filter.dynamicValue)}`;
+        }
+
+        const items = filter.selectedItems;
+        if (!items || items.length === 0) return '';
+        if (Array.isArray(items[0])) return `${this.getOperatorLabel(op)} ${(items[0] as string[]).map(fmt).join(', ')}`;
+        if (items.length === 1 || !items[1]) return `${this.getOperatorLabel(op)} ${fmt(items[0])}`;
+        return `${this.getOperatorLabel(op)} ${fmt(items[0])} - ${fmt(items[1])}`;
+    }
+
+    public isDynamicDateRange(filter: any): boolean {
+        return !!(filter.dynamicValue);
+    }
+
+    private getRangeLabel(value: string): string {
+        return rangeDateFormats.find((r: any) => r.value === value)?.label || value;
+    }
+
+    private getOperatorLabel(op: string): string {
+        return this.chartUtils.filterTypesLabels.find((f: any) => f.value === op)?.label || op;
+    }
+
     public removeGlobalFilter(filter: any, reload?: boolean): void {
 
         const formatedFilter = filter;
@@ -736,6 +775,8 @@ export class GlobalFilterComponent implements OnInit {
      * @param filter 
      */
     public processPickerEvent(event: any, filter: any): void {
+        filter.dateFilterType = event.operator;
+
         if (event.dates) {
             const dtf = new Intl.DateTimeFormat('en', { year: 'numeric', month: '2-digit', day: '2-digit' });
             if (!event.dates[1]) {
@@ -750,6 +791,7 @@ export class GlobalFilterComponent implements OnInit {
 
             filter.selectedItems = stringRange;
             filter.selectedRange = event.range;
+            filter.dynamicValue = event.range;
             this.loadDatesFromFilter(filter);
         }
 
@@ -759,12 +801,10 @@ export class GlobalFilterComponent implements OnInit {
 
         if (!event.range) {
             filter.selectedRange = null;
+            filter.dynamicValue = null;
         }
 
         this.applyGlobalFilter(filter);
-        this.setGlobalFilterItems(filter);
-        // filter = this.globalFilterService.formatGlobalFilter(filter);
-        // this.applyGlobalFilter(filter);
     }
 
     /**

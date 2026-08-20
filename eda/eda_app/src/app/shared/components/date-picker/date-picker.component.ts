@@ -34,6 +34,7 @@ export class DatePickerComponent implements OnChanges {
 	@Input() autoRemove: boolean = false;
 	@Input() autoClear: boolean = false;
 	@Input() hideCalendarGrid: boolean = true;
+	@Input() summaryLabel: string = '';
 	@Output() onDatesChanges = new EventEmitter<any>();
 	@Output() onRemove = new EventEmitter<void>();
 
@@ -142,7 +143,7 @@ export class DatePickerComponent implements OnChanges {
 
 	public clean(): void {
 		this.resetConfig();
-		this.onDatesChanges.emit({ dates: null, range: null });
+		this.onDatesChanges.emit({ dates: null, range: null, operator: null });
 	}
 
 	public resetConfig(): void {
@@ -157,9 +158,10 @@ export class DatePickerComponent implements OnChanges {
 	}
 
 	private emitChanges(): void {
+		const isExplicit = <any>this.selectedRange === 'customDate';
 		let dates = this.rangeDates;
 		if (this.selectionMode === 'single' && dates && !Array.isArray(dates)) dates = [dates, dates];
-		this.onDatesChanges.emit({ dates: this.rangeDates, range: this.selectedRange });
+		this.onDatesChanges.emit({ dates, range: isExplicit ? null : this.selectedRange, operator: this.filterTypeSelected?.value });
 	}
 
 	public remove() {

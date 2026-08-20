@@ -291,6 +291,8 @@ export class GlobalFiltersService {
 
 
     public formatFilter(globalFilter: any) {
+        this.normalizeLegacyFilter(globalFilter);
+
         let formatedFilter: any;
         if (globalFilter.pathList) {
             formatedFilter = this.formatGlobalFilterTree(globalFilter);
@@ -301,21 +303,38 @@ export class GlobalFiltersService {
         return formatedFilter;
     }
 
+    /** Backfills dateFilterType/dynamicValue on filters saved before operator support existed */
+    private normalizeLegacyFilter(filter: any): void {
+        if (filter.selectedRange && !filter.dynamicValue) {
+            filter.dynamicValue = filter.selectedRange;
+        }
+        if (!filter.dateFilterType) {
+            if (filter.selectedRange && filter.selectedRange !== 'customDate') {
+                filter.dateFilterType = 'between';
+            } else if (filter.selectedItems?.length >= 2) {
+                filter.dateFilterType = 'between';
+            } else if (filter.selectedItems?.length === 1) {
+                filter.dateFilterType = '=';
+            }
+        }
+    }
+
     private formatGlobalFilter(globalFilter: any) {
         const columnType = globalFilter.column?.value?.column_type || globalFilter.selectedColumn?.column_type;
         const filterTable = globalFilter.table?.value || globalFilter.selectedTable?.table_name;
         const filterColumn = globalFilter.column?.value?.column_name || globalFilter.selectedColumn?.column_name;
         const valueListSource = globalFilter.column?.value?.valueListSource || globalFilter.selectedColumn?.valueListSource;
         const isDate = columnType === 'date';
+        const dateFilterType = isDate ? (globalFilter.dateFilterType || 'between') : 'in';
 
-        const formatedFilter = {
+        const formatedFilter: any = {
             filter_id: globalFilter.id,
             filter_table: filterTable,
             filter_column: filterColumn,
             filter_column_type: columnType,
-            filter_type: isDate ? 'between' : 'in',
-            filter_elements: this.assertGlobalFilterItems(globalFilter),
-            filter_codes: this.assertGlobalFilterCodes(globalFilter),
+            filter_type: dateFilterType,
+            filter_elements: this.assertGlobalFilterItems(globalFilter, dateFilterType),
+            filter_codes: this.assertGlobalFilterCodes(globalFilter, dateFilterType),
             isGlobal: true,
             isAutocompleted: globalFilter.isAutocompleted,
             applyToAll: globalFilter.applyToAll,
@@ -326,6 +345,11 @@ export class GlobalFiltersService {
             computed_column: globalFilter.column?.value?.computed_column ?? globalFilter.selectedColumn?.computed_column,
             SQLexpression: globalFilter.column?.value?.SQLexpression ?? globalFilter.selectedColumn?.SQLexpression,
             fromChart: globalFilter.fromChart ?? false,  // <-- añadir esto
+            selectedRange: globalFilter.selectedRange,
+        }
+
+        if (globalFilter.dynamicValue) {
+            formatedFilter.dynamicValue = globalFilter.dynamicValue;
         }
 
         return formatedFilter;
@@ -334,20 +358,21 @@ export class GlobalFiltersService {
     private formatGlobalFilterTree(globalFilter: any) {
         const columnType = globalFilter.selectedColumn.column_type;
         const isDate = columnType === 'date';
+        const dateFilterType = isDate ? (globalFilter.dateFilterType || 'between') : 'in';
 
         const pathList = _.cloneDeep(globalFilter.pathList);
         for (const key in pathList) {
             delete (pathList[key].selectedTableNodes);
         }
 
-        const formatedFilter = {
+        const formatedFilter: any = {
             filter_id: globalFilter.id,
             filter_table: globalFilter.table_id || globalFilter.selectedTable.table_name,
             filter_column: globalFilter.selectedColumn.column_name,
             filter_column_type: columnType,
-            filter_type: isDate ? 'between' : 'in',
-            filter_elements: this.assertGlobalFilterItems(globalFilter),
-            filter_codes: this.assertGlobalFilterCodes(globalFilter),
+            filter_type: dateFilterType,
+            filter_elements: this.assertGlobalFilterItems(globalFilter, dateFilterType),
+            filter_codes: this.assertGlobalFilterCodes(globalFilter, dateFilterType),
             pathList: pathList,
             isGlobal: true,
             isAutocompleted: globalFilter.isAutocompleted,
@@ -359,71 +384,72 @@ export class GlobalFiltersService {
             SQLexpression: globalFilter.selectedColumn?.SQLexpression,
         }
 
+        if (globalFilter.dynamicValue) {
+            formatedFilter.dynamicValue = globalFilter.dynamicValue;
+        }
+
         return formatedFilter;
     }
 
-    public assertGlobalFilterCodes(globalFilter: any) {
+    public assertGlobalFilterCodes(globalFilter: any, dateFilterType?: string) {
         const columnType = globalFilter.column?.value?.column_type || globalFilter.selectedColumn?.column_type;
         const isDate = columnType === 'date';
+
+        if (!isDate) {
+            // false (EDA) -> compare against the raw selected values | true (SinergiaDA) -> compare against the internal codes
+            const useCodes = USE_VALUE_LIST_CODE_FOR_FILTERS && globalFilter.selectedIdValues;
+            return [{ value1: useCodes ? globalFilter.selectedIdValues : globalFilter.selectedItems }];
+        }
+
+        const filterType = dateFilterType || 'between';
+        const noValueTypes = ['not_null', 'not_null_nor_empty', 'null_or_empty'];
+        if (noValueTypes.includes(filterType)) return [];
+
+        const isTwoValue = filterType === 'between' ||
+            (globalFilter.dynamicValue && (filterType === 'in' || filterType === 'not_in'));
+
         const year_length = 4;
         const year_month_length = 7;
 
-        if (isDate && globalFilter.selectedItems[0] && !globalFilter.selectedItems[1]) {
-            const year = globalFilter.selectedItems[0];
-            if (globalFilter.selectedItems[0].length === year_length) {
-                globalFilter.selectedItems[0] = `${year}-01-01`;
-                globalFilter.selectedItems[1] = `${year}-12-31`;
+        if (isTwoValue) {
+            if (globalFilter.selectedItems[0] && !globalFilter.selectedItems[1]) {
+                const year = globalFilter.selectedItems[0];
+                if (globalFilter.selectedItems[0].length === year_length) {
+                    globalFilter.selectedItems[0] = `${year}-01-01`;
+                    globalFilter.selectedItems[1] = `${year}-12-31`;
+                }
+                else if (globalFilter.selectedItems[0].length === year_month_length) {
+                    const year_month = globalFilter.selectedItems[0];
+                    const year = parseInt(year_month.slice(0, 5))
+                    const month = parseInt(year_month.slice(5, 7));
+                    let days = new Date(year, month, 0).getDate();
+                    let daysstr = days < 10 ? `0${days}` : `${days}`
+                    globalFilter.selectedItems[0] = `${year_month}-01`;
+                    globalFilter.selectedItems[1] = `${year_month}-${daysstr}`;
+                } else {
+                    globalFilter.selectedItems[1] = globalFilter.selectedItems[0]
+                }
             }
-            else if (globalFilter.selectedItems[0].length === year_month_length) {
-                const year_month = globalFilter.selectedItems[0];
-                const year = parseInt(year_month.slice(0, 5))
-                const month = parseInt(year_month.slice(5, 7));
-                let days = new Date(year, month, 0).getDate();
-                let daysstr = days < 10 ? `0${days}` : `${days}`
-                globalFilter.selectedItems[0] = `${year_month}-01`;
-                globalFilter.selectedItems[1] = `${year_month}-${daysstr}`;
-            } else {
-                globalFilter.selectedItems[1] = globalFilter.selectedItems[0]
-            }
+
+            return [
+                { value1: globalFilter.selectedItems[0] ? [globalFilter.selectedItems[0]] : [] },
+                { value2: globalFilter.selectedItems[1] ? [globalFilter.selectedItems[1]] : [] }
+            ];
         }
 
-        // false (EDA) -> compare against the raw selected values | true (SinergiaDA) -> compare against the internal codes
-        const useCodes = USE_VALUE_LIST_CODE_FOR_FILTERS && globalFilter.selectedIdValues;
-
-        return isDate
-            ? [{ value1: globalFilter.selectedItems[0] ? [globalFilter.selectedItems[0]] : [] }, { value2: globalFilter.selectedItems[1] ? [globalFilter.selectedItems[1]] : [] }]
-            : [{ value1: useCodes ? globalFilter.selectedIdValues : globalFilter.selectedItems }];
+        // single-value operators (=, !=, >, <, >=, <=) or static in/not_in with discrete dates
+        const v1 = globalFilter.selectedItems[0];
+        return [{ value1: v1 ? (Array.isArray(v1) ? v1 : [v1]) : [] }];
     }
 
-    public assertGlobalFilterItems(globalFilter: any) {
+    public assertGlobalFilterItems(globalFilter: any, dateFilterType?: string) {
         const columnType = globalFilter.column?.value?.column_type || globalFilter.selectedColumn?.column_type;
         const isDate = columnType === 'date';
-        const year_length = 4;
-        const year_month_length = 7;
 
+        if (!isDate) return [{ value1: globalFilter.selectedItems }];
 
-        if (isDate && globalFilter.selectedItems[0] && !globalFilter.selectedItems[1]) {
-            const year = globalFilter.selectedItems[0];
-            if (globalFilter.selectedItems[0].length === year_length) {
-                globalFilter.selectedItems[0] = `${year}-01-01`;
-                globalFilter.selectedItems[1] = `${year}-12-31`;
-            }
-            else if (globalFilter.selectedItems[0].length === year_month_length) {
-                const year_month = globalFilter.selectedItems[0];
-                const year = parseInt(year_month.slice(0, 5))
-                const month = parseInt(year_month.slice(5, 7));
-                let days = new Date(year, month, 0).getDate();
-                let daysstr = days < 10 ? `0${days}` : `${days}`
-                globalFilter.selectedItems[0] = `${year_month}-01`;
-                globalFilter.selectedItems[1] = `${year_month}-${daysstr}`;
-            } else {
-                globalFilter.selectedItems[1] = globalFilter.selectedItems[0]
-            }
-        }
-
-        return isDate
-            ? [{ value1: globalFilter.selectedItems[0] ? [globalFilter.selectedItems[0]] : [] }, { value2: globalFilter.selectedItems[1] ? [globalFilter.selectedItems[1]] : [] }]
-            : [{ value1: globalFilter.selectedItems }];
+        // Dates have no separate "code" representation — same shape as filter_codes
+        return this.assertGlobalFilterCodes(globalFilter, dateFilterType);
     }
 
     public formatFilterItems(columnType: string, items: any[]) {
