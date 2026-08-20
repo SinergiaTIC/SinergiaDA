@@ -3,6 +3,7 @@
 	[hideOnDateTimeSelect]="false"
 	[firstDayOfWeek]="firstDayOfWeek" [placeholder]="summaryLabel || rangePlaceholder" (onClickOutside)="handleOutsideClick($event)"
 	(onClose)="resetConfig()" (onFocus)="activate()" appendTo="body" [style]="{width:'100%'}"
+	[inputStyle]="summaryOperator ? {'text-indent': (1.52 + summaryOperator.length * 0.27) + 'rem'} : null"
 	[panelStyleClass]="hideCalendarGrid ? 'date-picker-panel hide-calendar-grid' : 'date-picker-panel'">
 
 	<p-header>

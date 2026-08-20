@@ -29,7 +29,3 @@
   pointer-events: none;
   white-space: nowrap;
 }
-
-::ng-deep p-calendar input {
-  text-indent: 2.55rem;
-}
