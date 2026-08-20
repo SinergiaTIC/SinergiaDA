@@ -50,6 +50,9 @@
   border: 1px solid #d1d5db;
   box-sizing: border-box;
   font-size: 0.75rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 ::ng-deep date-picker input::placeholder {
