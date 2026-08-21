@@ -100,6 +100,7 @@ export class DatePickerComponent implements OnChanges {
 		this.showDateFormatSelecter = true;
 		this.hideCalendarGrid = true;
 		this.selectedRange = null;
+		this.rangeDates = null;
 		this.ranges = [...this._allRanges];
 
 		if (!filterTypeSelected) {
