@@ -65,9 +65,11 @@
 	</p-footer>
 </p-calendar>
 
-@if (summaryOperator) {
-	<div class="summary-overlay" [title]="summaryOperator + ' ' + summaryLabel">
+<div class="summary-overlay" [title]="summaryOperator ? (summaryOperator + ' ' + summaryLabel) : null">
+	@if (summaryOperator) {
 		<span class="summary-operator-badge">{{ summaryOperator }}</span>
 		<span class="summary-value-text">{{ summaryLabel }}</span>
-	</div>
-}
+	} @else {
+		<span class="summary-placeholder-text">{{ rangePlaceholder }}</span>
+	}
+</div>

@@ -46,3 +46,11 @@
   overflow: hidden;
   text-overflow: ellipsis;
 }
+
+.summary-placeholder-text {
+  color: #6b7280;
+  font-size: 0.75rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
