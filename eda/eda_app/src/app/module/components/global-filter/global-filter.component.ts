@@ -697,7 +697,12 @@ export class GlobalFilterComponent implements OnInit {
         const items = filter.selectedItems;
         if (!items || items.length === 0) return '';
         if (Array.isArray(items[0])) return (items[0] as string[]).map(fmt).join(', ');
-        if (items.length === 1 || !items[1]) return fmt(items[0]);
+
+        // Single-value comparison operators only ever mean one date, even though selectedItems
+        // stores it duplicated as [date, date] for internal consistency with the pair-shaped operators
+        const singleValueOperators = ['=', '!=', '>', '<', '>=', '<='];
+        if (singleValueOperators.includes(op) || items.length === 1 || !items[1]) return fmt(items[0]);
+
         return `${fmt(items[0])} - ${fmt(items[1])}`;
     }
 
