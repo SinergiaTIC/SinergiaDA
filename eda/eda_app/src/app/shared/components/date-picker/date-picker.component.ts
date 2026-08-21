@@ -54,6 +54,10 @@ export class DatePickerComponent implements OnChanges {
 	public rangePlaceholder: string = $localize`:@@DateSelectRange:Selecciona un rango`;
 	public rangeDates: any;
 	private _allRanges: Array<SelectItem>;
+	// hideOverlay() closes async (animation); the resulting (onClose) can arrive after a
+	// restoreFromInject() already ran for a fresh inject, wiping it out. Set before any
+	// self-triggered close so the delayed (onClose) knows not to reset again.
+	private suppressNextClose = false;
 
 	constructor(
 		private dateUtilsService: DateUtils,
@@ -146,6 +150,7 @@ export class DatePickerComponent implements OnChanges {
 	public confirm(): void {
 		if (!this.isReadyForConfirmation) return;
 		this.emitChanges();
+		this.suppressNextClose = true;
 		this.datePickerRef?.hideOverlay();
 		this.resetConfig();
 	}
@@ -155,12 +160,24 @@ export class DatePickerComponent implements OnChanges {
 		if (target?.closest('.p-dropdown-panel, .p-dropdown-item')) {
 			return;
 		}
+		this.suppressNextClose = true;
 		this.resetConfig();
 	}
 
 	public clean(): void {
+		this.suppressNextClose = true;
 		this.resetConfig();
 		this.onDatesChanges.emit({ dates: null, range: null, operator: null });
+	}
+
+	/** Bound to (onClose) — fires late (animation-driven), so a self-triggered close is
+	 * suppressed once to avoid stomping on a restoreFromInject() that ran in the meantime. */
+	public handleClose(): void {
+		if (this.suppressNextClose) {
+			this.suppressNextClose = false;
+			return;
+		}
+		this.resetConfig();
 	}
 
 	public resetConfig(): void {
