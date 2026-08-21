@@ -1,9 +1,8 @@
 <p-calendar class='eda-filter-multiselect' [locale]="locale" [(ngModel)]="rangeDates" dateFormat="dd-mm-y"
 	[selectionMode]="selectionMode" [readonlyInput]="true" [monthNavigator]="true" [yearNavigator]="true" yearRange="1984:2030"
 	[hideOnDateTimeSelect]="false"
-	[firstDayOfWeek]="firstDayOfWeek" [placeholder]="summaryOperator ? summaryLabel : rangePlaceholder" (onClickOutside)="handleOutsideClick($event)"
+	[firstDayOfWeek]="firstDayOfWeek" [placeholder]="rangePlaceholder" (onClickOutside)="handleOutsideClick($event)"
 	(onClose)="handleClose()" (onFocus)="activate()" appendTo="body" [style]="{width:'100%'}"
-	[inputStyle]="summaryOperator ? {'text-indent': (1.52 + summaryOperator.length * 0.27) + 'rem'} : null"
 	[panelStyleClass]="hideCalendarGrid ? 'date-picker-panel hide-calendar-grid' : 'date-picker-panel'"
 	[attr.title]="summaryOperator ? (summaryOperator + ' ' + summaryLabel) : null">
 
@@ -67,5 +66,8 @@
 </p-calendar>
 
 @if (summaryOperator) {
-	<span class="summary-operator-badge">{{ summaryOperator }}</span>
+	<div class="summary-overlay" [title]="summaryOperator + ' ' + summaryLabel">
+		<span class="summary-operator-badge">{{ summaryOperator }}</span>
+		<span class="summary-value-text">{{ summaryLabel }}</span>
+	</div>
 }

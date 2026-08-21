@@ -15,17 +15,34 @@
   display: block;
 }
 
-.summary-operator-badge {
+.summary-overlay {
   position: absolute;
-  left: 0.39rem;
-  top: 50%;
-  transform: translateY(-50%);
+  inset: 0;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0 0.6rem;
+  pointer-events: none;
+  overflow: hidden;
+  background: #ffffff;
+  border-radius: 0.5rem;
+}
+
+.summary-operator-badge {
+  flex-shrink: 0;
   padding: 1px 4px;
   border-radius: 9999px;
   border: 1px solid #93c5fd;
   background: #eff6ff;
   color: #000000;
   font-size: 0.7rem;
-  pointer-events: none;
   white-space: nowrap;
+}
+
+.summary-value-text {
+  color: #000000;
+  font-size: 0.75rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
