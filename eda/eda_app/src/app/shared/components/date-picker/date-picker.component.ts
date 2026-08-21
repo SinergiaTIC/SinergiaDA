@@ -218,7 +218,9 @@ export class DatePickerComponent implements OnChanges {
 			return;
 		}
 		this.hideCalendarGrid = true;
-		const dates = this.dateUtilsService.getRange(value);
-		this.rangeDates = this.selectionMode === 'single' ? dates[0] : dates;
+		// Don't assign rangeDates here — it's bound to the calendar's own value and would show
+		// the computed date immediately. The actual value is only supposed to apply on confirm;
+		// emitChanges() computes it lazily from selectedRange at that point.
+		this.rangeDates = null;
 	}
 }
