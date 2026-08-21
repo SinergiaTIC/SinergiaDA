@@ -21,7 +21,7 @@
   display: flex;
   align-items: center;
   gap: 6px;
-  padding: 0 0.6rem;
+  padding: 0 0.85rem 0 0.54rem;
   pointer-events: none;
   overflow: hidden;
   background: #ffffff;
@@ -35,13 +35,13 @@
   border: 1px solid #93c5fd;
   background: #eff6ff;
   color: #000000;
-  font-size: 0.7rem;
+  font-size: 0.76rem;
   white-space: nowrap;
 }
 
 .summary-value-text {
   color: #000000;
-  font-size: 0.75rem;
+  font-size: 0.81rem;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
