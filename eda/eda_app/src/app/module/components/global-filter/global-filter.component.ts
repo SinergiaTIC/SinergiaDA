@@ -690,8 +690,8 @@ export class GlobalFilterComponent implements OnInit {
             return `${da}-${mo}-${ye.slice(2)}`;
         };
 
-        if (filter.dynamicValue) {
-            return this.getRangeLabel(filter.dynamicValue);
+        if (filter.dynamicValue || filter.selectedRange) {
+            return this.getRangeLabel(filter.dynamicValue || filter.selectedRange);
         }
 
         const items = filter.selectedItems;
@@ -707,7 +707,7 @@ export class GlobalFilterComponent implements OnInit {
     }
 
     public isDynamicDateRange(filter: any): boolean {
-        return !!(filter.dynamicValue);
+        return !!(filter.dynamicValue || filter.selectedRange);
     }
 
     private getRangeLabel(value: string): string {

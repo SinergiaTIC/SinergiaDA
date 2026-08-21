@@ -84,8 +84,11 @@ export class DatePickerComponent implements OnChanges {
 		this.handleFilterChange(operator);
 
 		if (this.inject.range) {
+			// Only restore the dropdown selection — NOT rangeDates. Populating rangeDates would
+			// surface the literal computed date in the closed input (p-calendar shows its bound
+			// value over the placeholder), hiding the dynamic label (summaryLabel/summaryOperator)
+			// that's supposed to show for a variable range like "Avui" instead of a frozen date.
 			this.selectedRange = this.ranges.find(r => r.value === this.inject.range)?.value ?? null;
-			if (this.selectedRange) this.getRange();
 		} else if (this.inject.dateRange?.length > 0) {
 			this.selectedRange = <any>'customDate';
 			this.hideCalendarGrid = false;
@@ -173,6 +176,10 @@ export class DatePickerComponent implements OnChanges {
 	private emitChanges(): void {
 		const isExplicit = <any>this.selectedRange === 'customDate';
 		let dates = this.rangeDates;
+		// A restored dynamic range doesn't prefill rangeDates (see restoreFromInject) — compute it now if confirming as-is
+		if (!isExplicit && !dates && this.selectedRange) {
+			dates = this.dateUtilsService.getRange(<any>this.selectedRange);
+		}
 		if (this.selectionMode === 'single' && dates && !Array.isArray(dates)) dates = [dates, dates];
 		this.onDatesChanges.emit({ dates, range: isExplicit ? null : this.selectedRange, operator: this.filterTypeSelected?.value });
 	}
