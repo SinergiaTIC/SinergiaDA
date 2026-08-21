@@ -1,4 +1,4 @@
-<p-calendar class='eda-filter-multiselect' [locale]="locale" [(ngModel)]="rangeDates" dateFormat="dd.mm.yy"
+<p-calendar class='eda-filter-multiselect' [locale]="locale" [(ngModel)]="rangeDates" dateFormat="dd-mm-y"
 	[selectionMode]="selectionMode" [readonlyInput]="true" [monthNavigator]="true" [yearNavigator]="true" yearRange="1984:2030"
 	[hideOnDateTimeSelect]="false"
 	[firstDayOfWeek]="firstDayOfWeek" [placeholder]="summaryOperator ? summaryLabel : rangePlaceholder" (onClickOutside)="handleOutsideClick($event)"
