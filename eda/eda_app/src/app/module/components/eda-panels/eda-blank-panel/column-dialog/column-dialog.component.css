@@ -51,19 +51,18 @@
     background: var(--corporate-primary) !important;
     filter: brightness(0.9);
 }
-/* Date picker - same size as the one in global-filter */
+/* Date picker - same height as the "Format" p-dropdown next to it (.p-inputtext defaults) */
 ::ng-deep date-picker {
-    display: block !important;
-    height: 32px !important;
+    display: block;
 }
 
-::ng-deep date-picker input {
-    height: 32px !important;
-    padding: 0.25rem 0.75rem;
-    border-radius: 0.5rem;
-    border: 1px solid #d1d5db;
+::ng-deep date-picker .summary-overlay {
+    padding: 0.5rem 0.5rem;
+    border: 1px solid #ced4da;
+    border-radius: 3px;
     box-sizing: border-box;
-    font-size: 0.75rem;
+    font-size: 1rem;
+    height: 3.2rem;
 }
 
 /* ── Add filter button ─────────────────────────────────────── */
