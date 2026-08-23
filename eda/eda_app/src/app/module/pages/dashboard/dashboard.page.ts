@@ -388,6 +388,18 @@ export class DashboardPage implements OnInit {
 
   private updateFilterDatesInPanels(): void {
 
+        // A dynamic in/not_in date range was never supported as a literal SQL IN by the backend
+        // (it only reads value1, dropping the range's end). Filters saved before this was fixed —
+        // including ones from the old pre-migration app — still carry filter_type 'in'/'not_in'
+        // frozen from when they were created. Remap it here too so old dashboards get the correct
+        // between/not_between query, without needing to be re-saved.
+        const wireFilterType = (filter: any): string => {
+            if (filter.filter_column_type === 'date' && filter.selectedRange && ['in', 'not_in'].includes(filter.filter_type)) {
+                return filter.filter_type === 'in' ? 'between' : 'not_between';
+            }
+            return filter.filter_type;
+        };
+
         /**Set ranges for dates in panel filters */
         this.panels.filter(panel => panel.content).forEach(panel => {
 
@@ -403,12 +415,29 @@ export class DashboardPage implements OnInit {
 
                     pFilter.filter_elements[0] = { value1: [stringRange[0]] }
                     pFilter.filter_elements[1] = { value2: [stringRange[1]] }
+                    pFilter.filter_type = wireFilterType(pFilter);
 
                 }
 
                 panel.content.query.query.filters.push(pFilter);
 
             });
+
+            // Same date recompute + filter_type remap for the AND/OR filter tree, which the
+            // loop above doesn't touch — it lives at panel.content.query.query.sortedFilters.
+            const sortedFilters = panel.content.query.query.sortedFilters;
+            if (Array.isArray(sortedFilters)) {
+                sortedFilters.forEach(sFilter => {
+                    if (!!sFilter.selectedRange) {
+                        let range = this.dateUtilsService.getRange(sFilter.selectedRange);
+                        let stringRange = this.dateUtilsService.rangeToString(range);
+
+                        sFilter.filter_elements[0] = { value1: [stringRange[0]] };
+                        sFilter.filter_elements[1] = { value2: [stringRange[1]] };
+                        sFilter.filter_type = wireFilterType(sFilter);
+                    }
+                });
+            }
 
         });
 
