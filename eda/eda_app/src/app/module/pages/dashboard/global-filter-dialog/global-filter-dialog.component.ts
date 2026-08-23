@@ -1,11 +1,12 @@
 import { CdkDragDrop, moveItemInArray } from "@angular/cdk/drag-drop";
 import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from "@angular/core";
 import { EdaPanel } from "@eda/models/model.index";
-import { AlertService, DashboardService, FileUtiles, GlobalFiltersService, QueryBuilderService, StyleProviderService } from "@eda/services/service.index";
+import { AlertService, ChartUtilsService, DashboardService, FileUtiles, GlobalFiltersService, QueryBuilderService, StyleProviderService } from "@eda/services/service.index";
 import { EdaDatePickerConfig } from "@eda/shared/components/eda-date-picker/datePickerConfig";
+import { rangeDateFormats } from "@eda/shared/components/date-picker/date-picker.index";
 import * as _ from 'lodash';
 import { NgClass } from "@angular/common";
-import { EdaDatePickerComponent } from "@eda/shared/components/shared-components.index";
+import { DatePickerComponent } from "@eda/shared/components/shared-components.index";
 import { EdaDialog2Component } from "@eda/shared/components/shared-components.index";
 import { DropdownModule } from "primeng/dropdown";
 import { FormsModule, ReactiveFormsModule } from "@angular/forms";  
@@ -40,7 +41,7 @@ const PRIMENG_MODULES = [
 
 const STANDALONE_COMPONENTS = [
     EdaDialog2Component,
-    EdaDatePickerComponent,
+    DatePickerComponent,
 ];
 
 @Component({
@@ -133,6 +134,7 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
         private queryBuilderService: QueryBuilderService,
         private alertService: AlertService,
         private fileUtils: FileUtiles,
+        private chartUtils: ChartUtilsService,
     ) { }
 
     private sortByTittle = (a: any, b: any) => {
@@ -448,32 +450,95 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
         config.dateRange = [];
         config.range = filter.selectedRange;
         config.filter = filter;
+        config.dateFilterType = filter.dateFilterType;
         if (filter.selectedItems.length > 0) {
             if (!filter.selectedRange) {
-                let firstDate = filter.selectedItems[0];
-                let lastDate = filter.selectedItems[filter.selectedItems.length - 1];
+                // Static in/not_in stores its discrete dates nested as selectedItems[0]
+                const items = Array.isArray(filter.selectedItems[0]) ? filter.selectedItems[0] : filter.selectedItems;
+                let firstDate = items[0];
+                let lastDate = items[items.length - 1];
                 config.dateRange.push(new Date(firstDate.replace(/-/g, '/')));
                 config.dateRange.push(new Date(lastDate.replace(/-/g, '/')));
             }
-        }    
+        }
     }
 
-    public processPickerEvent(event): void {
+    public processPickerEvent(event: any): void {
+        this.globalFilter.dateFilterType = event.operator;
+
         if (event.dates) {
             const dtf = new Intl.DateTimeFormat('en', { year: 'numeric', month: '2-digit', day: '2-digit' });
-            if (!event.dates[1]) {
-                event.dates[1] = event.dates[0];
+            const toStr = (date: Date) => {
+                const [{ value: mo }, , { value: da }, , { value: ye }] = dtf.formatToParts(date);
+                return `${ye}-${mo}-${da}`;
+            };
+
+            const isStaticInNotIn = ['in', 'not_in'].includes(event.operator) && !event.range;
+            if (isStaticInNotIn) {
+                // Discrete, individually picked dates — kept as a single nested list, not a start/end pair
+                this.globalFilter.selectedItems = [event.dates.filter((d: any) => d != null).map(toStr)];
+            } else {
+                if (!event.dates[1]) {
+                    event.dates[1] = event.dates[0];
+                }
+                this.globalFilter.selectedItems = [event.dates[0], event.dates[1]].map(toStr);
             }
 
-            let stringRange = [event.dates[0], event.dates[1]]
-                .map(date => {
-                    let [{ value: mo }, , { value: da }, , { value: ye }] = dtf.formatToParts(date);
-                    return `${ye}-${mo}-${da}`
-                });
-
-            this.globalFilter.selectedItems = stringRange;
             this.globalFilter.selectedRange = event.range;
+            this.globalFilter.dynamicValue = event.range;
         }
+
+        if (!event.dates) {
+            this.globalFilter.selectedItems = [];
+        }
+
+        if (!event.range) {
+            this.globalFilter.selectedRange = null;
+            this.globalFilter.dynamicValue = null;
+        }
+
+        this.loadDatesFromFilter();
+    }
+
+    /** Just the value part of the date-picker's own summary — e.g. "03-08-26 - 09-08-26" or "Avui" */
+    public getDateFilterValueText(): string {
+        const op = this.globalFilter.dateFilterType;
+        if (!op) return '';
+
+        const noValueTypes = ['not_null', 'not_null_nor_empty', 'null_or_empty'];
+        if (noValueTypes.includes(op)) return '';
+
+        const fmt = (s: string) => {
+            if (!s) return '';
+            const [ye, mo, da] = s.split('-');
+            return `${da}-${mo}-${ye.slice(2)}`;
+        };
+
+        if (this.globalFilter.dynamicValue || this.globalFilter.selectedRange) {
+            return this.getRangeLabel(this.globalFilter.dynamicValue || this.globalFilter.selectedRange);
+        }
+
+        const items = this.globalFilter.selectedItems;
+        if (!items || items.length === 0) return '';
+        if (Array.isArray(items[0])) return (items[0] as string[]).map(fmt).join(', ');
+
+        const singleValueOperators = ['=', '!=', '>', '<', '>=', '<='];
+        if (singleValueOperators.includes(op) || items.length === 1 || !items[1]) return fmt(items[0]);
+
+        return `${fmt(items[0])} - ${fmt(items[1])}`;
+    }
+
+    /** Just the operator part of the date-picker's own summary, e.g. "=" or "Entre" — rendered as a badge */
+    public getDateFilterOperatorText(): string {
+        return this.globalFilter.dateFilterType ? this.getOperatorLabel(this.globalFilter.dateFilterType) : '';
+    }
+
+    private getRangeLabel(value: string): string {
+        return rangeDateFormats.find((r: any) => r.value === value)?.label || value;
+    }
+
+    private getOperatorLabel(op: string): string {
+        return this.chartUtils.filterTypesLabels.find((f: any) => f.value === op)?.label || op;
     }
 
     public findPanelPathTables() {

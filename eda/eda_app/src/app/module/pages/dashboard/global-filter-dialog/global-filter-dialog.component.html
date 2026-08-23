@@ -165,10 +165,12 @@
                 }
               }
               @if (globalFilter.selectedColumn?.column_type === 'date') {
-                <eda-date-picker #myCalendar
+                <date-picker
                   [inject]="datePickerConfigs[globalFilter?.id]"
-                  [autoClear]="true" (onDatesChanges)="processPickerEvent($event)">
-                </eda-date-picker>
+                  [autoClear]="true" (onDatesChanges)="processPickerEvent($event)"
+                  [summaryOperator]="getDateFilterOperatorText()"
+                  [summaryLabel]="getDateFilterValueText()">
+                </date-picker>
               }
             </div>
           </div>
