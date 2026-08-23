@@ -217,7 +217,7 @@
               [class.col-span-2]="selectedColumn?.column_type === 'date'"
               [class.justify-self-start]="selectedColumn?.column_type === 'date'">
               @if (selectedColumn?.column_type === 'date') {
-                <date-picker style="width: 160px; height: 32px;" (onDatesChanges)="processPickerEvent($event)"
+                <date-picker style="width: 160px;" (onDatesChanges)="processPickerEvent($event)"
                   [summaryOperator]="getPendingDateFilterOperatorText()"
                   [summaryLabel]="getPendingDateFilterValueText()">
                 </date-picker>
