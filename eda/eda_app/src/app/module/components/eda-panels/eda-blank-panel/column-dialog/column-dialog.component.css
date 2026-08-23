@@ -51,6 +51,21 @@
     background: var(--corporate-primary) !important;
     filter: brightness(0.9);
 }
+/* Date picker - same size as the one in global-filter */
+::ng-deep date-picker {
+    display: block !important;
+    height: 32px !important;
+}
+
+::ng-deep date-picker input {
+    height: 32px !important;
+    padding: 0.25rem 0.75rem;
+    border-radius: 0.5rem;
+    border: 1px solid #d1d5db;
+    box-sizing: border-box;
+    font-size: 0.75rem;
+}
+
 /* ── Add filter button ─────────────────────────────────────── */
 .addFilter-button {
     display: inline-flex;

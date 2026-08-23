@@ -180,42 +180,44 @@
           <div class="grid grid-cols-[42.5%_42.5%_15%] gap-3 items-start">
 
             <!-- Filter type and scope + switch -->
-            <div class="flex flex-col gap-3 w-full">
-              @if (selectedColumn?.column_type !== 'date') {
+            @if (selectedColumn?.column_type !== 'date') {
+              <div class="flex flex-col gap-3 w-full">
                 <p-dropdown id="types" [options]="filter.types" [(ngModel)]="filterSelected" optionLabel="label"
                   [autoDisplayFirst]="false" [style]="{'width': '100%'}" [showClear]="true"
                   i18n-placeholder="@@tiposFiltrosLabel" placeholder="Tipos de filtro"
                   (onChange)="handleFilterChange(filterSelected)">
                 </p-dropdown>
-              }
 
-              @if (filterSelected && selectedColumn?.column_type === 'numeric' && !display.switchButton && aggregationSelected?.value !== 'none') {
-                <p-dropdown
-                  id="whereHaving"
-                  [options]="filterBeforeAfter.elements"
-                  [(ngModel)]="filterBeforeAfterSelected"
-                  optionLabel="label"
-                  [autoDisplayFirst]="true"
-                  [style]="{'width': '100%'}"
-                  i18n-placeholder="@@whereHavingLabel" placeholder="Ámbito del filtro"
-                  (onChange)="whereHavingSwitch(filterBeforeAfterSelected)">
-                </p-dropdown>
-              }
+                @if (filterSelected && selectedColumn?.column_type === 'numeric' && !display.switchButton && aggregationSelected?.value !== 'none') {
+                  <p-dropdown
+                    id="whereHaving"
+                    [options]="filterBeforeAfter.elements"
+                    [(ngModel)]="filterBeforeAfterSelected"
+                    optionLabel="label"
+                    [autoDisplayFirst]="true"
+                    [style]="{'width': '100%'}"
+                    i18n-placeholder="@@whereHavingLabel" placeholder="Ámbito del filtro"
+                    (onChange)="whereHavingSwitch(filterBeforeAfterSelected)">
+                  </p-dropdown>
+                }
 
-              @if (!showFormatDateSection) {
-                <div class="flex items-center gap-2">
-                  <label class="text-base text-gray-600" i18n="@@optionsLabel" for="filter_options">Opciones</label>
-                  <p-inputSwitch id="filter_options" [(ngModel)]="filter.switch" [disabled]="display.switchButton"
-                    (onChange)="loadDropDrownData()">
-                  </p-inputSwitch>
-                </div>
-              }
-            </div>
+                @if (!showFormatDateSection) {
+                  <div class="flex items-center gap-2">
+                    <label class="text-base text-gray-600" i18n="@@optionsLabel" for="filter_options">Opciones</label>
+                    <p-inputSwitch id="filter_options" [(ngModel)]="filter.switch" [disabled]="display.switchButton"
+                      (onChange)="loadDropDrownData()">
+                    </p-inputSwitch>
+                  </div>
+                }
+              </div>
+            }
 
             <!-- Filter values -->
-            <div class="flex flex-col w-full gap-3">
+            <div class="flex flex-col gap-3" [class.w-full]="selectedColumn?.column_type !== 'date'"
+              [class.col-span-2]="selectedColumn?.column_type === 'date'"
+              [class.justify-self-start]="selectedColumn?.column_type === 'date'">
               @if (selectedColumn?.column_type === 'date') {
-                <date-picker (onDatesChanges)="processPickerEvent($event)"
+                <date-picker style="width: 160px; height: 32px;" (onDatesChanges)="processPickerEvent($event)"
                   [summaryOperator]="getPendingDateFilterOperatorText()"
                   [summaryLabel]="getPendingDateFilterValueText()">
                 </date-picker>
