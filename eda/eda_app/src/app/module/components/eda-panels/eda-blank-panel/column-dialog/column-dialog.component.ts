@@ -815,20 +815,29 @@ export class ColumnDialogComponent {
 
         if (event.dates) {
             const dtf = new Intl.DateTimeFormat('en', { year: 'numeric', month: '2-digit', day: '2-digit' });
+            const toDateString = (date: any) => {
+                let [{ value: mo }, , { value: da }, , { value: ye }] = dtf.formatToParts(date);
+                return `${ye}-${mo}-${da}`;
+            };
             const singleValueOperators = ['=', '!=', '>', '<', '>=', '<='];
             const isSingleDate = singleValueOperators.includes(this.filterSelected?.value);
+            const isStaticInNotIn = ['in', 'not_in'].includes(this.filterSelected?.value) && !event.range;
 
-            const dates = Array.isArray(event.dates) ? event.dates : [event.dates, event.dates];
-            if (!dates[1]) dates[1] = dates[0];
+            if (isStaticInNotIn) {
+                // Discretely picked dates for a static in/not_in: all of them belong together
+                // under value1 (the backend only ever reads value1 for in/not_in), not split
+                // into a value1/value2 pair that silently drops everything past the second date.
+                const dates = Array.isArray(event.dates) ? event.dates : [event.dates];
+                this.filterValue = { value1: dates.filter(date => date != null).map(toDateString) };
+            } else {
+                const dates = Array.isArray(event.dates) ? event.dates : [event.dates, event.dates];
+                if (!dates[1]) dates[1] = dates[0];
 
-            let stringRange = [dates[0], dates[1]]
-                .map(date => {
-                    let [{ value: mo }, , { value: da }, , { value: ye }] = dtf.formatToParts(date);
-                    return `${ye}-${mo}-${da}`
-                });
+                let stringRange = [dates[0], dates[1]].map(toDateString);
 
-            this.filterValue.value1 = stringRange[0];
-            this.filterValue.value2 = isSingleDate ? null : stringRange[1];
+                this.filterValue.value1 = stringRange[0];
+                this.filterValue.value2 = isSingleDate ? null : stringRange[1];
+            }
         } else {
             this.filterValue = {};
         }
@@ -862,6 +871,10 @@ export class ColumnDialogComponent {
         const singleValueOperators = ['=', '!=', '>', '<', '>=', '<='];
         if (singleValueOperators.includes(this.filterSelected.value)) {
             return fmt(this.filterValue?.value1);
+        }
+
+        if (Array.isArray(this.filterValue?.value1)) {
+            return this.filterValue.value1.map(fmt).join(', ');
         }
 
         return this.filterValue?.value2
