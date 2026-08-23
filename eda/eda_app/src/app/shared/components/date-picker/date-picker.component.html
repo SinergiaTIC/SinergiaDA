@@ -1,8 +1,8 @@
 <p-calendar class='eda-filter-multiselect' [locale]="locale" [(ngModel)]="rangeDates" dateFormat="dd-mm-y"
 	[selectionMode]="selectionMode" [readonlyInput]="true" [monthNavigator]="true" [yearNavigator]="true" yearRange="1984:2030"
-	[hideOnDateTimeSelect]="false"
+	[hideOnDateTimeSelect]="false" [showOnFocus]="false"
 	[firstDayOfWeek]="firstDayOfWeek" [placeholder]="rangePlaceholder" (onClickOutside)="handleOutsideClick($event)"
-	(onClose)="handleClose()" (onFocus)="activate()" appendTo="body" [style]="{width:'100%'}"
+	(onClose)="handleClose()" (onFocus)="activate()" (click)="datePickerRef.showOverlay()" appendTo="body" [style]="{width:'100%'}"
 	[panelStyleClass]="hideCalendarGrid ? 'date-picker-panel hide-calendar-grid' : 'date-picker-panel'"
 	[attr.title]="summaryOperator ? (summaryOperator + ' ' + summaryLabel) : null">
 
