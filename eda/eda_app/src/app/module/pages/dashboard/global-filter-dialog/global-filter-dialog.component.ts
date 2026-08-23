@@ -191,7 +191,11 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
             this.globalFilter.selectedColumn = _.cloneDeep(this.globalFilter.selectedTable.columns.find((col: any) => col.column_name == columnName));
 
             this.getColumnsByTable();
-            this.loadColumnValues();
+            if (this.globalFilter.selectedColumn?.column_type === 'date') {
+                this.loadDatesFromFilter();
+            } else {
+                this.loadColumnValues();
+            }
             this.findPanelPathTables();
             this.aliasValue = display_name_alias;
         }
