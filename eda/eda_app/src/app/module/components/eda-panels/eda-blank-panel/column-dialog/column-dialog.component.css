@@ -54,6 +54,13 @@
 /* Date picker - same height as the "Format" p-dropdown next to it (.p-inputtext defaults) */
 ::ng-deep date-picker {
     display: block;
+    height: 3.2rem;
+}
+
+::ng-deep date-picker .p-calendar,
+::ng-deep date-picker .p-calendar input {
+    height: 3.2rem;
+    box-sizing: border-box;
 }
 
 ::ng-deep date-picker .summary-overlay {
