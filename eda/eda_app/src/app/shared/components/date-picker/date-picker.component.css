@@ -32,9 +32,8 @@
 .summary-operator-badge {
   flex-shrink: 0;
   padding: 1px 4px;
-  border-radius: 9999px;
-  border: 1px solid #93c5fd;
-  background: #eff6ff;
+  border-radius: 0.375rem;
+  background: #E5E7EB;
   color: #000000;
   font-size: 0.76rem;
   white-space: nowrap;
