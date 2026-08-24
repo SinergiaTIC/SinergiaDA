@@ -48,7 +48,7 @@
                         </button>
                       }
                     </div>
-                    @if (filter.selectedItems?.length > 0) {
+                    @if (filter.dateFilterType) {
                       <div class="filter-tooltip-container filter-tooltip-container--static px-4 py-2 rounded flex items-center mr-1">
                         <span class="customMultiselect filters-size filter-tooltip-text">
                           {{ getDateFilterOperatorText(filter) }} {{ getDateFilterValueText(filter) }}

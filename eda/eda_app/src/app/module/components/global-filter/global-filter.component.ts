@@ -1141,8 +1141,10 @@ export class GlobalFilterComponent implements OnInit {
     public showFilterTooltip(event: MouseEvent, op: any, filter?: any): void {
     // if the dropdown is open the tooltip is not shown
         if (this.isDropdownOpen) return;
-    // If the filter doesn't have selected values, the tooltip won't be shown
-        if (filter && (!filter.selectedItems || filter.selectedItems.length === 0)) return;
+    // If the filter doesn't have selected values, the tooltip won't be shown — unless it's a date
+    // filter configured with a no-value operator (not_null, not_null_nor_empty, null_or_empty),
+    // where selectedItems is always empty even though the filter is meaningfully set.
+        if (filter && (!filter.selectedItems || filter.selectedItems.length === 0) && !filter.dateFilterType) return;
     // If there is some active timeout to hide the tooltip, it will be cleared 
         if (this.tooltipHideTimeout && this.lastPanel === filter.id) {
            clearTimeout(this.tooltipHideTimeout);
