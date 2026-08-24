@@ -109,6 +109,12 @@
   transition: background-color 0.2s ease;
   background-color: rgba(var(--corporate-primary-rgb), 0.08);
 }
+
+/* Purely informational row (e.g. date filter summary) — no per-item action to reveal on hover,
+   so it carries the highlighted background from the start instead of only on :hover. */
+.filter-tooltip-container--static{
+  background-color: rgba(var(--corporate-primary-rgb), 0.08);
+}
 /* individual filter - uniform width */
 .filter-card {
   flex: 0 0 auto;
