@@ -4,7 +4,7 @@
 	[firstDayOfWeek]="firstDayOfWeek" [placeholder]="rangePlaceholder" (onClickOutside)="handleOutsideClick($event)"
 	(onClose)="handleClose()" (onFocus)="activate()" (click)="datePickerRef.showOverlay()" appendTo="body" [style]="{width:'100%'}"
 	[panelStyleClass]="hideCalendarGrid ? 'date-picker-panel hide-calendar-grid' : 'date-picker-panel'"
-	[attr.title]="summaryOperator ? (summaryOperator + ' ' + summaryLabel) : null">
+	[attr.title]="showNativeTooltip && summaryOperator ? (summaryOperator + ' ' + summaryLabel) : null">
 
 	<p-header>
 		<div class="flex flex-col gap-2 p-2" (mousedown)="$event.stopPropagation()">
@@ -65,7 +65,7 @@
 	</p-footer>
 </p-calendar>
 
-<div class="summary-overlay" [title]="summaryOperator ? (summaryOperator + ' ' + summaryLabel) : null">
+<div class="summary-overlay" [title]="showNativeTooltip && summaryOperator ? (summaryOperator + ' ' + summaryLabel) : null">
 	@if (summaryOperator) {
 		<span class="summary-operator-badge">{{ summaryOperator }}</span>
 		<span class="summary-value-text">{{ summaryLabel }}</span>

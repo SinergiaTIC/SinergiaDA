@@ -36,6 +36,7 @@ export class DatePickerComponent implements OnChanges {
 	@Input() hideCalendarGrid: boolean = true;
 	@Input() summaryLabel: string = '';
 	@Input() summaryOperator: string = '';
+	@Input() showNativeTooltip: boolean = true;
 	@Output() onDatesChanges = new EventEmitter<any>();
 	@Output() onRemove = new EventEmitter<void>();
 

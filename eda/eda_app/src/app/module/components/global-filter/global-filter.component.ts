@@ -77,6 +77,7 @@ export class GlobalFilterComponent implements OnInit {
 
     public filtrar: string = $localize`:@@filtrarH4:Filtrar`;
     public resumen: string = $localize`:@@filterSummary:Resumen de filtros`;
+    public resumenSingular: string = $localize`:@@filterSummarySingular:Resumen de filtro`;
     public selectedItemsLabel: string = $localize`:@@globalFilterSelectedItemsLabel:elementos seleccionados`;
     private tooltipHideTimeout: any;
     // Flag to view last panel
