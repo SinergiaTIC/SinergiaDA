@@ -6771,6 +6771,10 @@ OR<ph id="5"/>
   <source>Restablecer (100%)</source>
   <target>Reset (100%)</target>
 </trans-unit>
+<trans-unit id="aboutTitle">
+  <source>Acerca de</source>
+  <target>About</target>
+</trans-unit>
 </body>
 </file>
 </xliff>
