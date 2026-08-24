@@ -50,8 +50,9 @@
                     </div>
                     @if (filter.dateFilterType) {
                       <div class="filter-tooltip-container filter-tooltip-container--static px-4 py-2 rounded flex items-center mr-1">
-                        <span class="customMultiselect filters-size filter-tooltip-text">
-                          {{ getDateFilterOperatorText(filter) }} {{ getDateFilterValueText(filter) }}
+                        <span class="flex justify-between gap-3 w-full customMultiselect filters-size filter-tooltip-text">
+                          <span>{{ getDateFilterOperatorText(filter) }}</span>
+                          <span>{{ getDateFilterValueText(filter) }}</span>
                         </span>
                       </div>
                     }
