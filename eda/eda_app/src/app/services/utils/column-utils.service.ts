@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { FilterType } from '@eda/services/utils/chart-utils.service';
+import { ChartUtilsService, FilterType } from '@eda/services/utils/chart-utils.service';
 import { FileUtiles } from '@eda/services/utils/file-utils.service';
 import * as _ from 'lodash';
 interface FilterOptions {
@@ -20,7 +20,7 @@ interface FilterOptions {
 }
 @Injectable()
 export class ColumnUtilsService {
-    constructor(private fileUtiles: FileUtiles) { }
+    constructor(private fileUtiles: FileUtiles, private chartUtils: ChartUtilsService) { }
 
     /**
      * @deprecated The method should not be used. Use setFilter(options: FilterOptions) instead
@@ -96,7 +96,8 @@ export class ColumnUtilsService {
             filter_type: wireFilterType,
             // The operator the user actually picked (e.g. 'in') — filter_type may have been
             // remapped above for the backend's sake and no longer matches what was selected.
-            display_filter_type: type,
+            // Stored as its display label/symbol (e.g. '!=' -> '≠') so filter tags can render it directly.
+            display_filter_type: this.chartUtils.filterTypesLabels.find(f => f.value === type)?.label || type,
             filter_elements: values,
             filter_codes: valuesIds,
             selectedRange: selectedRange,
