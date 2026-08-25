@@ -156,8 +156,15 @@ export const QueryUtils = {
 
     for(let i=0; i<ebp.sortedFilters.length; i++){
       if(ebp.sortedFilters[i].isGlobal) {
-        ebp.sortedFilters[i].filter_elements = ebp.globalFilters.find((globalFilter: any) => globalFilter.filter_id === ebp.sortedFilters[i].filter_id).filter_elements;
-        ebp.sortedFilters[i].filter_codes = ebp.globalFilters.find((globalFilter: any) => globalFilter.filter_id === ebp.sortedFilters[i].filter_id).filter_codes;
+        const liveGlobalFilter = ebp.globalFilters.find((globalFilter: any) => globalFilter.filter_id === ebp.sortedFilters[i].filter_id);
+        if (liveGlobalFilter) {
+          ebp.sortedFilters[i].filter_elements = liveGlobalFilter.filter_elements;
+          ebp.sortedFilters[i].filter_codes = liveGlobalFilter.filter_codes;
+          // filter_type must stay in sync with filter_elements/filter_codes' shape (e.g. a date
+          // filter's operator changing from 'between' to '=' changes it from 2 elements to 1) —
+          // it was only ever set once, when the filter was first added to the AND/OR tree.
+          ebp.sortedFilters[i].filter_type = liveGlobalFilter.filter_type;
+        }
       }
     }
 

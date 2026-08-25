@@ -21,11 +21,9 @@ import { DropdownModule } from 'primeng/dropdown';       // if use <p-dropdown>
 import { InputSwitchModule } from 'primeng/inputswitch'; // if use <p-inputSwitch>
 import { ScrollPanelModule } from 'primeng/scrollpanel'; // if use <p-scrollPanel>
 import { GlobalFilterDialogComponent } from "../component.index";
-import { EdaDatePickerComponent } from "@eda/shared/components/shared-components.index";
 import { DatePickerComponent } from "@eda/shared/components/shared-components.index";
 
 const STANDALONE_COMPONENTS = [
-    EdaDatePickerComponent,
     DatePickerComponent
 ];
 
