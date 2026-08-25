@@ -37,6 +37,7 @@ import { IaFormStateService } from '@eda/services/shared/IaFormState.service';
 
 // Standalone components
 import { EdaDialog2Component, EdaDialogController, EdaContextMenu, EdaDialogCloseEvent, EdaContextMenuComponent} from '@eda/shared/components/shared-components.index';
+import { rangeDateFormats } from '@eda/shared/components/date-picker/date-picker.index';
 import { FocusOnShowDirective } from '@eda/shared/directives/autofocus.directive';
 import { EdaInputText } from '@eda/shared/components/eda-input/eda-input-text';
 import { EdaChartComponent } from '@eda/components/eda-chart/eda-chart.component';
@@ -2327,7 +2328,11 @@ public tableNodeExpand(event: any): void {
             const aggregation = filter.aggregation_type;
             let valueStr = '';
 
-            if (values) {
+            if (filter.selectedRange) {
+                // Dynamic date range (e.g. "Aquesta setmana") — show its label instead of the
+                // literal dates it currently resolves to, which change every time the query runs.
+                valueStr = `"${rangeDateFormats.find(r => r.value === filter.selectedRange)?.label || filter.selectedRange}"`;
+            } else if (values) {
                 if (values.length == 1 && !['in', 'not_in'].includes(filter.filter_type)) {
                     valueStr = `"${values[0]}"`;
                 }  else if (values.length > 1 || ['in', 'not_in'].includes(filter.filter_type)) {
