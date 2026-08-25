@@ -2348,9 +2348,13 @@ public tableNodeExpand(event: any): void {
             let aggregationLabel = '';
             if(AGG_TYPES.filter(agg => agg.value === aggregation).length !== 0) aggregationLabel = AGG_TYPES.filter(agg => agg.value === aggregation)[0].label;
 
-            // Added internationalization for the “between” operator.
-            let filterType = filter.filter_type
-            if(filterType === 'between') filterType = this.textBetween;
+            // display_filter_type carries the operator the user actually picked (e.g. 'in' -> "Dentro de"),
+            // already resolved to its label — filter_type may have been remapped for the backend's sake
+            // (e.g. a dynamic 'in' range becomes 'between' since the backend can't range over 'in').
+            let filterType = filter.display_filter_type;
+            if (!filterType) {
+                filterType = filter.filter_type === 'between' ? this.textBetween : filter.filter_type;
+            }
 
             str = `<strong>${tableName}</strong>&nbsp[${columnName}]&nbsp<strong>${filterType}</strong>&nbsp${valueStr}  &nbsp<strong>${filterBeforeGroupingText}</strong>&nbsp${aggregationLabel ? ` - ${this.aggregationText}: &nbsp<strong>${aggregationLabel}</strong>` : ''}&nbsp`;
         }
