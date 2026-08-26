@@ -2,8 +2,8 @@ import { CdkDragDrop, moveItemInArray } from "@angular/cdk/drag-drop";
 import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from "@angular/core";
 import { EdaPanel } from "@eda/models/model.index";
 import { AlertService, ChartUtilsService, DashboardService, FileUtiles, GlobalFiltersService, QueryBuilderService, StyleProviderService } from "@eda/services/service.index";
-import { EdaDatePickerConfig } from "@eda/shared/components/eda-date-picker/datePickerConfig";
-import { rangeDateFormats } from "@eda/shared/components/date-picker/date-picker.index";
+import { DatePickerConfig } from "@eda/shared/components/date-picker/datePickerConfig";
+import { getDateFilterOperatorLabel, getDateFilterValueLabel } from "@eda/shared/components/date-picker/date-filter-display.util";
 import * as _ from 'lodash';
 import { NgClass } from "@angular/common";
 import { DatePickerComponent } from "@eda/shared/components/shared-components.index";
@@ -449,7 +449,7 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
     private loadDatesFromFilter() {
         const filter = this.globalFilter;
 
-        this.datePickerConfigs[filter.id] = new EdaDatePickerConfig();
+        this.datePickerConfigs[filter.id] = new DatePickerConfig();
         const config = this.datePickerConfigs[filter.id];
         config.dateRange = [];
         config.range = filter.selectedRange;
@@ -506,43 +506,19 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
 
     /** Just the value part of the date-picker's own summary — e.g. "03-08-26 - 09-08-26" or "Avui" */
     public getDateFilterValueText(): string {
-        const op = this.globalFilter.dateFilterType;
-        if (!op) return '';
-
-        const noValueTypes = ['not_null', 'not_null_nor_empty', 'null_or_empty'];
-        if (noValueTypes.includes(op)) return '';
-
-        const fmt = (s: string) => {
-            if (!s) return '';
-            const [ye, mo, da] = s.split('-');
-            return `${da}-${mo}-${ye.slice(2)}`;
-        };
-
-        if (this.globalFilter.dynamicValue || this.globalFilter.selectedRange) {
-            return this.getRangeLabel(this.globalFilter.dynamicValue || this.globalFilter.selectedRange);
-        }
-
         const items = this.globalFilter.selectedItems;
-        if (!items || items.length === 0) return '';
-        if (Array.isArray(items[0])) return (items[0] as string[]).map(fmt).join(', ');
-
-        const singleValueOperators = ['=', '!=', '>', '<', '>=', '<='];
-        if (singleValueOperators.includes(op) || items.length === 1 || !items[1]) return fmt(items[0]);
-
-        return `${fmt(items[0])} - ${fmt(items[1])}`;
+        const isDiscreteList = Array.isArray(items?.[0]);
+        return getDateFilterValueLabel({
+            operator: this.globalFilter.dateFilterType,
+            dynamicRangeValue: this.globalFilter.dynamicValue || this.globalFilter.selectedRange,
+            value1: isDiscreteList ? items[0] : items?.[0],
+            value2: isDiscreteList ? undefined : items?.[1],
+        });
     }
 
     /** Just the operator part of the date-picker's own summary, e.g. "=" or "Entre" — rendered as a badge */
     public getDateFilterOperatorText(): string {
-        return this.globalFilter.dateFilterType ? this.getOperatorLabel(this.globalFilter.dateFilterType) : '';
-    }
-
-    private getRangeLabel(value: string): string {
-        return rangeDateFormats.find((r: any) => r.value === value)?.label || value;
-    }
-
-    private getOperatorLabel(op: string): string {
-        return this.chartUtils.filterTypesLabels.find((f: any) => f.value === op)?.label || op;
+        return getDateFilterOperatorLabel(this.globalFilter.dateFilterType, this.chartUtils.filterTypesLabels);
     }
 
     public findPanelPathTables() {

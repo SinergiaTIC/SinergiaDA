@@ -1,7 +1,7 @@
 import { Component, inject, Input, OnInit, ChangeDetectorRef } from "@angular/core";
 import { AlertService, ChartUtilsService, DashboardService, GlobalFiltersService, QueryBuilderService, UserService } from "@eda/services/service.index";
-import { rangeDateFormats } from "@eda/shared/components/date-picker/date-picker.index";
-import { EdaDatePickerConfig } from "@eda/shared/components/eda-date-picker/datePickerConfig";
+import { DatePickerConfig } from "@eda/shared/components/date-picker/datePickerConfig";
+import { getDateFilterOperatorLabel, getDateFilterValueLabel } from "@eda/shared/components/date-picker/date-filter-display.util";
 import { EdaDialogController } from "@eda/shared/components/shared-components.index";
 import { EdaBlankPanelComponent } from "@eda/components/eda-panels/eda-blank-panel/eda-blank-panel.component";
 import { OverlayPanelModule } from "primeng/overlaypanel";
@@ -679,49 +679,25 @@ export class GlobalFilterComponent implements OnInit {
 
     /** Just the value part of the summary, e.g. "Hoy" or "05-08-26 - 08-08-26" — the operator lives in its own badge */
     public getDateFilterValueText(filter: any): string {
-        const op = filter.dateFilterType;
-        if (!op) return '';
-
-        const noValueTypes = ['not_null', 'not_null_nor_empty', 'null_or_empty'];
-        if (noValueTypes.includes(op)) return '';
-
-        const fmt = (s: string) => {
-            if (!s) return '';
-            const [ye, mo, da] = s.split('-');
-            return `${da}-${mo}-${ye.slice(2)}`;
-        };
-
-        if (filter.dynamicValue || filter.selectedRange) {
-            return this.getRangeLabel(filter.dynamicValue || filter.selectedRange);
-        }
-
-        const items = filter.selectedItems;
-        if (!items || items.length === 0) return '';
-        if (Array.isArray(items[0])) return (items[0] as string[]).map(fmt).join(', ');
-
         // Single-value comparison operators only ever mean one date, even though selectedItems
         // stores it duplicated as [date, date] for internal consistency with the pair-shaped operators
-        const singleValueOperators = ['=', '!=', '>', '<', '>=', '<='];
-        if (singleValueOperators.includes(op) || items.length === 1 || !items[1]) return fmt(items[0]);
-
-        return `${fmt(items[0])} - ${fmt(items[1])}`;
+        const items = filter.selectedItems;
+        const isDiscreteList = Array.isArray(items?.[0]);
+        return getDateFilterValueLabel({
+            operator: filter.dateFilterType,
+            dynamicRangeValue: filter.dynamicValue || filter.selectedRange,
+            value1: isDiscreteList ? items[0] : items?.[0],
+            value2: isDiscreteList ? undefined : items?.[1],
+        });
     }
 
     /** Just the operator part of the summary, e.g. "=" or "Entre" — rendered as a badge */
     public getDateFilterOperatorText(filter: any): string {
-        return filter.dateFilterType ? this.getOperatorLabel(filter.dateFilterType) : '';
+        return getDateFilterOperatorLabel(filter.dateFilterType, this.chartUtils.filterTypesLabels);
     }
 
     public isDynamicDateRange(filter: any): boolean {
         return !!(filter.dynamicValue || filter.selectedRange);
-    }
-
-    private getRangeLabel(value: string): string {
-        return rangeDateFormats.find((r: any) => r.value === value)?.label || value;
-    }
-
-    private getOperatorLabel(op: string): string {
-        return this.chartUtils.filterTypesLabels.find((f: any) => f.value === op)?.label || op;
     }
 
     public removeGlobalFilter(filter: any, reload?: boolean): void {
@@ -828,7 +804,7 @@ export class GlobalFilterComponent implements OnInit {
      * @param filter 
      */
     private loadDatesFromFilter(filter) {
-        this.datePickerConfigs[filter.id] = new EdaDatePickerConfig();
+        this.datePickerConfigs[filter.id] = new DatePickerConfig();
         const config = this.datePickerConfigs[filter.id];
         config.dateRange = [];
         config.range = filter.selectedRange;

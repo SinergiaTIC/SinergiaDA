@@ -11,7 +11,7 @@ import { DropdownModule } from 'primeng/dropdown';
 import { InputSwitchModule } from 'primeng/inputswitch';
 import { DashboardService, FilterType, ChartUtilsService, AlertService, OrdenationType, ColumnUtilsService, FormatDates, QueryBuilderService} from '@eda/services/service.index';
 import { EdaDialog, EdaDialogCloseEvent, EdaDialog2Component, EdaDialogAbstract, DatePickerComponent } from '@eda/shared/components/shared-components.index';
-import { rangeDateFormats } from '@eda/shared/components/date-picker/date-picker.index';
+import { getDateFilterOperatorLabel, getDateFilterValueLabel, getDynamicRangeLabel } from '@eda/shared/components/date-picker/date-filter-display.util';
 import { AGG_TYPES } from '@eda/configs/customizable/customizable_default';
 import * as _ from 'lodash';
 import { firstValueFrom } from 'rxjs';
@@ -847,44 +847,22 @@ export class ColumnDialogComponent {
 
     /** Operator badge for the date-picker's own display — reflects the pending (not yet added) filter */
     public getPendingDateFilterOperatorText(): string {
-        if (!this.filterSelected) return '';
-        return this.chartUtils.filterTypesLabels.find(f => f.value === this.filterSelected.value)?.label || this.filterSelected.value;
+        return getDateFilterOperatorLabel(this.filterSelected?.value, this.chartUtils.filterTypesLabels);
     }
 
     /** Value text for the date-picker's own display — reflects the pending (not yet added) filter */
     public getPendingDateFilterValueText(): string {
-        if (!this.filterSelected) return '';
-
-        const noValueTypes = ['not_null', 'not_null_nor_empty', 'null_or_empty'];
-        if (noValueTypes.includes(this.filterSelected.value)) return '';
-
-        if (this.filter.range) {
-            return rangeDateFormats.find(r => r.value === this.filter.range)?.label || this.filter.range;
-        }
-
-        const fmt = (s: string) => {
-            if (!s) return '';
-            const [ye, mo, da] = s.split('-');
-            return `${da}-${mo}-${ye.slice(2)}`;
-        };
-
-        const singleValueOperators = ['=', '!=', '>', '<', '>=', '<='];
-        if (singleValueOperators.includes(this.filterSelected.value)) {
-            return fmt(this.filterValue?.value1);
-        }
-
-        if (Array.isArray(this.filterValue?.value1)) {
-            return this.filterValue.value1.map(fmt).join(', ');
-        }
-
-        return this.filterValue?.value2
-            ? `${fmt(this.filterValue.value1)} - ${fmt(this.filterValue.value2)}`
-            : fmt(this.filterValue?.value1);
+        return getDateFilterValueLabel({
+            operator: this.filterSelected?.value,
+            dynamicRangeValue: this.filter.range,
+            value1: this.filterValue?.value1,
+            value2: this.filterValue?.value2,
+        });
     }
 
     /** Label for an already-added filter's dynamic range (e.g. "Avui"), used in the "Filtros activos" list */
     public getRangeLabelForFilter(rangeValue: string): string {
-        return rangeDateFormats.find(r => r.value === rangeValue)?.label || rangeValue;
+        return getDynamicRangeLabel(rangeValue);
     }
 
     public onCancelDuplicateColumn(): void {
