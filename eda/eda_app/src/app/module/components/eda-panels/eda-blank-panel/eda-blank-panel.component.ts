@@ -2356,10 +2356,12 @@ public tableNodeExpand(event: any): void {
             // display_filter_type carries the operator the user actually picked (e.g. 'in' -> "Dentro de"),
             // already resolved to its label — filter_type may have been remapped for the backend's sake
             // (e.g. a dynamic 'in' range becomes 'between' since the backend can't range over 'in').
-            let filterType = filter.display_filter_type;
-            if (!filterType) {
-                filterType = filter.filter_type === 'between' ? this.textBetween : filter.filter_type;
-            }
+            // Fall back to resolving filter_type's own label (not just the raw value) for filters
+            // persisted before display_filter_type existed — e.g. a static 'in' still reads 'in' as
+            // its wire type (only a dynamic range gets remapped to 'between'), so the lookup still works.
+            let filterType = filter.display_filter_type
+                || this.chartUtils.filterTypesLabels.find(f => f.value === filter.filter_type)?.label
+                || filter.filter_type;
 
             str = `<strong>${tableName}</strong>&nbsp[${columnName}]&nbsp<strong>${filterType}</strong>&nbsp${valueStr}  &nbsp<strong>${filterBeforeGroupingText}</strong>&nbsp${aggregationLabel ? ` - ${this.aggregationText}: &nbsp<strong>${aggregationLabel}</strong>` : ''}&nbsp`;
         }

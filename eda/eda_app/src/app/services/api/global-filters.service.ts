@@ -1,12 +1,13 @@
 import { Injectable } from '@angular/core';
 import { EdaPanel } from '@eda/models/model.index';
 import { USE_VALUE_LIST_CODE_FOR_FILTERS } from '@eda/configs/customizable/customizable_default';
+import { ChartUtilsService } from '@eda/services/utils/chart-utils.service';
 import * as _ from 'lodash';
 
 @Injectable()
 export class GlobalFiltersService {
 
-    constructor() { }
+    constructor(private chartUtils: ChartUtilsService) { }
 
     public panelsToDisplay(modelTables: any[], panels: any[], refferencePanel: any) {
         const panelsTables = [];
@@ -332,6 +333,12 @@ export class GlobalFiltersService {
         return dateFilterType;
     }
 
+    /** The operator's display label (e.g. '!=' -> '≠'), for filter summaries — wireFilterType may
+     * have remapped filter_type (e.g. 'in' -> 'between') to something the backend understands. */
+    private displayFilterType(dateFilterType: string): string {
+        return this.chartUtils.filterTypesLabels.find(f => f.value === dateFilterType)?.label || dateFilterType;
+    }
+
     private formatGlobalFilter(globalFilter: any) {
         const columnType = globalFilter.column?.value?.column_type || globalFilter.selectedColumn?.column_type;
         const filterTable = globalFilter.table?.value || globalFilter.selectedTable?.table_name;
@@ -346,6 +353,7 @@ export class GlobalFiltersService {
             filter_column: filterColumn,
             filter_column_type: columnType,
             filter_type: this.wireFilterType(dateFilterType, isDate, globalFilter.dynamicValue),
+            display_filter_type: this.displayFilterType(dateFilterType),
             filter_elements: this.assertGlobalFilterItems(globalFilter, dateFilterType),
             filter_codes: this.assertGlobalFilterCodes(globalFilter, dateFilterType),
             isGlobal: true,
@@ -384,6 +392,7 @@ export class GlobalFiltersService {
             filter_column: globalFilter.selectedColumn.column_name,
             filter_column_type: columnType,
             filter_type: this.wireFilterType(dateFilterType, isDate, globalFilter.dynamicValue),
+            display_filter_type: this.displayFilterType(dateFilterType),
             filter_elements: this.assertGlobalFilterItems(globalFilter, dateFilterType),
             filter_codes: this.assertGlobalFilterCodes(globalFilter, dateFilterType),
             pathList: pathList,
@@ -395,6 +404,7 @@ export class GlobalFiltersService {
             filterBeforeGrouping: true, // For all global filters it is Where
             computed_column: globalFilter.selectedColumn?.computed_column,
             SQLexpression: globalFilter.selectedColumn?.SQLexpression,
+            selectedRange: globalFilter.selectedRange,
         }
 
         if (globalFilter.dynamicValue) {
