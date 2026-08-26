@@ -383,6 +383,14 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
     public onChangeSelectedColumn(): void {
         this.aliasValue = '';
         this.globalFilter.selectedItems = [];
+
+        // Date filters use the date-picker (operator + dynamic range), not the autocomplete
+        // multiselect — autocomplete has no meaning for a date column.
+        if (this.globalFilter.selectedColumn?.column_type === 'date') {
+            this.isAutocompleted = false;
+            this.globalFilter.isAutocompleted = false;
+        }
+
         if(!this.globalFilter?.isAutocompleted){
             if (this.globalFilter.selectedColumn.column_type == 'date') {
                 this.loadDatesFromFilter();
