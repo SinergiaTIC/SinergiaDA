@@ -2369,6 +2369,21 @@ public tableNodeExpand(event: any): void {
         return str;
     }
 
+    /** False for a filter that's been cleared (no value, no dynamic range) — it applies no real
+     * constraint and shouldn't be listed as an active filter in the summary overlay/dialog. */
+    public isFilterActive(filter: any): boolean {
+        const noValueTypes = ['not_null', 'not_null_nor_empty', 'null_or_empty'];
+        if (noValueTypes.includes(filter.filter_type)) return true;
+        if (filter.selectedRange) return true;
+
+        const value1 = filter.filter_elements?.[0]?.value1;
+        const value2 = filter.filter_elements?.[1]?.value2;
+        return (Array.isArray(value1) && value1.length > 0) || (Array.isArray(value2) && value2.length > 0);
+    }
+
+    public hasActiveFilters(filters: any[]): boolean {
+        return (filters || []).some(f => this.isFilterActive(f));
+    }
 
     public onCloseWhatIfDialog(): void {
         this.display_v.whatIf_dialog = false;
