@@ -521,6 +521,11 @@ export class MySqlBuilderService extends QueryBuilderService {
       // recursive item
       const { cols, rows, y, x, filter_table, filter_column, filter_type, filter_column_type, filter_elements, filter_codes, value, valueListSource, sqlOptional, computed_column, SQLexpression } = item;
 
+      // filter_table can be a synthetic joined-path id (e.g. "target_table.target_column.source_column",
+      // built in the frontend's global-filters.service.ts onNodeExpand) instead of a real table name —
+      // strip it down the same way the rest of this file does (col.table_id.split('.')[0]).
+      const filterTableName = filter_table?.split('.')[0];
+
       // false (EDA) -> compare against the raw selected values | true (SinergiaDA) -> compare against the internal codes
       const codesOrElements = useCodeForFilters ? filter_codes : filter_elements;
 
@@ -645,7 +650,7 @@ export class MySqlBuilderService extends QueryBuilderService {
       if(computed_column==='computed') {
         resultado = `${['null_or_empty', 'not_null_nor_empty'].includes(filter_type) || (filter_type==='in' && sqlOptional !== undefined) ? ' (' : ''} ${sqlOptional !== undefined ? sqlOptional : ''} (${SQLexpression}) ${filter_type_value}${filter_elements_value}`;
       } else {
-        resultado = `${['null_or_empty', 'not_null_nor_empty'].includes(filter_type) || (filter_type==='in' && sqlOptional !== undefined) ? ' (' : ''} ${sqlOptional !== undefined ? sqlOptional : ''} \`${ validador ? valueListSource.target_table : filter_table}\`.\`${valueListFilterColumn}\` ${filter_type_value}${filter_elements_value}`;
+        resultado = `${['null_or_empty', 'not_null_nor_empty'].includes(filter_type) || (filter_type==='in' && sqlOptional !== undefined) ? ' (' : ''} ${sqlOptional !== undefined ? sqlOptional : ''} \`${ validador ? valueListSource.target_table : filterTableName}\`.\`${valueListFilterColumn}\` ${filter_type_value}${filter_elements_value}`;
       }
 
 
@@ -654,7 +659,7 @@ export class MySqlBuilderService extends QueryBuilderService {
         if(computed_column==='computed') {
           resultado = `${resultado} (${SQLexpression}) != '')`;
         } else {
-          resultado = `${resultado} \`${ validador ? valueListSource.target_table : filter_table}\`.\`${valueListFilterColumn}\` != '')`;
+          resultado = `${resultado} \`${ validador ? valueListSource.target_table : filterTableName}\`.\`${valueListFilterColumn}\` != '')`;
         }
       }
 
@@ -663,7 +668,7 @@ export class MySqlBuilderService extends QueryBuilderService {
         if(computed_column==='computed') {
           resultado = `${resultado} (${SQLexpression}) = '')`;
         } else {
-          resultado = `${resultado} \`${ validador ? valueListSource.target_table : filter_table}\`.\`${valueListFilterColumn}\` = '')`;
+          resultado = `${resultado} \`${ validador ? valueListSource.target_table : filterTableName}\`.\`${valueListFilterColumn}\` = '')`;
         }
       }
 

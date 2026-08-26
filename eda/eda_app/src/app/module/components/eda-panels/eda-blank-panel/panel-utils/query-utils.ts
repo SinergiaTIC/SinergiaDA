@@ -144,6 +144,25 @@ export const QueryUtils = {
     else return QueryUtils.initSqlQuery(ebp);
   },
 
+  /** Heal a filters array's global entries against the live global filter bar's join paths. A
+   * global filter the user hasn't actively touched this session still holds whatever was last
+   * saved to panel.content — assertGlobalFilter() (which resolves joins/filter_table from
+   * pathList) never ran for it live, so a stale/never-resolved join path would otherwise silently
+   * drop its table from the query. Used both for ebp.globalFilters (runQuery) and for the raw
+   * persisted panelContent.query.query.filters (loadChartsData, which bypasses ebp.globalFilters
+   * entirely when the panel has no nav children). */
+  healGlobalFilterJoins: (ebp: EdaBlankPanelComponent, filters: any[]) => {
+    const liveGlobalFilterDefs = ebp.dashboard?.globalFilter?.globalFilters || [];
+    for (const filter of filters || []) {
+      if (!filter.isGlobal) continue;
+      const livePath = liveGlobalFilterDefs.find((d: any) => d.id === filter.filter_id)?.pathList?.[ebp.panel.id];
+      if (livePath) {
+        filter.joins = livePath.path;
+        filter.filter_table = livePath.table_id;
+      }
+    }
+  },
+
   /**
  * Runs a query and sets panel chart
  * @param globalFilters flag to apply when runQuery() is called from dashboard component.
@@ -151,6 +170,8 @@ export const QueryUtils = {
   runQuery: async (ebp: EdaBlankPanelComponent, globalFilters: boolean) => {
 
     // Update globalFilters elements
+
+    QueryUtils.healGlobalFilterJoins(ebp, ebp.globalFilters);
 
     if(ebp.sortedFilters === undefined) ebp.sortedFilters = []; // if it is an old report, we define the report as empty
 

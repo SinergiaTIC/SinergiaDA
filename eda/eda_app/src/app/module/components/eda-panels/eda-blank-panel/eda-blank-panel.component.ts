@@ -655,6 +655,12 @@ public tableNodeExpand(event: any): void {
             }
             PanelInteractionUtils.handleFilters(this, panelContent.query.query); // 3. populate selectedFilters (reads dateNavState)
 
+            // panelContent.query.query.filters is the persisted snapshot — when there are no nav
+            // children, it's sent to the backend as-is (see queryToRun below), bypassing the live
+            // global filter bar entirely. Heal its joins so a filter whose join path was never
+            // resolved at save time doesn't silently drop its table from the query.
+            QueryUtils.healGlobalFilterJoins(this, panelContent.query.query.filters);
+
             const hasNavChildren = this.currentQuery.some((col: any) => col.downChild);
             const queryToRun = hasNavChildren ? QueryUtils.initEdaQuery(this) : panelContent.query;
             const response = await QueryUtils.switchAndRun(this, queryToRun);
