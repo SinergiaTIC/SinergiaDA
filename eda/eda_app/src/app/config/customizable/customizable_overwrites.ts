@@ -8,3 +8,4 @@ export const SHOW_WHAT_IF: boolean = false; // SDA: sin escenarios "What If"
 export const ALLOWED_JOIN_TYPES: string[] = ['left', 'inner']; 
 export const SHOW_CUSTOM_ACTION: boolean = false;
 export const SHOW_ZOOM_IN_SIDEBAR: boolean = false;
+export const SHOW_TUTORIAL_LABEL: boolean = false; // SDA: usar "Acerca de"

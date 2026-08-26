@@ -7063,6 +7063,10 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
         <source>Acerca de</source>
         <target>Sobre</target>
       </trans-unit>
+      <trans-unit id="sidebarTutorialTitle">
+        <source>Tutorial</source>
+        <target>Tutorial</target>
+      </trans-unit>
       <trans-unit id="filterHoverGreen">
         <source>Verde</source>
         <target>Verd</target>

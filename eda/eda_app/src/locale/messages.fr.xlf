@@ -7050,6 +7050,10 @@ Une fois configurée, vous pouvez l'activer à tout moment à partir du bouton.<
         <source>Acerca de</source>
         <target>À propos</target>
       </trans-unit>
+      <trans-unit id="sidebarTutorialTitle">
+        <source>Tutorial</source>
+        <target>Tutoriel</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>

@@ -6775,6 +6775,10 @@ OR<ph id="5"/>
   <source>Acerca de</source>
   <target>About</target>
 </trans-unit>
+<trans-unit id="sidebarTutorialTitle">
+  <source>Tutorial</source>
+  <target>Tutorial</target>
+</trans-unit>
 </body>
 </file>
 </xliff>

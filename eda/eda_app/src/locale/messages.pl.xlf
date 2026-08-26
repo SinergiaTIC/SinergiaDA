@@ -6716,6 +6716,10 @@ Po skonfigurowaniu możesz go wywołać w dowolnym momencie za pomocą przycisku
         <source>Acerca de</source>
         <target>O nas</target>
       </trans-unit>
+      <trans-unit id="sidebarTutorialTitle">
+        <source>Tutorial</source>
+        <target>Samouczek</target>
+      </trans-unit>
 </body>
 </file>
 </xliff>
