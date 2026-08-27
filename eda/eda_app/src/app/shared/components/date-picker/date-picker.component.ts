@@ -97,7 +97,8 @@ export class DatePickerComponent implements OnChanges {
 		} else if (this.inject.dateRange?.length > 0) {
 			this.selectedRange = <any>'customDate';
 			this.hideCalendarGrid = false;
-			this.rangeDates = this.inject.dateRange;
+			// 'single' mode binds a lone Date, not the [start, end] pair used by range/multiple
+			this.rangeDates = this.selectionMode === 'single' ? this.inject.dateRange[0] : this.inject.dateRange;
 		}
 	}
 

@@ -92,10 +92,19 @@
   color: var(--corporate-primary);
 }
 .filter-tooltip-text{
-    padding: 2px 6px; 
-    overflow: hidden; 
-    text-overflow: ellipsis; 
+    padding: 2px 6px;
+    overflow: hidden;
+    text-overflow: ellipsis;
     white-space: nowrap;
+}
+/* Date filter summary joins every "in"/"not_in" value into one string — let it wrap
+   instead of inheriting the nowrap/ellipsis clipping meant for single-value rows. */
+.filter-tooltip-value{
+    white-space: normal;
+    overflow: visible;
+    text-overflow: unset;
+    word-break: break-word;
+    text-align: right;
 }
 .filter-tooltip-container{
     display: grid; 

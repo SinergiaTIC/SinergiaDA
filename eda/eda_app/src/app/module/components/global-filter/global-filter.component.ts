@@ -813,11 +813,16 @@ export class GlobalFilterComponent implements OnInit {
         if (filter.selectedItems.length > 0) {
             if (!filter.selectedRange) {
                 // Static in/not_in stores its discrete dates nested as selectedItems[0]
-                const items = Array.isArray(filter.selectedItems[0]) ? filter.selectedItems[0] : filter.selectedItems;
-                let firstDate = items[0];
-                let lastDate = items[items.length - 1];
-                config.dateRange.push(new Date(firstDate.replace(/-/g, '/')));
-                config.dateRange.push(new Date(lastDate.replace(/-/g, '/')));
+                const isDiscreteList = Array.isArray(filter.selectedItems[0]);
+                if (isDiscreteList) {
+                    // Restore every discrete date, not just the first and last
+                    config.dateRange = filter.selectedItems[0].map((d: string) => new Date(d.replace(/-/g, '/')));
+                } else {
+                    let firstDate = filter.selectedItems[0];
+                    let lastDate = filter.selectedItems[filter.selectedItems.length - 1];
+                    config.dateRange.push(new Date(firstDate.replace(/-/g, '/')));
+                    config.dateRange.push(new Date(lastDate.replace(/-/g, '/')));
+                }
             }
         }
     }
