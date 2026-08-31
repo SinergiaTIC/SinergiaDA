@@ -8,7 +8,6 @@ import { LogoSidebar } from '@eda/configs/index';
 import { CreateDashboardService } from '@eda/services/utils/create-dashboard.service';
 import { GroupService } from '@eda/services/api/group.service';
 import { DashboardService } from '@eda/services/api/dashboard.service';
-import { SHOW_TUTORIAL_LABEL } from '@eda/configs/customizable/customizable_default';
 
 interface NavItem {
   path?: string;
@@ -83,7 +82,7 @@ export class MainLeftSidebarComponent {
       {
         path: '/about',
         icon: 'global',
-        label: SHOW_TUTORIAL_LABEL ? $localize`:@@sidebarTutorialTitle:Tutorial` : $localize`:@@aboutTitle:Acerca de`
+        label: $localize`:@@sidebarTutorialTitle:Tutorial`
       },
       { path: '/logout', icon: 'logout' },
     ];
