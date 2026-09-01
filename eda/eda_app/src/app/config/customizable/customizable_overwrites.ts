@@ -9,3 +9,4 @@ export const ALLOWED_JOIN_TYPES: string[] = ['left', 'inner'];
 export const SHOW_CUSTOM_ACTION: boolean = false;
 export const SHOW_ZOOM_IN_SIDEBAR: boolean = false;
 export const USE_EDA_KPI_SIZE_LOGIC: boolean = false;
+export const PRIVATE_EDITION_ACTIVATED: boolean =  false;

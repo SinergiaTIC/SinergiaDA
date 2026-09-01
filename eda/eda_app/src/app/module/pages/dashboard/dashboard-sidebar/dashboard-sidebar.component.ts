@@ -31,7 +31,7 @@ import { DependentFilters } from "../../../components/dependent-filters/dependen
 import { DashboardVisibleModal } from "../../../components/dashboard-visible/dashboard-visible.modal";
 import { GlobalFilterDialogComponent } from "../../../pages/dashboard/global-filter-dialog/global-filter-dialog.component";
 import { GlobalFilterComponent } from "@eda/components/global-filter/global-filter.component";
-import { SHOW_CUSTOM_ACTION, SHOW_ZOOM_IN_SIDEBAR } from "@eda/configs/customizable/customizable_default";
+import { SHOW_CUSTOM_ACTION, SHOW_ZOOM_IN_SIDEBAR, PRIVATE_EDITION_ACTIVATED } from "@eda/configs/customizable/customizable_default";
 import { ZoomSdaComponent } from "../zoom-control/zoom.component";
 
 
@@ -125,7 +125,7 @@ export class DashboardSidebarComponent implements AfterViewInit {
   refreshTime: number = null;
   clickFiltersEnabled: boolean = true;
   clickPanelLockButton: boolean = true;
-  onlyIcanEdit: boolean = true; // Only I can edit, but I can save as
+  onlyIcanEdit: boolean = PRIVATE_EDITION_ACTIVATED; // Only I can edit, but I can save as
   isReadOnly: boolean = false; // this is a read-only dashboard
   isEditable: boolean = false; // can edit the dashboard
   mostrarOpciones = false;
@@ -148,7 +148,7 @@ export class DashboardSidebarComponent implements AfterViewInit {
     this.hayFiltros = (this.dashboard.globalFilter?.globalFilters.length ?? 0) > 0;
     this.refreshTime = this.dashboard.dashboard.config.refreshTime || null;
     this.clickFiltersEnabled = this.dashboard.dashboard.config.clickFiltersEnabled ?? true;
-    this.onlyIcanEdit = this.dashboard.dashboard.config.onlyIcanEdit ?? true;
+    this.onlyIcanEdit = this.dashboard.dashboard.config.onlyIcanEdit ?? PRIVATE_EDITION_ACTIVATED;
     this.clickPanelLockButton = this.dashboard.dashboard.config.panelLockEnabled ?? true;
     this.isReadOnly = this.isReadOnlyCheck();
     this.isEditable = this.isEditableCheck();
@@ -566,7 +566,7 @@ export class DashboardSidebarComponent implements AfterViewInit {
           ds,
           tag: null,
           refreshTime: null,
-          onlyIcanEdit: true,
+          onlyIcanEdit: PRIVATE_EDITION_ACTIVATED,
           author: JSON.parse(localStorage.getItem('user')).name,
           styles: this.stylesProviderService.generateDefaultStyles(),
         },

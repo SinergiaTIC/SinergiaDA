@@ -365,7 +365,7 @@ export class MySqlBuilderService extends QueryBuilderService {
       let filtersString = `\nwhere 1 = 1 `;
 
       if (applicablePermissions.length) {
-        filtersString += `\nand (${this.buildPermissionsSqlExpresion(applicablePermissions)}) `;
+        filtersString += `\nand ${this.buildPermissionsSqlExpresion(applicablePermissions)} `;
       }
 
       filters.forEach(f => {
