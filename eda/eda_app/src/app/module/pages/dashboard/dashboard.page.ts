@@ -1094,44 +1094,6 @@ export class DashboardPage implements OnInit {
     });
   }
 
-  /** When a brand-new (non-duplicated) panel gets its root table for the first time,
-   * auto-attach it to global filters that already apply to sibling panels sharing that root table. */
-  public onNewPanelRootTableSet(rootTableName: string, panel: EdaPanel): void {
-    if (!rootTableName) return;
-    const newPanelComp = this.edaPanels.find(p => p.panel.id === panel.id);
-    if (!newPanelComp) return;
-
-    const globalFilters = this.globalFilter?.globalFilters?.filter((f: any) => f.isGlobal && f.pathList) || [];
-
-    globalFilters.forEach((filter: any) => {
-      if (!filter.panelList?.length) return;
-
-      // Find the first active panel in this filter that has the same rootTable
-      const matchingPanelId = filter.panelList.find((pid: string) => {
-        const existing = this.edaPanels.find(p => p.panel.id === pid);
-        return existing?.rootTable?.table_name === rootTableName;
-      });
-
-      if (matchingPanelId && filter.pathList[matchingPanelId]) {
-        filter.pathList[panel.id] = { ...filter.pathList[matchingPanelId] };
-        filter.panelList.push(panel.id);
-        const formatted = this.globalFiltersService.formatFilter(filter);
-        newPanelComp.assertGlobalFilter(formatted);
-      }
-    });
-  }
-
-  public onNewPanelRootTableCleared(panel: EdaPanel): void {
-    const globalFilters = this.globalFilter?.globalFilters?.filter((f: any) => f.isGlobal) || [];
-
-    globalFilters.forEach((filter: any) => {
-      filter.panelList = filter.panelList?.filter((pid: string) => pid !== panel.id) || [];
-      if (filter.pathList?.[panel.id]) {
-        delete filter.pathList[panel.id];
-      }
-    });
-  }
-
   async onGlobalFilter(data: any) {
     // const data = action?.data;
     if (data && !_.isNil(data?.inx)) {
