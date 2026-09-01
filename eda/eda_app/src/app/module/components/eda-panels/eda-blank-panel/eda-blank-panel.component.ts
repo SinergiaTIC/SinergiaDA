@@ -15,7 +15,9 @@ import { ConfirmationService, SharedModule } from 'primeng/api';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { TreeModule } from 'primeng/tree';
 // Eda config
-import { AGG_TYPES, NULL_VALUE, EMPTY_VALUE, SHOW_LOCK_IN_PANEL_HEADER } from '@eda/configs/customizable/customizable_default';
+import { AGG_TYPES, NULL_VALUE, EMPTY_VALUE, SHOW_LOCK_IN_PANEL_HEADER, ALLOWED_QUERY_MODES, SHOW_HIDDEN_FIELDS, SHOW_WHAT_IF, ALLOWED_JOIN_TYPES } from '@eda/configs/customizable/customizable_default';
+import { normalizeQueryMode } from '@eda/shared/utils/query-mode.util';
+
 import {Column, EdaPanel, InjectEdaPanel } from '@eda/models/model.index';
 
 import { PanelChart } from './panel-charts/panel-chart';
@@ -114,6 +116,13 @@ const STANDALONE_COMPONENTS = [
     IconComponent, FocusOnShowDirective, PromptComponent,
     FilterAndOrDialogComponent,
 ]
+// Label for each possible query mode value. Not client-configurable — ALLOWED_QUERY_MODES (customizable_default.ts) decides which values are enabled and in what order.
+export const QUERY_MODE_LABELS: any[] = [
+    { label: $localize`:@@PanelModeSelectorEDA:Modo EDA`, value: 'EDA' },
+    { label: $localize`:@@PanelModeSelectorSQL:Modo SQL`, value: 'SQL' },
+    { label: $localize`:@@PanelModeSelectorTree:Modo Árbol`, value: 'TREE' },
+]
+
 @Component({
     standalone: true,
     imports : [ STANDALONE_COMPONENTS,PRIMENG_MODULES, ANGULAR_MODULES, DIALOGS_COMPONENTS],
@@ -144,6 +153,8 @@ export class EdaBlankPanelComponent implements OnInit {
     @Output() duplicate: EventEmitter<any> = new EventEmitter();
     @Output() action: EventEmitter<IPanelAction> = new EventEmitter<IPanelAction>();
     @Output() panelConfigChanged: EventEmitter<any> = new EventEmitter<IPanelAction>();
+    @Output() rootTableFirstSet = new EventEmitter<string>();
+    @Output() rootTableCleared = new EventEmitter<void>();
 
     /** Properties injected into the dialog with chart-specific properties. */
     public configController: EdaDialogController;
@@ -243,12 +254,9 @@ export class EdaBlankPanelComponent implements OnInit {
     public groupByEnabled: boolean = true;
     public dynamicFilters: boolean = true;
 
-    public queryModes: any[] = [
-        { label: $localize`:@@PanelModeSelectorEDA:Modo EDA`, value: 'EDA' },
-        { label: $localize`:@@PanelModeSelectorSQL:Modo SQL`, value: 'SQL' },
-        { label: $localize`:@@PanelModeSelectorTree:Modo Árbol`, value: 'EDA2' }
-    ];
-    public selectedQueryMode: string = 'EDA';
+    public queryModes: any[] = ALLOWED_QUERY_MODES.map(v => QUERY_MODE_LABELS.find(l => l.value === v));
+
+    public selectedQueryMode: string = ALLOWED_QUERY_MODES[0];
 
     // Depreacted use selectedQueryMode instead of
     // public modeSQL: boolean;
@@ -294,9 +302,9 @@ export class EdaBlankPanelComponent implements OnInit {
         { icon: 'pi pi-align-left', label: 'Left', joinType: 'left' },
         { icon: 'pi pi-align-center', label: 'Inner', joinType: 'inner' },
         { icon: 'pi pi-align-right', label: 'Right', joinType: 'right' }
-    ];
+    ].filter(option => ALLOWED_JOIN_TYPES.includes(option.joinType));
 
-    public joinType = this.joinTypeOptions[1].joinType; // default init in Inner
+    public joinType = (this.joinTypeOptions.find(o => o.joinType === 'inner') ?? this.joinTypeOptions[0])?.joinType; // default init in Inner, or first allowed type
 
     
     /**panel chart component configuration */
@@ -338,9 +346,13 @@ export class EdaBlankPanelComponent implements OnInit {
     private formBuilder = inject(UntypedFormBuilder);
     private iaFormStateService = inject(IaFormStateService);
 
-
     public editingTitle: boolean = false;
     public promptAvailable = computed(() => this.iaFormStateService.formData().AVAILABLE);
+
+    readonly showLockInHeader = SHOW_LOCK_IN_PANEL_HEADER;
+    readonly showHiddenFieldsButton = SHOW_HIDDEN_FIELDS !== 'disabled';
+    readonly showHiddenFieldsButtonAdminOnly = SHOW_HIDDEN_FIELDS === 'admin-only';
+    public showHiddenColumn: boolean = false;
 
 
     constructor(
@@ -399,9 +411,9 @@ export class EdaBlankPanelComponent implements OnInit {
                     queryMode = modeSQL ? 'SQL' : 'EDA';
                 }
 
-                this.selectedQueryMode = queryMode;
+                this.selectedQueryMode = normalizeQueryMode(queryMode);
 
-                if (queryMode == 'EDA2') {
+                if (this.selectedQueryMode == 'TREE') {
                     this.rootTable = contentQuery.query.rootTable;
                 }
 
@@ -538,7 +550,13 @@ public tableNodeExpand(event: any): void {
         return (userName !== 'edaanonim' && !this.inject.isObserver);
     }
 
-    readonly showLockInHeader = SHOW_LOCK_IN_PANEL_HEADER;
+    // Toggles whether columns marked as hidden are shown (with reduced opacity) in the attributes list.
+    public async changeHiddenMode(): Promise<void> {
+        this.showHiddenColumn = !this.showHiddenColumn;
+        const selectedTable = this.getUserSelectedTable();
+        this.loadColumns(selectedTable);
+    }
+    readonly showWhatIf = SHOW_WHAT_IF;
 
     isPanelLocked(): boolean {
         return (this.panel as any).dragEnabled === false;
@@ -647,6 +665,15 @@ public tableNodeExpand(event: any): void {
             }
             PanelInteractionUtils.handleFilters(this, panelContent.query.query); // 3. populate selectedFilters (reads dateNavState)
 
+            // Duplicated panel: skip this initial query run (the inherited global filters are
+            // still being attached asynchronously by the dashboard) — buildGlobalconfiguration
+            // triggers the real, filter-aware query run once that's done. Everything above this
+            // point still needs to run, since it builds currentQuery/navState/selectedFilters.
+            if (this.panel._isDuplicate) {
+                this.buildGlobalconfiguration(panelContent);
+                return;
+            }
+
             const hasNavChildren = this.currentQuery.some((col: any) => col.downChild);
             const queryToRun = hasNavChildren ? QueryUtils.initEdaQuery(this) : panelContent.query;
             const response = await QueryUtils.switchAndRun(this, queryToRun);
@@ -688,7 +715,7 @@ public tableNodeExpand(event: any): void {
 
         // Only process if we are not in SQL mode or read-only mode!
         if (isEdaMode || isModeSqlDisabled) {
-            if (queryMode === 'EDA2') {
+            if (queryMode === 'TREE') {
             this.rootTable = this.tables.find(t => t.table_name === this.rootTable);
 
             for (const column of fields) {
@@ -737,6 +764,14 @@ public tableNodeExpand(event: any): void {
         // Check if the chart is a pivot table.
         const crossTableChart = this.chartTypes.find(g => g.subValue === 'crosstable');
         this.dragAndDropAvailable = !crossTableChart?.ngIf;
+
+        if (this.panel._isDuplicate) {
+            delete this.panel._isDuplicate;
+            // runQuery touches the panelChart ViewChild (static: false), which only
+            // resolves after ngAfterViewInit. We're still inside ngOnInit here, so defer
+            // to the next macrotask instead of failing with a silent unhandled rejection.
+            setTimeout(() => QueryUtils.runQuery(this, true));
+        }
     }
 
 
@@ -1058,7 +1093,7 @@ public tableNodeExpand(event: any): void {
 
     public getUserSelectedTable(): any {
         let selectedTable: any;
-        if (this.selectedQueryMode !== 'EDA2') {
+        if (this.selectedQueryMode !== 'TREE') {
           selectedTable = this.tablesToShow.filter(table => table.table_name === this.userSelectedTable)[0];
           if (!selectedTable) selectedTable = this.tablesToShow.filter(table => table.table_name === this.userSelectedTable.split('.')[0])[0];
         } else {
@@ -1070,9 +1105,9 @@ public tableNodeExpand(event: any): void {
 
     // Filter the entity searcher based on the active query mode.
     // EDA mode (standard): filters the flat tablesToShow list.
-    // EDA2 mode (tree) with active query: recursively filters displayedTableNodes.
+    // TREE mode with active query: recursively filters displayedTableNodes.
     public onTableInputKey(event: any) {
-        if (this.selectedQueryMode === 'EDA2' && this.currentQuery.length > 0) {
+        if (this.selectedQueryMode === 'TREE' && this.currentQuery.length > 0) {
             const term = event.target.value?.toLowerCase();
             this.displayedTableNodes = term
                 ? this.filterTreeNodes(this.tableNodes, term)
@@ -1464,9 +1499,9 @@ public tableNodeExpand(event: any): void {
             const queryMode = this.panelDeepCopy.query.query.queryMode;
             const modeSQL = this.panelDeepCopy.query.query.modeSQL;
 
-            this.selectedQueryMode = _.isNil(queryMode) ? (modeSQL ? 'SQL' : 'EDA') : queryMode;
-            
-            if(this.selectedQueryMode == 'EDA2'){
+            this.selectedQueryMode = normalizeQueryMode(_.isNil(queryMode) ? (modeSQL ? 'SQL' : 'EDA') : queryMode);
+
+            if(this.selectedQueryMode == 'TREE'){
                 this.rootTable = this.panelDeepCopy.rootTable;
             }
             
@@ -2074,9 +2109,10 @@ public tableNodeExpand(event: any): void {
             if (queryMatch) queryMatch.ordenation_type = sortingMatch.ordenation_type;
         }
 
-        if (this.selectedQueryMode == 'EDA2' && this.currentQuery.length === 1) {
+        if (this.selectedQueryMode == 'TREE' && this.currentQuery.length === 1) {
             PanelInteractionUtils.loadTableNodes(this);
             this.displayedTableNodes = this.tableNodes;
+            this.rootTableFirstSet.emit(this.rootTable?.table_name);
        }
     }
 
@@ -2085,8 +2121,8 @@ public tableNodeExpand(event: any): void {
     public loadColumns = (table: any) => PanelInteractionUtils.loadColumns(this, table, true);
 
     public removeColumn = (c: Column, list?: string) => {
-        // The root table restriction only applies in tree mode (EDA2).
-        const isTreeMode = this.selectedQueryMode === 'EDA2';
+        // The root table restriction only applies in TREE mode.
+        const isTreeMode = this.selectedQueryMode === 'TREE';
 
         const rootTableName = this.rootTable?.table_name;
         const isNotRootColumn = !!c?.joins?.length || (!!rootTableName && c?.table_id !== rootTableName);
@@ -2095,6 +2131,11 @@ public tableNodeExpand(event: any): void {
 
         if (!isTreeMode || isNotRootColumn || rootColumnElements > 1 || currentQueryLength === 1) {
             const columnHadFilter = this.selectedFilters.some((sf: any) => sf.filter_column === c.column_name);
+            // Last column of a new panel (query never executed): reset global filter config before utils runs
+            if (currentQueryLength === 1 && _.isNil(this.panel.content)) {
+                this.rootTableCleared.emit();
+                this.globalFilters = [];
+            }
             const removed = PanelInteractionUtils.removeColumn(this, c, list);
             if (removed !== false) {
                 // We check whether a field being removed had a filter in selectedFilters (this is verified before removeColumn deletes it).
@@ -2140,10 +2181,12 @@ public tableNodeExpand(event: any): void {
 
     /** It duplicates a dashboard panel and positions it one step below the original.*/
     public duplicatePanel(): void {
-        let duplicatedPanel =   _.cloneDeep(this.panel, true); 
+        const sourcePanelId = this.panel.id;
+        let duplicatedPanel = _.cloneDeep(this.panel, true);
         duplicatedPanel.id = this.fileUtiles.generateUUID();
-        duplicatedPanel.y = duplicatedPanel.y+1;
-        this.duplicate.emit(duplicatedPanel);
+        duplicatedPanel.y = duplicatedPanel.y + 1;
+        duplicatedPanel._isDuplicate = true;
+        this.duplicate.emit({ panel: duplicatedPanel, sourcePanelId });
     }
 
     
@@ -2688,7 +2731,7 @@ public tableNodeExpand(event: any): void {
         const queryMode = this.selectedQueryMode;
         const isEdaMode = queryMode && queryMode !== 'SQL';
         if (isEdaMode || modeSQL === false) {
-            if (queryMode === 'EDA2') {
+            if (queryMode === 'TREE') {
                 this.rootTable = this.tables.find((t: any) => t.table_name === this.rootTable);
                 for (const column of panelContent.query.query.fields) {
                     PanelInteractionUtils.assertTable(this, column);
