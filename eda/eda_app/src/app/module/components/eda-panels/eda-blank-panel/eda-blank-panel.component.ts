@@ -15,8 +15,9 @@ import { ConfirmationService, SharedModule } from 'primeng/api';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { TreeModule } from 'primeng/tree';
 // Eda config
-import { AGG_TYPES, NULL_VALUE, EMPTY_VALUE, SHOW_LOCK_IN_PANEL_HEADER, ALLOWED_QUERY_MODES, SHOW_HIDDEN_FIELDS, SHOW_WHAT_IF } from '@eda/configs/customizable/customizable_default';
+import { AGG_TYPES, NULL_VALUE, EMPTY_VALUE, SHOW_LOCK_IN_PANEL_HEADER, ALLOWED_QUERY_MODES, SHOW_HIDDEN_FIELDS, SHOW_WHAT_IF, ALLOWED_JOIN_TYPES } from '@eda/configs/customizable/customizable_default';
 import { normalizeQueryMode } from '@eda/shared/utils/query-mode.util';
+
 import {Column, EdaPanel, InjectEdaPanel } from '@eda/models/model.index';
 
 import { PanelChart } from './panel-charts/panel-chart';
@@ -152,6 +153,8 @@ export class EdaBlankPanelComponent implements OnInit {
     @Output() duplicate: EventEmitter<any> = new EventEmitter();
     @Output() action: EventEmitter<IPanelAction> = new EventEmitter<IPanelAction>();
     @Output() panelConfigChanged: EventEmitter<any> = new EventEmitter<IPanelAction>();
+    @Output() rootTableFirstSet = new EventEmitter<string>();
+    @Output() rootTableCleared = new EventEmitter<void>();
 
     /** Properties injected into the dialog with chart-specific properties. */
     public configController: EdaDialogController;
@@ -299,9 +302,9 @@ export class EdaBlankPanelComponent implements OnInit {
         { icon: 'pi pi-align-left', label: 'Left', joinType: 'left' },
         { icon: 'pi pi-align-center', label: 'Inner', joinType: 'inner' },
         { icon: 'pi pi-align-right', label: 'Right', joinType: 'right' }
-    ];
+    ].filter(option => ALLOWED_JOIN_TYPES.includes(option.joinType));
 
-    public joinType = this.joinTypeOptions[1].joinType; // default init in Inner
+    public joinType = (this.joinTypeOptions.find(o => o.joinType === 'inner') ?? this.joinTypeOptions[0])?.joinType; // default init in Inner, or first allowed type
 
     
     /**panel chart component configuration */
@@ -662,6 +665,15 @@ public tableNodeExpand(event: any): void {
             }
             PanelInteractionUtils.handleFilters(this, panelContent.query.query); // 3. populate selectedFilters (reads dateNavState)
 
+            // Duplicated panel: skip this initial query run (the inherited global filters are
+            // still being attached asynchronously by the dashboard) — buildGlobalconfiguration
+            // triggers the real, filter-aware query run once that's done. Everything above this
+            // point still needs to run, since it builds currentQuery/navState/selectedFilters.
+            if (this.panel._isDuplicate) {
+                this.buildGlobalconfiguration(panelContent);
+                return;
+            }
+
             const hasNavChildren = this.currentQuery.some((col: any) => col.downChild);
             const queryToRun = hasNavChildren ? QueryUtils.initEdaQuery(this) : panelContent.query;
             const response = await QueryUtils.switchAndRun(this, queryToRun);
@@ -752,6 +764,14 @@ public tableNodeExpand(event: any): void {
         // Check if the chart is a pivot table.
         const crossTableChart = this.chartTypes.find(g => g.subValue === 'crosstable');
         this.dragAndDropAvailable = !crossTableChart?.ngIf;
+
+        if (this.panel._isDuplicate) {
+            delete this.panel._isDuplicate;
+            // runQuery touches the panelChart ViewChild (static: false), which only
+            // resolves after ngAfterViewInit. We're still inside ngOnInit here, so defer
+            // to the next macrotask instead of failing with a silent unhandled rejection.
+            setTimeout(() => QueryUtils.runQuery(this, true));
+        }
     }
 
 
@@ -2092,6 +2112,7 @@ public tableNodeExpand(event: any): void {
         if (this.selectedQueryMode == 'TREE' && this.currentQuery.length === 1) {
             PanelInteractionUtils.loadTableNodes(this);
             this.displayedTableNodes = this.tableNodes;
+            this.rootTableFirstSet.emit(this.rootTable?.table_name);
        }
     }
 
@@ -2110,6 +2131,11 @@ public tableNodeExpand(event: any): void {
 
         if (!isTreeMode || isNotRootColumn || rootColumnElements > 1 || currentQueryLength === 1) {
             const columnHadFilter = this.selectedFilters.some((sf: any) => sf.filter_column === c.column_name);
+            // Last column of a new panel (query never executed): reset global filter config before utils runs
+            if (currentQueryLength === 1 && _.isNil(this.panel.content)) {
+                this.rootTableCleared.emit();
+                this.globalFilters = [];
+            }
             const removed = PanelInteractionUtils.removeColumn(this, c, list);
             if (removed !== false) {
                 // We check whether a field being removed had a filter in selectedFilters (this is verified before removeColumn deletes it).
@@ -2155,10 +2181,12 @@ public tableNodeExpand(event: any): void {
 
     /** It duplicates a dashboard panel and positions it one step below the original.*/
     public duplicatePanel(): void {
-        let duplicatedPanel =   _.cloneDeep(this.panel, true); 
+        const sourcePanelId = this.panel.id;
+        let duplicatedPanel = _.cloneDeep(this.panel, true);
         duplicatedPanel.id = this.fileUtiles.generateUUID();
-        duplicatedPanel.y = duplicatedPanel.y+1;
-        this.duplicate.emit(duplicatedPanel);
+        duplicatedPanel.y = duplicatedPanel.y + 1;
+        duplicatedPanel._isDuplicate = true;
+        this.duplicate.emit({ panel: duplicatedPanel, sourcePanelId });
     }
 
     

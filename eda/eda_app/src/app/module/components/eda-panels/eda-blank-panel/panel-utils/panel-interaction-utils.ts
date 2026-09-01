@@ -237,7 +237,11 @@ export const PanelInteractionUtils = {
       });
 
       // Separate global and local filters
-      ebp.globalFilters = clonedFilters.filter(f => f.isGlobal === true);
+      const contentGlobalFilters = clonedFilters.filter(f => f.isGlobal === true);
+      if (ebp.globalFilters.length === 0) {
+        // Don't overwrite filters already inherited by a duplicated/new panel
+        ebp.globalFilters = contentGlobalFilters;
+      }
       ebp.selectedFilters = clonedFilters.filter(f => f.isGlobal === false);
 
       // Add active nav filters (regular and date nav) to selectedFilters
@@ -466,6 +470,7 @@ export const PanelInteractionUtils = {
   },
 
   handleCurrentQuery2: (ebp: EdaBlankPanelComponent): void => {
+    ebp.currentQuery = []; // Reset currentQuery to load it with the columns from panelContent, which is the source of truth (same fix as handleCurrentQuery, since this is also called twice per load).
     if (ebp.panel.content) {
       const fields = ebp.panel.content.query.query.fields;
 

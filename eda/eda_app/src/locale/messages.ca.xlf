@@ -7055,9 +7055,25 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
         <source>Edición privada</source>
         <target>Edició privada</target>
       </trans-unit>
-      <trans-unit id="reportDataSourceName">
-        <source>Fuente de datos</source>
-        <target>Font de dades</target>
+      <trans-unit id="ResetZoom">
+        <source>Restablecer (100%)</source>
+        <target>Restableix (100%)</target>
+      </trans-unit>
+      <trans-unit id="filterHoverGreen">
+        <source>Verde</source>
+        <target>Verd</target>
+      </trans-unit>
+      <trans-unit id="filterHoverRed">
+        <source>Rojo</source>
+        <target>Vermell</target>
+      </trans-unit>
+      <trans-unit id="filterHoverAffected">
+        <source>Paneles afectados por este filtro</source>
+        <target>Panells afectats per aquest filtre</target>
+      </trans-unit>
+      <trans-unit id="filterHoverNotAffected">
+        <source>Paneles no afectados por este filtro</source>
+        <target>Panells no afectats per aquest filtre</target>
       </trans-unit>
       <trans-unit id="partialEditDataSourceNotice">
         <source>Algunas áreas de la configuración de la fuente de datos SinergiaCRM se encuentran desactivadas porque se configuran automáticamente durante el proceso de sincronización de datos con SinergiaCRM.</source>
