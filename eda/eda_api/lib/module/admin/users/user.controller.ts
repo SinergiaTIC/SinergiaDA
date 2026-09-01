@@ -8,6 +8,7 @@ import * as path from 'path';
 import * as fs from 'fs';
 import { QueryOptions } from 'mongoose';
 import { GroupController } from '../groups/group.controller';
+import { PluginRegistry } from '../../../plugins';
 
 
 
@@ -117,9 +118,9 @@ export class UserController {
                 if (! await bcrypt.compareSync(body.password, userEda.password)) {
                     let validLegacyPassword = false;
                     try {
-                        const { SinergiaAuthPlugin } = require('../../../plugins/SinergiaAuthPlugin');
-                        validLegacyPassword = SinergiaAuthPlugin.isEnabled()
-                            && await SinergiaAuthPlugin.verifyLegacyPassword(body.password, userEda.password.toString());
+                        const authPlugin = PluginRegistry.getAuthPlugins().find(plugin => plugin.isEnabled());
+                        validLegacyPassword = !!authPlugin
+                            && await authPlugin.verifyLegacyPassword(body.password, userEda.password.toString());
                     } catch (err) {
                         validLegacyPassword = false;
                     }
