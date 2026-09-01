@@ -6,3 +6,6 @@ export const SHOW_HIDDEN_FIELDS: 'disabled' | 'admin-only' | 'all' = 'admin-only
 export const ALLOWED_QUERY_MODES: string[] = ['TREE', 'SQL']; // ALLOWED_QUERY_MODES Order matters; the first value "ALLOWED_QUERY_MODES[0]" is considered the default query mode
 export const SHOW_WHAT_IF: boolean = false; // SDA: sin escenarios "What If"
 export const ALLOWED_JOIN_TYPES: string[] = ['left', 'inner']; 
+export const SHOW_CUSTOM_ACTION: boolean = false;
+export const SHOW_ZOOM_IN_SIDEBAR: boolean = false;
+export const PRIVATE_EDITION_ACTIVATED: boolean =  false;

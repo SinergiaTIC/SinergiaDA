@@ -56,6 +56,7 @@ import { KpiDeviationConfig } from './chart-configuration-models/kpi-deviation-c
     standalone: true,
     selector: 'panel-chart',
     templateUrl: './panel-chart.component.html',
+    styleUrl: './panel-chart.component.css',
     imports: [FormsModule, CommonModule]
 })
 

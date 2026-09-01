@@ -333,13 +333,22 @@ export class DashboardController {
 
   
   /**
-   * Get dashboards metadata
+   * Get dashboards metadata.
+   * By default, dashboards with config.active === false are excluded.
+   * Pass includeInactive: true to include them (used by admin listing).
    * @param filter filter to apply
+   * @param options.includeInactive include inactive dashboards (default false)
    */
-    private static async findAllDashboardsWithMeta(filter: Record<string, any> = {}) {
+  private static async findAllDashboardsWithMeta(
+    filter: Record<string, any> = {},
+    options: { includeInactive?: boolean } = {}
+  ) {
+    if (!options.includeInactive) {
+      filter['config.active'] = { $ne: false };
+    }
     return Dashboard.find(
       filter,
-      'config.title config.visible config.tag config.onlyIcanEdit config.author config.createdAt config.modifiedAt config.description config.createdAt config.modifiedAt config.active config.ds user group'
+      'config.title config.visible config.tag config.onlyIcanEdit config.author config.createdAt config.modifiedAt config.description config.createdAt config.modifiedAt config.active config.ds user group config.external'
     ).populate('user', 'name').exec();
   }
 
@@ -420,8 +429,8 @@ export class DashboardController {
     try {
       //si no lleva filtro, pasamos directamente a recuperarlos todos
       const dashboards = JSON.stringify(filter) !== '{}' ?
-        await Dashboard.find({ $or: Object.entries(filter).map(([clave, valor]) => ({ [clave]: valor })) }, 'config.title config.visible config.tag config.onlyIcanEdit config.author config.createdAt config.modifiedAt config.description config.createdAt config.modifiedAt config.active config.ds user group config.external').populate('user', 'name').exec() :
-        await Dashboard.find({}, 'config.title config.visible config.tag config.onlyIcanEdit config.author config.createdAt config.modifiedAt config.description config.createdAt config.modifiedAt config.active config.ds user group config.external').populate('user', 'name').exec();
+        await DashboardController.findAllDashboardsWithMeta({ $or: Object.entries(filter).map(([clave, valor]) => ({ [clave]: valor })) }, { includeInactive: true }) :
+        await DashboardController.findAllDashboardsWithMeta({}, { includeInactive: true });
       const openDashboards = [];
       const privateDashboards = [];
       const groupDashboards = [];
@@ -569,6 +578,10 @@ export class DashboardController {
 
         if (visibilityCheck && roleCheck) {
           return next(new HttpException(500, "You don't have permission"));
+        }
+
+        if (dashboard.config.active === false && !userRoles.includes('EDA_ADMIN')) {
+          return next(new HttpException(403, 'This dashboard is currently inactive'));
         }
 
         // Obtener el datasource asociado
@@ -983,9 +996,10 @@ export class DashboardController {
     }
 
     let allowedColumns = [];
-    // puede ser que me den permiso sobre una columna. 
+    // puede ser que me den permiso sobre una columna.
     // entonces tengo prohivida toda la tabla excepto esa columna en el caso de un modelo cerrado.
-    if (dataModelObject.ds.metadata.model_granted_roles.length > 0) { /** SI HAY PERMISOS DEFINIDOS. SI NO, NO HAY SEGURIDAD */
+    if (eda_api_config.custom_behaviour.RESTRICT_TABLE_TO_GRANTED_COLUMN &&
+      dataModelObject.ds.metadata.model_granted_roles.length > 0) { /** SI HAY PERMISOS DEFINIDOS. SI NO, NO HAY SEGURIDAD */
       if ( open != true &&  // si el modelo es cerrado.
         dataModelObject.ds.metadata.model_granted_roles.filter(r => r.global == false && r.none == false).length > 0) {
         dataModelObject.ds.metadata.model_granted_roles.filter(r => r.global == false && r.none == false  ).forEach(c => {
@@ -1417,7 +1431,7 @@ static  convertColumnToForbiddenColumn(columns: any[], sample: any): any[] {
         let notAllowedColumns = []
         for (let c = 0; c < req.body.query.fields.length; c++) {
           if (
-            uniquesForbiddenTables.includes(req.body.query.fields[c].table_id)
+            uniquesForbiddenTables.includes(req.body.query.fields[c].table_id.split('.')[0])
           ) {
             notAllowedColumns.push(req.body.query.fields[c])
           } else {
@@ -1446,9 +1460,7 @@ static  convertColumnToForbiddenColumn(columns: any[], sample: any): any[] {
       myQuery.queryLimit = req.body.query.queryLimit;
       myQuery.joinType = req.body.query.joinType ? req.body.query.joinType : 'inner';
 
-      // console.log('myQuery: ', myQuery);
-
-      if (myQuery.fields.length == 0) {
+       if (myQuery.fields.length === 0 || myQuery.fields.length < req.body.query.fields.length ) { //Not allowed to see all the data. If you have one forbidden column you cannot see the query. It will breack the chart
         console.log('you cannot see any data');
         return res.status(200).json([['noDataAllowed'], [[]]]);
       }
@@ -1459,7 +1471,7 @@ static  convertColumnToForbiddenColumn(columns: any[], sample: any): any[] {
       }
 
 
-      /** por compatibilidad. Si no tengo el tipo de columna en el filtro lo añado */
+      /** For compatibility. If I don't have the column type in the filter, I add it */
       if (myQuery.filters) {
         for (const filter of myQuery.filters) {
           if (!filter.filter_column_type) {

@@ -7055,9 +7055,9 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
         <source>Edición privada</source>
         <target>Edició privada</target>
       </trans-unit>
-      <trans-unit id="reportDataSourceName">
-        <source>Fuente de datos</source>
-        <target>Font de dades</target>
+      <trans-unit id="ResetZoom">
+        <source>Restablecer (100%)</source>
+        <target>Restableix (100%)</target>
       </trans-unit>
       <trans-unit id="filterHoverGreen">
         <source>Verde</source>

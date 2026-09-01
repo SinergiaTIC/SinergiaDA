@@ -20,6 +20,9 @@ import { FocusOnShowDirective } from '@eda/shared/directives/autofocus.directive
 import { CommonModule } from '@angular/common';
 import { AssistantService } from '@eda/services/api/assistant.service';
 import { EdaTitlePanelComponent, EdaTabsPanelComponent } from '@eda/components/component.index';
+import { ZoomSdaComponent } from './zoom-control/zoom.component';
+import { ZoomStateService } from './zoom-control/zoom-state.service';
+import { SHOW_ZOOM_IN_SIDEBAR } from '@eda/configs/customizable/customizable_default';
 
 // Sidebar imports
 import { DashboardSidebarService } from '@eda/services/shared/dashboard-sidebar.service';
@@ -67,13 +70,15 @@ const STANDALONE_COMPONENTS = [
   ImportPanelDialog,
   DependentFilters,
   EdaTitlePanelComponent,
-  EdaTabsPanelComponent
+  EdaTabsPanelComponent,
+  ZoomSdaComponent
 ]
 @Component({
   selector: 'app-v2-dashboard-page',
   standalone: true,
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   imports: [STANDALONE_COMPONENTS, ANGULAR_MODULES, GRIDSTER_MODULES, PRIMENG_MODULES],
+  providers: [ZoomStateService],
 
   templateUrl: './dashboard.page.html',
   styleUrls: ['./dashboard.page.css'],
@@ -93,6 +98,7 @@ export class DashboardPage implements OnInit {
   private chartUtils = inject(ChartUtilsService);
   private dateUtilsService = inject(DateUtils);
   private userService = inject(UserService);
+  private zoomState = inject(ZoomStateService);
 
   public title: string = $localize`:@@loading:Cargando informe...`;
   public styles: DashboardStyles;
@@ -115,6 +121,7 @@ export class DashboardPage implements OnInit {
   public queryParams: any = {};
   public hideWheel: boolean = false;
   public panelMode: boolean = false;
+  public readonly showZoomInSidebar = SHOW_ZOOM_IN_SIDEBAR;
   public connectionProperties: any;
 
 
@@ -182,6 +189,8 @@ export class DashboardPage implements OnInit {
 
   /* Set applyToAllFilters for new panel when it's created */
       public ngAfterViewInit(): void {
+          this.zoomState.init(this.route.snapshot.paramMap.get('id'));
+
           this.edaPanelsSubscription = this.edaPanels.changes.subscribe((comps: QueryList<EdaBlankPanelComponent>) => {
               const globalFilters = this.globalFilter?.globalFilters.filter(filter => filter.isGlobal === true);
               const unsetPanels = this.edaPanels.filter(panel => _.isNil(panel.panel.content));
@@ -299,8 +308,8 @@ export class DashboardPage implements OnInit {
       this.sortPanelsForMobile();
       this.styles = dashboard.config.styles || this.stylesProviderService.generateDefaultStyles();
       this.getUrlParams();
-      this.globalFilter.findGlobalFilterByUrlParams(this.queryParams);
-      this.globalFilter.fillFiltersData();
+      this.globalFilter?.findGlobalFilterByUrlParams(this.queryParams);
+      this.globalFilter?.fillFiltersData();
       
       if (this.styles.palette !== undefined) {
         this.chartUtils.MyPaletteColors = this.styles.palette['paleta'];
@@ -540,6 +549,11 @@ export class DashboardPage implements OnInit {
     result = this.userService.isAdmin;
     // if not admin...
     if (!result) {
+        // Dashboard data hasn't loaded yet (child components can render/query
+        // this before the async fetch in ngOnInit resolves) — default to no edit access.
+        if (!this.dashboard) {
+            return false;
+        }
         if (this.dashboard.onlyIcanEdit) {
             result = this.userService.user._id === this.dashboard.user
         } else {
@@ -1100,14 +1114,37 @@ export class DashboardPage implements OnInit {
     const standardQueryMode = this.panels.some((p) => isEdaQueryMode(p.content?.query?.query?.queryMode, p.content?.query?.query?.modeSQL));
 
     for (const panel of this.edaPanels) {
+      const ownMode = normalizeQueryMode(panel.panel?.content?.query?.query?.queryMode);
+      let allowedModes = [...ALLOWED_QUERY_MODES];
+
       if (treeQueryMode) {
-        panel.queryModes = ALLOWED_QUERY_MODES.filter(v => v !== 'EDA').map(v => QUERY_MODE_LABELS.find(l => l.value === v));
-        panel.selectedQueryMode = 'TREE';
+
+        allowedModes = allowedModes.filter(v => v !== 'EDA');
       } else if (standardQueryMode) {
-        panel.queryModes = ALLOWED_QUERY_MODES.filter(v => v !== 'TREE').map(v => QUERY_MODE_LABELS.find(l => l.value === v));
+        allowedModes = allowedModes.filter(v => v !== 'TREE');
       }
+
+      // Keep offering a panel's own already-saved mode even if it's no longer
+      // configured in QUERY_MODE, so legacy panels stay visible/selectable
+      // without letting new panels be created in a retired mode.
+      if (ownMode && !allowedModes.includes(ownMode)) {
+        allowedModes = [...allowedModes, ownMode];
+      }
+
       if (((!standardQueryMode && !treeQueryMode) || this.edaPanels.length === 1) && this.globalFilter.globalFilters.length === 0) {
-        panel.queryModes = ALLOWED_QUERY_MODES.map(v => QUERY_MODE_LABELS.find(l => l.value === v));
+
+        allowedModes = ownMode && !ALLOWED_QUERY_MODES.includes(ownMode) ? [...ALLOWED_QUERY_MODES, ownMode] : [...ALLOWED_QUERY_MODES];
+      }
+
+      panel.queryModes = allowedModes.map(v => QUERY_MODE_LABELS.find(l => l.value === v));
+
+      // Only correct the live selection when it is no longer a valid option
+      // (e.g. another panel just locked the report into the TREE/EDA family).
+      // Never overwrite a mode the user just picked in the dropdown while it
+      // is still allowed - doing so unconditionally used to snap SQL/EDA
+      // selections back to TREE right after the dropdown change was made.
+      if (allowedModes.length > 0 && !allowedModes.includes(panel.selectedQueryMode)) {
+        panel.selectedQueryMode = allowedModes[0];
       }
     }
   }
