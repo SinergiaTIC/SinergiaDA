@@ -2,7 +2,7 @@ import { ChangeDetectorRef, Component, CUSTOM_ELEMENTS_SCHEMA, inject, OnInit, Q
 import { ActivatedRoute } from '@angular/router';
 import { lastValueFrom, Subscription } from 'rxjs';
 import { DateUtils } from '@eda/services/utils/date-utils.service';
-import { resolveQueryMode, isEdaQueryMode } from '@eda/shared/utils/query-mode.util';
+import { resolveQueryMode, isEdaQueryMode, normalizeQueryMode } from '@eda/shared/utils/query-mode.util';
 import { ALLOWED_QUERY_MODES } from '@eda/configs/customizable/customizable_default';
 import * as _ from 'lodash';
 import { ButtonModule } from 'primeng/button';
