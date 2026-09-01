@@ -6756,6 +6756,25 @@ OR<ph id="5"/>
   <source>Fuente de datos</source>
   <target>Data source</target>
 </trans-unit>
+<trans-unit id="filterHoverGreen">
+<source>Verde</source>
+<target>Green</target>
+</trans-unit>
+<trans-unit id="filterHoverRed">
+<source>Rojo</source>
+<target>Red</target>
+</trans-unit>
+<trans-unit id="filterHoverAffected">
+<source>Paneles afectados por este filtro</source>
+<target>Panels affected by this filter</target>
+</trans-unit>
+<trans-unit id="filterHoverNotAffected">
+<source>Paneles no afectados por este filtro</source>
+<target>Panels not affected by this filter</target>
+<trans-unit id="ResetZoom">
+  <source>Restablecer (100%)</source>
+  <target>Reset (100%)</target>
+</trans-unit>
 </body>
 </file>
 </xliff>

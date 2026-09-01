@@ -579,13 +579,17 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
         if (!pathEntry || this.isEmpty(pathEntry.selectedTableNodes)) return false;
 
         const currentRootTable = panel.content.query.query.rootTable;
-        if (!currentRootTable) return false;
+
+        if (!currentRootTable) return false; // panels without rootTable (e.g. SQL): don't validate
 
         const path: any[] = pathEntry.path || [];
 
         if (path.length === 0) {
+
+            // 0 hops: the start is at selectedTableNodes.table_id
             return pathEntry.selectedTableNodes?.table_id !== currentRootTable;
         } else {
+            // 1+ hops: the start is at the first part of the first join
             return path[0][0]?.split('.')[0] !== currentRootTable;
         }
     }
@@ -594,6 +598,7 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
      * Auto-completes the path when the filtered table is a single relation hop away
      * from the panel's root table, so the user doesn't have to configure it manually.
      */
+
     private tryAutoFillSingleHop(panel: any): void {
         const filterTableName = this.globalFilter.selectedTable?.table_name;
         const rootTableName = panel.content.query.query.rootTable;
@@ -608,7 +613,8 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
             !rel.bridge && !rel.autorelation && rel.target_table === filterTableName
         );
 
-        // If multiple relations exist to the same table, use the first; user can override manually.
+
+        // If multiple relations exist to the same table, use the first primary; user can override manually.
         if (directRelations.length === 0) return;
 
         const rel = directRelations[0];
@@ -666,6 +672,7 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
      * Replicates a manually-selected path to other panels that share the same root table
      * and don't have a path defined yet, to keep the report consistent.
      */
+
     private propagatePathToSimilarPanels(sourcePanelId: string, table_id: string, node: any): void {
         const sourcePanel = this.filteredPanels.find((p: any) => p.id === sourcePanelId);
         if (!sourcePanel) return;
@@ -734,6 +741,7 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
             // const existsPath = pathList.find((path: any) => path.panel_id == panel.id);
             // pathList.push({ panel_id: panel.id, path: node.joins || [] });
             // this.globalFilter.table_id = table_id;
+            this.propagatePathToSimilarPanels(panel.id, table_id, node);
         }
     }
 
@@ -970,27 +978,21 @@ public async loadFilterAutoComplete(event: any, filtro: any) {
         return this.modelTables.find((table: any) => table.table_name === tableName);
     }
 
-    public getDisplayPathStr(node: any) {
-        let str = '&nbsp';
+    public getDisplayPathStr(node: any): string {
+        if (!node) return '&nbsp';
 
-        if (node) {
-            if ((node.joins||[]).length > 0) {
-                for (const join of node.joins) {
-                    const table = this.findTable(join[0]?.split('.')[0]);
-
-                    if (table) {
-                        str += `<strong>${table.display_name.default}</strong>&nbsp <i class="pi pi-angle-right"></i>`
-                    }
+        if ((node.joins || []).length > 0) {
+            let str = '';
+            for (const join of node.joins) {
+                const table = this.findTable(join[0]?.split('.')[0]);
+                if (table) {
+                    str += `<strong>${table.display_name.default}</strong>&nbsp;<i class="pi pi-angle-right"></i>&nbsp;`;
                 }
-
-                str += `<strong>${node?.label}</strong>`;
-            } else {
-                str = `<strong>${node?.label}</strong>`;
             }
+            return str + `<strong>${node?.label}</strong>`;
         }
 
-
-        return str;
+        return `<strong>${node?.label}</strong>`;
     }
 
     public applyToAllCheck() {

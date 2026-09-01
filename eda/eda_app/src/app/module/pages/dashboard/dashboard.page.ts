@@ -3,7 +3,7 @@ import { ActivatedRoute } from '@angular/router';
 import { lastValueFrom, Subscription } from 'rxjs';
 import { DateUtils } from '@eda/services/utils/date-utils.service';
 import { normalizeQueryMode } from '@eda/shared/utils/query-mode.util';
-import { QUERY_MODE } from '@eda/configs/customizable/customizable_default';
+import { ALLOWED_QUERY_MODES } from '@eda/configs/customizable/customizable_default';
 import * as _ from 'lodash';
 import { ButtonModule } from 'primeng/button';
 import { DropdownModule } from 'primeng/dropdown';
@@ -20,6 +20,9 @@ import { FocusOnShowDirective } from '@eda/shared/directives/autofocus.directive
 import { CommonModule } from '@angular/common';
 import { AssistantService } from '@eda/services/api/assistant.service';
 import { EdaTitlePanelComponent, EdaTabsPanelComponent } from '@eda/components/component.index';
+import { ZoomSdaComponent } from './zoom-control/zoom.component';
+import { ZoomStateService } from './zoom-control/zoom-state.service';
+import { SHOW_ZOOM_IN_SIDEBAR } from '@eda/configs/customizable/customizable_default';
 
 // Sidebar imports
 import { DashboardSidebarService } from '@eda/services/shared/dashboard-sidebar.service';
@@ -67,13 +70,15 @@ const STANDALONE_COMPONENTS = [
   ImportPanelDialog,
   DependentFilters,
   EdaTitlePanelComponent,
-  EdaTabsPanelComponent
+  EdaTabsPanelComponent,
+  ZoomSdaComponent
 ]
 @Component({
   selector: 'app-v2-dashboard-page',
   standalone: true,
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   imports: [STANDALONE_COMPONENTS, ANGULAR_MODULES, GRIDSTER_MODULES, PRIMENG_MODULES],
+  providers: [ZoomStateService],
 
   templateUrl: './dashboard.page.html',
   styleUrls: ['./dashboard.page.css'],
@@ -93,6 +98,7 @@ export class DashboardPage implements OnInit {
   private chartUtils = inject(ChartUtilsService);
   private dateUtilsService = inject(DateUtils);
   private userService = inject(UserService);
+  private zoomState = inject(ZoomStateService);
 
   public title: string = $localize`:@@loading:Cargando informe...`;
   public styles: DashboardStyles;
@@ -115,6 +121,7 @@ export class DashboardPage implements OnInit {
   public queryParams: any = {};
   public hideWheel: boolean = false;
   public panelMode: boolean = false;
+  public readonly showZoomInSidebar = SHOW_ZOOM_IN_SIDEBAR;
   public connectionProperties: any;
 
 
@@ -150,6 +157,9 @@ export class DashboardPage implements OnInit {
     id: string
   };
 
+  public hoveredFilterPanelIds: string[] = [];
+  public isFilterHoverActive: boolean = false;
+
   public urls: any[] = [];
   public sendViaMailConfig: any = { enabled: false};
 
@@ -179,6 +189,8 @@ export class DashboardPage implements OnInit {
 
   /* Set applyToAllFilters for new panel when it's created */
       public ngAfterViewInit(): void {
+          this.zoomState.init(this.route.snapshot.paramMap.get('id'));
+
           this.edaPanelsSubscription = this.edaPanels.changes.subscribe((comps: QueryList<EdaBlankPanelComponent>) => {
               const globalFilters = this.globalFilter?.globalFilters.filter(filter => filter.isGlobal === true);
               const unsetPanels = this.edaPanels.filter(panel => _.isNil(panel.panel.content));
@@ -343,8 +355,8 @@ export class DashboardPage implements OnInit {
       this.sortPanelsForMobile();
       this.styles = dashboard.config.styles || this.stylesProviderService.generateDefaultStyles();
       this.getUrlParams();
-      this.globalFilter.findGlobalFilterByUrlParams(this.queryParams);
-      this.globalFilter.fillFiltersData();
+      this.globalFilter?.findGlobalFilterByUrlParams(this.queryParams);
+      this.globalFilter?.fillFiltersData();
       
       if (this.styles.palette !== undefined) {
         this.chartUtils.MyPaletteColors = this.styles.palette['paleta'];
@@ -613,6 +625,11 @@ export class DashboardPage implements OnInit {
     result = this.userService.isAdmin;
     // if not admin...
     if (!result) {
+        // Dashboard data hasn't loaded yet (child components can render/query
+        // this before the async fetch in ngOnInit resolves) — default to no edit access.
+        if (!this.dashboard) {
+            return false;
+        }
         if (this.dashboard.onlyIcanEdit) {
             result = this.userService.user._id === this.dashboard.user
         } else {
@@ -1041,10 +1058,78 @@ export class DashboardPage implements OnInit {
     });
   }
 
-  public onDuplicatePanel(panel: any) {
+  public onDuplicatePanel(event: { panel: any, sourcePanelId: string }): void {
+    const { panel, sourcePanelId } = event;
+
+    if (this.globalFilter?.globalFilters) {
+      this.globalFilter.globalFilters
+        .filter((f: any) => f.isGlobal)
+        .forEach((filter: any) => {
+          if (filter.pathList && filter.pathList[sourcePanelId]) {
+            filter.pathList[panel.id] = _.cloneDeep(filter.pathList[sourcePanelId]);
+          }
+          if (filter.panelList.includes(sourcePanelId) && !filter.panelList.includes(panel.id)) {
+            filter.panelList.push(panel.id);
+          }
+        });
+    }
+
     this.panels.push(panel);
     this.dashboardService.setNotSaved(true);
     this.stylesProviderService.loadedPanels++;
+
+    const _dupSub = this.edaPanels.changes.subscribe(() => {
+      _dupSub.unsubscribe();
+      const newPanel = this.edaPanels.toArray().find(p => p.panel.id === panel.id);
+      if (newPanel && this.globalFilter?.globalFilters) {
+        const applicable = this.globalFilter.globalFilters.filter((f: any) => f.isGlobal && f.panelList.includes(panel.id));
+        applicable.forEach((filter: any) => {
+          newPanel.assertGlobalFilter(this.globalFiltersService.formatFilter(filter));
+        });
+        // By this point the panel's own ngOnInit (and its _isDuplicate query run) has
+        // already completed, so trigger the query run directly instead of relying on a
+        // flag nothing else re-checks.
+        if (applicable.length > 0) newPanel.runQueryFromDashboard(true);
+      }
+    });
+  }
+
+  /** When a brand-new (non-duplicated) panel gets its root table for the first time,
+   * auto-attach it to global filters that already apply to sibling panels sharing that root table. */
+  public onNewPanelRootTableSet(rootTableName: string, panel: EdaPanel): void {
+    if (!rootTableName) return;
+    const newPanelComp = this.edaPanels.find(p => p.panel.id === panel.id);
+    if (!newPanelComp) return;
+
+    const globalFilters = this.globalFilter?.globalFilters?.filter((f: any) => f.isGlobal && f.pathList) || [];
+
+    globalFilters.forEach((filter: any) => {
+      if (!filter.panelList?.length) return;
+
+      // Find the first active panel in this filter that has the same rootTable
+      const matchingPanelId = filter.panelList.find((pid: string) => {
+        const existing = this.edaPanels.find(p => p.panel.id === pid);
+        return existing?.rootTable?.table_name === rootTableName;
+      });
+
+      if (matchingPanelId && filter.pathList[matchingPanelId]) {
+        filter.pathList[panel.id] = { ...filter.pathList[matchingPanelId] };
+        filter.panelList.push(panel.id);
+        const formatted = this.globalFiltersService.formatFilter(filter);
+        newPanelComp.assertGlobalFilter(formatted);
+      }
+    });
+  }
+
+  public onNewPanelRootTableCleared(panel: EdaPanel): void {
+    const globalFilters = this.globalFilter?.globalFilters?.filter((f: any) => f.isGlobal) || [];
+
+    globalFilters.forEach((filter: any) => {
+      filter.panelList = filter.panelList?.filter((pid: string) => pid !== panel.id) || [];
+      if (filter.pathList?.[panel.id]) {
+        delete filter.pathList[panel.id];
+      }
+    });
   }
 
   async onGlobalFilter(data: any) {
@@ -1102,9 +1187,10 @@ export class DashboardPage implements OnInit {
 
     for (const panel of this.edaPanels) {
       const ownMode = normalizeQueryMode(panel.panel?.content?.query?.query?.queryMode);
-      let allowedModes = [...QUERY_MODE];
+      let allowedModes = [...ALLOWED_QUERY_MODES];
 
       if (treeQueryMode) {
+
         allowedModes = allowedModes.filter(v => v !== 'EDA');
       } else if (standardQueryMode) {
         allowedModes = allowedModes.filter(v => v !== 'TREE');
@@ -1118,7 +1204,8 @@ export class DashboardPage implements OnInit {
       }
 
       if (((!standardQueryMode && !treeQueryMode) || this.edaPanels.length === 1) && this.globalFilter.globalFilters.length === 0) {
-        allowedModes = ownMode && !QUERY_MODE.includes(ownMode) ? [...QUERY_MODE, ownMode] : [...QUERY_MODE];
+
+        allowedModes = ownMode && !ALLOWED_QUERY_MODES.includes(ownMode) ? [...ALLOWED_QUERY_MODES, ownMode] : [...ALLOWED_QUERY_MODES];
       }
 
       panel.queryModes = allowedModes.map(v => QUERY_MODE_LABELS.find(l => l.value === v));

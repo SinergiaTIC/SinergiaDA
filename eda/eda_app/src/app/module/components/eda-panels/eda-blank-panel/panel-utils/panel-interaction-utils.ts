@@ -29,8 +29,11 @@ export const PanelInteractionUtils = {
         return !matcher && tableColumn.visible === true;
     });
 
+    // Hide columns marked as hidden unless the user toggled them visible via the eye button
+    const visibleColumns = filteredColumns.filter((tableColumn: Column) => ebp.showHiddenColumn || !tableColumn.hidden);
+
     // Sort columns by default display name
-    ebp.columns = filteredColumns.sort((a, b) => a.display_name.default.localeCompare(b.display_name.default));
+    ebp.columns = visibleColumns.sort((a, b) => a.display_name.default.localeCompare(b.display_name.default));
 
     // Reload Inputs when call func from select table 
     if(reloadInputs){ ebp.columnInput = ''; }
@@ -234,7 +237,11 @@ export const PanelInteractionUtils = {
       });
 
       // Separate global and local filters
-      ebp.globalFilters = clonedFilters.filter(f => f.isGlobal === true);
+      const contentGlobalFilters = clonedFilters.filter(f => f.isGlobal === true);
+      if (ebp.globalFilters.length === 0) {
+        // Don't overwrite filters already inherited by a duplicated/new panel
+        ebp.globalFilters = contentGlobalFilters;
+      }
       ebp.selectedFilters = clonedFilters.filter(f => f.isGlobal === false);
 
       // Add active nav filters (regular and date nav) to selectedFilters

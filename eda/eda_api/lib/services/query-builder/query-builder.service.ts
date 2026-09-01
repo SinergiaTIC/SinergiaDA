@@ -92,11 +92,11 @@ export abstract class QueryBuilderService {
         const valueListList = [];
         const modelPermissions = this.dataModel.ds.metadata.model_granted_roles;
 
-        /** Check dels permisos de columna, si hi ha permisos es posen als filtres PERMISOS RECURSIVOS */
-        if (eda_api_config.custom_behaviour.USE_FLAT_PERMISSIONS) {
-            this.permissions = this.getPermissions(modelPermissions, this.tables, origin, this.queryTODO);
+        /** Check the permissions behaviour. If they are recursive get recursive permissions*/
+        if (eda_api_config.custom_behaviour.USE_RECURSIVE_PERMISSIONS) {
+            this.permissions = this.getRecursivePermissions(modelPermissions, this.tables, origin, this.queryTODO);
         } else {
-            this.permissions = this.getTreePermissions(modelPermissions, this.queryTODO);
+            this.permissions = this.getFlatPermissions(modelPermissions, this.queryTODO);
         }
         
         // SI USUARIO ES ADMIN VACIAR EL ARRAY PERMISSIONS
@@ -715,7 +715,7 @@ export abstract class QueryBuilderService {
 
 
 
-    public getPermissions(modelPermissions, modelTables, originTable, query) {
+    public getRecursivePermissions(modelPermissions, modelTables, originTable, query) {
 
         //console.log('recursively.... SE BUSCA EN LAS TABLAS RELACIONADAS');
         let filters = [];
@@ -781,7 +781,7 @@ export abstract class QueryBuilderService {
         return filters;
     }
 
-    public getTreePermissions(modelPermissions,  query) {
+    public getFlatPermissions(modelPermissions,  query) {
           /**
          * Tento todos los permisos modelPermissions
          * Tengo mi consulta query
@@ -1053,7 +1053,15 @@ export abstract class QueryBuilderService {
         const origin = table;
         const dest = [];
         const modelPermissions = this.dataModel.ds.metadata.model_granted_roles;
-        const permissions = this.getPermissions(modelPermissions, this.tables, origin, this.queryTODO);
+
+
+        /** Check the permissions behaviour. If they are recursive get recursive permissions*/
+        const permissions =
+            eda_api_config.custom_behaviour.USE_RECURSIVE_PERMISSIONS?
+            this.getRecursivePermissions(modelPermissions, this.tables, origin, this.queryTODO):
+            this.getFlatPermissions(modelPermissions, this.queryTODO)
+            ;
+        
         const joinType = 'inner'; // es per els permisos. Ha de ser així.
         const valueListJoins = []; // anulat
 
