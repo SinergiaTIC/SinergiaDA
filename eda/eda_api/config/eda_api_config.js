@@ -18,6 +18,7 @@ module.exports = {
     log_rotation_schedule: '0 0 * * *', // daily at midnight: archive yesterday's log_file and empty it in place
     custom_behaviour:{
       ALLOW_NON_ADMIN_MANAGE_PUBLIC_REPORTS: false, // true -> Non-admin users can manage "open" dashboards.
-      USE_FLAT_PERMISSIONS: false, // true -> QueryBuilderService.builder() getPermissions (EDA). false -> with getTreePermissions (SDA).
+      USE_RECURSIVE_PERMISSIONS: false, // true -> QueryBuilderService.builder() getRecursivePermissions (EDA). false -> with getFlatPermissions (SDA).
+      RESTRICT_TABLE_TO_GRANTED_COLUMN: false // true -> closed model: granting permission on one column hides the rest of the table's columns (EDA). false -> row-level permissions never hide sibling columns (SDA).
     }
   }
