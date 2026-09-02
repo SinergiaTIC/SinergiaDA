@@ -1660,6 +1660,7 @@ static  convertColumnToForbiddenColumn(columns: any[], sample: any): any[] {
 
     } catch (err) {
       console.log(err)
+      insertServerLog(req, 'error', 'QueryError', req.user?.name, `${req.body?.dashboard?.dashboard_id}--${req.body?.dashboard?.panel_id}: ${err?.message || err}`);
       next(new HttpException(500, DashboardController.parseQueryError(err)))
     }
   }
@@ -2073,6 +2074,7 @@ static  convertColumnToForbiddenColumn(columns: any[], sample: any): any[] {
 
     } catch (err) {
       console.log(err)
+      insertServerLog(req, 'error', 'QueryError', req.user?.name, `${req.body?.dashboard?.dashboard_id}--${req.body?.dashboard?.panel_id}: ${err?.message || err}`);
       next(new HttpException(500, DashboardController.parseQueryError(err)))
     }
   }
@@ -2237,6 +2239,7 @@ static  convertColumnToForbiddenColumn(columns: any[], sample: any): any[] {
       return res.status(200).json(output)
     } catch (err) {
       console.log(err)
+      insertServerLog(req, 'error', 'QueryError', req.user?.name, `${req.body?.dashboard?.dashboard_id}--${req.body?.dashboard?.panel_id}: ${err?.message || err}`);
       next(new HttpException(500, DashboardController.parseQueryError(err)))
     }
   }
