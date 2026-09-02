@@ -7046,7 +7046,7 @@ Une fois configurée, vous pouvez l'activer à tout moment à partir du bouton.<
         <source>Restablecer (100%)</source>
         <target>Réinitialiser (100%)</target>
       </trans-unit>
-      <trans-unit id="sidebarTutorialTitle">
+      <trans-unit id="aboutPageTitle">
         <source>Tutorial</source>
         <target>Tutoriel</target>
       </trans-unit>
