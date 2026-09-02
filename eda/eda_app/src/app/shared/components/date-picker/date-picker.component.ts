@@ -149,18 +149,13 @@ export class DatePickerComponent implements OnChanges {
 		return true;
 	}
 
-	public confirm(): void {
-		if (!this.isReadyForConfirmation) return;
-		this.emitChanges();
-		this.suppressNextClose = true;
-		this.datePickerRef?.hideOverlay();
-		this.resetConfig();
-	}
-
 	public handleOutsideClick(event: MouseEvent): void {
 		const target = event.target as HTMLElement;
 		if (target?.closest('.p-dropdown-panel, .p-dropdown-item')) {
 			return;
+		}
+		if (this.isReadyForConfirmation) {
+			this.emitChanges();
 		}
 		this.suppressNextClose = true;
 		this.resetConfig();
