@@ -25,6 +25,19 @@
   padding: 0;
 }
 
+/* 
+  Keep H1/H2 sizing. Needed because the global stylesheet 
+  resets heading sizes (h2 with !important below 1370px). 
+*/
+.eda-title-panel h1 {
+  font-size: 2em !important;
+  font-weight: bold;
+}
+.eda-title-panel h2 {
+  font-size: 1.5em !important;
+  font-weight: bold;
+}
+
 .eda-title-panel img {
   max-height: 100%;
   max-width: 100%;
