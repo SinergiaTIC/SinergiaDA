@@ -1460,9 +1460,7 @@ static  convertColumnToForbiddenColumn(columns: any[], sample: any): any[] {
       myQuery.queryLimit = req.body.query.queryLimit;
       myQuery.joinType = req.body.query.joinType ? req.body.query.joinType : 'inner';
 
-      // console.log('myQuery: ', myQuery);
-
-       if (myQuery.fields.length < req.body.query.fields.length ) { //Not allowed to see all the data. If you have one forbidden column you cannot see the query. It will breack the chart
+       if (myQuery.fields.length === 0 || myQuery.fields.length < req.body.query.fields.length ) { //Not allowed to see all the data. If you have one forbidden column you cannot see the query. It will breack the chart
         console.log('you cannot see any data');
         return res.status(200).json([['noDataAllowed'], [[]]]);
       }
@@ -1473,7 +1471,7 @@ static  convertColumnToForbiddenColumn(columns: any[], sample: any): any[] {
       }
 
 
-      /** por compatibilidad. Si no tengo el tipo de columna en el filtro lo añado */
+      /** For compatibility. If I don't have the column type in the filter, I add it */
       if (myQuery.filters) {
         for (const filter of myQuery.filters) {
           if (!filter.filter_column_type) {
