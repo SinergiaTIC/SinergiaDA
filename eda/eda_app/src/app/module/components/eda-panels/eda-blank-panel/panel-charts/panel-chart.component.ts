@@ -659,7 +659,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         yTicksLimit: 0,
         maxRotation: 1,
         minRotation: 1,
-        labelOffset: 40,
+        labelOffset: 0,
         padding: -2
     };
 
@@ -668,6 +668,22 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         dataDescription.otherColumns, manySeries, false, dimensions, null,
         minMax, styles, cfg.edaChart?.showLabels, cfg.edaChart?.showLabelsPercent, cfg.showPointLines, cfg.showPredictionLines, cfg.numberOfColumns, chartSubType, ticksOptions, false, cfg.showGridLines ?? true, this.styleProviderService
     );
+
+    // KPI+chart X axis normalization: center-align labels, small grid offset.
+    if (!chartOptions.chartOptions.scales) chartOptions.chartOptions.scales = {};
+    chartOptions.chartOptions.scales.x = {
+        ...chartOptions.chartOptions.scales.x,
+        grid: {
+            ...chartOptions.chartOptions.scales.x?.grid,
+            clip: false,
+        },
+        ticks: {
+            ...chartOptions.chartOptions.scales.x?.ticks,
+            align: 'center',
+            maxRotation: 90,
+            minRotation: 0,
+        },
+    };
 
     // Initialize chartConfig
     chartConfig.edaChart = {}
@@ -854,12 +870,12 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         if (!chartOptions.scales.x) chartOptions.scales.x = {};
         if (!chartOptions.scales.x.ticks) chartOptions.scales.x.ticks = {};
         if (!chartOptions.scales.x.grid) chartOptions.scales.x.grid = {};
+        // Y axis is never shown for KPI+chart, regardless of X axis settings.
+        chartOptions.scales.y = { ...chartOptions.scales.y, display: false };
 
         chartOptions.scales.x.display = showAxis || showLabels;
-        // This app hardcodes grid.display=false for the X axis in the base bar/line/area styles
-        // (no vertical gridlines by design) — grid.display also gates drawing the border in
-        // Chart.js 3, so it must be toggled here too, not just drawBorder, or "show axis" is a no-op.
-        chartOptions.scales.x.grid.display = showAxis;
+        // grid.display = vertical gridlines, kept off; "mostrar eje X" only toggles drawBorder, which Chart.js 3 draws independently.
+        chartOptions.scales.x.grid.display = false;
         chartOptions.scales.x.grid.drawBorder = showAxis;
         chartOptions.scales.x.ticks.display = showLabels;
 

@@ -368,12 +368,12 @@ export class KpiEditDialogComponent implements OnInit, AfterViewInit, AfterViewC
         // so Chart.js's own scale-recalculation reliably picks up the change.
         const opts = { ...chartContent.chartOptions, scales: { ...chartContent.chartOptions.scales } };
         opts.scales.x = { ...opts.scales.x, ticks: { ...opts.scales.x?.ticks }, grid: { ...opts.scales.x?.grid } };
+        // Y axis is never shown for KPI+chart (matches develop), regardless of X axis settings.
+        opts.scales.y = { ...opts.scales.y, display: false };
 
         opts.scales.x.display = this.showXAxis || this.showXAxisLabels;
-        // grid.display is hardcoded false in this app's base bar/line/area styles (no vertical
-        // gridlines by design), and it also gates the axis border draw in Chart.js 3 — must be
-        // toggled here too, not just drawBorder, or the "mostrar eje X" switch is a no-op.
-        opts.scales.x.grid.display = this.showXAxis;
+        // grid.display = vertical gridlines, kept off (matches develop); "mostrar eje X" only toggles drawBorder, which Chart.js 3 draws independently.
+        opts.scales.x.grid.display = false;
         opts.scales.x.grid.drawBorder = this.showXAxis;
         opts.scales.x.ticks.display = this.showXAxisLabels;
 
