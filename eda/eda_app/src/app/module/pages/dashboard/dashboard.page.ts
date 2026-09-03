@@ -1114,7 +1114,7 @@ export class DashboardPage implements OnInit {
     const standardQueryMode = this.panels.some((p) => isEdaQueryMode(p.content?.query?.query?.queryMode, p.content?.query?.query?.modeSQL));
 
     for (const panel of this.edaPanels) {
-      const ownMode = normalizeQueryMode(panel.panel?.content?.query?.query?.queryMode);
+      const ownMode = resolveQueryMode(panel.panel?.content?.query?.query?.queryMode, panel.panel?.content?.query?.query?.modeSQL);
       let allowedModes = [...ALLOWED_QUERY_MODES];
 
       if (treeQueryMode) {
