@@ -13,7 +13,7 @@ function deepMerge(base, overwrite) {
     if (!isPlainObject(base) || !isPlainObject(overwrite)) {
         return overwrite;
     }
-    const result = { ...base };
+    const result = structuredClone(base);
     for (const key of Object.keys(overwrite)) {
         result[key] = deepMerge(result[key], overwrite[key]);
     }
@@ -24,7 +24,16 @@ let cachedOverwrites = null;
 
 function loadOverwrites() {
     if (cachedOverwrites === null) {
-        cachedOverwrites = fs.existsSync(OVERWRITE_PATH) ? require(OVERWRITE_PATH) : {};
+        if (!fs.existsSync(OVERWRITE_PATH)) {
+            cachedOverwrites = {};
+        } else {
+            try {
+                cachedOverwrites = require(OVERWRITE_PATH);
+            } catch (err) {
+                console.error('[config-overwrite] Failed to load config.overwrite.js:', err.message);
+                cachedOverwrites = {};
+            }
+        }
     }
     return cachedOverwrites;
 }
