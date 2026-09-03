@@ -741,6 +741,8 @@ export class DashboardController {
       //Save dashboard in db
       const dashboardCreated = await dashboard.save();
 
+      insertServerLog(req, 'info', 'DashboardCreated', req.user.name, buildDashboardLogType(dashboard?._id, dashboard?.config?.title, 'created'))
+
       return res.status(201).json({ ok: true, dashboard })
     } catch (err) {
       console.log(err);
@@ -769,6 +771,9 @@ export class DashboardController {
           }
         }
 
+        const previousTitle = dashboard.config?.title || '-'
+        const previousVisibility = dashboard.config?.visible || '-'
+
         dashboard.config = body.config
         dashboard.group = body.group
         /**avoid dashboards without name */
@@ -790,6 +795,17 @@ export class DashboardController {
 
         try {
           const dashboardToUpdate = await dashboard.save();
+
+          const updatedTitle = dashboard?.config?.title || '-'
+          const updatedVisibility = dashboard?.config?.visible || '-'
+          insertServerLog(req, 'info', 'DashboardUpdated', req.user.name, buildDashboardLogType(dashboard?._id, updatedTitle, 'updated'))
+          if (previousTitle !== updatedTitle) {
+            insertServerLog(req, 'info', 'DashboardRenamed', req.user.name, buildDashboardLogType(dashboard?._id, updatedTitle, `renamed_from:${previousTitle}`))
+          }
+          if (previousVisibility !== updatedVisibility) {
+            insertServerLog(req, 'info', 'DashboardVisibilityChanged', req.user.name, buildDashboardLogType(dashboard?._id, updatedTitle, `visibility:${previousVisibility}->${updatedVisibility}`))
+          }
+
           return res.status(200).json({ ok: true, dashboard })
         } catch (err) {
           return next(new HttpException(500, 'Error updating dashboard'))
@@ -824,6 +840,10 @@ export class DashboardController {
       const { data } = req.body;
       const { key, newValue } = data;
 
+      const previousDashboard = await Dashboard.findById(id).exec();
+      const previousTitle = previousDashboard?.config?.title || '-';
+      const previousVisibility = previousDashboard?.config?.visible || '-';
+
       let updateObj: any = { [key]: newValue };
 
       if (key === 'config.visible' && newValue !== 'group') {
@@ -853,6 +873,15 @@ export class DashboardController {
         return next(
           new HttpException(404, 'Dashboard not found with this id')
         );
+      }
+
+      const updatedTitle = dashboard?.config?.title || '-';
+      const updatedVisibility = dashboard?.config?.visible || '-';
+      if (key === 'config.title' && previousTitle !== updatedTitle) {
+        insertServerLog(req, 'info', 'DashboardRenamed', req.user.name, buildDashboardLogType(dashboard?._id, updatedTitle, `renamed_from:${previousTitle}`));
+      }
+      if (key === 'config.visible' && previousVisibility !== updatedVisibility) {
+        insertServerLog(req, 'info', 'DashboardVisibilityChanged', req.user.name, buildDashboardLogType(dashboard?._id, updatedTitle, `visibility:${previousVisibility}->${updatedVisibility}`));
       }
 
       return res.status(200).json({ ok: true, dashboard });
@@ -885,6 +914,8 @@ export class DashboardController {
           new HttpException(400, 'Dashboard with this id does not exist')
         );
       }
+
+      insertServerLog(req, 'info', 'DashboardDeleted', req.user.name, buildDashboardLogType(dashboard?._id, dashboard?.config?.title, `deleted--id:${dashboard?._id}`))
 
       return res.status(200).json({ ok: true, dashboard });
 
@@ -1381,6 +1412,7 @@ static  convertColumnToForbiddenColumn(columns: any[], sample: any): any[] {
    * Executa una consulta EDA per un dashboard
    */
   static async execQuery(req: Request, res: Response, next: NextFunction) {
+    let builtQuery = ''
 
     try {
       let connectionProps: any;
@@ -1563,6 +1595,7 @@ static  convertColumnToForbiddenColumn(columns: any[], sample: any): any[] {
         req.user,
         req.body.query.queryLimit // Agregado de limite para fuente de datos generados a partir de un excel
       )
+      builtQuery = query
 
       /**---------------------------------------------------------------------------------------------------------*/
 
@@ -1660,7 +1693,7 @@ static  convertColumnToForbiddenColumn(columns: any[], sample: any): any[] {
 
     } catch (err) {
       console.log(err)
-      insertServerLog(req, 'error', 'QueryError', req.user?.name, `${req.body?.dashboard?.dashboard_id}--${req.body?.dashboard?.panel_id}: ${err?.message || err}`);
+      insertServerLog(req, 'error', 'PanelQueryFailed', req.user?.name, await buildPanelQueryErrorType(req.body?.dashboard, err, 'EDA', builtQuery));
       next(new HttpException(500, DashboardController.parseQueryError(err)))
     }
   }
@@ -1892,6 +1925,7 @@ static  convertColumnToForbiddenColumn(columns: any[], sample: any): any[] {
    * Executa una consulta SQL  per un dashboard
    */
   static async execSqlQuery(req: Request, res: Response, next: NextFunction) {
+    let builtQuery = ''
     try {
       let connectionProps: any;
       if (req.body.dashboard?.connectionProperties !== undefined) connectionProps = req.body.dashboard.connectionProperties;
@@ -1941,6 +1975,7 @@ static  convertColumnToForbiddenColumn(columns: any[], sample: any): any[] {
         dataModelObject,
         req.user
       )
+      builtQuery = query
 
       /**If query is in format select foo from a, b queryBuilder returns null */
       if (!query) {
@@ -2074,7 +2109,7 @@ static  convertColumnToForbiddenColumn(columns: any[], sample: any): any[] {
 
     } catch (err) {
       console.log(err)
-      insertServerLog(req, 'error', 'QueryError', req.user?.name, `${req.body?.dashboard?.dashboard_id}--${req.body?.dashboard?.panel_id}: ${err?.message || err}`);
+      insertServerLog(req, 'error', 'PanelQueryFailed', req.user?.name, await buildPanelQueryErrorType(req.body?.dashboard, err, 'SQL', builtQuery));
       next(new HttpException(500, DashboardController.parseQueryError(err)))
     }
   }
@@ -2239,7 +2274,6 @@ static  convertColumnToForbiddenColumn(columns: any[], sample: any): any[] {
       return res.status(200).json(output)
     } catch (err) {
       console.log(err)
-      insertServerLog(req, 'error', 'QueryError', req.user?.name, `${req.body?.dashboard?.dashboard_id}--${req.body?.dashboard?.panel_id}: ${err?.message || err}`);
       next(new HttpException(500, DashboardController.parseQueryError(err)))
     }
   }
@@ -2459,6 +2493,41 @@ function insertServerLog(
     ':' +
     date.getSeconds()
   ServerLogService.log({ level, action, userMail, ip, type, date_str })
+}
+
+// Normalize dashboard log payload including report name — parsed by the frontend as id--title--detail
+export function buildDashboardLogType(dashboardId: any, dashboardTitle: string, extra?: string) {
+  const safeId = (dashboardId || '').toString().replace(/\|,\|/g, ' ')
+  const safeTitle = (dashboardTitle || '-').toString().replace(/\|,\|/g, ' ')
+  if (!extra) return `${safeId}--${safeTitle}`
+  const safeExtra = extra.toString().replace(/\|,\|/g, ' ')
+  return `${safeId}--${safeTitle}--${safeExtra}`
+}
+
+// Normalize panel query error payload with dashboard and panel identifiers, resolving title/panel name from DB when missing
+export async function buildPanelQueryErrorType(dashboard: any, err: any, mode: string, sqlQuery: any) {
+  const dashboardId = (dashboard && (dashboard.dashboard_id || dashboard._id || dashboard.id)) || ''
+  let dashboardTitle = (dashboard && (dashboard.dashboard_name || dashboard.title || dashboard.name)) || '-'
+  const panelId = (dashboard && (dashboard.panel_id || dashboard.panelId)) || '-'
+  let panelName = (dashboard && (dashboard.panel_name || dashboard.panelTitle || dashboard.panel_title)) || '-'
+  if ((dashboardTitle === '-' || panelName === '-') && dashboardId) {
+    const dashboardDoc: any = await Dashboard.findById(dashboardId).exec()
+    if (dashboardDoc && dashboardDoc.config) {
+      if (dashboardTitle === '-') dashboardTitle = dashboardDoc.config.title || '-'
+      if (panelName === '-' && dashboardDoc.config.panel && panelId) {
+        const panel = dashboardDoc.config.panel.find(p => (p && p.id) == panelId)
+        if (panel && panel.title) panelName = panel.title
+      }
+    }
+  }
+  const rawMessage = (err && (err.message || (err.toString && err.toString()))) || 'unknown_error'
+  const safeMessage = rawMessage.toString().replace(/\|,\|/g, ' ').replace(/\s+/g, ' ').substring(0, 180)
+  const rawSql = (sqlQuery || '').toString()
+  const rawSqlTrimmed = rawSql.length > 6000 ? rawSql.substring(0, 6000) : rawSql
+  const safeSqlB64 = Buffer.from(rawSqlTrimmed, 'utf8').toString('base64')
+  const safeSql = (sqlQuery || '').toString().replace(/\|,\|/g, ' ').replace(/--/g, ' ').replace(/\s+/g, ' ').substring(0, 1000)
+  const safePanelName = (panelName || '-').toString().replace(/\|,\|/g, ' ').replace(/--/g, ' ').replace(/\s+/g, ' ').substring(0, 180)
+  return buildDashboardLogType(dashboardId, dashboardTitle, `mode:${mode}--panel:${panelId}--panel_name:${safePanelName}--error:${safeMessage}--sql_b64:${safeSqlB64}--sql:${safeSql}`)
 }
 
 async function setDasboardsAuthorDate(dashboards: any[]) {
