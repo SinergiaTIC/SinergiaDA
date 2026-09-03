@@ -158,10 +158,11 @@ export class EdaTitlePanelComponent implements OnInit {
     }
 
     public duplicatePanel(): void {
+        const sourcePanelId = this.panel.id;
         const duplicatedPanel = _.cloneDeep(this.panel, true);
         duplicatedPanel.id = this.fileUtiles.generateUUID();
         duplicatedPanel.y = duplicatedPanel.y + 1;
-        this.duplicate.emit(duplicatedPanel);
+        this.duplicate.emit({ panel: duplicatedPanel, sourcePanelId });
     }
 
     private _buildToggleLockItem(): EdaContextMenuItem {
