@@ -12,6 +12,7 @@ import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { TitleDialogComponent } from './edit-title/quill-editor.component';
 import { FileUtiles } from '@eda/services/service.index';
+import { SHOW_LOCK_IN_PANEL_HEADER } from '@eda/configs/customizable/customizable_default';
 @Component({
     standalone: true,
     selector: 'eda-title-panel',
@@ -29,6 +30,7 @@ export class EdaTitlePanelComponent implements OnInit {
     @Output() duplicate: EventEmitter<any> = new EventEmitter();
 
     titleClick: boolean = false;
+    readonly showLockInHeader = SHOW_LOCK_IN_PANEL_HEADER;
     contextMenu: EdaContextMenu;
     editTittleController: EdaDialogController;
     display: any = {
@@ -118,7 +120,7 @@ export class EdaTitlePanelComponent implements OnInit {
                         this.duplicatePanel();
                     }
                 }),
-                this._buildToggleLockItem(),
+                ...(this.showLockInHeader ? [] : [this._buildToggleLockItem()]) as EdaContextMenuItem[],
                 new EdaContextMenuItem({
                     label: $localize`:@@panelOptions4:Eliminar panel`,
                     icon: 'fa fa-trash',
@@ -163,6 +165,18 @@ export class EdaTitlePanelComponent implements OnInit {
         duplicatedPanel.id = this.fileUtiles.generateUUID();
         duplicatedPanel.y = duplicatedPanel.y + 1;
         this.duplicate.emit({ panel: duplicatedPanel, sourcePanelId });
+    }
+
+    public isPanelLocked(): boolean {
+        return (this.panel as any).dragEnabled === false;
+    }
+
+    public togglePanelLock(): void {
+        const locked = this.isPanelLocked();
+        (this.panel as any).dragEnabled = locked;
+        (this.panel as any).resizeEnabled = locked;
+        this.inject.gridsterOptions?.api?.optionsChanged();
+        this.dashboardService.setNotSaved(true);
     }
 
     private _buildToggleLockItem(): EdaContextMenuItem {

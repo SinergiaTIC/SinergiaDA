@@ -4,6 +4,14 @@
         <div class="flex items-center justify-center flex-grow h-full overflow-y-auto" [ngStyle]="getTitleStyle()" (dblclick)="display.editMode && openEditDialog()">
           <div class="eda-title-panel" [innerHTML]="panel.title | sanitizeHtml"></div>
         </div>
+        @if (showLockInHeader && display.editMode) {
+          <i
+            [class]="isPanelLocked() ? 'pi pi-lock text-red-500' : 'pi pi-lock-open text-green-500'"
+            class="cursor-pointer mr-2 w-[28px] h-[28px] flex items-center justify-center text-center rounded-full content-center"
+            (click)="togglePanelLock()"
+            (mousedown)="$event.stopPropagation()"
+          ></i>
+        }
         <i class="pi pi-ellipsis-v cursor-pointer mr-4" (click)="openContextMenu($event)"></i>
     </div>
 </div>
