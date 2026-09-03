@@ -126,6 +126,20 @@ Quill.register(Size, true);
 		::ng-deep .p-overlaypanel.ql-color-overlay {
 			z-index: 999999 !important;
 		}
+
+		/* List number/bullet scales with the font size applied to the line. */
+		::ng-deep .ql-editor li:has(> [style*="font-size: 10px"]) { font-size: 10px; }
+		::ng-deep .ql-editor li:has(> [style*="font-size: 12px"]) { font-size: 12px; }
+		::ng-deep .ql-editor li:has(> [style*="font-size: 14px"]) { font-size: 14px; }
+		::ng-deep .ql-editor li:has(> [style*="font-size: 16px"]) { font-size: 16px; }
+		::ng-deep .ql-editor li:has(> [style*="font-size: 18px"]) { font-size: 18px; }
+		::ng-deep .ql-editor li:has(> [style*="font-size: 20px"]) { font-size: 20px; }
+		::ng-deep .ql-editor li:has(> [style*="font-size: 24px"]) { font-size: 24px; }
+		::ng-deep .ql-editor li:has(> [style*="font-size: 28px"]) { font-size: 28px; }
+		::ng-deep .ql-editor li:has(> [style*="font-size: 32px"]) { font-size: 32px; }
+		::ng-deep .ql-editor li:has(> [style*="font-size: 36px"]) { font-size: 36px; }
+		::ng-deep .ql-editor li:has(> [style*="font-size: 42px"]) { font-size: 42px; }
+		::ng-deep .ql-editor li:has(> [style*="font-size: 48px"]) { font-size: 48px; }
 	`],
 	imports: [FormsModule, CommonModule, DialogModule, EdaDialog2Component, PanelChartComponent, EdaContextMenuComponent, EditorModule,
 		ColorPickerModule, InputSwitchModule, InputTextModule, TooltipModule, OverlayPanelModule]
