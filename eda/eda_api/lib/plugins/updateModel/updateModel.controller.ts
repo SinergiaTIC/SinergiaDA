@@ -5,7 +5,6 @@ import { EnCrypterService } from "../../services/encrypter/encrypter.service";
 import { userAndGroupsToMongo } from "./service/usersAndGroupsToMongo";
 import { Enumerations } from "./service/enumerations";
 import { pushModelToMongo } from "./service/push.Model.to.Mongo";
-import path from 'path';
 import fs from "fs";
 import { CleanModel } from "./service/cleanModel";
 import ServerLogService from '../../services/server-log/server-log.service';
@@ -686,8 +685,22 @@ export class updateModel {
     // Format tables as JSON
     console.timeLog("UpdateModel", "(Start JSON formatting)");
 
-    // Load and configure base model using path library to avoid errors reading the file
-    let main_model = await JSON.parse(fs.readFileSync(path.join(__dirname, '../../../config/base_datamodel.json'), "utf-8"));
+    // Base model structure defined inline to avoid external config file dependency
+    let main_model: any = {
+      _id: "111111111111111111111111",
+      ds: {
+        connection: {
+          type: "mysql", host: "", database: "", user: "", password: "",
+          port: "", schema: "", searchPath: "", poolLimit: "", sid: 1, warehouse: ""
+        },
+        metadata: {
+          model_name: "SinergiaCRM", model_id: "", model_granted_roles: [],
+          optimized: false, filter: "",
+          cache_config: { units: "days", quantity: 1, hours: "06", minutes: "00", enabled: false }
+        },
+        model: { tables: [], maps: [] }
+      }
+    };
 
     main_model.ds.connection.host = sinergiaDatabase.sinergiaConn.host;
     main_model.ds.connection.database = sinergiaDatabase.sinergiaConn.database;
