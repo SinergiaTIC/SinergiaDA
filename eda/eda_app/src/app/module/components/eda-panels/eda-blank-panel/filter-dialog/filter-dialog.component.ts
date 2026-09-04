@@ -249,7 +249,10 @@ export class FilterDialogComponent {
         const addToSortedFilters = { add: false, filter: item };
         this.updateSortedFiltersFilterDialog.emit(addToSortedFilters);
 
-        this.filter.selecteds.find(f => _.startsWith(f.filter_id, item.filter_id) ).removed = true;
+        const matched = this.filter.selecteds.find(f => _.startsWith(f.filter_id, item.filter_id));
+        if (matched) {
+            matched.removed = true;
+        }
 
         this.filter.forDisplay = this.filter.selecteds.filter(f => {
             return _.startsWith(f.filter_table, this.selectedColumn.table_id) &&

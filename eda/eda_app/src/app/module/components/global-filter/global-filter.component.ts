@@ -873,8 +873,11 @@ export class GlobalFilterComponent implements OnInit {
             const message = res[0][0];
             
             if (['noDataAllowed', 'noFilterAllowed'].includes(message)) {
-                this.globalFilters.find((gf: any) => gf.id == globalFilter.id).visible = 'hidden';
-                this.globalFilters.find((gf: any) => gf.id == globalFilter.id).data = false;
+                const restrictedFilter = this.globalFilters.find((gf: any) => gf.id == globalFilter.id);
+                if (restrictedFilter) {
+                    restrictedFilter.visible = 'hidden';
+                    restrictedFilter.data = false;
+                }
             }
             
             const data = res[1].filter(item => !!item[0] || item[0] == '').map(item => ({ label: item[0], value: item[0] }));
