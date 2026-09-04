@@ -7059,6 +7059,10 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
         <source>Restablecer (100%)</source>
         <target>Restableix (100%)</target>
       </trans-unit>
+      <trans-unit id="aboutPageTitle">
+        <source>Tutorial</source>
+        <target>Tutorial</target>
+      </trans-unit>
       <trans-unit id="filterHoverGreen">
         <source>Verde</source>
         <target>Verd</target>
