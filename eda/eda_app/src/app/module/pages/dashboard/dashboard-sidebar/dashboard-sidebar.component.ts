@@ -488,7 +488,8 @@ export class DashboardSidebarComponent implements AfterViewInit {
       resizable: true,
       dragAndDrop: true,
       fontsize: '22px',
-      color: '#000000'
+      color: '#000000',
+      backgroundColor: '#ffffff'
     });
 
     this.dashboard.panels.push(panel);
