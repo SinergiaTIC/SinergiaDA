@@ -16,7 +16,7 @@ import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { TreeModule } from 'primeng/tree';
 // Eda config
 import { AGG_TYPES, NULL_VALUE, EMPTY_VALUE, SHOW_LOCK_IN_PANEL_HEADER, ALLOWED_QUERY_MODES, SHOW_HIDDEN_FIELDS, SHOW_WHAT_IF, ALLOWED_JOIN_TYPES } from '@eda/configs/customizable/customizable_default';
-import { normalizeQueryMode } from '@eda/shared/utils/query-mode.util';
+import { resolveQueryMode } from '@eda/shared/utils/query-mode.util';
 
 import {Column, EdaPanel, InjectEdaPanel } from '@eda/models/model.index';
 
@@ -403,15 +403,10 @@ export class EdaBlankPanelComponent implements OnInit {
             try {
                 const contentQuery = this.panel.content.query;
 
-                // Ensure compatibility with legacy dashboards where queryMode is not provided.
+                // resolveQueryMode ensures compatibility with legacy dashboards where queryMode is not provided.
                 const modeSQL = contentQuery.query.modeSQL;
-                let queryMode = contentQuery.query.queryMode;
-
-                if (!queryMode) {
-                    queryMode = modeSQL ? 'SQL' : 'EDA';
-                }
-
-                this.selectedQueryMode = normalizeQueryMode(queryMode);
+                const queryMode = contentQuery.query.queryMode;
+                this.selectedQueryMode = resolveQueryMode(queryMode, modeSQL);
 
                 if (this.selectedQueryMode == 'TREE') {
                     this.rootTable = contentQuery.query.rootTable;
@@ -1496,10 +1491,7 @@ public tableNodeExpand(event: any): void {
 
             this.currentSQLQuery = this.panelDeepCopy.query.query.SQLexpression;
 
-            const queryMode = this.panelDeepCopy.query.query.queryMode;
-            const modeSQL = this.panelDeepCopy.query.query.modeSQL;
-
-            this.selectedQueryMode = normalizeQueryMode(_.isNil(queryMode) ? (modeSQL ? 'SQL' : 'EDA') : queryMode);
+            this.selectedQueryMode = resolveQueryMode(this.panelDeepCopy.query.query.queryMode, this.panelDeepCopy.query.query.modeSQL);
 
             if(this.selectedQueryMode == 'TREE'){
                 this.rootTable = this.panelDeepCopy.rootTable;
