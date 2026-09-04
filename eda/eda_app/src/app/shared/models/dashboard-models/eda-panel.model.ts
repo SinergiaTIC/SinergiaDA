@@ -29,6 +29,7 @@ export class EdaPanel {
     public linkedDashboardProps: LinkedDashboardProps;
     public readonly: boolean = false;
     public globalFilterMap: any[];
+    public backgroundTransparent?: boolean;
     public _isDuplicate?: boolean;
 
     constructor(init?: Partial<EdaPanel>) {
