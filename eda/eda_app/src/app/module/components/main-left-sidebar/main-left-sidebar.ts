@@ -82,7 +82,7 @@ export class MainLeftSidebarComponent {
       {
         path: '/about',
         icon: 'global',
-        label: 'Tutorial'
+        label: $localize`:@@aboutPageTitle:Tutorial`
       },
       { path: '/logout', icon: 'logout' },
     ];
