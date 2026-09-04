@@ -16,6 +16,25 @@
 }
 
 <ng-template #kpiValueContainer>
+  @if (useHoverResize) {
+    <div class="relative w-full h-full" (mouseenter)="onMouseEnter()" (mouseleave)="onMouseLeave()">
+      @if (shouldShowControls()) {
+        <div class="absolute top-1 right-1 flex items-center gap-1.5 z-10">
+          <button type="button" title="Reducir tamaño" (click)="decreaseFont()"
+                  class="w-6 h-6 flex items-center justify-center rounded border border-gray-300 bg-white hover:bg-gray-100 text-gray-700 text-sm leading-none">-</button>
+          <button type="button" title="Aumentar tamaño" (click)="increaseFont()"
+                  class="w-6 h-6 flex items-center justify-center rounded border border-gray-300 bg-white hover:bg-gray-100 text-gray-700 text-sm leading-none">+</button>
+          <span class="text-xs text-gray-500" style="min-width: 2.75rem; text-align: right;">{{getFontSize()}}</span>
+        </div>
+      }
+      <ng-container *ngTemplateOutlet="kpiValueContent;"></ng-container>
+    </div>
+  } @else {
+    <ng-container *ngTemplateOutlet="kpiValueContent;"></ng-container>
+  }
+</ng-template>
+
+<ng-template #kpiValueContent>
     <div #sufixContainer class="pointer" title="Añadir unidades"
          style="max-width: 100%; overflow: hidden;">
         <span [ngStyle]="getStyle()" (click)="setSufix()"

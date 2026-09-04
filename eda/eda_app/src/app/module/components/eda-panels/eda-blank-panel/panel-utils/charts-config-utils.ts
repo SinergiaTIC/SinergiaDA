@@ -69,6 +69,7 @@ export const ChartsConfigUtils = {
         alertLimits: ebp.panelChart.componentRef.instance.inject.alertLimits,
         assignedColors: ebp.panelChart.props.config?.getConfig()?.['assignedColors'] || null,
         modifiedFontPoints: ebp.panelChart.componentRef.instance.inject.modifiedFontPoints || 0,
+        fontScale: ebp.panelChart.componentRef.instance.inject.fontScale || 1,
         backgroundColor: ebp.panelChart.componentRef.instance.inject.backgroundColor || '',
         kpiColor: ebp.panelChart.componentRef.instance.inject.kpiColor || '',
         prefixImage: ebp.panelChart.componentRef.instance.inject.prefixImage || '',
@@ -79,6 +80,18 @@ export const ChartsConfigUtils = {
         config.edaChart.colors = kpiChart.chartColors;
         config.edaChart.chartType = ebp.panelChart.props.chartType;
         config.edaChart.assignedColors = ebp.panelChart.props.config?.getConfig()?.['assignedColors'] || null;  // ambién en edaChart
+        config.edaChart.lineWidth = kpiChart.lineWidth ?? 2;
+        config.edaChart.lineStyle = kpiChart.lineStyle || 'solid';
+        config.edaChart.showXAxis = kpiChart.showXAxis ?? true;
+        config.edaChart.showXAxisLabels = kpiChart.showXAxisLabels ?? true;
+        config.edaChart.xAxisLabelCount = kpiChart.xAxisLabelCount || 0;
+        config.edaChart.showAllXAxisLabels = kpiChart.showAllXAxisLabels ?? true;
+        config.edaChart.labelColor = kpiChart.labelColor || '#000000';
+        config.edaChart.labelBackgroundColor = kpiChart.labelBackgroundColor || '';
+        config.edaChart.showLabels = kpiChart.showLabels ?? false;
+        config.edaChart.showLabelsPercent = kpiChart.showLabelsPercent ?? false;
+        config.edaChart.chartLineColor = kpiChart.chartLineColor || '';
+        config.edaChart.chartFillColor = kpiChart.chartFillColor || '';
       }
     } else if (ebp.panelChart.componentRef && ebp.panelChart.props.chartType === 'dynamicText') {
       const dtInstance = ebp.panelChart.componentRef.instance;
