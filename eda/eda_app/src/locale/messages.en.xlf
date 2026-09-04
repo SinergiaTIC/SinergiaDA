@@ -6942,6 +6942,14 @@ OR<ph id="5"/>
   <source>Restablecer (100%)</source>
   <target>Reset (100%)</target>
 </trans-unit>
+<trans-unit id="partialEditDataSourceNotice">
+  <source>Algunas áreas de la configuración de la fuente de datos SinergiaCRM se encuentran desactivadas porque se configuran automáticamente durante el proceso de sincronización de datos con SinergiaCRM.</source>
+  <target>Some areas of the SinergiaCRM data source configuration are disabled because they are configured automatically during the SinergiaCRM data synchronization process.</target>
+</trans-unit>
+<trans-unit id="deleteDuckdbTable">
+  <source>Eliminar tabla CSV</source>
+  <target>Delete CSV table</target>
+</trans-unit>
 <trans-unit id="aboutPageTitle">
   <source>Tutorial</source>
   <target>Tutorial</target>
