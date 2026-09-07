@@ -11,7 +11,7 @@ import { DropdownModule } from 'primeng/dropdown';
 import { InputSwitchModule } from 'primeng/inputswitch';
 import { DashboardService, FilterType, ChartUtilsService, AlertService, OrdenationType, ColumnUtilsService, FormatDates, QueryBuilderService} from '@eda/services/service.index';
 import { EdaDialog, EdaDialogCloseEvent, EdaDialog2Component, EdaDialogAbstract, DatePickerComponent } from '@eda/shared/components/shared-components.index';
-import { getDateFilterOperatorLabel, getDateFilterValueLabel, getDynamicRangeLabel } from '@eda/shared/components/date-picker/date-filter-display.util';
+import { getDynamicRangeLabel } from '@eda/shared/components/date-picker/date-filter-display.util';
 import { AGG_TYPES } from '@eda/configs/customizable/customizable_default';
 import * as _ from 'lodash';
 import { firstValueFrom } from 'rxjs';
@@ -809,6 +809,9 @@ export class ColumnDialogComponent {
         // filter.types dropdown for them) — pick up the confirmed operator from the event.
         if (event.operator) {
             this.filterSelected = this.filter.types.find(t => t.value === event.operator) ?? this.filterSelected;
+        } else if (event.operator === null) {
+            // Operator was cleared in the date-picker itself (inline mode's own clear button)
+            this.filterSelected = undefined;
         }
 
         this.filter.range = event.range;
@@ -842,22 +845,7 @@ export class ColumnDialogComponent {
             this.filterValue = {};
         }
 
-        this.display.filterButton = false;
-    }
-
-    /** Operator badge for the date-picker's own display — reflects the pending (not yet added) filter */
-    public getPendingDateFilterOperatorText(): string {
-        return getDateFilterOperatorLabel(this.filterSelected?.value, this.chartUtils.filterTypesLabels);
-    }
-
-    /** Value text for the date-picker's own display — reflects the pending (not yet added) filter */
-    public getPendingDateFilterValueText(): string {
-        return getDateFilterValueLabel({
-            operator: this.filterSelected?.value,
-            dynamicRangeValue: this.filter.range,
-            value1: this.filterValue?.value1,
-            value2: this.filterValue?.value2,
-        });
+        this.display.filterButton = event.operator === null ? true : false;
     }
 
     /** Label for an already-added filter's dynamic range (e.g. "Avui"), used in the "Filtros activos" list */

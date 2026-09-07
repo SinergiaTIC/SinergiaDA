@@ -213,13 +213,10 @@
             }
 
             <!-- Filter values -->
-            <div class="flex flex-col gap-3" [class.w-full]="selectedColumn?.column_type !== 'date'"
-              [class.col-span-2]="selectedColumn?.column_type === 'date'"
-              [class.justify-self-start]="selectedColumn?.column_type === 'date'">
+            <div class="flex flex-col gap-3 w-full"
+              [class.col-span-2]="selectedColumn?.column_type === 'date'">
               @if (selectedColumn?.column_type === 'date') {
-                <date-picker style="width: 160px;" (onDatesChanges)="processPickerEvent($event)"
-                  [summaryOperator]="getPendingDateFilterOperatorText()"
-                  [summaryLabel]="getPendingDateFilterValueText()">
+                <date-picker [inline]="true" (onDatesChanges)="processPickerEvent($event)">
                 </date-picker>
               } @else {
                 @if (!filter.switch && !['not_null', 'not_null_nor_empty', 'null_or_empty'].includes(filterSelected?.value)) {

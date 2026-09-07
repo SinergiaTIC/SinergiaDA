@@ -37,6 +37,10 @@ export class DatePickerComponent implements OnChanges {
 	@Input() summaryLabel: string = '';
 	@Input() summaryOperator: string = '';
 	@Input() showNativeTooltip: boolean = true;
+	/** Renders the operator/range dropdowns and calendar directly in the page flow instead of
+	 * behind a popup badge. Selections emit live as the user picks them (no outside-click/close
+	 * trigger to hook into, unlike popup mode). */
+	@Input() inline: boolean = false;
 	@Output() onDatesChanges = new EventEmitter<any>();
 	@Output() onRemove = new EventEmitter<void>();
 
@@ -201,6 +205,49 @@ export class DatePickerComponent implements OnChanges {
 
 	public remove() {
 		this.onRemove.emit();
+	}
+
+	/** Inline mode has no popup close to hook into, so each dropdown/calendar interaction
+	 * emits directly once the selection is complete enough to be a valid filter. */
+	public onInlineOperatorChange(): void {
+		this.handleFilterChange(this.filterTypeSelected);
+		if (!this.filterTypeSelected) {
+			this.onDatesChanges.emit({ dates: null, range: null, operator: null });
+			return;
+		}
+		if (this.isReadyForConfirmation) {
+			this.emitChanges();
+		}
+		this.autoOpenInlineCalendar();
+	}
+
+	public onInlineRangeChange(): void {
+		this.getRange();
+		if (this.isReadyForConfirmation) {
+			this.emitChanges();
+		}
+		this.autoOpenInlineCalendar();
+	}
+
+	/** As soon as the calendar slot becomes visible (customDate picked, or an operator like
+	 * between/not_between that needs it directly), pop it open so the user can start clicking
+	 * dates right away instead of needing an extra click just to open it. */
+	private autoOpenInlineCalendar(): void {
+		if (this.hideCalendarGrid) return;
+		// Calendar is OnPush; calling showOverlay() directly via ViewChild flips its internal flag
+		// without marking it dirty, so nothing repaints. Focusing its input instead fires the
+		// (focus) binding from inside the calendar's own template — a real DOM event Angular picks
+		// up normally — which runs its onInputFocus() -> showOverlay() path with correct CD.
+		setTimeout(() => this.datePickerRef?.inputfieldViewChild?.nativeElement.focus());
+	}
+
+	public onInlineDatesChange(): void {
+		if (this.selectionMode === 'range') {
+			// Wait for both ends of the range before emitting a partial [start, null] pick
+			const range = this.rangeDates as Date[];
+			if (!Array.isArray(range) || !range[1]) return;
+		}
+		this.emitChanges();
 	}
 
 	public activate() {
