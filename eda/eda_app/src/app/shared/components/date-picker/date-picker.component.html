@@ -69,16 +69,15 @@
 } @else {
 	<div class="grid grid-cols-3 items-start gap-3 date-picker-inline">
 		<div class="min-w-0">
-			<label class="block text-sm mb-1" i18n="@@filterOperatorSelectionText">Selección de operador del filtro:</label>
 			<p-dropdown [options]="filterTypesOptions" [(ngModel)]="filterTypeSelected" optionLabel="label"
 				[autoDisplayFirst]="false" [style]="{'width':'100%'}" [showClear]="true" scrollHeight="230px"
+				i18n-placeholder="@@filterOperatorSelectionText" placeholder="Selecciona un operador"
 				(onChange)="onInlineOperatorChange()">
 			</p-dropdown>
 		</div>
 
 		@if (showDateFormatSelecter) {
 			<div class="min-w-0">
-				<label class="block text-sm mb-1" i18n="@@dateSelectionText">Selección de fecha:</label>
 				<p-dropdown [options]="ranges" [(ngModel)]="selectedRange" [placeholder]="rangePlaceholder"
 					[style]="{'width':'100%'}" [disabled]="!filterTypeSelected" scrollHeight="230px" (onChange)="onInlineRangeChange()">
 				</p-dropdown>
@@ -87,7 +86,6 @@
 
 		@if (!hideCalendarGrid) {
 			<div class="min-w-0">
-				<label class="block text-sm mb-1 invisible">.</label>
 				<p-calendar class="eda-filter-multiselect" [locale]="locale" [(ngModel)]="rangeDates" dateFormat="dd-mm-y"
 					[selectionMode]="selectionMode" [readonlyInput]="true" [monthNavigator]="true" [yearNavigator]="true" yearRange="1984:2030"
 					[firstDayOfWeek]="firstDayOfWeek" [placeholder]="rangePlaceholder" appendTo="body" [style]="{width:'100%'}"
