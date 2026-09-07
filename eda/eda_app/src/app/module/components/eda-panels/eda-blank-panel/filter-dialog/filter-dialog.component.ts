@@ -1,7 +1,7 @@
 import {Component, Input, Output, EventEmitter} from '@angular/core';
 import {SelectItem} from 'primeng/api';
 import {EdaDialogAbstract, EdaDialog, EdaDialogCloseEvent, DatePickerComponent} from '@eda/shared/components/shared-components.index';
-import { getDateFilterOperatorLabel, getDateFilterValueLabel, getDynamicRangeLabel } from '@eda/shared/components/date-picker/date-filter-display.util';
+import { getDynamicRangeLabel } from '@eda/shared/components/date-picker/date-filter-display.util';
 import {Column} from '@eda/models/model.index';
 import { CommonModule } from '@angular/common';
 import { NgClass } from '@angular/common';
@@ -368,6 +368,9 @@ export class FilterDialogComponent {
         // filter.types dropdown for them) — pick up the confirmed operator from the event.
         if (event.operator) {
             this.filterSelected = this.filter.types.find(t => t.value === event.operator) ?? this.filterSelected;
+        } else if (event.operator === null) {
+            // Operator was cleared in the date-picker itself (inline mode's own clear button)
+            this.filterSelected = undefined;
         }
 
         this.filter.range = event.range;
@@ -401,22 +404,7 @@ export class FilterDialogComponent {
             this.filterValue = {};
         }
 
-        this.display.filterButton = false;
-    }
-
-    /** Operator badge for the date-picker's own display — reflects the pending (not yet added) filter */
-    public getPendingDateFilterOperatorText(): string {
-        return getDateFilterOperatorLabel(this.filterSelected?.value, this.chartUtils.filterTypesLabels);
-    }
-
-    /** Value text for the date-picker's own display — reflects the pending (not yet added) filter */
-    public getPendingDateFilterValueText(): string {
-        return getDateFilterValueLabel({
-            operator: this.filterSelected?.value,
-            dynamicRangeValue: this.filter.range,
-            value1: this.filterValue?.value1,
-            value2: this.filterValue?.value2,
-        });
+        this.display.filterButton = event.operator === null ? true : false;
     }
 
     /** Label for an already-added filter's dynamic range (e.g. "Avui"), used in the "Filtros activos" list */
