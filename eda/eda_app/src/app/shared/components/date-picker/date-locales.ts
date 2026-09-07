@@ -1,4 +1,5 @@
-/** NO SE USAN.... SE USAN LAS TRADUCCIONES DE app.component.ts */
+/** PrimeNG p-calendar locale config (day/month names, today/clear labels, week header) for
+ * date-picker and eda-date-picker. Note: ca content intentionally left untranslated for now. */
 export const locales = {
   es: {
     firstDayOfWeek: 1,

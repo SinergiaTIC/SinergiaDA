@@ -58,6 +58,9 @@ export class DatePickerComponent implements OnChanges {
 	public selectedRange: SelectItem;
 	public rangePlaceholder: string = $localize`:@@DateSelectRange:Selecciona un rango`;
 	public rangeDates: any;
+	/** p-calendar's [yearRange] — shared by both calendars in this template so the bound value stays in
+	 * sync, and the upper bound tracks the current year instead of going stale at a fixed year. */
+	public readonly calendarYearRange = `1984:${new Date().getFullYear() + 50}`;
 	private _allRanges: Array<SelectItem>;
 	// hideOverlay() closes async (animation); the resulting (onClose) can arrive after a
 	// restoreFromInject() already ran for a fresh inject, wiping it out. Set before any
@@ -71,8 +74,7 @@ export class DatePickerComponent implements OnChanges {
 		let lan_ca = new RegExp('\/ca\/', 'i');
 		let lan_es = new RegExp('\/es\/', 'i');
 		this.locale = lan_ca.test(url) ? locales.ca : lan_es.test(url) ? locales.es : locales.en;
-		//this.firstDayOfWeek = lan_es.test(url) || lan_ca.test(url) ? 1 : 0;
-		this.firstDayOfWeek = lan_es.test(url) || lan_ca.test(url) ? 1 : 1;
+		this.firstDayOfWeek = 1;
 		this._allRanges = [...this.ranges];
 
 		// Operators for date type, same list used by the old date-format-dialog
@@ -106,6 +108,8 @@ export class DatePickerComponent implements OnChanges {
 		}
 	}
 
+	/** Public: bound directly in this component's own template ((onChange) on the popup-mode
+	 * operator dropdown) — Angular's strict template checker requires template-bound members to be public. */
 	public handleFilterChange(filterTypeSelected: FilterType): void {
 		this.showDateFormatSelecter = true;
 		this.hideCalendarGrid = true;
@@ -165,6 +169,8 @@ export class DatePickerComponent implements OnChanges {
 		this.resetConfig();
 	}
 
+	/** Public on purpose: global-filter.component.html calls this cross-component via a
+	 * template reference variable (#dp) on its "clear" button, not just from this component's own template. */
 	public clean(): void {
 		this.suppressNextClose = true;
 		this.resetConfig();
@@ -222,7 +228,7 @@ export class DatePickerComponent implements OnChanges {
 	}
 
 	public onInlineRangeChange(): void {
-		this.getRange();
+		this.updateRangeSelection();
 		if (this.isReadyForConfirmation) {
 			this.emitChanges();
 		}
@@ -255,7 +261,11 @@ export class DatePickerComponent implements OnChanges {
 		this.restoreFromInject();
 	}
 
-	public getRange() {
+	/** Applies the picked dropdown range: toggles the calendar slot for customDate, or clears any
+	 * explicit dates so emitChanges() computes the dynamic range lazily. Void mutator, not a getter.
+	 * Public: bound directly in this component's own template (popup-mode range dropdown's (onChange)) —
+	 * Angular's strict template checker requires template-bound members to be public. */
+	public updateRangeSelection() {
 		const value = <any>this.selectedRange;
 		if (value === 'customDate') {
 			this.hideCalendarGrid = false;

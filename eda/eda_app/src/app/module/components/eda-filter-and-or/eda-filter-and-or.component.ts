@@ -62,7 +62,6 @@ export class EdaFilterAndOrComponent implements OnInit {
   selectedButtonInitialValue: string;
   stringQuery: string = '';
   existeIntercambioItems: boolean = false;
-  public textBetween: string = $localize`:@@textBetween:Entre`;
 
   constructor(private cdr: ChangeDetectorRef, private chartUtils: ChartUtilsService) {
     let rowHeight = 0;

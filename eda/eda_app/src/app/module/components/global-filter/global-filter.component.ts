@@ -705,10 +705,6 @@ export class GlobalFilterComponent implements OnInit {
         return getDateFilterOperatorLabel(filter.dateFilterType, this.chartUtils.filterTypesLabels);
     }
 
-    public isDynamicDateRange(filter: any): boolean {
-        return !!(filter.dynamicValue || filter.selectedRange);
-    }
-
     public removeGlobalFilter(filter: any, reload?: boolean): void {
 
         const formatedFilter = filter;

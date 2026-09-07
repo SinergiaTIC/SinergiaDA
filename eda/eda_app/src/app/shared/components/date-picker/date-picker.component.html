@@ -1,6 +1,6 @@
 @if (!inline) {
 	<p-calendar class='eda-filter-multiselect' [locale]="locale" [(ngModel)]="rangeDates" dateFormat="dd-mm-y"
-		[selectionMode]="selectionMode" [readonlyInput]="true" [monthNavigator]="true" [yearNavigator]="true" yearRange="1984:2030"
+		[selectionMode]="selectionMode" [readonlyInput]="true" [monthNavigator]="true" [yearNavigator]="true" [yearRange]="calendarYearRange"
 		[hideOnDateTimeSelect]="false" [showOnFocus]="false"
 		[firstDayOfWeek]="firstDayOfWeek" [placeholder]="rangePlaceholder" (onClickOutside)="handleOutsideClick($event)"
 		(onClose)="handleClose()" (onFocus)="activate()" (click)="datePickerRef.showOverlay()" appendTo="body" [style]="{width:'100%'}"
@@ -21,7 +21,7 @@
 					<div>
 						<label class="block text-sm mb-1" i18n="@@dateSelectionText">Selección de fecha:</label>
 						<p-dropdown [options]="ranges" [(ngModel)]="selectedRange" [placeholder]="rangePlaceholder"
-							[style]="{'width':'100%'}" [disabled]="!filterTypeSelected" scrollHeight="230px" (onChange)="getRange()">
+							[style]="{'width':'100%'}" [disabled]="!filterTypeSelected" scrollHeight="230px" (onChange)="updateRangeSelection()">
 						</p-dropdown>
 					</div>
 				}
@@ -47,7 +47,7 @@
 						@if(autoClear){
 							<button
 								pButton pRipple type="button"
-								label="Clean" icon="pi pi-undo"
+								i18n-label="@@datePickerCleanBtn" label="Limpiar" icon="pi pi-undo"
 								(click)="clean()"
 								class="p-button-rounded p-button-outlined">
 							</button>
@@ -71,7 +71,7 @@
 		<div class="min-w-0">
 			<p-dropdown [options]="filterTypesOptions" [(ngModel)]="filterTypeSelected" optionLabel="label"
 				[autoDisplayFirst]="false" [style]="{'width':'100%'}" [showClear]="true" scrollHeight="230px"
-				i18n-placeholder="@@filterOperatorSelectionText" placeholder="Selecciona un operador"
+				i18n-placeholder="@@filterOperatorPlaceholder" placeholder="Selecciona un operador"
 				(onChange)="onInlineOperatorChange()">
 			</p-dropdown>
 		</div>
@@ -87,7 +87,7 @@
 		@if (!hideCalendarGrid) {
 			<div class="min-w-0">
 				<p-calendar class="eda-filter-multiselect" [locale]="locale" [(ngModel)]="rangeDates" dateFormat="dd-mm-y"
-					[selectionMode]="selectionMode" [readonlyInput]="true" [monthNavigator]="true" [yearNavigator]="true" yearRange="1984:2030"
+					[selectionMode]="selectionMode" [readonlyInput]="true" [monthNavigator]="true" [yearNavigator]="true" [yearRange]="calendarYearRange"
 					[firstDayOfWeek]="firstDayOfWeek" [placeholder]="rangePlaceholder" appendTo="body" [style]="{width:'100%'}"
 					(onSelect)="onInlineDatesChange()">
 				</p-calendar>

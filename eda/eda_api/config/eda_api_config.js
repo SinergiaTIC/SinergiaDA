@@ -2,9 +2,7 @@ const applyConfigOverwrite = require('./apply-config-overwrite');
 
 module.exports = applyConfigOverwrite('eda_api_config', {
     // we can modify the null value of the bbdd to give us another value read on the screen
-    // we can modify the null value of the bbdd to give us another value read on the screen
     null_value: '',
-    // Number of workers in cluster mode. If it is 0 or not defined, it uses all available cores.
     // Number of workers in cluster mode. If it is 0 or not defined, it uses all available cores.
     cluster_workers: 4,
     port: 8666,
