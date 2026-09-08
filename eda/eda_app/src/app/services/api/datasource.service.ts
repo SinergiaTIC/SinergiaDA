@@ -131,13 +131,15 @@ export class DataSourceService extends ApiService implements OnDestroy {
 
                 // Column nodes
                 const sortedColumns = (table.columns ?? []).slice().sort((a: any, b: any) => {
-                    const la = (a.display_name?.default ?? a.column_name ?? '').toLowerCase();
-                    const lb = (b.display_name?.default ?? b.column_name ?? '').toLowerCase();
+                    // display_name.default starts out as '' (not undefined) until the column is
+                    // individually edited, so ?? never falls back to column_name for untouched columns.
+                    const la = (a.display_name?.default || a.column_name || '').toLowerCase();
+                    const lb = (b.display_name?.default || b.column_name || '').toLowerCase();
                     return la < lb ? -1 : la > lb ? 1 : 0;
                 });
                 sortedColumns.forEach((column: any) => {
                     const currCol: TreeNode = {};
-                    currCol.label = column.display_name?.default ?? column.column_name;
+                    currCol.label = column.display_name?.default || column.column_name;
                     currCol.data = 'columna';
                     currCol.children = [];
                     const typeIconMap: Record<string, string> = {

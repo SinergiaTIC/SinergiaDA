@@ -7079,6 +7079,14 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
         <source>Paneles no afectados por este filtro</source>
         <target>Panells no afectats per aquest filtre</target>
       </trans-unit>
+      <trans-unit id="partialEditDataSourceNotice">
+        <source>Algunas áreas de la configuración de la fuente de datos SinergiaCRM se encuentran desactivadas porque se configuran automáticamente durante el proceso de sincronización de datos con SinergiaCRM.</source>
+        <target>Algunes àrees de la configuració de la font de dades SinergiaCRM es troben desactivades perquè es configuren automàticament durant el procés de sincronització de dades amb SinergiaCRM.</target>
+      </trans-unit>
+      <trans-unit id="deleteDuckdbTable">
+        <source>Eliminar tabla CSV</source>
+        <target>Eliminar taula CSV</target>
+      </trans-unit>
       <trans-unit id="duplicatePanel">
         <source>Duplicar panel</source>
         <target>Duplica el panell</target>
