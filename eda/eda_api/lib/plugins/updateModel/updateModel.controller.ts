@@ -7,7 +7,7 @@ import { Enumerations } from "./service/enumerations";
 import { pushModelToMongo } from "./service/push.Model.to.Mongo";
 import fs from "fs";
 import { CleanModel } from "./service/cleanModel";
-import ServerLogService from '../../services/server-log/server-log.service';
+import { insertServerLog } from '../../services/server-log/server-log.service';
 
 const sinergiaDatabase = require("../../../config/sinergiacrm.config");
 let mariadbModule: any;
@@ -788,13 +788,3 @@ function getUpdateModelActor(req: Request) {
   return sanitizeLogSegment(requestUser || 'system-update-model');
 }
 
-function insertServerLog(req: Request, level: string, action: string, userMail: string, type: string) {
-  const ip = req.headers['x-forwarded-for'] || req.get('origin');
-  var date = new Date();
-  var month = date.getMonth() + 1;
-  var monthstr = month < 10 ? "0" + month.toString() : month.toString();
-  var day = date.getDate();
-  var daystr = day < 10 ? "0" + day.toString() : day.toString();
-  var date_str = date.getFullYear() + "-" + monthstr + "-" + daystr + " " + date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds();
-  ServerLogService.log({ level, action, userMail, ip, type, date_str });
-}
