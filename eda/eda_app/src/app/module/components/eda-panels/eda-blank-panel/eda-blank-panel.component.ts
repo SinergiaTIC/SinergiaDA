@@ -238,6 +238,8 @@ export class EdaBlankPanelComponent implements OnInit {
     public ptooltipViewQuery: string = $localize`:@@ptooltipViewQuery:Ver consulta SQL`
     public aggregationText: string = $localize`:@@aggregationText:Agregación`;
     public textBetween: string = $localize`:@@textBetween:Entre`
+    public yesText: string = $localize`:@@si:Si`;
+    public noText: string = $localize`:@@no:No`;
     /** Query Variables */
     public tables: any[] = [];
     public tablesToShow: any[] = [];
@@ -253,6 +255,7 @@ export class EdaBlankPanelComponent implements OnInit {
     public queryLimit: number = 5000; // 5.000 by default
     public groupByEnabled: boolean = true;
     public dynamicFilters: boolean = true;
+    public dynamicFiltersAvailable: boolean; // True when the dashboard has at least one EDA panel. Set in ngOnInit.
 
     public queryModes: any[] = ALLOWED_QUERY_MODES.map(v => QUERY_MODE_LABELS.find(l => l.value === v));
 
@@ -394,6 +397,7 @@ export class EdaBlankPanelComponent implements OnInit {
     async ngOnInit() {
         this.index = 0;
         this.readonly = this.panel.readonly;
+        this.dynamicFiltersAvailable = this.dashboard.dynamicFiltersAvailable();
         if (this.panel.description === undefined) this.panel.description = '';
 
         await this.setTablesData();
