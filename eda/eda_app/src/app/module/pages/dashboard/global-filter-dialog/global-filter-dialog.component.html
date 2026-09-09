@@ -104,7 +104,7 @@
              <ng-container *ngIf="globalFilter.pathList[panel.id] && panel.content?.query?.query?.queryMode === 'SQL'">
                  <span i18n="@@sqlModeFilterPathText" style="font-family: var(--DEFAULT_FONT_FAMILY); font-weight: bolder; font-size: 0.9rem; color: #495057;" [style.opacity]="!panel.active || !panel.avaliable ? 0.4 : 1">En modo SQL, si necesita modificar la ruta, debe hacerlo en la consulta</span>
              </ng-container>
-             <!-- SDA CUSTOM --><p-treeSelect *ngIf="globalFilter.pathList[panel.id] && panel.content?.query?.query?.queryMode !== 'SQL'" [(ngModel)]="globalFilter.pathList[panel.id].selectedTableNodes" [options]="panel.content.globalFilterPaths" (onNodeExpand)="onNodeExpand(panel, $event)" (onNodeSelect)="onNodeSelect(panel, $event)" [disabled]="!panel.active || !panel.avaliable">
+             <!-- SDA CUSTOM --><p-treeSelect *ngIf="globalFilter.pathList[panel.id] && panel.content?.query?.query?.queryMode !== 'SQL'" [(ngModel)]="globalFilter.pathList[panel.id].selectedTableNodes" [options]="panel.content.globalFilterPaths" (onNodeExpand)="onNodeExpand(panel, $event)" (onNodeSelect)="onNodeSelect(panel, $event)" [disabled]="!panel.active || !panel.avaliable" appendTo="body">
 
                                         <ng-template pTemplate="value">
                          <!-- SDA CUSTOM -->    <span class="d-flex align-items-center" [innerHTML]="getDisplayPathStr(globalFilter.pathList[panel.id].selectedTableNodes)"></span>
