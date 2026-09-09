@@ -16,7 +16,7 @@ import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { TreeModule } from 'primeng/tree';
 // Eda config
 import { AGG_TYPES, NULL_VALUE, EMPTY_VALUE, SHOW_LOCK_IN_PANEL_HEADER, ALLOWED_QUERY_MODES, SHOW_HIDDEN_FIELDS, SHOW_WHAT_IF, ALLOWED_JOIN_TYPES } from '@eda/configs/customizable/customizable_default';
-import { normalizeQueryMode } from '@eda/shared/utils/query-mode.util';
+import { resolveQueryMode } from '@eda/shared/utils/query-mode.util';
 
 import {Column, EdaPanel, InjectEdaPanel } from '@eda/models/model.index';
 
@@ -238,6 +238,8 @@ export class EdaBlankPanelComponent implements OnInit {
     public ptooltipViewQuery: string = $localize`:@@ptooltipViewQuery:Ver consulta SQL`
     public aggregationText: string = $localize`:@@aggregationText:Agregación`;
     public textBetween: string = $localize`:@@textBetween:Entre`
+    public yesText: string = $localize`:@@si:Si`;
+    public noText: string = $localize`:@@no:No`;
     /** Query Variables */
     public tables: any[] = [];
     public tablesToShow: any[] = [];
@@ -253,6 +255,7 @@ export class EdaBlankPanelComponent implements OnInit {
     public queryLimit: number = 5000; // 5.000 by default
     public groupByEnabled: boolean = true;
     public dynamicFilters: boolean = true;
+    public dynamicFiltersAvailable: boolean; // True when the dashboard has at least one EDA panel. Set in ngOnInit.
 
     public queryModes: any[] = ALLOWED_QUERY_MODES.map(v => QUERY_MODE_LABELS.find(l => l.value === v));
 
@@ -394,6 +397,7 @@ export class EdaBlankPanelComponent implements OnInit {
     async ngOnInit() {
         this.index = 0;
         this.readonly = this.panel.readonly;
+        this.dynamicFiltersAvailable = this.dashboard.dynamicFiltersAvailable();
         if (this.panel.description === undefined) this.panel.description = '';
 
         await this.setTablesData();
@@ -403,15 +407,10 @@ export class EdaBlankPanelComponent implements OnInit {
             try {
                 const contentQuery = this.panel.content.query;
 
-                // Ensure compatibility with legacy dashboards where queryMode is not provided.
+                // resolveQueryMode ensures compatibility with legacy dashboards where queryMode is not provided.
                 const modeSQL = contentQuery.query.modeSQL;
-                let queryMode = contentQuery.query.queryMode;
-
-                if (!queryMode) {
-                    queryMode = modeSQL ? 'SQL' : 'EDA';
-                }
-
-                this.selectedQueryMode = normalizeQueryMode(queryMode);
+                const queryMode = contentQuery.query.queryMode;
+                this.selectedQueryMode = resolveQueryMode(queryMode, modeSQL);
 
                 if (this.selectedQueryMode == 'TREE') {
                     this.rootTable = contentQuery.query.rootTable;
@@ -1496,10 +1495,7 @@ public tableNodeExpand(event: any): void {
 
             this.currentSQLQuery = this.panelDeepCopy.query.query.SQLexpression;
 
-            const queryMode = this.panelDeepCopy.query.query.queryMode;
-            const modeSQL = this.panelDeepCopy.query.query.modeSQL;
-
-            this.selectedQueryMode = normalizeQueryMode(_.isNil(queryMode) ? (modeSQL ? 'SQL' : 'EDA') : queryMode);
+            this.selectedQueryMode = resolveQueryMode(this.panelDeepCopy.query.query.queryMode, this.panelDeepCopy.query.query.modeSQL);
 
             if(this.selectedQueryMode == 'TREE'){
                 this.rootTable = this.panelDeepCopy.rootTable;
