@@ -1,0 +1,79 @@
+.dashboard-menu-sda {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-left: 0.5rem;
+}
+
+.dsm-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  padding: 0.6rem 1.1rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+  line-height: 1;
+  border-radius: 10px;
+  border: 1px solid #d1d5db;
+  background: #ffffff;
+  color: #374151;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  cursor: pointer;
+  user-select: none;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+}
+
+.dsm-btn:hover {
+  background: #f8fafc;
+  border-color: #cbd5e1;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.12);
+}
+
+.dsm-btn:active {
+  transform: translateY(1px);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+}
+
+.dsm-btn-primary {
+  background: linear-gradient(135deg, #0284c7, #0ea5e9);
+  border-color: transparent;
+  color: #ffffff;
+  box-shadow: 0 2px 6px rgba(2, 132, 199, 0.35);
+}
+
+.dsm-btn-primary:hover {
+  background: linear-gradient(135deg, #0369a1, #0284c7);
+  border-color: transparent;
+  box-shadow: 0 4px 12px rgba(2, 132, 199, 0.4);
+}
+
+.dsm-btn-icon {
+  font-size: 1rem;
+}
+
+.dsm-btn-caret {
+  font-size: 0.75rem;
+  opacity: 0.85;
+}
+
+.dsm-btn-ghost {
+  padding: 0.6rem 0.85rem;
+  background: transparent;
+  box-shadow: none;
+  border-color: transparent;
+  color: #4b5563;
+}
+
+.dsm-btn-ghost:hover {
+  background: #f1f5f9;
+  border-color: #e2e8f0;
+  box-shadow: none;
+}
+
+.dsm-menu .p-menuitem-link {
+  padding: 0.7rem 1rem;
+  font-size: 0.95rem;
+  font-weight: 500;
+}
