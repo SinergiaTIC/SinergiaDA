@@ -10,6 +10,8 @@ import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { ColorPickerModule } from 'primeng/colorpicker';
 import { DropdownModule } from 'primeng/dropdown';
+import { InputSwitchModule } from 'primeng/inputswitch';
+import { InputTextModule } from 'primeng/inputtext';
 import { USE_EDA_KPI_SIZE_LOGIC } from '@eda/configs/customizable/customizable_default';
 
 @Component({
@@ -17,7 +19,7 @@ import { USE_EDA_KPI_SIZE_LOGIC } from '@eda/configs/customizable/customizable_d
     selector: 'app-kpi-dialog',
     templateUrl: './kpi-dialog.component.html',
     styleUrls: ['./kpi-dialog.component.css'],
-    imports: [FormsModule, CommonModule, EdaDialog2Component, ColorPickerModule, PanelChartComponent, KpiMailConfigModal, DropdownModule]
+    imports: [FormsModule, CommonModule, EdaDialog2Component, ColorPickerModule, PanelChartComponent, KpiMailConfigModal, DropdownModule, InputSwitchModule, InputTextModule]
 })
 export class KpiEditDialogComponent implements OnInit, AfterViewInit, AfterViewChecked, OnDestroy {
     @Input() controller: any;
@@ -54,6 +56,8 @@ export class KpiEditDialogComponent implements OnInit, AfterViewInit, AfterViewC
     public kpiBackgroundColor: string = '';
     public kpiTextColor: string = '';
     public prefixImage: string = '';
+    /** Snapshot for the "Apariencia" section "Restaurar" button. */
+    private initialAppearanceState: { kpiBackgroundColor: string, kpiTextColor: string, prefixImage: string } = null;
 
     // --- KPI+chart options (kpibar/kpiline/kpiarea only) ---
     public lineWidth: number = 2;
@@ -93,6 +97,11 @@ export class KpiEditDialogComponent implements OnInit, AfterViewInit, AfterViewC
     public activeTab: "aspecto" | "alerts" = "aspecto";
     public isKpiTrend: boolean = false;
     public isKpiDeviation: boolean = false;
+    /** Collapsible "Aspecto" sections — same behavior as the develop KPI dialog. */
+    public isSizeExpanded: boolean = false;
+    public isAppearanceExpanded: boolean = true;
+    public isAxisScaleExpanded: boolean = false;
+    public isLabelsValuesExpanded: boolean = false;
     public selectedPalette: { name: string; paleta: any } | null = null;
     public allPalettes: any = this.stylesProviderService.ChartsPalettes;
     public title: string = $localize`:@@ChartProps:PROPIEDADES DEL GRAFICO`;
@@ -162,8 +171,11 @@ export class KpiEditDialogComponent implements OnInit, AfterViewInit, AfterViewC
         this.originalAlerts = [...(config.alertLimits || [])];
         this.alerts = [...this.originalAlerts];
         this.modifiedFontPoints = config.modifiedFontPoints || 0;
-        this.kpiBackgroundColor = config.backgroundColor || '';
-        this.kpiTextColor = config.kpiColor || '';
+        // Pre-fill with the KPI's current color, falling back to the panel style defaults.
+        this.kpiBackgroundColor = config.backgroundColor
+            || this.normalizeHexColor(this.getStyleProviderValue('panelColor'), '#ffffff');
+        this.kpiTextColor = config.kpiColor
+            || this.normalizeHexColor(this.getStyleProviderValue('panelFontColor'), '#67757c');
         this.prefixImage = config.prefixImage || '';
         this.isKpiTrend = this.panelChartConfig.chartType === 'kpitrend';
         this.isKpiDeviation = this.panelChartConfig.chartType === 'kpideviation';
@@ -182,13 +194,15 @@ export class KpiEditDialogComponent implements OnInit, AfterViewInit, AfterViewC
         this.showLabels = config.edaChart?.showLabels ?? false;
         this.showLabelsPercent = config.edaChart?.showLabelsPercent ?? false;
         this.labelColor = config.edaChart?.labelColor || '#000000';
-        this.labelBackgroundColor = config.edaChart?.labelBackgroundColor || '';
+        // Never blank: fall back to the KPI background instead of "no box".
+        this.labelBackgroundColor = config.edaChart?.labelBackgroundColor || this.kpiBackgroundColor || '#ffffff';
         this.showChartLineColor = ['kpibar', 'kpiarea'].includes(this.panelChartConfig.chartType);
         this.chartLineColor = config.edaChart?.chartLineColor || this.getKpiChartLineColor();
         this.showChartFillColor = this.panelChartConfig.chartType === 'kpiarea';
         this.chartFillColor = config.edaChart?.chartFillColor || this.getKpiChartFillColor();
 
         // Snapshot for the per-section "Restaurar" buttons
+        this.initialAppearanceState = { kpiBackgroundColor: this.kpiBackgroundColor, kpiTextColor: this.kpiTextColor, prefixImage: this.prefixImage };
         this.initialLineState = { lineWidth: this.lineWidth, lineStyle: this.lineStyle, chartLineColor: this.chartLineColor, chartFillColor: this.chartFillColor };
         this.initialAxisState = { showXAxis: this.showXAxis, showXAxisLabels: this.showXAxisLabels, showAllXAxisLabels: this.showAllXAxisLabels, xAxisLabelCount: this.xAxisLabelCount };
         this.initialLabelsState = { showLabels: this.showLabels, showLabelsPercent: this.showLabelsPercent, labelColor: this.labelColor, labelBackgroundColor: this.labelBackgroundColor };
@@ -203,10 +217,58 @@ export class KpiEditDialogComponent implements OnInit, AfterViewInit, AfterViewC
                 }
             }, 100);
         }
+
+        // Once the preview renders, refine the pre-filled colors from the live chart and resync the "Restaurar" snapshots.
+        setTimeout(() => {
+            const instance: any = this.panelChartComponent?.componentRef?.instance;
+            if (!instance) return;
+            const live: any = instance.inject?.edaChart || this.chartContent;
+
+            if (!config.kpiColor && instance.color) {
+                this.kpiTextColor = this.normalizeHexColor(instance.color, this.kpiTextColor);
+            }
+            if (!config.backgroundColor && instance.inject?.backgroundColor) {
+                this.kpiBackgroundColor = this.normalizeHexColor(instance.inject.backgroundColor, this.kpiBackgroundColor);
+            }
+            if (!config.edaChart?.chartLineColor) {
+                this.chartLineColor = this.getKpiChartLineColor() || this.chartLineColor || this.kpiTextColor;
+            }
+            if (!config.edaChart?.chartFillColor) {
+                this.chartFillColor = this.getKpiChartFillColor() || this.chartFillColor || this.kpiBackgroundColor;
+            }
+            const datalabels = live?.chartOptions?.plugins?.datalabels;
+            if (!config.edaChart?.labelColor) {
+                this.labelColor = this.normalizeHexColor(datalabels?.color, this.labelColor || '#000000');
+            }
+            if (!config.edaChart?.labelBackgroundColor) {
+                this.labelBackgroundColor = this.normalizeHexColor(datalabels?.backgroundColor, this.labelBackgroundColor || '#ffffff');
+            }
+
+            if (this.initialAppearanceState) {
+                this.initialAppearanceState.kpiTextColor = this.kpiTextColor;
+                this.initialAppearanceState.kpiBackgroundColor = this.kpiBackgroundColor;
+            }
+            this.initialLineState = { ...this.initialLineState, chartLineColor: this.chartLineColor, chartFillColor: this.chartFillColor };
+            this.initialLabelsState = { ...this.initialLabelsState, labelColor: this.labelColor, labelBackgroundColor: this.labelBackgroundColor };
+        }, 120);
+    }
+
+    /** Current value of a StyleProviderService BehaviorSubject-backed observable, read synchronously. */
+    private getStyleProviderValue(key: 'panelColor' | 'panelFontColor'): string {
+        return (this.stylesProviderService as any)?.[key]?.source?.['_value'] || '';
     }
 
     setActiveTab(tab: "aspecto" | "alerts"): void {
         this.activeTab = tab;
+    }
+
+    toggleSection(section: 'size' | 'appearance' | 'axisScale' | 'labelsValues'): void {
+        switch (section) {
+            case 'size': this.isSizeExpanded = !this.isSizeExpanded; break;
+            case 'appearance': this.isAppearanceExpanded = !this.isAppearanceExpanded; break;
+            case 'axisScale': this.isAxisScaleExpanded = !this.isAxisScaleExpanded; break;
+            case 'labelsValues': this.isLabelsValuesExpanded = !this.isLabelsValuesExpanded; break;
+        }
     }
 
     saveChartConfig() {
@@ -557,6 +619,27 @@ export class KpiEditDialogComponent implements OnInit, AfterViewInit, AfterViewC
         if (nextEdaChart) {
             this.chartContent = nextEdaChart;
         }
+    }
+
+    /** Restores KPI colors, series colors and (for KPI+chart) line style/colors all at once. */
+    resetAppearanceSection(): void {
+        if (this.initialAppearanceState) {
+            this.kpiBackgroundColor = this.initialAppearanceState.kpiBackgroundColor;
+            this.kpiTextColor = this.initialAppearanceState.kpiTextColor;
+            this.prefixImage = this.initialAppearanceState.prefixImage;
+            this.updateKpiBackground();
+            this.updateKpiTextColor();
+            this.updatePrefixImage();
+        }
+
+        if (this.originalAssignedColors.length > 0) {
+            this.selectedPalette = null;
+            this.assignedColors = this.originalAssignedColors.map(c => ({ ...c }));
+            this.applyColorsToChart();
+        }
+
+        // Line width/style + independent line/fill colors also live in this section now.
+        this.resetLineSection();
     }
 
     resetLineSection(): void {
