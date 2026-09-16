@@ -594,6 +594,21 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
                     pFilter.filter_elements[0] = { value1: [stringRange[0]] }
                     pFilter.filter_elements[1] = { value2: [stringRange[1]] }
 
+                    /* SDA CUSTOM - Refresh filter_codes so SQL builders use current dates */
+                    /* SDA CUSTOM */ pFilter.filter_codes[0] = { value1: [stringRange[0]] };
+                    /* SDA CUSTOM */ if (pFilter.filter_codes[1]) {
+                    /* SDA CUSTOM */     pFilter.filter_codes[1] = { value2: [stringRange[1]] };
+                    /* SDA CUSTOM */ }
+                    /* SDA CUSTOM - Sync sortedFilters entry with refreshed dates */
+                    /* SDA CUSTOM */ const sfEntry = panel.content.query.query.sortedFilters?.find(
+                    /* SDA CUSTOM */     (sf: any) => sf.filter_id === pFilter.filter_id
+                    /* SDA CUSTOM */ );
+                    /* SDA CUSTOM */ if (sfEntry) {
+                    /* SDA CUSTOM */     sfEntry.filter_elements = pFilter.filter_elements;
+                    /* SDA CUSTOM */     sfEntry.filter_codes = pFilter.filter_codes;
+                    /* SDA CUSTOM */ }
+                    /* END SDA CUSTOM */
+
                 }
 
                 panel.content.query.query.filters.push(pFilter);
