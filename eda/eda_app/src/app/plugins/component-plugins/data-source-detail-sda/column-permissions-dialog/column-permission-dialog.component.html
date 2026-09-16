@@ -1,0 +1,86 @@
+<eda-dialog2 width="50vw" height="100vh" (apply)="savePermission()" [header]="title" (close)="closeDialog()" [overflow]="'auto'">
+
+  <div content class="p-2 space-y-6">
+
+    <!-- Group Selection -->
+    <div class="bg-gray-50 rounded-lg border border-gray-200">
+      <div class="p-3 border-b border-gray-200">
+        <h3 class="text-xl font-medium text-gray-900" i18n="@@permissionTypeGroup">Permisos por Grupo</h3>
+        <p class="text-base text-gray-600" i18n="@@permissionTypeGroupDescription">Asignar permisos a grupos de usuarios
+        </p>
+      </div>
+      <div class="p-3 space-y-4">
+        <div class="col-12">
+          <p-multiSelect [options]="roles" [(ngModel)]="selectedRoles" [virtualScroll]="true" [itemSize]="30"
+            [style]="{'vertical-align' : 'bottom', width: '100%' }"
+            [panelStyle]="{minWidth:'15em'}" [maxSelectedLabels]="1" [defaultLabel]="groupsDefaultLabel">
+          </p-multiSelect>
+        </div>
+
+        <div class="space-y-3 mt-4">
+          <p-multiSelect [options]="values" [(ngModel)]="selectedValues" [virtualScroll]="true" [itemSize]="30"
+            [style]="{'vertical-align' : 'bottom', width: '100%' }" [maxSelectedLabels]="1" defaultLabel="ID"
+            [disabled]="all">
+          </p-multiSelect>
+        </div>
+
+        <!-- Switches and Dynamic -->
+        <div class="mt-5 bg-gray-50 border border-gray-200 rounded-lg p-4 space-y-4">
+
+          <h3 class="text-base font-medium text-gray-700" i18n="@@AdvanceOptions">
+            Opciones avanzadas
+          </h3>
+
+          <!-- Switch: All -->
+          <div class="flex items-center justify-between bg-white border border-gray-200 rounded-lg p-3">
+            <div>
+              <div class="text-base font-medium text-gray-900" i18n="@@AllTags">Todos</div>
+              <p class="text-sm text-gray-600" i18n="@@AllTagsDescription">
+                Acceso a todos los elementos sin restricciones
+              </p>
+            </div>
+            <p-inputSwitch [(ngModel)]="all" (onChange)="syncronizeAllNoneValuesAll()">
+            </p-inputSwitch>
+          </div>
+
+          <!-- Switch: None -->
+          <div class="flex items-center justify-between bg-white border border-gray-200 rounded-lg p-3">
+            <div>
+              <div class="text-base font-medium text-gray-900" i18n="@@NoneTags">Ninguno</div>
+              <p class="text-sm text-gray-600" i18n="@@NoneTagsDescription">
+                No se muestra ningún elemento para este usuario/grupo
+              </p>
+            </div>
+            <p-inputSwitch [(ngModel)]="none" (onChange)="syncronizeAllNoneValuesNone()">
+            </p-inputSwitch>
+          </div>
+
+          <!-- Dynamic switch -->
+          <div class="flex items-center justify-between bg-white border border-gray-200 rounded-lg p-3">
+            <div>
+              <div class="text-base font-medium text-gray-900" i18n="@@DynamicTags">Dinámico</div>
+              <p class="text-sm text-gray-600" i18n="@@DynamicTagsDescription">
+                Filtrado avanzado mediante una consulta personalizada
+              </p>
+            </div>
+            <p-inputSwitch [(ngModel)]="dynamic" (onChange)="syncronizeAllNoneValuesDynamic()">
+            </p-inputSwitch>
+          </div>
+
+          <!-- Input Dinámico -->
+          @if(dynamic){
+            <div class="mt-3">
+              <label class="block text-base font-semibold text-gray-900 mb-1" i18n="@@inputConsultaDinamica">
+                Consulta dinámica
+              </label>
+              <input pInputText type="text" [(ngModel)]="dynamicQuery"
+                class="w-full p-2 border border-gray-300 rounded-md" i18n-placeholder="@@placeholderConsultaDinamica" placeholder="Introduzca la expresión dinámica…">
+            </div>
+          }
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+</eda-dialog2>

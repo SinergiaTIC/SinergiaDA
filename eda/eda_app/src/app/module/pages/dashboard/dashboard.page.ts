@@ -20,6 +20,7 @@ import { FocusOnShowDirective } from '@eda/shared/directives/autofocus.directive
 import { CommonModule } from '@angular/common';
 import { AssistantService } from '@eda/services/api/assistant.service';
 import { EdaTitlePanelComponent, EdaTabsPanelComponent } from '@eda/components/component.index';
+
 import { ZoomSdaComponent } from './zoom-control/zoom.component';
 import { ZoomStateService } from './zoom-control/zoom-state.service';
 import { SHOW_ZOOM_IN_SIDEBAR } from '@eda/configs/customizable/customizable_default';
@@ -70,8 +71,7 @@ const STANDALONE_COMPONENTS = [
   ImportPanelDialog,
   DependentFilters,
   EdaTitlePanelComponent,
-  EdaTabsPanelComponent,
-  ZoomSdaComponent
+  EdaTabsPanelComponent
 ]
 @Component({
   selector: 'app-v2-dashboard-page',
