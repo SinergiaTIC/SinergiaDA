@@ -10,3 +10,4 @@ export const ALLOWED_JOIN_TYPES: string[] = ['left', 'inner'];
 export const SHOW_CUSTOM_ACTION: boolean = false;
 export const SHOW_ZOOM_IN_SIDEBAR: boolean = false;
 export const PRIVATE_EDITION_ACTIVATED: boolean =  false;
+export const ENABLED_LANGUAGES: string[] = ['es', 'en', 'ca', 'fr', 'pl', 'gl', 'eu'];
