@@ -1,1 +1,1 @@
-module.exports.SdaVersion = "2.12.1";
+module.exports.SdaVersion = "2.12.2";
