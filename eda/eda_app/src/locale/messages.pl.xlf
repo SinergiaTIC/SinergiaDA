@@ -7117,6 +7117,14 @@ Po skonfigurowaniu możesz go wywołać w dowolnym momencie za pomocą przycisku
         <source>Tutorial</source>
         <target>Samouczek</target>
       </trans-unit>
+      <trans-unit id="kpiDecreaseFontSize" datatype="html">
+        <source>Reducir tamaño</source>
+        <target>Zmniejsz rozmiar</target>
+      </trans-unit>
+      <trans-unit id="kpiIncreaseFontSize" datatype="html">
+        <source>Aumentar tamaño</source>
+        <target>Zwiększ rozmiar</target>
+      </trans-unit>
 </body>
 </file>
 </xliff>

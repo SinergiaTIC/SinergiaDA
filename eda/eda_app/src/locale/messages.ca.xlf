@@ -7447,6 +7447,14 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
         <source>Quitar formato</source>
         <target>Eliminar format</target>
       </trans-unit>
+      <trans-unit id="kpiDecreaseFontSize" datatype="html">
+        <source>Reducir tamaño</source>
+        <target>Reduir mida</target>
+      </trans-unit>
+      <trans-unit id="kpiIncreaseFontSize" datatype="html">
+        <source>Aumentar tamaño</source>
+        <target>Augmentar mida</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>

@@ -7178,6 +7178,14 @@ OR<ph id="5"/>
   <source>Tutorial</source>
   <target>Tutorial</target>
 </trans-unit>
+<trans-unit id="kpiDecreaseFontSize" datatype="html">
+  <source>Reducir tamaño</source>
+  <target>Decrease size</target>
+</trans-unit>
+<trans-unit id="kpiIncreaseFontSize" datatype="html">
+  <source>Aumentar tamaño</source>
+  <target>Increase size</target>
+</trans-unit>
 </body>
 </file>
 </xliff>

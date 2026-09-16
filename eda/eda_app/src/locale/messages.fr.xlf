@@ -7418,6 +7418,14 @@ Une fois configurée, vous pouvez l'activer à tout moment à partir du bouton.<
         <source>Tutorial</source>
         <target>Tutoriel</target>
       </trans-unit>
+      <trans-unit id="kpiDecreaseFontSize" datatype="html">
+        <source>Reducir tamaño</source>
+        <target>Réduire la taille</target>
+      </trans-unit>
+      <trans-unit id="kpiIncreaseFontSize" datatype="html">
+        <source>Aumentar tamaño</source>
+        <target>Augmenter la taille</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>
