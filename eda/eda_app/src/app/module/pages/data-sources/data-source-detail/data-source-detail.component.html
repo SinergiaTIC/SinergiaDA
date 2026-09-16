@@ -340,7 +340,7 @@
           </div>
         }
 
-        @if(columnPanel.valueListSource){
+        @if(columnPanel.valueListSource && defineListOfPossibleValuesButtonEnabled){
         <h3 class="text-lg font-medium text-gray-700 mb-3" i18n="@@rolesPermisos">Valores para filtro</h3>
         
         <div class="border rounded-lg">
@@ -391,10 +391,12 @@
 
         
 
-      <div class="mb-6">
-        <h3 class="text-lg font-medium text-gray-700 mb-3" i18n="@@rolesPermisos">Roles y permisos de fila</h3>
-        <eda-table [inject]="permissionsColumn"></eda-table>
-      </div>
+      @if(addPermissionButtonEnabled){
+        <div class="mb-6">
+          <h3 class="text-lg font-medium text-gray-700 mb-3" i18n="@@rolesPermisos">Roles y permisos de fila</h3>
+          <eda-table [inject]="permissionsColumn"></eda-table>
+        </div>
+      }
 
         
 
