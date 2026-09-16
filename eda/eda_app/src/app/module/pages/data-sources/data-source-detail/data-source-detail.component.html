@@ -3,25 +3,27 @@
     <div class="bg-card rounded-lg border shadow-sm">
       <div class="flex items-center justify-between p-6 border-b">
         <h3 class="text-2xl font-semibold leading-none tracking-tight" i18n="@@editModelHeaders">{{tablePanel.type ? tablePanel.name : ''}}</h3>
-        <div class="flex items-center gap-2">
-          <span class="relative group text-xs font-medium text-gray-500 cursor-default select-none">
-            <span i18n="@@mcpVisibilityLabel">Visibilidad MCP</span>
-            <span class="absolute top-full left-1/2 -translate-x-1/2 mt-2 w-64 rounded-md bg-gray-800 text-white text-xs px-3 py-2 text-center shadow-lg pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-150 z-50"
-                  i18n="@@mcpVisibilityTooltipTableModel">
-              Controla si el agente de IA tiene acceso a esta información: Full permite acceso completo, None lo excluye totalmente.
+        @if(aiControlEnabled){
+          <div class="flex items-center gap-2">
+            <span class="relative group text-xs font-medium text-gray-500 cursor-default select-none">
+              <span i18n="@@mcpVisibilityLabel">Visibilidad MCP</span>
+              <span class="absolute top-full left-1/2 -translate-x-1/2 mt-2 w-64 rounded-md bg-gray-800 text-white text-xs px-3 py-2 text-center shadow-lg pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-150 z-50"
+                    i18n="@@mcpVisibilityTooltipTableModel">
+                Controla si el agente de IA tiene acceso a esta información: Full permite acceso completo, None lo excluye totalmente.
+              </span>
             </span>
-          </span>
-          <div class="flex p-1 rounded-lg bg-gray-200">
-            @for (opt of iaVisibilityOptionsSimple; track opt.value) {
-              <button type="button"
-                (click)="tablePanel.ia_visibility = opt.value; update()"
-                class="px-3 py-1 rounded-md text-xs font-medium transition-all"
-                [ngClass]="{'bg-white shadow text-foreground': tablePanel.ia_visibility === opt.value, 'text-gray-500': tablePanel.ia_visibility !== opt.value}">
-                {{ opt.label }}
-              </button>
-            }
+            <div class="flex p-1 rounded-lg bg-gray-200">
+              @for (opt of iaVisibilityOptionsSimple; track opt.value) {
+                <button type="button"
+                  (click)="tablePanel.ia_visibility = opt.value; update()"
+                  class="px-3 py-1 rounded-md text-xs font-medium transition-all"
+                  [ngClass]="{'bg-white shadow text-foreground': tablePanel.ia_visibility === opt.value, 'text-gray-500': tablePanel.ia_visibility !== opt.value}">
+                  {{ opt.label }}
+                </button>
+              }
+            </div>
           </div>
-        </div>
+        }
       </div>
       <div class="p-6 space-y-6">
         <div class="grid gap-4">
@@ -182,25 +184,27 @@
     <div class="bg-card rounded-lg border shadow-sm">
       <div class="flex items-center justify-between p-6 border-b">
         <h3 class="text-2xl font-semibold leading-none tracking-tight" i18n="@@editModelHeaders">{{columnPanel.type ? columnPanel.name : ''}}</h3>
-        <div class="flex items-center gap-2">
-          <span class="relative group text-xs font-medium text-gray-500 cursor-default select-none">
-            <span i18n="@@mcpVisibilityLabel">Visibilidad MCP</span>
-            <span class="absolute top-full left-1/2 -translate-x-1/2 mt-2 w-72 rounded-md bg-gray-800 text-white text-xs px-3 py-2 text-center shadow-lg pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-150 z-50"
-                  i18n="@@mcpVisibilityTooltipCol">
-              Controla si el agente de IA tiene acceso a esta información: Full permite acceso completo, Declaration expone solo nombre y tipo, None lo excluye totalmente.
+        @if(aiControlEnabled){
+          <div class="flex items-center gap-2">
+            <span class="relative group text-xs font-medium text-gray-500 cursor-default select-none">
+              <span i18n="@@mcpVisibilityLabel">Visibilidad MCP</span>
+              <span class="absolute top-full left-1/2 -translate-x-1/2 mt-2 w-72 rounded-md bg-gray-800 text-white text-xs px-3 py-2 text-center shadow-lg pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-150 z-50"
+                    i18n="@@mcpVisibilityTooltipCol">
+                Controla si el agente de IA tiene acceso a esta información: Full permite acceso completo, Declaration expone solo nombre y tipo, None lo excluye totalmente.
+              </span>
             </span>
-          </span>
-          <div class="flex p-1 rounded-lg bg-gray-200">
-            @for (opt of iaVisibilityOptions; track opt.value) {
-              <button type="button"
-                (click)="columnPanel.ia_visibility = opt.value; update()"
-                class="px-3 py-1 rounded-md text-xs font-medium transition-all"
-                [ngClass]="{'bg-white shadow text-foreground': columnPanel.ia_visibility === opt.value, 'text-gray-500': columnPanel.ia_visibility !== opt.value}">
-                {{ opt.label }}
-              </button>
-            }
+            <div class="flex p-1 rounded-lg bg-gray-200">
+              @for (opt of iaVisibilityOptions; track opt.value) {
+                <button type="button"
+                  (click)="columnPanel.ia_visibility = opt.value; update()"
+                  class="px-3 py-1 rounded-md text-xs font-medium transition-all"
+                  [ngClass]="{'bg-white shadow text-foreground': columnPanel.ia_visibility === opt.value, 'text-gray-500': columnPanel.ia_visibility !== opt.value}">
+                  {{ opt.label }}
+                </button>
+              }
+            </div>
           </div>
-        </div>
+        }
       </div>
       
       <div class="p-6 space-y-6">
@@ -429,25 +433,27 @@
     <div class="bg-card rounded-lg border shadow-sm">
       <div class="flex items-center justify-between p-6 border-b">
         <h2 class="text-2xl font-semibold" i18n="@@editModelHeaders">Editar {{modelPanel.type ? modelPanel.metadata.model_name : ''}}</h2>
-        <div class="flex items-center gap-2">
-          <span class="relative group text-xs font-medium text-gray-500 cursor-default select-none">
-            <span i18n="@@mcpVisibilityLabel">Visibilidad MCP</span>
-            <span class="absolute top-full left-1/2 -translate-x-1/2 mt-2 w-64 rounded-md bg-gray-800 text-white text-xs px-3 py-2 text-center shadow-lg pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-150 z-50"
-                  i18n="@@mcpVisibilityTooltipTableModel">
-              Controla si el agente de IA tiene acceso a esta información: Full permite acceso completo, None lo excluye totalmente.
+        @if(aiControlEnabled){
+          <div class="flex items-center gap-2">
+            <span class="relative group text-xs font-medium text-gray-500 cursor-default select-none">
+              <span i18n="@@mcpVisibilityLabel">Visibilidad MCP</span>
+              <span class="absolute top-full left-1/2 -translate-x-1/2 mt-2 w-64 rounded-md bg-gray-800 text-white text-xs px-3 py-2 text-center shadow-lg pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-150 z-50"
+                    i18n="@@mcpVisibilityTooltipTableModel">
+                Controla si el agente de IA tiene acceso a esta información: Full permite acceso completo, None lo excluye totalmente.
+              </span>
             </span>
-          </span>
-          <div class="flex p-1 rounded-lg bg-gray-200">
-            @for (opt of iaVisibilityOptionsSimple; track opt.value) {
-              <button type="button"
-                (click)="$any(modelPanel.metadata).ia_visibility = opt.value; update()"
-                class="px-3 py-1 rounded-md text-xs font-medium transition-all"
-                [ngClass]="{'bg-white shadow text-foreground': $any(modelPanel.metadata).ia_visibility === opt.value, 'text-gray-500': $any(modelPanel.metadata).ia_visibility !== opt.value}">
-                {{ opt.label }}
-              </button>
-            }
+            <div class="flex p-1 rounded-lg bg-gray-200">
+              @for (opt of iaVisibilityOptionsSimple; track opt.value) {
+                <button type="button"
+                  (click)="$any(modelPanel.metadata).ia_visibility = opt.value; update()"
+                  class="px-3 py-1 rounded-md text-xs font-medium transition-all"
+                  [ngClass]="{'bg-white shadow text-foreground': $any(modelPanel.metadata).ia_visibility === opt.value, 'text-gray-500': $any(modelPanel.metadata).ia_visibility !== opt.value}">
+                  {{ opt.label }}
+                </button>
+              }
+            </div>
           </div>
-        </div>
+        }
       </div>
       <div class="p-6 space-y-6">
         <!-- Metadata Section -->
@@ -608,7 +614,7 @@
             }
           </div>
           
-          @if (['mysql', 'postgres', 'sqlserver', 'clickhouse'].includes(selectedTipoBD?.value)) {
+          @if (sslConnectionSwitchEnabled && ['mysql', 'postgres', 'sqlserver', 'clickhouse'].includes(selectedTipoBD?.value)) {
             <div class="mt-4 flex items-center space-x-2">
               <button 
                 type="button" 
