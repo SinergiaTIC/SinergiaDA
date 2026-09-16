@@ -81,6 +81,26 @@
             </label>
           </div>
 
+          @if(tableTypesButtonGroupEnabled){
+            <div class="mb-4">
+              <label class="block font-medium text-gray-700 mb-2" i18n="@@inputTipoTabla">
+                Tipo de tabla
+              </label>
+              <div class="inline-flex rounded-md border border-gray-300 overflow-hidden">
+                @for (type of tableTypes; track type.value; let first = $first) {
+                  <button
+                    type="button"
+                    (click)="updateTableType(type.value)"
+                    class="px-4 py-2 font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                    [ngClass]="[tablePanel.table_type === type.value ? 'btn-type-active' : 'bg-white text-gray-700 hover:bg-gray-100', !first ? 'border-l border-gray-300' : '']"
+                  >
+                    {{ type.label }}
+                  </button>
+                }
+              </div>
+            </div>
+          }
+
           @if(tablePanel.query){
             <div>
               <label for="description" class="block font-medium text-gray-700 mb-1" i18n="@@viewLabel"> Vista </label>
@@ -139,16 +159,19 @@
             </svg>
             {{addPermission}}
           </button>
-          <button class="inline-flex items-center justify-center whitespace-nowrap rounded-md font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 btn-corporate-primary h-10 px-4 py-2"
-            (click)="openTableRelationDialog()">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4 mr-2"><path d="M12 5v14M5 12h14"/></svg>
-            {{addRelation}}
-          </button>
+          @if(addRelationshipToTableButtonEnabled){
+            <button class="inline-flex items-center justify-center whitespace-nowrap rounded-md font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 btn-corporate-primary h-10 px-4 py-2"
+              (click)="openTableRelationDialog()">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4 mr-2"><path d="M12 5v14M5 12h14"/></svg>
+              {{addRelation}}
+            </button>
+          }
           <button class="inline-flex items-center justify-center whitespace-nowrap rounded-md font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 btn-corporate-primary h-10 px-4 py-2"
             (click)="openNewColDialog()">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4 mr-2"><path d="M12 5v14M5 12h14"/></svg>
             {{addCalculatedCol}}
           </button>
+          @if(hideAllColumnsButtonEnabled){
           <button
             class="inline-flex items-center justify-center whitespace-nowrap rounded-md font-medium
                   ring-offset-background transition-colors focus-visible:outline-none
@@ -160,7 +183,7 @@
             }"
             (click)="hideAllColumns(tablePanel)"
           >
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" 
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
               stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4 mr-2"
             >
               <path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"/>
@@ -171,6 +194,7 @@
 
             {{ hideColumnsString }}
           </button>
+          }
         </div>
       </div>
     </div>
