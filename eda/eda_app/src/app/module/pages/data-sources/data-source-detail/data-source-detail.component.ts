@@ -1,5 +1,5 @@
 import { EdaTable, EdaColumnText, EdaColumnContextMenu, EdaTableComponent } from '@eda/components/component.index';
-import { Component, OnInit, OnDestroy, EventEmitter, Output, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+import { Component, OnInit, OnDestroy, EventEmitter, Output, Input, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { Router, NavigationEnd } from '@angular/router';
 import { UntypedFormGroup } from '@angular/forms';
 import { MenuItem, SelectItem, TreeNode } from 'primeng/api';
@@ -73,6 +73,7 @@ const STANDALONE_COMPONENTS = [
   imports: [ANGULAR_MODULES, STANDALONE_COMPONENTS]
 })
 export class DataSourceDetailComponent implements OnInit, OnDestroy {
+    @Input() id: string;
     @Output() onTableCreated: EventEmitter<any> = new EventEmitter();
 
     public aiControlEnabled: boolean = PROTECTED_MODEL_AI_CONTROL_ENABLED;
@@ -645,7 +646,7 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
     }
 
     isProtectedDataSource(): boolean {
-        return PROTECTED_MODEL_DATA_SOURCES_ARRAY.includes(this.dataModelService.model_id);
+        return PROTECTED_MODEL_DATA_SOURCES_ARRAY.includes(this.id);
     }
 
     updateRelation(relation: Relation) {  

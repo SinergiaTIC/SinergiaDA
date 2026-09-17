@@ -94,7 +94,7 @@
   </div>
 
   <div class="w-[70%] h-[calc(100vh-5rem)] overflow-auto">
-    <app-data-source-detail (onTableCreated)="reLoadModelFromDb()"></app-data-source-detail>
+    <app-data-source-detail [id]="id" (onTableCreated)="reLoadModelFromDb()"></app-data-source-detail>
   </div>
   
   @if (isSaveAsDialogVisible) {

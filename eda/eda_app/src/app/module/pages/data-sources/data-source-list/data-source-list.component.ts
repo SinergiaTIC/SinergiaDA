@@ -54,7 +54,7 @@ export class DataSourceListComponent implements OnInit, OnDestroy {
     public connectionType: string;
 
     isProtectedDataSource(): boolean {
-        return PROTECTED_MODEL_DATA_SOURCES_ARRAY.includes(this.dataModelService.model_id);
+        return PROTECTED_MODEL_DATA_SOURCES_ARRAY.includes(this.id);
     }
 
 
