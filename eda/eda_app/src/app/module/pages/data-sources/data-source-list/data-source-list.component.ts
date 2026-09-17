@@ -7,6 +7,7 @@ import Swal, { SweetAlertOptions } from 'sweetalert2';
 import { DataSourceDetailComponent } from '../data-source-detail/data-source-detail.component';
 import { PrimengModule } from 'app/core/primeng.module';
 import { DatasourceSaveAsDialog } from '../data-source-save-as/datasource-save-as.dialog';
+import { PROTECTED_MODEL_DATA_SOURCES_ARRAY } from '@eda/configs/customizable/customizable_default';
 
 import * as _ from 'lodash';
 
@@ -51,6 +52,10 @@ export class DataSourceListComponent implements OnInit, OnDestroy {
     public deleteModelSTR = $localize`:@@deleteModel:Borrar modelo de datos`;
     public unsaved : string;
     public connectionType: string;
+
+    isProtectedDataSource(): boolean {
+        return PROTECTED_MODEL_DATA_SOURCES_ARRAY.includes(this.dataModelService.model_id);
+    }
 
 
     constructor(public dataModelService: DataSourceService,
