@@ -21,7 +21,7 @@ interface Particle {
       left: 0;
       width: 100%;
       height: 100%;
-      background: linear-gradient(to bottom right, #EBF4FF, #FFFFFF, #EBF4FF);
+      background: hsl(var(--left-sidebar-bg));
     }
   `,
     ],
@@ -87,7 +87,7 @@ export class ParticlesBackgroundComponent implements AfterViewInit, OnDestroy {
 
             this.ctx.beginPath()
             this.ctx.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2)
-            this.ctx.fillStyle = `hsla(210, 80%, 50%, ${particle.opacity})`
+            this.ctx.fillStyle = `hsla(63, 61%, 48%, ${particle.opacity})`
             this.ctx.fill()
 
             this.particles.forEach((otherParticle) => {
@@ -97,7 +97,7 @@ export class ParticlesBackgroundComponent implements AfterViewInit, OnDestroy {
 
                 if (distance < 150) {
                     this.ctx.beginPath()
-                    this.ctx.strokeStyle = `hsla(210, 80%, 50%, ${0.1 * (1 - distance / 150)})`
+                    this.ctx.strokeStyle = `hsla(63, 61%, 48%, ${0.1 * (1 - distance / 150)})`
                     this.ctx.lineWidth = 0.8
                     this.ctx.moveTo(particle.x, particle.y)
                     this.ctx.lineTo(otherParticle.x, otherParticle.y)

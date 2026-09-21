@@ -12,12 +12,93 @@
 }
 
 :root {
-  --DEFAULT_FONT_FAMILY: "Montserrat";
+  --DEFAULT_FONT_FAMILY: "Questrial";
   /* THIS MUST BE SET ALSO IN  eda_app\src\app\config\personalitzacio\customizables.ts */
 
   /* ── Scrollbar global ── */
   --scrollbar-thumb: #cbd5e1;
   --scrollbar-thumb-hover: #94a3b8;
+
+  /* ── Classic dark left sidebar (2.x palette) ── */
+  --left-sidebar-bg: 216 17% 17%;   /* #242A33 */
+  --left-sidebar-fg: #95a2b4;       /* icons / labels */
+}
+
+/* Re-map the Tailwind chrome tokens only inside the left sidebar, so the
+   component keeps using bg-background/bg-muted untouched. Icons use
+   stroke:currentColor, so `color` drives them. Hover/active keep using
+   --corporate-primary (olive) from the component's own CSS. */
+app-main-left-sidebar {
+  --background: var(--left-sidebar-bg);
+  --muted: var(--left-sidebar-bg);
+  --border: var(--left-sidebar-bg);
+  color: var(--left-sidebar-fg);
+}
+
+app-main-left-sidebar > div {
+  border-right-color: var(--left-sidebar-bg);
+}
+
+/* Sidebar logo: the 90x90 SDA mark was squashed by the fixed w-12/h-9 slot.
+   Keep it square & undistorted (ID beats Tailwind's class utilities). */
+#sidebar-btn-toggle {
+  width: 3rem;
+  height: 3rem;
+  object-fit: contain;
+}
+
+/* ─── Corporate green buttons: always dark text ─────────────────────────────
+   The olive primary is light, so dark text is far more readable (matches the
+   old 2.x look). Covers the scattered .btn-corporate-* definitions (per-page
+   component CSS), PrimeNG highlights, dialog confirm buttons, tags, the
+   sidebar hover/active and the utility bg-[var(--corporate-primary)]. */
+.btn-corporate-primary,
+.btn-corporate-primary:hover,
+.btn-corporate-gradient,
+.btn-corporate-gradient:hover,
+.confirm-button,
+.tag-selected,
+.tag:hover,
+.p-selectbutton .p-button.p-highlight,
+.p-selectbutton .p-button.p-highlight:hover,
+.sidebar-btn:hover,
+.sidebar-btn-active,
+[class*="bg-[var(--corporate-primary)]"] {
+  color: #1f2937 !important;
+}
+
+/* ─── Login (dark, matches the left sidebar) ────────────────────────────────
+   The background is set in particles-background.ts (hsl(--left-sidebar-bg));
+   the colored orbs are hidden and the card is a subtle translucent glass. */
+app-loginv2 .animate-blob {
+  display: none;
+}
+
+/* Card: rgba(255, 255, 255, 0.10) over the dark background */
+app-loginv2 .bg-white\/70 {
+  background-color: #FFFFFF1A;      /* = rgba(255, 255, 255, 0.10) */
+  border-color: #FFFFFF26;          /* = rgba(255, 255, 255, 0.15) */
+}
+
+/* Readability on the dark translucent card */
+app-loginv2 .text-gray-800 {
+  color: #FFFFFF;
+}
+app-loginv2 .text-gray-600 {
+  color: rgba(255, 255, 255, 0.85);
+}
+app-loginv2 .text-gray-500 {
+  color: rgba(255, 255, 255, 0.60);
+}
+
+/* ─── Classic SDA font scale ────────────────────────────────────────────────
+   The whole UI is rem-based (Tailwind). Old 2.x rendered text ~1.5x larger
+   than this app's 13px base (11px under the <=1370px media query). Raising the
+   root to 16.8px makes every rem token match the old measurements (10.5→16px,
+   8.4→12.8px). !important beats the later html rules in style.css (custom.css
+   is @import-ed first, so it would otherwise lose). */
+html {
+  font-size: 16.8px !important;
 }
 
 /* ─── PrimeNG highlight override (lara-light-blue uses hardcoded blue — we override here) ─── */
