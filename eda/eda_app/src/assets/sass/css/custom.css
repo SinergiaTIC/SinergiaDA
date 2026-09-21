@@ -194,3 +194,46 @@ html {
   display: flex;
   width: 100% !important;
 }
+
+/* ─── Report/dashboard tables: mirror the 2.x PrimeNG look ──────────────────
+   eda-table sets --table-* inline (from DEFAULT_TABLE_HEADER_COLOR); a
+   stylesheet !important declaration wins over the inline value, so we can
+   recolor the header/banding here without touching the component.
+   Old measured values (:8082): th rgba(219,223,228,.5) 11px/300 pad 6.6px,
+   td #455a64 11px/400 pad 4.4px, banding rgba(245,241,241,.22). */
+.eda-table {
+  --table-header-color: rgba(219, 223, 228, 0.5) !important;
+  --table-banding-color: transparent !important;
+  --table-total-color: rgba(219, 223, 228, 0.5) !important;
+}
+
+/* 2.x rows were a uniform rgba(245,241,241,.22) (no zebra): tint the whole
+   table and keep every cell transparent. */
+.eda-table .p-datatable .p-datatable-table {
+  background-color: rgba(245, 241, 241, 0.22) !important;
+}
+
+.eda-table .p-datatable .p-datatable-thead > tr > th {
+  color: #455a64 !important;
+  font-size: 13px !important;
+  font-weight: 700 !important;
+  padding: 6.6px !important;
+  border: 1px solid #ffffff !important;
+  border-radius: 0 !important;
+}
+
+.eda-table .p-datatable .p-datatable-tbody > tr > td {
+  color: #455a64 !important;
+  font-size: 13px !important;
+  font-weight: 400 !important;
+  padding: 4.4px !important;
+  border: 1px solid #e9ecef !important;
+}
+
+/* 2.x inherited the root size: 13px full, 11px on the reduced (<=1370px) layout */
+@media (max-width: 1370px) {
+  .eda-table .p-datatable .p-datatable-thead > tr > th,
+  .eda-table .p-datatable .p-datatable-tbody > tr > td {
+    font-size: 11px !important;
+  }
+}
