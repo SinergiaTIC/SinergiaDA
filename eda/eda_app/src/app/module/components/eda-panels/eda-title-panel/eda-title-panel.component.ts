@@ -113,7 +113,7 @@ export class EdaTitlePanelComponent implements OnInit {
                     }
                 }),
                 new EdaContextMenuItem({
-                    label: $localize`:@@duplicatePanel:Duplicar panel`,
+                    label: $localize`:@@panelOptionsDup:Duplicar panel`,
                     icon: 'fa fa-copy',
                     command: () => {
                         this.contextMenu.hideContextMenu();
