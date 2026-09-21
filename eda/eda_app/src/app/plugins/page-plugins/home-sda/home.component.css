@@ -42,6 +42,31 @@
   font-variant-numeric: tabular-nums;
 }
 
+/* ---- Header controls: exact same height in every viewport ----
+   Default paddings/font sizes gave 34/40/42/67px (and "Nuevo informe"
+   wrapped to two lines). Force them all to 2.5rem (42px). */
+.btn-corporate-gradient,
+#view-mode button,
+.filter-dropdown-toggle,
+button.border-transparent,
+span.ml-auto {
+  height: 2.5rem;
+  min-height: 2.5rem;
+  padding-top: 0;
+  padding-bottom: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap;
+}
+
+#buscador {
+  height: 2.5rem;
+  min-height: 2.5rem;
+  padding-top: 0;
+  padding-bottom: 0;
+}
+
 /* ---- Report table ---- */
 #report-table th { position: relative; cursor: pointer; }
 #report-table th:hover { background-color: hsl(var(--muted)); }
