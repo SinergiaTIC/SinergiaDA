@@ -158,7 +158,25 @@ html {
   background: rgba(var(--corporate-primary-rgb), 0.08) !important;
 }
 
-/* ─── PrimeNG paginator hover ───────────────────────────────────────────── */
+/* ─── Paginator + record counter: mirror the 2.x look ───────────────────── */
+.p-paginator {
+  padding: 0.5rem 0 !important;
+  font-size: 13px !important;
+  background: transparent !important;
+  border: 0 !important;
+}
+.p-paginator .p-paginator-first,
+.p-paginator .p-paginator-prev,
+.p-paginator .p-paginator-next,
+.p-paginator .p-paginator-last,
+.p-paginator .p-paginator-pages .p-paginator-page {
+  min-width: 26px !important;
+  height: 26px !important;
+  margin: 0 2px !important;
+  color: #455a64 !important;
+  font-size: 13px !important;
+  border-radius: 3px !important;
+}
 .p-paginator .p-paginator-first:not(.p-disabled):not(.p-highlight):hover,
 .p-paginator .p-paginator-prev:not(.p-disabled):not(.p-highlight):hover,
 .p-paginator .p-paginator-next:not(.p-disabled):not(.p-highlight):hover,
@@ -167,9 +185,41 @@ html {
   background: rgba(var(--corporate-primary-rgb), 0.08) !important;
   color: var(--corporate-primary) !important;
 }
-
 .p-paginator .p-paginator-pages .p-paginator-page.p-highlight {
-  color: var(--corporate-primary) !important;
+  background: #e8f5e9 !important;
+  color: #495057 !important;
+  font-weight: bold !important;
+  border-radius: 3px !important;
+}
+.p-paginator .p-dropdown {
+  height: 26px !important;
+  min-height: 26px !important;
+}
+.p-paginator .p-dropdown-label,
+.p-paginator .p-dropdown-trigger {
+  font-size: 13px !important;
+}
+
+/* Record counter (eda-table .items-length) */
+.items-length {
+  font-size: 13px !important;
+  font-weight: 600 !important;
+  color: #455a64 !important;
+}
+
+/* 2.x inherited the root size: 13px full, 11px on the reduced (<=1370px) layout */
+@media (max-width: 1370px) {
+  .p-paginator,
+  .p-paginator .p-paginator-first,
+  .p-paginator .p-paginator-prev,
+  .p-paginator .p-paginator-next,
+  .p-paginator .p-paginator-last,
+  .p-paginator .p-paginator-pages .p-paginator-page,
+  .p-paginator .p-dropdown-label,
+  .p-paginator .p-dropdown-trigger,
+  .items-length {
+    font-size: 11px !important;
+  }
 }
 
 /* ─── PrimeNG focus ring override (lara-light-blue uses hardcoded blue) ─── */
