@@ -1,11 +1,11 @@
 // AUTO-GENERADO por scripts/generate-plugins.js — no editar a mano.
-// Para agregar un plugin de menú de informe nuevo, crea una carpeta en
-// dashboard-menu-plugins con su plugin.meta.ts y componente, y vuelve a correr
+// Para agregar un component plugin nuevo, crea una carpeta en
+// component-plugins con su plugin.meta.ts y componente, y vuelve a correr
 // `npm start` / `npm run build:prod`.
-import { IDashboardMenuPlugin } from './dashboard-menu-plugin.interface';
+import { IComponentPlugin } from './component-plugin.interface';
 import { DashboardMenuSdaComponent } from './dashboard-menu-sda/dashboard-menu.component';
 
-export const DASHBOARD_MENU_PLUGINS: IDashboardMenuPlugin[] = [
+export const COMPONENT_PLUGINS: IComponentPlugin[] = [
     {
         type: 'report-toolbar',
         label: 'Menú del informe',

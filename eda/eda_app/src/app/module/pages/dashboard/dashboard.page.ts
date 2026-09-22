@@ -23,7 +23,7 @@ import { EdaTitlePanelComponent, EdaTabsPanelComponent } from '@eda/components/c
 import { ZoomSdaComponent } from './zoom-control/zoom.component';
 import { ZoomStateService } from './zoom-control/zoom-state.service';
 import { SHOW_ZOOM_IN_SIDEBAR } from '@eda/configs/customizable/customizable_default';
-import { DASHBOARD_MENU_PLUGINS } from '../../../plugins/dashboard-menu-plugins/dashboard-menu-plugin-registry';
+import { COMPONENT_PLUGINS } from '../../../plugins/component-plugins/component-plugin-registry';
 
 // Sidebar imports
 import { DashboardSidebarService } from '@eda/services/shared/dashboard-sidebar.service';
@@ -90,10 +90,10 @@ export class DashboardPage implements OnInit {
   @ViewChildren(EdaBlankPanelComponent) edaPanels: QueryList<EdaBlankPanelComponent>;
   
   /**
-   * Plugin de menú del informe (toolbar sustituye a los tres puntos ⠿).
+   * Plugin de componente del informe (toolbar sustituye a los tres puntos ⠿).
    * Expuesto al template para renderizarlo con ngComponentOutlet.
    */
-  public menuPlugin = DASHBOARD_MENU_PLUGINS.find(p => p.type === 'report-toolbar') ?? DASHBOARD_MENU_PLUGINS[0];
+  public menuPlugin = COMPONENT_PLUGINS.find(p => p.type === 'report-toolbar') ?? COMPONENT_PLUGINS[0];
   
   private sidebarService = inject(DashboardSidebarService)
   private globalFiltersService = inject(GlobalFiltersService);
