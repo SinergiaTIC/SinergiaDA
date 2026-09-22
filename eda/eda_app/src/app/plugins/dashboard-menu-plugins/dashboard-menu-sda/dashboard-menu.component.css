@@ -49,6 +49,19 @@
   box-shadow: 0 4px 12px rgba(2, 132, 199, 0.4);
 }
 
+.dsm-btn-warning {
+  background: linear-gradient(135deg, #d97706, #f59e0b);
+  border-color: transparent;
+  color: #ffffff;
+  box-shadow: 0 2px 6px rgba(217, 119, 6, 0.35);
+}
+
+.dsm-btn-warning:hover {
+  background: linear-gradient(135deg, #b45309, #d97706);
+  border-color: transparent;
+  box-shadow: 0 4px 12px rgba(217, 119, 6, 0.4);
+}
+
 .dsm-btn-icon {
   font-size: 1rem;
 }
@@ -76,4 +89,24 @@
   padding: 0.7rem 1rem;
   font-size: 0.95rem;
   font-weight: 500;
+}
+
+/* Toasts globales arriba-centro (p-toast por defecto es top-right).
+ * Regla global a propósito: el <p-toast> es único en app.component. */
+.p-toast.p-toast-top-right {
+  left: 50%;
+  right: auto;
+  transform: translateX(-50%);
+}
+
+/* Aviso "cambios sin guardar": vive en dashboard.page.html con clases
+ * `absolute -top-12 right-16`. Se centra arriba como los toasts, sin tocar
+ * el core. Frágil por diseño: si el core cambia esas clases, revisar aquí. */
+#myDashboard div.absolute.-top-12.right-16 {
+  position: fixed;
+  top: 1rem;
+  bottom: auto;
+  left: 50%;
+  right: auto;
+  transform: translateX(-50%);
 }

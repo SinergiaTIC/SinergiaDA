@@ -13,13 +13,8 @@
     </button>
   }
 
-  <button type="button" class="dsm-btn" [pTooltip]="reloadTooltip" tooltipPosition="bottom" (click)="reload()">
-    <i class="pi pi-refresh dsm-btn-icon"></i>
-    <span>{{ reloadLabel }}</span>
-  </button>
-
   @if (isEditable) {
-    <button type="button" class="dsm-btn" [pTooltip]="saveTooltip" tooltipPosition="bottom" (click)="save()">
+    <button type="button" class="dsm-btn" [class.dsm-btn-warning]="hasUnsavedChanges" [pTooltip]="saveTooltip" tooltipPosition="bottom" (click)="save()">
       <i class="pi pi-save dsm-btn-icon"></i>
       <span>{{ saveLabel }}</span>
     </button>

@@ -1,11 +1,11 @@
-import { Component, Input, OnInit, ViewChild, inject } from "@angular/core";
+import { Component, Input, OnDestroy, OnInit, ViewChild, ViewEncapsulation, inject } from "@angular/core";
 import { CommonModule } from "@angular/common";
-import { lastValueFrom } from "rxjs";
+import { Subscription } from "rxjs";
 import { Menu, MenuModule } from "primeng/menu";
 import { MenuItem } from "primeng/api";
 import { TooltipModule } from "primeng/tooltip";
 import { EdaPanel, EdaPanelType, EdaTitlePanel, EdaTabsPanel } from "@eda/models/model.index";
-import { DashboardService, FileUtiles, StyleProviderService } from "@eda/services/service.index";
+import { FileUtiles, StyleProviderService, DashboardService } from "@eda/services/service.index";
 import { DashboardSidebarService } from "@eda/services/shared/dashboard-sidebar.service";
 import { SHOW_CUSTOM_ACTION } from "@eda/configs/customizable/customizable_default";
 
@@ -20,9 +20,12 @@ import { SHOW_CUSTOM_ACTION } from "@eda/configs/customizable/customizable_defau
   standalone: true,
   imports: [CommonModule, MenuModule, TooltipModule],
   templateUrl: "./dashboard-menu.component.html",
-  styleUrls: ["./dashboard-menu.component.css"]
+  styleUrls: ["./dashboard-menu.component.css"],
+  // Sin encapsulación a propósito: la regla de toasts globales del CSS
+  // debe aplicar fuera de este componente.
+  encapsulation: ViewEncapsulation.None
 })
-export class DashboardMenuSdaComponent implements OnInit {
+export class DashboardMenuSdaComponent implements OnInit, OnDestroy {
   @Input() dashboard: any = null;
 
   @ViewChild("addMenu") addMenu?: Menu;
@@ -32,6 +35,7 @@ export class DashboardMenuSdaComponent implements OnInit {
   private stylesProviderService = inject(StyleProviderService);
   private dashboardService = inject(DashboardService);
   private sidebarService = inject(DashboardSidebarService);
+  private notSavedSub?: Subscription;
 
   public isEditable: boolean = false;
   public isReadOnly: boolean = true;
@@ -39,11 +43,11 @@ export class DashboardMenuSdaComponent implements OnInit {
   public moreMenuItems: MenuItem[] = [];
 
   public addLabel = $localize`:@@dashboardSidebarReportAdd:Añadir`;
-  public reloadLabel = $localize`:@@dashboardSidebarRefreshDashboard:Recargar`;
-  public reloadTooltip = $localize`:@@dashboardSidebarRefreshDashboardTooltip:Recargar informe`;
   public saveLabel = $localize`:@@dashboardSidebarSave:Guardar`;
   public saveTooltip = $localize`:@@dashboardSidebarSaveTooltip:Guardar informe`;
   public moreLabel = $localize`:@@dashboardSidebarMoreOptions:Más`;
+  /** true cuando el informe tiene cambios pendientes de guardar. */
+  public hasUnsavedChanges: boolean = false;
 
   private readonly ANONIM_ID = "135792467811111111111112";
   private readonly ADMIN_ID = "135792467811111111111110";
@@ -52,17 +56,18 @@ export class DashboardMenuSdaComponent implements OnInit {
   ngOnInit(): void {
     this.isEditable = this.canIedit();
     this.isReadOnly = this.isReadOnlyCheck();
+    this.notSavedSub = this.dashboardService.notSaved.subscribe(v => this.hasUnsavedChanges = !!v);
     this.buildAddMenu();
     this.buildMoreMenu();
   }
 
-  /**
-   * Acciones primarias visibles: Recargar y Guardar.
-   */
-  public reload(): void {
-    this.cleanPanelsCache();
+  ngOnDestroy(): void {
+    this.notSavedSub?.unsubscribe();
   }
 
+  /**
+   * Acción primaria visible: Guardar.
+   */
   public async save(): Promise<void> {
     if (!this.dashboard) return;
     try {
@@ -109,34 +114,41 @@ export class DashboardMenuSdaComponent implements OnInit {
   }
 
   /**
-   * Dropdown "Más": resto de acciones disponibles en el menú actual. La lógica
-   * de cada acción vive en DashboardSidebarComponent (que sigue montado); aquí
-   * sólo se delega a su instancia vía métodos/flags públicos, sin refactorizarlo.
+   * Dropdown "Más": mismas acciones que el menú original, agrupadas por sección
+   * con el patrón estándar de p-menu (grupo = cabecera no clicable + items).
+   * Agrupar TODO es obligatorio: p-menu entra en modo agrupado en cuanto un
+   * item tiene `items`, y en ese modo un item suelto se pinta como cabecera
+   * muerta (no clicable). La lógica de cada acción sigue viviendo en
+   * DashboardSidebarComponent; aquí sólo se delega, sin refactorizarlo.
    */
   private buildMoreMenu(): void {
     const sidebar = () => this.dashboard?.sidebar;
+    const sb = this.dashboard?.sidebar;
+    const hide = () => this.moreMenu?.hide();
 
-    this.moreMenuItems = [
+    const groups: MenuItem[] = [
       {
-        label: $localize`:@@dashboardSidebarEditFilter:Editar filtros`,
-        icon: "pi pi-filter",
-        command: () => sidebar()?.toggleGlobalFilter()
-      },
-      {
-        label: $localize`:@@dashboardSidebarDependentFilters:Filtros dependientes`,
-        icon: "pi pi-sliders-h",
-        command: () => sidebar()?.dependentFilters()
-      },
-      {
-        label: $localize`:@@dashboardSidebarSaveAs:Guardar como`,
-        icon: "pi pi-copy",
-        visible: this.can('edit'),
-        command: () => { const s = sidebar(); if (s) s.isSaveAsDialogVisible = true; }
-      },
-      {
-        label: $localize`:@@dashboardSidebarDownload:Descargar`,
-        icon: "pi pi-download",
+        label: $localize`:@@dashboardMenuSectionFilters:Filtros`,
         items: [
+          // Igual que el original: un item por filtro que abre su diálogo
+          // de edición (DashboardSidebarComponent.handleSpecificFilter).
+          ...this.editFilterItems(),
+          {
+            label: $localize`:@@dashboardSidebarDependentFilters:Filtros dependientes`,
+            icon: "pi pi-sliders-h",
+            command: () => sidebar()?.dependentFilters()
+          }
+        ]
+      },
+      {
+        label: $localize`:@@dashboardMenuSectionReport:Informe`,
+        items: [
+          {
+            label: $localize`:@@dashboardSidebarSaveAs:Guardar como`,
+            icon: "pi pi-copy",
+            visible: this.can('edit'),
+            command: () => { const s = sidebar(); if (s) s.isSaveAsDialogVisible = true; hide(); }
+          },
           {
             label: $localize`:@@dashboardSidebarDownloadPDF:Descargar PDF`,
             icon: "pi pi-file-pdf",
@@ -156,71 +168,113 @@ export class DashboardMenuSdaComponent implements OnInit {
             label: $localize`:@@dashboardSidebarDownloadWord:Descargar Word`,
             icon: "pi pi-file-word",
             command: () => sidebar()?.exportDashboardAsWord()
+          },
+          {
+            label: $localize`:@@opcionMail:Enviar por email`,
+            icon: "pi pi-envelope",
+            visible: this.can('edit'),
+            command: () => { const s = sidebar(); if (s) s.isMailConfigDialogVisible = true; hide(); }
+          },
+          ...(SHOW_CUSTOM_ACTION ? [{
+            label: $localize`:@@dashboardSidebarCustomAction:Acción personalizada`,
+            icon: "pi pi-cog",
+            visible: this.can('edit'),
+            command: () => { const s = sidebar(); if (s) s.isCustomActionDialogVisible = true; hide(); }
+          }] : [])
+        ]
+      },
+      {
+        label: $localize`:@@dashboardMenuSectionCustomize:Personalizar`,
+        items: [
+          {
+            label: $localize`:@@dashboardSidebarEditStyles:Editar estilos`,
+            icon: "pi pi-palette",
+            visible: this.can('edit'),
+            command: () => { const s = sidebar(); if (s) s.isEditStyleDialogVisible = true; hide(); }
+          },
+          {
+            label: $localize`:@@dashboardSidebarDashboardPrivacity:Privacidad del informe`,
+            icon: "pi pi-lock",
+            visible: this.can('edit'),
+            command: () => { const s = sidebar(); if (s) s.isVisibleModalVisible = true; hide(); }
+          },
+          {
+            label: $localize`:@@addTag:Añadir etiqueta`,
+            icon: "pi pi-tag",
+            visible: this.can('edit'),
+            command: () => { const s = sidebar(); if (s) s.isTagModalVisible = true; hide(); }
           }
         ]
       },
       {
-        label: $localize`:@@opcionMail:Enviar por email`,
-        icon: "pi pi-envelope",
-        visible: this.can('edit'),
-        command: () => { const s = sidebar(); if (s) s.isMailConfigDialogVisible = true; }
-      },
-      ...(SHOW_CUSTOM_ACTION ? [{
-        label: $localize`:@@dashboardSidebarCustomAction:Acción personalizada`,
-        icon: "pi pi-cog",
-        visible: this.can('edit'),
-        command: () => { const s = sidebar(); if (s) s.isCustomActionDialogVisible = true; }
-      }] : []),
-      { separator: true },
-      {
-        label: $localize`:@@dashboardSidebarEditStyles:Editar estilos`,
-        icon: "pi pi-palette",
-        visible: this.can('edit'),
-        command: () => { const s = sidebar(); if (s) s.isEditStyleDialogVisible = true; }
-      },
-      {
-        label: $localize`:@@dashboardSidebarDashboardPrivacity:Privacidad del informe`,
-        icon: "pi pi-lock",
-        visible: this.can('edit'),
-        command: () => { const s = sidebar(); if (s) s.isVisibleModalVisible = true; }
-      },
-      {
-        label: $localize`:@@addTag:Añadir etiqueta`,
-        icon: "pi pi-tag",
-        visible: this.can('edit'),
-        command: () => { const s = sidebar(); if (s) s.isTagModalVisible = true; }
-      },
-      {
-        label: this.dashboard?.sidebar?.clickFiltersEnabled
-          ? $localize`:@@enableFilters:Click en filtros habilitado`
-          : $localize`:@@disableFilters:Click en filtros deshabilitado`,
-        icon: "pi pi-bolt",
-        command: () => sidebar()?.toggleClickFilters()
-      },
-      {
-        label: this.dashboard?.sidebar?.clickPanelLockButton
-          ? $localize`:@@enablePanelLockButton:Bloquear los paneles`
-          : $localize`:@@disablePanelLockButton:Desbloquear los paneles`,
-        icon: "pi pi-lock",
-        visible: this.can('edit'),
-        command: () => sidebar()?.panelLockButton()
-      },
-      {
-        label: this.dashboard?.sidebar?.onlyIcanEdit
-          ? $localize`:@@onlyIcanEditTagEnable:Edición privada habilitada`
-          : $localize`:@@onlyIcanEditTagDisable:Edición privada deshabilitada`,
-        icon: "pi pi-check",
-        visible: this.can('edit'),
-        command: () => sidebar()?.toggleEdit()
+        label: $localize`:@@dashboardMenuSectionBehaviour:Interacción`,
+        items: [
+          {
+            label: sb?.clickFiltersEnabled
+              ? $localize`:@@enableFilters:Click en filtros habilitado`
+              : $localize`:@@disableFilters:Click en filtros deshabilitado`,
+            icon: sb?.clickFiltersEnabled ? "pi pi-bolt" : "pi pi-ban",
+            command: () => { sidebar()?.toggleClickFilters(); this.buildMoreMenu(); }
+          },
+          {
+            label: sb?.clickPanelLockButton
+              ? $localize`:@@enablePanelLockButton:Bloquear los paneles`
+              : $localize`:@@disablePanelLockButton:Desbloquear los paneles`,
+            icon: sb?.clickPanelLockButton ? "pi pi-lock-open" : "pi pi-lock",
+            visible: this.can('edit'),
+            command: () => { sidebar()?.panelLockButton(); this.buildMoreMenu(); }
+          },
+          {
+            label: sb?.onlyIcanEdit
+              ? $localize`:@@onlyIcanEditTagEnable:Edición privada habilitada`
+              : $localize`:@@onlyIcanEditTagDisable:Edición privada deshabilitada`,
+            icon: sb?.onlyIcanEdit ? "pi pi-check" : "pi pi-ban",
+            visible: this.can('edit'),
+            command: () => { sidebar()?.toggleEdit(); this.buildMoreMenu(); }
+          }
+        ]
       },
       { separator: true },
       {
-        label: $localize`:@@dashboardSidebarDeleteDashboard:Eliminar informe`,
-        icon: "pi pi-trash",
-        visible: this.can('edit'),
-        command: () => sidebar()?.removeDashboard()
+        label: $localize`:@@dashboardMenuSectionDelete:Eliminar`,
+        items: [
+          {
+            label: $localize`:@@dashboardSidebarDeleteDashboard:Eliminar informe`,
+            icon: "pi pi-trash",
+            visible: this.can('edit'),
+            command: () => sidebar()?.removeDashboard()
+          }
+        ]
       }
     ];
+
+    this.moreMenuItems = this.withoutEmptyGroups(groups);
+  }
+
+  /** Elimina grupos sin items visibles y separadores huérfanos (inicio/fin/dobles). */
+  private withoutEmptyGroups(groups: MenuItem[]): MenuItem[] {
+    const kept = groups.filter(g => {
+      if (g.separator || !g.items) return true;
+      return (g.items as MenuItem[]).some(i => i.visible !== false);
+    });
+    const out: MenuItem[] = [];
+    for (const g of kept) {
+      if (g.separator && (out.length === 0 || out[out.length - 1].separator)) continue;
+      out.push(g);
+    }
+    while (out.length > 0 && out[out.length - 1].separator) out.pop();
+    return out;
+  }
+
+  /** Items de la sección "Filtros": uno por filtro, abre su diálogo de edición. */
+  private editFilterItems(): MenuItem[] {
+    const sidebar = () => this.dashboard?.sidebar;
+    const filters = this.dashboard?.globalFilter?.globalFilters || [];
+    return filters.map((f: any) => ({
+      label: f?.selectedColumn?.display_name?.default || f?.column?.value?.description?.default,
+      icon: "pi pi-check",
+      command: () => sidebar()?.handleSpecificFilter(f)
+    }));
   }
 
   /** Reconstruye el menú "Más" (para refrescar labels de toggles) y lo abre. */
@@ -331,21 +385,6 @@ export class DashboardMenuSdaComponent implements OnInit {
       dragAndDrop: true
     });
     this.dashboard.panels.push(panel);
-  }
-
-  public async cleanPanelsCache(): Promise<void> {
-    const queries: any[] = [];
-    for (const panel of this.dashboard?.panels || []) {
-      if (panel.content && panel.content.query && panel.content.query.query) {
-        queries.push(panel.content.query.query);
-      }
-    }
-    const body = {
-      model_id: this.dashboard.dataSource?._id,
-      queries
-    };
-    await lastValueFrom(this.dashboardService.cleanCache(body));
-    this.dashboard?.loadDashboard?.();
   }
 
   public closeMenus(): void {
