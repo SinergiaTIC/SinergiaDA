@@ -10,10 +10,11 @@ import { DashboardSidebarService } from "@eda/services/shared/dashboard-sidebar.
 import { SHOW_CUSTOM_ACTION } from "@eda/configs/customizable/customizable_default";
 
 /**
- * dashboard-menu-sda: sustituye al menú de los tres puntos (⠿) en la cabecera
- * del informe por un toolbar horizontal. Único plugin activo de tipo
- * 'report-toolbar'. Recibe la instancia DashboardPage como input y sólo
- * depende de ella de forma estructural (sin refactorizar DashboardSidebarComponent).
+ * dashboard-menu-sda: replaces the three-dot (⠿) menu in the report header
+ * with a horizontal toolbar. The only active plugin of type 'report-toolbar'.
+ * Receives the DashboardPage instance as input and only depends on it
+ * structurally (without refactoring DashboardSidebarComponent). In view mode
+ * the toolbar collapses to the view/edit switch (see viewMode).
  */
 @Component({
   selector: "dashboard-menu-sda",
@@ -21,8 +22,8 @@ import { SHOW_CUSTOM_ACTION } from "@eda/configs/customizable/customizable_defau
   imports: [CommonModule, MenuModule, TooltipModule],
   templateUrl: "./dashboard-menu.component.html",
   styleUrls: ["./dashboard-menu.component.css"],
-  // Sin encapsulación a propósito: la regla de toasts globales del CSS
-  // debe aplicar fuera de este componente.
+  // Unencapsulated on purpose: the global toast rule in the CSS
+  // must apply outside this component.
   encapsulation: ViewEncapsulation.None
 })
 export class DashboardMenuSdaComponent implements OnInit, OnDestroy, DoCheck {
@@ -50,18 +51,23 @@ export class DashboardMenuSdaComponent implements OnInit, OnDestroy, DoCheck {
   public viewTooltip = $localize`:@@dashboardMenuViewModeTooltip:Pasar a modo ver (oculta la edición)`;
   public editModeLabel = $localize`:@@dashboardMenuEditMode:Editar`;
   public editModeTooltip = $localize`:@@dashboardMenuEditModeTooltip:Volver a modo edición`;
-  /** true cuando el informe tiene cambios pendientes de guardar. */
+  /** true when the report has unsaved changes. */
   public hasUnsavedChanges: boolean = false;
   /**
-   * Modo ver: oculta toda la edición SIN tocar el core. Palancas en caliente:
-   * - `panel.readonly=true` (apaga lo gobernado por `isEditable()` en paneles),
-   * - `gridsterOptions.draggable/resizable.enabled=false` (frena mover/redimensionar),
-   * - clase `dsm-view-mode` en #myDashboard + CSS global (chrome sin flag),
-   * - toolbar propio reducido al switch. Todo se restaura al salir.
+   * View mode: hides all editing WITHOUT touching the core. Hot levers:
+   * - `panel.readonly=true` (switches off everything governed by `isEditable()` in panels),
+   * - `gridsterOptions.draggable/resizable.enabled=false` (stops move/resize),
+   * - `dsm-view-mode` class on #myDashboard + global CSS (chrome without flags),
+   * - own toolbar collapsed to the switch. Everything is restored on exit.
    */
-  public viewMode: boolean = false;
+  public viewMode: boolean = true;
+  private viewModeInit = false;
+  private viewModeTouched = false;
   private viewModeBackup = new Map<string, any>();
+  private viewModeCompBackup = new Map<string, any>();
   private gridsterBackup: { draggable?: boolean; resizable?: boolean } = {};
+  /** localStorage key prefix for the per-report view/edit preference. */
+  private readonly VIEW_MODE_STORAGE_PREFIX = 'dsm-view-mode:';
 
   private readonly ANONIM_ID = "135792467811111111111112";
   private readonly ADMIN_ID = "135792467811111111111110";
@@ -81,25 +87,41 @@ export class DashboardMenuSdaComponent implements OnInit, OnDestroy, DoCheck {
   }
 
   /**
-   * Reafirma los flags de modo ver en cada ciclo: los paneles pueden ser
-   * reemplazados (p. ej. recarga con auto-refresh) sin pasar por el plugin.
-   * Idempotente y barato: solo toca lo que difiere.
+   * Re-asserts the view-mode flags on every cycle: panels can be replaced
+   * (e.g. reload with auto-refresh) without going through the plugin.
+   * Idempotent and cheap: only touches what differs.
    */
   ngDoCheck(): void {
+    // The report loads async AFTER this plugin is created, so permissions,
+    // menus and the stored per-report mode can only be resolved once the
+    // dashboard id is available. Never touches a mode the user already set.
+    if (!this.viewModeInit && (this.dashboard?.dashboardId || this.dashboard?.dashboard?._id)) {
+      this.viewModeInit = true;
+      this.isEditable = this.canIedit();
+      this.isReadOnly = this.isReadOnlyCheck();
+      if (!this.viewModeTouched) {
+        this.viewMode = this.isEditable && this.readStoredViewMode();
+      }
+      this.buildAddMenu();
+      this.buildMoreMenu();
+    }
     if (!this.viewMode) return;
     this.ensureViewFlags();
-    document.getElementById('myDashboard')?.classList.toggle('dsm-view-mode', true);
+    this.syncViewModeClass();
   }
 
-  /** Conmutador ver/editar (solo con permiso de edición). */
+  /** View/edit switch (edit permission only). */
   public toggleViewMode(): void {
     this.setViewMode(!this.viewMode);
   }
 
+  /** Enables or disables view mode, applying or restoring its flags. */
   public setViewMode(enabled: boolean): void {
     this.closeMenus();
     this.viewMode = enabled;
-    document.getElementById('myDashboard')?.classList.toggle('dsm-view-mode', enabled);
+    this.viewModeTouched = true;
+    this.storeViewMode(enabled);
+    this.syncViewModeClass();
     if (enabled) {
       this.ensureViewFlags();
     } else {
@@ -107,12 +129,52 @@ export class DashboardMenuSdaComponent implements OnInit, OnDestroy, DoCheck {
     }
   }
 
-  /** Aplica readonly + gridster off, guardando el previo al primer toque. */
+  /** Storage key for this report (null when the dashboard id is unknown). */
+  private viewModeStorageKey(): string | null {
+    const id = this.dashboard?.dashboardId ?? this.dashboard?.dashboard?._id;
+    return id ? `${this.VIEW_MODE_STORAGE_PREFIX}${id}` : null;
+  }
+
+  /** Last view-mode choice for this report; defaults to view (true). */
+  private readStoredViewMode(): boolean {
+    try {
+      const key = this.viewModeStorageKey();
+      if (!key) return true;
+      return localStorage.getItem(key) !== 'edit';
+    } catch {
+      return true;
+    }
+  }
+
+  private storeViewMode(enabled: boolean): void {
+    try {
+      const key = this.viewModeStorageKey();
+      if (key) localStorage.setItem(key, enabled ? 'view' : 'edit');
+    } catch { /* private mode etc.: preference simply not persisted */ }
+  }
+
+  private syncViewModeClass(): void {
+    document.getElementById('myDashboard')?.classList.toggle('dsm-view-mode', this.viewMode);
+  }
+
+  /** Applies readonly + gridster off, stashing the previous values on first touch. */
   private ensureViewFlags(): void {
     for (const p of this.dashboard?.panels || []) {
       if (p && p.readonly !== true) {
         if (!this.viewModeBackup.has(p.id)) this.viewModeBackup.set(p.id, p.readonly);
         p.readonly = true;
+      }
+    }
+    // Blank-panel chrome (lock, ...) reads the COMPONENT's readonly snapshot
+    // taken in its ngOnInit, not the panel object: patch live instances too.
+    // Components created later snapshot panel.readonly (already true here).
+    for (const comp of this.dashboard?.edaPanels?.toArray?.() || []) {
+      const compAny = comp as any;
+      if (compAny && compAny.readonly !== true) {
+        if (!this.viewModeCompBackup.has(compAny.panel?.id)) {
+          this.viewModeCompBackup.set(compAny.panel?.id, compAny.readonly);
+        }
+        compAny.readonly = true;
       }
     }
     const g: any = this.dashboard?.gridsterOptions;
@@ -131,13 +193,19 @@ export class DashboardMenuSdaComponent implements OnInit, OnDestroy, DoCheck {
     if (changed) g.api?.optionsChanged();
   }
 
-  /** Restaura los valores previos al modo ver (solo lo que este tocó). */
+  /** Restores the pre-view-mode values (only what view mode touched). */
   private restoreEditMode(): void {
     for (const p of this.dashboard?.panels || []) {
       if (!p || !this.viewModeBackup.has(p.id)) continue;
       p.readonly = this.viewModeBackup.get(p.id);
     }
     this.viewModeBackup.clear();
+    for (const comp of this.dashboard?.edaPanels?.toArray?.() || []) {
+      const compAny = comp as any;
+      if (!compAny || !this.viewModeCompBackup.has(compAny.panel?.id)) continue;
+      compAny.readonly = this.viewModeCompBackup.get(compAny.panel?.id);
+    }
+    this.viewModeCompBackup.clear();
     const g: any = this.dashboard?.gridsterOptions;
     if (g) {
       let changed = false;
@@ -154,19 +222,15 @@ export class DashboardMenuSdaComponent implements OnInit, OnDestroy, DoCheck {
     this.gridsterBackup = {};
   }
 
-  /**
-   * Acción primaria visible: Guardar.
-   */
+  /** Primary visible action: Save. */
   public async save(): Promise<void> {
     if (!this.dashboard) return;
     try {
       await this.dashboard.saveDashboard();
-    } catch { /* el propio dashboard informa del error */ }
+    } catch { /* the dashboard itself reports the error */ }
   }
 
-  /**
-   * Dropdown "Añadir": nuevo panel, filtro, texto, navegador e importar panel.
-   */
+  /** "Add" dropdown: new panel, filter, text, tabs and panel import. */
   private buildAddMenu(): void {
     this.addMenuItems = [
       {
@@ -203,12 +267,12 @@ export class DashboardMenuSdaComponent implements OnInit, OnDestroy, DoCheck {
   }
 
   /**
-   * Dropdown "Más": mismas acciones que el menú original, agrupadas por sección
-   * con el patrón estándar de p-menu (grupo = cabecera no clicable + items).
-   * Agrupar TODO es obligatorio: p-menu entra en modo agrupado en cuanto un
-   * item tiene `items`, y en ese modo un item suelto se pinta como cabecera
-   * muerta (no clicable). La lógica de cada acción sigue viviendo en
-   * DashboardSidebarComponent; aquí sólo se delega, sin refactorizarlo.
+   * "More" dropdown: same actions as the original menu, grouped by section
+   * with the standard p-menu pattern (group = non-clickable header + items).
+   * Grouping EVERYTHING is mandatory: p-menu switches to grouped mode as soon
+   * as one item has `items`, and in that mode a loose item renders as a dead
+   * (non-clickable) header. Each action's logic still lives in
+   * DashboardSidebarComponent; here it is only delegated, not refactored.
    */
   private buildMoreMenu(): void {
     const sidebar = () => this.dashboard?.sidebar;
@@ -219,8 +283,8 @@ export class DashboardMenuSdaComponent implements OnInit, OnDestroy, DoCheck {
       {
         label: $localize`:@@dashboardMenuSectionFilters:Filtros`,
         items: [
-          // Igual que el original: un item por filtro que abre su diálogo
-          // de edición (DashboardSidebarComponent.handleSpecificFilter).
+          // Same as the original: one item per filter opening its edit
+          // dialog (DashboardSidebarComponent.handleSpecificFilter).
           ...this.editFilterItems(),
           {
             label: $localize`:@@dashboardSidebarDependentFilters:Filtros dependientes`,
@@ -340,7 +404,7 @@ export class DashboardMenuSdaComponent implements OnInit, OnDestroy, DoCheck {
     this.moreMenuItems = this.withoutEmptyGroups(groups);
   }
 
-  /** Elimina grupos sin items visibles y separadores huérfanos (inicio/fin/dobles). */
+  /** Drops groups without visible items and orphan separators (leading/trailing/doubled). */
   private withoutEmptyGroups(groups: MenuItem[]): MenuItem[] {
     const kept = groups.filter(g => {
       if (g.separator || !g.items) return true;
@@ -355,7 +419,7 @@ export class DashboardMenuSdaComponent implements OnInit, OnDestroy, DoCheck {
     return out;
   }
 
-  /** Items de la sección "Filtros": uno por filtro, abre su diálogo de edición. */
+  /** "Filters" section items: one per filter, opening its edit dialog. */
   private editFilterItems(): MenuItem[] {
     const sidebar = () => this.dashboard?.sidebar;
     const filters = this.dashboard?.globalFilter?.globalFilters || [];
@@ -366,11 +430,12 @@ export class DashboardMenuSdaComponent implements OnInit, OnDestroy, DoCheck {
     }));
   }
 
-  /** Reconstruye el menú "Más" (para refrescar labels de toggles) y lo abre. */
+  /** Rebuilds the "More" menu (to refresh toggle labels) and opens it. */
   public openMoreMenu(event: Event): void {
     this.buildMoreMenu();
     this.moreMenu?.toggle(event);
   }
+  /** Checks an action permission ('edit' supported, anything else falls back to isEditable). */
   public can(action: string): boolean {
     if (!this.dashboard) return false;
     if (action === "edit") return this.canIedit();
@@ -423,7 +488,7 @@ export class DashboardMenuSdaComponent implements OnInit, OnDestroy, DoCheck {
     return !!user && user._id === this.ANONIM_ID;
   }
 
-  // ---- Acciones de creación (misma lógica que DashboardSidebarComponent) ----
+  // ---- Creation actions (same logic as DashboardSidebarComponent) ----
 
   public onAddWidget(): void {
     const panel = new EdaPanel({
@@ -446,7 +511,7 @@ export class DashboardMenuSdaComponent implements OnInit, OnDestroy, DoCheck {
   public onAddTitle(): void {
     const panel = new EdaTitlePanel({
       id: this.fileUtils.generateUUID(),
-      title: "Titulo Panel",
+      title: $localize`:@@newTitlePanel:Titulo Panel`,
       type: EdaPanelType.TITLE,
       w: 20,
       h: 1,
@@ -464,7 +529,7 @@ export class DashboardMenuSdaComponent implements OnInit, OnDestroy, DoCheck {
   public onAddTabsPanel(): void {
     const panel = new EdaTabsPanel({
       id: this.fileUtils.generateUUID(),
-      title: "Tabs",
+      title: $localize`:@@newTabsPanel:Tabs`,
       type: EdaPanelType.TABS,
       w: 40,
       h: 2,

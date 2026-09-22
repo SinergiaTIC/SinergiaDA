@@ -93,35 +93,43 @@
   font-weight: 500;
 }
 
-/* Toasts globales arriba-centro (p-toast por defecto es top-right).
- * Regla global a propósito: el <p-toast> es único en app.component. */
+/* Global toasts pinned top-center (p-toast defaults to top-right).
+ * Intentionally global: the single <p-toast> lives in app.component. */
 .p-toast.p-toast-top-right {
   left: 50%;
   right: auto;
   transform: translateX(-50%);
 }
 
-/* VIEW-MODE (sin tocar core): oculta el chrome de edición NO gobernado por
- * flags (panel.readonly cubre los paneles de datos vía isEditable()).
- * Frágil por diseño: si el core cambia este markup, revisar aquí. */
+/* VIEW-MODE (no core changes): hides edit chrome NOT governed by flags
+ * (panel.readonly covers data panels via isEditable()).
+ * Fragile by design: if the core changes this markup, revisit here. */
 #myDashboard.dsm-view-mode eda-title-panel {
-  pointer-events: none; /* bloquea dblclick-edición y clicks de su chrome */
+  pointer-events: none; /* blocks dblclick-editing and its chrome clicks */
 }
 #myDashboard.dsm-view-mode eda-title-panel .pi-ellipsis-v,
-#myDashboard.dsm-view-mode eda-tabs-panel .pi-ellipsis-v {
-  display: none; /* triggers de context-menu sin gatear */
+#myDashboard.dsm-view-mode eda-tabs-panel .pi-ellipsis-v,
+#myDashboard.dsm-view-mode eda-blank-panel .pi-ellipsis-v {
+  display: none; /* ungated panel-menu triggers (titles stay visible) */
 }
-#myDashboard.dsm-view-mode .drag-handler,
+#myDashboard.dsm-view-mode eda-title-panel .pi-lock,
+#myDashboard.dsm-view-mode eda-title-panel .pi-lock-open {
+  display: none; /* title-panel lock runs on internal editMode, not flippable */
+}
+#myDashboard.dsm-view-mode .drag-handler {
+  cursor: default; /* the header bar doubles as drag handle: keep it, just not draggable */
+}
 #myDashboard.dsm-view-mode .gridster-item-resizable-handler {
-  display: none; /* tiradores visuales (el comportamiento lo frena gridster off) */
+  display: none; /* visual handles (gridster off stops the behavior) */
 }
 #myDashboard.dsm-view-mode zoom-control {
-  display: none; /* control de zoom: ayuda de vista, fuera en modo ver */
+  display: none; /* zoom control: viewing aid, out in view mode */
 }
 
-/* Aviso "cambios sin guardar": vive en dashboard.page.html con clases
- * `absolute -top-12 right-16`. Se centra arriba como los toasts, sin tocar
- * el core. Frágil por diseño: si el core cambia esas clases, revisar aquí. */
+/* "Unsaved changes" notice: lives in dashboard.page.html with
+ * `absolute -top-12 right-16` classes. Centered on top like the toasts,
+ * without touching the core. Fragile by design: if the core changes those
+ * classes, revisit here. */
 #myDashboard div.absolute.-top-12.right-16 {
   position: fixed;
   top: 1rem;

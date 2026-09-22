@@ -90,8 +90,8 @@ export class DashboardPage implements OnInit {
   @ViewChildren(EdaBlankPanelComponent) edaPanels: QueryList<EdaBlankPanelComponent>;
   
   /**
-   * Plugin de componente del informe (toolbar sustituye a los tres puntos ⠿).
-   * Expuesto al template para renderizarlo con ngComponentOutlet.
+   * Report component plugin (toolbar replacing the three dots ⠿).
+   * Exposed to the template for rendering with ngComponentOutlet.
    */
   public menuPlugin = COMPONENT_PLUGINS.find(p => p.type === 'report-toolbar') ?? COMPONENT_PLUGINS[0];
   
