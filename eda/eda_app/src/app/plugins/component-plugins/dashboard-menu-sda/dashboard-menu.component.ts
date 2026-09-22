@@ -1,4 +1,4 @@
-import { Component, Input, OnDestroy, OnInit, ViewChild, ViewEncapsulation, inject } from "@angular/core";
+import { Component, DoCheck, Input, OnDestroy, OnInit, ViewChild, ViewEncapsulation, inject } from "@angular/core";
 import { CommonModule } from "@angular/common";
 import { Subscription } from "rxjs";
 import { Menu, MenuModule } from "primeng/menu";
@@ -25,7 +25,7 @@ import { SHOW_CUSTOM_ACTION } from "@eda/configs/customizable/customizable_defau
   // debe aplicar fuera de este componente.
   encapsulation: ViewEncapsulation.None
 })
-export class DashboardMenuSdaComponent implements OnInit, OnDestroy {
+export class DashboardMenuSdaComponent implements OnInit, OnDestroy, DoCheck {
   @Input() dashboard: any = null;
 
   @ViewChild("addMenu") addMenu?: Menu;
@@ -46,8 +46,22 @@ export class DashboardMenuSdaComponent implements OnInit, OnDestroy {
   public saveLabel = $localize`:@@dashboardSidebarSave:Guardar`;
   public saveTooltip = $localize`:@@dashboardSidebarSaveTooltip:Guardar informe`;
   public moreLabel = $localize`:@@dashboardSidebarMoreOptions:Más`;
+  public viewLabel = $localize`:@@dashboardMenuViewMode:Ver`;
+  public viewTooltip = $localize`:@@dashboardMenuViewModeTooltip:Pasar a modo ver (oculta la edición)`;
+  public editModeLabel = $localize`:@@dashboardMenuEditMode:Editar`;
+  public editModeTooltip = $localize`:@@dashboardMenuEditModeTooltip:Volver a modo edición`;
   /** true cuando el informe tiene cambios pendientes de guardar. */
   public hasUnsavedChanges: boolean = false;
+  /**
+   * Modo ver: oculta toda la edición SIN tocar el core. Palancas en caliente:
+   * - `panel.readonly=true` (apaga lo gobernado por `isEditable()` en paneles),
+   * - `gridsterOptions.draggable/resizable.enabled=false` (frena mover/redimensionar),
+   * - clase `dsm-view-mode` en #myDashboard + CSS global (chrome sin flag),
+   * - toolbar propio reducido al switch. Todo se restaura al salir.
+   */
+  public viewMode: boolean = false;
+  private viewModeBackup = new Map<string, any>();
+  private gridsterBackup: { draggable?: boolean; resizable?: boolean } = {};
 
   private readonly ANONIM_ID = "135792467811111111111112";
   private readonly ADMIN_ID = "135792467811111111111110";
@@ -63,6 +77,81 @@ export class DashboardMenuSdaComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.notSavedSub?.unsubscribe();
+    if (this.viewMode) this.restoreEditMode();
+  }
+
+  /**
+   * Reafirma los flags de modo ver en cada ciclo: los paneles pueden ser
+   * reemplazados (p. ej. recarga con auto-refresh) sin pasar por el plugin.
+   * Idempotente y barato: solo toca lo que difiere.
+   */
+  ngDoCheck(): void {
+    if (!this.viewMode) return;
+    this.ensureViewFlags();
+    document.getElementById('myDashboard')?.classList.toggle('dsm-view-mode', true);
+  }
+
+  /** Conmutador ver/editar (solo con permiso de edición). */
+  public toggleViewMode(): void {
+    this.setViewMode(!this.viewMode);
+  }
+
+  public setViewMode(enabled: boolean): void {
+    this.closeMenus();
+    this.viewMode = enabled;
+    document.getElementById('myDashboard')?.classList.toggle('dsm-view-mode', enabled);
+    if (enabled) {
+      this.ensureViewFlags();
+    } else {
+      this.restoreEditMode();
+    }
+  }
+
+  /** Aplica readonly + gridster off, guardando el previo al primer toque. */
+  private ensureViewFlags(): void {
+    for (const p of this.dashboard?.panels || []) {
+      if (p && p.readonly !== true) {
+        if (!this.viewModeBackup.has(p.id)) this.viewModeBackup.set(p.id, p.readonly);
+        p.readonly = true;
+      }
+    }
+    const g: any = this.dashboard?.gridsterOptions;
+    if (!g) return;
+    let changed = false;
+    if (g.draggable && g.draggable.enabled !== false) {
+      if (this.gridsterBackup.draggable === undefined) this.gridsterBackup.draggable = g.draggable.enabled;
+      g.draggable.enabled = false;
+      changed = true;
+    }
+    if (g.resizable && g.resizable.enabled !== false) {
+      if (this.gridsterBackup.resizable === undefined) this.gridsterBackup.resizable = g.resizable.enabled;
+      g.resizable.enabled = false;
+      changed = true;
+    }
+    if (changed) g.api?.optionsChanged();
+  }
+
+  /** Restaura los valores previos al modo ver (solo lo que este tocó). */
+  private restoreEditMode(): void {
+    for (const p of this.dashboard?.panels || []) {
+      if (!p || !this.viewModeBackup.has(p.id)) continue;
+      p.readonly = this.viewModeBackup.get(p.id);
+    }
+    this.viewModeBackup.clear();
+    const g: any = this.dashboard?.gridsterOptions;
+    if (g) {
+      let changed = false;
+      if (g.draggable && this.gridsterBackup.draggable !== undefined) {
+        g.draggable.enabled = this.gridsterBackup.draggable;
+        changed = true;
+      }
+      if (g.resizable && this.gridsterBackup.resizable !== undefined) {
+        g.resizable.enabled = this.gridsterBackup.resizable;
+        changed = true;
+      }
+      if (changed) g.api?.optionsChanged();
+    }
+    this.gridsterBackup = {};
   }
 
   /**
