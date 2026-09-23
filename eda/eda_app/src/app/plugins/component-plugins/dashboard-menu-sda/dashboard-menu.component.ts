@@ -31,6 +31,7 @@ export class DashboardMenuSdaComponent implements OnInit, OnDestroy, DoCheck {
 
   @ViewChild("addMenu") addMenu?: Menu;
   @ViewChild("moreMenu") moreMenu?: Menu;
+  @ViewChild("filtersMenu") filtersMenu?: Menu;
 
   private fileUtils = inject(FileUtiles);
   private stylesProviderService = inject(StyleProviderService);
@@ -42,6 +43,8 @@ export class DashboardMenuSdaComponent implements OnInit, OnDestroy, DoCheck {
   public isReadOnly: boolean = true;
   public addMenuItems: MenuItem[] = [];
   public moreMenuItems: MenuItem[] = [];
+  /** Items of the left flyout opened by the single "Filtros de informe" entry. */
+  public filterMenuItems: MenuItem[] = [];
 
   public addLabel = $localize`:@@dashboardSidebarReportAdd:Añadir`;
   public saveLabel = $localize`:@@dashboardSidebarSave:Guardar`;
@@ -51,6 +54,11 @@ export class DashboardMenuSdaComponent implements OnInit, OnDestroy, DoCheck {
   public viewTooltip = $localize`:@@dashboardMenuViewModeTooltip:Pasar a modo ver (oculta la edición)`;
   public editModeLabel = $localize`:@@dashboardMenuEditMode:Editar`;
   public editModeTooltip = $localize`:@@dashboardMenuEditModeTooltip:Volver a modo edición`;
+  /** Tooltips of the single download icon row (Informe section). */
+  public downloadPdfLabel = $localize`:@@dashboardSidebarDownloadPDF:Descargar PDF`;
+  public downloadImageLabel = $localize`:@@dashboardSidebarDownloadImage:Descargar Imagen`;
+  public downloadExcelLabel = $localize`:@@dashboardSidebarDownloadExcel:Descargar Excel`;
+  public downloadWordLabel = $localize`:@@dashboardSidebarDownloadWord:Descargar Word`;
   /** true when the report has unsaved changes. */
   public hasUnsavedChanges: boolean = false;
   /**
@@ -105,6 +113,7 @@ export class DashboardMenuSdaComponent implements OnInit, OnDestroy, DoCheck {
       this.buildAddMenu();
       this.buildMoreMenu();
     }
+    if (!this.viewModeInit) return; // never touch panels before knowing the report mode
     if (!this.viewMode) return;
     this.ensureViewFlags();
     this.syncViewModeClass();
@@ -267,11 +276,9 @@ export class DashboardMenuSdaComponent implements OnInit, OnDestroy, DoCheck {
   }
 
   /**
-   * "More" dropdown: same actions as the original menu, grouped by section
-   * with the standard p-menu pattern (group = non-clickable header + items).
-   * Grouping EVERYTHING is mandatory: p-menu switches to grouped mode as soon
-   * as one item has `items`, and in that mode a loose item renders as a dead
-   * (non-clickable) header. Each action's logic still lives in
+   * "More" dropdown: same actions as the original menu, laid out as a flat
+   * list where the former section headers are replaced by thin separators
+   * (joinSections). Each action's logic still lives in
    * DashboardSidebarComponent; here it is only delegated, not refactored.
    */
   private buildMoreMenu(): void {
@@ -279,147 +286,133 @@ export class DashboardMenuSdaComponent implements OnInit, OnDestroy, DoCheck {
     const sb = this.dashboard?.sidebar;
     const hide = () => this.moreMenu?.hide();
 
-    const groups: MenuItem[] = [
-      {
-        label: $localize`:@@dashboardMenuSectionFilters:Filtros`,
-        items: [
-          // Same as the original: one item per filter opening its edit
-          // dialog (DashboardSidebarComponent.handleSpecificFilter).
-          ...this.editFilterItems(),
-          {
-            label: $localize`:@@dashboardSidebarDependentFilters:Filtros dependientes`,
-            icon: "pi pi-sliders-h",
-            command: () => sidebar()?.dependentFilters()
-          }
-        ]
-      },
-      {
-        label: $localize`:@@dashboardMenuSectionReport:Informe`,
-        items: [
-          {
-            label: $localize`:@@dashboardSidebarSaveAs:Guardar como`,
-            icon: "pi pi-copy",
-            visible: this.can('edit'),
-            command: () => { const s = sidebar(); if (s) s.isSaveAsDialogVisible = true; hide(); }
-          },
-          {
-            label: $localize`:@@dashboardSidebarDownloadPDF:Descargar PDF`,
-            icon: "pi pi-file-pdf",
-            command: () => sidebar()?.exportAsPDF()
-          },
-          {
-            label: $localize`:@@dashboardSidebarDownloadImage:Descargar Imagen`,
-            icon: "pi pi-image",
-            command: () => sidebar()?.exportAsJPEG()
-          },
-          {
-            label: $localize`:@@dashboardSidebarDownloadExcel:Descargar Excel`,
-            icon: "pi pi-file-excel",
-            command: () => sidebar()?.exportDashboardAsExcel()
-          },
-          {
-            label: $localize`:@@dashboardSidebarDownloadWord:Descargar Word`,
-            icon: "pi pi-file-word",
-            command: () => sidebar()?.exportDashboardAsWord()
-          },
-          {
-            label: $localize`:@@opcionMail:Enviar por email`,
-            icon: "pi pi-envelope",
-            visible: this.can('edit'),
-            command: () => { const s = sidebar(); if (s) s.isMailConfigDialogVisible = true; hide(); }
-          },
-          ...(SHOW_CUSTOM_ACTION ? [{
-            label: $localize`:@@dashboardSidebarCustomAction:Acción personalizada`,
-            icon: "pi pi-cog",
-            visible: this.can('edit'),
-            command: () => { const s = sidebar(); if (s) s.isCustomActionDialogVisible = true; hide(); }
-          }] : [])
-        ]
-      },
-      {
-        label: $localize`:@@dashboardMenuSectionCustomize:Personalizar`,
-        items: [
-          {
-            label: $localize`:@@dashboardSidebarEditStyles:Editar estilos`,
-            icon: "pi pi-palette",
-            visible: this.can('edit'),
-            command: () => { const s = sidebar(); if (s) s.isEditStyleDialogVisible = true; hide(); }
-          },
-          {
-            label: $localize`:@@dashboardSidebarDashboardPrivacity:Privacidad del informe`,
-            icon: "pi pi-lock",
-            visible: this.can('edit'),
-            command: () => { const s = sidebar(); if (s) s.isVisibleModalVisible = true; hide(); }
-          },
-          {
-            label: $localize`:@@addTag:Añadir etiqueta`,
-            icon: "pi pi-tag",
-            visible: this.can('edit'),
-            command: () => { const s = sidebar(); if (s) s.isTagModalVisible = true; hide(); }
-          }
-        ]
-      },
-      {
-        label: $localize`:@@dashboardMenuSectionBehaviour:Interacción`,
-        items: [
-          {
-            label: sb?.clickFiltersEnabled
-              ? $localize`:@@enableFilters:Click en filtros habilitado`
-              : $localize`:@@disableFilters:Click en filtros deshabilitado`,
-            icon: sb?.clickFiltersEnabled ? "pi pi-bolt" : "pi pi-ban",
-            command: () => { sidebar()?.toggleClickFilters(); this.buildMoreMenu(); }
-          },
-          {
-            label: sb?.clickPanelLockButton
-              ? $localize`:@@enablePanelLockButton:Bloquear los paneles`
-              : $localize`:@@disablePanelLockButton:Desbloquear los paneles`,
-            icon: sb?.clickPanelLockButton ? "pi pi-lock-open" : "pi pi-lock",
-            visible: this.can('edit'),
-            command: () => { sidebar()?.panelLockButton(); this.buildMoreMenu(); }
-          },
-          {
-            label: sb?.onlyIcanEdit
-              ? $localize`:@@onlyIcanEditTagEnable:Edición privada habilitada`
-              : $localize`:@@onlyIcanEditTagDisable:Edición privada deshabilitada`,
-            icon: sb?.onlyIcanEdit ? "pi pi-check" : "pi pi-ban",
-            visible: this.can('edit'),
-            command: () => { sidebar()?.toggleEdit(); this.buildMoreMenu(); }
-          }
-        ]
-      },
-      { separator: true },
-      {
-        label: $localize`:@@dashboardMenuSectionDelete:Eliminar`,
-        items: [
-          {
-            label: $localize`:@@dashboardSidebarDeleteDashboard:Eliminar informe`,
-            icon: "pi pi-trash",
-            visible: this.can('edit'),
-            command: () => sidebar()?.removeDashboard()
-          }
-        ]
-      }
+    // Each array is a former section; empty ones (all items hidden) drop out
+    // along with their separator.
+    const sections: MenuItem[][] = [
+      [
+        // Single entry instead of one per filter (the list could grow too
+        // long). It opens a flyout to the LEFT with one button per filter,
+        // keeping the "More" menu open (see onFiltersItemClick).
+        {
+          id: 'reportFilters',
+          label: $localize`:@@dashboardMenuReportFilters:Filtros de informe`,
+          icon: "pi pi-filter",
+          visible: this.hasReportFilters()
+        },
+        {
+          label: $localize`:@@dashboardSidebarDependentFilters:Filtros dependientes`,
+          icon: "pi pi-sliders-h",
+          command: () => sidebar()?.dependentFilters()
+        }
+      ],
+      [
+        {
+          label: $localize`:@@dashboardSidebarSaveAs:Guardar como`,
+          icon: "pi pi-copy",
+          visible: this.can('edit'),
+          command: () => { const s = sidebar(); if (s) s.isSaveAsDialogVisible = true; hide(); }
+        },
+        {
+          label: $localize`:@@opcionMail:Enviar por email`,
+          icon: "pi pi-envelope",
+          visible: this.can('edit'),
+          command: () => { const s = sidebar(); if (s) s.isMailConfigDialogVisible = true; hide(); }
+        },
+        ...(SHOW_CUSTOM_ACTION ? [{
+          label: $localize`:@@dashboardSidebarCustomAction:Acción personalizada`,
+          icon: "pi pi-cog",
+          visible: this.can('edit'),
+          command: () => { const s = sidebar(); if (s) s.isCustomActionDialogVisible = true; hide(); }
+        }] : [])
+      ],
+      [
+        // Own section: the 4 download formats render as a single icon row
+        // (see the itemTemplate), not as 4 entries.
+        { id: 'downloadGroup' }
+      ],
+      [
+        {
+          label: $localize`:@@dashboardSidebarEditStyles:Editar estilos`,
+          icon: "pi pi-palette",
+          visible: this.can('edit'),
+          command: () => { const s = sidebar(); if (s) s.isEditStyleDialogVisible = true; hide(); }
+        },
+        {
+          label: $localize`:@@dashboardSidebarDashboardPrivacity:Privacidad del informe`,
+          icon: "pi pi-lock",
+          visible: this.can('edit'),
+          command: () => { const s = sidebar(); if (s) s.isVisibleModalVisible = true; hide(); }
+        },
+        {
+          label: $localize`:@@addTag:Añadir etiqueta`,
+          icon: "pi pi-tag",
+          visible: this.can('edit'),
+          command: () => { const s = sidebar(); if (s) s.isTagModalVisible = true; hide(); }
+        }
+      ],
+      [
+        {
+          label: sb?.clickFiltersEnabled
+            ? $localize`:@@enableFilters:Click en filtros habilitado`
+            : $localize`:@@disableFilters:Click en filtros deshabilitado`,
+          icon: sb?.clickFiltersEnabled ? "pi pi-bolt" : "pi pi-ban",
+          command: () => { sidebar()?.toggleClickFilters(); this.buildMoreMenu(); }
+        },
+        {
+          label: sb?.clickPanelLockButton
+            ? $localize`:@@enablePanelLockButton:Bloquear los paneles`
+            : $localize`:@@disablePanelLockButton:Desbloquear los paneles`,
+          icon: sb?.clickPanelLockButton ? "pi pi-lock-open" : "pi pi-lock",
+          visible: this.can('edit'),
+          command: () => { sidebar()?.panelLockButton(); this.buildMoreMenu(); }
+        },
+        {
+          label: sb?.onlyIcanEdit
+            ? $localize`:@@onlyIcanEditTagEnable:Edición privada habilitada`
+            : $localize`:@@onlyIcanEditTagDisable:Edición privada deshabilitada`,
+          icon: sb?.onlyIcanEdit ? "pi pi-check" : "pi pi-ban",
+          visible: this.can('edit'),
+          command: () => { sidebar()?.toggleEdit(); this.buildMoreMenu(); }
+        }
+      ],
+      [
+        {
+          label: $localize`:@@dashboardSidebarDeleteDashboard:Eliminar informe`,
+          icon: "pi pi-trash",
+          visible: this.can('edit'),
+          command: () => sidebar()?.removeDashboard()
+        }
+      ]
     ];
 
-    this.moreMenuItems = this.withoutEmptyGroups(groups);
+    this.moreMenuItems = this.joinSections(sections);
   }
 
-  /** Drops groups without visible items and orphan separators (leading/trailing/doubled). */
-  private withoutEmptyGroups(groups: MenuItem[]): MenuItem[] {
-    const kept = groups.filter(g => {
-      if (g.separator || !g.items) return true;
-      return (g.items as MenuItem[]).some(i => i.visible !== false);
-    });
+  /**
+   * Flattens sections into a single p-menu list, dropping hidden items and
+   * empty sections, and inserting one separator between the remaining ones.
+   * p-menu only renders headers for items with `items`; not using those keeps
+   * the menu flat so separators (and our custom itemTemplate) work.
+   */
+  private joinSections(sections: MenuItem[][]): MenuItem[] {
+    const visibleSections = sections
+      .map(items => items.filter(i => i.visible !== false))
+      .filter(items => items.length > 0);
+
     const out: MenuItem[] = [];
-    for (const g of kept) {
-      if (g.separator && (out.length === 0 || out[out.length - 1].separator)) continue;
-      out.push(g);
-    }
-    while (out.length > 0 && out[out.length - 1].separator) out.pop();
+    visibleSections.forEach((items, idx) => {
+      if (idx > 0) out.push({ separator: true });
+      out.push(...items);
+    });
     return out;
   }
 
-  /** "Filters" section items: one per filter, opening its edit dialog. */
+  /** Whether the report currently has any global filter. */
+  private hasReportFilters(): boolean {
+    return (this.dashboard?.globalFilter?.globalFilters || []).length > 0;
+  }
+
+  /** Flyout items: one per report filter, opening its edit dialog. */
   private editFilterItems(): MenuItem[] {
     const sidebar = () => this.dashboard?.sidebar;
     const filters = this.dashboard?.globalFilter?.globalFilters || [];
@@ -428,6 +421,67 @@ export class DashboardMenuSdaComponent implements OnInit, OnDestroy, DoCheck {
       icon: "pi pi-check",
       command: () => sidebar()?.handleSpecificFilter(f)
     }));
+  }
+
+  /**
+   * Opens the left flyout listing the report filters. p-menu can only render
+   * one level (an item with `items` becomes a non-clickable header), so the
+   * flyout is a separate popup. Its position is set manually afterwards
+   * (positionFlyoutLeft), because p-menu's own alignment only flips left when
+   * the overlay would overflow the viewport and otherwise overlaps the anchor.
+   */
+  private openFiltersFlyout(event?: Event): void {
+    this.filterMenuItems = this.editFilterItems();
+    const moreContainer = (this.moreMenu as any)?.container as HTMLElement | undefined;
+    const anchor = moreContainer || (event?.currentTarget as HTMLElement);
+    if (!anchor) return;
+    this.filtersMenu?.show({ currentTarget: anchor } as any);
+    setTimeout(() => this.positionFlyoutLeft(anchor), 0);
+  }
+
+  /** Places the flyout so its right edge sits just left of the anchor. */
+  private positionFlyoutLeft(anchor: HTMLElement): void {
+    const container = (this.filtersMenu as any)?.container as HTMLElement | undefined;
+    if (!container) return;
+    const rect = anchor.getBoundingClientRect();
+    const gap = 8;
+    const scrollLeft = window.scrollX || document.documentElement.scrollLeft || 0;
+    const scrollTop = window.scrollY || document.documentElement.scrollTop || 0;
+    container.style.marginTop = '0';
+    container.style.left = `${Math.max(0, rect.left + scrollLeft - container.offsetWidth - gap)}px`;
+    container.style.top = `${rect.top + scrollTop}px`;
+  }
+
+  /**
+   * Click on the single "Filtros de informe" entry. Handled from the custom
+   * itemTemplate (not via `command`) and stops propagation so p-menu does NOT
+   * run its usual click -> command -> hide sequence: the "More" menu stays
+   * open while the flyout shows to its left. Clicking again toggles it.
+   */
+  public onFiltersItemClick(event: Event, item: MenuItem): void {
+    if (item?.id !== 'reportFilters') return;
+    event.stopPropagation();
+    if (this.filtersMenu?.visible) {
+      this.filtersMenu.hide();
+      return;
+    }
+    this.openFiltersFlyout(event);
+  }
+
+  /** Closes the flyout (e.g. when the "More" menu hides for any reason). */
+  public closeFiltersFlyout(): void {
+    this.filtersMenu?.hide();
+  }
+
+  /** Downloads the report in one of the supported formats (Informe section). */
+  public exportReport(format: 'pdf' | 'image' | 'excel' | 'word'): void {
+    const sidebar = this.dashboard?.sidebar;
+    switch (format) {
+      case 'pdf': sidebar?.exportAsPDF(); break;
+      case 'image': sidebar?.exportAsJPEG(); break;
+      case 'excel': sidebar?.exportDashboardAsExcel(); break;
+      case 'word': sidebar?.exportDashboardAsWord(); break;
+    }
   }
 
   /** Rebuilds the "More" menu (to refresh toggle labels) and opens it. */

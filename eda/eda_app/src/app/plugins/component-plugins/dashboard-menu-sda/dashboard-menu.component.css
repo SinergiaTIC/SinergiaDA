@@ -93,6 +93,69 @@
   font-weight: 500;
 }
 
+/* Left flyout listing the report filters (from "More" > "Filtros de informe") */
+.dsm-filters-flyout {
+  min-width: 12rem;
+}
+
+/* Caret on the "Filtros de informe" entry, hinting the left flyout */
+.dsm-flyout-caret {
+  margin-left: auto;
+  opacity: 0.6;
+  font-size: 0.75rem;
+}
+
+/* Thin separators between blocks (replacing the old section headers).
+ * Unlayered rule, so it wins over the @layer primeng theme defaults. */
+.dsm-menu .p-menuitem-separator {
+  width: 60%;
+  margin: 0.3rem auto;
+  border-top: 1px solid #e2e8f0;
+}
+
+/* Single row with one icon per download format */
+.dsm-download-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.4rem 1rem;
+}
+
+.dsm-format-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 9999px;
+  border: 1px solid #e2e8f0;
+  background: #ffffff;
+  color: #4b5563;
+  cursor: pointer;
+}
+
+.dsm-format-btn:hover {
+  background: #f1f5f9;
+}
+
+/* One brand colour per download format */
+.dsm-fmt-pdf {
+  color: #d32f2f;
+}
+
+.dsm-fmt-image {
+  color: #0891b2;
+}
+
+.dsm-fmt-excel {
+  color: #217346;
+}
+
+.dsm-fmt-word {
+  color: #2b579a;
+}
+
 /* Global toasts pinned top-center (p-toast defaults to top-right).
  * Intentionally global: the single <p-toast> lives in app.component. */
 .p-toast.p-toast-top-right {

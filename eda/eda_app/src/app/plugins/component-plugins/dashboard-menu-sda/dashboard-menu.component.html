@@ -1,9 +1,51 @@
 <div class="dashboard-menu-sda">
   <!-- Add dropdown -->
-  <p-menu #addMenu [model]="addMenuItems" [popup]="true" appendTo="body" panelStyleClass="dsm-menu"></p-menu>
+  <p-menu #addMenu [model]="addMenuItems" [popup]="true" appendTo="body" styleClass="dsm-menu"></p-menu>
 
   <!-- More dropdown -->
-  <p-menu #moreMenu [model]="moreMenuItems" [popup]="true" appendTo="body" panelStyleClass="dsm-menu"></p-menu>
+  <p-menu #moreMenu [model]="moreMenuItems" [popup]="true" appendTo="body" styleClass="dsm-menu"
+    (onHide)="closeFiltersFlyout()">
+    <!--
+      Custom item template: p-menu is single-level and hides the menu after any
+      item click. The "Filtros de informe" entry is handled here instead of via
+      `command`, stopping propagation so "More" stays open while the flyout
+      opens to its left. Every other item keeps the default click behaviour.
+    -->
+    <ng-template pTemplate="item" let-item>
+      @if (item.id === 'downloadGroup') {
+        <!-- Single row with one icon per download format -->
+        <div class="dsm-download-row">
+          <button type="button" class="dsm-format-btn" [pTooltip]="downloadPdfLabel" tooltipPosition="top"
+            (click)="exportReport('pdf')">
+            <i class="pi pi-file-pdf dsm-fmt-pdf"></i>
+          </button>
+          <button type="button" class="dsm-format-btn" [pTooltip]="downloadImageLabel" tooltipPosition="top"
+            (click)="exportReport('image')">
+            <i class="pi pi-image dsm-fmt-image"></i>
+          </button>
+          <button type="button" class="dsm-format-btn" [pTooltip]="downloadExcelLabel" tooltipPosition="top"
+            (click)="exportReport('excel')">
+            <i class="pi pi-file-excel dsm-fmt-excel"></i>
+          </button>
+          <button type="button" class="dsm-format-btn" [pTooltip]="downloadWordLabel" tooltipPosition="top"
+            (click)="exportReport('word')">
+            <i class="pi pi-file-word dsm-fmt-word"></i>
+          </button>
+        </div>
+      } @else {
+        <div class="p-menuitem-link" (click)="onFiltersItemClick($event, item)">
+          <span class="p-menuitem-icon" *ngIf="item.icon" [ngClass]="item.icon"></span>
+          <span class="p-menuitem-text">{{ item.label }}</span>
+          @if (item.id === 'reportFilters') {
+            <i class="pi pi-angle-right dsm-flyout-caret"></i>
+          }
+        </div>
+      }
+    </ng-template>
+  </p-menu>
+
+  <!-- Report filters flyout (opened from "More" > "Filtros de informe") -->
+  <p-menu #filtersMenu [model]="filterMenuItems" [popup]="true" appendTo="body" styleClass="dsm-menu dsm-filters-flyout"></p-menu>
 
   @if (isEditable) {
     <button type="button" class="dsm-btn" [pTooltip]="viewMode ? editModeTooltip : viewTooltip" tooltipPosition="bottom" (click)="toggleViewMode()">
