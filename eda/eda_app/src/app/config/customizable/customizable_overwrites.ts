@@ -6,7 +6,7 @@ export const USE_VALUE_LIST_CODE_FOR_FILTERS: boolean = true; // true -> For usi
 export const SHOW_HIDDEN_FIELDS: 'disabled' | 'admin-only' | 'all' = 'admin-only'; // 'disabled' → button hidden for everyone | 'admin-only' → only admins see the button | 'all' → all users see it
 export const ALLOWED_QUERY_MODES: string[] = ['TREE', 'SQL']; // ALLOWED_QUERY_MODES Order matters; the first value "ALLOWED_QUERY_MODES[0]" is considered the default query mode
 export const SHOW_WHAT_IF: boolean = false; // SDA: sin escenarios "What If"
-export const ALLOWED_JOIN_TYPES: string[] = ['left', 'inner']; 
+export const ALLOWED_JOIN_TYPES: string[] = ['left', 'inner'];
 export const SHOW_CUSTOM_ACTION: boolean = false;
 export const SHOW_ZOOM_IN_SIDEBAR: boolean = false;
 export const PRIVATE_EDITION_ACTIVATED: boolean =  false;
@@ -47,23 +47,23 @@ export const CORPORATE_COLORS = {
 
     // Action button colors in dialogs
     buttons: {
-        // Confirm: classic olive, flat like the old UI
-        confirmBg:        '#b4bc32',  // Gradient start
-        confirmBgEnd:     '#b4bc32',  // Gradient end (= start → flat)
-        confirmHoverBg:   '#8f9626',  // Hover start (darker olive)
-        confirmHoverBgEnd:'#8f9626',  // Hover end (darker olive)
+        // Confirm: classic olive, flat solid (start = end); hover slightly lighter
+        confirmBg:        '#b4bc32',  // Solid fill
+        confirmBgEnd:     '#b4bc32',  // = start → flat
+        confirmHoverBg:   '#c2ca52',  // Hover: slightly lighter olive
+        confirmHoverBgEnd:'#c2ca52',  // = hover start → flat
 
-        // Auxiliary: secondary action (unchanged from defaults)
-        auxBg:            '#1D4ED8',  // Gradient start (blue-700)
-        auxBgEnd:         '#3B82F6',  // Gradient end (blue-500)
-        auxHoverBg:       '#1E40AF',  // Hover start (blue-800)
-        auxHoverBgEnd:    '#2563EB',  // Hover end (blue-600)
+        // Auxiliary: secondary action — flat solid (start = end); hover slightly lighter
+        auxBg:            '#1D4ED8',  // Solid fill
+        auxBgEnd:         '#1D4ED8',  // = start → flat
+        auxHoverBg:       '#3568e0',  // Hover: slightly lighter blue
+        auxHoverBgEnd:    '#3568e0',  // = hover start → flat
 
-        // Cancel: discard action (unchanged from defaults)
-        cancelBg:         '#df4040',  // Gradient start
-        cancelBgEnd:      '#ec2828',  // Gradient end
-        cancelHoverBg:    'rgb(177, 39, 39)',  // Hover start
-        cancelHoverBgEnd: '#bd3636',  // Hover end
+        // Cancel: discard action — flat solid (start = end); hover slightly lighter
+        cancelBg:         '#df4040',  // Solid fill
+        cancelBgEnd:      '#df4040',  // = start → flat
+        cancelHoverBg:    '#e76060',  // Hover: slightly lighter red
+        cancelHoverBgEnd: '#e76060',  // = hover start → flat
     },
 };
 

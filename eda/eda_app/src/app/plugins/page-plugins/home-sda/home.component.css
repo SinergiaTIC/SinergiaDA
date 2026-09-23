@@ -60,6 +60,11 @@ span.ml-auto {
   white-space: nowrap;
 }
 
+/* "Nuevo informe": same font size as the rest of the header controls */
+.btn-corporate-gradient {
+  font-size: 14px;
+}
+
 #buscador {
   height: 2.5rem;
   min-height: 2.5rem;

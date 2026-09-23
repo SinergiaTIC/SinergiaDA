@@ -67,6 +67,22 @@ app-main-left-sidebar > div {
   color: #1f2937 !important;
 }
 
+/* Any element whose text is white over the corporate olive background must be
+   dark for readability (matches the 2.x look). Covers Tailwind text-white combos,
+   hover states that fill with the corporate colour, and the core table-dialog
+   percentage buttons that set `color: white` inline via [style.color] (hence the
+   !important, which is required to beat the inline style). */
+[class*="bg-[var(--corporate-primary)]"].text-white,
+[class*="bg-[var(--corporate-primary)]"] .text-white,
+button[style*="background-color: var(--corporate-primary)"],
+button[style*="background-color:var(--corporate-primary)"],
+.hover\:bg-\[var\(--corporate-primary\)\]:hover.text-white,
+.hover\:text-white:hover.hover\:bg-\[var\(--corporate-primary\)\],
+.p-selectbutton .p-button.p-highlight,
+.p-selectbutton .p-button.p-highlight:hover {
+  color: #1f2937 !important;
+}
+
 /* ─── Login (dark, matches the left sidebar) ────────────────────────────────
    The background is set in particles-background.ts (hsl(--left-sidebar-bg));
    the colored orbs are hidden and the card is a subtle translucent glass. */
@@ -99,6 +115,45 @@ app-loginv2 .text-gray-500 {
    is @import-ed first, so it would otherwise lose). */
 html {
   font-size: 16.8px !important;
+}
+
+/* ─── Preloader (index.html): corporate colour ──────────────────────────────
+   spinners.css paints the loader in blue #1976d2. We override it here (this
+   file is imported after spinners.css) so all appearance tweaks live in one
+   place. The keyframes must be redefined as well because their colours can't
+   be overridden from outside. Literal fallback #b4bc32 because the preloader
+   renders before Angular injects --corporate-primary. */
+.loader__figure {
+  border-color: var(--corporate-primary, #b4bc32);
+}
+
+.loader__label {
+  color: var(--corporate-primary, #b4bc32);
+}
+
+@keyframes loader-figure {
+  0% {
+    height: 0;
+    width: 0;
+    background-color: var(--corporate-primary, #b4bc32);
+  }
+  29% {
+    background-color: var(--corporate-primary, #b4bc32);
+  }
+  30% {
+    height: 2em;
+    width: 2em;
+    background-color: transparent;
+    border-width: 1em;
+    opacity: 1;
+  }
+  100% {
+    height: 2em;
+    width: 2em;
+    border-width: 0;
+    opacity: 0;
+    background-color: transparent;
+  }
 }
 
 /* ─── PrimeNG highlight override (lara-light-blue uses hardcoded blue — we override here) ─── */
@@ -195,9 +250,23 @@ html {
   height: 26px !important;
   min-height: 26px !important;
 }
-.p-paginator .p-dropdown-label,
-.p-paginator .p-dropdown-trigger {
+.p-paginator .p-dropdown-label {
+  padding: 0 0.35rem !important;
+  display: flex !important;
+  align-items: center;
   font-size: 13px !important;
+}
+.p-paginator .p-dropdown-trigger {
+  width: 1.35rem !important;
+  font-size: 13px !important;
+}
+
+/* Dropdown options (panel is appended to <body>, so it can't be scoped by an
+   ancestor). Keep the rows compact and in line with the paginator size. */
+.p-dropdown-panel .p-dropdown-items .p-dropdown-item {
+  padding: 0.25rem 0.75rem !important;
+  font-size: 13px !important;
+  line-height: 1.4 !important;
 }
 
 /* Record counter (eda-table .items-length) */
