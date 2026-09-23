@@ -23,6 +23,7 @@ import { EdaTitlePanelComponent, EdaTabsPanelComponent } from '@eda/components/c
 import { ZoomSdaComponent } from './zoom-control/zoom.component';
 import { ZoomStateService } from './zoom-control/zoom-state.service';
 import { SHOW_ZOOM_IN_SIDEBAR } from '@eda/configs/customizable/customizable_default';
+import { COMPONENT_PLUGINS } from '../../../plugins/component-plugins/component-plugin-registry';
 
 // Sidebar imports
 import { DashboardSidebarService } from '@eda/services/shared/dashboard-sidebar.service';
@@ -87,6 +88,13 @@ export class DashboardPage implements OnInit {
   @ViewChild(DashboardSidebarComponent) sidebar!: DashboardSidebarComponent;
   @ViewChild(GlobalFilterComponent) globalFilter: GlobalFilterComponent;
   @ViewChildren(EdaBlankPanelComponent) edaPanels: QueryList<EdaBlankPanelComponent>;
+  
+  /**
+   * Report component plugin (toolbar replacing the three dots ⠿).
+   * Only the plugin declaring `type: 'report-toolbar'` is mounted; if none is
+   * registered, the template falls back to the original three-dots menu.
+   */
+  public menuPlugin = COMPONENT_PLUGINS.find(p => p.type === 'report-toolbar');
   
   private sidebarService = inject(DashboardSidebarService)
   private globalFiltersService = inject(GlobalFiltersService);

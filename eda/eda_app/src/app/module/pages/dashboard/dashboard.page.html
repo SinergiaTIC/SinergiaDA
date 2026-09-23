@@ -17,9 +17,14 @@
           }
         </div>
         @if(!hideWheel){
-          <button class="w-6 h-6 rounded-full flex items-center justify-center ml-2 " [ngStyle]="reportTitle" (click)="showSidebar($event)">
-            <i class="pi pi-ellipsis-v"></i>
-          </button>
+          @if(menuPlugin){
+            <ng-container *ngComponentOutlet="menuPlugin.component; inputs: { dashboard: this }"></ng-container>
+          } @else {
+            <!-- Official three-dots menu: fallback when no component plugin is registered -->
+            <button class="w-6 h-6 rounded-full flex items-center justify-center ml-2 " [ngStyle]="reportTitle" (click)="showSidebar($event)">
+              <i class="pi pi-ellipsis-v"></i>
+            </button>
+          }
         }
       </div>
 
