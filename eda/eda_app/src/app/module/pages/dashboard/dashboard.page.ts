@@ -91,9 +91,10 @@ export class DashboardPage implements OnInit {
   
   /**
    * Report component plugin (toolbar replacing the three dots ⠿).
-   * Exposed to the template for rendering with ngComponentOutlet.
+   * Only the plugin declaring `type: 'report-toolbar'` is mounted; if none is
+   * registered, the template falls back to the original three-dots menu.
    */
-  public menuPlugin = COMPONENT_PLUGINS.find(p => p.type === 'report-toolbar') ?? COMPONENT_PLUGINS[0];
+  public menuPlugin = COMPONENT_PLUGINS.find(p => p.type === 'report-toolbar');
   
   private sidebarService = inject(DashboardSidebarService)
   private globalFiltersService = inject(GlobalFiltersService);
