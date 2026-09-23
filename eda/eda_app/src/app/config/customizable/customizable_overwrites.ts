@@ -74,3 +74,154 @@ export const DEFAULT_BACKGROUND_COLOR: string = '#f1f0f0'; // Report/page backgr
 export const LogoImage = 'assets/images/logos/logo_sda.png';      // Login logo: SinergiaDA (new asset, originals untouched)
 export const LogoSidebar = 'assets/images/logos/logo_sda.png';    // Left sidebar logo: SinergiaDA
 export const SubLogoImage = 'assets/images/logos/sub-logo_sda.png'; // Login sub-logo: SinergiaDA
+
+/** Charts palettes — SinergiaDA first and set as default.
+ *  NOTE: overriding ChartsPalettes replaces the whole array, so every palette
+ *  from customizable_default.ts must be repeated here (apply-overwrites.js).
+ *  The SinergiaDA palette is built around the corporate olive #b4bc32 with
+ *  analogous (yellow-green/olive/green), complementary (violet/magenta) and
+ *  triadic (blue, red/orange) tones. */
+export const ChartsPalettes = [
+    {
+        name: 'SinergiaDA',
+        paleta: [
+            '#b4bc32', // corporate olive (brand primary)
+            '#8f9626', // darker olive (hover tone)
+            '#d4da5e', // light olive
+            '#6b8e23', // olive green
+            '#3f9142', // deep green (analogous)
+            '#7ac143', // fresh green
+            '#2f9e8f', // teal-green (analogous)
+            '#1f7a8c', // petrol blue (triadic)
+            '#2d6cdf', // blue (triadic)
+            '#6c4bd6', // violet (complementary of olive-yellow)
+            '#9b4dca', // purple
+            '#c74ba0', // magenta
+            '#e0517a', // pink-red
+            '#e0693b', // orange (triadic)
+            '#e8a33d', // amber
+            '#f2cf8c', // sand (light neutral)
+            '#8799a3', // slate grey (neutral)
+            '#4a5568', // dark slate
+        ],
+    },
+    {
+        paleta: [
+            '#10B4BD',
+            '#3C88CA',
+            '#685CD9',
+            '#8B5DD2',
+            '#A36AC7',
+            '#BB78BD',
+            '#D285B3',
+            '#EA93A9',
+            '#F7A68E',
+            '#FCB37A',
+            '#FDB0BA',
+            '#FBBFA6',
+            '#F9C98F',
+            '#F6D278',
+            '#ECE45A'
+        ],
+        name: 'Gradiente'
+    },
+    {
+        paleta: [
+  '#6ECBD3', // soft cyan
+  '#C59BEF', // lavender
+  '#DCEB8E', // light pastel green
+  '#F2B98E', // soft peach
+  '#E4C7F5', // light lilac
+  '#79BDEB', // sky blue
+  '#E89BCB', // soft pink
+  '#A8E6C1', // mint green
+  '#879CEB', // lavender blue
+  '#F2CF8C', // soft yellow
+  '#7EDBD1', // light turquoise
+  '#F29C9C', // pastel coral
+  '#C6E88E', // soft lime green
+  '#9C8EEB', // soft violet
+  '#8FD8F2', // ice blue
+  '#F2A8D8', // dusty rose
+  '#C3B6F2', // light mauve
+  '#B8EED1', // aqua green
+  '#F4C7A1', // apricot
+  '#8FE3D0', // bluish mint
+  '#D9F0A3', // light pistachio
+  '#F5B8E4', // light pink
+  '#A8E1F2', // pastel sky blue
+  '#F4DA8E', // butter yellow
+  '#B19CF2'  // final light violet
+        ]
+        , name: 'Contraste'
+    }, {
+        paleta: [
+            '#5C86A6', '#F7DB86', '#69C8BC', '#A66B5C', '#8FE7ED',
+            '#FFB56B', '#8C8C8C', '#CDE67D', '#D7B28E', '#74BFC3',
+            '#050504', '#F2A7A3', '#7FC4A7', '#FFD1A0', '#73A7C6',
+            '#B8A0F2', '#7BE2CF', '#F2A0EE', '#8EE0A6', '#FFB1C0',
+            '#A8CCFF', '#FFB08A', '#C3CEDD', '#C7E87D', '#FFD59A'
+        ]
+        , name: 'Nocturna'
+    },
+    {
+        paleta: [
+            '#7FEFD1', '#6FE3D6', '#7AD3E0', '#8BC6EA', '#9ABCF3',
+            '#7AA6D9', '#5D86C9', '#476CB8', '#3353A6','#2A4A90',
+             '#1F3F7A', '#162F5E', '#0F223F', '#0B1A2B','#2C2C2C',
+             '#6C7A7C', '#8A989A', '#A7B3B5', '#C3CCCD', '#D6DEDF',
+            '#E6EFF0', '#B9E7E4', '#A4D8DF', '#93C6D1'
+        ]
+        , name: 'Menta'
+    },
+    {
+        paleta: [
+  '#025F8F',
+  '#027BB0',
+  '#0296D1',
+  '#0C9BD3',
+  '#169FD5',
+  '#20A4D7',
+  '#2AA8D9',
+  '#34ADDB',
+  '#3EB1DD',
+  '#48B6DF',
+  '#52BAE1',
+  '#5CBFE3',
+  '#66C3E5',
+  '#70C8E7',
+  '#7ACCE9',
+  '#84D1EB',
+  '#8ED5ED',
+  '#98DAEF',
+  '#A2DEF0',
+  '#ACE3F2',
+  '#B6E7F4',
+  '#C0ECF6',
+  '#CAF0F8'
+        ]
+        , name: 'Celeste'
+    },
+    {
+        paleta: [
+            '#425EEB', '#CA42EB', '#4192EB', '#9342EB', '#5C42EB',
+            '#7DD3FC', '#7C3AED', '#60A5FA', '#A855F7', '#2563EB',
+            '#C084FC', '#1D4ED8', '#D8B4FE', '#0F172A', '#93C5FD',
+            '#4C1D95', '#38BDF8', '#6D28D9', '#E879F9', '#312E81',
+            '#A78BFA', '#2DD4BF', '#F0ABFC', '#8DA2FB', '#9E90EB'
+        ]
+        , name: 'psique'
+    },
+    {
+        paleta: [
+            '#425EEB', '#00E5FF', '#CA42EB', '#00FF85', '#FF2BD6',
+            '#4192EB', '#FFB000', '#9342EB', '#FF3D00', '#5C42EB',
+            '#00C2FF', '#FF00A8', '#00FFCC', '#7C3AED', '#00FF3C',
+            '#2563EB', '#FFD400', '#A855F7', '#FF006E', '#00A8FF',
+            '#C084FC', '#00FF9A', '#FF4D8D', '#2D2AFF', '#9E90EB'
+        ]
+        , name: 'solido'
+    },
+];
+
+export const DEFAULT_PALETTE_COLOR: any = ChartsPalettes.find(palette => palette.name === 'SinergiaDA');
