@@ -70,14 +70,17 @@ export class EdaMapComponent implements OnInit, AfterViewInit, AfterViewChecked 
         scrollWheelZoom: this.draggable,
       });
       const tiles = L.tileLayer(
-        "https://cartodb-basemaps-{s}.global.ssl.fastly.net/light_all/{z}/{x}/{y}.png",
-//        "https://tile.openstreetmap.org/{z}/{x}/{y}.png", alternativa de openstreetmaps
+// SDA CUSTOM - Use OpenStreetMap tiles so map labels render in the local language (CARTO raster tiles only exist in English)
+// SDA CUSTOM - For production with high tile volume, switch to CARTO (key is referer-restricted):
+// SDA CUSTOM - "https://basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png?key=cb1_3uwk_1_96856c39af318820049e5a33",
+        /* SDA CUSTOM */ "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
         {
           maxZoom: 19,
-          attribution:
-            '&copy; <a href="http://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap</a>',
+          /* SDA CUSTOM */ attribution:
+            /* SDA CUSTOM */ '&copy; <a href="http://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap</a>',
         }
       );
+// END SDA CUSTOM
 
       tiles.addTo(this.map);
       //Objeto que recoge datos para hacer mapa markers
