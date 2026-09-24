@@ -5,6 +5,7 @@ import Swal from 'sweetalert2';
 import { IconComponent } from '@eda/shared/components/icon/icon.component';
 import { UserService } from '@eda/services/service.index';
 import { LogoSidebar } from '@eda/configs/index';
+import { AI_ASSISTANT_MANAGEMENT_AVAILABLE } from '@eda/configs/customizable/customizable_default';
 import { CreateDashboardService } from '@eda/services/utils/create-dashboard.service';
 import { GroupService } from '@eda/services/api/group.service';
 import { DashboardService } from '@eda/services/api/dashboard.service';
@@ -114,7 +115,7 @@ export class MainLeftSidebarComponent {
       { path: '/admin/models/import-export', label: $localize`:@@dataExportImport:Data Export/Import`, icon: 'arrow-down-on-square-stack' },
       { path: '/admin/email-settings', label: $localize`:@@adminEmail:Gestión de email`, icon: 'at-symbol' },
       { path: '/logs', label: $localize`:@@logsManagement:Visor de logs`, icon: 'clipboard-document-list' },
-      { path: '/admin/ai-settings', label: $localize`:@@AIManagement:Gestión del asistente`, icon: 'sparkles-ai' },
+      ...(AI_ASSISTANT_MANAGEMENT_AVAILABLE ? [{ path: '/admin/ai-settings', label: $localize`:@@AIManagement:Gestión del asistente`, icon: 'sparkles-ai' }] : []),
       { path: '/portal', label: $localize`:@@adminPortal:Portal de datos`, icon: 'global-mini' },
     );
   } else if (this.userService.isDataSourceCreator) {
