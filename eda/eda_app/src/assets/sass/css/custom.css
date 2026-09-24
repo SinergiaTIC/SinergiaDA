@@ -291,6 +291,78 @@ html {
   }
 }
 
+/* ─── Notifications: solid fills, guaranteed contrast ────────────────────────
+   Toasts (p-toast) and inline messages (p-message) come with pale severity
+   fills. We paint them solid with the old text colour and flip the text
+   (white on green, near-black on amber), keeping bolder/larger text, thick
+   accent border and deep shadow. */
+.p-toast .p-toast-message {
+  border-radius: 10px !important;
+  border-left-width: 8px !important;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.28), 0 8px 10px -6px rgba(0, 0, 0, 0.18) !important;
+}
+.p-toast .p-toast-message .p-toast-message-content {
+  padding: 1rem 1.25rem !important;
+}
+.p-toast .p-toast-message .p-toast-summary {
+  font-size: 15px !important;
+  font-weight: 700 !important;
+}
+.p-toast .p-toast-message .p-toast-detail {
+  font-size: 15px !important;
+  font-weight: 600 !important;
+  line-height: 1.45 !important;
+}
+.p-toast .p-toast-message .p-toast-message-icon {
+  font-size: 1.75rem !important;
+}
+/* Solid success: green fill, white text + icon */
+.p-toast .p-toast-message.p-toast-message-success {
+  background: #1ea97c !important;
+  border-color: #146c43 !important;
+}
+.p-toast .p-toast-message.p-toast-message-success .p-toast-summary,
+.p-toast .p-toast-message.p-toast-message-success .p-toast-detail,
+.p-toast .p-toast-message.p-toast-message-success .p-toast-message-icon {
+  color: #ffffff !important;
+}
+/* Solid warning (toast + inline p-message): amber fill, near-black text + icon */
+.p-toast .p-toast-message.p-toast-message-warn,
+.p-message.p-message-warn {
+  background: #cc8925 !important;
+  border-color: #8a5a00 !important;
+}
+.p-toast .p-toast-message.p-toast-message-warn .p-toast-summary,
+.p-toast .p-toast-message.p-toast-message-warn .p-toast-detail,
+.p-toast .p-toast-message.p-toast-message-warn .p-toast-message-icon,
+.p-message.p-message-warn .p-message-text,
+.p-message.p-message-warn .p-message-detail,
+.p-message.p-message-warn .p-message-summary,
+.p-message.p-message-warn .p-message-icon {
+  color: #1f2937 !important;
+}
+
+/* Inline p-message (e.g. "canvis sense guardar" warning on dashboards) */
+.p-message {
+  border-radius: 8px !important;
+  box-shadow: 0 8px 20px -6px rgba(0, 0, 0, 0.25) !important;
+}
+.p-message .p-message-wrapper {
+  padding: 0.85rem 1.25rem !important;
+}
+.p-message .p-message-text,
+.p-message .p-message-detail,
+.p-message .p-message-summary {
+  font-size: 14px !important;
+  font-weight: 600 !important;
+}
+.p-message.p-message-warn,
+.p-message.p-message-success,
+.p-message.p-message-info,
+.p-message.p-message-error {
+  border-left-width: 8px !important;
+}
+
 /* ─── PrimeNG focus ring override (lara-light-blue uses hardcoded blue) ─── */
 .p-dropdown:not(.p-disabled).p-focus,
 .p-multiselect:not(.p-disabled).p-focus,
