@@ -226,3 +226,20 @@ export const SHOW_CUSTOM_ACTION: boolean = true; // true → "Acción personaliz
 export const SHOW_ZOOM_IN_SIDEBAR: boolean = true; // true → zoom control lives inside the dashboard sidebar | false → zoom control lives in the filters bar
 export const USE_EDA_KPI_SIZE_LOGIC: boolean = true; // true → EDA mode: numeric input in the KPI dialog (modifiedFontPoints, additive) | false → SDA mode: +/- buttons on hover over the KPI (fontScale, multiplicative)
 export const PRIVATE_EDITION_ACTIVATED: boolean =  true;
+
+/** Feature flags - data-source page */
+/** Data model - General configuration*/
+export const PROTECTED_MODEL_AI_CONTROL_ENABLED: boolean = true; // true → AI Control enabled | false → AI Control unavailable
+export const PROTECTED_MODEL_SSL_CONNECTION_SWITCH_BUTTON_ENABLED: boolean = true; // true → SSL connection enabled | false → SSL connection unavailable
+export const PROTECTED_MODEL_ADD_VIEW_BUTTON_ENABLED: boolean = true; // true → Add view enabled | false → Add view unavailable
+export const PROTECTED_MODEL_ADD_TABLE_FROM_CSV_BUTTON_ENABLED: boolean = true; // true → Add table from CSV enabled | false → Add table from CSV unavailable
+export const PROTECTED_MODEL_ADD_TAG_BUTTON_ENABLED: boolean = true; // true → Add tag enabled | false → Add tag unavailable
+/** Data model - Table configuration*/
+export const PROTECTED_MODEL_TABLE_TYPES_BUTTON_GROUP_ENABLED: boolean = false; // false → Table types group unavailable | true → Table types group enabled
+export const PROTECTED_MODEL_ADD_RELATIONSHIP_TO_TABLE_BUTTON_ENABLED: boolean = true; // true → Relationship to table enabled | false → Relationship to table unavailable
+export const PROTECTED_MODEL_HIDE_ALL_COLUMNS_BUTTON_ENABLED: boolean = true; // true → hide all columns enabled | false → hide all columns unavailable
+/** Data model - Column configuration => Calculated Fields*/
+export const PROTECTED_MODEL_DEFINE_LIST_OF_POSSIBLE_VALUES_BUTTON_ENABLED: boolean = true; // true → Define a list of possible values enabled | false → Define a list of possible values unavailable
+export const PROTECTED_MODEL_ADD_PERMISSION_BUTTON_ENABLED: boolean = true; // true → Add permission enabled | false → Add permission unavailable
+/** Data model - Protected data sources*/
+export const PROTECTED_MODEL_DATA_SOURCES_ARRAY: string[] = []; // Array of all the protected data sources
