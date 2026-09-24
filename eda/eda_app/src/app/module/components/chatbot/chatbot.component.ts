@@ -6,7 +6,7 @@ import { ChartData, ChartOptions } from 'chart.js';
 import { Subscription } from 'rxjs';
 import { IaChatService, ChatMessage, ChatOption, BarChart } from '@eda/services/api/ia-chat.service';
 import type { ChatEvent } from '@eda/services/api/ia-chat.service';
-import { CORPORATE_COLORS } from '@eda/configs/index';
+import { CORPORATE_COLORS } from '@eda/configs/customizable/customizable_merged';
 
 @Component({
   selector: 'app-chatbot',

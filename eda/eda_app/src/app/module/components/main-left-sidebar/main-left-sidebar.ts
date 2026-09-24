@@ -4,7 +4,7 @@ import { NgClass } from '@angular/common';
 import Swal from 'sweetalert2';
 import { IconComponent } from '@eda/shared/components/icon/icon.component';
 import { UserService } from '@eda/services/service.index';
-import { LogoSidebar } from '@eda/configs/index';
+import { LogoSidebar } from '@eda/configs/customizable/customizable_merged';
 import { CreateDashboardService } from '@eda/services/utils/create-dashboard.service';
 import { GroupService } from '@eda/services/api/group.service';
 import { DashboardService } from '@eda/services/api/dashboard.service';

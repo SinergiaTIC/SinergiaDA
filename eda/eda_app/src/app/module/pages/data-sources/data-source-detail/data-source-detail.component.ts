@@ -6,7 +6,7 @@ import { MenuItem, SelectItem, TreeNode } from 'primeng/api';
 import { AlertService, DataSourceService, QueryParams, QueryBuilderService, SpinnerService } from '@eda/services/service.index';
 import { EditTablePanel, EditColumnPanel, EditModelPanel, ValueListSource, Relation } from '@eda/models/data-source-model/data-source-models';
 import { EdaDialogController, EdaDialogCloseEvent, EdaContextMenu, EdaContextMenuItem } from '@eda/shared/components/shared-components.index';
-import { AGG_TYPES } from '@eda/configs/customizable/customizable_default';
+import { AGG_TYPES } from '@eda/configs/customizable/customizable_merged';
 import { EdaColumnFunction } from '@eda/components/eda-table/eda-columns/eda-column-function';
 import * as _ from 'lodash';
 import { EdaColumnEditable } from '@eda/components/eda-table/eda-columns/eda-column-editable';

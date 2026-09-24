@@ -2,7 +2,7 @@ import { Component, inject, OnInit, AfterViewChecked, NgZone, ViewChild, Element
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
-import { LogoImage, SubLogoImage, BackgroundImage } from '@eda/configs/index';
+import { LogoImage, SubLogoImage, BackgroundImage } from '@eda/configs/customizable/customizable_merged';
 import { ParticlesBackgroundComponent } from '@eda/shared/components/particles-background/particles-background';
 import { UserService } from '@eda/services/service.index';
 import { User } from '@eda/models/model.index';

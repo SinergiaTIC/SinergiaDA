@@ -1,6 +1,6 @@
 import { Injectable, Inject } from '@angular/core';
 import { DOCUMENT } from '@angular/common';
-import { Tema, TemaUrl  } from '@eda/configs/index';
+import { Tema, TemaUrl  } from '@eda/configs/customizable/customizable_merged';
 
 @Injectable()
 export class SettingsService {
