@@ -30,7 +30,6 @@ if (cluster.isMaster || (cluster.worker && cluster.worker.id === 1)) {
         console.log('[MCP] ========== ROUTER INICIADO ==========');
         console.log('[MCP] EDA_APP_URL :', EDA_APP_URL || '(no configurado)');
         console.log('[MCP] MODEL       :', MODEL || '(no configurado)');
-        console.log('[MCP] AVAILABLE   :', AVAILABLE);
         console.log('[MCP] MAX_TOKENS  :', MAX_TOKENS);
         console.log('[MCP] MCP_EMAIL   :', MCP_EMAIL || '(no configurado)');
         console.log('[MCP] MCP_PASSWORD:', MCP_PASSWORD ? '(configurado)' : '(no configurado)');
