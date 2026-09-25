@@ -28,3 +28,5 @@ export const PROTECTED_MODEL_DEFINE_LIST_OF_POSSIBLE_VALUES_BUTTON_ENABLED: bool
 export const PROTECTED_MODEL_ADD_PERMISSION_BUTTON_ENABLED: boolean = false; // true → Add permission enabled | false → Add permission unavailable
 /** Data model - Protected data sources*/
 export const PROTECTED_MODEL_DATA_SOURCES_ARRAY: string[] = ['111111111111111111111111']; // Array of all the protected data sources
+export const HOME_SCREEN_PARTICLE_COLOR: string = '#97B73E'; // any CSS color (e.g. '#00BFB3') for the particles and the lines between them | '' → default blue
+export const HOME_SCREEN_BACKGROUND_COLOR: string = '#353535'; // any CSS color/background (e.g. '#F5F5F5') for the login background | '' → default light gradient
