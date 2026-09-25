@@ -12,12 +12,148 @@
 }
 
 :root {
-  --DEFAULT_FONT_FAMILY: "Montserrat";
+  --DEFAULT_FONT_FAMILY: "Questrial";
   /* THIS MUST BE SET ALSO IN  eda_app\src\app\config\personalitzacio\customizables.ts */
 
   /* ── Scrollbar global ── */
   --scrollbar-thumb: #cbd5e1;
   --scrollbar-thumb-hover: #94a3b8;
+
+  /* ── Classic dark left sidebar (2.x palette) ── */
+  --left-sidebar-bg: 216 17% 17%;   /* #242A33 */
+  --left-sidebar-fg: #95a2b4;       /* icons / labels */
+}
+
+/* Re-map the Tailwind chrome tokens only inside the left sidebar, so the
+   component keeps using bg-background/bg-muted untouched. Icons use
+   stroke:currentColor, so `color` drives them. Hover/active keep using
+   --corporate-primary (olive) from the component's own CSS. */
+app-main-left-sidebar {
+  --background: var(--left-sidebar-bg);
+  --muted: var(--left-sidebar-bg);
+  --border: var(--left-sidebar-bg);
+  color: var(--left-sidebar-fg);
+}
+
+app-main-left-sidebar > div {
+  border-right-color: var(--left-sidebar-bg);
+}
+
+/* Sidebar logo: the 90x90 SDA mark was squashed by the fixed w-12/h-9 slot.
+   Keep it square & undistorted (ID beats Tailwind's class utilities). */
+#sidebar-btn-toggle {
+  width: 3rem;
+  height: 3rem;
+  object-fit: contain;
+}
+
+/* ─── Corporate green buttons: always dark text ─────────────────────────────
+   The olive primary is light, so dark text is far more readable (matches the
+   old 2.x look). Covers the scattered .btn-corporate-* definitions (per-page
+   component CSS), PrimeNG highlights, dialog confirm buttons, tags, the
+   sidebar hover/active and the utility bg-[var(--corporate-primary)]. */
+.btn-corporate-primary,
+.btn-corporate-primary:hover,
+.btn-corporate-gradient,
+.btn-corporate-gradient:hover,
+.confirm-button,
+.tag-selected,
+.tag:hover,
+.p-selectbutton .p-button.p-highlight,
+.p-selectbutton .p-button.p-highlight:hover,
+.sidebar-btn:hover,
+.sidebar-btn-active,
+[class*="bg-[var(--corporate-primary)]"] {
+  color: #1f2937 !important;
+}
+
+/* Any element whose text is white over the corporate olive background must be
+   dark for readability (matches the 2.x look). Covers Tailwind text-white combos,
+   hover states that fill with the corporate colour, and the core table-dialog
+   percentage buttons that set `color: white` inline via [style.color] (hence the
+   !important, which is required to beat the inline style). */
+[class*="bg-[var(--corporate-primary)]"].text-white,
+[class*="bg-[var(--corporate-primary)]"] .text-white,
+button[style*="background-color: var(--corporate-primary)"],
+button[style*="background-color:var(--corporate-primary)"],
+.hover\:bg-\[var\(--corporate-primary\)\]:hover.text-white,
+.hover\:text-white:hover.hover\:bg-\[var\(--corporate-primary\)\],
+.p-selectbutton .p-button.p-highlight,
+.p-selectbutton .p-button.p-highlight:hover {
+  color: #1f2937 !important;
+}
+
+/* ─── Login (dark, matches the left sidebar) ────────────────────────────────
+   The background is set in particles-background.ts (hsl(--left-sidebar-bg));
+   the colored orbs are hidden and the card is a subtle translucent glass. */
+app-loginv2 .animate-blob {
+  display: none;
+}
+
+/* Card: rgba(255, 255, 255, 0.10) over the dark background */
+app-loginv2 .bg-white\/70 {
+  background-color: #FFFFFF1A;      /* = rgba(255, 255, 255, 0.10) */
+  border-color: #FFFFFF26;          /* = rgba(255, 255, 255, 0.15) */
+}
+
+/* Readability on the dark translucent card */
+app-loginv2 .text-gray-800 {
+  color: #FFFFFF;
+}
+app-loginv2 .text-gray-600 {
+  color: rgba(255, 255, 255, 0.85);
+}
+app-loginv2 .text-gray-500 {
+  color: rgba(255, 255, 255, 0.60);
+}
+
+/* ─── Classic SDA font scale ────────────────────────────────────────────────
+   The whole UI is rem-based (Tailwind). Old 2.x rendered text ~1.5x larger
+   than this app's 13px base (11px under the <=1370px media query). Raising the
+   root to 16.8px makes every rem token match the old measurements (10.5→16px,
+   8.4→12.8px). !important beats the later html rules in style.css (custom.css
+   is @import-ed first, so it would otherwise lose). */
+html {
+  font-size: 16.8px !important;
+}
+
+/* ─── Preloader (index.html): corporate colour ──────────────────────────────
+   spinners.css paints the loader in blue #1976d2. We override it here (this
+   file is imported after spinners.css) so all appearance tweaks live in one
+   place. The keyframes must be redefined as well because their colours can't
+   be overridden from outside. Literal fallback #b4bc32 because the preloader
+   renders before Angular injects --corporate-primary. */
+.loader__figure {
+  border-color: var(--corporate-primary, #b4bc32);
+}
+
+.loader__label {
+  color: var(--corporate-primary, #b4bc32);
+}
+
+@keyframes loader-figure {
+  0% {
+    height: 0;
+    width: 0;
+    background-color: var(--corporate-primary, #b4bc32);
+  }
+  29% {
+    background-color: var(--corporate-primary, #b4bc32);
+  }
+  30% {
+    height: 2em;
+    width: 2em;
+    background-color: transparent;
+    border-width: 1em;
+    opacity: 1;
+  }
+  100% {
+    height: 2em;
+    width: 2em;
+    border-width: 0;
+    opacity: 0;
+    background-color: transparent;
+  }
 }
 
 /* ─── PrimeNG highlight override (lara-light-blue uses hardcoded blue — we override here) ─── */
@@ -77,7 +213,25 @@
   background: rgba(var(--corporate-primary-rgb), 0.08) !important;
 }
 
-/* ─── PrimeNG paginator hover ───────────────────────────────────────────── */
+/* ─── Paginator + record counter: mirror the 2.x look ───────────────────── */
+.p-paginator {
+  padding: 0.5rem 0 !important;
+  font-size: 13px !important;
+  background: transparent !important;
+  border: 0 !important;
+}
+.p-paginator .p-paginator-first,
+.p-paginator .p-paginator-prev,
+.p-paginator .p-paginator-next,
+.p-paginator .p-paginator-last,
+.p-paginator .p-paginator-pages .p-paginator-page {
+  min-width: 26px !important;
+  height: 26px !important;
+  margin: 0 2px !important;
+  color: #455a64 !important;
+  font-size: 13px !important;
+  border-radius: 3px !important;
+}
 .p-paginator .p-paginator-first:not(.p-disabled):not(.p-highlight):hover,
 .p-paginator .p-paginator-prev:not(.p-disabled):not(.p-highlight):hover,
 .p-paginator .p-paginator-next:not(.p-disabled):not(.p-highlight):hover,
@@ -86,9 +240,127 @@
   background: rgba(var(--corporate-primary-rgb), 0.08) !important;
   color: var(--corporate-primary) !important;
 }
-
 .p-paginator .p-paginator-pages .p-paginator-page.p-highlight {
-  color: var(--corporate-primary) !important;
+  background: #e8f5e9 !important;
+  color: #495057 !important;
+  font-weight: bold !important;
+  border-radius: 3px !important;
+}
+.p-paginator .p-dropdown {
+  height: 26px !important;
+  min-height: 26px !important;
+}
+.p-paginator .p-dropdown-label {
+  padding: 0 0.35rem !important;
+  display: flex !important;
+  align-items: center;
+  font-size: 13px !important;
+}
+.p-paginator .p-dropdown-trigger {
+  width: 1.35rem !important;
+  font-size: 13px !important;
+}
+
+/* Dropdown options (panel is appended to <body>, so it can't be scoped by an
+   ancestor). Keep the rows compact and in line with the paginator size. */
+.p-dropdown-panel .p-dropdown-items .p-dropdown-item {
+  padding: 0.25rem 0.75rem !important;
+  font-size: 13px !important;
+  line-height: 1.4 !important;
+}
+
+/* Record counter (eda-table .items-length) */
+.items-length {
+  font-size: 13px !important;
+  font-weight: 600 !important;
+  color: #455a64 !important;
+}
+
+/* 2.x inherited the root size: 13px full, 11px on the reduced (<=1370px) layout */
+@media (max-width: 1370px) {
+  .p-paginator,
+  .p-paginator .p-paginator-first,
+  .p-paginator .p-paginator-prev,
+  .p-paginator .p-paginator-next,
+  .p-paginator .p-paginator-last,
+  .p-paginator .p-paginator-pages .p-paginator-page,
+  .p-paginator .p-dropdown-label,
+  .p-paginator .p-dropdown-trigger,
+  .items-length {
+    font-size: 11px !important;
+  }
+}
+
+/* ─── Notifications: solid fills, guaranteed contrast ────────────────────────
+   Toasts (p-toast) and inline messages (p-message) come with pale severity
+   fills. We paint them solid with the old text colour and flip the text
+   (white on green, near-black on amber), keeping bolder/larger text, thick
+   accent border and deep shadow. */
+.p-toast .p-toast-message {
+  border-radius: 10px !important;
+  border-left-width: 8px !important;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.28), 0 8px 10px -6px rgba(0, 0, 0, 0.18) !important;
+}
+.p-toast .p-toast-message .p-toast-message-content {
+  padding: 1rem 1.25rem !important;
+}
+.p-toast .p-toast-message .p-toast-summary {
+  font-size: 15px !important;
+  font-weight: 700 !important;
+}
+.p-toast .p-toast-message .p-toast-detail {
+  font-size: 15px !important;
+  font-weight: 600 !important;
+  line-height: 1.45 !important;
+}
+.p-toast .p-toast-message .p-toast-message-icon {
+  font-size: 1.75rem !important;
+}
+/* Solid success: green fill, white text + icon */
+.p-toast .p-toast-message.p-toast-message-success {
+  background: #1ea97c !important;
+  border-color: #146c43 !important;
+}
+.p-toast .p-toast-message.p-toast-message-success .p-toast-summary,
+.p-toast .p-toast-message.p-toast-message-success .p-toast-detail,
+.p-toast .p-toast-message.p-toast-message-success .p-toast-message-icon {
+  color: #ffffff !important;
+}
+/* Solid warning (toast + inline p-message): amber fill, near-black text + icon */
+.p-toast .p-toast-message.p-toast-message-warn,
+.p-message.p-message-warn {
+  background: #cc8925 !important;
+  border-color: #8a5a00 !important;
+}
+.p-toast .p-toast-message.p-toast-message-warn .p-toast-summary,
+.p-toast .p-toast-message.p-toast-message-warn .p-toast-detail,
+.p-toast .p-toast-message.p-toast-message-warn .p-toast-message-icon,
+.p-message.p-message-warn .p-message-text,
+.p-message.p-message-warn .p-message-detail,
+.p-message.p-message-warn .p-message-summary,
+.p-message.p-message-warn .p-message-icon {
+  color: #1f2937 !important;
+}
+
+/* Inline p-message (e.g. "canvis sense guardar" warning on dashboards) */
+.p-message {
+  border-radius: 8px !important;
+  box-shadow: 0 8px 20px -6px rgba(0, 0, 0, 0.25) !important;
+}
+.p-message .p-message-wrapper {
+  padding: 0.85rem 1.25rem !important;
+}
+.p-message .p-message-text,
+.p-message .p-message-detail,
+.p-message .p-message-summary {
+  font-size: 14px !important;
+  font-weight: 600 !important;
+}
+.p-message.p-message-warn,
+.p-message.p-message-success,
+.p-message.p-message-info,
+.p-message.p-message-error {
+  border-left-width: 8px !important;
 }
 
 /* ─── PrimeNG focus ring override (lara-light-blue uses hardcoded blue) ─── */
@@ -112,4 +384,47 @@
 .gf-panel-table .p-treeselect .p-treeselect-label-container {
   display: flex;
   width: 100% !important;
+}
+
+/* ─── Report/dashboard tables: mirror the 2.x PrimeNG look ──────────────────
+   eda-table sets --table-* inline (from DEFAULT_TABLE_HEADER_COLOR); a
+   stylesheet !important declaration wins over the inline value, so we can
+   recolor the header/banding here without touching the component.
+   Old measured values (:8082): th rgba(219,223,228,.5) 11px/300 pad 6.6px,
+   td #455a64 11px/400 pad 4.4px, banding rgba(245,241,241,.22). */
+.eda-table {
+  --table-header-color: rgba(219, 223, 228, 0.5) !important;
+  --table-banding-color: transparent !important;
+  --table-total-color: rgba(219, 223, 228, 0.5) !important;
+}
+
+/* 2.x rows were a uniform rgba(245,241,241,.22) (no zebra): tint the whole
+   table and keep every cell transparent. */
+.eda-table .p-datatable .p-datatable-table {
+  background-color: rgba(245, 241, 241, 0.22) !important;
+}
+
+.eda-table .p-datatable .p-datatable-thead > tr > th {
+  color: #455a64 !important;
+  font-size: 13px !important;
+  font-weight: 700 !important;
+  padding: 6.6px !important;
+  border: 1px solid #ffffff !important;
+  border-radius: 0 !important;
+}
+
+.eda-table .p-datatable .p-datatable-tbody > tr > td {
+  color: #455a64 !important;
+  font-size: 13px !important;
+  font-weight: 400 !important;
+  padding: 4.4px !important;
+  border: 1px solid #e9ecef !important;
+}
+
+/* 2.x inherited the root size: 13px full, 11px on the reduced (<=1370px) layout */
+@media (max-width: 1370px) {
+  .eda-table .p-datatable .p-datatable-thead > tr > th,
+  .eda-table .p-datatable .p-datatable-tbody > tr > td {
+    font-size: 11px !important;
+  }
 }

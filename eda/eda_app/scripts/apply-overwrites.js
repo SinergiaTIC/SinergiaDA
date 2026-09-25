@@ -18,6 +18,7 @@ function extractDeclaration(src, pos) {
     let inString = null;       // null | "'" | '"' | '`'
     let inLineComment = false;
     let inBlockComment = false;
+    let valueStarted = false;  // already past the top-level `=` (scalar, no braces → newline-closeable)
     const len = src.length;
 
     while (i < len) {
@@ -45,8 +46,16 @@ function extractDeclaration(src, pos) {
 
         if (ch === "'" || ch === '"' || ch === '`') { inString = ch; i++; continue; }
 
-        if (ch === '{' || ch === '[' || ch === '(') { depth++; i++; continue; }
+        if (ch === '{' || ch === '[' || ch === '(') { depth++; valueStarted = true; i++; continue; }
         if (ch === '}' || ch === ']' || ch === ')') { depth--; i++; continue; }
+
+        if (ch === '=' && depth === 0) { valueStarted = true; i++; continue; }
+
+        if (depth === 0 && valueStarted && (ch === '\n' || ch === '\r')) {
+            // Scalar declaration without trailing `;` (e.g. `export const X = '#000000'`):
+            // close at end of line instead of swallowing the following declarations.
+            return src.slice(pos, i);
+        }
 
         if (ch === ';' && depth === 0) return src.slice(pos, i + 1);
 

@@ -42,8 +42,55 @@
   font-variant-numeric: tabular-nums;
 }
 
-/* ---- Report table ---- */
-#report-table th { position: relative; cursor: pointer; }
+/* ---- Header controls: exact same height in every viewport ----
+   Default paddings/font sizes gave 34/40/42/67px (and "Nuevo informe"
+   wrapped to two lines). Force them all to 2.5rem (42px). */
+.btn-corporate-gradient,
+#view-mode button,
+.filter-dropdown-toggle,
+button.border-transparent,
+span.ml-auto {
+  height: 2.5rem;
+  min-height: 2.5rem;
+  padding-top: 0;
+  padding-bottom: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap;
+}
+
+/* "Nuevo informe": same font size as the rest of the header controls */
+.btn-corporate-gradient {
+  font-size: 14px;
+}
+
+#buscador {
+  height: 2.5rem;
+  min-height: 2.5rem;
+  padding-top: 0;
+  padding-bottom: 0;
+}
+
+/* ---- Report table (mirrors the 2.x Bootstrap table-striped look) ---- */
+/* Frame: no border / radius, like the old table (overflow visible so the
+   sticky header can stick to the scroll container). */
+.border.rounded-lg.overflow-hidden { border: 0; border-radius: 0; overflow: visible; }
+
+#report-table { border-collapse: collapse; }
+#report-table th {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  cursor: pointer;
+  background-color: #ffffff;
+  color: #67757c;
+  font-size: 14px;
+  font-weight: 700;
+  padding: 8.25px 20px 8.25px 8.25px;
+  /* dark separator under the header (box-shadow survives sticky, unlike border) */
+  box-shadow: inset 0 -1px 0 0 #67757c;
+}
 #report-table th:hover { background-color: hsl(var(--muted)); }
 #report-table th.cursor-pointer::after {
   content: "▲";
@@ -54,8 +101,21 @@
 }
 #report-table th.sort-asc::after { opacity: 1; }
 #report-table th.sort-desc::after { content: "▼"; opacity: 1; }
+
+#report-table td {
+  color: #67757c;
+  font-size: 16px;
+  font-weight: 300;
+  padding: 8.25px;
+}
 #report-table td:first-child:hover { text-decoration: underline; font-weight: 600; }
-#report-table td { color: hsl(var(--foreground)); font-size: 0.95rem; font-weight: 500; }
+
+/* Old table: transparent header, no row separators, striped tbody, no hover fill */
+#report-table thead { background-color: transparent; }
+#report-table tbody tr { border-top-width: 0; }
+#report-table tbody tr:nth-child(odd) { background-color: rgba(0, 0, 0, 0.05); }
+#report-table tbody tr:nth-child(even):hover { background-color: transparent; }
+#report-table tbody tr:nth-child(odd):hover { background-color: rgba(0, 0, 0, 0.05); }
 
 /* ---- Report type column: dot, label and edit button in one horizontal row ---- */
 .type-row {
