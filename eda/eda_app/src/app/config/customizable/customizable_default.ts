@@ -215,6 +215,7 @@ export const  AGG_TYPES  = [
 ];
 
 /** Feature flags variables  */ 
+export const APPLICATION_NAME: string = 'Edalitics'; // application name shown in the browser tab title
 export const SHOW_LOCK_IN_PANEL_HEADER: boolean = false; // true → lock button visible in panel header | false → lock in context menu
 export const ALLOW_NON_ADMIN_MANAGE_PUBLIC_REPORTS: boolean = false; // true → public visibility option shown in dashboard creation/edit UIs | false → hidden
 export const USE_VALUE_LIST_CODE_FOR_FILTERS: boolean = false; // true -> For using the filters with code values.
@@ -243,3 +244,5 @@ export const PROTECTED_MODEL_DEFINE_LIST_OF_POSSIBLE_VALUES_BUTTON_ENABLED: bool
 export const PROTECTED_MODEL_ADD_PERMISSION_BUTTON_ENABLED: boolean = true; // true → Add permission enabled | false → Add permission unavailable
 /** Data model - Protected data sources*/
 export const PROTECTED_MODEL_DATA_SOURCES_ARRAY: string[] = []; // Array of all the protected data sources
+export const HOME_SCREEN_PARTICLE_COLOR: string = ''; // any CSS color (e.g. '#00BFB3') for the particles and the lines between them | '' → default blue
+export const HOME_SCREEN_BACKGROUND_COLOR: string = ''; // any CSS color/background (e.g. '#F5F5F5') for the login background | '' → default light gradient
