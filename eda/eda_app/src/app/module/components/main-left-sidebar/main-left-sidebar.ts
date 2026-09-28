@@ -8,6 +8,8 @@ import { LogoSidebar } from '@eda/configs/index';
 import { CreateDashboardService } from '@eda/services/utils/create-dashboard.service';
 import { GroupService } from '@eda/services/api/group.service';
 import { DashboardService } from '@eda/services/api/dashboard.service';
+import { IconService } from '@eda/services/utils/icons.service';
+import { CUSTOMIZE_SIDE_MENU_ICONS } from '@eda/configs/customizable/customizable_default';
 
 interface NavItem {
   path?: string;
@@ -34,6 +36,7 @@ export class MainLeftSidebarComponent {
   private createDashboardService = inject(CreateDashboardService);
   private groupService = inject(GroupService);
   private dashboardService = inject(DashboardService);
+  private iconService = inject(IconService);
   public queryParams: any = {};
   public hideWheel: boolean = false;
   public panelMode: boolean = false;
@@ -67,9 +70,9 @@ export class MainLeftSidebarComponent {
   assignNavItems() {
     // Basic for all users
     const baseNav: NavItem[] = [
-      { path: '/home', icon: 'home' },
+      { path: '/home', icon: this.resolveSideMenuIcon('home') },
       {
-        icon: 'settings',
+        icon: this.resolveSideMenuIcon('settings'),
         items: [
           { path: '/profile', label: $localize`:@@sidebarProfile:Perfil`, icon: 'profile' },
           { lang: 'EN', label: 'English', icon: 'en-flag' },
@@ -81,16 +84,16 @@ export class MainLeftSidebarComponent {
       },
       {
         path: '/about',
-        icon: 'global',
+        icon: this.resolveSideMenuIcon('information'),
         label: $localize`:@@aboutPageTitle:Tutorial`
       },
-      { path: '/logout', icon: 'logout' },
+      { path: '/logout', icon: this.resolveSideMenuIcon('logout') },
     ];
 
 
   // Additional section creation (hidden for EDA_RO)
   const plusSection: NavItem = {
-    icon: 'plus',
+    icon: this.resolveSideMenuIcon('create'),
     items: [
       { path: '/home', label: $localize`:@@tituloNuevoInforme:Crear nuevo informe`, icon: 'plus', command: () => this.createDashboardService.open() },
     ]
@@ -102,7 +105,7 @@ export class MainLeftSidebarComponent {
     
 
   const moleculaSection: NavItem = {
-    icon: 'molecula',
+    icon: this.resolveSideMenuIcon('management'),
     items: []
   };
 
@@ -129,7 +132,21 @@ export class MainLeftSidebarComponent {
     ...(!this.isObserver ? [plusSection] : []), // create menu (hidden for EDA_RO)
     ...((this.userService.isAdmin || this.userService.isDataSourceCreator) ? [moleculaSection] : []), // management
     ...baseNav.slice(1),    // settings, about, logout
-  ];
+  ].filter(item => item.icon); // entries configured as 'none' / '' are hidden
+  }
+
+  /**
+   * Returns the icon configured in CUSTOMIZE_SIDE_MENU_ICONS for a side-menu entry.
+   * 'none' or '' → null (entry hidden). Unknown icon name → warning in console.
+   */
+  private resolveSideMenuIcon(key: string): string | null {
+    const name = (CUSTOMIZE_SIDE_MENU_ICONS[key] ?? '').trim();
+    if (name === '' || name.toLowerCase() === 'none') return null;
+
+    if (!this.iconService.getIcon(name)) {
+      console.warn(`CUSTOMIZE_SIDE_MENU_ICONS.${key}: icon "${name}" not found in IconService`);
+    }
+    return name;
   }
 
   showOverlay(item: NavItem) {
