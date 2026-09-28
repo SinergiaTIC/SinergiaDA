@@ -34,3 +34,6 @@ eda/eda_mcp/node_modules
 eda/eda_app/src/app/plugins/page-plugins/page-plugin-registry.ts
 eda/eda_api/config/sinergiacrm.config.js
 eda/eda_app/proxy.conf.json
+AGENTS.md
+.sda-migration/
+.vscode/

@@ -48,6 +48,22 @@ app-main-left-sidebar > div {
   object-fit: contain;
 }
 
+/* ─── Report visibility/type selector: black text on corporate green ─────────
+   The p-selectbutton in create/save-as/visible dialogs paints the selected
+   option olive with white text via component-scoped !important rules
+   (.visibility-selector, specificity 0,3,0). This beats them without touching
+   core (PR #593 review). */
+.visibility-selector .p-selectbutton .p-button.p-highlight,
+.visibility-selector .p-selectbutton .p-button.p-highlight:hover {
+  color: #000000 !important;
+}
+.visibility-selector .p-selectbutton .p-button.p-highlight .p-button-icon-left,
+.visibility-selector .p-selectbutton .p-button.p-highlight .p-button-icon-right,
+.visibility-selector .p-selectbutton .p-button.p-highlight:hover .p-button-icon-left,
+.visibility-selector .p-selectbutton .p-button.p-highlight:hover .p-button-icon-right {
+  color: #000000 !important;
+}
+
 /* ─── Corporate green buttons: always dark text ─────────────────────────────
    The olive primary is light, so dark text is far more readable (matches the
    old 2.x look). Covers the scattered .btn-corporate-* definitions (per-page
@@ -358,4 +374,28 @@ html {
   .eda-table .p-datatable .p-datatable-tbody > tr > td {
     font-size: 11px !important;
   }
+}
+
+/* ─── Filter dialog options: prevent overflow ───────────────────────────────
+   The options grid is fixed to 5 columns and overflows with long labels.
+   Make it wrap responsively instead (PR #593 review). NOTE: the dialog content
+   is teleported to <body> (outside app-global-filter-dialog), so scope via :has().
+   Scoped, no core changes. */
+app-global-filter-dialog .grid.grid-cols-5,
+.p-dialog:has(.grid.grid-cols-5) .grid.grid-cols-5 {
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 10rem), 1fr));
+  gap: 0.75rem;
+}
+app-global-filter-dialog .grid.grid-cols-5 > *,
+.p-dialog:has(.grid.grid-cols-5) .grid.grid-cols-5 > * {
+  min-width: 0;
+}
+
+/* ─── Filter dialog panel rows: bordered dropdowns ───────────────────────────
+   In the "panels to which the filter applies" rows, the dropdowns
+   (p-treeSelect) need a visible border. Scoped to the dialog; core untouched. */
+ p-treeselect  {
+  border: 1px solid #12151A !important;
+  border-radius: 0.375rem !important;
+
 }

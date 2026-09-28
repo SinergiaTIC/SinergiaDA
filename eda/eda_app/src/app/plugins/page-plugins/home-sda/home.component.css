@@ -195,6 +195,11 @@ span.ml-auto {
 .report-card { border-left-width: 6px; transition: box-shadow 0.2s, transform 0.15s; }
 .report-card:hover { box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); }
 .report-card:active { transform: scale(0.99); }
+/* Card title larger to fill the available space (PR #593 review) */
+.report-card h5,
+.report-card .report-name {
+  font-size: 1.15rem;
+}
 .card-border-open    { border-left-color: #b4bc32; }
 .card-border-common  { border-left-color: #add8e7; }
 .card-border-group   { border-left-color: #ffd971; }
