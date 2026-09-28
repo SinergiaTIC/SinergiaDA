@@ -55,13 +55,24 @@ app-main-left-sidebar > div {
    core (PR #593 review). */
 .visibility-selector .p-selectbutton .p-button.p-highlight,
 .visibility-selector .p-selectbutton .p-button.p-highlight:hover {
-  color: #000000 !important;
+  color: #242A33 !important;
+}
+/* Hover: lighten minimally, never white */
+.visibility-selector .p-selectbutton .p-button.p-highlight:hover,
+.visibility-selector .p-selectbutton .p-button:not(.p-highlight):hover {
+  background-color: #c2ca52 !important;
 }
 .visibility-selector .p-selectbutton .p-button.p-highlight .p-button-icon-left,
 .visibility-selector .p-selectbutton .p-button.p-highlight .p-button-icon-right,
 .visibility-selector .p-selectbutton .p-button.p-highlight:hover .p-button-icon-left,
 .visibility-selector .p-selectbutton .p-button.p-highlight:hover .p-button-icon-right {
-  color: #000000 !important;
+  color: #242A33 !important;
+}
+/* Non-selected options on hover also fill olive: keep dark text for consistency */
+.visibility-selector .p-selectbutton .p-button:not(.p-highlight):hover,
+.visibility-selector .p-selectbutton .p-button:not(.p-highlight):hover .p-button-icon-left,
+.visibility-selector .p-selectbutton .p-button:not(.p-highlight):hover .p-button-icon-right {
+  color: #242A33 !important;
 }
 
 /* ─── Corporate green buttons: always dark text ─────────────────────────────
@@ -389,6 +400,25 @@ app-global-filter-dialog .grid.grid-cols-5,
 app-global-filter-dialog .grid.grid-cols-5 > *,
 .p-dialog:has(.grid.grid-cols-5) .grid.grid-cols-5 > * {
   min-width: 0;
+}
+
+/* ─── Filter dialog panel rows: panel-name button look ───────────────────────
+   The panel title toggles activate/deactivate but looks like plain text.
+   Give it a button appearance with black text (PR #593 review). */
+.gf-panel-table button.text-sm {
+  background-color: #ffffff !important;
+  border: 1px solid #d1d5db !important;
+  border-radius: 0.375rem !important;
+  padding: 0.35rem 0.75rem !important;
+  color: #000000 !important;
+}
+
+/* ─── Filter dialog panel rows: Paula's attenuated background ───────────────
+   Rows where the filter is active (bg-teal-50) get the attenuated corporate
+   tone instead (PR #593 review). gf-panel-table is unique to this dialog;
+   core untouched. */
+.gf-panel-table .bg-teal-50 {
+  background-color: rgba(var(--corporate-primary-rgb), 0.2) !important;
 }
 
 /* ─── Filter dialog panel rows: bordered dropdowns ───────────────────────────
