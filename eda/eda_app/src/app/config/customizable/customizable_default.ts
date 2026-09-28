@@ -171,11 +171,11 @@ export const ChartsPalettes = [
 
 ];
 
-export const LogoImage = 'assets/images/logos/logo.png';
+export const LogoImage = 'assets/images/logos/logo_sda.png';
 
-export const LogoSidebar = 'assets/images/logos/logo.png';
+export const LogoSidebar = 'assets/images/logos/logo_sda.png';
 
-export const SubLogoImage = 'assets/images/logos/logo_500.png';
+export const SubLogoImage = 'assets/images/logos/sub-logo_sda.png';
 
 export const BackgroundImage = 'assets/images/background/data-bg.png';
 
@@ -215,34 +215,34 @@ export const  AGG_TYPES  = [
 ];
 
 /** Feature flags variables  */ 
-export const APPLICATION_NAME: string = 'Edalitics'; // application name shown in the browser tab title
-export const SHOW_LOCK_IN_PANEL_HEADER: boolean = false; // true → lock button visible in panel header | false → lock in context menu
+export const APPLICATION_NAME: string = 'Sinergia Data Analytics'; // application name shown in the browser tab title
+export const SHOW_LOCK_IN_PANEL_HEADER: boolean = true; // true → lock button visible in panel header | false → lock in context menu
 export const ALLOW_NON_ADMIN_MANAGE_PUBLIC_REPORTS: boolean = false; // true → public visibility option shown in dashboard creation/edit UIs | false → hidden
-export const USE_VALUE_LIST_CODE_FOR_FILTERS: boolean = false; // true -> For using the filters with code values.
+export const USE_VALUE_LIST_CODE_FOR_FILTERS: boolean = true; // true -> For using the filters with code values.
 export const SHOW_HIDDEN_FIELDS: 'disabled' | 'admin-only' | 'all' = 'admin-only'; // 'disabled' → button hidden for everyone | 'admin-only' → only admins see the button | 'all' → all users see it
-export const ALLOWED_QUERY_MODES: string[] = ['EDA', 'SQL', 'TREE']; // ALLOWED_QUERY_MODES Order matters; the first value "ALLOWED_QUERY_MODES[0]" is considered the default query mode
-export const SHOW_WHAT_IF: boolean = true; // true → "What If?" scenarios button visible | false → hidden
-export const ALLOWED_JOIN_TYPES: string[] = ['left', 'inner', 'right']; // subset of 'left' | 'inner' | 'right' shown as join type options
-export const SHOW_CUSTOM_ACTION: boolean = true; // true → "Acción personalizada" visible en el menú del informe | false → oculta
-export const SHOW_ZOOM_IN_SIDEBAR: boolean = true; // true → zoom control lives inside the dashboard sidebar | false → zoom control lives in the filters bar
-export const USE_EDA_KPI_SIZE_LOGIC: boolean = true; // true → EDA mode: numeric input in the KPI dialog (modifiedFontPoints, additive) | false → SDA mode: +/- buttons on hover over the KPI (fontScale, multiplicative)
-export const PRIVATE_EDITION_ACTIVATED: boolean =  true;
+export const ALLOWED_QUERY_MODES: string[] = ['TREE', 'SQL']; // ALLOWED_QUERY_MODES Order matters; the first value "ALLOWED_QUERY_MODES[0]" is considered the default query mode
+export const SHOW_WHAT_IF: boolean = false; // true → "What If?" scenarios button visible | false → hidden
+export const ALLOWED_JOIN_TYPES: string[] = ['left', 'inner']; // subset of 'left' | 'inner' | 'right' shown as join type options
+export const SHOW_CUSTOM_ACTION: boolean = false; // true → "Acción personalizada" visible en el menú del informe | false → oculta
+export const SHOW_ZOOM_IN_SIDEBAR: boolean = false; // true → zoom control lives inside the dashboard sidebar | false → zoom control lives in the filters bar
+export const USE_EDA_KPI_SIZE_LOGIC: boolean = false; // true → EDA mode: numeric input in the KPI dialog (modifiedFontPoints, additive) | false → SDA mode: +/- buttons on hover over the KPI (fontScale, multiplicative)
+export const PRIVATE_EDITION_ACTIVATED: boolean =  false;
 
 /** Feature flags - data-source page */
 /** Data model - General configuration*/
-export const PROTECTED_MODEL_AI_CONTROL_ENABLED: boolean = true; // true → AI Control enabled | false → AI Control unavailable
-export const PROTECTED_MODEL_SSL_CONNECTION_SWITCH_BUTTON_ENABLED: boolean = true; // true → SSL connection enabled | false → SSL connection unavailable
-export const PROTECTED_MODEL_ADD_VIEW_BUTTON_ENABLED: boolean = true; // true → Add view enabled | false → Add view unavailable
-export const PROTECTED_MODEL_ADD_TABLE_FROM_CSV_BUTTON_ENABLED: boolean = true; // true → Add table from CSV enabled | false → Add table from CSV unavailable
-export const PROTECTED_MODEL_ADD_TAG_BUTTON_ENABLED: boolean = true; // true → Add tag enabled | false → Add tag unavailable
+export const PROTECTED_MODEL_AI_CONTROL_ENABLED: boolean = false; // true → AI Control enabled | false → AI Control unavailable
+export const PROTECTED_MODEL_SSL_CONNECTION_SWITCH_BUTTON_ENABLED: boolean = false; // true → SSL connection enabled | false → SSL connection unavailable
+export const PROTECTED_MODEL_ADD_VIEW_BUTTON_ENABLED: boolean = false; // true → Add view enabled | false → Add view unavailable
+export const PROTECTED_MODEL_ADD_TABLE_FROM_CSV_BUTTON_ENABLED: boolean = false; // true → Add table from CSV enabled | false → Add table from CSV unavailable
+export const PROTECTED_MODEL_ADD_TAG_BUTTON_ENABLED: boolean = false; // true → Add tag enabled | false → Add tag unavailable
 /** Data model - Table configuration*/
-export const PROTECTED_MODEL_TABLE_TYPES_BUTTON_GROUP_ENABLED: boolean = false; // false → Table types group unavailable | true → Table types group enabled
-export const PROTECTED_MODEL_ADD_RELATIONSHIP_TO_TABLE_BUTTON_ENABLED: boolean = true; // true → Relationship to table enabled | false → Relationship to table unavailable
-export const PROTECTED_MODEL_HIDE_ALL_COLUMNS_BUTTON_ENABLED: boolean = true; // true → hide all columns enabled | false → hide all columns unavailable
+export const PROTECTED_MODEL_TABLE_TYPES_BUTTON_GROUP_ENABLED: boolean = true; // false → Table types group unavailable | true → Table types group enabled
+export const PROTECTED_MODEL_ADD_RELATIONSHIP_TO_TABLE_BUTTON_ENABLED: boolean = false; // true → Relationship to table enabled | false → Relationship to table unavailable
+export const PROTECTED_MODEL_HIDE_ALL_COLUMNS_BUTTON_ENABLED: boolean = false; // true → hide all columns enabled | false → hide all columns unavailable
 /** Data model - Column configuration => Calculated Fields*/
-export const PROTECTED_MODEL_DEFINE_LIST_OF_POSSIBLE_VALUES_BUTTON_ENABLED: boolean = true; // true → Define a list of possible values enabled | false → Define a list of possible values unavailable
-export const PROTECTED_MODEL_ADD_PERMISSION_BUTTON_ENABLED: boolean = true; // true → Add permission enabled | false → Add permission unavailable
+export const PROTECTED_MODEL_DEFINE_LIST_OF_POSSIBLE_VALUES_BUTTON_ENABLED: boolean = false; // true → Define a list of possible values enabled | false → Define a list of possible values unavailable
+export const PROTECTED_MODEL_ADD_PERMISSION_BUTTON_ENABLED: boolean = false; // true → Add permission enabled | false → Add permission unavailable
 /** Data model - Protected data sources*/
-export const PROTECTED_MODEL_DATA_SOURCES_ARRAY: string[] = []; // Array of all the protected data sources
-export const HOME_SCREEN_PARTICLE_COLOR: string = ''; // any CSS color (e.g. '#00BFB3') for the particles and the lines between them | '' → default blue
-export const HOME_SCREEN_BACKGROUND_COLOR: string = ''; // any CSS color/background (e.g. '#F5F5F5') for the login background | '' → default light gradient
+export const PROTECTED_MODEL_DATA_SOURCES_ARRAY: string[] = ['111111111111111111111111']; // Array of all the protected data sources
+export const HOME_SCREEN_PARTICLE_COLOR: string = '#97B73E'; // any CSS color (e.g. '#00BFB3') for the particles and the lines between them | '' → default blue
+export const HOME_SCREEN_BACKGROUND_COLOR: string = '#353535'; // any CSS color/background (e.g. '#F5F5F5') for the login background | '' → default light gradient

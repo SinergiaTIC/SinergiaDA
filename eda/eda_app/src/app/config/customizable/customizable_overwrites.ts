@@ -31,3 +31,7 @@ export const PROTECTED_MODEL_ADD_PERMISSION_BUTTON_ENABLED: boolean = false; // 
 export const PROTECTED_MODEL_DATA_SOURCES_ARRAY: string[] = ['111111111111111111111111']; // Array of all the protected data sources
 export const HOME_SCREEN_PARTICLE_COLOR: string = '#97B73E'; // any CSS color (e.g. '#00BFB3') for the particles and the lines between them | '' → default blue
 export const HOME_SCREEN_BACKGROUND_COLOR: string = '#353535'; // any CSS color/background (e.g. '#F5F5F5') for the login background | '' → default light gradient
+/** SinergiaDA logos (new assets, originals untouched) */
+export const LogoImage = 'assets/images/logos/logo_sda.png';
+export const LogoSidebar = 'assets/images/logos/logo_sda.png';
+export const SubLogoImage = 'assets/images/logos/sub-logo_sda.png';
