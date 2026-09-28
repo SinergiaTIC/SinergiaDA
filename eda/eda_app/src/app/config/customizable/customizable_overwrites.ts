@@ -28,3 +28,4 @@ export const PROTECTED_MODEL_DEFINE_LIST_OF_POSSIBLE_VALUES_BUTTON_ENABLED: bool
 export const PROTECTED_MODEL_ADD_PERMISSION_BUTTON_ENABLED: boolean = false; // true → Add permission enabled | false → Add permission unavailable
 /** Data model - Protected data sources*/
 export const PROTECTED_MODEL_DATA_SOURCES_ARRAY: string[] = ['111111111111111111111111']; // Array of all the protected data sources
+export const AI_ASSISTANT_MANAGEMENT_AVAILABLE: boolean = true;// true → AI assistant available | false → AI assistant disabled
