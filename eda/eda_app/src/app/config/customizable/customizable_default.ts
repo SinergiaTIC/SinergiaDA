@@ -226,6 +226,14 @@ export const SHOW_CUSTOM_ACTION: boolean = true; // true → "Acción personaliz
 export const SHOW_ZOOM_IN_SIDEBAR: boolean = true; // true → zoom control lives inside the dashboard sidebar | false → zoom control lives in the filters bar
 export const USE_EDA_KPI_SIZE_LOGIC: boolean = true; // true → EDA mode: numeric input in the KPI dialog (modifiedFontPoints, additive) | false → SDA mode: +/- buttons on hover over the KPI (fontScale, multiplicative)
 export const PRIVATE_EDITION_ACTIVATED: boolean =  true;
+export const CUSTOMIZE_SIDE_MENU_ICONS: any = { // Icon name (IconService registry) per side-menu entry | 'none' or '' → entry hidden
+    home: 'home',
+    create: 'plus',
+    management: 'molecula',
+    settings: 'settings',
+    information: 'global',
+    logout: 'logout',
+};
 
 /** Feature flags - data-source page */
 /** Data model - General configuration*/
