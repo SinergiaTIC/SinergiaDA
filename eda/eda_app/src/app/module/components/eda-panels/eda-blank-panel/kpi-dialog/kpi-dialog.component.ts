@@ -12,7 +12,7 @@ import { ColorPickerModule } from 'primeng/colorpicker';
 import { DropdownModule } from 'primeng/dropdown';
 import { InputSwitchModule } from 'primeng/inputswitch';
 import { InputTextModule } from 'primeng/inputtext';
-import { USE_EDA_KPI_SIZE_LOGIC } from '@eda/configs/customizable/customizable_default';
+import { USE_EDA_KPI_SIZE_LOGIC } from '@eda/configs/customizable/customizable_merged';
 
 @Component({
     standalone: true,
