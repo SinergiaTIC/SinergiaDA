@@ -115,29 +115,36 @@ export const SubLogoImage = 'assets/images/logos/sub-logo_sda.png'; // Login sub
  *  from customizable_default.ts must be repeated here (apply-overwrites.js).
  *  The SinergiaDA palette is built around the corporate olive #b4bc32 with
  *  analogous (yellow-green/olive/green), complementary (violet/magenta) and
- *  triadic (blue, red/orange) tones. */
+ *  triadic (blue, red/orange) tones.
+ *  ORDER MATTERS: the colours are handed to the chart series in array order
+ *  (chart-dialog, dashboard-edit-style: `paleta[i % paleta.length]`), so two
+ *  neighbouring entries are drawn side by side. They are therefore interleaved
+ *  by hue family and lightness instead of grouped by family, which keeps every
+ *  adjacent pair far apart in CIEDE2000 (ΔE00 min 37.8, avg 62.0; the previous
+ *  order had a min of 9.3 and put five olives and greens next to each other).
+ *  Do not regroup the colours: append new ones at the end instead. */
 export const ChartsPalettes = [
     {
         name: 'SinergiaDA',
         paleta: [
             '#b4bc32', // corporate olive (brand primary)
-            '#8f9626', // darker olive (hover tone)
-            '#d4da5e', // light olive
-            '#6b8e23', // olive green
-            '#3f9142', // deep green (analogous)
-            '#7ac143', // fresh green
-            '#2f9e8f', // teal-green (analogous)
-            '#1f7a8c', // petrol blue (triadic)
-            '#2d6cdf', // blue (triadic)
-            '#6c4bd6', // violet (complementary of olive-yellow)
             '#9b4dca', // purple
-            '#c74ba0', // magenta
+            '#6b8e23', // olive green
             '#e0517a', // pink-red
+            '#2f9e8f', // teal-green (analogous)
             '#e0693b', // orange (triadic)
-            '#e8a33d', // amber
-            '#f2cf8c', // sand (light neutral)
-            '#8799a3', // slate grey (neutral)
+            '#3f9142', // deep green (analogous)
+            '#c74ba0', // magenta
+            '#7ac143', // fresh green
             '#4a5568', // dark slate
+            '#f2cf8c', // sand (light neutral)
+            '#1f7a8c', // petrol blue (triadic)
+            '#e8a33d', // amber
+            '#2d6cdf', // blue (triadic)
+            '#8f9626', // darker olive
+            '#6c4bd6', // violet (complementary of olive-yellow)
+            '#d4da5e', // light olive
+            '#8799a3', // slate grey (neutral)
         ],
     },
     {
