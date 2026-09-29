@@ -429,3 +429,14 @@ app-global-filter-dialog .grid.grid-cols-5 > *,
   border-radius: 0.375rem !important;
 
 }
+
+/* ─── Column dialog: hide the "Navegable desde" section (#620) ───────────────
+   The "Navegable desde" card is the only .section-card whose direct child is a
+   p-dropdown: the sibling cards hold .aggregation-list, an input or a
+   p-inputSwitch. Scoped to .grid.gap-3, which is unique to this dialog, so the
+   "Ordenación", "Formato" and filter cards are untouched, and the rule does not
+   depend on the order of the cards. Hiding only; the field and its logic stay. */
+.grid.gap-3 > .flex.flex-col.gap-3 > .section-card:has(> p-dropdown) {
+  display: none !important;
+}
+
