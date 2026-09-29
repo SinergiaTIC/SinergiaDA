@@ -111,6 +111,28 @@ button[style*="background-color:var(--corporate-primary)"],
   color: #1f2937 !important;
 }
 
+/* ─── Panel dialog buttons: dark text on the corporate colour ───────────────
+   Extends the rule above to the buttons of the panel editor and of its inner
+   dialogs (column, filter, KPI, what-if) and to the tabs panel, which still set
+   `color: white` on the corporate background. Several of them do it with
+   `!important`, so the override needs it too.
+
+   `.btn-panel-active:hover` is deliberately left out: it paints a white
+   background with #6b7280 text, which is already correct. */
+.aggregation-active,
+.aggregation-active:hover,
+.addFilter-button,
+.addFilter-button:hover:not(:disabled),
+.btn-panel-active,
+.btn-panel-hover:hover,
+.entity-item.btn-panel-active:hover,
+.kpi-tab-btn--active,
+.kpi-add-alert-btn,
+.whatif-chip,
+.tab-button:hover {
+  color: #1f2937 !important;
+}
+
 /* ─── Login (dark, matches the left sidebar) ────────────────────────────────
    The background is set in particles-background.ts (hsl(--left-sidebar-bg));
    the colored orbs are hidden and the card is a subtle translucent glass. */
