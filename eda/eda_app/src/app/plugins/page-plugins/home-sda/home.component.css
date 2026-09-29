@@ -42,9 +42,61 @@
   font-variant-numeric: tabular-nums;
 }
 
+/* ---- Header controls: exact same height in every viewport ----
+   Default paddings/font sizes gave 34/40/42/67px (and "Nuevo informe"
+   wrapped to two lines). Force them all to 2.5rem (42px). */
+.btn-corporate-gradient,
+#view-mode button,
+.filter-dropdown-toggle,
+button.border-transparent,
+span.ml-auto {
+  height: 2.5rem;
+  min-height: 2.5rem;
+  padding-top: 0;
+  padding-bottom: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap;
+}
+
+/* "Nuevo informe": same font size as the rest of the header controls */
+.btn-corporate-gradient {
+  font-size: 14px;
+}
+
+#buscador {
+  height: 2.5rem;
+  min-height: 2.5rem;
+  padding-top: 0;
+  padding-bottom: 0;
+}
+
 /* ---- Report table ---- */
-#report-table th { position: relative; cursor: pointer; }
-#report-table th:hover { background-color: hsl(var(--muted)); }
+/* Professional dark header (light text, rounded first/last cells); body rows
+   keep the 2.x striped look. Frame without border/radius (overflow visible so
+   the sticky header can stick to the scroll container). */
+.border.rounded-lg.overflow-hidden { border: 0; border-radius: 0; overflow: visible; }
+
+#report-table { border-collapse: separate; border-spacing: 0; }
+#report-table th {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  cursor: pointer;
+  background-color: #242A33;
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 700;
+  padding: 8.25px 20px 8.25px 8.25px;
+}
+#report-table th:first-child {
+  border-radius: 10px 0 0 0px;
+}
+#report-table th:last-child {
+  border-radius: 0 10px 0px 0;
+}
+#report-table th:hover { background-color: #333537; }
 #report-table th.cursor-pointer::after {
   content: "▲";
   font-weight: 900;
@@ -54,8 +106,21 @@
 }
 #report-table th.sort-asc::after { opacity: 1; }
 #report-table th.sort-desc::after { content: "▼"; opacity: 1; }
+
+#report-table td {
+  color: #67757c;
+  font-size: 16px;
+  font-weight: 300;
+  padding: 8.25px;
+}
 #report-table td:first-child:hover { text-decoration: underline; font-weight: 600; }
-#report-table td { color: hsl(var(--foreground)); font-size: 0.95rem; font-weight: 500; }
+
+/* Body rows: no separators, striped tbody, no hover fill (2.x look) */
+#report-table thead { background-color: transparent; }
+#report-table tbody tr { border-top-width: 0; }
+#report-table tbody tr:nth-child(odd) { background-color: rgba(0, 0, 0, 0.05); }
+#report-table tbody tr:nth-child(even):hover { background-color: transparent; }
+#report-table tbody tr:nth-child(odd):hover { background-color: rgba(0, 0, 0, 0.05); }
 
 /* ---- Report type column: dot, label and edit button in one horizontal row ---- */
 .type-row {
@@ -135,6 +200,11 @@
 .report-card { border-left-width: 6px; transition: box-shadow 0.2s, transform 0.15s; }
 .report-card:hover { box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); }
 .report-card:active { transform: scale(0.99); }
+/* Card title larger to fill the available space (PR #593 review) */
+.report-card h5,
+.report-card .report-name {
+  font-size: 1.15rem;
+}
 .card-border-open    { border-left-color: #b4bc32; }
 .card-border-common  { border-left-color: #add8e7; }
 .card-border-group   { border-left-color: #ffd971; }

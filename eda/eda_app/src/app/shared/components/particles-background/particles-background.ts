@@ -24,7 +24,7 @@ interface Particle {
       left: 0;
       width: 100%;
       height: 100%;
-      background: linear-gradient(to bottom right, #EBF4FF, #FFFFFF, #EBF4FF);
+      background: hsl(var(--left-sidebar-bg));
     }
   `,
     ],
