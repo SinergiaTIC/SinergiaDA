@@ -14,7 +14,7 @@ import { EdaChartComponent } from '@eda/components/eda-chart/eda-chart.component
 import * as _ from 'lodash';
 import { StyleConfig } from './style-provider.service';
 import { KpiConfig } from '@eda/components/eda-panels/eda-blank-panel/panel-charts/chart-configuration-models/kpi-config';
-import { DEFAULT_PALETTE_COLOR } from '@eda/configs/index';
+import { DEFAULT_PALETTE_COLOR } from '@eda/configs/customizable/customizable_merged';
 import { StyleProviderService } from '@eda/services/service.index';
 import { color } from 'd3';
 

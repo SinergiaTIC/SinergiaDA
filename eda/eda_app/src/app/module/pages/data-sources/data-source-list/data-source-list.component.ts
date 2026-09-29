@@ -7,7 +7,7 @@ import Swal, { SweetAlertOptions } from 'sweetalert2';
 import { DataSourceDetailComponent } from '../data-source-detail/data-source-detail.component';
 import { PrimengModule } from 'app/core/primeng.module';
 import { DatasourceSaveAsDialog } from '../data-source-save-as/datasource-save-as.dialog';
-import { PROTECTED_MODEL_DATA_SOURCES_ARRAY } from '@eda/configs/customizable/customizable_default';
+import { PROTECTED_MODEL_DATA_SOURCES_ARRAY } from '@eda/configs/customizable/customizable_merged';
 
 import * as _ from 'lodash';
 
