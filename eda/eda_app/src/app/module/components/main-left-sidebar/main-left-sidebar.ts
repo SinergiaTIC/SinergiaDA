@@ -9,7 +9,7 @@ import { CreateDashboardService } from '@eda/services/utils/create-dashboard.ser
 import { GroupService } from '@eda/services/api/group.service';
 import { DashboardService } from '@eda/services/api/dashboard.service';
 import { IconService } from '@eda/services/utils/icons.service';
-import { CUSTOMIZE_SIDE_MENU_ICONS } from '@eda/configs/customizable/customizable_default';
+import { CUSTOMIZE_SIDE_MENU_ICONS } from '@eda/configs/customizable/customizable_merged';
 
 interface NavItem {
   path?: string;

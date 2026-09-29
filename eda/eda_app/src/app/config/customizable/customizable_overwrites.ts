@@ -6,18 +6,18 @@ export const USE_VALUE_LIST_CODE_FOR_FILTERS: boolean = true; // true -> For usi
 export const SHOW_HIDDEN_FIELDS: 'disabled' | 'admin-only' | 'all' = 'admin-only'; // 'disabled' → button hidden for everyone | 'admin-only' → only admins see the button | 'all' → all users see it
 export const ALLOWED_QUERY_MODES: string[] = ['TREE', 'SQL']; // ALLOWED_QUERY_MODES Order matters; the first value "ALLOWED_QUERY_MODES[0]" is considered the default query mode
 export const SHOW_WHAT_IF: boolean = false; // SDA: sin escenarios "What If"
-export const ALLOWED_JOIN_TYPES: string[] = ['left', 'inner']; 
+export const ALLOWED_JOIN_TYPES: string[] = ['left', 'inner'];
 export const SHOW_CUSTOM_ACTION: boolean = false;
 export const SHOW_ZOOM_IN_SIDEBAR: boolean = false;
 export const USE_EDA_KPI_SIZE_LOGIC: boolean = false;
 export const PRIVATE_EDITION_ACTIVATED: boolean =  false;
 export const CUSTOMIZE_SIDE_MENU_ICONS: any = { // Icon name (IconService registry) per side-menu entry | 'none' or '' → entry hidden
-    home: 'home',
     create: 'plus',
-    management: 'molecula',
-    settings: 'settings',
-    information: 'global',
+    management: 'settings',
+    settings: 'profile',
+    information: 'information-circle',
     logout: 'logout',
+
 };
 
 /** Feature flags - data-source page */
