@@ -1,4 +1,10 @@
 
+# Local AI agent context (not to be committed)
+AGENTS.md
+
+# SDA migration working docs (local planning, not to be committed)
+.sda-migration/
+
 #API
 eda/eda_api/.vscode/
 eda/eda_api/node_modules/
@@ -32,5 +38,7 @@ eda/eda_mcp/dist
 eda/eda_mcp/node_modules
 #APP plugin-Registry
 eda/eda_app/src/app/plugins/page-plugins/page-plugin-registry.ts
+#APP generated customizable merge (apply-overwrites.js output; defaults stay pristine)
+eda/eda_app/src/app/config/customizable/customizable_merged.ts
 eda/eda_api/config/sinergiacrm.config.js
 eda/eda_app/proxy.conf.json
