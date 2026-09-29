@@ -4553,6 +4553,1238 @@ OR<ph id="5"/>
           Los filtros de seguridad se definen a nivel de tabla y columna concreta.</source>
         <target>Any user can view the table.
     Security filters are defined at the table and specific column level.</target>
+</trans-unit>
+<trans-unit id="AddPredictionTitle">
+  <source>¿Quieres actualizar los valores?</source>
+  <target>Do you want to update the values?</target>
+</trans-unit>
+<trans-unit id="AddPredictionText">
+  <source>Puedes guardar el gráfico con o sin predicción.</source>
+  <target>You can save the chart with or without the prediction.</target>
+</trans-unit>
+<trans-unit id="AddPredictionYes">
+  <source>Sí, actualizar</source>
+  <target>Yes, update</target>
+</trans-unit>
+<trans-unit id="AddPredictionNo">
+  <source>No, cerrar</source>
+  <target>No, close</target>
+</trans-unit>
+<trans-unit id="showLines">
+  <source>Mostrar Líneas de Puntos</source>
+  <target>Show Dotted Lines</target>
+</trans-unit>
+<trans-unit id="chartLabelLineOptionDescription">
+  <source>Muestra líneas conectando los puntos</source>
+  <target>Show lines connecting the dots</target>
+</trans-unit>
+<trans-unit id="chartLabelLineOptionDescription2">
+  <source>Conecta los puntos con líneas</source>
+  <target>Connect the dots with lines</target>
+</trans-unit>
+<trans-unit id="chartLabelLinePredictionOptionDescription">
+  <source>Muestra la predicción de la serie</source>
+  <target>Show the series prediction</target>
+</trans-unit>
+<trans-unit id="gradientTab">
+  <source>Colores por intervalo</source>
+  <target>Colors by interval</target>
+</trans-unit>
+
+<trans-unit id="uniqueColorsPerBar">
+  <source>Color por valor único:</source>
+  <target>Color per unique value:</target>
+</trans-unit>
+
+<trans-unit id="noUniqueLabels">
+  <source>No hay valores únicos disponibles.</source>
+  <target>No unique values available.</target>
+</trans-unit>
+
+<trans-unit id="semaphoreTab">
+  <source>Código semafórico</source>
+  <target>Traffic light code</target>
+</trans-unit>
+<trans-unit id="aboveThreshold">
+  <source>es mayor que:</source>
+  <target>is greater than:</target>
+</trans-unit>
+<trans-unit id="betweenThresholds">
+  <source>mayor que</source>
+  <target>greater than</target>
+</trans-unit>
+<trans-unit id="betweenThresholds2">
+  <source>y menor que</source>
+  <target>and less than</target>
+</trans-unit>
+<trans-unit id="belowThreshold">
+  <source>es menor que:</source>
+  <target>is less than:</target>
+</trans-unit>
+<trans-unit id="gradientMin">
+  <source>Min</source>
+  <target>Min</target>
+</trans-unit>
+<trans-unit id="gradientMax">
+  <source>Max</source>
+  <target>Max</target>
+</trans-unit>
+<trans-unit id="mandatoryFilter">
+  <source>¿Filtro obligatorio?</source>
+  <target>Mandatory filter?</target>
+</trans-unit>
+<trans-unit id="email">
+  <source>Correo</source>
+  <target>E-mail</target>
+</trans-unit>
+<trans-unit id="nextStepBtn">
+  <source>Siguiente paso</source>
+  <target>Next step</target>
+</trans-unit>
+<trans-unit id="openInNewTab">
+  <source>Abrir en NUEVA pestaña</source>
+  <target>Open in NEW tab</target>
+</trans-unit>
+<trans-unit id="openInSameTab">
+  <source>Abrir en MISMA pestaña</source>
+  <target>Open in SAME tab</target>
+</trans-unit>
+  <trans-unit id="showField">
+    <source>Mostrar campo de origen</source>
+    <target>Show source field</target>
+  </trans-unit>
+  <trans-unit id="promptOption">
+    <source>Opciones IA</source>
+    <target>Opcions IA</target>
+  </trans-unit>
+  <trans-unit id="askTheAIText">
+    <source>Consulta con la IA</source>
+    <target>Ask the AI</target>
+  </trans-unit>
+<trans-unit id="filterSummary">
+  <source>Resumen de filtros</source>
+  <target>Filters Summary</target>
+</trans-unit>
+<trans-unit id="filterSummarySingular">
+  <source>Resumen de filtro</source>
+  <target>Filter summary</target>
+</trans-unit>
+<trans-unit id="globalFilterSelectedItemsLabel">
+  <source>items seleccionados</source>
+  <target>items selected</target>
+</trans-unit>
+<trans-unit id="copyPublicLinkTooltip">
+  <source>Copiar enlace público</source>
+  <target>Copy public link</target>
+</trans-unit>
+<trans-unit id="copyPublicLinkSuccessTitle">
+  <source>¡Enlace copiado!</source>
+  <target>Link copied!</target>
+</trans-unit>
+<trans-unit id="copyPublicLinkSuccessText">
+  <source>El enlace público ha sido copiado al portapapeles.</source>
+  <target>The public link has been copied to the clipboard.</target>
+</trans-unit>
+<trans-unit id="acceptBtn">
+  <source>Aceptar</source>
+  <target>Accept</target>
+</trans-unit>
+<trans-unit id="renameReportTooltip">
+  <source>Editar nombre</source>
+  <target>Edit name</target>
+</trans-unit>
+<trans-unit id="confirmRenameTooltip">
+  <source>Confirmar nombre</source>
+  <target>Confirm name</target>
+</trans-unit>
+<trans-unit id="duplicateReportTooltip">
+  <source>Duplicar informe</source>
+  <target>Duplicate report</target>
+</trans-unit>
+<trans-unit id="deleteReportTooltip">
+  <source>Eliminar informe</source>
+  <target>Delete report</target>
+</trans-unit>
+<trans-unit id="authorTooltipLabel">
+  <source>Autor:</source>
+  <target>Author:</target>
+</trans-unit>
+<trans-unit id="createdAtTooltipLabel">
+  <source>Creado:</source>
+  <target>Created:</target>
+</trans-unit>
+<trans-unit id="modifiedAtTooltipLabel">
+  <source>Modificado:</source>
+  <target>Modified:</target>
+</trans-unit>
+<trans-unit id="emailAlreadyExistsTitle">
+  <source>Email en uso</source>
+  <target>Email in use</target>
+</trans-unit>
+<trans-unit id="emailAlreadyExistsMsg">
+  <source>Ya existe un usuario con este correo electrónico.</source>
+  <target>A user with this email address already exists.</target>
+</trans-unit>
+<trans-unit id="assistantTitle">
+  <source>Pregunta en lenguaje natural: </source>
+  <target>Ask in natural language: </target>
+</trans-unit>
+<trans-unit id="assistantSubtitle">
+  <source>Construye tu consulta en lenguaje natural</source>
+  <target>Build your query using natural language</target>
+</trans-unit>
+<trans-unit id="AIManagement" datatype="html">
+  <source>Gestión del asistente</source>
+  <target>Assistant Management</target>
+</trans-unit>
+<trans-unit id="whereMessage">
+  <source>Filtro sobre todos los registros</source>
+  <target>Filter on all records</target>
+</trans-unit>
+<trans-unit id="havingMessage">
+  <source>Filtro sobre los resultados</source>
+  <target>Filter on results</target>
+</trans-unit>
+<trans-unit id="aggregationText">
+  <source>Agregación</source>
+  <target>Aggregation</target>
+</trans-unit>
+<trans-unit id="textBetween">
+  <source>Entre</source>
+  <target>Between</target>
+</trans-unit>
+<trans-unit id="whereMessageLabel">
+  <source>Aplicar el filtro sobre todos los registros</source>
+  <target>Apply filter on all records</target>
+</trans-unit>
+<trans-unit id="havingMessageLabel">
+  <source>Aplicar el filtro sobre los resultados</source>
+  <target>Apply filter on results</target>
+</trans-unit>
+<trans-unit id="customHtmlSaved">
+  <source>HTML personalizado guardado correctamente.</source>
+  <target>Custom HTML saved correctly.</target>
+</trans-unit>
+<trans-unit id="advancedFilterTitle" datatype="html">
+  <source>Filtro avanzado</source>
+  <target>Advanced filter</target>
+</trans-unit>
+<trans-unit id="clearFiltersBtn" datatype="html">
+  <source>Limpiar</source>
+  <target>Clear</target>
+</trans-unit>
+<trans-unit id="authorFilterLabel" datatype="html">
+  <source>Propietario</source>
+  <target>Owner</target>
+</trans-unit>
+<trans-unit id="authorFilterPlaceholder" datatype="html">
+  <source>Autor...</source>
+  <target>Author...</target>
+</trans-unit>
+<trans-unit id="datasourceFilterLabel" datatype="html">
+  <source>Datasource</source>
+  <target>Datasource</target>
+</trans-unit>
+<trans-unit id="datasourceFilterPlaceholder" datatype="html">
+  <source>postgres, mysql...</source>
+  <target>postgres, mysql...</target>
+</trans-unit>
+<trans-unit id="createdFilterLabel" datatype="html">
+  <source>Creado en</source>
+  <target>Created at</target>
+</trans-unit>
+<trans-unit id="modifiedFilterLabel" datatype="html">
+  <source>Modificado en</source>
+  <target>Modified at</target>
+</trans-unit>
+<trans-unit id="tagsFilterLabel" datatype="html">
+  <source>Tags</source>
+  <target>Tags</target>
+</trans-unit>
+<trans-unit id="tagsFilterPlaceholder" datatype="html">
+  <source>Selecciona tags...</source>
+  <target>Select tags...</target>
+</trans-unit>
+<trans-unit id="hechoCon" datatype="html">
+  <source> HECHO CON </source>
+  <target> MADE WITH </target>
+</trans-unit>
+<trans-unit id="adminPortal" datatype="html">
+  <source>Portal de datos</source>
+  <target>Data Portal</target>
+</trans-unit>
+<trans-unit id="inputDescripcionModelo" datatype="html">
+  <source>Descripción</source>
+  <target>Description</target>
+</trans-unit>
+<trans-unit id="placeholderDescripcionModelo" datatype="html">
+  <source>Describe el propósito y contenido de este modelo de datos...</source>
+  <target>Describe the purpose and content of this data model...</target>
+</trans-unit>
+<trans-unit id="mcpVisibilityLabel" datatype="html">
+  <source>Visibilidad MCP</source>
+  <target>MCP Visibility</target>
+</trans-unit>
+<trans-unit id="mcpVisibilityTooltipTableModel" datatype="html">
+  <source>Controla si el agente de IA tiene acceso a esta información: Full permite acceso completo, None lo excluye totalmente.</source>
+  <target>Controls whether the AI agent has access to this information: Full allows full access, None excludes it entirely.</target>
+</trans-unit>
+<trans-unit id="mcpVisibilityTooltipCol" datatype="html">
+  <source>Controla si el agente de IA tiene acceso a esta información: Full permite acceso completo, Declaration expone solo nombre y tipo, None lo excluye totalmente.</source>
+  <target>Controls whether the AI agent has access to this information: Full allows full access, Declaration exposes only name and type, None excludes it entirely.</target>
+</trans-unit>
+<trans-unit id="dynamicFiltersText" datatype="html">
+  <source>Filtros dinámicos</source>
+  <target>Dynamic filters</target>
+</trans-unit>
+<trans-unit id="uniqueRecordsGrouping" datatype="html">
+  <source>Registros únicos (agrupación)?</source>
+  <target>Unique records (grouping)?</target>
+</trans-unit>
+<trans-unit id="tableDescriptionDependentFilter" datatype="html">
+  <source>Tabla:</source>
+  <target>Table:</target>
+</trans-unit>
+<trans-unit id="columnDescriptionDependentFilter" datatype="html">
+  <source>Columna:</source>
+  <target>Column:</target>
+</trans-unit>
+<trans-unit id="noAttributeShouldHaveAggregation">
+  <source>Ningún Atributo debe tener agregación</source>
+  <target>No attribute should have aggregation</target>
+</trans-unit>
+<trans-unit id="mustConfigureAtLeastOneAttribute">
+  <source>Debe configurar un atributo como mínimo para habilitar esta opción</source>
+  <target>You must configure at least one attribute to enable this option</target>
+</trans-unit>
+<trans-unit id="mustAddTheGroupingsToRunWithAggregations">
+  <source>Debe activar las agrupaciones para ejecutar con agregaciones configuradas en los atributos</source>
+  <target>You must enable groupings to execute with aggregations configured on the attributes</target>
+</trans-unit>
+<trans-unit id="chatAssistantTitle" datatype="html">
+  <source>Asistente Edalitics</source>
+  <target>Edalitics Assistant</target>
+</trans-unit>
+<trans-unit id="chatAssistantSubtitle" datatype="html">
+  <source>Asistente IA para facilitar tu trabajo</source>
+  <target>AI Assistant to make your work easier</target>
+</trans-unit>
+<trans-unit id="chatCloseBtn" datatype="html">
+  <source>Cerrar</source>
+  <target>Close</target>
+</trans-unit>
+<trans-unit id="chatEmptyTitle" datatype="html">
+  <source>¿En qué puedo ayudarte?</source>
+  <target>How can I help you?</target>
+</trans-unit>
+<trans-unit id="chatEmptySubtitle" datatype="html">
+  <source>Consulta dashboards, datasources y datos</source>
+  <target>Browse dashboards, datasources and data</target>
+</trans-unit>
+<trans-unit id="chatSuggestion1" datatype="html">
+  <source>¿Qué dashboards tengo?</source>
+  <target>What dashboards do I have?</target>
+</trans-unit>
+<trans-unit id="chatSuggestion2" datatype="html">
+  <source>¿Qué fuentes de datos hay?</source>
+  <target>What data sources are there?</target>
+</trans-unit>
+<trans-unit id="chatSuggestion3" datatype="html">
+  <source>Estado del servidor</source>
+  <target>Server status</target>
+</trans-unit>
+<trans-unit id="chatSuggestion4" datatype="html">
+  <source>¿Qué informes tengo disponibles?</source>
+  <target>What reports do I have available?</target>
+</trans-unit>
+<trans-unit id="chatInputPlaceholder" datatype="html">
+  <source>Escribe un mensaje...</source>
+  <target>Write a message...</target>
+</trans-unit>
+<trans-unit id="chatFabTitle" datatype="html">
+  <source>Asistente IA</source>
+  <target>AI Assistant</target>
+</trans-unit>
+<trans-unit id="mapClusteredPoints" datatype="html">
+  <source>puntos agrupados</source>
+  <target>clustered points</target>
+</trans-unit>
+<trans-unit id="saveAsModel" datatype="html">
+  <source>Guardar como, para el modelo de datos</source>
+  <target>Save as, for the data mode</target>
+</trans-unit>
+<trans-unit id="chatOptionSelectedLabel" datatype="html">
+  <source>Opción</source>
+  <target>Option</target>
+</trans-unit>
+<trans-unit id="chatErrorConnecting" datatype="html">
+  <source>Error al conectar con el asistente.</source>
+  <target>Error connecting to the assistant.</target>
+</trans-unit>
+<trans-unit id="chatFallbackYes" datatype="html">
+  <source>Sí</source>
+  <target>Yes</target>
+</trans-unit>
+<trans-unit id="chatFallbackSearchIn" datatype="html">
+  <source>Buscar en...</source>
+  <target>Search in...</target>
+</trans-unit>
+<trans-unit id="chatFallbackSearchInPrefix" datatype="html">
+  <source>Buscar en: </source>
+  <target>Search in: </target>
+</trans-unit>
+<trans-unit id="whereDoWeBegin" datatype="html">
+  <source>¿ Por dónde empezamos ?</source>
+  <target>Where do we start?</target>
+</trans-unit>
+<trans-unit id="analyzingTheScheme" datatype="html">
+  <source>Analizando el esquema</source>
+  <target>Analyzing the scheme</target>
+</trans-unit>
+<trans-unit id="aiManagementTitle" datatype="html">
+  <source>Gestión de IA</source>
+  <target>AI Management</target>
+</trans-unit>
+<trans-unit id="aiManagementSubtitle" datatype="html">
+  <source>Configura los parámetros del asistente de inteligencia artificial</source>
+  <target>Configure the parameters of the artificial intelligence assistant</target>
+</trans-unit>
+<trans-unit id="aiProvider" datatype="html">
+  <source>PROVEEDOR</source>
+  <target>PROVIDER</target>
+</trans-unit>
+<trans-unit id="aiApiKey" datatype="html">
+  <source>API KEY</source>
+  <target>API KEY</target>
+</trans-unit>
+<trans-unit id="aiAwsAccessKey" datatype="html">
+  <source>CLAVE DE ACCESO DE AWS</source>
+  <target>AWS ACCESS KEY</target>
+</trans-unit>
+<trans-unit id="aiAwsRegion" datatype="html">
+  <source>REGIÓN DE AWS</source>
+  <target>AWS REGION</target>
+</trans-unit>
+<trans-unit id="aiAwsSecretKey" datatype="html">
+  <source>CLAVE SECRETA DE AWS</source>
+  <target>AWS SECRET KEY</target>
+</trans-unit>
+<trans-unit id="aiModel" datatype="html">
+  <source>MODELO DE IA</source>
+  <target>AI MODEL</target>
+</trans-unit>
+<trans-unit id="aiContext" datatype="html">
+  <source>CONTEXTO</source>
+  <target>CONTEXT</target>
+</trans-unit>
+<trans-unit id="aiEDAApp" datatype="html">
+  <source>EDA APP URL</source>
+  <target>EDA APP URL</target>
+</trans-unit>
+<trans-unit id="aiMCPURL" datatype="html">
+  <source>MCP URL</source>
+  <target>MCP URL</target>
+</trans-unit>
+<trans-unit id="aiLimit" datatype="html">
+  <source>LÍMITE</source>
+  <target>LIMIT</target>
+</trans-unit>
+<trans-unit id="aiAvailable" datatype="html">
+  <source>DISPONIBLE</source>
+  <target>AVAILABLE</target>
+</trans-unit>
+<trans-unit id="navegableFrom" datatype="html">
+  <source>Navegable desde</source>
+  <target>Navegable from</target>
+</trans-unit>
+<trans-unit id="noParentAttributes" datatype="html">
+  <source>Añade más atributos para activar la navegación</source>
+  <target>Add more attributes to enable navigation</target>
+</trans-unit>
+<trans-unit id="noParentText" datatype="html">
+  <source>Sin padre</source>
+  <target>No parent</target>
+</trans-unit>
+<trans-unit id="noDataAvailable" datatype="html">
+  <source>Sin datos disponibles</source>
+  <target>No data available</target>
+</trans-unit>
+<trans-unit id="noDataChatMessage" datatype="html">
+  <source>Para utilizar este chat necesitas tener un panel con datos seleccionado.</source>
+  <target>To use this chat you need to have a panel with data selected.</target>
+</trans-unit>
+<trans-unit id="copyToClipboard" datatype="html">
+  <source>Copiar</source>
+  <target>Copy</target>
+</trans-unit>
+<trans-unit id="ctrlEnterToSend" datatype="html">
+  <source>Ctrl+Enter para enviar</source>
+  <target>Ctrl+Enter to send</target>
+</trans-unit>
+<trans-unit id="askEdaliticsPrefix" datatype="html">
+  <source>Pregúntale a </source>
+  <target>Ask </target>
+</trans-unit>
+<trans-unit id="askEdaliticsSubtitle" datatype="html">
+  <source>Análisis de datos con IA</source>
+  <target>AI-powered data analysis</target>
+</trans-unit>
+<trans-unit id="volver" datatype="html">
+  <source>Volver</source>
+  <target>Go Back</target>
+</trans-unit>
+<trans-unit id="navegar" datatype="html">
+  <source>Navegar</source>
+  <target>Navigate</target>
+</trans-unit>
+<trans-unit id="resultSortingText" datatype="html">
+  <source>Ordenar los resultados por:</source>
+  <target>Sort results by:</target>
+</trans-unit>
+<trans-unit id="draggResultSorting" datatype="html">
+  <source>Arrastre aquí los atributos sobre los que quiere ordenar</source>
+  <target>Drag here the attributes you want to sort by</target>
+</trans-unit>
+<trans-unit id="noDuckDbFile">
+  <source>Debe cargar un archivo CSV primero</source>
+  <target>You must load a CSV file first</target>
+</trans-unit>
+<trans-unit id="noFolderName">
+  <source>Debe proporcionar el nombre de la carpeta</source>
+  <target>You must provide a folder name</target>
+</trans-unit>
+<trans-unit id="duckdbCreated">
+  <source>Fuente de datos DuckDB creada correctamente</source>
+  <target>DuckDB data source created successfully</target>
+</trans-unit>
+<trans-unit id="errorParseDuckDb">
+  <source>Error al parsear el archivo CSV. Verifica el separador.</source>
+  <target>Error parsing the CSV file. Check the separator.</target>
+</trans-unit>
+<trans-unit id="duckdbFolderLabel">
+  <source>Carpeta padre</source>
+  <target>Parent folder</target>
+</trans-unit>
+<trans-unit id="duckdbFolderPlaceholder">
+  <source>nombre_carpeta_nueva</source>
+  <target>new_folder_name</target>
+</trans-unit>
+<trans-unit id="duckdbFolderHint">
+  <source>Los archivos CSV se guardarán en <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>duckdb/<x id="INTERPOLATION" equiv-text="{{ connectionForm.get(&apos;folderName&apos;)?.value || &apos;...&apos; }}"/>/<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/></source>
+  <target>CSV files will be stored in <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>duckdb/<x id="INTERPOLATION" equiv-text="{{ connectionForm.get(&apos;folderName&apos;)?.value || &apos;...&apos; }}"/>/<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/></target>
+</trans-unit>
+<trans-unit id="duckdbAddAnotherCsv">
+  <source>Añadir otro CSV</source>
+  <target>Add another CSV</target>
+</trans-unit>
+<trans-unit id="duckdbNewFolder">
+  <source>+ Nueva carpeta</source>
+  <target>+ New folder</target>
+</trans-unit>
+<trans-unit id="duckdbCsvListTitle">
+  <source>CSVs en la carpeta (<x id="INTERPOLATION" equiv-text="{{ duckdbCsvList.length }}"/>):</source>
+  <target>CSVs in the folder (<x id="INTERPOLATION" equiv-text="{{ duckdbCsvList.length }}"/>):</target>
+</trans-unit>
+<trans-unit id="duckdbCsvColumns">
+  <source>(<x id="INTERPOLATION" equiv-text="{{ csv.columnsConfig.length }}"/> columnas)</source>
+  <target>(<x id="INTERPOLATION" equiv-text="{{ csv.columnsConfig.length }}"/> columns)</target>
+</trans-unit>
+<trans-unit id="odooUrlLabel">
+  <source>URL de Odoo <x id="START_TAG_SPAN" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" equiv-text="&lt;/span&gt;"/></source>
+  <target>Odoo URL <x id="START_TAG_SPAN" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" equiv-text="&lt;/span&gt;"/></target>
+</trans-unit>
+<trans-unit id="odooInfoMessage">
+  <source>Al confirmar se descargarán las facturas, líneas, clientes, productos y vendedores de Odoo y se crearán como tablas en un datasource DuckDB. La descarga puede tardar unos segundos dependiendo del volumen de datos.</source>
+  <target>On confirm, invoices, lines, customers, products and salespeople will be downloaded from Odoo and created as tables in a DuckDB datasource. The download may take a few seconds depending on data volume.</target>
+</trans-unit>
+<trans-unit id="odooCreated">
+  <source>Fuente de datos Odoo creada correctamente</source>
+  <target>Odoo data source created successfully</target>
+</trans-unit>
+<trans-unit id="ga4PropertyIdLabel">
+  <source>ID de Propiedad GA4</source>
+  <target>GA4 Property ID</target>
+</trans-unit>
+<trans-unit id="ga4PropertyIdHint">
+  <source>Puedes encontrarlo en Google Analytics → Administrar → Información de la propiedad</source>
+  <target>You can find it in Google Analytics → Admin → Property Settings</target>
+</trans-unit>
+<trans-unit id="ga4FolderNameLabel">
+  <source>Nombre de carpeta</source>
+  <target>Folder name</target>
+</trans-unit>
+<trans-unit id="ga4FolderNameHint">
+  <source>Se creará la carpeta duckdb/&lt;nombre&gt;/ con los CSV de métricas</source>
+  <target>The folder duckdb/&lt;name&gt;/ will be created with the metrics CSV files</target>
+</trans-unit>
+<trans-unit id="ga4FolderPlaceholder">
+  <source>ga4_miempresa</source>
+  <target>ga4_mycompany</target>
+</trans-unit>
+<trans-unit id="ga4AuthLabel">
+  <source>Autorización de Google Analytics</source>
+  <target>Google Analytics Authorization</target>
+</trans-unit>
+<trans-unit id="ga4AuthButton">
+  <source>Autorizar con Google Analytics</source>
+  <target>Authorize with Google Analytics</target>
+</trans-unit>
+<trans-unit id="ga4AuthWaiting">
+  <source>Esperando autorización en la ventana emergente...</source>
+  <target>Waiting for authorization in the popup window...</target>
+</trans-unit>
+<trans-unit id="ga4AuthSuccess">
+  <source>Cuenta de Google Analytics autorizada correctamente</source>
+  <target>Google Analytics account authorized successfully</target>
+</trans-unit>
+<trans-unit id="ga4AuthRevoke">
+  <source>Cambiar cuenta</source>
+  <target>Change account</target>
+</trans-unit>
+<trans-unit id="ga4AuthError">
+  <source>Error durante la autorización. Inténtalo de nuevo.</source>
+  <target>Authorization error. Please try again.</target>
+</trans-unit>
+<trans-unit id="ga4InfoMessage">
+  <source>Al confirmar se descargarán los datos de los últimos 365 días de Google Analytics 4: sesiones por canal, páginas vistas, eventos, dispositivos y datos geográficos. La descarga puede tardar según el volumen de datos de la propiedad.</source>
+  <target>On confirm, the last 365 days of Google Analytics 4 data will be downloaded: sessions by channel, page views, events, devices and geographic data. Download time depends on the property's data volume.</target>
+</trans-unit>
+<trans-unit id="ga4Created">
+  <source>Fuente de datos Google Analytics 4 creada correctamente</source>
+  <target>Google Analytics 4 data source created successfully</target>
+</trans-unit>
+<trans-unit id="ga4PropertyIdRequired">
+  <source>Debe indicar el ID de propiedad de Google Analytics 4</source>
+  <target>Google Analytics 4 Property ID is required</target>
+</trans-unit>
+<trans-unit id="ga4AuthRequired">
+  <source>Debes autorizar el acceso a Google Analytics primero</source>
+  <target>You must authorize Google Analytics access first</target>
+</trans-unit>
+<trans-unit id="holdedFolderLabel">
+  <source>Nombre de carpeta <x id="START_TAG_SPAN" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" equiv-text="&lt;/span&gt;"/></source>
+  <target>Folder name <x id="START_TAG_SPAN" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" equiv-text="&lt;/span&gt;"/></target>
+</trans-unit>
+<trans-unit id="holdedApiKeyLabel">
+  <source>API Key de Holded <x id="START_TAG_SPAN" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" equiv-text="&lt;/span&gt;"/></source>
+  <target>Holded API Key <x id="START_TAG_SPAN" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" equiv-text="&lt;/span&gt;"/></target>
+</trans-unit>
+<trans-unit id="holdedInfoMessage">
+  <source>Al confirmar se descargarán las facturas, líneas, contactos, productos y asientos contables de Holded y se crearán como tablas en un datasource DuckDB. La descarga puede tardar unos minutos dependiendo del volumen de datos.</source>
+  <target>On confirm, invoices, lines, contacts, products and accounting entries will be downloaded from Holded and created as tables in a DuckDB datasource. The download may take a few minutes depending on data volume.</target>
+</trans-unit>
+<trans-unit id="holdedCreated">
+  <source>Fuente de datos Holded creada correctamente</source>
+  <target>Holded data source created successfully</target>
+</trans-unit>
+<trans-unit id="multipleSelectionText">
+  <source>Selección múltiple</source>
+  <target>Multiple choice</target>
+</trans-unit>
+<trans-unit id="uniqueSelectionText">
+  <source>Selección única</source>
+  <target>Single choice</target>
+</trans-unit>
+<trans-unit id="uniqueSelectionDescription">
+  <source>Active esta opción para permitir la selección múltiple.</source>
+  <target>Enable this option to allow multiple selection.</target>
+</trans-unit>
+<trans-unit id="multipleSelectionDescription">
+  <source>Desactive esta opción para permitir la selección única.</source>
+  <target>Disable this option to allow single selection.</target>
+</trans-unit>
+<trans-unit id="enablePanelLockButton">
+  <source>Bloquear los paneles</source>
+  <target>Lock the panels</target>
+</trans-unit>
+<trans-unit id="disablePanelLockButton">
+  <source>Desbloquear los paneles</source>
+  <target>Unlock the panels</target>
+</trans-unit>
+<trans-unit id="noAttributes">
+  <source>Sin atributos</source>
+  <target>Without attributes</target>
+</trans-unit>
+<trans-unit id="noFilters">
+  <source>Sin filtros</source>
+  <target>Without filters</target>
+</trans-unit>
+<trans-unit id="reportName">
+  <source>Nombre del Informe</source>
+  <target>Report Name</target>
+</trans-unit>
+<trans-unit id="reportType">
+  <source>Tipo</source>
+  <target>Type</target>
+</trans-unit>
+<trans-unit id="reportTags">
+  <source>Etiquetas</source>
+  <target>Tags</target>
+</trans-unit>
+<trans-unit id="reportAutor">
+  <source>Autor</source>
+  <target>Author</target>
+</trans-unit>
+<trans-unit id="reportCreatedAt">
+  <source>Fecha creación</source>
+  <target>Creation date</target>
+</trans-unit>
+<trans-unit id="reportModifiedAt">
+  <source>Fecha modificación</source>
+  <target>Modification date</target>
+</trans-unit>
+<trans-unit id="reportPrivateEdition">
+  <source>Edición privada</source>
+  <target>Private edition</target>
+</trans-unit>
+<trans-unit id="reportDataSourceName">
+  <source>Fuente de datos</source>
+  <target>Data source</target>
+</trans-unit>
+<trans-unit id="kpiSizeHover" datatype="html">
+        <source>Tamaño del KPI</source>
+        <target>KPI size</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/module/components/eda-panels/eda-blank-panel/kpi-dialog/kpi-dialog.component.html</context>
+          <context context-type="linenumber">64,65</context>
+        </context-group>
+      </trans-unit>
+<trans-unit id="kpiSizeHoverHint" datatype="html">
+        <source> Pasa el ratón por encima del KPI para ver los botones que permiten ajustar su tamaño. </source>
+        <target> Hover over the KPI to see the buttons that let you adjust its size. </target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/module/components/eda-panels/eda-blank-panel/kpi-dialog/kpi-dialog.component.html</context>
+          <context context-type="linenumber">69,70</context>
+        </context-group>
+      </trans-unit>
+<trans-unit id="colorChartBorderLabel" datatype="html">
+        <source>Color del borde</source>
+        <target>Border color</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/module/components/eda-panels/eda-blank-panel/kpi-dialog/kpi-dialog.component.html</context>
+          <context context-type="linenumber">168,170</context>
+        </context-group>
+      </trans-unit>
+<trans-unit id="colorLabelLine" datatype="html">
+        <source>Color de línea</source>
+        <target>Line color</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/module/components/eda-panels/eda-blank-panel/kpi-dialog/kpi-dialog.component.html</context>
+          <context context-type="linenumber">187,188</context>
+        </context-group>
+      </trans-unit>
+<trans-unit id="colorLabelArea" datatype="html">
+        <source>Color de área</source>
+        <target>Area color</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/module/components/eda-panels/eda-blank-panel/kpi-dialog/kpi-dialog.component.html</context>
+          <context context-type="linenumber">198,199</context>
+        </context-group>
+      </trans-unit>
+<trans-unit id="kpiLineSettings" datatype="html">
+        <source>Línea</source>
+        <target>Line</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/module/components/eda-panels/eda-blank-panel/kpi-dialog/kpi-dialog.component.html</context>
+          <context context-type="linenumber">219,220</context>
+        </context-group>
+      </trans-unit>
+<trans-unit id="resetSectionButton" datatype="html">
+        <source>Restaurar</source>
+        <target>Reset</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/module/components/eda-panels/eda-blank-panel/kpi-dialog/kpi-dialog.component.html</context>
+          <context context-type="linenumber">222,223</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/module/components/eda-panels/eda-blank-panel/kpi-dialog/kpi-dialog.component.html</context>
+          <context context-type="linenumber">255,256</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/module/components/eda-panels/eda-blank-panel/kpi-dialog/kpi-dialog.component.html</context>
+          <context context-type="linenumber">292,293</context>
+        </context-group>
+      </trans-unit>
+<trans-unit id="widthLabelLine" datatype="html">
+        <source>Grosor de línea</source>
+        <target>Line thickness</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/module/components/eda-panels/eda-blank-panel/kpi-dialog/kpi-dialog.component.html</context>
+          <context context-type="linenumber">226,227</context>
+        </context-group>
+      </trans-unit>
+<trans-unit id="lineStyleLabel" datatype="html">
+        <source>Tipo de línea</source>
+        <target>Line type</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/module/components/eda-panels/eda-blank-panel/kpi-dialog/kpi-dialog.component.html</context>
+          <context context-type="linenumber">231,232</context>
+        </context-group>
+      </trans-unit>
+<trans-unit id="kpiAxisAndLabels" datatype="html">
+        <source>Eje X y etiquetas de valor</source>
+        <target>X axis and value labels</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/module/components/eda-panels/eda-blank-panel/kpi-dialog/kpi-dialog.component.html</context>
+          <context context-type="linenumber">246,247</context>
+        </context-group>
+      </trans-unit>
+<trans-unit id="axisScaleH6" datatype="html">
+        <source>Ejes y escala</source>
+        <target>Axes and scale</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/module/components/eda-panels/eda-blank-panel/kpi-dialog/kpi-dialog.component.html</context>
+          <context context-type="linenumber">253,254</context>
+        </context-group>
+      </trans-unit>
+<trans-unit id="xAxisShowLabel" datatype="html">
+        <source>Mostrar eje X</source>
+        <target>Show X-axis</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/module/components/eda-panels/eda-blank-panel/kpi-dialog/kpi-dialog.component.html</context>
+          <context context-type="linenumber">258,259</context>
+        </context-group>
+      </trans-unit>
+<trans-unit id="xAxisLabelsLabel" datatype="html">
+        <source>Mostrar etiquetas del eje X</source>
+        <target>Show X-axis labels</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/module/components/eda-panels/eda-blank-panel/kpi-dialog/kpi-dialog.component.html</context>
+          <context context-type="linenumber">265,266</context>
+        </context-group>
+      </trans-unit>
+<trans-unit id="xAxisAllLabelsLabel" datatype="html">
+        <source>Mostrar todas las etiquetas</source>
+        <target>Show all labels</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/module/components/eda-panels/eda-blank-panel/kpi-dialog/kpi-dialog.component.html</context>
+          <context context-type="linenumber">272,273</context>
+        </context-group>
+      </trans-unit>
+<trans-unit id="xAxisLabelCountLabel" datatype="html">
+        <source>Máximo de etiquetas</source>
+        <target>Maximum labels</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/module/components/eda-panels/eda-blank-panel/kpi-dialog/kpi-dialog.component.html</context>
+          <context context-type="linenumber">280,281</context>
+        </context-group>
+      </trans-unit>
+<trans-unit id="labelsValuesH6" datatype="html">
+        <source>Etiquetas y valores</source>
+        <target>Labels and values</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/module/components/eda-panels/eda-blank-panel/kpi-dialog/kpi-dialog.component.html</context>
+          <context context-type="linenumber">290,291</context>
+        </context-group>
+      </trans-unit>
+<trans-unit id="showValueLabelsLabel" datatype="html">
+        <source>Mostrar valores en el gráfico</source>
+        <target>Show values on chart</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/module/components/eda-panels/eda-blank-panel/kpi-dialog/kpi-dialog.component.html</context>
+          <context context-type="linenumber">295,296</context>
+        </context-group>
+      </trans-unit>
+<trans-unit id="showValuePercentLabel" datatype="html">
+        <source>Mostrar valores en porcentaje</source>
+        <target>Show values as percentage</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/module/components/eda-panels/eda-blank-panel/kpi-dialog/kpi-dialog.component.html</context>
+          <context context-type="linenumber">302,303</context>
+        </context-group>
+      </trans-unit>
+<trans-unit id="labelColorLabel" datatype="html">
+        <source>Color del texto de etiquetas</source>
+        <target>Label text color</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/module/components/eda-panels/eda-blank-panel/kpi-dialog/kpi-dialog.component.html</context>
+          <context context-type="linenumber">310,311</context>
+        </context-group>
+      </trans-unit>
+<trans-unit id="labelBackgroundColorLabel" datatype="html">
+        <source>Fondo de etiquetas</source>
+        <target>Label background</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/module/components/eda-panels/eda-blank-panel/kpi-dialog/kpi-dialog.component.html</context>
+          <context context-type="linenumber">319,320</context>
+        </context-group>
+      </trans-unit>
+<trans-unit id="kpiAspecto" datatype="html">
+        <source>Aspecto</source>
+        <target>Appearance</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/module/components/eda-panels/eda-blank-panel/kpi-dialog/kpi-dialog.component.html</context>
+          <context context-type="linenumber">22</context>
+        </context-group>
+      </trans-unit>
+<trans-unit id="kpiVisualStyle" datatype="html">
+        <source>Estilo visual del KPI</source>
+        <target>KPI visual style</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/module/components/eda-panels/eda-blank-panel/kpi-dialog/kpi-dialog.component.html</context>
+          <context context-type="linenumber">80</context>
+        </context-group>
+      </trans-unit>
+<trans-unit id="kpiBgColor" datatype="html">
+        <source>Color de fondo</source>
+        <target>Background color</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/module/components/eda-panels/eda-blank-panel/kpi-dialog/kpi-dialog.component.html</context>
+          <context context-type="linenumber">87</context>
+        </context-group>
+      </trans-unit>
+<trans-unit id="kpiTextColor" datatype="html">
+        <source>Color del indicador</source>
+        <target>Indicator color</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/module/components/eda-panels/eda-blank-panel/kpi-dialog/kpi-dialog.component.html</context>
+          <context context-type="linenumber">107</context>
+        </context-group>
+      </trans-unit>
+<trans-unit id="colorLabelSeries" datatype="html">
+        <source>Color de la serie</source>
+        <target>Series color</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/module/components/eda-panels/eda-blank-panel/kpi-dialog/kpi-dialog.component.html</context>
+          <context context-type="linenumber">118</context>
+        </context-group>
+      </trans-unit>
+<trans-unit id="panelTitleOptions" datatype="html">
+        <source>Opciones de visualización</source>
+        <target>Display options</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/module/components/eda-panels/eda-blank-panel/kpi-dialog/kpi-dialog.component.html</context>
+          <context context-type="linenumber">42</context>
+        </context-group>
+      </trans-unit>
+<trans-unit id="appearanceSection" datatype="html">
+        <source>Apariencia</source>
+        <target>Appearance</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/module/components/eda-panels/eda-blank-panel/kpi-dialog/kpi-dialog.component.html</context>
+          <context context-type="linenumber">65</context>
+        </context-group>
+      </trans-unit>
+<trans-unit id="kpiPrefixImage" datatype="html">
+        <source>Imagen prefijo</source>
+        <target>Prefix image</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/module/components/eda-panels/eda-blank-panel/kpi-dialog/kpi-dialog.component.html</context>
+          <context context-type="linenumber">127</context>
+        </context-group>
+      </trans-unit>
+
+<trans-unit id="duplicatePanel">
+<source>Duplicar panel</source>
+<target>Duplicate panel</target>
+</trans-unit>
+
+<trans-unit id="PanelOptions">
+<source>PANEL OPTIONS</source>
+<target>PANEL OPTIONS</target>
+</trans-unit>
+
+<trans-unit id="titlePanelOptions">
+<source>Opciones del panel</source>
+<target>Panel options</target>
+</trans-unit>
+
+<trans-unit id="titlePanelAppearance">
+<source>Apariencia</source>
+<target>Appearance</target>
+</trans-unit>
+
+<trans-unit id="titlePanelShowBg">
+<source>Mostrar fondo del panel</source>
+<target>Show panel background</target>
+</trans-unit>
+
+<trans-unit id="titlePanelBgColor">
+<source>Color de fondo</source>
+<target>Background color</target>
+</trans-unit>
+
+<trans-unit id="titlePanelShowBorder">
+<source>Mostrar borde</source>
+<target>Show border</target>
+</trans-unit>
+
+<trans-unit id="titlePanelBorderColor">
+<source>Color del borde</source>
+<target>Border color</target>
+</trans-unit>
+
+<trans-unit id="titlePanelVerticalAlign">
+<source>Alineación vertical</source>
+<target>Vertical alignment</target>
+</trans-unit>
+
+<trans-unit id="titlePanelAlignTop">
+<source>Arriba</source>
+<target>Top</target>
+</trans-unit>
+
+<trans-unit id="titlePanelAlignCenter">
+<source>Centro</source>
+<target>Middle</target>
+</trans-unit>
+
+<trans-unit id="titlePanelAlignBottom">
+<source>Abajo</source>
+<target>Bottom</target>
+</trans-unit>
+
+<trans-unit id="qlTooltipSize">
+<source>Tamaño de letra</source>
+<target>Font size</target>
+</trans-unit>
+
+<trans-unit id="qlTooltipBold">
+<source>Negrita</source>
+<target>Bold</target>
+</trans-unit>
+
+<trans-unit id="qlTooltipItalic">
+<source>Cursiva</source>
+<target>Italic</target>
+</trans-unit>
+
+<trans-unit id="qlTooltipUnderline">
+<source>Subrayado</source>
+<target>Underline</target>
+</trans-unit>
+
+<trans-unit id="qlTooltipStrike">
+<source>Tachado</source>
+<target>Strikethrough</target>
+</trans-unit>
+
+<trans-unit id="qlTooltipTextColor">
+<source>Color del texto</source>
+<target>Text color</target>
+</trans-unit>
+
+<trans-unit id="qlTooltipTextBgColor">
+<source>Color de resaltado del texto</source>
+<target>Text highlight color</target>
+</trans-unit>
+
+<trans-unit id="qlTooltipSub">
+<source>Subíndice</source>
+<target>Subscript</target>
+</trans-unit>
+
+<trans-unit id="qlTooltipSuper">
+<source>Superíndice</source>
+<target>Superscript</target>
+</trans-unit>
+
+<trans-unit id="qlTooltipH1">
+<source>Título 1</source>
+<target>Heading 1</target>
+</trans-unit>
+
+<trans-unit id="qlTooltipH2">
+<source>Título 2</source>
+<target>Heading 2</target>
+</trans-unit>
+
+<trans-unit id="qlTooltipQuote">
+<source>Cita</source>
+<target>Quote</target>
+</trans-unit>
+
+<trans-unit id="qlTooltipOrderedList">
+<source>Lista numerada</source>
+<target>Numbered list</target>
+</trans-unit>
+
+<trans-unit id="qlTooltipBulletList">
+<source>Lista con viñetas</source>
+<target>Bulleted list</target>
+</trans-unit>
+
+<trans-unit id="qlTooltipAlignLeft">
+<source>Alinear a la izquierda</source>
+<target>Align left</target>
+</trans-unit>
+
+<trans-unit id="qlTooltipAlignCenter">
+<source>Centrar</source>
+<target>Center</target>
+</trans-unit>
+
+<trans-unit id="qlTooltipAlignRight">
+<source>Alinear a la derecha</source>
+<target>Align right</target>
+</trans-unit>
+
+<trans-unit id="qlTooltipLink">
+<source>Insertar enlace</source>
+<target>Insert link</target>
+</trans-unit>
+
+<trans-unit id="qlTooltipImage">
+<source>Insertar imagen desde un archivo</source>
+<target>Insert image from a file</target>
+</trans-unit>
+
+<trans-unit id="qlTooltipVideo">
+<source>Insertar vídeo</source>
+<target>Insert video</target>
+</trans-unit>
+
+<trans-unit id="qlTooltipUrlImage">
+<source>Insertar imagen desde una URL</source>
+<target>Insert image from a URL</target>
+</trans-unit>
+
+<trans-unit id="qlTooltipClean">
+<source>Quitar formato</source>
+<target>Clear formatting</target>
+</trans-unit>
+
+<trans-unit id="filterHoverGreen">
+<source>Verde</source>
+<target>Green</target>
+</trans-unit>
+<trans-unit id="filterHoverRed">
+<source>Rojo</source>
+<target>Red</target>
+</trans-unit>
+<trans-unit id="filterHoverAffected">
+<source>Paneles afectados por este filtro</source>
+<target>Panels affected by this filter</target>
+</trans-unit>
+<trans-unit id="filterHoverNotAffected">
+<source>Paneles no afectados por este filtro</source>
+<target>Panels not affected by this filter</target>
+<trans-unit id="ResetZoom">
+  <source>Restablecer (100%)</source>
+  <target>Reset (100%)</target>
+</trans-unit>
+<trans-unit id="aboutPageTitle">
+  <source>Tutorial</source>
+  <target>Tutorial</target>
+</trans-unit>
+<trans-unit id="kpiDecreaseFontSize" datatype="html">
+  <source>Reducir tamaño</source>
+  <target>Decrease size</target>
+</trans-unit>
+<trans-unit id="kpiIncreaseFontSize" datatype="html">
+  <source>Aumentar tamaño</source>
+  <target>Increase size</target>
+</trans-unit>
+<trans-unit id="LogsActionNewLogin">
+  <source>Login</source>
+  <target>Login</target>
+</trans-unit>
+<trans-unit id="LogsActionDashboardAccessed">
+  <source>Dashboard Accessed</source>
+  <target>Dashboard accessed</target>
+</trans-unit>
+<trans-unit id="LogsActionDashboardCreated">
+  <source>Dashboard Created</source>
+  <target>Dashboard created</target>
+</trans-unit>
+<trans-unit id="LogsActionDashboardUpdated">
+  <source>Dashboard Updated</source>
+  <target>Dashboard updated</target>
+</trans-unit>
+<trans-unit id="LogsActionDashboardRenamed">
+  <source>Dashboard Renamed</source>
+  <target>Dashboard renamed</target>
+</trans-unit>
+<trans-unit id="LogsActionDashboardVisibilityChanged">
+  <source>Dashboard Visibility Changed</source>
+  <target>Dashboard visibility changed</target>
+</trans-unit>
+<trans-unit id="LogsActionDashboardDeleted">
+  <source>Dashboard Deleted</source>
+  <target>Dashboard deleted</target>
+</trans-unit>
+<trans-unit id="LogsActionPanelQueryFailed">
+  <source>Panel Query Failed</source>
+  <target>Panel query failed</target>
+</trans-unit>
+<trans-unit id="LogsActionUserCreated">
+  <source>User Created</source>
+  <target>User created</target>
+</trans-unit>
+<trans-unit id="LogsActionUserUpdated">
+  <source>User Updated</source>
+  <target>User updated</target>
+</trans-unit>
+<trans-unit id="LogsActionUserDeleted">
+  <source>User Deleted</source>
+  <target>User deleted</target>
+</trans-unit>
+<trans-unit id="LogsActionUserRolesChanged">
+  <source>User Roles Changed</source>
+  <target>User roles changed</target>
+</trans-unit>
+<trans-unit id="LogsActionUserPasswordChanged">
+  <source>User Password Changed</source>
+  <target>User password changed</target>
+</trans-unit>
+<trans-unit id="LogsActionGroupCreated">
+  <source>Group Created</source>
+  <target>Group created</target>
+</trans-unit>
+<trans-unit id="LogsActionGroupUpdated">
+  <source>Group Updated</source>
+  <target>Group updated</target>
+</trans-unit>
+<trans-unit id="LogsActionGroupDeleted">
+  <source>Group Deleted</source>
+  <target>Group deleted</target>
+</trans-unit>
+<trans-unit id="LogsActionGroupMembershipChanged">
+  <source>Group Membership Changed</source>
+  <target>Group membership changed</target>
+</trans-unit>
+<trans-unit id="LogsActionUpdateModelStarted">
+  <source>Update Model Started</source>
+  <target>Model update started</target>
+</trans-unit>
+<trans-unit id="LogsActionUpdateModelUsersAndGroupsSynced">
+  <source>Update Model Users/Groups Synced</source>
+  <target>Users/Groups synced</target>
+</trans-unit>
+<trans-unit id="LogsActionUpdateModelUsersAndGroupsSyncFailed">
+  <source>Update Model Users/Groups Sync Failed</source>
+  <target>Users/Groups sync failed</target>
+</trans-unit>
+<trans-unit id="LogsActionUpdateModelRolesMapped">
+  <source>Update Model Roles Mapped</source>
+  <target>Roles mapped</target>
+</trans-unit>
+<trans-unit id="LogsActionUpdateModelRolesMappingFailed">
+  <source>Update Model Roles Mapping Failed</source>
+  <target>Role mapping failed</target>
+</trans-unit>
+<trans-unit id="LogsActionUpdateModelDataModelBuilt">
+  <source>Update Model Data Model Built</source>
+  <target>Data model built</target>
+</trans-unit>
+<trans-unit id="LogsActionUpdateModelDataModelBuildFailed">
+  <source>Update Model Data Model Build Failed</source>
+  <target>Data model build failed</target>
+</trans-unit>
+<trans-unit id="LogsActionUpdateModelCompleted">
+  <source>Update Model Completed</source>
+  <target>Model update completed</target>
+</trans-unit>
+<trans-unit id="LogsActionUpdateModelPushFailed">
+  <source>Update Model Push Failed</source>
+  <target>Model push failed</target>
+</trans-unit>
+<trans-unit id="LogsActionUpdateModelFailed">
+  <source>Update Model Failed</source>
+  <target>Model update failed</target>
+</trans-unit>
+</body>
+</file>
       </trans-unit>
       <trans-unit id="showLines">
         <source>Mostrar Líneas de Puntos</source>

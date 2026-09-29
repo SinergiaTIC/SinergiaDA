@@ -31,7 +31,7 @@ import { DependentFilters } from "../../../components/dependent-filters/dependen
 import { DashboardVisibleModal } from "../../../components/dashboard-visible/dashboard-visible.modal";
 import { GlobalFilterDialogComponent } from "../../../pages/dashboard/global-filter-dialog/global-filter-dialog.component";
 import { GlobalFilterComponent } from "@eda/components/global-filter/global-filter.component";
-import { SHOW_CUSTOM_ACTION, SHOW_ZOOM_IN_SIDEBAR, PRIVATE_EDITION_ACTIVATED } from "@eda/configs/customizable/customizable_default";
+import { SHOW_CUSTOM_ACTION, SHOW_ZOOM_IN_SIDEBAR, PRIVATE_EDITION_ACTIVATED } from "@eda/configs/customizable/customizable_merged";
 import { ZoomSdaComponent } from "../zoom-control/zoom.component";
 
 
@@ -294,7 +294,7 @@ export class DashboardSidebarComponent implements AfterViewInit {
           this.hidePopover();
         }
       },
-      {
+      ...(this.dashboard.dynamicFiltersAvailable() ? [{
         id: 'enableFilters',
         label: this.clickFiltersEnabled ? $localize`:@@enableFilters: Click en filtros habilitado`
           : $localize`:@@disableFilters:Click en filtros deshabilitado`,
@@ -302,7 +302,7 @@ export class DashboardSidebarComponent implements AfterViewInit {
         command: () => {
           this.toggleClickFilters();
         }
-      },
+      }] : []),
       {
         id: 'enablePanelLock',
         label: this.clickPanelLockButton ? $localize`:@@enablePanelLockButton: Bloquear los paneles`

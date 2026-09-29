@@ -1,5 +1,5 @@
 // Angular
-import { Component, Input, Output, EventEmitter, ViewChild, OnInit, inject, computed, CUSTOM_ELEMENTS_SCHEMA, ChangeDetectorRef, ElementRef } from '@angular/core';
+import { Component, Input, Output, EventEmitter, ViewChild, OnInit, AfterViewChecked, inject, computed, CUSTOM_ELEMENTS_SCHEMA, ChangeDetectorRef, ElementRef } from '@angular/core';
 import { CommonModule, NgClass } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { DragDropModule, CdkDrag, CdkDragDrop, moveItemInArray, transferArrayItem, copyArrayItem } from '@angular/cdk/drag-drop';
@@ -15,11 +15,9 @@ import { ConfirmationService, SharedModule } from 'primeng/api';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { TreeModule } from 'primeng/tree';
 // Eda config
-import { AGG_TYPES, NULL_VALUE, EMPTY_VALUE, SHOW_LOCK_IN_PANEL_HEADER, ALLOWED_QUERY_MODES, SHOW_HIDDEN_FIELDS, SHOW_WHAT_IF, ALLOWED_JOIN_TYPES } from '@eda/configs/customizable/customizable_default';
-import { normalizeQueryMode } from '@eda/shared/utils/query-mode.util';
-
+import { resolveQueryMode } from '@eda/shared/utils/query-mode.util';
+import { AGG_TYPES, NULL_VALUE, EMPTY_VALUE, SHOW_LOCK_IN_PANEL_HEADER, ALLOWED_QUERY_MODES, SHOW_HIDDEN_FIELDS, SHOW_WHAT_IF, ALLOWED_JOIN_TYPES, USE_EDA_KPI_SIZE_LOGIC } from '@eda/configs/customizable/customizable_merged';
 import {Column, EdaPanel, InjectEdaPanel } from '@eda/models/model.index';
-
 import { PanelChart } from './panel-charts/panel-chart';
 import { PanelOptions } from './panel-utils/panel-menu-options';
 import { TableConfig } from './panel-charts/chart-configuration-models/table-config';
@@ -132,7 +130,7 @@ export const QUERY_MODE_LABELS: any[] = [
     templateUrl: './eda-blank-panel.component.html',
     styleUrls: ['./eda-blank-panel.component.css'],
 })
-export class EdaBlankPanelComponent implements OnInit {
+export class EdaBlankPanelComponent implements OnInit, AfterViewChecked {
     /** Reference to the dashboard root element (used for image capture during Excel export) */
     public elRef = inject(ElementRef);
 
@@ -239,6 +237,8 @@ export class EdaBlankPanelComponent implements OnInit {
     public ptooltipViewQuery: string = $localize`:@@ptooltipViewQuery:Ver consulta SQL`
     public aggregationText: string = $localize`:@@aggregationText:Agregación`;
     public textBetween: string = $localize`:@@textBetween:Entre`
+    public yesText: string = $localize`:@@si:Si`;
+    public noText: string = $localize`:@@no:No`;
     /** Query Variables */
     public tables: any[] = [];
     public tablesToShow: any[] = [];
@@ -254,6 +254,7 @@ export class EdaBlankPanelComponent implements OnInit {
     public queryLimit: number = 5000; // 5.000 by default
     public groupByEnabled: boolean = true;
     public dynamicFilters: boolean = true;
+    public dynamicFiltersAvailable: boolean; // True when the dashboard has at least one EDA panel. Set in ngOnInit.
 
     public queryModes: any[] = ALLOWED_QUERY_MODES.map(v => QUERY_MODE_LABELS.find(l => l.value === v));
 
@@ -395,6 +396,7 @@ export class EdaBlankPanelComponent implements OnInit {
     async ngOnInit() {
         this.index = 0;
         this.readonly = this.panel.readonly;
+        this.dynamicFiltersAvailable = this.dashboard.dynamicFiltersAvailable();
         if (this.panel.description === undefined) this.panel.description = '';
 
         await this.setTablesData();
@@ -404,15 +406,10 @@ export class EdaBlankPanelComponent implements OnInit {
             try {
                 const contentQuery = this.panel.content.query;
 
-                // Ensure compatibility with legacy dashboards where queryMode is not provided.
+                // resolveQueryMode ensures compatibility with legacy dashboards where queryMode is not provided.
                 const modeSQL = contentQuery.query.modeSQL;
-                let queryMode = contentQuery.query.queryMode;
-
-                if (!queryMode) {
-                    queryMode = modeSQL ? 'SQL' : 'EDA';
-                }
-
-                this.selectedQueryMode = normalizeQueryMode(queryMode);
+                const queryMode = contentQuery.query.queryMode;
+                this.selectedQueryMode = resolveQueryMode(queryMode, modeSQL);
 
                 if (this.selectedQueryMode == 'TREE') {
                     this.rootTable = contentQuery.query.rootTable;
@@ -570,6 +567,28 @@ public tableNodeExpand(event: any): void {
         panel.resizeEnabled = locked;
         this.dashboard.gridsterOptions.api?.optionsChanged();
         this.dashboardService.setNotSaved(true);
+        this.refreshKpiResizeControls();
+    }
+
+    ngAfterViewChecked(): void {
+        this.refreshKpiResizeControls();
+    }
+
+    /**
+     * SDA mode only (USE_EDA_KPI_SIZE_LOGIC === false): keeps the KPI's hover +/- resize
+     * buttons visible only while the panel is editable and unlocked, mirroring the
+     * canEdit/canSave/!locked gating used for the same purpose in develop.
+     */
+    private refreshKpiResizeControls(): void {
+        if (USE_EDA_KPI_SIZE_LOGIC) return;
+        const chartType = this.panelChartConfig?.chartType;
+        if (!chartType?.startsWith('kpi') || chartType === 'kpideviation') return;
+        const instance = this.panelChart?.componentRef?.instance;
+        if (!instance?.inject) return;
+        const desired = this.isEditable() && !this.isPanelLocked();
+        if (instance.inject.showResizeControls !== desired) {
+            instance.inject.showResizeControls = desired;
+        }
     }
 
     public showWhatIfSection(): boolean {
@@ -1502,10 +1521,7 @@ public tableNodeExpand(event: any): void {
 
             this.currentSQLQuery = this.panelDeepCopy.query.query.SQLexpression;
 
-            const queryMode = this.panelDeepCopy.query.query.queryMode;
-            const modeSQL = this.panelDeepCopy.query.query.modeSQL;
-
-            this.selectedQueryMode = normalizeQueryMode(_.isNil(queryMode) ? (modeSQL ? 'SQL' : 'EDA') : queryMode);
+            this.selectedQueryMode = resolveQueryMode(this.panelDeepCopy.query.query.queryMode, this.panelDeepCopy.query.query.modeSQL);
 
             if(this.selectedQueryMode == 'TREE'){
                 this.rootTable = this.panelDeepCopy.rootTable;
@@ -1895,6 +1911,7 @@ public tableNodeExpand(event: any): void {
             alertLimits: response.alerts,
             sufix: response.sufix,
             modifiedFontPoints: response.modifiedFontPoints || 0,
+            fontScale: response.fontScale || 1,
             backgroundColor: response.backgroundColor || '',
             kpiColor: response.kpiColor || '',
             prefixImage: response.prefixImage || '',
@@ -1917,6 +1934,18 @@ public tableNodeExpand(event: any): void {
                 response.assignedColors,  //  Pass assignedColors from the response, not from edaChart.
                 response.edaChart.showPointLines,
                 response.edaChart.showPredictionLines,
+                response.edaChart.chartLegend ?? true,
+                response.edaChart.showGridLines ?? true,
+                response.edaChart.lineWidth ?? 2,
+                response.edaChart.lineStyle || 'solid',
+                response.edaChart.showXAxis ?? true,
+                response.edaChart.showXAxisLabels ?? true,
+                response.edaChart.xAxisLabelCount || 0,
+                response.edaChart.labelColor || '#000000',
+                response.edaChart.labelBackgroundColor || '',
+                response.edaChart.chartLineColor || '',
+                response.edaChart.chartFillColor || '',
+                response.edaChart.showAllXAxisLabels ?? true,
             );
         }
 
@@ -1927,6 +1956,7 @@ public tableNodeExpand(event: any): void {
                 edaChart: layout,
                 assignedColors: response.assignedColors,
                 modifiedFontPoints: response.modifiedFontPoints || 0,
+                fontScale: response.fontScale || 1,
                 backgroundColor: response.backgroundColor || '',
                 kpiColor: response.kpiColor || '',
                 prefixImage: response.prefixImage || '',

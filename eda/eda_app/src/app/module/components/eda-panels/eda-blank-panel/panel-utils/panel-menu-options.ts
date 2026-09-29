@@ -3,7 +3,7 @@ import { PanelInteractionUtils } from './panel-interaction-utils';
 import * as _ from 'lodash';
 
 import { EdaContextMenuItem, EdaDialogController, EdaDialogCloseEvent } from "@eda/shared/components/shared-components.index";
-import { SHOW_LOCK_IN_PANEL_HEADER } from '@eda/configs/customizable/customizable_default';
+import { SHOW_LOCK_IN_PANEL_HEADER } from '@eda/configs/customizable/customizable_merged';
 
 export const PanelOptions = {
   editQuery: (panelComponent: EdaBlankPanelComponent) => {
@@ -227,11 +227,6 @@ export const PanelOptions = {
       icon:"fa fa-external-link",
       command: () => {
         panelComponent.contextMenu.hideContextMenu();
-
-        let queryMode = panelComponent.panel.content.query.query.queryMode;
-        const modeSQL = panelComponent.panel.content.query.query.modeSQL;
-
-        if (!queryMode) queryMode = modeSQL ? 'SQL' : 'EDA';
 
         panelComponent.linkDashboardController = new EdaDialogController({
           params:{
