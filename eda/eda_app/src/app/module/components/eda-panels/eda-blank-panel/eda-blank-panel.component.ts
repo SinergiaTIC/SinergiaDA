@@ -16,7 +16,7 @@ import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { TreeModule } from 'primeng/tree';
 // Eda config
 import { resolveQueryMode } from '@eda/shared/utils/query-mode.util';
-import { AGG_TYPES, NULL_VALUE, EMPTY_VALUE, SHOW_LOCK_IN_PANEL_HEADER, ALLOWED_QUERY_MODES, SHOW_HIDDEN_FIELDS, SHOW_WHAT_IF, ALLOWED_JOIN_TYPES, USE_EDA_KPI_SIZE_LOGIC } from '@eda/configs/customizable/customizable_default';
+import { AGG_TYPES, NULL_VALUE, EMPTY_VALUE, SHOW_LOCK_IN_PANEL_HEADER, ALLOWED_QUERY_MODES, SHOW_HIDDEN_FIELDS, SHOW_WHAT_IF, ALLOWED_JOIN_TYPES, USE_EDA_KPI_SIZE_LOGIC } from '@eda/configs/customizable/customizable_merged';
 import {Column, EdaPanel, InjectEdaPanel } from '@eda/models/model.index';
 import { PanelChart } from './panel-charts/panel-chart';
 import { PanelOptions } from './panel-utils/panel-menu-options';
