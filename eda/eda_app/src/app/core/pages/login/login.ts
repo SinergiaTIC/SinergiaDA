@@ -9,7 +9,7 @@ import { User } from '@eda/models/model.index';
 import { lastValueFrom } from 'rxjs';
 import { jwtDecode } from 'jwt-decode';
 import { GOOGLE_CLIENT_ID } from '@eda/configs/config';
-import { HOME_SCREEN_PARTICLE_COLOR, HOME_SCREEN_BACKGROUND_COLOR } from '@eda/configs/customizable/customizable_default';
+import { HOME_SCREEN_PARTICLE_COLOR, HOME_SCREEN_BACKGROUND_COLOR } from '@eda/configs/customizable/customizable_merged';
 import { MsalModule, MsalService } from '@azure/msal-angular';
 import Swal from 'sweetalert2';
 
