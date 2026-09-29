@@ -514,7 +514,7 @@
                             (click)="display_v.advancedSetting = 0"
                             i18n="@@yourQuerySQL"
                           >
-                            Mi consulta SQL
+                            Mi consulta
                           </h3>
                           <i class="pi pi-info-circle cursor-pointer text-gray-400 mb-2 text-sm" [pTooltip]="ptooltipViewQuery" (click)="getQuery($event)"></i>
                         </div>
@@ -657,10 +657,13 @@
 
                         <!-- Ordenamiento de resultados -->
                         <div class="w-full">
-                          <div class="pb-1">
-                            <h3 class="text-lg mb-2 mt-2 font-bold" i18n="@@resultSortingText">Ordenar los resultados por:</h3>
+                          <div class="pb-1 flex justify-between items-center gap-4">
+                            <div class="flex items-center gap-2">
+                              <span i18n="@@resultSortingText" class="text-base font-medium text-gray-700">Ordenar los resultados por:</span>
+                              <i class="pi pi-info-circle cursor-pointer text-gray-400 text-sm" [pTooltip]="ptooltipOrderByControl"></i>
+                            </div>
                             <div
-                              class="flex gap-1 rounded-lg border p-2 min-h-[25px] filter-list text-base"
+                              class="relative flex-1 flex gap-1 rounded-lg border p-2 min-h-[25px] filter-list text-base"
                               cdkDropList
                               #resultSortingList="cdkDropList"
                               id="result-sorting-list"

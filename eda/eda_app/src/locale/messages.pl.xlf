@@ -2713,8 +2713,8 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
   </trans-unit>
 
   <trans-unit id="yourQuerySQL">
-    <source>Mi consulta SQL</source>
-    <target>Moje zapytanie SQL</target>
+    <source>Mi consulta</source>
+    <target>Moje zapytanie</target>
   </trans-unit>
 
   <trans-unit id="openSqlMode">
@@ -7236,6 +7236,10 @@ Po skonfigurowaniu możesz go wywołać w dowolnym momencie za pomocą przycisku
       <trans-unit id="LogsActionUpdateModelFailed">
         <source>Update Model Failed</source>
         <target>Aktualizacja modelu nie powiodła się</target>
+      </trans-unit>
+      <trans-unit id="ptooltipOrderByControl">
+        <source>Arrastra aquí los atributos por los que quieres ordenar los resultados y colócalos en el orden que prefieras. En cada uno puedes elegir ascendente (ASC), descendente (DESC) o dejarlo sin indicar.</source>
+        <target>Przeciągnij tutaj atrybuty, według których chcesz sortować wyniki, i ułóż je w preferowanej kolejności. Dla każdego z nich możesz wybrać sortowanie rosnące (ASC), malejące (DESC) lub pozostawić je bez określenia.</target>
       </trans-unit>
 </body>
 </file>

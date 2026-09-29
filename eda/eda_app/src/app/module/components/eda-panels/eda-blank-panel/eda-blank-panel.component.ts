@@ -235,6 +235,7 @@ export class EdaBlankPanelComponent implements OnInit, AfterViewChecked {
     public draggResultSorting: string = $localize`:@@draggFilters:Arrastre aquí los atributos sobre los que quiere ordenar`;
     public ptooltipSQLmode: string = $localize`:@@sqlTooltip:Al cambiar de modo perderás la configuración de la consulta actual`;
     public ptooltipViewQuery: string = $localize`:@@ptooltipViewQuery:Ver consulta SQL`
+    public ptooltipOrderByControl: string = $localize`:@@ptooltipOrderByControl:Arrastra aquí los atributos por los que quieres ordenar los resultados y colócalos en el orden que prefieras. En cada uno puedes elegir ascendente (ASC), descendente (DESC) o dejarlo sin indicar.`
     public aggregationText: string = $localize`:@@aggregationText:Agregación`;
     public textBetween: string = $localize`:@@textBetween:Entre`
     public yesText: string = $localize`:@@si:Si`;

@@ -3082,8 +3082,8 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
   </trans-unit>
 
   <trans-unit id="yourQuerySQL">
-    <source>Mi consulta SQL</source>
-    <target>La meva consulta SQL</target>
+    <source>Mi consulta</source>
+    <target>La meva consulta</target>
   </trans-unit>
 
   <trans-unit id="openSqlMode">
@@ -7566,6 +7566,10 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
       <trans-unit id="LogsActionUpdateModelFailed">
         <source>Update Model Failed</source>
         <target>Error en actualització del model</target>
+      </trans-unit>
+      <trans-unit id="ptooltipOrderByControl">
+        <source>Arrastra aquí los atributos por los que quieres ordenar los resultados y colócalos en el orden que prefieras. En cada uno puedes elegir ascendente (ASC), descendente (DESC) o dejarlo sin indicar.</source>
+        <target>Arrossega aquí els atributs pels quals vols ordenar els resultats i col·loca'ls en l'ordre que prefereixis. En cadascun pots triar ascendent (ASC), descendent (DESC) o deixar-lo sense indicar.</target>
       </trans-unit>
     </body>
   </file>

@@ -2810,8 +2810,8 @@ terms<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/>
 </trans-unit>
 
 <trans-unit id="yourQuerySQL">
-<source>Mi consulta SQL</source>
-<target>My SQL query</target>
+<source>Mi consulta</source>
+<target>My query</target>
 </trans-unit>
 
 <trans-unit id="openSqlMode">
@@ -7297,6 +7297,10 @@ OR<ph id="5"/>
 <trans-unit id="LogsActionUpdateModelFailed">
   <source>Update Model Failed</source>
   <target>Model update failed</target>
+</trans-unit>
+<trans-unit id="ptooltipOrderByControl">
+  <source>Arrastra aquí los atributos por los que quieres ordenar los resultados y colócalos en el orden que prefieras. En cada uno puedes elegir ascendente (ASC), descendente (DESC) o dejarlo sin indicar.</source>
+  <target>Drag here the attributes you want to sort the results by and arrange them in the order you prefer. For each one, you can choose ascending (ASC), descending (DESC), or leave it unspecified.</target>
 </trans-unit>
 </body>
 </file>

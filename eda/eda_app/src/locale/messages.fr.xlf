@@ -3039,8 +3039,8 @@
   </trans-unit>
 
   <trans-unit id="yourQuerySQL">
-    <source>Mi consulta SQL</source>
-    <target>Ma requête SQL</target>
+    <source>Mi consulta</source>
+    <target>Ma requête</target>
   </trans-unit>
 
   <trans-unit id="openSqlMode">
@@ -7537,6 +7537,10 @@ Une fois configurée, vous pouvez l'activer à tout moment à partir du bouton.<
       <trans-unit id="LogsActionUpdateModelFailed">
         <source>Update Model Failed</source>
         <target>Échec de la mise à jour du modèle</target>
+      </trans-unit>
+      <trans-unit id="ptooltipOrderByControl">
+        <source>Arrastra aquí los atributos por los que quieres ordenar los resultados y colócalos en el orden que prefieras. En cada uno puedes elegir ascendente (ASC), descendente (DESC) o dejarlo sin indicar.</source>
+        <target>Faites glisser ici les attributs selon lesquels vous souhaitez trier les résultats et placez-les dans l'ordre de votre choix. Pour chacun d'eux, vous pouvez choisir l'ordre croissant (ASC), décroissant (DESC) ou ne rien indiquer.</target>
       </trans-unit>
     </body>
   </file>
