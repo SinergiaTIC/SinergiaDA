@@ -202,7 +202,7 @@ export const EMPTY_VALUE: string = ''; // $localize`:@@EmptyValueMessage:Sin Inf
 export const NULL_VALUE: string = '';// null Agregado de null_value en diferentes idiomas  if you want to leave the null you can put this value: LEAVE_THE_NULL . THIS LEAVE_THE_NULL will leave the null value as null
 export const DEFAULT_PALETTE_COLOR: any = ChartsPalettes.find(palette => palette.name === "Gradiente");
 export const FATHER_ID: number = 0; // Parent ID value for the Treetable component
-export const GLOBAL_FILTER_BUTTON_POSITION: string = 'left'; // By default the is left but you be modified to 'right' 
+export const GLOBAL_FILTER_BUTTON_POSITION: string = 'left'; // By default the is left but you be modified to 'right'
 
 export const  AGG_TYPES  = [
     { label: $localize`:@@aggTsum:Suma`, value: 'sum' },
@@ -214,19 +214,27 @@ export const  AGG_TYPES  = [
     { label: 'No', value: 'none' }
 ];
 
-/** Feature flags variables  */ 
+/** Feature flags variables  */
 export const APPLICATION_NAME: string = 'Sinergia Data Analytics'; // application name shown in the browser tab title
 export const SHOW_LOCK_IN_PANEL_HEADER: boolean = true; // true → lock button visible in panel header | false → lock in context menu
 export const ALLOW_NON_ADMIN_MANAGE_PUBLIC_REPORTS: boolean = false; // true → public visibility option shown in dashboard creation/edit UIs | false → hidden
 export const USE_VALUE_LIST_CODE_FOR_FILTERS: boolean = true; // true -> For using the filters with code values.
 export const SHOW_HIDDEN_FIELDS: 'disabled' | 'admin-only' | 'all' = 'admin-only'; // 'disabled' → button hidden for everyone | 'admin-only' → only admins see the button | 'all' → all users see it
-export const ALLOWED_QUERY_MODES: string[] = ['TREE', 'SQL']; // ALLOWED_QUERY_MODES Order matters; the first value "ALLOWED_QUERY_MODES[0]" is considered the default query mode
-export const SHOW_WHAT_IF: boolean = false; // true → "What If?" scenarios button visible | false → hidden
-export const ALLOWED_JOIN_TYPES: string[] = ['left', 'inner']; // subset of 'left' | 'inner' | 'right' shown as join type options
-export const SHOW_CUSTOM_ACTION: boolean = false; // true → "Acción personalizada" visible en el menú del informe | false → oculta
-export const SHOW_ZOOM_IN_SIDEBAR: boolean = false; // true → zoom control lives inside the dashboard sidebar | false → zoom control lives in the filters bar
-export const USE_EDA_KPI_SIZE_LOGIC: boolean = false; // true → EDA mode: numeric input in the KPI dialog (modifiedFontPoints, additive) | false → SDA mode: +/- buttons on hover over the KPI (fontScale, multiplicative)
-export const PRIVATE_EDITION_ACTIVATED: boolean =  false;
+export const ALLOWED_QUERY_MODES: string[] = ['EDA', 'SQL', 'TREE']; // ALLOWED_QUERY_MODES Order matters; the first value "ALLOWED_QUERY_MODES[0]" is considered the default query mode
+export const SHOW_WHAT_IF: boolean = true; // true → "What If?" scenarios button visible | false → hidden
+export const ALLOWED_JOIN_TYPES: string[] = ['left', 'inner', 'right']; // subset of 'left' | 'inner' | 'right' shown as join type options
+export const SHOW_CUSTOM_ACTION: boolean = true; // true → "Acción personalizada" visible en el menú del informe | false → oculta
+export const SHOW_ZOOM_IN_SIDEBAR: boolean = true; // true → zoom control lives inside the dashboard sidebar | false → zoom control lives in the filters bar
+export const USE_EDA_KPI_SIZE_LOGIC: boolean = true; // true → EDA mode: numeric input in the KPI dialog (modifiedFontPoints, additive) | false → SDA mode: +/- buttons on hover over the KPI (fontScale, multiplicative)
+export const PRIVATE_EDITION_ACTIVATED: boolean =  true;
+export const CUSTOMIZE_SIDE_MENU_ICONS: any = { // Icon name (IconService registry) per side-menu entry | 'none' or '' → entry hidden
+    home: 'home',
+    create: 'plus',
+    management: 'molecula',
+    settings: 'settings',
+    information: 'global',
+    logout: 'logout',
+};
 
 /** Feature flags - data-source page */
 /** Data model - General configuration*/
@@ -243,6 +251,7 @@ export const PROTECTED_MODEL_HIDE_ALL_COLUMNS_BUTTON_ENABLED: boolean = false; /
 export const PROTECTED_MODEL_DEFINE_LIST_OF_POSSIBLE_VALUES_BUTTON_ENABLED: boolean = false; // true → Define a list of possible values enabled | false → Define a list of possible values unavailable
 export const PROTECTED_MODEL_ADD_PERMISSION_BUTTON_ENABLED: boolean = false; // true → Add permission enabled | false → Add permission unavailable
 /** Data model - Protected data sources*/
-export const PROTECTED_MODEL_DATA_SOURCES_ARRAY: string[] = ['111111111111111111111111']; // Array of all the protected data sources
-export const HOME_SCREEN_PARTICLE_COLOR: string = '#97B73E'; // any CSS color (e.g. '#00BFB3') for the particles and the lines between them | '' → default blue
-export const HOME_SCREEN_BACKGROUND_COLOR: string = '#353535'; // any CSS color/background (e.g. '#F5F5F5') for the login background | '' → default light gradient
+export const PROTECTED_MODEL_DATA_SOURCES_ARRAY: string[] = []; // Array of all the protected data sources
+export const AI_ASSISTANT_MANAGEMENT_AVAILABLE: boolean = true;// true → AI assistant available | false → AI assistant disabled
+export const HOME_SCREEN_PARTICLE_COLOR: string = ''; // any CSS color (e.g. '#00BFB3') for the particles and the lines between them | '' → default blue
+export const HOME_SCREEN_BACKGROUND_COLOR: string = ''; // any CSS color/background (e.g. '#F5F5F5') for the login background | '' → default light gradient

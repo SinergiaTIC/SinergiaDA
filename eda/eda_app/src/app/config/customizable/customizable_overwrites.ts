@@ -12,6 +12,14 @@ export const SHOW_CUSTOM_ACTION: boolean = false;
 export const SHOW_ZOOM_IN_SIDEBAR: boolean = false;
 export const USE_EDA_KPI_SIZE_LOGIC: boolean = false;
 export const PRIVATE_EDITION_ACTIVATED: boolean =  false;
+export const CUSTOMIZE_SIDE_MENU_ICONS: any = { // Icon name (IconService registry) per side-menu entry | 'none' or '' → entry hidden
+    create: 'plus',
+    management: 'settings',
+    settings: 'profile',
+    information: 'information-circle',
+    logout: 'logout',
+
+};
 
 /** Feature flags - data-source page */
 /** Data model - General configuration*/
@@ -29,6 +37,7 @@ export const PROTECTED_MODEL_DEFINE_LIST_OF_POSSIBLE_VALUES_BUTTON_ENABLED: bool
 export const PROTECTED_MODEL_ADD_PERMISSION_BUTTON_ENABLED: boolean = false; // true → Add permission enabled | false → Add permission unavailable
 /** Data model - Protected data sources*/
 export const PROTECTED_MODEL_DATA_SOURCES_ARRAY: string[] = ['111111111111111111111111']; // Array of all the protected data sources
+export const AI_ASSISTANT_MANAGEMENT_AVAILABLE: boolean = false;// true → AI assistant available | false → AI assistant disabled
 export const HOME_SCREEN_PARTICLE_COLOR: string = '#97B73E'; // any CSS color (e.g. '#00BFB3') for the particles and the lines between them | '' → default blue
 export const HOME_SCREEN_BACKGROUND_COLOR: string = '#353535'; // any CSS color/background (e.g. '#F5F5F5') for the login background | '' → default light gradient
 /** SinergiaDA logos (new assets, originals untouched) */

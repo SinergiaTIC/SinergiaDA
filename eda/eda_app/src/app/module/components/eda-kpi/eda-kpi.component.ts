@@ -4,7 +4,7 @@ import { registerLocaleData } from '@angular/common';
 import { EdaKpi } from './eda-kpi';
 import es from '@angular/common/locales/es';
 import { EdaChartComponent } from '../eda-chart/eda-chart.component';
-import { USE_EDA_KPI_SIZE_LOGIC } from '@eda/configs/customizable/customizable_default';
+import { USE_EDA_KPI_SIZE_LOGIC } from '@eda/configs/customizable/customizable_merged';
 
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
