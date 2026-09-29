@@ -6151,3 +6151,3933 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
     </body>
   </file>
 </xliff>
+
+<?xml version="1.0" encoding="UTF-8"?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+  <file source-language="es" datatype="plaintext" original="ng2.template">
+    <body>
+      <!-- SECTION: AUTENTICACIÓN Y PERFIL DE USUARIO -->
+      <trans-unit id="placeholderInputUsuario">
+        <source>Usuario</source>
+      </trans-unit>
+      <trans-unit id="spanRememberme">
+        <source>Recuérdame</source>
+      </trans-unit>
+      <trans-unit id="signinBtn">
+        <source>Ingresar</source>
+      </trans-unit>
+      <trans-unit id="tituloPerfilUsuario">
+        <source>Perfil del usuario</source>
+      </trans-unit>
+      <trans-unit id="labelNombreUsuario">
+        <source>Nombre de usuario</source>
+      </trans-unit>
+      <trans-unit id="labelUsuarioEmail">
+        <source>Correo de usuario</source>
+      </trans-unit>
+      <trans-unit id="labelImagenUsuario">
+        <source> Fotografía del usuario</source>
+      </trans-unit>
+      <trans-unit id="button">
+        <source>Actualizar Foto</source>
+      </trans-unit>
+      <trans-unit id="inputNombre">
+        <source>Nombre</source>
+      </trans-unit>
+      <trans-unit id="inputEmail">
+        <source>Correo *</source>
+      </trans-unit>
+      <trans-unit id="inputPassword">
+        <source> Password </source>
+      </trans-unit>
+      <trans-unit id="inputSeguridad">
+        <source>Seguridad *</source>
+      </trans-unit>
+      <trans-unit id="userTable">
+        <source>USUARIO</source>
+      </trans-unit>
+      <trans-unit id="labelnewPass">
+        <source>Nueva Contraseña (Si no quieres modificar tu contraseña actual deja el campo en blanco)</source>
+      </trans-unit>
+      <trans-unit id="labelRepeatPass">
+        <source>Repite la nueva contraseña </source>
+      </trans-unit>
+      <trans-unit id="nameNewPass">
+        <source>newPassword</source>
+      </trans-unit>
+      <trans-unit id="usersRole">
+        <source>ROLE</source>
+      </trans-unit>
+      <trans-unit id="direccionMail">
+        <source>Dirección Email / Usuario</source>
+      </trans-unit>
+      <trans-unit id="UserDeletedOk">
+        <source>El usuario a sido eliminado correctamente</source>
+      </trans-unit>
+      <trans-unit id="picUpdated">
+        <source>Imagen Actualizada</source>
+      </trans-unit>
+      <trans-unit id="UserCreated">
+        <source>Usuario creado</source>
+      </trans-unit>
+      <trans-unit id="RegisterError">
+        <source>Error al registrarse</source>
+      </trans-unit>
+      <trans-unit id="UpdatedUser">
+        <source>Usuario actualizado</source>
+      </trans-unit>
+      <trans-unit id="fileNotPicture">
+        <source>El archivo seleccionado no es una imagen</source>
+      </trans-unit>
+      <trans-unit id="newUserTitle">
+        <source>CREAR NUEVO USUARIO</source>
+      </trans-unit>
+      <trans-unit id="usersPermissions">
+        <source>Permisos de usuario</source>
+      </trans-unit>
+      <trans-unit id="users">
+        <source>Usuarios</source>
+      </trans-unit>
+      <trans-unit id="passwordLogin">
+        <source>Contraseña</source>
+      </trans-unit>
+      <trans-unit id="d554461cfe5e5317e9257ceb0f9f96bec13c86c4">
+        <source>Confirma contraseña</source>
+      </trans-unit>
+      <trans-unit id="PasswordsNotEqual">
+        <source>Las contraseñas no coinciden</source>
+      </trans-unit>
+      <trans-unit id="groups3">
+        <source>AUTH</source>
+      </trans-unit>
+      <!-- SECTION: MENÚS Y NAVEGACIÓN (SIDEBAR) -->
+      <trans-unit id="languageSelectorTitle">
+        <source>Seleccionar idioma</source>
+      </trans-unit>
+      <trans-unit id="sidebarProfile">
+        <source>Perfil</source>
+      </trans-unit>
+      <trans-unit id="logsManagement">
+        <source>Gestión de logs</source>
+      </trans-unit>
+      <trans-unit id="sidebarGroupManagement">
+        <source>Gestión de Grupos</source>
+      </trans-unit>
+      <trans-unit id="sidebarLogOut">
+        <source>Cerrar sesión</source>
+      </trans-unit>
+      <trans-unit id="sidebarMyDashboards">
+        <source> Ver informes</source>
+      </trans-unit>
+      <trans-unit id="sidebarNewDb">
+        <source>Nueva Fuente</source>
+      </trans-unit>
+      <trans-unit id="sidebarEditDb">
+        <source>Editar Fuente</source>
+      </trans-unit>
+      <trans-unit id="tituloGrupoComunes">
+        <source> COMUNES </source>
+      </trans-unit>
+      <trans-unit id="sidebarModelsManagement">
+        <source>Gestión de Modelos</source>
+      </trans-unit>
+      <trans-unit id="sidebarUserManagement">
+        <source>Gestión de Usuarios</source>
+      </trans-unit>
+      <!-- SECTION: GESTIÓN DE INFORMES (DASHBOARDS) -->
+      <trans-unit id="publicDashboardTitle">
+        <source> Informe público EDA</source>
+      </trans-unit>
+      <trans-unit id="tituloNuevoInforme">
+        <source> Crear nuevo informe </source>
+      </trans-unit>
+      <trans-unit id="tituloGrupoPublicos">
+        <source> PUBLICOS </source>
+      </trans-unit>
+      <trans-unit id="tituloGrupoMisGrupos">
+        <source> MIS GRUPOS </source>
+      </trans-unit>
+      <trans-unit id="tituloGrupoPersonales">
+        <source> PRIVADOS </source>
+      </trans-unit>
+      <trans-unit id="labelDameNombre">
+        <source>Dame un nombre *</source>
+      </trans-unit>
+      <trans-unit id="buscarPorNombre">
+        <source>Buscar por nombre del informe</source>
+      </trans-unit>
+      <trans-unit id="buscar">
+        <source>Buscar</source>
+      </trans-unit>
+      <trans-unit id="selectFuenteDatos">
+        <source>Selecciona una fuente de datos *</source>
+      </trans-unit>
+      <trans-unit id="opcionGuardar">
+        <source>GUARDAR</source>
+      </trans-unit>
+      <trans-unit id="opcionPdf">
+        <source>DESCARGAR PDF</source>
+      </trans-unit>
+      <trans-unit id="opcionImagen">
+        <source>DESCARGAR IMAGEN</source>
+      </trans-unit>
+      <trans-unit id="dahsboardSaved">
+        <source>Informe guardado correctamente</source>
+      </trans-unit>
+      <trans-unit id="deleteDashboardWarning">
+        <source> Estás a punto de borrar el informe</source>
+      </trans-unit>
+      <trans-unit id="DashboardDeletedInfo">
+        <source>Informe eliminado correctamente.</source>
+      </trans-unit>
+      <trans-unit id="LinkDashboardDbFilter">
+        <source> Campo del informe </source>
+      </trans-unit>
+      <trans-unit id="LinkDashboardSelectedDashboard">
+        <source> Informe a vincular </source>
+      </trans-unit>
+      <trans-unit id="DashboardLink">
+        <source>Vincular con un informe</source>
+      </trans-unit>
+      <trans-unit id="newTag">
+        <source> Nueva etiqueta </source>
+      </trans-unit>
+      <trans-unit id="Dashboards_ms">
+        <source>Informes</source>
+      </trans-unit>
+      <trans-unit id="ExportDashboard">
+        <source>Exportar Informe</source>
+      </trans-unit>
+      <trans-unit id="importDashboard">
+        <source>Importar Informe</source>
+      </trans-unit>
+      <trans-unit id="downloadDashboard">
+        <source>Descargar informe</source>
+      </trans-unit>
+      <trans-unit id="gotodashboard">
+        <source>Ir al informe</source>
+      </trans-unit>
+      <trans-unit id="dashboardTable">
+        <source>INFORME</source>
+      </trans-unit>
+      <trans-unit id="SaveAs">
+        <source>GUARDAR COMO...</source>
+      </trans-unit>
+      <trans-unit id="opcionGuardarComo">
+        <source>GUARDAR COMO</source>
+      </trans-unit>
+      <trans-unit id="eliminarInforme">
+        <source>ELIMINAR INFORME</source>
+      </trans-unit>
+      <trans-unit id="opcionUrls">
+        <source>ACCIÓN PERSONALIZADA</source>
+      </trans-unit>
+      <trans-unit id="urlEditSave">
+        <source>URL editado correctamente</source>
+      </trans-unit>
+      <trans-unit id="urlEditSaveError">
+        <source>Formulario incompleto, rellene todos los campos</source>
+      </trans-unit>
+      <trans-unit id="addUrlDashboardUndefined">
+        <source>Faltan rellenar algunos campos</source>
+      </trans-unit>
+      <trans-unit id="urlAddedSuccessfully">
+        <source>URL agregado correctamente</source>
+      </trans-unit>
+      <trans-unit id="urlAddedIncomplete">
+        <source>Formulario incompleto</source>
+      </trans-unit>
+      <trans-unit id="urlSuccessfulConnection">
+        <source>Llamada EXITOSA</source>
+      </trans-unit>
+      <trans-unit id="urlConnectionError">
+        <source>ERROR en la llamada</source>
+      </trans-unit>
+      <trans-unit id="actionUrl">
+        <source>Acción</source>
+      </trans-unit>
+      <trans-unit id="editionUrl">
+        <source>Edición</source>
+      </trans-unit>
+      <trans-unit id="urlTextConfiguration">
+        <source>Configuración de url y nombre de acción personalizada: </source>
+      </trans-unit>
+      <trans-unit id="resumeTextConfiguration">
+        <source> Puedes configurar una acción personalizada que quieras ejecutar. Te permite llamar a una URL que haga una acción que quieras invocar. Puede ser una llamada a una api, a un endpoint de una app
+o incluso invocar procesos de carga desde una llamada http. Una vez configurado podrás invocarlo siempre que que quieras desde el botón. </source>
+      </trans-unit>
+      <trans-unit id="urlString">
+        <source>URL: </source>
+      </trans-unit>
+      <trans-unit id="urlName">
+        <source>Nombre: </source>
+      </trans-unit>
+      <trans-unit id="urlDescription">
+        <source>Descripción: </source>
+      </trans-unit>
+      <trans-unit id="textLabelUrl">
+        <source>Agregar url</source>
+      </trans-unit>
+      <!-- SECTION: DISEÑO Y ESTILOS DEL INFORME -->
+      <trans-unit id="temasColors">
+        <source>Temas</source>
+      </trans-unit>
+      <trans-unit id="menuClaro">
+        <source>Con el menu claro</source>
+      </trans-unit>
+      <trans-unit id="menuOscuro">
+        <source>Con el menu oscuro</source>
+      </trans-unit>
+      <trans-unit id="noStyle">
+        <source>Sin estilo</source>
+      </trans-unit>
+      <trans-unit id="showLabels">
+        <source> Mostrar Etiquetas </source>
+      </trans-unit>
+      <trans-unit id="showLabelsPercent">
+        <source> Mostrar Etiquetas en Porcentajes </source>
+      </trans-unit>
+      <trans-unit id="showLablesTooltip">
+        <source>Mostrar o ocultar las etiquetas sobre los gráficos</source>
+      </trans-unit>
+      <trans-unit id="showLablesPercentTooltip">
+        <source>Mostrar o ocultar las etiquetas en porcentaje sobre los gráficos</source>
+      </trans-unit>
+      <trans-unit id="editStylesTitle">
+        <source>EDITAR ESTILOS DEL INFORME</source>
+      </trans-unit>
+      <trans-unit id="ChangeFontFamily">
+        <source> Tipo de fuente</source>
+      </trans-unit>
+      <trans-unit id="ChangeFontSize">
+        <source> Tamaño de fuente</source>
+      </trans-unit>
+      <trans-unit id="ChangeFontColor">
+        <source> Color de la fuente</source>
+      </trans-unit>
+      <trans-unit id="ChangeBackgroundColor">
+        <source> Color del fondo</source>
+      </trans-unit>
+      <trans-unit id="ChangePaneColor">
+        <source> Color del panel</source>
+      </trans-unit>
+      <trans-unit id="opcionEditarEstilos">
+        <source>EDITAR ESTILOS</source>
+      </trans-unit>
+      <trans-unit id="left">
+        <source>Izquierda</source>
+      </trans-unit>
+      <trans-unit id="center">
+        <source>Centro</source>
+      </trans-unit>
+      <trans-unit id="right">
+        <source>Derecha</source>
+      </trans-unit>
+      <trans-unit id="resetStylesBtn">
+        <source>Volver a los valores por defecto</source>
+      </trans-unit>
+      <trans-unit id="samplePanelTitle">
+        <source>Previsualización</source>
+      </trans-unit>
+      <trans-unit id="samplePanelName">
+        <source>Título del informe</source>
+      </trans-unit>
+      <trans-unit id="ChangelignTitle">
+        <source> Alineación</source>
+      </trans-unit>
+      <trans-unit id="PanelOptions">
+        <source>PANEL OPTIONS</source>
+      </trans-unit>
+      <trans-unit id="titlePanelAppearance">
+        <source>Apariencia</source>
+      </trans-unit>
+      <trans-unit id="titlePanelShowBg">
+        <source>Mostrar fondo del panel</source>
+      </trans-unit>
+      <trans-unit id="titlePanelBgColor">
+        <source>Color de fondo</source>
+      </trans-unit>
+      <trans-unit id="titlePanelShowBorder">
+        <source>Mostrar borde</source>
+      </trans-unit>
+      <trans-unit id="titlePanelBorderColor">
+        <source>Color del borde</source>
+      </trans-unit>
+      <trans-unit id="titlePanelVerticalAlign">
+        <source>Alineación vertical</source>
+      </trans-unit>
+      <trans-unit id="titlePanelAlignTop">
+        <source>Arriba</source>
+      </trans-unit>
+      <trans-unit id="titlePanelAlignCenter">
+        <source>Centro</source>
+      </trans-unit>
+      <trans-unit id="titlePanelAlignBottom">
+        <source>Abajo</source>
+      </trans-unit>
+      <trans-unit id="qlTooltipSize">
+        <source>Tamaño de letra</source>
+      </trans-unit>
+      <trans-unit id="qlTooltipBold">
+        <source>Negrita</source>
+      </trans-unit>
+      <trans-unit id="qlTooltipItalic">
+        <source>Cursiva</source>
+      </trans-unit>
+      <trans-unit id="qlTooltipUnderline">
+        <source>Subrayado</source>
+      </trans-unit>
+      <trans-unit id="qlTooltipStrike">
+        <source>Tachado</source>
+      </trans-unit>
+      <trans-unit id="qlTooltipTextColor">
+        <source>Color del texto</source>
+      </trans-unit>
+      <trans-unit id="qlTooltipTextBgColor">
+        <source>Color de resaltado del texto</source>
+      </trans-unit>
+      <trans-unit id="qlTooltipSub">
+        <source>Subíndice</source>
+      </trans-unit>
+      <trans-unit id="qlTooltipSuper">
+        <source>Superíndice</source>
+      </trans-unit>
+      <trans-unit id="qlTooltipH1">
+        <source>Título 1</source>
+      </trans-unit>
+      <trans-unit id="qlTooltipH2">
+        <source>Título 2</source>
+      </trans-unit>
+      <trans-unit id="qlTooltipQuote">
+        <source>Cita</source>
+      </trans-unit>
+      <trans-unit id="qlTooltipOrderedList">
+        <source>Lista numerada</source>
+      </trans-unit>
+      <trans-unit id="qlTooltipBulletList">
+        <source>Lista con viñetas</source>
+      </trans-unit>
+      <trans-unit id="qlTooltipAlignLeft">
+        <source>Alinear a la izquierda</source>
+      </trans-unit>
+      <trans-unit id="qlTooltipAlignCenter">
+        <source>Centrar</source>
+      </trans-unit>
+      <trans-unit id="qlTooltipAlignRight">
+        <source>Alinear a la derecha</source>
+      </trans-unit>
+      <trans-unit id="qlTooltipLink">
+        <source>Insertar enlace</source>
+      </trans-unit>
+      <trans-unit id="qlTooltipImage">
+        <source>Insertar imagen desde un archivo</source>
+      </trans-unit>
+      <trans-unit id="qlTooltipVideo">
+        <source>Insertar vídeo</source>
+      </trans-unit>
+      <trans-unit id="qlTooltipUrlImage">
+        <source>Insertar imagen desde una URL</source>
+      </trans-unit>
+      <trans-unit id="qlTooltipClean">
+        <source>Quitar formato</source>
+      </trans-unit>
+      <trans-unit id="panelTitleEdit">
+        <source>Título del panel</source>
+      </trans-unit>
+      <!-- SECTION: OPERACIONES DEL PANEL (DASHBOARD PANELS) -->
+      <trans-unit id="opcionTitulo">
+        <source>NUEVO TEXTO</source>
+      </trans-unit>
+      <trans-unit id="opcionFiltro">
+        <source>NUEVO FILTRO</source>
+      </trans-unit>
+      <trans-unit id="opcionInforme">
+        <source>RECARGAR INFORME</source>
+      </trans-unit>
+      <trans-unit id="loading">
+        <source>Cargando informe...</source>
+      </trans-unit>
+      <trans-unit id="panelOptions2">
+        <source>Editar opciones del gráfico</source>
+      </trans-unit>
+      <trans-unit id="panelOptions3">
+        <source>Exportar a Excel</source>
+      </trans-unit>
+      <trans-unit id="panelOptions4">
+        <source>Eliminar panel</source>
+      </trans-unit>
+      <trans-unit id="panelOptionsDup">
+        <source>Duplicar panel</source>
+      </trans-unit>
+      <trans-unit id="newPanelTitle">
+        <source>Nuevo Panel</source>
+      </trans-unit>
+      <trans-unit id="commonPanel">
+        <source>Común</source>
+      </trans-unit>
+      <trans-unit id="privatePanel">
+        <source>Privado</source>
+      </trans-unit>
+      <trans-unit id="panelOptions5">
+        <source>Vincular con otro informe</source>
+      </trans-unit>
+      <trans-unit id="panelOptions0">
+        <source>OPCIONES DEL PANEL</source>
+      </trans-unit>
+      <trans-unit id="greendot">
+        <source>Paneles filtrados</source>
+      </trans-unit>
+      <trans-unit id="reddot">
+        <source>Paneles no relacionados</source>
+      </trans-unit>
+      <trans-unit id="unselecteddot">
+        <source>Paneles no filtrados</source>
+      </trans-unit>
+      <trans-unit id="seconds_to_refresh">
+        <source>Intervalo de recarga</source>
+      </trans-unit>
+      <trans-unit id="seeRepetitions">
+        <source> ver/ocultar valores repetidos</source>
+      </trans-unit>
+      <trans-unit id="seeNegativeNumbers">
+        <source> Números negativos</source>
+      </trans-unit>
+      <trans-unit id="addCrossSorting">
+        <source>Ordenación</source>
+      </trans-unit>
+      <trans-unit id="sortByValue">
+        <source>Por valor descendente</source>
+      </trans-unit>
+      <trans-unit id="sortByValueAsc">
+        <source>Por valor ascendente</source>
+      </trans-unit>
+      <trans-unit id="sortAlphabetical">
+        <source>Alfabética</source>
+      </trans-unit>
+      <trans-unit id="withNegativeNumbers">
+        <source> Con números negativos</source>
+      </trans-unit>
+      <trans-unit id="withoutNegativeNumbers">
+        <source> Sin números negativos</source>
+      </trans-unit>
+      <trans-unit id="tableColors">
+        <source>Colores de tabla</source>
+      </trans-unit>
+      <trans-unit id="tableColorsEnabled">
+        <source>Colores activos</source>
+      </trans-unit>
+      <trans-unit id="tableHeaderColor">
+        <source>Color cabecera</source>
+      </trans-unit>
+      <trans-unit id="tableBandingColor">
+        <source>Color filas alternas</source>
+      </trans-unit>
+      <trans-unit id="panelTable">
+        <source>PANEL</source>
+      </trans-unit>
+      <trans-unit id="columnsTooltip">
+        <source>Elige cuantas columnas quieres mostrar</source>
+      </trans-unit>
+      <trans-unit id="panelContentEdit">
+        <source>Contenido del panel</source>
+      </trans-unit>
+      <trans-unit id="measureLabel">
+        <source>Medida:</source>
+      </trans-unit>
+      <trans-unit id="operationLabel">
+        <source>Operación:</source>
+      </trans-unit>
+      <trans-unit id="numericalValueLabel">
+        <source>Valor numérico:</source>
+      </trans-unit>
+      <trans-unit id="newNameLabel">
+        <source>Nuevo nombre:</source>
+      </trans-unit>
+      <trans-unit id="noDataAllowed">
+        <source>Este panel no está disponible por falta de permisos</source>
+      </trans-unit>
+      <trans-unit id="noFilterAllowed">
+        <source>Este panel no está disponible por falta de permisos en un filtro</source>
+      </trans-unit>
+      <trans-unit id="filterByTreetable">
+        <source>Filtro: </source>
+      </trans-unit>
+      <trans-unit id="treeTableTitleDialog">
+        <source>Propiedades de la tabla árbol</source>
+      </trans-unit>
+      <trans-unit id="uniqueRecords1" datatype="html">
+        <source>La opción <x id="START_TAG_STRONG" ctype="x-strong"/>Registros únicos<x id="CLOSE_TAG_STRONG" ctype="x-strong"/> aplica un <x id="START_TAG_STRONG_1" ctype="x-strong"/>GROUP BY<x id="CLOSE_TAG_STRONG_1" ctype="x-strong"/> sobre todos los atributos de la consulta. Úsala cuando quieras eliminar duplicados y agrupar los resultados por la combinación de todos los campos seleccionados.</source>
+      </trans-unit>
+      <trans-unit id="uniqueRecords3">
+        <source>Al activarla, las métricas numéricas se agrupan junto al resto de atributos, lo que puede alterar el resultado esperado si ya existen agregaciones definidas.</source>
+      </trans-unit>
+      <trans-unit id="tooltipUniqueRecords">
+        <source>Aplica GROUP BY a todos los campos para eliminar duplicados</source>
+      </trans-unit>
+      <!-- SECTION: TIPOS DE GRÁFICOS Y DOCUMENTACIÓN -->
+      <trans-unit id="chartTypes1">
+        <source>Tabla de Datos</source>
+      </trans-unit>
+      <trans-unit id="chartTypes2">
+        <source>Tabla Cruzada</source>
+      </trans-unit>
+      <trans-unit id="chartTypes3">
+        <source>Gráfico de Pastel</source>
+      </trans-unit>
+      <trans-unit id="chartTypes4">
+        <source>Gráfico de Área Polar</source>
+      </trans-unit>
+      <trans-unit id="chartTypes5">
+        <source>Gráfico de Barras</source>
+      </trans-unit>
+      <trans-unit id="chartTypesHistograma">
+        <source>Histograma</source>
+      </trans-unit>
+      <trans-unit id="chartTypes17">
+        <source>Gráfico Solar</source>
+      </trans-unit>
+      <trans-unit id="chartTypesDynamicText">
+        <source>Texto Dinámico</source>
+      </trans-unit>
+      <trans-unit id="chartInfoDynamicText">
+        <source>Un texto dinámicos requiere de un único valor NO numérico</source>
+      </trans-unit>
+      <trans-unit id="chartTypes6">
+        <source>Gráfico de Barras Apiladas</source>
+      </trans-unit>
+      <trans-unit id="chartTypes19">
+        <source>Gráfico de Barras Apiladas al 100%</source>
+      </trans-unit>
+      <trans-unit id="chartTypes7">
+        <source>Gráfico de Barras Horizontales</source>
+      </trans-unit>
+      <trans-unit id="chartTypesPyramid">
+        <source>Gráfico de Barras Horizontales Contrapuestas</source>
+      </trans-unit>
+      <trans-unit id="chartTypes8">
+        <source>Gráfico de Lineas</source>
+      </trans-unit>
+      <trans-unit id="chartTypes18">
+        <source>Gráfico de Áreas</source>
+      </trans-unit>
+      <trans-unit id="chartTypes9">
+        <source>Mixto: Barras y lineas</source>
+      </trans-unit>
+      <trans-unit id="chartTypes10">
+        <source>Mapa de coordenadas</source>
+      </trans-unit>
+      <trans-unit id="chartTypes11">
+        <source>Mapa de Capas</source>
+      </trans-unit>
+      <trans-unit id="chartTypes12">
+        <source>ParallelSets</source>
+      </trans-unit>
+      <trans-unit id="chartTypes13">
+        <source>TreeMap</source>
+      </trans-unit>
+      <trans-unit id="chartTypes14">
+        <source>ScatterPlot</source>
+      </trans-unit>
+      <trans-unit id="chartTypes15">
+        <source>Velocímetro</source>
+      </trans-unit>
+      <trans-unit id="chartTypes16">
+        <source>Funnel</source>
+      </trans-unit>
+      <trans-unit id="chartTypesBubblechart">
+        <source>Bubblechart</source>
+      </trans-unit>
+      <trans-unit id="chartTypesRadar">
+        <source>Radar</source>
+      </trans-unit>
+      <trans-unit id="ChartProps">
+        <source>PROPIEDADES DEL GRAFICO</source>
+      </trans-unit>
+      <trans-unit id="chartInfo1">
+        <source>Los datos seleccionados no permiten utilizar este gráfico.</source>
+      </trans-unit>
+      <trans-unit id="chartInfo2">
+        <source>Un KPI necesita un único número</source>
+      </trans-unit>
+      <trans-unit id="chartInfo3">
+        <source>Un gráfico de barras necesita una o más categorías y una série numéricas. Además, si hay mas de una série los datos numéricos deben agregarse.</source>
+      </trans-unit>
+      <trans-unit id="chartInfo4">
+        <source>
+ Un gráfico combinado necesita una categoría y dos séries numéricas</source>
+      </trans-unit>
+      <trans-unit id="chartInfo5">
+        <source>Un gráfico de línea necesita una o más categorías y una série numérica. Además, si hay mas de una série los datos numéricos deben agregarse.</source>
+      </trans-unit>
+      <trans-unit id="chartInfoArea">
+        <source>Un gráfico de area necesita una o más categorías y una série numérica. Además, si hay mas de una série los datos numéricos deben agregarse.</source>
+      </trans-unit>
+      <trans-unit id="chartInfo6">
+        <source>Un gráfico de barras necesita una o más categorías y una série numérica. Además, si hay mas de una série los datos numéricos deben agregarse.</source>
+      </trans-unit>
+      <trans-unit id="chartInfo8">
+        <source>Un gráfico polar necesita una categoría y una série numérica</source>
+      </trans-unit>
+      <trans-unit id="chartInfo9">
+        <source>Un gráfico de pastel necesita una categoría y una série numérica</source>
+      </trans-unit>
+      <trans-unit id="chartInfo10">
+        <source>Una tabla cruzada necesita dos o más categorías y una série numérica</source>
+      </trans-unit>
+      <trans-unit id="chartInfo11">
+        <source>Es necesario que los dos primeros campos sean de tipo coordenada.</source>
+      </trans-unit>
+      <trans-unit id="chartInfo111">
+        <source>Puedes añarir un campo de tipo métrica y uno de tipo etiqueta en este orden o cualquiera de los dos por separado.</source>
+      </trans-unit>
+      <trans-unit id="chartInfo12">
+        <source>Es necesario un campo vinculado a un archivo GeoJson y un campo de tipo numérico.</source>
+      </trans-unit>
+      <trans-unit id="chartInfoBubble">
+        <source>Un gráfico de burbujas necesita una categorías y una série numérica.</source>
+      </trans-unit>
+      <trans-unit id="tooManyValues">
+        <source> - Demasiados valores</source>
+      </trans-unit>
+      <trans-unit id="notAvaliable">
+        <source> - No Disponible</source>
+      </trans-unit>
+      <trans-unit id="tooManyValuestext">
+        <source>Hay demasiados valores para este gráfico. Agrega o filtra los datos para poder visualizarlos mejor.</source>
+      </trans-unit>
+      <trans-unit id="notSavedChanges">
+        <source> Hay cambios sin guardar... </source>
+      </trans-unit>
+      <trans-unit id="NoTag">
+        <source>Sin Etiqueta</source>
+      </trans-unit>
+      <trans-unit id="AllTags">
+        <source>Todos</source>
+      </trans-unit>
+      <trans-unit id="NoneTags">
+        <source>Ninguno</source>
+      </trans-unit>
+      <trans-unit id="linkedTo">
+        <source>Vinculado con</source>
+      </trans-unit>
+      <trans-unit id="addtrend">
+        <source> Tendencia </source>
+      </trans-unit>
+      <trans-unit id="removetrend">
+        <source>Quitar tendencia</source>
+      </trans-unit>
+      <trans-unit id="chartInfo14">
+        <source>Un Parallel Set necesita dos o más categorias y un campo numérico</source>
+      </trans-unit>
+      <trans-unit id="chartInfo15">
+        <source>Un Tree Map necesita un campo numérico y una o más categorias</source>
+      </trans-unit>
+      <trans-unit id="chartInfo16">
+        <source>Un Scatter Plot necesita una categoria y dos o tres campos numéricos</source>
+      </trans-unit>
+      <trans-unit id="chartInfo17">
+        <source>El velocímetro necesita uno o dos valores numéricos, en caso de disponer de dos valores el segundo se interpretará como límite</source>
+      </trans-unit>
+      <trans-unit id="chartInfoHistogram">
+        <source>Un histograma necesita una única columna de valores numericos de los que se calculará la frecuencia</source>
+      </trans-unit>
+      <trans-unit id="chartInfoFunnel">
+        <source>Un embudo necesita una categoría y un valor numérico</source>
+      </trans-unit>
+      <trans-unit id="chartInfoPyramid">
+        <source>Un gráfico de piramide necesita de dos categorías y un valor numérico</source>
+      </trans-unit>
+      <trans-unit id="chartInfoKpiTrend">
+        <source>KPI Tendencia necesita una columna de fecha en formato mes y una columna numérica</source>
+      </trans-unit>
+      <trans-unit id="chartInfoKpiDeviation">
+        <source>KPI Desviación necesita dos columnas numéricas: valor actual y valor de referencia</source>
+      </trans-unit>
+      <trans-unit id="cumulativeSum">
+        <source>Suma acumulativa</source>
+      </trans-unit>
+      <trans-unit id="showUniqueColors">
+        <source>Activar Colores Únicos</source>
+      </trans-unit>
+      <trans-unit id="trendTooltip">
+        <source>La función de añadir tendencia sólo se puede activar en los gràficos de lineas</source>
+      </trans-unit>
+      <trans-unit id="cumulativeSumTooltip">
+        <source>Si activas ésta función se calculará la suma acumulativa 
+                                            para los campos numéricos que eligas. Sólo se puede activar si la fecha está agregada por mes, semana o dia.</source>
+      </trans-unit>
+      <trans-unit id="cumsumAlertMessage1">
+        <source> La suma acumulativa sólo se puede aplicar si se dispone de una única serie no numérica. </source>
+      </trans-unit>
+      <trans-unit id="cumsumAlertMessage2">
+        <source> Puedes desactivar la función acumulativa en el campo de fecha o quitar una columna no numérica. </source>
+      </trans-unit>
+      <trans-unit id="histoGramRangesTxt">
+        <source>Rango</source>
+      </trans-unit>
+      <trans-unit id="chartTypesKPIBAR">
+        <source>KPI + Gráfico de Barras</source>
+      </trans-unit>
+      <trans-unit id="chartTypesKPILINE">
+        <source>KPI + Gráfico de Lineas</source>
+      </trans-unit>
+      <trans-unit id="chartTypesKPIAREA">
+        <source>KPI + Gráfico de Áreas</source>
+      </trans-unit>
+      <trans-unit id="chartTypesKPITrend">
+        <source>KPI Tendencia</source>
+      </trans-unit>
+      <trans-unit id="chartTypesKPIDeviation">
+        <source>KPI Desviación</source>
+      </trans-unit>
+      <trans-unit id="chartTypesTableAnalized">
+        <source>Tabla DataQuality</source>
+      </trans-unit>
+      <trans-unit id="addTag">
+        <source>AÑADIR ETIQUETA</source>
+      </trans-unit>
+      <trans-unit id="chartUniqueColorsOption">
+        <source>Asigna un color único a cada barra o elemento</source>
+      </trans-unit>
+      <trans-unit id="chartUniqueColorsOptionDescription">
+        <source>Cada elemento tendrá un color diferente</source>
+      </trans-unit>
+      <trans-unit id="addComparative">
+        <source> Comparativa </source>
+      </trans-unit>
+      <trans-unit id="uniqueColorsPerBar">
+        <source>Color por valor único:</source>
+      </trans-unit>
+      <trans-unit id="noUniqueLabels">
+        <source>No hay valores únicos disponibles.</source>
+      </trans-unit>
+      <!-- SECTION: CONSTRUCCIÓN DE CONSULTAS (QUERY BUILDER) -->
+      <trans-unit id="entidadesH4">
+        <source> Entidades </source>
+      </trans-unit>
+      <trans-unit id="atributosH4">
+        <source> Atributos </source>
+      </trans-unit>
+      <trans-unit id="seleccionH4">
+        <source> Mostrar los siguientes atributos: </source>
+      </trans-unit>
+      <trans-unit id="filtrosH4">
+        <source> Filtrar los resultados por: </source>
+      </trans-unit>
+      <trans-unit id="consultaH4">
+        <source> Mi consulta </source>
+      </trans-unit>
+      <trans-unit id="resumenAtrH6">
+        <source> Resumen de atributos </source>
+      </trans-unit>
+      <trans-unit id="resumenFiltrosPanelH6">
+        <source> Resumen de filtros del panel </source>
+      </trans-unit>
+      <trans-unit id="resumenFiltrosInformeH6">
+        <source> Resumen de filtros del informe </source>
+      </trans-unit>
+      <trans-unit id="originTable">
+        <source>Tabla origen</source>
+      </trans-unit>
+      <trans-unit id="placeholderTables">
+        <source>Tablas</source>
+      </trans-unit>
+      <trans-unit id="indicaciones">
+        <source>Indicaciones</source>
+      </trans-unit>
+      <trans-unit id="indicaciones1">
+        <source> Puedes realizar consultas SQL sobre el esquema definido en tu modelo. Para ello introduce la consulta en el cuadro de texto y selecciona la tabla principal (puede ser cualquiera de las que aparecen en la consulta). Usaremos esta tabla para vincular la consulta a los filtros del informe. </source>
+      </trans-unit>
+      <trans-unit id="indicaciones2">
+        <source> Limitaciones: </source>
+      </trans-unit>
+      <trans-unit id="indicaciones3">
+        <source> Solo es posible usar las tablas del esquema definido en el modelo (si lo hay) </source>
+      </trans-unit>
+      <trans-unit id="indicaciones4">
+        <source> Debes utilizar alias para todas las tablas de la consulta ( select a,b from tabla t where c ) </source>
+      </trans-unit>
+      <trans-unit id="indicaciones5">
+        <source> Puedes vincular los filtros del informe con la consulta </source>
+      </trans-unit>
+      <trans-unit id="indicaciones8">
+        <source> Si la tabla por la que filtramos no está en la consulta, recuerda que debes añadir las cláusulas JOIN necesarias para poder vicular la tabla del filtro con tu consulta </source>
+      </trans-unit>
+      <trans-unit id="indicaciones9">
+        <source>Consulta simple</source>
+      </trans-unit>
+      <trans-unit id="indicaciones10">
+        <source>Consulta con los filtros del informe vinculados</source>
+      </trans-unit>
+      <trans-unit id="indicaciones11">
+        <source> Tenemos un filtro en el informe para el campo &apos;city&apos; de la tabla CUSTOMERS </source>
+      </trans-unit>
+      <trans-unit id="indicaciones12">
+        <source> Consulta sin filtros vinculados</source>
+      </trans-unit>
+      <trans-unit id="indicaciones13">
+        <source> Consulta con filtros vinculados</source>
+      </trans-unit>
+      <trans-unit id="indicaciones14">
+        <source> Tenemos un filtro en el informe para el campo &apos;office_id&apos; de la tabla OFFICES </source>
+      </trans-unit>
+      <trans-unit id="vistaPrevia">
+        <source>VISTA PREVIA</source>
+      </trans-unit>
+      <trans-unit id="ejecutarBtn">
+        <source>Ejecutar</source>
+      </trans-unit>
+      <trans-unit id="EditQuery">
+        <source>EDITAR CONSULTA</source>
+      </trans-unit>
+      <trans-unit id="EditSQLQuery">
+        <source>EDITAR CONSULTA SQL</source>
+      </trans-unit>
+      <trans-unit id="dragFields">
+        <source>Arrastre aquí los atributos que quiera ver en su panel</source>
+      </trans-unit>
+      <trans-unit id="limitRowsInfo">
+        <source>Establece un Top n para la consulta</source>
+      </trans-unit>
+      <trans-unit id="Limits">
+        <source> Limites </source>
+      </trans-unit>
+      <trans-unit id="yourQuerySQL">
+        <source>Mi consulta SQL</source>
+      </trans-unit>
+      <trans-unit id="openSqlMode">
+        <source>Abrir en modo SQL</source>
+      </trans-unit>
+      <trans-unit id="sqlTooltip">
+        <source>Al cambiar de modo perderás la configuración de la consulta actual</source>
+      </trans-unit>
+      <trans-unit id="ptooltipViewQuery">
+        <source>Ver consulta SQL</source>
+      </trans-unit>
+      <trans-unit id="entidadesTitle">
+        <source>Clique sobre un entidad para ver sus atributos.</source>
+      </trans-unit>
+      <trans-unit id="atributsTitle">
+        <source>Atributos de una entidad. Arrastre los atrubutos a la selección o los filtros para consultarlos. Haciendo click sobre el atributo se accede a sus propiedaes</source>
+      </trans-unit>
+      <trans-unit id="seleccionTitle">
+        <source>Para lanzar una consulta. Seleccione los atributos que desea ver, Clique sobre ellos para configurarlos y ejecute la consulta. Siempre podrá volver a esta vista.</source>
+      </trans-unit>
+      <trans-unit id="atributoLabel">
+        <source>Atributo</source>
+      </trans-unit>
+      <trans-unit id="atributoConsulta">
+        <source>Consulta</source>
+      </trans-unit>
+      <trans-unit id="count_tablesLabel">
+        <source>Tablas implicadas</source>
+      </trans-unit>
+      <trans-unit id="count_rowsLabel">
+        <source>TTotal de registros</source>
+      </trans-unit>
+      <trans-unit id="count_nullsLabel">
+        <source>Total nulos</source>
+      </trans-unit>
+      <trans-unit id="count_emptyLabel">
+        <source>Total cadenas vacías</source>
+      </trans-unit>
+      <trans-unit id="count_distinctLabel">
+        <source>Total valores distintos</source>
+      </trans-unit>
+      <trans-unit id="most_duplicatedLabel">
+        <source>Más repetido</source>
+      </trans-unit>
+      <trans-unit id="least_duplicatedLabel">
+        <source>Menos duplicado</source>
+      </trans-unit>
+      <trans-unit id="maxLabel">
+        <source>Valor máximo</source>
+      </trans-unit>
+      <trans-unit id="minLabel">
+        <source>Valor mínimo</source>
+      </trans-unit>
+      <trans-unit id="moda_countsLabel">
+        <source>Moda</source>
+      </trans-unit>
+      <trans-unit id="medianLabel">
+        <source>Mediana</source>
+      </trans-unit>
+      <trans-unit id="median_count_bymonthLabel">
+        <source>Mediana por mes</source>
+      </trans-unit>
+      <trans-unit id="max_bymonthLabel">
+        <source>Máximos por mes</source>
+      </trans-unit>
+      <trans-unit id="min_bymonthLabel">
+        <source>Mínimos por mes</source>
+      </trans-unit>
+      <trans-unit id="EmptyValueMessage">
+        <source>Sin Informar</source>
+      </trans-unit>
+      <trans-unit id="PanelModeSelectorEDA">
+        <source>Modo EDA</source>
+      </trans-unit>
+      <trans-unit id="PanelModeSelectorSQL">
+        <source>Modo SQL</source>
+      </trans-unit>
+      <trans-unit id="PanelModeSelectorTree">
+        <source>Modo Árbol</source>
+      </trans-unit>
+      <trans-unit id="tooltipJoinType">
+        <source>Define cómo se unen las tablas: LEFT, INNER o RIGHT JOIN</source>
+      </trans-unit>
+      <trans-unit id="tooltipScenarios">
+        <source>Crea atributos derivados aplicando operaciones matemáticas</source>
+      </trans-unit>
+      <!-- SECTION: MODELADO DE DATOS (DATA MODEL) -->
+      <trans-unit id="tituloCard">
+        <source>MODELO DE DATOS</source>
+      </trans-unit>
+      <trans-unit id="inputNombreTecnico">
+        <source>Nombre técnico</source>
+      </trans-unit>
+      <trans-unit id="inputDescripcion">
+        <source>Descripción</source>
+      </trans-unit>
+      <trans-unit id="inputEsconderTabla">
+        <source>Esconder tabla</source>
+      </trans-unit>
+      <trans-unit id="inputTipoTabla">
+        <source>Tipo de tabla</source>
+      </trans-unit>
+      <trans-unit id="addRelation">
+        <source> Añadir relación </source>
+      </trans-unit>
+      <trans-unit id="inputTipoColumna">
+        <source> Tipo de columna </source>
+      </trans-unit>
+      <trans-unit id="rolesPermisos">
+        <source>Roles y permisos de fila</source>
+      </trans-unit>
+      <trans-unit id="addModelPermissions">
+        <source>Añadir permiso a nivel de modelo</source>
+      </trans-unit>
+      <trans-unit id="addPermission">
+        <source>Añadir permiso</source>
+      </trans-unit>
+      <trans-unit id="esconderColumna">
+        <source>Esconder columna</source>
+      </trans-unit>
+      <trans-unit id="metadata">
+        <source> Metadata </source>
+      </trans-unit>
+      <trans-unit id="placeholderSourceColumns">
+        <source>Columna origen</source>
+      </trans-unit>
+      <trans-unit id="placeholderTargetTables">
+        <source>tabla destino</source>
+      </trans-unit>
+      <trans-unit id="placeholderTargetColumns">
+        <source>Columna destino </source>
+      </trans-unit>
+      <trans-unit id="placeholderTargetColumnId">
+        <source>Columna con el id</source>
+      </trans-unit>
+      <trans-unit id="placeholderTargetColumnDesc">
+        <source>Columna con la descripción</source>
+      </trans-unit>
+      <trans-unit id="deleteModel">
+        <source>Borrar modelo de datos</source>
+      </trans-unit>
+      <trans-unit id="updateModel">
+        <source>Actualizar modelo de datos desde la base de datos origen para buscar nuevas tablas y columnas</source>
+      </trans-unit>
+      <trans-unit id="saveModel">
+        <source>Guardar modelo de datos</source>
+      </trans-unit>
+      <trans-unit id="Refresh">
+        <source>Refrescar modelo de datos</source>
+      </trans-unit>
+      <trans-unit id="addCalculatedCol">
+        <source>Añadir columna  calculada</source>
+      </trans-unit>
+      <trans-unit id="targetRel">
+        <source>Destino</source>
+      </trans-unit>
+      <trans-unit id="originRel">
+        <source>Origen</source>
+      </trans-unit>
+      <trans-unit id="duplicateColumnButton">
+        <source>Duplicar columna</source>
+      </trans-unit>
+      <trans-unit id="listRelations">
+        <source>Relaciones</source>
+      </trans-unit>
+      <trans-unit id="AddValueListOptions">
+        <source>Definir un listado de valores posibles</source>
+      </trans-unit>
+      <trans-unit id="possibleValuesList">
+        <source>Tabla y columna asociadas </source>
+      </trans-unit>
+      <trans-unit id="possibleValuesListTable">
+        <source>Tabla</source>
+      </trans-unit>
+      <trans-unit id="valueListSourceHeader">
+        <source>Tabla que contiene los valores posibles para el filtro asociado a esta columna</source>
+      </trans-unit>
+      <trans-unit id="valueListSourceTabla">
+        <source>Tabla relacionada</source>
+      </trans-unit>
+      <trans-unit id="valueListSourceID">
+        <source>Id de la columna relacionada</source>
+      </trans-unit>
+      <trans-unit id="possibleValuesListID">
+        <source>Columna id:</source>
+      </trans-unit>
+      <trans-unit id="valueListSourceDescripcion">
+        <source>Descripción dfe la columna relacionada</source>
+      </trans-unit>
+      <trans-unit id="possibleValuesListDescription">
+        <source>Descripción de la columna</source>
+      </trans-unit>
+      <trans-unit id="columnaCalculada">
+        <source> Nueva columna calculada </source>
+      </trans-unit>
+      <trans-unit id="aggTsum">
+        <source>Suma</source>
+      </trans-unit>
+      <trans-unit id="aggTmean">
+        <source>Media</source>
+      </trans-unit>
+      <trans-unit id="aggTmax">
+        <source>Máximo</source>
+      </trans-unit>
+      <trans-unit id="aggTmin">
+        <source>Mínimo</source>
+      </trans-unit>
+      <trans-unit id="aggTcount">
+        <source>Cuenta Valores</source>
+      </trans-unit>
+      <trans-unit id="aggTcountD">
+        <source>Valores Distintos</source>
+      </trans-unit>
+      <trans-unit id="table">
+        <source>de la entidad</source>
+      </trans-unit>
+      <trans-unit id="addCalculatedColTitle">
+        <source>Añadir columna calculada a la tabla </source>
+      </trans-unit>
+      <trans-unit id="addRelationTo">
+        <source>Añadir relación a la tabla</source>
+      </trans-unit>
+      <trans-unit id="SureInfo">
+        <source>Estás a punto de borrar el modelo de datos y todos los dashboards asociados, el cambio es irreversible</source>
+      </trans-unit>
+      <trans-unit id="ConfirmDeleteModel">
+        <source>Si, ¡Eliminalo!</source>
+      </trans-unit>
+      <trans-unit id="DeleteSuccess">
+        <source>Modelo eliminado correctamente.</source>
+      </trans-unit>
+      <trans-unit id="UpdateModelSucess">
+        <source>Modelo actualizado correctamente</source>
+      </trans-unit>
+      <trans-unit id="ViewDatamodel">
+        <source>Añadir Vista</source>
+      </trans-unit>
+      <trans-unit id="DataModelHeader">
+        <source>Configurar nuevo orígen de datos</source>
+      </trans-unit>
+      <trans-unit id="Models_ms">
+        <source>Modelos</source>
+      </trans-unit>
+      <trans-unit id="ExportModel">
+        <source>Exportar Modelo</source>
+      </trans-unit>
+      <trans-unit id="importModel">
+        <source>Importar Modelo</source>
+      </trans-unit>
+      <trans-unit id="DBInconsistencies">
+        <source>Se han encontrado inconsistencias en el informe, los siguientes elementos no existen en el modelo: </source>
+      </trans-unit>
+      <trans-unit id="modelInconsistenciesS">
+        <source>Se han encontrado inconsistencias en los siguientes informes: </source>
+      </trans-unit>
+      <trans-unit id="ModelSaved">
+        <source>Modelo guardado correctamente</source>
+      </trans-unit>
+      <trans-unit id="downloadModel">
+        <source>Descargar modelo</source>
+      </trans-unit>
+      <trans-unit id="adChacheConfig">
+        <source>Configurar caché del modelo </source>
+      </trans-unit>
+      <trans-unit id="CacheDeletedOK">
+        <source>Caché eliminada correctamente</source>
+      </trans-unit>
+      <trans-unit id="IncorrectCacheDelete">
+        <source>No ha sido posible eliminar la caché</source>
+      </trans-unit>
+      <trans-unit id="RefreshCacheTitle">
+        <source> Actualizar los datos del modelo cada: </source>
+      </trans-unit>
+      <trans-unit id="noCache">
+        <source>Sin cache</source>
+      </trans-unit>
+      <trans-unit id="deleteCache">
+        <source>Borrar caché</source>
+      </trans-unit>
+      <trans-unit id="securityConfig">
+        <source>Configuración de seguridad</source>
+      </trans-unit>
+      <trans-unit id="viewsecurity">
+        <source>Ver configuración de seguridad</source>
+      </trans-unit>
+      <trans-unit id="rolesPermisosTabla">
+        <source>Visibilidad de tablas</source>
+      </trans-unit>
+      <trans-unit id="rolesPermisosModelo">
+        <source>Visibilidad a nivel de modelo</source>
+      </trans-unit>
+      <trans-unit id="tablePermissionNO">
+        <source>No tiene permiso para ver esta tabla</source>
+      </trans-unit>
+      <trans-unit id="tablePpermissionYES">
+        <source>SI tiene permiso para ver esta tabla</source>
+      </trans-unit>
+      <trans-unit id="modelPermissionNO">
+        <source>No tiene permiso para ver este modelo</source>
+      </trans-unit>
+      <trans-unit id="modelPermissionYES">
+        <source>SI tiene permiso para ver este modelo</source>
+      </trans-unit>
+      <trans-unit id="anyCanSeeNO">
+        <source>Los usuarios y grupos que pueden ver el modelo son SOLO los definidos explicitamente.</source>
+      </trans-unit>
+      <trans-unit id="anyCanSeeYES">
+        <source>Cualquier usuario puede ver el modelo. Los filtros de seguridad se definen a nivel de tabla y columna concreta.</source>
+      </trans-unit>
+      <trans-unit id="tablesd">
+        <source>TABLA</source>
+      </trans-unit>
+      <trans-unit id="visible">
+        <source>VISIBLE</source>
+      </trans-unit>
+      <trans-unit id="permisos">
+        <source>PERMISOS</source>
+      </trans-unit>
+      <trans-unit id="column">
+        <source>COLUMNA</source>
+      </trans-unit>
+      <trans-unit id="addCacheConfig">
+        <source>Configurar Caché</source>
+      </trans-unit>
+      <trans-unit id="duplicatedColumnNameLabel">
+        <source> Nombre columna duplicada </source>
+      </trans-unit>
+      <trans-unit id="allowCache">
+        <source> Habilitar caché</source>
+      </trans-unit>
+      <trans-unit id="inputTipoDatamodel">
+        <source> Tipo </source>
+      </trans-unit>
+      <trans-unit id="OptimizeQuery">
+        <source>Optimizar consultas</source>
+      </trans-unit>
+      <!-- SECTION: CONEXIÓN Y FUENTES DE DATOS (DATASOURCES) -->
+      <trans-unit id="inputServidor">
+        <source>SERVIDOR *</source>
+      </trans-unit>
+      <trans-unit id="inputPort">
+        <source>PUERTO *</source>
+      </trans-unit>
+      <trans-unit id="inputUsuario">
+        <source>USUARIO *</source>
+      </trans-unit>
+      <trans-unit id="conexionh4">
+        <source> Conexión </source>
+      </trans-unit>
+      <trans-unit id="inputHost">
+        <source> Host </source>
+      </trans-unit>
+      <trans-unit id="inputNombreDB">
+        <source> Base de datos </source>
+      </trans-unit>
+      <trans-unit id="checkConnection">
+        <source>Comprobar conexión</source>
+      </trans-unit>
+      <trans-unit id="updateModelXLCSV">
+        <source>Actualizar el fichero origen para buscar nuevas tablas y columnas</source>
+      </trans-unit>
+      <trans-unit id="confirmationExcel">
+        <source>Confirmación</source>
+      </trans-unit>
+      <trans-unit id="confirmationExcelMessage">
+        <source>¿Estás seguro de que quieres sobreescribir este modelo de datos?</source>
+      </trans-unit>
+      <trans-unit id="emptyTag">
+        <source>Este tag esta vacío</source>
+      </trans-unit>
+      <trans-unit id="existentTag">
+        <source>Este tag ya existe</source>
+      </trans-unit>
+      <trans-unit id="newTagPlaceholder">
+        <source>Agregar nuevo tag</source>
+      </trans-unit>
+      <trans-unit id="saveTag">
+        <source>Guardar Tags</source>
+      </trans-unit>
+      <trans-unit id="addTagDataSource">
+        <source> Añadir Tag</source>
+      </trans-unit>
+      <trans-unit id="DatadourceTitle">
+        <source>Fuente de datos: </source>
+      </trans-unit>
+      <trans-unit id="EstablishedConnections">
+        <source>Conexión establecida</source>
+      </trans-unit>
+      <trans-unit id="IncorrectConnectionData">
+        <source>Datos de conexión incorrectos</source>
+      </trans-unit>
+      <trans-unit id="inputBigQueryKeys">
+        <source>Subir archivo de claves (json) *</source>
+      </trans-unit>
+      <trans-unit id="DatasourceText">
+        <source>Creada correctamente</source>
+      </trans-unit>
+      <trans-unit id="groupsPersmissions">
+        <source>Permisos de grupo</source>
+      </trans-unit>
+      <trans-unit id="agregacionh5">
+        <source> Agregación </source>
+      </trans-unit>
+      <trans-unit id="allowSSL">
+        <source>Conexión mediante SSL</source>
+      </trans-unit>
+      <trans-unit id="IncorrectFile">
+        <source>Archivo incorrecto, verifique que el formato del archivo sea json o geojson.</source>
+      </trans-unit>
+      <trans-unit id="viewEdition">
+        <source>Edición de la vista</source>
+      </trans-unit>
+      <trans-unit id="CollectionText">
+        <source>Colección creada correctamente</source>
+      </trans-unit>
+      <trans-unit id="ErrorExcel">
+        <source>Cargue un archivo .xls o .xlsx</source>
+      </trans-unit>
+      <trans-unit id="DynamicTags">
+        <source>Dinámico</source>
+      </trans-unit>
+      <trans-unit id="inputConsultaDinamica">
+        <source>Consulta dinámica</source>
+      </trans-unit>
+      <trans-unit id="addValueList">
+        <source>Añadir lista de valores posibles</source>
+      </trans-unit>
+      <trans-unit id="inputPoolDb">
+        <source>Pool Limit</source>
+      </trans-unit>
+      <trans-unit id="inputWarehouse">
+        <source>WAREHOUSE*</source>
+      </trans-unit>
+      <!-- SECTION: FILTROS, AGREGACIONES Y RANGOS -->
+      <trans-unit id="agregacionesH4">
+        <source> Agregaciones </source>
+      </trans-unit>
+      <trans-unit id="ordenacionH4">
+        <source> Ordenación </source>
+      </trans-unit>
+      <trans-unit id="filtrarH4">
+        <source> Filtrar </source>
+      </trans-unit>
+      <trans-unit id="tiposFiltrosLabel">
+        <source> Tipos de filtro </source>
+      </trans-unit>
+      <trans-unit id="fechaLabel">
+        <source> Fecha </source>
+      </trans-unit>
+      <trans-unit id="valorFiltrarLabel">
+        <source> Valor a filtrar </source>
+      </trans-unit>
+      <trans-unit id="valor1Label">
+        <source> Valor 1 </source>
+      </trans-unit>
+      <trans-unit id="valor2Label">
+        <source> Valor 2 </source>
+      </trans-unit>
+      <trans-unit id="optionsLabel">
+        <source> Opciones </source>
+      </trans-unit>
+      <trans-unit id="addFilterBtn">
+        <source>Añadir filtro</source>
+      </trans-unit>
+      <trans-unit id="dateFormatH4">
+        <source> Formato </source>
+      </trans-unit>
+      <trans-unit id="aplyToAllPanelsH5">
+        <source>¿Aplica a todos los paneles?</source>
+      </trans-unit>
+      <trans-unit id="panelsToAplyH5">
+        <source>Paneles para los que aplica el filtro</source>
+      </trans-unit>
+      <trans-unit id="filterForH5">
+        <source> Filtrar por</source>
+      </trans-unit>
+      <trans-unit id="filters1">
+        <source>IGUAL A (=)</source>
+      </trans-unit>
+      <trans-unit id="filters2">
+        <source>NO IGUAL A (!=)</source>
+      </trans-unit>
+      <trans-unit id="filters3">
+        <source>MAYOR A (&gt;)</source>
+      </trans-unit>
+      <trans-unit id="filters4">
+        <source>MENOR A (&lt;)</source>
+      </trans-unit>
+      <trans-unit id="filters5">
+        <source>MAYOR o IGUAL A (&gt;=)</source>
+      </trans-unit>
+      <trans-unit id="filters6">
+        <source>MENOR o IGUAL A (&lt;=)</source>
+      </trans-unit>
+      <trans-unit id="filters7">
+        <source>ENTRE (between)</source>
+      </trans-unit>
+      <trans-unit id="filters8">
+        <source>DENTRO DE (in)</source>
+      </trans-unit>
+      <trans-unit id="filters9">
+        <source>FUERA DE (not in)</source>
+      </trans-unit>
+      <trans-unit id="filters10">
+        <source>PARECIDO A (like)</source>
+      </trans-unit>
+      <trans-unit id="filters11">
+        <source>NO PARECIDO A (not like)</source>
+      </trans-unit>
+      <trans-unit id="filters12">
+        <source>VALORES NO NULOS (not null)</source>
+      </trans-unit>
+      <trans-unit id="DashboardFilters">
+        <source>FILTROS DEL INFORME</source>
+      </trans-unit>
+      <trans-unit id="draggFilters">
+        <source>Arrastre aquí los atributos sobre los que quiera filtrar</source>
+      </trans-unit>
+      <trans-unit id="unlink">
+        <source>Desvincular del informe: </source>
+      </trans-unit>
+      <trans-unit id="canIfilter">
+        <source> Visiblidad del filtro</source>
+      </trans-unit>
+      <trans-unit id="public">
+        <source>público</source>
+      </trans-unit>
+      <trans-unit id="readOnly">
+        <source>deshabilitado</source>
+      </trans-unit>
+      <trans-unit id="hidden">
+        <source>oculto</source>
+      </trans-unit>
+      <trans-unit id="positionFilterInReport">
+        <source> Posición del filtro en el informe</source>
+      </trans-unit>
+      <trans-unit id="filterVisibleScope">
+        <source>Definir la visibilidad del filtro. Público: todos pueden usarlo.  Deshabilitado: El resto de usuarios pueden ver el filtro pero no pueden modificarlo.  Oculto: El resto de usuario no pueden ver el filtro. Pero se les aplica</source>
+      </trans-unit>
+      <trans-unit id="filters13">
+        <source>VALORES NO NULOS NI VACÍOS (not null and != &apos;&apos;)</source>
+      </trans-unit>
+      <trans-unit id="filters14">
+        <source>VALORES NULOS O VACÍOS (null or = &apos;&apos;)</source>
+      </trans-unit>
+      <trans-unit id="aliasValuePh">
+        <source>Alias del filtro (opcional)</source>
+      </trans-unit>
+      <trans-unit id="dynamicFilters1" datatype="html">
+        <source>Al hacer clic en otros paneles del dashboard se crean <x id="START_TAG_STRONG" ctype="x-strong"/>filtros dinámicos<x id="CLOSE_TAG_STRONG" ctype="x-strong"/> que afectan al resto de paneles. Activar esta opción hace que este panel <x id="START_TAG_STRONG_1" ctype="x-strong"/>ignore<x id="CLOSE_TAG_STRONG_1" ctype="x-strong"/> esos filtros dinámicos y siempre muestre sus datos completos, independientemente de las selecciones del usuario en otros paneles.</source>
+      </trans-unit>
+      <trans-unit id="dynamicFilters3">
+        <source>Los filtros de panel y globales definidos manualmente sí se siguen aplicando con normalidad.</source>
+      </trans-unit>
+      <trans-unit id="dynamicFilters4">
+        <source>Esta opción no afecta a los filtros creados desde el selector de filtros del dashboard.</source>
+      </trans-unit>
+      <trans-unit id="tooltipAdvancedFilters">
+        <source>Combina los filtros del panel con operadores AND u OR</source>
+      </trans-unit>
+      <trans-unit id="tooltipDynamicFilters">
+        <source>Actívalo para que este panel ignore los filtros dinámicos de otros paneles</source>
+      </trans-unit>
+      <trans-unit id="filterHoverGreen">
+        <source>Verde</source>
+      </trans-unit>
+      <trans-unit id="filterHoverRed">
+        <source>Rojo</source>
+      </trans-unit>
+      <trans-unit id="filterHoverAffected">
+        <source>Paneles afectados por este filtro</source>
+      </trans-unit>
+      <trans-unit id="filterHoverNotAffected">
+        <source>Paneles no afectados por este filtro</source>
+      </trans-unit>
+      <trans-unit id="FiltersH4">
+        <source> Filtros </source>
+      </trans-unit>
+      <!-- SECTION: SELECTOR DE FECHAS (DATEPICKER) -->
+      <trans-unit id="dates1">
+        <source>AÑO</source>
+      </trans-unit>
+      <trans-unit id="datesQ">
+        <source>TRIMESTRE</source>
+      </trans-unit>
+      <trans-unit id="dates2">
+        <source>MES</source>
+      </trans-unit>
+      <trans-unit id="dates3">
+        <source>DIA</source>
+      </trans-unit>
+      <trans-unit id="dates4">
+        <source>NO</source>
+      </trans-unit>
+      <trans-unit id="dates5">
+        <source>SEMANA</source>
+      </trans-unit>
+      <trans-unit id="dates6">
+        <source>DIA DE LA SEMANA</source>
+      </trans-unit>
+      <trans-unit id="dates7">
+        <source>FECHA COMPLETA</source>
+      </trans-unit>
+      <trans-unit id="dates8">
+        <source>DIA HORA</source>
+      </trans-unit>
+      <trans-unit id="dates9">
+        <source>DIA HORA MINUTO</source>
+      </trans-unit>
+      <trans-unit id="DatePickerBeforeYesterday">
+        <source>Antes de Ayer</source>
+      </trans-unit>
+      <trans-unit id="DatePickerWeek">
+        <source>Ésta semana</source>
+      </trans-unit>
+      <trans-unit id="DatePickerWeekFull">
+        <source>Ésta semana al completo</source>
+      </trans-unit>
+      <trans-unit id="DatePickerLastWeek">
+        <source>La semana pasada</source>
+      </trans-unit>
+      <trans-unit id="DatePickerLastWeekFull">
+        <source>La semana pasada completa</source>
+      </trans-unit>
+      <trans-unit id="DatePickerMonth">
+        <source>Éste mes</source>
+      </trans-unit>
+      <trans-unit id="DatePickerLastMonth">
+        <source>El mes pasado</source>
+      </trans-unit>
+      <trans-unit id="DatePickerLastMonthFull">
+        <source>El mes pasado completo</source>
+      </trans-unit>
+      <trans-unit id="DatePickerMonthPreviousYear">
+        <source>Éste mes del año pasado</source>
+      </trans-unit>
+      <trans-unit id="DatePickerMonthPreviousYearFull">
+        <source>Éste mes al completo del año pasado</source>
+      </trans-unit>
+      <trans-unit id="DatePickerYear">
+        <source>Éste año</source>
+      </trans-unit>
+      <trans-unit id="DatePickerYearPreviousYear">
+        <source>El año pasado</source>
+      </trans-unit>
+      <trans-unit id="DatePickerYearPreviousYearFull">
+        <source>El año pasado, completo</source>
+      </trans-unit>
+      <trans-unit id="DatePickerLast7">
+        <source>Últimos 7 días</source>
+      </trans-unit>
+      <trans-unit id="DatePickerLast3">
+        <source>Últimos 3 días</source>
+      </trans-unit>
+      <trans-unit id="DatePickerLast15">
+        <source>Últimos 15 días</source>
+      </trans-unit>
+      <trans-unit id="DatePickerLast30">
+        <source>Últimos 30 días</source>
+      </trans-unit>
+      <trans-unit id="DatePickerLast60">
+        <source>Últimos 60 días</source>
+      </trans-unit>
+      <trans-unit id="DatePickerLast120">
+        <source>Últimos 120 días</source>
+      </trans-unit>
+      <trans-unit id="DateSelectRange">
+        <source>Selecciona un rango</source>
+      </trans-unit>
+      <trans-unit id="DatePickerNull">
+        <source>Fecha nula</source>
+      </trans-unit>
+      <!-- SECTION: MAPAS Y GEOJSON -->
+      <trans-unit id="inputMapTables">
+        <source>Propiedades del mapa</source>
+      </trans-unit>
+      <trans-unit id="inputMapURL">
+        <source> Subir archivo GeoJson (JSON)</source>
+      </trans-unit>
+      <trans-unit id="inputMapField">
+        <source> Campo a usar para vincular el modelo con el mapa</source>
+      </trans-unit>
+      <trans-unit id="inputMapName">
+        <source> Nombre del mapa</source>
+      </trans-unit>
+      <trans-unit id="availableMaps">
+        <source>Mapas disponibles</source>
+      </trans-unit>
+      <trans-unit id="inputMapColumnsText">
+        <source>Vincular columnas al mapa</source>
+      </trans-unit>
+      <trans-unit id="inputMapColumns">
+        <source>Columnas</source>
+      </trans-unit>
+      <trans-unit id="addMap">
+        <source>Mapas</source>
+      </trans-unit>
+      <trans-unit id="legendPosition">
+        <source> Posición de la leyenda </source>
+      </trans-unit>
+      <trans-unit id="noMouseH6">
+        <source> Activar funciones del mouse </source>
+      </trans-unit>
+      <trans-unit id="mapClusteredPoints">
+        <source>puntos agrupados</source>
+      </trans-unit>
+      <!-- SECTION: ALERTAS Y NOTIFICACIONES (EMAIL/KPI) -->
+      <trans-unit id="kpiAlertH6">
+        <source> Generar alerta </source>
+      </trans-unit>
+      <trans-unit id="DynamicTextColor">
+        <source> Cambiar Color </source>
+      </trans-unit>
+      <trans-unit id="kpiGreatSmallEqualH6">
+        <source> Operador </source>
+      </trans-unit>
+      <trans-unit id="colorKpiH6">
+        <source> Color </source>
+      </trans-unit>
+      <trans-unit id="kpiAlerts">
+        <source> Alertas </source>
+      </trans-unit>
+      <trans-unit id="addAlert">
+        <source>Añadir alerta</source>
+      </trans-unit>
+      <trans-unit id="alertsInfo">
+        <source> Cuando el valor del kpi sea (=, &lt;,&gt;) que el valor definido cambiará el color del texto</source>
+      </trans-unit>
+      <trans-unit id="MailSending">
+        <source> Envío de alertas por mail </source>
+      </trans-unit>
+      <trans-unit id="SendMailEvery">
+        <source> Enviar mail de alerta cada: </source>
+      </trans-unit>
+      <trans-unit id="SendMailWho">
+        <source> Destinatarios </source>
+      </trans-unit>
+      <trans-unit id="SendMailWhat">
+        <source> Contenido del mail: </source>
+      </trans-unit>
+      <trans-unit id="at">
+        <source> A las </source>
+      </trans-unit>
+      <trans-unit id="alertTable">
+        <source>ALERTA</source>
+      </trans-unit>
+      <trans-unit id="alertsConfigTitle">
+        <source>Gestión de alertas</source>
+      </trans-unit>
+      <trans-unit id="mailConfOk">
+        <source>Credenciales  correctas</source>
+      </trans-unit>
+      <trans-unit id="checkCredentials">
+        <source>Comprobar credenciales</source>
+      </trans-unit>
+      <trans-unit id="mailmanagementHeader">
+        <source>Gestión de correo</source>
+      </trans-unit>
+      <trans-unit id="mailConfSaved">
+        <source>Configuración guardada correctamente</source>
+      </trans-unit>
+      <trans-unit id="DashboardMailingTitle">
+        <source>Configuración del envío por email</source>
+      </trans-unit>
+      <trans-unit id="opcionMail">
+        <source>ENVIAR POR EMAIL</source>
+      </trans-unit>
+      <trans-unit id="noMail">
+        <source>Sin alertas de correo</source>
+      </trans-unit>
+      <trans-unit id="dashbaordsMailingHeader">
+        <source>Envio de informes por email</source>
+      </trans-unit>
+      <trans-unit id="ptooltipViewAlerts">
+        <source>Configurar alertas</source>
+      </trans-unit>
+      <trans-unit id="thresholdValuePercent">
+        <source>Valor umbral (%)</source>
+      </trans-unit>
+      <trans-unit id="deviationPercTrigAlert">
+        <source>% de desviación que activará la alerta (ej: -10 = cuando la desviación sea inferior al -10%)</source>
+      </trans-unit>
+      <trans-unit id="whenKpiDeviationIs">
+        <source>Cuando el % es</source>
+      </trans-unit>
+      <trans-unit id="inputSecurity">
+        <source>TLS *</source>
+      </trans-unit>
+      <!-- SECTION: MENSAJES DEL SISTEMA Y BOTONES GENÉRICOS -->
+      <trans-unit id="conditionsP1">
+        <source>Esta aplicación es una demo.</source>
+      </trans-unit>
+      <trans-unit id="conditionsP2">
+        <source>No ofrece ninguna garantía y no somos responsables del uso que se haga de la misma.</source>
+      </trans-unit>
+      <trans-unit id="conditionsP3">
+        <source>Usala bajo tu responsabilidad.</source>
+      </trans-unit>
+      <trans-unit id="cerrarBtn">
+        <source>Cerrar</source>
+      </trans-unit>
+      <trans-unit id="guardarBtn">
+        <source>Confirmar</source>
+      </trans-unit>
+      <trans-unit id="colorsChartH6">
+        <source> Colores </source>
+      </trans-unit>
+      <trans-unit id="dangerQuery">
+        <source>¡Cuidado!</source>
+      </trans-unit>
+      <trans-unit id="dangerQueryText1">
+        <source>La consulta que estás a punto de realizar es potencialmente pesada y puede tardar mas de lo normal en ejecutarse. </source>
+      </trans-unit>
+      <trans-unit id="dangerQueryText2">
+        <source>Puedes añadir filtros o agregaciones para reducir el número de registros</source>
+      </trans-unit>
+      <trans-unit id="dangerQueryText3">
+        <source>¿Deseas continuar?</source>
+      </trans-unit>
+      <trans-unit id="cancelarBtn">
+        <source>Cancelar</source>
+      </trans-unit>
+      <trans-unit id="LogarithmicScaleH6">
+        <source> ¿Escala logaritmica? </source>
+      </trans-unit>
+      <trans-unit id="inputx">
+        <source>Centro del mapa (Latitud, Longitud)</source>
+      </trans-unit>
+      <trans-unit id="borrar">
+        <source>Borrar</source>
+      </trans-unit>
+      <trans-unit id="valueTable">
+        <source>VALOR</source>
+      </trans-unit>
+      <trans-unit id="groups1">
+        <source>EMAIL</source>
+      </trans-unit>
+      <trans-unit id="informacionGeneral">
+        <source>Información general</source>
+      </trans-unit>
+      <trans-unit id="linkFilters">
+        <source>Vincular consulta con los filtros del panel</source>
+      </trans-unit>
+      <trans-unit id="examples">
+        <source>Ejemplos</source>
+      </trans-unit>
+      <trans-unit id="inputxDescription">
+        <source>Si desconoces las coordenadas del centro las calcularemos automáticamente </source>
+      </trans-unit>
+      <trans-unit id="sqlExpColumn">
+        <source>Expresión SQL (Debe incluir la agregación)</source>
+      </trans-unit>
+      <trans-unit id="ErrorMessage">
+        <source>Ha ocurrido un error</source>
+      </trans-unit>
+      <trans-unit id="CorrectQuery">
+        <source>Consulta correcta</source>
+      </trans-unit>
+      <trans-unit id="IncorrectQuery">
+        <source>Consulta incorrecta</source>
+      </trans-unit>
+      <trans-unit id="IncorrectQueryAgg">
+        <source>Debes incluir la agregación (distinct, sum, max, min, etc)</source>
+      </trans-unit>
+      <trans-unit id="Sure">
+        <source>¿Estás seguro?</source>
+      </trans-unit>
+      <trans-unit id="Deleted">
+        <source>¡Eliminado!</source>
+      </trans-unit>
+      <trans-unit id="DeletedUser">
+        <source>Usuario borrado</source>
+      </trans-unit>
+      <trans-unit id="mandatoryFields">
+        <source>Recuerde rellenar los campos obligatorios</source>
+      </trans-unit>
+      <trans-unit id="IncorrectForm">
+        <source>Formulario incorrecto. Revise los campos obligatorios.</source>
+      </trans-unit>
+      <trans-unit id="ImportantMessage">
+        <source>Importante</source>
+      </trans-unit>
+      <trans-unit id="AcceptConditions">
+        <source>Debe de aceptar las condiciones</source>
+      </trans-unit>
+      <trans-unit id="AddFiltersWarningTittle">
+        <source>Solo puedes añadir filtros cuando todos los paneles están configurados</source>
+      </trans-unit>
+      <trans-unit id="AddFiltersWarningText">
+        <source>Puedes borrar los paneles en blanco o configurarlos</source>
+      </trans-unit>
+      <trans-unit id="AddFiltersWarningButton">
+        <source>Entendido</source>
+      </trans-unit>
+      <trans-unit id="DeleteGroup">
+        <source>ELIMINAR GRUPO</source>
+      </trans-unit>
+      <trans-unit id="DeleteGroupText">
+        <source>Eliminarás todos los elementos relacionados con este grupo, ¿Deseas continuar?</source>
+      </trans-unit>
+      <trans-unit id="cantDeleteUser">
+        <source>No se puede borrar el usuario</source>
+      </trans-unit>
+      <trans-unit id="cantSelfDelete">
+        <source>No se puede borrar a si mismo</source>
+      </trans-unit>
+      <trans-unit id="DeleteUserMessage">
+        <source>Estás a punto de borrar el usuario </source>
+      </trans-unit>
+      <trans-unit id="DeleteUser">
+        <source>Si, ¡Bórralo!</source>
+      </trans-unit>
+      <trans-unit id="rowOptions">
+        <source>OPCIONES DE LA FILA</source>
+      </trans-unit>
+      <trans-unit id="EDITCAP">
+        <source>EDITAR</source>
+      </trans-unit>
+      <trans-unit id="deleteCAP">
+        <source>ELIMINAR</source>
+      </trans-unit>
+      <trans-unit id="generateView">
+        <source>Generar vista</source>
+      </trans-unit>
+      <trans-unit id="addView">
+        <source>Añadir vista</source>
+      </trans-unit>
+      <trans-unit id="inputBorrarVista">
+        <source>Borrar vista</source>
+      </trans-unit>
+      <trans-unit id="joinTypeH4">
+        <source> Tipo de intersección:   </source>
+      </trans-unit>
+      <trans-unit id="addCSV">
+        <source>Añadir tabla desde csv</source>
+      </trans-unit>
+      <trans-unit id="placeholderTableName">
+        <source>Nombre de la tabla</source>
+      </trans-unit>
+      <trans-unit id="placeholderInputSeparator">
+        <source>Separador</source>
+      </trans-unit>
+      <trans-unit id="saveCSV">
+        <source>Generar tabla</source>
+      </trans-unit>
+      <trans-unit id="addTableTitle">
+        <source>Añadir Tabla</source>
+      </trans-unit>
+      <trans-unit id="succesAddTable">
+        <source>Tabla creada correctamente</source>
+      </trans-unit>
+      <trans-unit id="csvField">
+        <source> Campo </source>
+      </trans-unit>
+      <trans-unit id="functionalities">
+        <source>Extender el modelo</source>
+      </trans-unit>
+      <trans-unit id="utilities">
+        <source>Utilidades</source>
+      </trans-unit>
+      <trans-unit id="hideTables">
+        <source>Ocultar todas las tablas</source>
+      </trans-unit>
+      <trans-unit id="hideColumns">
+        <source>Ocultar todas las columnas</source>
+      </trans-unit>
+      <trans-unit id="hideAllRelations">
+        <source> Ocultar todas las relaciones</source>
+      </trans-unit>
+      <trans-unit id="addFile">
+        <source>Subir archivo</source>
+      </trans-unit>
+      <trans-unit id="NotSavedWarning">
+        <source>Hay cambios sin guardar. ¿Seguro que quieres salir?</source>
+      </trans-unit>
+      <trans-unit id="csvSep">
+        <source>Separador Decimal</source>
+      </trans-unit>
+      <trans-unit id="viewOk">
+        <source> Vista generada correctamente</source>
+      </trans-unit>
+      <trans-unit id="groups">
+        <source>Grupos</source>
+      </trans-unit>
+      <trans-unit id="groupTable">
+        <source>GRUPO</source>
+      </trans-unit>
+      <trans-unit id="removeRowTotals">
+        <source>Quitar totales de fila</source>
+      </trans-unit>
+      <trans-unit id="removeColSubtotals">
+        <source>Quitar subtotales de columna</source>
+      </trans-unit>
+      <trans-unit id="addRowTotals">
+        <source>Totales de fila</source>
+      </trans-unit>
+      <trans-unit id="addColTotals">
+        <source>Totales de columna</source>
+      </trans-unit>
+      <trans-unit id="removeColTotals">
+        <source>Quitar totales de columna</source>
+      </trans-unit>
+      <trans-unit id="addColSubtotals">
+        <source>Subtotales de columna</source>
+      </trans-unit>
+      <trans-unit id="addOnlyPercentages">
+        <source>Sólo Porcentajes</source>
+      </trans-unit>
+      <trans-unit id="addOnlyValues">
+        <source>Sólo valores</source>
+      </trans-unit>
+      <trans-unit id="addValuesPercentages">
+        <source>Valores y Porcentajes</source>
+      </trans-unit>
+      <trans-unit id="addTotals">
+        <source>Totales</source>
+      </trans-unit>
+      <trans-unit id="addPercentages">
+        <source>Porcentajes</source>
+      </trans-unit>
+      <trans-unit id="addStyles">
+        <source>Código de color</source>
+      </trans-unit>
+      <trans-unit id="tableTitleDialog">
+        <source>Propiedades de la tabla</source>
+      </trans-unit>
+      <trans-unit id="SubTotals">
+        <source>SubTotales</source>
+      </trans-unit>
+      <trans-unit id="gradientTitle">
+        <source>Código de color para la columna: </source>
+      </trans-unit>
+      <trans-unit id="hours">
+        <source>Hora/s</source>
+      </trans-unit>
+      <trans-unit id="days">
+        <source>Día/s</source>
+      </trans-unit>
+      <trans-unit id="NoValidCol">
+        <source>No hay columnas válidas</source>
+      </trans-unit>
+      <trans-unit id="inputFormat">
+        <source> Número de decimales </source>
+      </trans-unit>
+      <trans-unit id="comparativeTooltip">
+        <source>La función de comparar sólo se puede activar si se dispone de un campo de fecha agregado por mes o semana y un único campo numérico agregado</source>
+      </trans-unit>
+      <trans-unit id="canIeditTooltip">
+        <source>Si esta opción está seleccionada sólo el propietario del informe y los administradores podrán guardar los cambios</source>
+      </trans-unit>
+      <trans-unit id="onlyIcanEditTag">
+        <source> Edición privada: </source>
+      </trans-unit>
+      <trans-unit id="filterTooltip">
+        <source>Puedes añadir palabras separadas por comas, que se aplicarán como filtros de tipo LIKE a la hora de recuperar las tablas de tu base de datos</source>
+      </trans-unit>
+      <trans-unit id="histoGramDescTxt">
+        <source>Número de</source>
+      </trans-unit>
+      <trans-unit id="histoGramDescTxt2">
+        <source>en este rango</source>
+      </trans-unit>
+      <trans-unit id="si">
+        <source>Si</source>
+      </trans-unit>
+      <trans-unit id="no">
+        <source>No</source>
+      </trans-unit>
+      <trans-unit id="aplicarBtn">
+        <source>Aplicar</source>
+      </trans-unit>
+      <trans-unit id="disenoTablaCruzada">
+        <source>Diseño de la tabla cruzada: </source>
+      </trans-unit>
+      <trans-unit id="messageItemCrosstable">
+        <source>Este eje debe contener al menos un elemento</source>
+      </trans-unit>
+      <trans-unit id="removeColumnGlobalFilter">
+        <source>No se puede eliminar la columna porque hay vinculado un Filtro</source>
+      </trans-unit>
+      <trans-unit id="invalidPathForm">
+        <source> Ruta incorrecta para el filtro seleccionado</source>
+      </trans-unit>
+      <trans-unit id="textoTablaCruzadaEjeX">
+        <source> • Eje vertical: Arrastre aquí los campos.</source>
+      </trans-unit>
+      <trans-unit id="textoTablaCruzadaEjeY">
+        <source> • Eje horizontal: Arrastre aquí los campos para el eje horizontal de la tabla cruzada.</source>
+      </trans-unit>
+      <trans-unit id="textoTablaCruzadaEjeZ">
+        <source> • Eje numérico: Arrastre aquí solo los campos numéricos.</source>
+      </trans-unit>
+      <trans-unit id="import">
+        <source>Importar</source>
+      </trans-unit>
+      <trans-unit id="logFileBtn">
+        <source>Logs</source>
+      </trans-unit>
+      <trans-unit id="logErrorFileBtn">
+        <source>Logs Error</source>
+      </trans-unit>
+      <trans-unit id="whereDoWeBegin">
+        <source>¿ Por dónde empezamos ?</source>
+      </trans-unit>
+      <trans-unit id="inputQueryView">
+        <source> Vista </source>
+      </trans-unit>
+      <trans-unit id="crearGrupoLabel">
+        <source>Crear grupo</source>
+      </trans-unit>
+      <!-- SECTION: CONTENIDO HTML (INTERPOLACIONES) -->
+      <trans-unit id="terms1" datatype="html">
+        <source> Estoy de acuerdo con los <x id="START_LINK" ctype="x-a" equiv-text="&lt;a
+									(click)=&quot;conditionsDialog()&quot;&gt;"/>términos<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/></source>
+      </trans-unit>
+      <trans-unit id="haveAccount" datatype="html">
+        <source> ¿Tienes una cuenta? <x id="START_LINK" ctype="x-a" equiv-text="&lt;a [routerLink]=&quot;[&apos;/login&apos;]&quot; class=&quot;text-info ml-2&quot;&gt;"/><x id="START_BOLD_TEXT" ctype="x-b" equiv-text="&lt;b&gt;"/>Ingresa ahora<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/><x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/></source>
+      </trans-unit>
+      <trans-unit id="indicaciones6" datatype="html">
+        <source> Para hacerlo sólo tienes que añadir: <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span style=&quot;color:rgb(0, 62, 119); font-weight: bold&quot;&gt;"/> AND <x id="INTERPOLATION" equiv-text="{{&apos; ${alias_tabla.columna_filtrada} &apos;}}"/> <x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/> en la cláusula &apos;WHERE&apos; de la consulta donde quieras inyectar el filtro </source>
+      </trans-unit>
+      <trans-unit id="indicaciones7" datatype="html">
+        <source> Si no has añadido ningúna cláusula WHERE, añádela a la consulta y haz los joins necesarios, junto con el filtro en el formato <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span style=&quot;color:rgb(0, 62, 119); font-weight: bold&quot;&gt;"/> <x id="INTERPOLATION" equiv-text="{{&apos; ${alias_tabla.columna_filtrada} &apos;}}"/> <x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/></source>
+      </trans-unit>
+      <trans-unit id="vistaSeleccionador" datatype="html">
+        <source><x id="INTERPOLATION" equiv-text="&quot;&gt;
+
+                &lt;div class=&quot;grid&quot;"/></source>
+      </trans-unit>
+      <trans-unit id="editModelHeaders" datatype="html">
+        <source>Editar <x id="INTERPOLATION" equiv-text="{{tablePanel.type ? tablePanel.name : &apos;&apos;}}"/></source>
+      </trans-unit>
+      <trans-unit id="registers1" datatype="html">
+        <source><x id="INTERPOLATION" equiv-text="{{ table.filteredValue.length }}"/> registros</source>
+      </trans-unit>
+      <trans-unit id="registers2" datatype="html">
+        <source><x id="INTERPOLATION" equiv-text="{{ table.value.length }}"/> registros</source>
+      </trans-unit>
+      <trans-unit id="topQueryH4" datatype="html">
+        <source> Mostrar Top:   <x id="START_TAG_P_INPUTNUMBER" ctype="x-p_inputnumber" equiv-text="&lt;p-inputNumber [(ngModel)]=&quot;queryLimit&quot; (onInput)=&quot;onTopChange()&quot;&gt;"/><x id="CLOSE_TAG_P_INPUTNUMBER" ctype="x-p_inputnumber"/></source>
+      </trans-unit>
+      <trans-unit id="visitYouTubeLink">
+        <source>Consulta nuestros videotutoriales en youtube</source>
+      </trans-unit>
+      <trans-unit id="tituloAbout">
+        <source>Enterprise Data Analytics</source>
+      </trans-unit>
+      <trans-unit id="firstAboutParagraphSpan" datatype="html">
+        <source><x id="START_LINK" ctype="x-a" equiv-text="&lt;a class=&quot;stronger-paragraph&quot; href=&quot;https://eda.jortilles.com&quot;&gt;"/>Enterprise Data Analytics (EDA)<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/> es una aplicación web de código libre que permite realizar informes gráficos e interactivos de forma sencilla. EDA es una aplicación que se puede instalar en tus propios servidores o se puede difrutar en su versión SaaS <x id="START_LINK_1" equiv-text="&lt;a class=&quot;stronger-paragraph&quot; href=&quot;https://www.edalitics.com&quot;&gt;"/>Edalitics<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/>. Edalitics permite disfrutar de toda la potencia de EDA sin tener que preocuparte de instalaciones, configuraciones, actualizaciones, etc. Conectas tus fuentes de datos y listo. </source>
+      </trans-unit>
+      <trans-unit id="secondAboutParagraph" datatype="html">
+        <source> EDA ha sido desarrollado por <x id="START_LINK" ctype="x-a" equiv-text="&lt;a class=&quot;stronger-paragraph&quot; href=&quot;https://www.jortilles.com&quot;&gt;"/>Jortilles<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/>. Si necesita soporte empresarial, no dude en contactar con nosotros. Así mismo cómo si quiere solicitar nuevas funcionalidades o carácteristicas. Jortilles financia el desarrollo de EDA mediante las suscripciones a Edalitics y el soporte empresarial que ofrece a sus clientes. </source>
+      </trans-unit>
+      <trans-unit id="thirdAboutParagraph" datatype="html">
+        <source> El código fuente de EDA está disponible en <x id="START_LINK" ctype="x-a" equiv-text="&lt;a class=&quot;stronger-paragraph&quot; href=&quot;https://github.com/jortilles/EDA&quot;&gt;"/>Github<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/>. </source>
+      </trans-unit>
+      <trans-unit id="fourthAboutParagraph" datatype="html">
+        <source> La documentación de EDA está disponible en <x id="START_LINK" ctype="x-a" equiv-text="&lt;a class=&quot;stronger-paragraph&quot; href=&quot;https://edadoc.jortilles.com/#/&quot;&gt;"/>Este Link<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/></source>
+      </trans-unit>
+      <trans-unit id="fifthAboutParagraph" datatype="html">
+        <source> Existe un foro donde puedes compartir tu experiencia con la comunidad en <x id="START_LINK" ctype="x-a" equiv-text="&lt;a class=&quot;stronger-paragraph&quot; href=&quot;https://github.com/jortilles/EDA/discussions&quot;&gt;"/>Este Link<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/></source>
+      </trans-unit>
+      <trans-unit id="atributosH4interpolation" datatype="html">
+        <source><x id="INTERPOLATION" equiv-text="&lt;/span&gt;
+                                &lt;/h5&gt;"/></source>
+      </trans-unit>
+      <!-- SECTION: FUNCIONALIDADES PENDIENTES DE EXTRACCIÓN (no están en messages.xlf, requiere ng extract-i18n) -->
+      <trans-unit id="placeholderRelationName">
+        <source>Nombre relación</source>
+      </trans-unit>
+      <trans-unit id="panelOptionsChangeChartType">
+        <source>Cambiar tipo de gráfico</source>
+      </trans-unit>
+      <trans-unit id="panelOptionsLock">
+        <source>Bloquear panel</source>
+      </trans-unit>
+      <trans-unit id="panelOptionsUnlock">
+        <source>Desbloquear panel</source>
+      </trans-unit>
+      <trans-unit id="publicPanel">
+        <source>Publico</source>
+      </trans-unit>
+      <trans-unit id="modifyRelationTo">
+        <source>Modificar relación de la tabla</source>
+      </trans-unit>
+      <trans-unit id="NoRecords">
+        <source>No se pudo obtener ningún registro</source>
+      </trans-unit>
+      <trans-unit id="UpdatedUserError">
+        <source>Error al actualizar el usuario </source>
+      </trans-unit>
+      <trans-unit id="DatePickerLast365">
+        <source> Últimos 365 días </source>
+      </trans-unit>
+      <trans-unit id="kpiSize">
+        <source>Modificar el tamaño del KPI</source>
+      </trans-unit>
+      <trans-unit id="increaseKpiSize">
+        <source>Incrementar el tamaño del KPI</source>
+      </trans-unit>
+      <trans-unit id="AllTagsFlat">
+        <source>Todo</source>
+      </trans-unit>
+      <trans-unit id="AllTagsGrouped">
+        <source>Todo agrupado</source>
+      </trans-unit>
+      <trans-unit id="tooltipApplyToAll">
+        <source>Si está activado, el filtro se aplica a todos los paneles del informe.</source>
+      </trans-unit>
+      <trans-unit id="tooltipAutocomplete">
+        <source>Si está activado, los valores se buscan dinámicamente mediante autocompletado.</source>
+      </trans-unit>
+      <trans-unit id="tooltipMandatory">
+        <source>Si está activado, el filtro debe tener un valor seleccionado para poder visualizar el informe.</source>
+      </trans-unit>
+      <trans-unit id="tooltipVisibility">
+        <source>Público: todos pueden usarlo. Deshabilitado: otros usuarios pueden ver el filtro pero no modificarlo. Oculto: no visible para otros pero se aplica igualmente.</source>
+      </trans-unit>
+      <trans-unit id="seeHideRepetitions">
+        <source>Ver/ocultar valores repetidos</source>
+      </trans-unit>
+      <trans-unit id="hideRepetitions">
+        <source>Ocultar valores repetidos</source>
+      </trans-unit>
+      <trans-unit id="sendMailHeader">
+        <source>Configuración de los envíos por email</source>
+      </trans-unit>
+      <trans-unit id="saveAsHeader">
+        <source>Guardar como...</source>
+      </trans-unit>
+      <trans-unit id="chartInfo18">
+        <source>El sunburst necesita al menos una categoria y un campo numérico </source>
+      </trans-unit>
+      <trans-unit id="trendTitleYear">
+        <source>Año actual</source>
+      </trans-unit>
+      <trans-unit id="trendTitleMonth">
+        <source>Mes actual</source>
+      </trans-unit>
+      <trans-unit id="trendTitleWeek">
+        <source>Semana actual</source>
+      </trans-unit>
+      <trans-unit id="trendTitleDay">
+        <source>Hoy</source>
+      </trans-unit>
+      <trans-unit id="trendTitlePeriod">
+        <source>Período actual</source>
+      </trans-unit>
+      <trans-unit id="trendCompYear">
+        <source>Año anterior</source>
+      </trans-unit>
+      <trans-unit id="trendCompMonth">
+        <source>Mes anterior</source>
+      </trans-unit>
+      <trans-unit id="trendCompWeek">
+        <source>Semana anterior</source>
+      </trans-unit>
+      <trans-unit id="trendCompDay">
+        <source>Día anterior</source>
+      </trans-unit>
+      <trans-unit id="trendCompPeriod">
+        <source>Período anterior</source>
+      </trans-unit>
+      <trans-unit id="alertMailDeleted">
+        <source>Alerta de correo eliminada</source>
+      </trans-unit>
+      <trans-unit id="dashboardMailDeleted">
+        <source>Configuración de envío eliminada</source>
+      </trans-unit>
+      <trans-unit id="mailSentNow">
+        <source>Envío iniciado correctamente</source>
+      </trans-unit>
+      <trans-unit id="sendingNow">
+        <source>Enviando...</source>
+      </trans-unit>
+      <trans-unit id="sendScheduledMails">
+        <source>Enviar todos los correos programados</source>
+      </trans-unit>
+      <trans-unit id="adminEmail">
+        <source>Gestión de correo</source>
+      </trans-unit>
+      <trans-unit id="adminEmailSubtitle">
+        <source>Configure los ajustes y credenciales de su servidor de correo electrónico</source>
+      </trans-unit>
+      <trans-unit id="alertsConfigSubtitle">
+        <source>Administra tus configuraciones de alertas</source>
+      </trans-unit>
+      <trans-unit id="dashbaordsMailingSubtitle">
+        <source>Administrar las configuraciones de correo electrónico del panel</source>
+      </trans-unit>
+      <trans-unit id="enableCache">
+        <source>Habilitar caché </source>
+      </trans-unit>
+      <trans-unit id="newDashboardtitle">
+        <source>CREA UN NUEVO INFORME</source>
+      </trans-unit>
+      <trans-unit id="noFormatsAvailable">
+        <source>Esta es una columna calculada y no tiene opciones de formato disponibles</source>
+      </trans-unit>
+      <trans-unit id="editCalculatedField">
+        <source>Edición de campo calculado</source>
+      </trans-unit>
+      <trans-unit id="deleteCalculatedColumn">
+        <source>Si, Eliminar el campo calculado!</source>
+      </trans-unit>
+      <trans-unit id="deleteCalculatedColumnConfirmation">
+        <source>Campo calculado eliminado correctamente. Debera guardar cambios en el modelo de datos para que la eliminación sea permanente</source>
+      </trans-unit>
+      <trans-unit id="DeleteGroupCancel">
+        <source>Cancelar</source>
+      </trans-unit>
+      <trans-unit id="formDialogCalculatedColumn">
+        <source>Recuerde rellenar todos los campos</source>
+      </trans-unit>
+      <trans-unit id="mandatoryDiferentName">
+        <source>Este nombre de campo calculado ya existe. Intente con otro.</source>
+      </trans-unit>
+      <trans-unit id="titleCalculatedColumnEditMessage">
+        <source>Campo calculado actualizado correctamente</source>
+      </trans-unit>
+      <trans-unit id="textCalculatedColumnEditMessage">
+        <source>IMPORTANTE: Al modificar un campo calculado ya existente los paneles que lo utilizan no se actualizan automáticamente, es necesario entrar en la configuración de cada uno de ellos, pulsar en Ejecutar y guardar el informe</source>
+      </trans-unit>
+      <trans-unit id="setNewAlert">
+        <source>Configurar nueva alerta</source>
+      </trans-unit>
+      <trans-unit id="onlyIcanEditTagEnable">
+        <source>Edición privada habilitada</source>
+      </trans-unit>
+      <trans-unit id="onlyIcanEditTagDisable">
+        <source>Edición privada deshabilitada</source>
+      </trans-unit>
+      <trans-unit id="ChangeDefaultsColors">
+        <source>Color del los gráficos</source>
+      </trans-unit>
+      <trans-unit id="properties">
+        <source>Propiedades</source>
+      </trans-unit>
+      <trans-unit id="deleteFilters">
+        <source>Eliminar filtros</source>
+      </trans-unit>
+      <trans-unit id="samplePanelDBName">
+        <source>Título del informe</source>
+      </trans-unit>
+      <trans-unit id="urlAction">
+        <source>Acciones: </source>
+      </trans-unit>
+      <trans-unit id="dialogHeaderCustomActions">
+        <source>ACCIONES PERSONALIZADAS </source>
+      </trans-unit>
+      <trans-unit id="chartTypesTreeTable">
+        <source>Tabla Árbol</source>
+      </trans-unit>
+      <trans-unit id="SureDataQuality">
+        <source>¿Estás seguro de que deseas continuar con la visualización de DataQuality? Esta acción puede tomar un poco de tiempo.</source>
+      </trans-unit>
+      <trans-unit id="ContinueTablaQuality">
+        <source>Continuar</source>
+      </trans-unit>
+      <trans-unit id="filteredReportMessage">
+        <source>Por favor, espera un momento mientras procesamos la selección.</source>
+      </trans-unit>
+      <trans-unit id="GroupCreated">
+        <source>Grupo creado</source>
+      </trans-unit>
+      <trans-unit id="GroupUpdated">
+        <source>Grupo actualizado</source>
+      </trans-unit>
+      <trans-unit id="GroupDeletedOk">
+        <source>El grupo a sido eliminado correctamente</source>
+      </trans-unit>
+      <trans-unit id="UpdatedGroupError">
+        <source>El grupo no se ha podido actualizar</source>
+      </trans-unit>
+      <trans-unit id="cannotRemoveLastColumn">
+        <source>No se puede eliminar todas las columnas de la tabla raíz sin eliminar las columnas dependientes.</source>
+      </trans-unit>
+      <trans-unit id="whereMessage">
+        <source>Filtro sobre todos los registros</source>
+      </trans-unit>
+      <trans-unit id="havingMessage">
+        <source>Filtro sobre los resultados</source>
+      </trans-unit>
+      <trans-unit id="whereMessageLabel">
+        <source>Aplicar el filtro sobre todos los registros</source>
+      </trans-unit>
+      <trans-unit id="havingMessageLabel">
+        <source>Aplicar el filtro sobre los resultados</source>
+      </trans-unit>
+      <trans-unit id="ptooltipViewTextRanges">
+        <source>Al configurar un Rango las agregaciones quedarán bloqueadas, Ejemplo de un rango válido - 12:18:50:100 </source>
+      </trans-unit>
+      <trans-unit id="addRange">
+        <source>Añadir Rango</source>
+      </trans-unit>
+      <trans-unit id="rangeDescriptionNumberError">
+        <source>El correcto orden de los límites del rango van de menor a mayor</source>
+      </trans-unit>
+      <trans-unit id="rangeDescriptionCharacterError">
+        <source>El último caracter del rango debe ser un número</source>
+      </trans-unit>
+      <trans-unit id="ptooltipNotAvailableRanges">
+        <source>No es posible crear un rango nuevo por que ya existe uno configurado</source>
+      </trans-unit>
+      <trans-unit id="textBetween">
+        <source>Entre</source>
+      </trans-unit>
+      <trans-unit id="loginTitle">
+        <source>Inicio de sesión</source>
+      </trans-unit>
+      <trans-unit id="permissionType">
+        <source>Tipo de Permisos</source>
+      </trans-unit>
+      <trans-unit id="permissionTypeDescription">
+        <source>Selecciona cómo quieres gestionar los permisos</source>
+      </trans-unit>
+      <trans-unit id="permissionTypeUser">
+        <source>Permisos por Usuario</source>
+      </trans-unit>
+      <trans-unit id="permissionTypeGroup">
+        <source>Permisos por Grupo</source>
+      </trans-unit>
+      <trans-unit id="permissionTypeUserDescription">
+        <source>Asignar permisos individualmente a usuarios específicos</source>
+      </trans-unit>
+      <trans-unit id="permissionTypeGroupDescription">
+        <source>Asignar permisos a grupos de usuarios</source>
+      </trans-unit>
+      <trans-unit id="selectUsers">
+        <source>Seleccionar Usuarios</source>
+      </trans-unit>
+      <trans-unit id="selectGroups">
+        <source>Seleccionar Grupos</source>
+      </trans-unit>
+      <trans-unit id="DataModelDB">
+        <source>Configurar nuevo orígen de datos</source>
+      </trans-unit>
+      <trans-unit id="newDataSourceDescription">
+        <source>Conéctese a su base de datos para comenzar a consultar y visualizar sus datos</source>
+      </trans-unit>
+      <trans-unit id="name">
+        <source>Nombre</source>
+      </trans-unit>
+      <trans-unit id="nameRequired">
+        <source>El nombre es obligatorio</source>
+      </trans-unit>
+      <trans-unit id="separatorRequired">
+        <source>El separador es obligatorio</source>
+      </trans-unit>
+      <trans-unit id="type">
+        <source>Tipo</source>
+      </trans-unit>
+      <trans-unit id="server">
+        <source>Servidor</source>
+      </trans-unit>
+      <trans-unit id="account">
+        <source>Cuenta</source>
+      </trans-unit>
+      <trans-unit id="serverRequired">
+        <source>Url del servidor es obligatorio</source>
+      </trans-unit>
+      <trans-unit id="accountRequired">
+        <source>El nombre de cuenta es obligatorio</source>
+      </trans-unit>
+      <trans-unit id="port">
+        <source>Puerto</source>
+      </trans-unit>
+      <trans-unit id="portRequired">
+        <source>El puerto es obligatorio</source>
+      </trans-unit>
+      <trans-unit id="databaseRequired">
+        <source>Base de datos es obligatorio</source>
+      </trans-unit>
+      <trans-unit id="schema">
+        <source>Esquema</source>
+      </trans-unit>
+      <trans-unit id="usernameRequired">
+        <source>El usuario es obligatorio</source>
+      </trans-unit>
+      <trans-unit id="password">
+        <source>Contraseña</source>
+      </trans-unit>
+      <trans-unit id="passwordRequired">
+        <source>La contraseña es obligatorio</source>
+      </trans-unit>
+      <trans-unit id="bigqueryKeyDragDrop">
+        <source>Sube un archivo de claves</source>
+      </trans-unit>
+      <trans-unit id="filters">
+        <source>Filtros</source>
+      </trans-unit>
+      <trans-unit id="optionalFilterDescription">
+        <source>Optional filters to limit the scope of your connection</source>
+      </trans-unit>
+      <trans-unit id="connectionOptions">
+        <source>Opciones de conexión</source>
+      </trans-unit>
+      <trans-unit id="optimizedQueries">
+        <source>Optimizar consultas</source>
+      </trans-unit>
+      <trans-unit id="optimizedQueriesTooltipDescription">
+        <source>Optimice automáticamente las consultas para un mejor rendimiento</source>
+      </trans-unit>
+      <trans-unit id="optimizedQueriesDescription">
+        <source>Mejore el rendimiento de las consultas con la optimización automática</source>
+      </trans-unit>
+      <trans-unit id="allowCacheTooltipDescription">
+        <source>Almacenar en caché los resultados de las consultas para mejorar el rendimiento de los datos a los que se accede con frecuencia</source>
+      </trans-unit>
+      <trans-unit id="allowCacheDescription">
+        <source>Almacenar en caché los resultados de las consultas para una recuperación de datos más rápida</source>
+      </trans-unit>
+      <trans-unit id="sslConnection">
+        <source>Conexión SSL</source>
+      </trans-unit>
+      <trans-unit id="sslConnectionTooltipDescription">
+        <source>Utilice SSL para cifrar la conexión a su base de datos para una mayor seguridad</source>
+      </trans-unit>
+      <trans-unit id="sslConnectionDescription">
+        <source>Proteja su conexión con encriptación SSL</source>
+      </trans-unit>
+      <trans-unit id="testConnection">
+        <source>Probar conexión</source>
+      </trans-unit>
+      <trans-unit id="basicInformation">
+        <source>Información básica</source>
+      </trans-unit>
+      <trans-unit id="advancedSettings">
+        <source>Configuración avanzada</source>
+      </trans-unit>
+      <trans-unit id="noCacheDescription">
+        <source>Desactiva el sistema de caché para obtener datos en tiempo real</source>
+      </trans-unit>
+      <trans-unit id="atTime">
+        <source>A las:</source>
+      </trans-unit>
+      <trans-unit id="mapDescription">
+        <source>Configurar las propiedades básicas de la visualización de su mapa</source>
+      </trans-unit>
+      <trans-unit id="selectField">
+        <source>Selecciona un campo</source>
+      </trans-unit>
+      <trans-unit id="linkMapColumnsDescription">
+        <source>Conecte sus columnas de datos a la visualización geográfica</source>
+      </trans-unit>
+      <trans-unit id="selectTable">
+        <source>Selecciona una tabla</source>
+      </trans-unit>
+      <trans-unit id="selectColumn">
+        <source>Selecciona una columna</source>
+      </trans-unit>
+      <trans-unit id="linkColumn">
+        <source>Vincular columna</source>
+      </trans-unit>
+      <trans-unit id="mapsAvailableDescription">
+        <source>Mapas que están actualmente configurados y disponibles para su uso</source>
+      </trans-unit>
+      <trans-unit id="noMapsAvailable">
+        <source>No hay mapas disponibles</source>
+      </trans-unit>
+      <trans-unit id="noMapsAvailableDescription">
+        <source>Configurar un mapa en la pestaña Propiedades del mapa</source>
+      </trans-unit>
+      <trans-unit id="filterReports">
+        <source>FILTRAR INFORMES:</source>
+      </trans-unit>
+      <trans-unit id="sortReports">
+        <source>ORDENAR INFORMES:</source>
+      </trans-unit>
+      <trans-unit id="createdAt">
+        <source>Fecha (asc.)</source>
+      </trans-unit>
+      <trans-unit id="createdAtDesc">
+        <source>Fecha (desc.)</source>
+      </trans-unit>
+      <trans-unit id="withoutContentYet">
+        <source>Sin contenido</source>
+      </trans-unit>
+      <trans-unit id="searchGroups">
+        <source>Buscar grupos...</source>
+      </trans-unit>
+      <trans-unit id="newGroup">
+        <source>Crear Nuevo Grupo</source>
+      </trans-unit>
+      <trans-unit id="editGroup">
+        <source>Editar Grupo</source>
+      </trans-unit>
+      <trans-unit id="adminGroupsTitle">
+        <source>Gestión de Grupos</source>
+      </trans-unit>
+      <trans-unit id="addGroup">
+        <source>Crear Grupo</source>
+      </trans-unit>
+      <trans-unit id="foundGroups">
+        <source>grupos encontrados</source>
+      </trans-unit>
+      <trans-unit id="role">
+        <source>Rol</source>
+      </trans-unit>
+      <trans-unit id="newUser">
+        <source>Crear Nuevo Usuario</source>
+      </trans-unit>
+      <trans-unit id="editUser">
+        <source>Editar Usuario</source>
+      </trans-unit>
+      <trans-unit id="adminUsers">
+        <source>Gestión de Usuarios</source>
+      </trans-unit>
+      <trans-unit id="addUser">
+        <source>Crear Usuario</source>
+      </trans-unit>
+      <trans-unit id="searchUsers">
+        <source>Buscar usuarios...</source>
+      </trans-unit>
+      <trans-unit id="foundUsers">
+        <source>usuarios encontrados</source>
+      </trans-unit>
+      <trans-unit id="group">
+        <source>Grupo</source>
+      </trans-unit>
+      <trans-unit id="adminDatasource">
+        <source>Gestión de fuentes de datos</source>
+      </trans-unit>
+      <trans-unit id="addDatasource">
+        <source>Crear fuente de datos</source>
+      </trans-unit>
+      <trans-unit id="foundDatasource">
+        <source>fuentes de datos encontradas</source>
+      </trans-unit>
+      <trans-unit id="profileSubtitle">
+        <source>Administra tu información personal y preferencias de cuenta</source>
+      </trans-unit>
+      <trans-unit id="profileInfoTitle">
+        <source>Información Personal</source>
+      </trans-unit>
+      <trans-unit id="profileInfoSubtitle">
+        <source>Actualiza tu información básica de perfil</source>
+      </trans-unit>
+      <trans-unit id="usernameLengthValidation">
+        <source>El nombre de usuario debe tener al menos 2 caracteres.</source>
+      </trans-unit>
+      <trans-unit id="emailValidation">
+        <source>Por favor ingresa un email válido.</source>
+      </trans-unit>
+      <trans-unit id="changePassword">
+        <source>Cambiar contraseña</source>
+      </trans-unit>
+      <trans-unit id="newPassword">
+        <source>Nueva contraseña</source>
+      </trans-unit>
+      <trans-unit id="confirmNewPassword">
+        <source>Confirmar nueva contraseña</source>
+      </trans-unit>
+      <trans-unit id="passwordValidation">
+        <source>Las contraseñas no coinciden</source>
+      </trans-unit>
+      <trans-unit id="saveChanges">
+        <source>Guardar cambios</source>
+      </trans-unit>
+      <trans-unit id="profileImage">
+        <source>Foto de perfil</source>
+      </trans-unit>
+      <trans-unit id="profileImageSubtitle">
+        <source>Actualiza tu foto de perfil</source>
+      </trans-unit>
+      <trans-unit id="uploadImage">
+        <source>Subir imagen</source>
+      </trans-unit>
+      <trans-unit id="selectedImage">
+        <source>Imagen seleccionada</source>
+      </trans-unit>
+      <trans-unit id="noImageSelected">
+        <source>No hay imagen seleccionada</source>
+      </trans-unit>
+      <trans-unit id="chartDisplayOptionsTitle">
+        <source>Opciones de visualización</source>
+      </trans-unit>
+      <trans-unit id="chartTrendOption">
+        <source>Mostrar línea de tendencia en el gráfico</source>
+      </trans-unit>
+      <trans-unit id="chartComparationOption">
+        <source>Habilita la comparación con períodos anteriores</source>
+      </trans-unit>
+      <trans-unit id="showLegend">
+        <source>Mostrar Leyenda</source>
+      </trans-unit>
+      <trans-unit id="chartLegendOptionDescription">
+        <source>Muestra la leyenda del gráfico</source>
+      </trans-unit>
+      <trans-unit id="showGridLines">
+        <source>Mostrar Líneas Guía</source>
+      </trans-unit>
+      <trans-unit id="chartGridLinesOptionDescription">
+        <source>Muestra u oculta las líneas guía del gráfico</source>
+      </trans-unit>
+      <trans-unit id="histogramColum">
+        <source>Columnas</source>
+      </trans-unit>
+      <trans-unit id="tooltipBlockedByComparative">
+        <source>Bloqueado porque comparativa está activa</source>
+      </trans-unit>
+      <trans-unit id="tooltipBlockedByTrendOrPrediction">
+        <source>Bloqueado porque tendencia o predicción está activa</source>
+      </trans-unit>
+      <trans-unit id="chartLabelOption">
+        <source>Muestra las etiquetas de cada segmento</source>
+      </trans-unit>
+      <trans-unit id="chartLabelPercentOption">
+        <source>Muestra los porcentajes en las etiquetas</source>
+      </trans-unit>
+      <trans-unit id="aboutEdaP1">
+        <source>Una aplicación web de código libre que permite realizar informes gráficos e interactivos de forma sencilla.</source>
+      </trans-unit>
+      <trans-unit id="aboutEdaH1">
+        <source>Código Abierto</source>
+      </trans-unit>
+      <trans-unit id="aboutEdaP2">
+        <source>EDA es una aplicación que se puede instalar en tus propios servidores o disfrutar en su versión SaaS Edalitics.</source>
+      </trans-unit>
+      <trans-unit id="aboutEdaA1">
+        <source>Ver en Github</source>
+      </trans-unit>
+      <trans-unit id="aboutEdaH2">
+        <source>Documentación</source>
+      </trans-unit>
+      <trans-unit id="aboutEdaP3">
+        <source>Accede a nuestra documentación completa para aprender a sacar el máximo provecho de EDA.</source>
+      </trans-unit>
+      <trans-unit id="aboutEdaA2">
+        <source>Ver Documentación</source>
+      </trans-unit>
+      <trans-unit id="aboutEdaH3">
+        <source>Comunidad</source>
+      </trans-unit>
+      <trans-unit id="aboutEdaP4">
+        <source>Únete a nuestra comunidad para compartir experiencias y obtener ayuda.</source>
+      </trans-unit>
+      <trans-unit id="aboutEdaA3">
+        <source>Ir al Foro</source>
+      </trans-unit>
+      <trans-unit id="aboutEdaP5">
+        <source>Aprende a usar EDA con nuestros tutoriales paso a paso.</source>
+      </trans-unit>
+      <trans-unit id="aboutEdaB1">
+        <source>Crear Modelo de Datos</source>
+      </trans-unit>
+      <trans-unit id="aboutEdaB2">
+        <source>Crear Informe</source>
+      </trans-unit>
+      <trans-unit id="aboutEdaH4">
+        <source>¿Quieres probar EDA en el cloud?</source>
+      </trans-unit>
+      <trans-unit id="aboutEdaP6">
+        <source>Edalitics te permitirá estar siempre a la última sin preocuparte por nada.</source>
+      </trans-unit>
+      <trans-unit id="aboutEdaH5">
+        <source>Tutoriales en video</source>
+      </trans-unit>
+      <trans-unit id="aboutEdaA4">
+        <source>Prueba Edalitics gratis </source>
+      </trans-unit>
+      <trans-unit id="aboutEdaP7">
+        <source>Si necesita soporte empresarial o desea solicitar nuevas funcionalidades, no dude en contactar con nosotros.</source>
+      </trans-unit>
+      <trans-unit id="multiSelectDefaultLabel">
+        <source>Selecciona un grupo *</source>
+      </trans-unit>
+      <trans-unit id="allElementsConnected">
+        <source>Todos los elementos están conectados</source>
+      </trans-unit>
+      <trans-unit id="dashboardFiltersMin">
+        <source>Filtros del dashboard</source>
+      </trans-unit>
+      <trans-unit id="noConnection">
+        <source>No hay conexiones activas</source>
+      </trans-unit>
+      <trans-unit id="select1to1">
+        <source>Selecciona un elemento del listado izquierdo y luego uno del listado derecho para crear una conexión 1:1.</source>
+      </trans-unit>
+      <trans-unit id="connectDashboardPanel">
+        <source>Conecta los filtros entre el dashboard y el panel, (los únicos filtros de panel que se visualizan son aquellos cuyo tipo de filtro es IN)</source>
+      </trans-unit>
+      <trans-unit id="mapFilters">
+        <source>Mapear Filtros</source>
+      </trans-unit>
+      <trans-unit id="searcherInput">
+        <source>Buscador</source>
+      </trans-unit>
+      <trans-unit id="manageDBModels">
+        <source>Gestiona la importación y exportación de fuentes de datos</source>
+      </trans-unit>
+      <trans-unit id="SelectModelToExport">
+        <source>Selecciona una fuente de datos para exportar</source>
+      </trans-unit>
+      <trans-unit id="SelectDashboardToExport">
+        <source>Selecciona un dashboard para exportar</source>
+      </trans-unit>
+      <trans-unit id="SelectModel">
+        <source>Selecciona una fuente de datos</source>
+      </trans-unit>
+      <trans-unit id="SelectDashboard">
+        <source>Selecciona un dashboard</source>
+      </trans-unit>
+      <trans-unit id="UploadModel">
+        <source>Sube un archivo de modelo</source>
+      </trans-unit>
+      <trans-unit id="UploadDashboard">
+        <source>Sube un archivo de dashboard</source>
+      </trans-unit>
+      <trans-unit id="export">
+        <source>Exportar</source>
+      </trans-unit>
+      <trans-unit id="clickToUpload">
+        <source>Click para subir</source>
+      </trans-unit>
+      <trans-unit id="dragDrop">
+        <source> o arrastra y suelta</source>
+      </trans-unit>
+      <trans-unit id="manageDashboards">
+        <source>Gestiona la importación y exportación de dashboards</source>
+      </trans-unit>
+      <trans-unit id="askPanelData">
+        <source>Pregunta sobre los datos de tu panel ...</source>
+      </trans-unit>
+      <trans-unit id="askEdaliticsText">
+        <source>Pregúntale a Edalitics</source>
+      </trans-unit>
+      <trans-unit id="escribeMensaje">
+        <source>Escribe tu mensaje...</source>
+      </trans-unit>
+      <trans-unit id="viewName">
+        <source>Introduzca el nombre de la vista</source>
+      </trans-unit>
+      <trans-unit id="viewDescription">
+        <source>Introduce una breve descripción</source>
+      </trans-unit>
+      <trans-unit id="viewTNameP">
+        <source>Introduzca el identificador técnico</source>
+      </trans-unit>
+      <trans-unit id="enterSQLExpression">
+        <source>Ingrese su consulta SQL aquí</source>
+      </trans-unit>
+      <trans-unit id="generating">
+        <source>Generando...</source>
+      </trans-unit>
+      <trans-unit id="selectedTags">
+        <source>Tags seleccionados</source>
+      </trans-unit>
+      <trans-unit id="emptyMessageTags">
+        <source>No se encontraron resultados</source>
+      </trans-unit>
+      <trans-unit id="dimensionLabel">
+        <source>Dimension</source>
+      </trans-unit>
+      <trans-unit id="factLabel">
+        <source>Hecho</source>
+      </trans-unit>
+      <trans-unit id="viewLabel">
+        <source>Vista</source>
+      </trans-unit>
+      <trans-unit id="tagCreated">
+        <source>Etiqueta creada correctamente</source>
+      </trans-unit>
+      <trans-unit id="tagAssigned">
+        <source>Etiqueta asignada correctamente</source>
+      </trans-unit>
+      <trans-unit id="DatasourceTitle">
+        <source>Fuente de datos </source>
+      </trans-unit>
+      <trans-unit id="Cargando">
+        <source>Cargando... </source>
+      </trans-unit>
+      <trans-unit id="Initial">
+        <source>Inicio</source>
+      </trans-unit>
+      <trans-unit id="Final">
+        <source>Final</source>
+      </trans-unit>
+      <trans-unit id="DashboardUpdatedInfo">
+        <source>El dashboard ha sido actualizado correctamente.</source>
+      </trans-unit>
+      <trans-unit id="dsConnectionRefused">
+        <source>No se ha podido conectar a la base de datos.</source>
+      </trans-unit>
+      <trans-unit id="searchDatasource">
+        <source>Buscar fuente de datos</source>
+      </trans-unit>
+      <trans-unit id="selectPalette">
+        <source>-- Seleccione una paleta --</source>
+      </trans-unit>
+      <trans-unit id="scenarios">
+        <source>Escenarios</source>
+      </trans-unit>
+      <trans-unit id="AdvanceOptions">
+        <source>Opciones avanzadas</source>
+      </trans-unit>
+      <trans-unit id="condition">
+        <source>Condición</source>
+      </trans-unit>
+      <trans-unit id="alertColor">
+        <source>Color de la alerta</source>
+      </trans-unit>
+      <trans-unit id="noAlertsConfigured">
+        <source>No hay alertas configuradas </source>
+      </trans-unit>
+      <trans-unit id="alertsConfigured">
+        <source>Alertas configuradas </source>
+      </trans-unit>
+      <trans-unit id="lessThan">
+        <source>Menor que </source>
+      </trans-unit>
+      <trans-unit id="equalTo">
+        <source>Igual a </source>
+      </trans-unit>
+      <trans-unit id="greaterThan">
+        <source>Mayor que</source>
+      </trans-unit>
+      <trans-unit id="thresholdValue">
+        <source>Valor umbral</source>
+      </trans-unit>
+      <trans-unit id="numValTrigAlert">
+        <source>Valor numérico que activará la alerta</source>
+      </trans-unit>
+      <trans-unit id="textChangeColor">
+        <source>el texto cambiará a este color</source>
+      </trans-unit>
+      <trans-unit id="value">
+        <source>Valor</source>
+      </trans-unit>
+      <trans-unit id="actions">
+        <source>Acciones</source>
+      </trans-unit>
+      <trans-unit id="orderAlerts">
+        <source>Las alertas se aplicarán en orden de creación. Haga clic en el botón X para eliminar una alerta.</source>
+      </trans-unit>
+      <trans-unit id="useFormAlertConfigure">
+        <source>Configure una alerta usando el formulario de arriba para visualizar cambios en el gráfico.</source>
+      </trans-unit>
+      <trans-unit id="dashboardSidebarNewText">
+        <source>Nuevo texto</source>
+      </trans-unit>
+      <trans-unit id="dashboardSidebarNewFilter">
+        <source>Nuevo filtro</source>
+      </trans-unit>
+      <trans-unit id="dashboardSidebarEditFilter">
+        <source>Editar filtro</source>
+      </trans-unit>
+      <trans-unit id="dashboardSidebarImportPanel">
+        <source>Importar panel</source>
+      </trans-unit>
+      <trans-unit id="dashboardSidebarRefreshDashboard">
+        <source>Recargar informe</source>
+      </trans-unit>
+      <trans-unit id="dashboardSidebarDashboardPrivacity">
+        <source>Privacidad informe</source>
+      </trans-unit>
+      <trans-unit id="dashboardSidebarLiveDashboard">
+        <source>Live Dashboard</source>
+      </trans-unit>
+      <trans-unit id="secondsToRefresh">
+        <source>Segundos para refrescar</source>
+      </trans-unit>
+      <trans-unit id="dashboardSidebarSave">
+        <source>Guardar</source>
+      </trans-unit>
+      <trans-unit id="dashboardSidebarSaveAs">
+        <source>Guardar como</source>
+      </trans-unit>
+      <trans-unit id="dashboardSidebarDeleteDashboard">
+        <source>Eliminar informe</source>
+      </trans-unit>
+      <trans-unit id="dashboardSidebarMoreOptions">
+        <source>Más opciones</source>
+      </trans-unit>
+      <trans-unit id="dashboardSidebarEditStyles">
+        <source>Editar estilos</source>
+      </trans-unit>
+      <trans-unit id="dashboardSidebarDownloadPDF">
+        <source>Descargar PDF</source>
+      </trans-unit>
+      <trans-unit id="dashboardSidebarDownloadImage">
+        <source>Descargar imagen</source>
+      </trans-unit>
+      <trans-unit id="dashboardSidebarDownloadExcel">
+        <source>Descargar Excel</source>
+      </trans-unit>
+      <trans-unit id="dashboardSidebarDownload">
+        <source>Descargar</source>
+      </trans-unit>
+      <trans-unit id="dashboardSidebarCustomAction">
+        <source>Acción personalizada</source>
+      </trans-unit>
+      <trans-unit id="deleteBtn">
+        <source>Eliminar</source>
+      </trans-unit>
+      <trans-unit id="valueKPI">
+        <source>Cuando el valor KPI es</source>
+      </trans-unit>
+      <trans-unit id="alertsPreview">
+        <source>Vista previa:</source>
+      </trans-unit>
+      <trans-unit id="enableFilters">
+        <source>Click en filtros habilitado</source>
+      </trans-unit>
+      <trans-unit id="disableFilters">
+        <source>Click en filtros deshabilitado</source>
+      </trans-unit>
+      <trans-unit id="selectFileImport">
+        <source>Por favor selecciona un archivo para importar</source>
+      </trans-unit>
+      <trans-unit id="logarithmicScale">
+        <source>Escala logarítmica</source>
+      </trans-unit>
+      <trans-unit id="activeMouseFunctions">
+        <source>Activar funciones del ratón</source>
+      </trans-unit>
+      <trans-unit id="enableBaseLayer">
+        <source>Activar capa base</source>
+      </trans-unit>
+      <trans-unit id="logarithmicScaleTooltip">
+        <source>Aplica escala logarítmica a los valores del mapa</source>
+      </trans-unit>
+      <trans-unit id="activeMouseFunctionsTooltip">
+        <source>Permite arrastrar y hacer zoom con el ratón</source>
+      </trans-unit>
+      <trans-unit id="enableBaseLayerTooltip">
+        <source>Muestra u oculta la capa base del mapa</source>
+      </trans-unit>
+      <trans-unit id="layerColor">
+        <source>Color de capa</source>
+      </trans-unit>
+      <trans-unit id="topleftPosition">
+        <source>Superior izquierda</source>
+      </trans-unit>
+      <trans-unit id="bottomleftPosition">
+        <source>Inferior izquierda</source>
+      </trans-unit>
+      <trans-unit id="toprightPosition">
+        <source>Superior derecha</source>
+      </trans-unit>
+      <trans-unit id="bottomrightPosition">
+        <source>Inferior derecha</source>
+      </trans-unit>
+      <trans-unit id="selectDashboardPrivacity">
+        <source>Selecciona la privacidad del informe</source>
+      </trans-unit>
+      <trans-unit id="defaultValueLabel">
+        <source>Valor por defecto</source>
+      </trans-unit>
+      <trans-unit id="filteredItems">
+        <source>elementos disponibles</source>
+      </trans-unit>
+      <trans-unit id="noItemsAvailable">
+        <source>No hay elementos disponibles</source>
+      </trans-unit>
+      <trans-unit id="itemsSelected1">
+        <source>Seleccionados</source>
+      </trans-unit>
+      <trans-unit id="cleanEverything">
+        <source>Limpiar todo</source>
+      </trans-unit>
+      <trans-unit id="cleanConnections">
+        <source>Limpiar </source>
+      </trans-unit>
+      <trans-unit id="connections">
+        <source>conexiones </source>
+      </trans-unit>
+      <trans-unit id="panelFilters">
+        <source>Filtros del panel </source>
+      </trans-unit>
+      <trans-unit id="updateProfilePic">
+        <source>Actualizar foto</source>
+      </trans-unit>
+      <trans-unit id="uploadingProfilePic">
+        <source>Subiendo...</source>
+      </trans-unit>
+      <trans-unit id="attachNewImage">
+        <source>Debe adjuntar una nueva imagen </source>
+      </trans-unit>
+      <trans-unit id="selectRecipients">
+        <source>Selecciona los destinatarios *</source>
+      </trans-unit>
+      <trans-unit id="noContentToExport">
+        <source>No tienes contenido para exportar</source>
+      </trans-unit>
+      <trans-unit id="REPORTCloned">
+        <source>Informe clonado correctamente</source>
+      </trans-unit>
+      <trans-unit id="InvalidServerResponse">
+        <source>Respuesta inválida del servidor</source>
+      </trans-unit>
+      <trans-unit id="CouldNotCloneReport">
+        <source>No se pudo clonar el informe. Por favor, inténtalo de nuevo.</source>
+      </trans-unit>
+      <trans-unit id="searchEntities">
+        <source>Buscar entidades...</source>
+      </trans-unit>
+      <trans-unit id="searchAttributes">
+        <source>Buscar atributos...</source>
+      </trans-unit>
+      <trans-unit id="groupSelect">
+        <source>Selecciona...</source>
+      </trans-unit>
+      <trans-unit id="selectedUsers">
+        <source>Usuarios seleccionados</source>
+      </trans-unit>
+      <trans-unit id="availableUsers">
+        <source>Usuarios disponibles</source>
+      </trans-unit>
+      <trans-unit id="copyPublicURL">
+        <source>copiar URL pública</source>
+      </trans-unit>
+      <trans-unit id="importPanelsTitle">
+        <source>Importar paneles</source>
+      </trans-unit>
+      <trans-unit id="selectPanels">
+        <source>Selecciona los paneles</source>
+      </trans-unit>
+      <trans-unit id="searchPanels">
+        <source>Buscar paneles...</source>
+      </trans-unit>
+      <trans-unit id="dashboardExportedSuccessfully">
+        <source>Dashboard exportado correctamente</source>
+      </trans-unit>
+      <trans-unit id="selectDashboardToExport">
+        <source>Por favor selecciona un dashboard para exportar</source>
+      </trans-unit>
+      <trans-unit id="problemExportingModel">
+        <source>Ocurrió un problema al exportar el modelo</source>
+      </trans-unit>
+      <trans-unit id="modelExportedSucessfully">
+        <source>Modelo exportado correctamente</source>
+      </trans-unit>
+      <trans-unit id="selectModelToExport">
+        <source>Por favor selecciona un modelo para exportar</source>
+      </trans-unit>
+      <trans-unit id="dashboardUpdatedSuccessfully">
+        <source>Dashboard actualizado correctamente</source>
+      </trans-unit>
+      <trans-unit id="dashboardCreatedSuccessfully">
+        <source>Dashboard creado correctamente</source>
+      </trans-unit>
+      <trans-unit id="notPossibleImportDashboard">
+        <source>No se pudo importar el dashboard</source>
+      </trans-unit>
+      <trans-unit id="noValidJsonFormat">
+        <source>El archivo no tiene un formato JSON válido:</source>
+      </trans-unit>
+      <trans-unit id="notPossibleReadFile">
+        <source>No se pudo leer el archivo seleccionado</source>
+      </trans-unit>
+      <trans-unit id="noCorrectJsonFormat">
+        <source>El archivo no tiene un formato JSON válido</source>
+      </trans-unit>
+      <trans-unit id="errorImportModel">
+        <source>Ha ocurrido un error al importar el modelo</source>
+      </trans-unit>
+      <trans-unit id="modelImportedSuccessfully">
+        <source>Modelo importado correctamente</source>
+      </trans-unit>
+      <trans-unit id="errorVerifyingModelIntegrity">
+        <source>Error al verificar integridad del modelo</source>
+      </trans-unit>
+      <trans-unit id="fillRequiredFields">
+        <source>Recuerde llenar los campos obligatorios</source>
+      </trans-unit>
+      <trans-unit id="connectedWithServer">
+        <source>Conectado con el servidor</source>
+      </trans-unit>
+      <trans-unit id="differentFiltersCannotBeConnected">
+        <source>No se pueden vincular filtros de tipos distintos.</source>
+      </trans-unit>
+      <trans-unit id="scrollError">
+        <source>Error haciendo scroll</source>
+      </trans-unit>
+      <trans-unit id="viewEditionTitle">
+        <source>Edición de la Vista</source>
+      </trans-unit>
+      <trans-unit id="viewEditionDescription">
+        <source>La edición de la vista permite modificar únicamente la consulta (query), pero no debe cambiar los nombres de las columnas.</source>
+      </trans-unit>
+      <trans-unit id="columnDashboard">
+        <source>Columna</source>
+      </trans-unit>
+      <trans-unit id="fieldDashboardDashboard">
+        <source>Panel</source>
+      </trans-unit>
+      <trans-unit id="joins">
+        <source>Tipo de intersección</source>
+      </trans-unit>
+      <trans-unit id="joins1" datatype="html">
+        <source>La funcionalidad de <ph id="0"/>Intersección de Joins<ph id="1"/> permite definir cómo se relacionan las tablas de tu consulta mediante <ph id="2"/>LEFT<ph id="3"/>, <ph id="4"/>INNER<ph id="5"/> o <ph id="6"/>RIGHT JOIN<ph id="7"/>. Esto te da control sobre qué registros se incluyen en el resultado, dependiendo de la presencia o ausencia de coincidencias entre las tablas.</source>
+      </trans-unit>
+      <trans-unit id="joins3">
+        <source>Solo es posible hacer joins entre tablas definidas dentro del modelo o consulta actual.</source>
+      </trans-unit>
+      <trans-unit id="whatif1" datatype="html">
+        <source>La funcionalidad <ph id="0"/>What If<ph id="1"/> te permite crear atributos nuevos a partir de otros atributos en tu gráfico. A estos nuevos campos se les puede aplicar una operación matemática para modificar su valor según tus necesidades, y también es posible cambiarles el nombre para identificarlos fácilmente.</source>
+      </trans-unit>
+      <trans-unit id="whatif3">
+        <source>Solo es posible crear nuevos atributos basados en los atributos existentes en el gráfico.</source>
+      </trans-unit>
+      <trans-unit id="whatif4">
+        <source>Esta opción solo está disponible con atributos de tipo numérico.</source>
+      </trans-unit>
+      <trans-unit id="filtrosAvanzados">
+        <source>Filtros avanzados</source>
+      </trans-unit>
+      <trans-unit id="filtrosAvanzados1" datatype="html">
+        <source>La funcionalidad <ph id="0"/>Filtros Avanzados<ph id="1"/> permite relacionar los filtros globales y de panel utilizando operadores <ph id="2"/>AND<ph id="3"/> o <ph id="4"/>OR<ph id="5"/>. Esto posibilita que los filtros no solo se apliquen como un conjunto fijo de condiciones, sino que puedan interoperar entre sí según la relación definida.</source>
+      </trans-unit>
+      <trans-unit id="filtrosAvanzados3">
+        <source>Solo es posible usar filtros definidos dentro del dashboard actual.</source>
+      </trans-unit>
+      <trans-unit id="dashboardSidebarDependentFilters">
+        <source>Filtros dependientes</source>
+      </trans-unit>
+      <trans-unit id="dependentFiltersTitle">
+        <source>Configuración de filtros dependientes</source>
+      </trans-unit>
+      <trans-unit id="preparingDependentFilters">
+        <source> filtros globales para la configuracion de los filtros dependientes: </source>
+      </trans-unit>
+      <trans-unit id="autocompleteFilter">
+        <source>¿Filtro autocomplete?</source>
+      </trans-unit>
+      <trans-unit id="globalFiltersToDF">
+        <source>Debe disponer de filtros globales para poder avanzar con la configuración de los filtros dependientes.</source>
+      </trans-unit>
+      <trans-unit id="newFilterAddToDF">
+        <source>Se agregó un nuevo filtro a la relación de filtros dependientes</source>
+      </trans-unit>
+      <trans-unit id="DFSettingsRestarted">
+        <source>Se ha reiniciado la configuración de los filtros dependientes</source>
+      </trans-unit>
+      <trans-unit id="showField">
+        <source>Mostrar campo de origen</source>
+      </trans-unit>
+      <trans-unit id="correctGeoJsonFormat">
+        <source>El archivo tiene un formato GeoJson válido.</source>
+      </trans-unit>
+      <trans-unit id="wrongGeoJsonFormat">
+        <source>El archivo no tiene un formato GeoJson válido.</source>
+      </trans-unit>
+      <trans-unit id="AddMandatoryFilters">
+        <source>Los siguientes filtros son obligatorios y no tienen valor asignado:</source>
+      </trans-unit>
+      <trans-unit id="panelOptionsMapFilters">
+        <source>Mapear filtros</source>
+      </trans-unit>
+      <trans-unit id="dataExportImport">
+        <source>Data Export/Import</source>
+      </trans-unit>
+      <trans-unit id="AllTagsDescription">
+        <source>Acceso a todos los elementos sin restricciones</source>
+      </trans-unit>
+      <trans-unit id="NoneTagsDescription">
+        <source>No se muestra ningún elemento para este usuario/grupo</source>
+      </trans-unit>
+      <trans-unit id="DynamicTagsDescription">
+        <source>Filtrado avanzado mediante una consulta personalizada</source>
+      </trans-unit>
+      <trans-unit id="placeholderConsultaDinamica">
+        <source>Introduzca la expresión dinámica…</source>
+      </trans-unit>
+      <trans-unit id="showLinesPrediction">
+        <source>Mostrar Predicción</source>
+      </trans-unit>
+      <trans-unit id="removePrediction">
+        <source>Quitar Predicción</source>
+      </trans-unit>
+      <trans-unit id="Prediction">
+        <source>Predicción</source>
+      </trans-unit>
+      <trans-unit id="TabsPanelConfig">
+        <source>CONFIGURACION DE PESTAÑAS</source>
+      </trans-unit>
+      <trans-unit id="TabsPanelConfig2">
+        <source>Configuración de pestañas</source>
+      </trans-unit>
+      <trans-unit id="tabsDashboardSettings">
+        <source>Configura las pestañas para mostrar dashboards</source>
+      </trans-unit>
+      <trans-unit id="filterByPrivacy">
+        <source>Filtrar por Privacidad</source>
+      </trans-unit>
+      <trans-unit id="filterByTags">
+        <source>Filtrar por Tags</source>
+      </trans-unit>
+      <trans-unit id="selectEditTabs">
+        <source>Seleccionar...</source>
+      </trans-unit>
+      <trans-unit id="searchTag">
+        <source>Buscar tag...</source>
+      </trans-unit>
+      <trans-unit id="dashboardsSelected">
+        <source>Dashboards seleccionados</source>
+      </trans-unit>
+      <trans-unit id="dashboardsAvailable">
+        <source>Dashboards disponibles</source>
+      </trans-unit>
+      <trans-unit id="filterSearchDashboards">
+        <source>Usa los filtros para buscar dashboards</source>
+      </trans-unit>
+      <trans-unit id="noCoincidenceDashFilters">
+        <source>No hay dashboards que coincidan con los filtros</source>
+      </trans-unit>
+      <trans-unit id="addDashListAvailable">
+        <source>Añade dashboards desde la lista de disponibles</source>
+      </trans-unit>
+      <trans-unit id="filterOptions">
+        <source>Opciones del filtro:</source>
+      </trans-unit>
+      <trans-unit id="ModelRestrictionAccess">
+        <source>Modelo con acceso restringido</source>
+      </trans-unit>
+      <trans-unit id="ModelRestrictionAccessMessageOption">
+        <source>Desactivar para habilitar el acceso a todos los usuarios</source>
+      </trans-unit>
+      <trans-unit id="ModelActivationAccess">
+        <source>Modelo con acceso para todos los usuarios</source>
+      </trans-unit>
+      <trans-unit id="ModelActivationAccessMessageOption">
+        <source>Activar para limitar el acceso solo a usuarios o grupos autorizados</source>
+      </trans-unit>
+      <trans-unit id="tableRestrictionAccess">
+        <source>Los usuarios y grupos configurados tendrán acceso autorizado a la tabla: </source>
+      </trans-unit>
+      <trans-unit id="tableActivationAccess">
+        <source>Los usuarios y grupos configurados NO tendrán acceso a la tabla: </source>
+      </trans-unit>
+      <trans-unit id="tableActivationAccessMessageOption">
+        <source>Activar para habilitar un acceso restringido</source>
+      </trans-unit>
+      <trans-unit id="decimalNumberText">
+        <source>Número de decimales</source>
+      </trans-unit>
+      <trans-unit id="CheckExpression">
+        <source>Comprobar expresión</source>
+      </trans-unit>
+      <trans-unit id="DatePickerToday">
+        <source>Hoy</source>
+      </trans-unit>
+      <trans-unit id="DatePickerMonthFull">
+        <source>Este mes completo</source>
+      </trans-unit>
+      <trans-unit id="panelOptionsExportTo">
+        <source>Exportar a </source>
+      </trans-unit>
+      <trans-unit id="DatePickerYearFull">
+        <source>Este año al completo</source>
+      </trans-unit>
+      <trans-unit id="DatePickerNextMonth">
+        <source>Próximo mes</source>
+      </trans-unit>
+      <trans-unit id="DatePickerNextWeek">
+        <source>Próxima semana</source>
+      </trans-unit>
+      <trans-unit id="DatePickerNext30">
+        <source>Próximos 30 días</source>
+      </trans-unit>
+      <trans-unit id="DatePickerNext60">
+        <source>Próximos 60 días</source>
+      </trans-unit>
+      <trans-unit id="DatePickerNext90">
+        <source>Próximos 90 días</source>
+      </trans-unit>
+      <trans-unit id="DatePickerNextQuarter">
+        <source>Próximo trimestre</source>
+      </trans-unit>
+      <trans-unit id="DatePickerNextYear">
+        <source>Próximo año</source>
+      </trans-unit>
+      <trans-unit id="DatePickerYesterday">
+        <source>Ayer</source>
+      </trans-unit>
+      <trans-unit id="DatePickerTomorrow">
+        <source>Mañana</source>
+      </trans-unit>
+      <trans-unit id="DatePickerPastTomorrow">
+        <source>Pasado mañana</source>
+      </trans-unit>
+      <trans-unit id="DatePickerLastQuarter">
+        <source>Último trimestre</source>
+      </trans-unit>
+      <trans-unit id="DatePickerThisQuarter">
+        <source>Este trimestre</source>
+      </trans-unit>
+      <trans-unit id="DatePickerNext3">
+        <source>Próximos 3 días</source>
+      </trans-unit>
+      <trans-unit id="DatePickerNext7">
+        <source>Próximos 7 días</source>
+      </trans-unit>
+      <trans-unit id="DatePickerNext15">
+        <source>Próximos 15 días</source>
+      </trans-unit>
+      <trans-unit id="DatePickerLast90">
+        <source>Últimos 90 días</source>
+      </trans-unit>
+      <trans-unit id="DatePickerNext120">
+        <source>Próximos 120 días</source>
+      </trans-unit>
+      <trans-unit id="DatePickerNext365">
+        <source>Próximos 365 días</source>
+      </trans-unit>
+      <trans-unit id="DatePickerAll">
+        <source>Todas</source>
+      </trans-unit>
+      <trans-unit id="DatePickerBeforeTodayIncluded">
+        <source>Todo hasta hoy</source>
+      </trans-unit>
+      <trans-unit id="noNameProvided">
+        <source>Debe proporcionar un nombre para el datasource</source>
+      </trans-unit>
+      <trans-unit id="noCsvData">
+        <source>Debe cargar un archivo CSV primero</source>
+      </trans-unit>
+      <trans-unit id="noCsvColumns">
+        <source>No se detectaron columnas en el archivo CSV. Verifique el separador.</source>
+      </trans-unit>
+      <trans-unit id="emptyCsvFile">
+        <source>El archivo CSV está vacío o no se pudo leer con este separador</source>
+      </trans-unit>
+      <trans-unit id="emptyCsvFile2">
+        <source>El archivo CSV está vacío o no se pudo leer</source>
+      </trans-unit>
+      <trans-unit id="errorParseCsv">
+        <source>Error al parsear el archivo CSV con el separador especificado</source>
+      </trans-unit>
+      <trans-unit id="errorParseCsv2">
+        <source>Error al parsear el archivo CSV. Verifica el separador.</source>
+      </trans-unit>
+      <trans-unit id="errorParseCsv3">
+        <source>Error al parsear el archivo CSV. Verifique el separador y formato del archivo.</source>
+      </trans-unit>
+      <trans-unit id="dashboardSidebarNewTabs">
+        <source>Nuevo navegador</source>
+      </trans-unit>
+      <trans-unit id="anyCanSeeNoTable">
+        <source>Define quién puede acceder y ver esta tabla. Solo los usuarios y grupos explícitamente autorizados tendrán
+          acceso.</source>
+      </trans-unit>
+      <trans-unit id="anyCanSeeYesTable">
+        <source>Cualquier usuario puede ver la tabla.
+          Los filtros de seguridad se definen a nivel de tabla y columna concreta.</source>
+      </trans-unit>
+      <trans-unit id="showLines">
+        <source>Mostrar Líneas de Puntos</source>
+      </trans-unit>
+      <trans-unit id="chartLabelLineOptionDescription">
+        <source>Muestra líneas conectando los puntos</source>
+      </trans-unit>
+      <trans-unit id="chartLabelLinePredictionOptionDescription">
+        <source>Muestra la predicción de la serie</source>
+      </trans-unit>
+      <trans-unit id="gradientTab">
+        <source>Colores por intervalo</source>
+      </trans-unit>
+      <trans-unit id="semaphoreTab">
+        <source>Código semafórico</source>
+      </trans-unit>
+      <trans-unit id="aboveThreshold">
+        <source>es mayor que:</source>
+      </trans-unit>
+      <trans-unit id="betweenThresholds">
+        <source>mayor que:</source>
+      </trans-unit>
+      <trans-unit id="betweenThresholds2">
+        <source>y menor que</source>
+      </trans-unit>
+      <trans-unit id="belowThreshold">
+        <source>es menor que:</source>
+      </trans-unit>
+      <trans-unit id="gradientMin">
+        <source>Min</source>
+      </trans-unit>
+      <trans-unit id="gradientMax">
+        <source>Max</source>
+      </trans-unit>
+      <trans-unit id="mandatoryFilter">
+        <source>¿Filtro obligatorio?</source>
+      </trans-unit>
+      <trans-unit id="email">
+        <source>Correo</source>
+      </trans-unit>
+      <trans-unit id="nextStepBtn">
+        <source>Siguiente paso</source>
+      </trans-unit>
+      <trans-unit id="predictionDialogTitle">
+        <source>Configuración de Predicción</source>
+      </trans-unit>
+      <trans-unit id="predictionMethodLabel">
+        <source>Método de predicción</source>
+      </trans-unit>
+      <trans-unit id="predictionMethodNone">
+        <source>-- Selecciona el método de predicción --</source>
+      </trans-unit>
+      <trans-unit id="predictionStepsLabel">
+        <source>Pasos a predecir</source>
+      </trans-unit>
+      <trans-unit id="predictionStepsDesc">
+        <source>Número de periodos futuros a predecir</source>
+      </trans-unit>
+      <trans-unit id="tfTargetColumnLabel">
+        <source>Columna a predecir</source>
+      </trans-unit>
+      <trans-unit id="tfTargetColumnDesc">
+        <source>Las demás columnas numéricas se usarán automáticamente como variables de referencia</source>
+      </trans-unit>
+      <trans-unit id="arimaTargetColumnDesc">
+        <source>Columna numérica a predecir</source>
+      </trans-unit>
+      <trans-unit id="advancedConfigDesc">
+        <source>Personalizar los parámetros del modelo</source>
+      </trans-unit>
+      <trans-unit id="arimaVariablesTitle">
+        <source>Variables ARIMA</source>
+      </trans-unit>
+      <trans-unit id="arimaFormula">
+        <source>Formula ARIMA(p, d, q)</source>
+      </trans-unit>
+      <trans-unit id="arimaParamPTooltip">
+        <source>Número de términos autoregresivos. Indica cuántos valores pasados de la serie influyen en el valor actual.</source>
+      </trans-unit>
+      <trans-unit id="arimaParamDTooltip">
+        <source>Número de veces que se diferencia la serie para hacerla estacionaria. Normalmente 0, 1 o 2.</source>
+      </trans-unit>
+      <trans-unit id="arimaParamQTooltip">
+        <source>Número de términos de media móvil. Indica cuántos errores pasados influyen en el valor actual.</source>
+      </trans-unit>
+      <trans-unit id="tensorflowVariablesTitle">
+        <source>Variables TensorFlow (LSTM)</source>
+      </trans-unit>
+      <trans-unit id="tfEpochsLabel">
+        <source>Épocas</source>
+      </trans-unit>
+      <trans-unit id="tfEpochsTooltip">
+        <source>Número de veces que el modelo recorre el conjunto de datos completo durante el entrenamiento. Más épocas pueden mejorar la precisión pero aumentan el tiempo de entrenamiento.</source>
+      </trans-unit>
+      <trans-unit id="tfLookbackLabel">
+        <source>Lookback</source>
+      </trans-unit>
+      <trans-unit id="tfLookbackTooltip">
+        <source>Número de pasos de tiempo pasados que el modelo usa como entrada para predecir el siguiente valor. Un valor mayor captura más contexto histórico.</source>
+      </trans-unit>
+      <trans-unit id="tfLrLabel">
+        <source>Learning rate</source>
+      </trans-unit>
+      <trans-unit id="tfLrTooltip">
+        <source>Velocidad a la que el modelo actualiza sus pesos durante el entrenamiento. Valores pequeños son más estables pero aprenden más lento; valores grandes aprenden rápido pero pueden ser inestables.</source>
+      </trans-unit>
+      <trans-unit id="predictionConfigDescription">
+        <source>Se ejecutará la consulta con la predicción seleccionada y se guardarán los cambios.</source>
+      </trans-unit>
+      <trans-unit id="askTheAIText">
+        <source>Consulta con la IA</source>
+      </trans-unit>
+      <trans-unit id="filterSummary">
+        <source>Resumen de filtros</source>
+      </trans-unit>
+      <trans-unit id="filterSummarySingular">
+        <source>Resumen de filtro</source>
+      </trans-unit>
+      <trans-unit id="globalFilterSelectedItemsLabel">
+        <source>elementos seleccionados</source>
+      </trans-unit>
+      <trans-unit id="copyPublicLinkTooltip">
+        <source>Copiar enlace público</source>
+      </trans-unit>
+      <trans-unit id="copyPublicLinkSuccessText">
+        <source>El enlace público ha sido copiado al portapapeles.</source>
+      </trans-unit>
+      <trans-unit id="renameReportTooltip">
+        <source>Editar nombre</source>
+      </trans-unit>
+      <trans-unit id="confirmRenameTooltip">
+        <source>Confirmar nombre</source>
+      </trans-unit>
+      <trans-unit id="duplicateReportTooltip">
+        <source>Duplicar informe</source>
+      </trans-unit>
+      <trans-unit id="deleteReportTooltip">
+        <source>Eliminar informe</source>
+      </trans-unit>
+      <trans-unit id="authorTooltipLabel">
+        <source>Autor:</source>
+      </trans-unit>
+      <trans-unit id="createdAtTooltipLabel">
+        <source>Creado:</source>
+      </trans-unit>
+      <trans-unit id="modifiedAtTooltipLabel">
+        <source>Modificado:</source>
+      </trans-unit>
+      <trans-unit id="emailAlreadyExistsTitle">
+        <source>Email en uso</source>
+      </trans-unit>
+      <trans-unit id="emailAlreadyExistsMsg">
+        <source>Ya existe un usuario con este correo electrónico.</source>
+      </trans-unit>
+      <trans-unit id="assistantTitle">
+        <source>Pregunta en lenguaje natural: </source>
+      </trans-unit>
+      <trans-unit id="assistantSubtitle">
+        <source>Construye tu consulta en lenguaje natural</source>
+      </trans-unit>
+      <trans-unit id="AIManagement">
+        <source>Gestión del asistente</source>
+      </trans-unit>
+      <trans-unit id="aggregationText">
+        <source>Agregación</source>
+      </trans-unit>
+      <trans-unit id="customHtmlSaved">
+        <source>HTML personalizado guardado correctamente.</source>
+      </trans-unit>
+      <trans-unit id="advancedFilterTitle">
+        <source>Filtro avanzado</source>
+      </trans-unit>
+      <trans-unit id="clearFiltersBtn">
+        <source>Limpiar</source>
+      </trans-unit>
+      <trans-unit id="authorFilterLabel">
+        <source>Propietario</source>
+      </trans-unit>
+      <trans-unit id="authorFilterPlaceholder">
+        <source>Autor...</source>
+      </trans-unit>
+      <trans-unit id="datasourceFilterLabel">
+        <source>Datasource</source>
+      </trans-unit>
+      <trans-unit id="datasourceFilterPlaceholder">
+        <source>postgres, mysql...</source>
+      </trans-unit>
+      <trans-unit id="createdFilterLabel">
+        <source>Creado en</source>
+      </trans-unit>
+      <trans-unit id="modifiedFilterLabel">
+        <source>Modificado en</source>
+      </trans-unit>
+      <trans-unit id="tagsFilterLabel">
+        <source>Tags</source>
+      </trans-unit>
+      <trans-unit id="tagsFilterPlaceholder">
+        <source>Selecciona tags...</source>
+      </trans-unit>
+      <trans-unit id="hechoCon">
+        <source> HECHO CON </source>
+      </trans-unit>
+      <trans-unit id="adminPortal">
+        <source>Portal de datos</source>
+      </trans-unit>
+      <trans-unit id="inputDescripcionModelo">
+        <source>Descripción</source>
+      </trans-unit>
+      <trans-unit id="placeholderDescripcionModelo">
+        <source>Describe el propósito y contenido de este modelo de datos...</source>
+      </trans-unit>
+      <trans-unit id="mcpVisibilityLabel">
+        <source>Visibilidad MCP</source>
+      </trans-unit>
+      <trans-unit id="mcpVisibilityTooltipTableModel">
+        <source>Controla si el agente de IA tiene acceso a esta información: Full permite acceso completo, None lo excluye totalmente.</source>
+      </trans-unit>
+      <trans-unit id="mcpVisibilityTooltipCol">
+        <source>Controla si el agente de IA tiene acceso a esta información: Full permite acceso completo, Declaration expone solo nombre y tipo, None lo excluye totalmente.</source>
+      </trans-unit>
+      <trans-unit id="dynamicFiltersText">
+        <source>Filtros dinámicos</source>
+      </trans-unit>
+      <trans-unit id="uniqueRecordsGrouping">
+        <source>Registros únicos (agrupación)?</source>
+      </trans-unit>
+      <trans-unit id="tableDescriptionDependentFilter">
+        <source>Tabla:</source>
+      </trans-unit>
+      <trans-unit id="columnDescriptionDependentFilter">
+        <source>Columna:</source>
+      </trans-unit>
+      <trans-unit id="noAttributeShouldHaveAggregation">
+        <source>Ningún Atributo debe tener agregación</source>
+      </trans-unit>
+      <trans-unit id="mustConfigureAtLeastOneAttribute">
+        <source>Debe configurar un atributo como mínimo para habilitar esta opción</source>
+      </trans-unit>
+      <trans-unit id="mustAddTheGroupingsToRunWithAggregations">
+        <source>Debe activar las agrupaciones para ejecutar con agregaciones configuradas en los atributos</source>
+      </trans-unit>
+      <trans-unit id="chatAssistantTitle">
+        <source>Asistente Edalitics</source>
+      </trans-unit>
+      <trans-unit id="chatAssistantSubtitle">
+        <source>Asistente IA para facilitar tu trabajo</source>
+      </trans-unit>
+      <trans-unit id="chatCloseBtn">
+        <source>Cerrar</source>
+      </trans-unit>
+      <trans-unit id="chatEmptyTitle">
+        <source>¿En qué puedo ayudarte?</source>
+      </trans-unit>
+      <trans-unit id="chatEmptySubtitle">
+        <source>Consulta dashboards, datasources y datos</source>
+      </trans-unit>
+      <trans-unit id="chatSuggestion2">
+        <source>¿Qué fuentes de datos hay?</source>
+      </trans-unit>
+      <trans-unit id="chatSuggestion4">
+        <source>¿Qué informes tengo disponibles?</source>
+      </trans-unit>
+      <trans-unit id="chatInputPlaceholder">
+        <source>Escribe un mensaje...</source>
+      </trans-unit>
+      <trans-unit id="chatFabTitle">
+        <source>Asistente IA</source>
+      </trans-unit>
+      <trans-unit id="saveAsModel">
+        <source>Guardar como, para el modelo de datos</source>
+      </trans-unit>
+      <trans-unit id="chatOptionSelectedLabel">
+        <source>Opción</source>
+      </trans-unit>
+      <trans-unit id="chatErrorConnecting">
+        <source>Error al conectar con el asistente.</source>
+      </trans-unit>
+      <trans-unit id="chatFallbackYes">
+        <source>Sí</source>
+      </trans-unit>
+      <trans-unit id="chatFallbackSearchIn">
+        <source>Buscar en...</source>
+      </trans-unit>
+      <trans-unit id="chatFallbackSearchInPrefix">
+        <source>Buscar en: </source>
+      </trans-unit>
+      <trans-unit id="analyzingTheScheme">
+        <source>Analizando el esquema</source>
+      </trans-unit>
+      <trans-unit id="aiManagementTitle">
+        <source>Gestión de IA</source>
+      </trans-unit>
+      <trans-unit id="aiManagementSubtitle">
+        <source>Configura los parámetros del asistente de inteligencia artificial</source>
+      </trans-unit>
+      <trans-unit id="aiProvider">
+        <source>PROVEEDOR</source>
+      </trans-unit>
+      <trans-unit id="aiApiKey">
+        <source>API KEY</source>
+      </trans-unit>
+      <trans-unit id="aiAwsAccessKey">
+        <source>CLAVE DE ACCESO DE AWS</source>
+      </trans-unit>
+      <trans-unit id="aiAwsRegion">
+        <source>REGIÓN DE AWS</source>
+      </trans-unit>
+      <trans-unit id="aiAwsSecretKey">
+        <source>CLAVE SECRETA DE AWS</source>
+      </trans-unit>
+      <trans-unit id="aiModel">
+        <source>MODELO DE IA</source>
+      </trans-unit>
+      <trans-unit id="aiContext">
+        <source>CONTEXTO</source>
+      </trans-unit>
+      <trans-unit id="aiEDAApp">
+        <source>EDA APP URL</source>
+      </trans-unit>
+      <trans-unit id="aiMCPURL">
+        <source>MCP URL</source>
+      </trans-unit>
+      <trans-unit id="aiLimit">
+        <source>LÍMITE</source>
+      </trans-unit>
+      <trans-unit id="aiAvailable">
+        <source>DISPONIBLE</source>
+      </trans-unit>
+      <trans-unit id="navegableFrom">
+        <source>Navegable desde</source>
+      </trans-unit>
+      <trans-unit id="noParentAttributes">
+        <source>Añade más atributos para activar la navegación</source>
+      </trans-unit>
+      <trans-unit id="noParentText">
+        <source>Sin padre</source>
+      </trans-unit>
+      <trans-unit id="noDataAvailable">
+        <source>Sin datos disponibles</source>
+      </trans-unit>
+      <trans-unit id="noDataChatMessage">
+        <source>Para utilizar este chat necesitas tener un panel con datos seleccionado.</source>
+      </trans-unit>
+      <trans-unit id="copyToClipboard">
+        <source>Copiar</source>
+      </trans-unit>
+      <trans-unit id="askEdaliticsPrefix">
+        <source>Pregúntale a </source>
+      </trans-unit>
+      <trans-unit id="askEdaliticsSubtitle">
+        <source>Análisis de datos con IA</source>
+      </trans-unit>
+      <trans-unit id="volver">
+        <source>Volver</source>
+      </trans-unit>
+      <trans-unit id="navegar">
+        <source>Navegar</source>
+      </trans-unit>
+      <trans-unit id="resultSortingText">
+        <source>Ordenar los resultados por:</source>
+      </trans-unit>
+      <trans-unit id="noDuckDbFile">
+        <source>Debe cargar un archivo CSV primero</source>
+      </trans-unit>
+      <trans-unit id="noFolderName">
+        <source>Debe proporcionar el nombre de la carpeta</source>
+      </trans-unit>
+      <trans-unit id="duckdbCreated">
+        <source>Fuente de datos DuckDB creada correctamente</source>
+      </trans-unit>
+      <trans-unit id="errorParseDuckDb">
+        <source>Error al parsear el archivo CSV. Verifica el separador.</source>
+      </trans-unit>
+      <trans-unit id="duckdbFolderLabel">
+        <source>Carpeta padre</source>
+      </trans-unit>
+      <trans-unit id="duckdbFolderPlaceholder">
+        <source>nombre_carpeta_nueva</source>
+      </trans-unit>
+      <trans-unit id="duckdbAddAnotherCsv">
+        <source>Añadir otro CSV</source>
+      </trans-unit>
+      <trans-unit id="duckdbCsvListTitle" datatype="html">
+        <source>CSVs en la carpeta (<x id="INTERPOLATION" equiv-text="{{ duckdbCsvList.length }}"/>):</source>
+      </trans-unit>
+      <trans-unit id="duckdbCsvColumns" datatype="html">
+        <source>(<x id="INTERPOLATION" equiv-text="{{ csv.columnsConfig.length }}"/> columnas)</source>
+      </trans-unit>
+      <trans-unit id="odooUrlLabel" datatype="html">
+        <source>URL de Odoo <x id="START_TAG_SPAN" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" equiv-text="&lt;/span&gt;"/></source>
+      </trans-unit>
+      <trans-unit id="odooInfoMessage">
+        <source>Al confirmar se descargarán las facturas, líneas, clientes, productos y vendedores de Odoo y se crearán como tablas en un datasource DuckDB. La descarga puede tardar unos segundos dependiendo del volumen de datos.</source>
+      </trans-unit>
+      <trans-unit id="odooCreated">
+        <source>Fuente de datos Odoo creada correctamente</source>
+      </trans-unit>
+      <trans-unit id="ga4PropertyIdLabel">
+        <source>ID de Propiedad GA4</source>
+      </trans-unit>
+      <trans-unit id="ga4PropertyIdHint">
+        <source>Puedes encontrarlo en Google Analytics → Administrar → Información de la propiedad</source>
+      </trans-unit>
+      <trans-unit id="ga4FolderNameLabel">
+        <source>Nombre de carpeta</source>
+      </trans-unit>
+      <trans-unit id="ga4FolderNameHint">
+        <source>Se creará la carpeta duckdb/&lt;nombre&gt;/ con los CSV de métricas</source>
+      </trans-unit>
+      <trans-unit id="ga4FolderPlaceholder">
+        <source>ga4_miempresa</source>
+      </trans-unit>
+      <trans-unit id="ga4AuthLabel">
+        <source>Autorización de Google Analytics</source>
+      </trans-unit>
+      <trans-unit id="ga4AuthButton">
+        <source>Autorizar con Google Analytics</source>
+      </trans-unit>
+      <trans-unit id="ga4AuthWaiting">
+        <source>Esperando autorización en la ventana emergente...</source>
+      </trans-unit>
+      <trans-unit id="ga4AuthSuccess">
+        <source>Cuenta de Google Analytics autorizada correctamente</source>
+      </trans-unit>
+      <trans-unit id="ga4AuthRevoke">
+        <source>Cambiar cuenta</source>
+      </trans-unit>
+      <trans-unit id="ga4AuthError">
+        <source>Error durante la autorización. Inténtalo de nuevo.</source>
+      </trans-unit>
+      <trans-unit id="ga4InfoMessage">
+        <source>Al confirmar se descargarán los datos de los últimos 365 días de Google Analytics 4: sesiones por canal, páginas vistas, eventos, dispositivos y datos geográficos. La descarga puede tardar según el volumen de datos de la propiedad.</source>
+      </trans-unit>
+      <trans-unit id="ga4Created">
+        <source>Fuente de datos Google Analytics 4 creada correctamente</source>
+      </trans-unit>
+      <trans-unit id="ga4PropertyIdRequired">
+        <source>Debe indicar el ID de propiedad de Google Analytics 4</source>
+      </trans-unit>
+      <trans-unit id="ga4AuthRequired">
+        <source>Debes autorizar el acceso a Google Analytics primero</source>
+      </trans-unit>
+      <trans-unit id="holdedFolderLabel" datatype="html">
+        <source>Nombre de carpeta <x id="START_TAG_SPAN" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" equiv-text="&lt;/span&gt;"/></source>
+      </trans-unit>
+      <trans-unit id="holdedApiKeyLabel" datatype="html">
+        <source>API Key de Holded <x id="START_TAG_SPAN" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" equiv-text="&lt;/span&gt;"/></source>
+      </trans-unit>
+      <trans-unit id="holdedInfoMessage">
+        <source>Al confirmar se descargarán las facturas, líneas, contactos, productos y asientos contables de Holded y se crearán como tablas en un datasource DuckDB. La descarga puede tardar unos minutos dependiendo del volumen de datos.</source>
+      </trans-unit>
+      <trans-unit id="holdedCreated">
+        <source>Fuente de datos Holded creada correctamente</source>
+      </trans-unit>
+      <trans-unit id="multipleSelectionText">
+        <source>Selección múltiple</source>
+      </trans-unit>
+      <trans-unit id="uniqueSelectionText">
+        <source>Selección única</source>
+      </trans-unit>
+      <trans-unit id="uniqueSelectionDescription">
+        <source>Active esta opción para permitir la selección múltiple.</source>
+      </trans-unit>
+      <trans-unit id="multipleSelectionDescription">
+        <source>Desactive esta opción para permitir la selección única.</source>
+      </trans-unit>
+      <trans-unit id="enablePanelLockButton">
+        <source>Bloquear los paneles</source>
+      </trans-unit>
+      <trans-unit id="disablePanelLockButton">
+        <source>Desbloquear los paneles</source>
+      </trans-unit>
+      <trans-unit id="noAttributes">
+        <source>Sin atributos</source>
+      </trans-unit>
+      <trans-unit id="noFilters">
+        <source>Sin filtros</source>
+      </trans-unit>
+      <trans-unit id="reportName">
+        <source>Nombre del Informe</source>
+      </trans-unit>
+      <trans-unit id="reportType">
+        <source>Tipo</source>
+      </trans-unit>
+      <trans-unit id="reportTags">
+        <source>Etiquetas</source>
+      </trans-unit>
+      <trans-unit id="reportAutor">
+        <source>Autor</source>
+      </trans-unit>
+      <trans-unit id="reportCreatedAt">
+        <source>Fecha creación</source>
+      </trans-unit>
+      <trans-unit id="reportModifiedAt">
+        <source>Fecha modificación</source>
+      </trans-unit>
+      <trans-unit id="reportPrivateEdition">
+        <source>Edición privada</source>
+      </trans-unit>
+      <trans-unit id="ResetZoom">
+        <source>Restablecer (100%)</source>
+      </trans-unit>
+      <trans-unit id="aboutPageTitle">
+        <source>Tutorial</source>
+      </trans-unit>
+      <trans-unit id="LogsActionNewLogin">
+        <source>Login</source>
+      </trans-unit>
+      <trans-unit id="LogsActionDashboardAccessed">
+        <source>Dashboard Accessed</source>
+      </trans-unit>
+      <trans-unit id="LogsActionDashboardCreated">
+        <source>Dashboard Created</source>
+      </trans-unit>
+      <trans-unit id="LogsActionDashboardUpdated">
+        <source>Dashboard Updated</source>
+      </trans-unit>
+      <trans-unit id="LogsActionDashboardRenamed">
+        <source>Dashboard Renamed</source>
+      </trans-unit>
+      <trans-unit id="LogsActionDashboardVisibilityChanged">
+        <source>Dashboard Visibility Changed</source>
+      </trans-unit>
+      <trans-unit id="LogsActionDashboardDeleted">
+        <source>Dashboard Deleted</source>
+      </trans-unit>
+      <trans-unit id="LogsActionPanelQueryFailed">
+        <source>Panel Query Failed</source>
+      </trans-unit>
+      <trans-unit id="LogsActionUserCreated">
+        <source>User Created</source>
+      </trans-unit>
+      <trans-unit id="LogsActionUserUpdated">
+        <source>User Updated</source>
+      </trans-unit>
+      <trans-unit id="LogsActionUserDeleted">
+        <source>User Deleted</source>
+      </trans-unit>
+      <trans-unit id="LogsActionUserRolesChanged">
+        <source>User Roles Changed</source>
+      </trans-unit>
+      <trans-unit id="LogsActionUserPasswordChanged">
+        <source>User Password Changed</source>
+      </trans-unit>
+      <trans-unit id="LogsActionGroupCreated">
+        <source>Group Created</source>
+      </trans-unit>
+      <trans-unit id="LogsActionGroupUpdated">
+        <source>Group Updated</source>
+      </trans-unit>
+      <trans-unit id="LogsActionGroupDeleted">
+        <source>Group Deleted</source>
+      </trans-unit>
+      <trans-unit id="LogsActionGroupMembershipChanged">
+        <source>Group Membership Changed</source>
+      </trans-unit>
+      <trans-unit id="LogsActionUpdateModelStarted">
+        <source>Update Model Started</source>
+      </trans-unit>
+      <trans-unit id="LogsActionUpdateModelUsersAndGroupsSynced">
+        <source>Update Model Users/Groups Synced</source>
+      </trans-unit>
+      <trans-unit id="LogsActionUpdateModelUsersAndGroupsSyncFailed">
+        <source>Update Model Users/Groups Sync Failed</source>
+      </trans-unit>
+      <trans-unit id="LogsActionUpdateModelRolesMapped">
+        <source>Update Model Roles Mapped</source>
+      </trans-unit>
+      <trans-unit id="LogsActionUpdateModelRolesMappingFailed">
+        <source>Update Model Roles Mapping Failed</source>
+      </trans-unit>
+      <trans-unit id="LogsActionUpdateModelDataModelBuilt">
+        <source>Update Model Data Model Built</source>
+      </trans-unit>
+      <trans-unit id="LogsActionUpdateModelDataModelBuildFailed">
+        <source>Update Model Data Model Build Failed</source>
+      </trans-unit>
+      <trans-unit id="LogsActionUpdateModelCompleted">
+        <source>Update Model Completed</source>
+      </trans-unit>
+      <trans-unit id="LogsActionUpdateModelPushFailed">
+        <source>Update Model Push Failed</source>
+      </trans-unit>
+      <trans-unit id="LogsActionUpdateModelFailed">
+        <source>Update Model Failed</source>
+      </trans-unit>
+      <trans-unit id="reportDataSourceName">
+        <source>Fuente de datos</source>
+      </trans-unit>
+    </body>
+  </file>
+</xliff>

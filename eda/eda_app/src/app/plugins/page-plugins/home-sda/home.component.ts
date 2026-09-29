@@ -7,6 +7,7 @@ import { filter } from "rxjs/operators";
 import { AlertService, DashboardService, GroupService, IGroup, SidebarService, StyleProviderService } from "@eda/services/service.index";
 import { CreateDashboardService } from "@eda/services/utils/create-dashboard.service";
 import { IconComponent } from "@eda/shared/components/icon/icon.component";
+import { LanguageSelectorComponent } from "@eda/shared/components/language-selector/language-selector.component";
 import { TooltipModule } from "primeng/tooltip";
 import { DropdownModule, Dropdown } from "primeng/dropdown";
 import Swal from "sweetalert2";
@@ -16,7 +17,7 @@ import { ALLOW_NON_ADMIN_MANAGE_PUBLIC_REPORTS } from "@eda/configs/customizable
 @Component({
   standalone: true,
   selector: "home-sda",
-  imports: [CommonModule, FormsModule, TooltipModule, IconComponent, DropdownModule],
+  imports: [CommonModule, FormsModule, TooltipModule, IconComponent, DropdownModule, LanguageSelectorComponent],
   templateUrl: "./home.component.html",
   styleUrls: ["./home.component.css"]
 })

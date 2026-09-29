@@ -226,6 +226,7 @@ export const SHOW_CUSTOM_ACTION: boolean = true; // true → "Acción personaliz
 export const SHOW_ZOOM_IN_SIDEBAR: boolean = true; // true → zoom control lives inside the dashboard sidebar | false → zoom control lives in the filters bar
 export const USE_EDA_KPI_SIZE_LOGIC: boolean = true; // true → EDA mode: numeric input in the KPI dialog (modifiedFontPoints, additive) | false → SDA mode: +/- buttons on hover over the KPI (fontScale, multiplicative)
 export const PRIVATE_EDITION_ACTIVATED: boolean =  true;
+export const ENABLED_LANGUAGES: string[] = ['es', 'en', 'ca', 'fr', 'pl', 'gl', 'eu']; // Locale codes shown in the language selector. Each one must have a matching build in angular.json's i18n.locales (or be the sourceLocale) — this flag only controls what's offered in the UI, it doesn't build/remove locales.
 
 /** Feature flags - data-source page */
 /** Data model - General configuration*/
