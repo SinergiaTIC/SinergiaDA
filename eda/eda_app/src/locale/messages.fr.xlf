@@ -6563,8 +6563,8 @@ Une fois configurée, vous pouvez l'activer à tout moment à partir du bouton.<
         <target>Filtres dynamiques</target>
       </trans-unit>
       <trans-unit id="uniqueRecordsGrouping" datatype="html">
-        <source>Registros únicos (agrupación)?</source>
-        <target>Enregistrements uniques (regroupement)?</target>
+        <source>Registros únicos (agrupación)</source>
+        <target>Enregistrements uniques (regroupement)</target>
       </trans-unit>
       <trans-unit id="tableDescriptionDependentFilter" datatype="html">
         <source>Tabla:</source>

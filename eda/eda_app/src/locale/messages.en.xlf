@@ -6272,8 +6272,8 @@ Once configured you can invoke it whenever you want from the button.</target>
   <target>Enable it so this panel ignores the dynamic filters of other panels</target>
 </trans-unit>
 <trans-unit id="uniqueRecordsGrouping" datatype="html">
-  <source>Registros únicos (agrupación)?</source>
-  <target>Unique records (grouping)?</target>
+  <source>Registros únicos (agrupación)</source>
+  <target>Unique records (grouping)</target>
 </trans-unit>
 <trans-unit id="tooltipUniqueRecords" datatype="html">
   <source>Aplica GROUP BY a todos los campos para eliminar duplicados</source>

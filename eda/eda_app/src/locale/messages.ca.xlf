@@ -6595,8 +6595,8 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
         <target>Filtres dinàmics</target>
       </trans-unit>
       <trans-unit id="uniqueRecordsGrouping" datatype="html">
-        <source>Registros únicos (agrupación)?</source>
-        <target>Registres únics (agrupació)?</target>
+        <source>Registros únicos (agrupación)</source>
+        <target>Registres únics (agrupació)</target>
       </trans-unit>
       <trans-unit id="tableDescriptionDependentFilter" datatype="html">
         <source>Tabla:</source>

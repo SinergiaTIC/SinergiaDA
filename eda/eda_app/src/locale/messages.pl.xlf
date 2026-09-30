@@ -6228,8 +6228,8 @@ Po skonfigurowaniu możesz go wywołać w dowolnym momencie za pomocą przycisku
         <target>Filtry dynamiczne</target>
       </trans-unit>
       <trans-unit id="uniqueRecordsGrouping" datatype="html">
-        <source>Registros únicos (agrupación)?</source>
-        <target>Unikalne rekordy (grupowanie)?</target>
+        <source>Registros únicos (agrupación)</source>
+        <target>Unikalne rekordy (grupowanie)</target>
       </trans-unit>
       <trans-unit id="tableDescriptionDependentFilter" datatype="html">
         <source>Tabla:</source>
