@@ -769,16 +769,23 @@
                                   <i class="pi pi-info-circle cursor-pointer text-gray-400 text-sm" pTooltip="Aplica GROUP BY a todos los campos para eliminar duplicados" i18n-pTooltip="@@tooltipUniqueRecords"></i>
                                 </div>                                   
 
-                                <button
-                                  type="button"
-                                  (click)="toggleGroupBy()"
-                                  [ngClass]="{
-                                    'btn-panel-active': groupByEnabled,
-                                    'btn-panel-hover bg-white text-gray-600': !groupByEnabled
-                                  }"
-                                  class="px-3 py-1 text-base border rounded-md transition-all min-w-[3rem] text-center">
-                                  {{ groupByEnabled ? yesText : noText }}
-                                </button>
+                                <!-- No / Sí segmented button group: each button only toggles when it is not already the active one -->
+                                <div class="inline-flex rounded-md border border-gray-300 overflow-hidden">
+                                  <button
+                                    type="button"
+                                    (click)="groupByEnabled && toggleGroupBy()"
+                                    [ngClass]="!groupByEnabled ? 'bg-[var(--corporate-primary)] text-white' : 'bg-white text-gray-700 hover:bg-gray-100'"
+                                    class="px-3 py-1 text-base min-w-[3rem] text-center transition-colors focus:outline-none">
+                                    {{ noText }}
+                                  </button>
+                                  <button
+                                    type="button"
+                                    (click)="!groupByEnabled && toggleGroupBy()"
+                                    [ngClass]="groupByEnabled ? 'bg-[var(--corporate-primary)] text-white' : 'bg-white text-gray-700 hover:bg-gray-100'"
+                                    class="px-3 py-1 text-base min-w-[3rem] text-center border-l border-gray-300 transition-colors focus:outline-none">
+                                    {{ yesText }}
+                                  </button>
+                                </div>
                               </div>
     
                               <!-- Dynamic filters -->
