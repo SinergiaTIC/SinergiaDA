@@ -733,7 +733,7 @@
                               </div>
     
                               <!-- What-If Scenarios -->
-                              
+                              @if (showWhatIf) {
                                 <div class="flex items-center justify-between rounded-lg px-3 py-2 gap-2">
                                   <div class="flex items-center gap-2">
                                     <span i18n="@@scenarios" class="text-base font-medium text-gray-700 cursor-default">Escenarios</span>
@@ -744,7 +744,7 @@
                                     What If?
                                   </button>
                                 </div>
-                              
+                              }
   
                               <!-- AND/OR Advanced filters -->
                               <div class="flex items-center justify-between rounded-lg px-3 py-2 gap-2">
@@ -782,7 +782,7 @@
                               </div>
     
                               <!-- Dynamic filters -->
-                              
+                              @if (dynamicFiltersAvailable) {
                                 <div class="flex items-center justify-between rounded-lg px-3 py-2 gap-2">
 
                                   <div class="flex items-center gap-2">
@@ -801,7 +801,7 @@
                                     {{ dynamicFilters ? yesText : noText }}
                                   </button>
                                 </div>
-                              
+                              }
                             </div>
 
                           </div>
