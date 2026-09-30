@@ -7571,6 +7571,18 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
         <source>Arrastra aquí los atributos por los que quieres ordenar los resultados y colócalos en el orden que prefieras. En cada uno puedes elegir ascendente (ASC), descendente (DESC) o dejarlo sin indicar.</source>
         <target>Arrossega aquí els atributs pels quals vols ordenar els resultats i col·loca'ls en l'ordre que prefereixis. En cadascun pots triar ascendent (ASC), descendent (DESC) o deixar-lo sense indicar.</target>
       </trans-unit>
+      <trans-unit id="ptooltipIntersectionType">
+        <source>Tipo de intersección</source>
+        <target>Tipus d'intersecció</target>
+      </trans-unit>      
+      <trans-unit id="ptooltipScenarios">
+        <source>Escenarios</source>
+        <target>Escenaris</target>
+      </trans-unit>      
+      <trans-unit id="ptooltipAdvancedFilters">
+        <source>Filtros avanzados (AND/OR)</source>
+        <target>Filtres avançats (AND/OR)</target>
+      </trans-unit>      
     </body>
   </file>
 </xliff>

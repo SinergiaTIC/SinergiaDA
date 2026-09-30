@@ -7542,6 +7542,18 @@ Une fois configurée, vous pouvez l'activer à tout moment à partir du bouton.<
         <source>Arrastra aquí los atributos por los que quieres ordenar los resultados y colócalos en el orden que prefieras. En cada uno puedes elegir ascendente (ASC), descendente (DESC) o dejarlo sin indicar.</source>
         <target>Faites glisser ici les attributs selon lesquels vous souhaitez trier les résultats et placez-les dans l'ordre de votre choix. Pour chacun d'eux, vous pouvez choisir l'ordre croissant (ASC), décroissant (DESC) ou ne rien indiquer.</target>
       </trans-unit>
+      <trans-unit id="ptooltipIntersectionType">
+        <source>Tipo de intersección</source>
+        <target>Type d'intersection</target>
+      </trans-unit>  
+      <trans-unit id="ptooltipScenarios">
+        <source>Escenarios</source>
+        <target>Scénarios</target>
+      </trans-unit>
+      <trans-unit id="ptooltipAdvancedFilters">
+        <source>Filtros avanzados (AND/OR)</source>
+        <target>Filtres avancés (AND/OR)</target>
+      </trans-unit>           
     </body>
   </file>
 </xliff>

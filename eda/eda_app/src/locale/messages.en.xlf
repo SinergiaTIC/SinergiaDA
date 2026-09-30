@@ -7302,6 +7302,18 @@ OR<ph id="5"/>
   <source>Arrastra aquí los atributos por los que quieres ordenar los resultados y colócalos en el orden que prefieras. En cada uno puedes elegir ascendente (ASC), descendente (DESC) o dejarlo sin indicar.</source>
   <target>Drag here the attributes you want to sort the results by and arrange them in the order you prefer. For each one, you can choose ascending (ASC), descending (DESC), or leave it unspecified.</target>
 </trans-unit>
+<trans-unit id="ptooltipIntersectionType">
+  <source>Tipo de intersección</source>
+  <target>Intersection type</target>
+</trans-unit>
+<trans-unit id="ptooltipScenarios">
+  <source>Escenarios</source>
+  <target>Scenarios</target>
+</trans-unit>
+<trans-unit id="ptooltipAdvancedFilters">
+  <source>Filtros avanzados (AND/OR)</source>
+  <target>Advanced filters (AND/OR)</target>
+</trans-unit>       
 </body>
 </file>
 </xliff>

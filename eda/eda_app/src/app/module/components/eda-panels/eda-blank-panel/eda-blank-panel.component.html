@@ -716,9 +716,13 @@
                           <div class="flex flex-row justify-between w-full">
                             
                             <div class="flex flex-col">
+
                               <!-- Intersection type -->
                               <div class="flex items-center justify-between rounded-lg px-3 py-2 gap-2">
-                                <span i18n="@@joinTypeH4" class="text-base font-medium text-gray-700" pTooltip="Define cómo se unen las tablas: LEFT, INNER o RIGHT JOIN" i18n-pTooltip="@@tooltipJoinType" tooltipPosition="top">Tipo de intersección</span>
+                                <div class="flex items-center gap-2">
+                                  <span i18n="@@joinTypeH4" class="text-base font-medium text-gray-700" pTooltip="Define cómo se unen las tablas: LEFT, INNER o RIGHT JOIN" i18n-pTooltip="@@tooltipJoinType" tooltipPosition="top">Tipo de intersección</span>
+                                  <i class="pi pi-info-circle cursor-pointer text-gray-400 text-sm" [pTooltip]="ptooltipIntersectionType"></i>
+                                </div>
                                 <div class="flex gap-1">
                                   <button *ngFor="let type of joinTypeOptions" (click)="onJoinTypeChange(type)"
                                     [ngClass]="{'btn-panel-active': joinType === type.joinType, 'btn-panel-hover bg-white text-gray-600': joinType !== type.joinType}"
@@ -731,7 +735,11 @@
                               <!-- What-If Scenarios -->
                               @if (showWhatIf) {
                                 <div class="flex items-center justify-between rounded-lg px-3 py-2 gap-2">
-                                  <span i18n="@@scenarios" class="text-base font-medium text-gray-700" pTooltip="Crea atributos derivados aplicando operaciones matemáticas" i18n-pTooltip="@@tooltipScenarios" tooltipPosition="top">Escenarios</span>
+                                  <div class="flex items-center gap-2">
+                                    <span i18n="@@scenarios" class="text-base font-medium text-gray-700" pTooltip="Crea atributos derivados aplicando operaciones matemáticas" i18n-pTooltip="@@tooltipScenarios" tooltipPosition="top">Escenarios</span>
+                                    <i class="pi pi-info-circle cursor-pointer text-gray-400 text-sm" [pTooltip]="ptooltipScenarios"></i>
+                                  </div>                                  
+
                                   <button class="px-3 py-1 text-base border rounded-md bg-white text-gray-600 btn-panel-hover transition-all" (click)="onWhatIfDialog()">
                                     What If?
                                   </button>
@@ -740,11 +748,16 @@
   
                               <!-- AND/OR Advanced filters -->
                               <div class="flex items-center justify-between rounded-lg px-3 py-2 gap-2">
-                                <span i18n="@@filtrosAvanzados" class="text-base font-medium text-gray-700" pTooltip="Combina los filtros del panel con operadores AND u OR" i18n-pTooltip="@@tooltipAdvancedFilters" tooltipPosition="top">Filtros avanzados (AND/OR)</span>
+                                <div class="flex items-center gap-2">
+                                  <span i18n="@@filtrosAvanzados" class="text-base font-medium text-gray-700" pTooltip="Combina los filtros del panel con operadores AND u OR" i18n-pTooltip="@@tooltipAdvancedFilters" tooltipPosition="top">Filtros avanzados (AND/OR)</span>
+                                  <i class="pi pi-info-circle cursor-pointer text-gray-400 text-sm" [pTooltip]="ptooltipAdvancedFilters"></i>
+                                </div>    
+
                                 <button class="px-3 py-1 text-base border rounded-md bg-white text-gray-600 btn-panel-hover transition-all" (click)="filterAndOrDialog()">
                                   <span i18n="@@configurarFiltrosAvanzados">Configurar</span>
                                 </button>
                               </div>
+
                             </div>
 
                             <div class="flex flex-col">
