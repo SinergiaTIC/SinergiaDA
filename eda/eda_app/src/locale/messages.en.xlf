@@ -5614,56 +5614,6 @@ Once configured you can invoke it whenever you want from the button.</target>
 <target>Dashboard</target>
 </trans-unit>
 
-<trans-unit id="joins">
-<source>Tipo de intersección</source>
-<target>Type of Join</target>
-</trans-unit>
-
-<trans-unit id="joins1">
-<source>La funcionalidad de <ph id="0"/>
-Intersección de Joins<ph id="1"/>
- permite definir cómo se relacionan las tablas de tu consulta mediante <ph id="2"/>
-LEFT<ph id="3"/>
-,<ph id="4"/>
-INNER<ph id="5"/>
- o <ph id="6"/>
-RIGHT JOIN<ph id="7"/>
-. Esto te da control sobre qué registros se incluyen en el resultado, dependiendo de la presencia o ausencia de coincidencias entre las tablas.</source>
-<target>The <ph id="0"/>
-Join Intersection<ph id="1"/>
- feature allows you to define how the tables in your query are related using <ph id="2"/>
-LEFT<ph id="3"/>
-,<ph id="4"/>
-INNER<ph id="5"/>
-, or <ph id="6"/>
-RIGHT JOIN<ph id="7"/>
-. This gives you control over which records are included in the result, depending on the presence or absence of matches between tables.</target>
-</trans-unit>
-
-<trans-unit id="joins3">
-<source>Solo es posible hacer joins entre tablas definidas dentro del modelo o consulta actual.</source>
-<target>It is only possible to perform joins between tables defined within the current model or query.</target>
-</trans-unit>
-
-<trans-unit id="whatif1">
-<source>La funcionalidad <ph id="0"/>
-What If<ph id="1"/>
- te permite crear atributos nuevos a partir de otros atributos en tu gráfico. A estos nuevos campos se les puede aplicar una operación matemática para modificar su valor según tus necesidades, y también es posible cambiarles el nombre para identificarlos fácilmente.</source>
-<target>The <ph id="0"/>
-What If<ph id="1"/>
- feature allows you to create new attributes based on other attributes in your chart. You can apply a mathematical operation to these new fields to modify their value according to your needs, and it is also possible to rename them for easy identification.</target>
-</trans-unit>
-
-<trans-unit id="whatif3">
-<source>Solo es posible crear nuevos atributos basados en los atributos existentes en el gráfico.</source>
-<target>It is only possible to create new attributes based on existing attributes in the chart.</target>
-</trans-unit>
-
-<trans-unit id="whatif4">
-<source>Esta opción solo está disponible con atributos de tipo numérico.</source>
-<target>This option is only available for numeric-type attributes.</target>
-</trans-unit>
-
 <trans-unit id="filtrosAvanzados">
 <source>Filtros avanzados</source>
 <target>Advanced Filters</target>
@@ -5671,53 +5621,6 @@ What If<ph id="1"/>
 <trans-unit id="tooltipAdvancedFilters" datatype="html">
 <source>Combina los filtros del panel con operadores AND u OR</source>
 <target>Combines the panel filters with AND or OR operators</target>
-</trans-unit>
-
-<trans-unit id="filtrosAvanzados1">
-<source>La funcionalidad <ph id="0"/>
-Filtros Avanzados<ph id="1"/>
- permite relacionar los filtros globales y de panel utilizando operadores <ph id="2"/>
-AND<ph id="3"/>
- o <ph id="4"/>
-OR<ph id="5"/>
-. Esto posibilita que los filtros no solo se apliquen como un conjunto fijo de condiciones, sino que puedan interoperar entre sí según la relación definida.</source>
-<target>The <ph id="0"/>
-Advanced Filters<ph id="1"/>
- feature allows you to relate global and panel filters using <ph id="2"/>
-AND<ph id="3"/>
- or <ph id="4"/>
-OR<ph id="5"/>
- operators. This enables filters to not only apply as a fixed set of conditions, but also to interact with each other depending on the defined relationship.</target>
-</trans-unit>
-
-<trans-unit id="filtrosAvanzados3">
-<source>Solo es posible usar filtros definidos dentro del dashboard actual.</source>
-<target>It is only possible to use filters defined within the current dashboard.</target>
-</trans-unit>
-
-<trans-unit id="uniqueRecords1">
-  <source>La opción <ph id="0"/>Registros únicos<ph id="1"/> aplica un <ph id="2"/>GROUP BY<ph id="3"/> sobre todos los atributos de la consulta. Úsala cuando quieras eliminar duplicados y agrupar los resultados por la combinación de todos los campos seleccionados.</source>
-  <target>The option <ph id="0"/>Unique Records<ph id="1"/> applies a <ph id="2"/>GROUP BY<ph id="3"/> over all attributes in the query. Use it when you want to remove duplicates and group the results by the combination of all selected fields.</target>
-</trans-unit>
-
-<trans-unit id="uniqueRecords3">
-  <source>Al activarla, las métricas numéricas se agrupan junto al resto de atributos, lo que puede alterar el resultado esperado si ya existen agregaciones definidas.</source>
-  <target>When activated, numeric metrics are grouped together with the rest of the attributes, which may alter the expected result if there are already defined aggregations.</target>
-</trans-unit>
-
-<trans-unit id="dynamicFilters1">
-  <source>Al hacer clic en otros paneles del dashboard se crean <ph id="0"/>filtros dinámicos<ph id="1"/> que afectan al resto de paneles. Activar esta opción hace que este panel <ph id="2"/>ignore<ph id="3"/> esos filtros dinámicos y siempre muestre sus datos completos, independientemente de las selecciones del usuario en otros paneles.</source>
-  <target>When clicking on other panels in the dashboard, <ph id="0"/>dynamic filters<ph id="1"/> are created that affect the remaining panels. Activating this option makes this panel <ph id="2"/>ignore<ph id="3"/> those dynamic filters and always display its complete data, regardless of the user's selections in other panels.</target>
-</trans-unit>
-
-<trans-unit id="dynamicFilters3">
-  <source>Los filtros de panel y globales definidos manualmente sí se siguen aplicando con normalidad.</source>
-  <target>The manually defined panel and global filters are still applied as usual.</target>
-</trans-unit>
-
-<trans-unit id="dynamicFilters4">
-  <source>Esta opción no afecta a los filtros creados desde el selector de filtros del dashboard.</source>
-  <target>This option does not affect the filters created from the dashboard's filter selector.</target>
 </trans-unit>
 
 <trans-unit id="dashboardSidebarDependentFilters">

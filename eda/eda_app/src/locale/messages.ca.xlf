@@ -5814,74 +5814,9 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
         <target>Panell</target>
       </trans-unit>
 
-      <trans-unit id="joins">
-        <source>Tipo de intersección</source>
-        <target>Tipus d'intersecció</target>
-      </trans-unit>
-
-      <trans-unit id="joins1">
-        <source>La funcionalidad de <ph id="0"/>Intersección de Joins<ph id="1"/> permite definir cómo se relacionan las tablas de tu consulta mediante <ph id="2"/>LEFT<ph id="3"/>, <ph id="4"/>INNER<ph id="5"/> o <ph id="6"/>RIGHT JOIN<ph id="7"/>. Esto te da control sobre qué registros se incluyen en el resultado, dependiendo de la presencia o ausencia de coincidencias entre las tablas.</source>
-        <target>La funcionalitat de <ph id="0"/>Intersecció de Joins<ph id="1"/> permet definir com es relacionen les taules de la vostra consulta mitjançant <ph id="2"/>LEFT<ph id="3"/>, <ph id="4"/>INNER<ph id="5"/> o <ph id="6"/>RIGHT JOIN<ph id="7"/>. Això us dóna control sobre quins registres s'inclouen en el resultat, depenent de la presència o absència de coincidències entre les taules.</target>
-      </trans-unit>
-
-      <trans-unit id="joins3">
-        <source>Solo es posible hacer joins entre tablas definidas dentro del modelo o consulta actual.</source>
-        <target>Només és possible fer joins entre taules definides dins del model o consulta actual.</target>
-      </trans-unit>
-
-      <trans-unit id="whatif1">
-        <source>La funcionalidad <ph id="0"/>What If<ph id="1"/> te permite crear atributos nuevos a partir de otros atributos en tu gráfico. A estos nuevos campos se les puede aplicar una operación matemática para modificar su valor según tus necesidades, y también es posible cambiarles el nombre para identificarlos fácilmente.</source>
-        <target>La funcionalitat <ph id="0"/>What If<ph id="1"/> us permet crear nous atributs a partir d'altres atributs al vostre gràfic. A aquests nous camps se'ls pot aplicar una operació matemàtica per modificar-ne el valor segons les teves necessitats, i també és possible canviar-los el nom per identificar-los fàcilment.</target>
-      </trans-unit>
-
-      <trans-unit id="whatif3">
-        <source>Solo es posible crear nuevos atributos basados en los atributos existentes en el gráfico.</source>
-        <target>Només és possible crear nous atributs basats en els atributs existents al gràfic.</target>
-      </trans-unit>
-
-      <trans-unit id="whatif4">
-        <source>Esta opción solo está disponible con atributos de tipo numérico.</source>
-        <target>Aquesta opció només està disponible amb atributs de tipus numèric.</target>
-      </trans-unit>
-
       <trans-unit id="filtrosAvanzados">
         <source>Filtros avanzados</source>
         <target>Filtres avançats</target>
-      </trans-unit>
-
-      <trans-unit id="filtrosAvanzados1">
-        <source>La funcionalidad <ph id="0"/>Filtros Avanzados<ph id="1"/> permite relacionar los filtros globales y de panel utilizando operadores <ph id="2"/>AND<ph id="3"/> o <ph id="4"/>OR<ph id="5"/>. Esto posibilita que los filtros no solo se apliquen como un conjunto fijo de condiciones, sino que puedan interoperar entre sí según la relación definida.</source>
-        <target>La funcionalitat <ph id="0"/>Filtres avançats<ph id="1"/> permet relacionar els filtres globals i de panell utilitzant operadors <ph id="2"/>AND<ph id="3"/> o <ph id="4"/>OR<ph id="5"/>. Això possibilita que els filtres no només s'apliquin com a conjunt fix de condicions, sinó que puguin interoperar entre si segons la relació definida.</target>
-      </trans-unit>
-
-      <trans-unit id="filtrosAvanzados3">
-        <source>Solo es posible usar filtros definidos dentro del dashboard actual.</source>
-        <target>Només és possible fer servir filtres definits dins del dashboard actual.</target>
-      </trans-unit>
-
-      <trans-unit id="uniqueRecords1">
-        <source>La opción <ph id="0"/>Registros únicos<ph id="1"/> aplica un <ph id="2"/>GROUP BY<ph id="3"/> sobre todos los atributos de la consulta. Úsala cuando quieras eliminar duplicados y agrupar los resultados por la combinación de todos los campos seleccionados.</source>
-        <target>L'opció <ph id="0"/>Registres únics<ph id="1"/> aplica un <ph id="2"/>GROUP BY<ph id="3"/> sobre tots els atributs de la consulta. Utilitza-la quan vulguis eliminar duplicats i agrupar els resultats per la combinació de tots els camps seleccionats.</target>
-      </trans-unit>
-
-      <trans-unit id="uniqueRecords3">
-        <source>Al activarla, las métricas numéricas se agrupan junto al resto de atributos, lo que puede alterar el resultado esperado si ya existen agregaciones definidas.</source>
-        <target>En activar-la, les mètriques numèriques s'agrupen juntament amb la resta d'atributs, la qual cosa pot alterar el resultat esperat si ja existeixen agregacions definides.</target>
-      </trans-unit>
-
-      <trans-unit id="dynamicFilters1">
-        <source>Al hacer clic en otros paneles del dashboard se crean <ph id="0"/>filtros dinámicos<ph id="1"/> que afectan al resto de paneles. Activar esta opción hace que este panel <ph id="2"/>ignore<ph id="3"/> esos filtros dinámicos y siempre muestre sus datos completos, independientemente de las selecciones del usuario en otros paneles.</source>
-        <target>En fer clic a altres panells del dashboard es creen <ph id="0"/>filtres dinàmics<ph id="1"/> que afecten la resta de panells. Activar aquesta opció fa que aquest panell <ph id="2"/>ignori<ph id="3"/> aquests filtres dinàmics i sempre mostri les seves dades completes, independentment de les seleccions de l'usuari en altres panells.</target>
-      </trans-unit>
-
-      <trans-unit id="dynamicFilters3">
-        <source>Los filtros de panel y globales definidos manualmente sí se siguen aplicando con normalidad.</source>
-        <target>Els filtres de panell i globals definits manualment sí que es continuen aplicant amb normalitat.</target>
-      </trans-unit>
-
-      <trans-unit id="dynamicFilters4">
-        <source>Esta opción no afecta a los filtros creados desde el selector de filtros del dashboard.</source>
-        <target>Aquesta opció no afecta els filtres creats des del selector de filtres del dashboard.</target>
       </trans-unit>
 
       <trans-unit id="tooltipJoinType">
