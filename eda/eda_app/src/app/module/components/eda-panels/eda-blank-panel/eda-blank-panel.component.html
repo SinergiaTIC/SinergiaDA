@@ -763,7 +763,12 @@
                             <div class="flex flex-col">
                               <!-- Unique records -->
                               <div class="flex items-center justify-between rounded-lg px-3 py-2 gap-2">
-                                <span i18n="@@uniqueRecordsGrouping" class="text-base font-medium text-gray-700" pTooltip="Aplica GROUP BY a todos los campos para eliminar duplicados" i18n-pTooltip="@@tooltipUniqueRecords" tooltipPosition="top">Registros únicos (agrupación)</span>
+
+                                <div class="flex items-center gap-2">
+                                  <span i18n="@@uniqueRecordsGrouping" class="text-base font-medium text-gray-700" pTooltip="Aplica GROUP BY a todos los campos para eliminar duplicados" i18n-pTooltip="@@tooltipUniqueRecords" tooltipPosition="top">Registros únicos (agrupación)</span>
+                                  <i class="pi pi-info-circle cursor-pointer text-gray-400 text-sm" [pTooltip]="ptooltipUniqueRecords"></i>
+                                </div>                                   
+
                                 <button
                                   type="button"
                                   (click)="toggleGroupBy()"
@@ -779,7 +784,12 @@
                               <!-- Dynamic filters -->
                               @if (dynamicFiltersAvailable) {
                                 <div class="flex items-center justify-between rounded-lg px-3 py-2 gap-2">
-                                  <span i18n="@@dynamicFiltersText" class="text-base font-medium text-gray-700" pTooltip="Actívalo para que este panel ignore los filtros dinámicos de otros paneles" tooltipPosition="top">Filtros dinámicos</span>
+
+                                  <div class="flex items-center gap-2">
+                                    <span i18n="@@dynamicFiltersText" class="text-base font-medium text-gray-700" pTooltip="Actívalo para que este panel ignore los filtros dinámicos de otros paneles" tooltipPosition="top">Filtros dinámicos</span>
+                                    <i class="pi pi-info-circle cursor-pointer text-gray-400 text-sm" [pTooltip]="ptooltipDynamicFilters"></i>
+                                  </div>   
+
                                   <button
                                     type="button"
                                     (click)="dynamicFiltersInteraction()"

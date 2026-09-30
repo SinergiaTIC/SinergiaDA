@@ -7252,7 +7252,15 @@ Po skonfigurowaniu możesz go wywołać w dowolnym momencie za pomocą przycisku
       <trans-unit id="ptooltipAdvancedFilters">
         <source>Filtros avanzados (AND/OR)</source>
         <target>Zaawansowane filtry (AND/OR)</target>
-      </trans-unit>           
+      </trans-unit>
+      <trans-unit id="ptooltipUniqueRecords">
+        <source>Registros únicos (agrupación)</source>
+        <target>Unikalne rekordy (grupowanie)</target>
+      </trans-unit>
+      <trans-unit id="ptooltipDynamicFilters">
+        <source>Filtros dinámicos</source>
+        <target>Filtry dynamiczne</target>
+      </trans-unit>              
 </body>
 </file>
 </xliff>

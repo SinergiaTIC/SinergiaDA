@@ -7583,6 +7583,14 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
         <source>Filtros avanzados (AND/OR)</source>
         <target>Filtres avançats (AND/OR)</target>
       </trans-unit>      
+      <trans-unit id="ptooltipUniqueRecords">
+        <source>Registros únicos (agrupación)</source>
+        <target>Registres únics (agrupació)</target>
+      </trans-unit>      
+      <trans-unit id="ptooltipDynamicFilters">
+        <source>Filtros dinámicos</source>
+        <target>Filtres dinàmics</target>
+      </trans-unit>      
     </body>
   </file>
 </xliff>

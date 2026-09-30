@@ -239,6 +239,8 @@ export class EdaBlankPanelComponent implements OnInit, AfterViewChecked {
     public ptooltipIntersectionType: string = $localize`:@@ptooltipIntersectionType:Tipo de intersección`
     public ptooltipScenarios: string = $localize`:@@ptooltipScenarios:Escenarios`
     public ptooltipAdvancedFilters: string = $localize`:@@ptooltipAdvancedFilters:Filtros avanzados (AND/OR)`
+    public ptooltipUniqueRecords: string = $localize`:@@ptooltipUniqueRecords:Registros únicos (agrupación)`
+    public ptooltipDynamicFilters: string = $localize`:@@ptooltipDynamicFilters:Filtros dinámicos`
     public aggregationText: string = $localize`:@@aggregationText:Agregación`;
     public textBetween: string = $localize`:@@textBetween:Entre`
     public yesText: string = $localize`:@@si:Si`;
