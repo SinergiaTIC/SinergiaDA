@@ -40,8 +40,13 @@ eda/eda_mcp/node_modules
 eda/eda_app/src/app/plugins/page-plugins/page-plugin-registry.ts
 #APP generated customizable merge (apply-overwrites.js output; defaults stay pristine)
 eda/eda_app/src/app/config/customizable/customizable_merged.ts
+#APP generated i18n merge (i18n-merge.js output; base and custom files stay pristine)
+eda/eda_app/src/locale/merged/
+#APP previous translation catalogs kept as reference by "npm run i18n:seed"
+eda/eda_app/src/locale/legacy/
 eda/eda_api/config/sinergiacrm.config.js
 eda/eda_app/proxy.conf.json
 AGENTS.md
 .sda-migration/
 .vscode/
+eda/eda_api/metadata.json
