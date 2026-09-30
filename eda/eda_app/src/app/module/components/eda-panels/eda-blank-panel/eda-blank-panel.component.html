@@ -720,8 +720,8 @@
                               <!-- Intersection type -->
                               <div class="flex items-center justify-between rounded-lg px-3 py-2 gap-2">
                                 <div class="flex items-center gap-2">
-                                  <span i18n="@@joinTypeH4" class="text-base font-medium text-gray-700 cursor-default" pTooltip="Define cómo se unen las tablas: LEFT, INNER o RIGHT JOIN" i18n-pTooltip="@@tooltipJoinType" tooltipPosition="top">Tipo de intersección</span>
-                                  <i class="pi pi-info-circle cursor-pointer text-gray-400 text-sm" [pTooltip]="ptooltipIntersectionType"></i>
+                                  <span i18n="@@joinTypeH4" class="text-base font-medium text-gray-700 cursor-default">Tipo de intersección</span>
+                                  <i class="pi pi-info-circle cursor-pointer text-gray-400 text-sm" pTooltip="Define cómo se unen las tablas: LEFT, INNER o RIGHT JOIN" i18n-pTooltip="@@tooltipJoinType"></i>
                                 </div>
                                 <div class="flex gap-1">
                                   <button *ngFor="let type of joinTypeOptions" (click)="onJoinTypeChange(type)"
@@ -733,24 +733,24 @@
                               </div>
     
                               <!-- What-If Scenarios -->
-                              @if (showWhatIf) {
+                              
                                 <div class="flex items-center justify-between rounded-lg px-3 py-2 gap-2">
                                   <div class="flex items-center gap-2">
-                                    <span i18n="@@scenarios" class="text-base font-medium text-gray-700 cursor-default" pTooltip="Crea atributos derivados aplicando operaciones matemáticas" i18n-pTooltip="@@tooltipScenarios" tooltipPosition="top">Escenarios</span>
-                                    <i class="pi pi-info-circle cursor-pointer text-gray-400 text-sm" [pTooltip]="ptooltipScenarios"></i>
+                                    <span i18n="@@scenarios" class="text-base font-medium text-gray-700 cursor-default">Escenarios</span>
+                                    <i class="pi pi-info-circle cursor-pointer text-gray-400 text-sm" pTooltip="Crea atributos derivados aplicando operaciones matemáticas" i18n-pTooltip="@@tooltipScenarios"></i>
                                   </div>                                  
 
                                   <button class="px-3 py-1 text-base border rounded-md bg-white text-gray-600 btn-panel-hover transition-all" (click)="onWhatIfDialog()">
                                     What If?
                                   </button>
                                 </div>
-                              }
+                              
   
                               <!-- AND/OR Advanced filters -->
                               <div class="flex items-center justify-between rounded-lg px-3 py-2 gap-2">
                                 <div class="flex items-center gap-2">
-                                  <span i18n="@@filtrosAvanzados" class="text-base font-medium text-gray-700 cursor-default" pTooltip="Combina los filtros del panel con operadores AND u OR" i18n-pTooltip="@@tooltipAdvancedFilters" tooltipPosition="top">Filtros avanzados (AND/OR)</span>
-                                  <i class="pi pi-info-circle cursor-pointer text-gray-400 text-sm" [pTooltip]="ptooltipAdvancedFilters"></i>
+                                  <span i18n="@@filtrosAvanzados" class="text-base font-medium text-gray-700 cursor-default">Filtros avanzados (AND/OR)</span>
+                                  <i class="pi pi-info-circle cursor-pointer text-gray-400 text-sm" pTooltip="Combina los filtros del panel con operadores AND u OR" i18n-pTooltip="@@tooltipAdvancedFilters"></i>
                                 </div>    
 
                                 <button class="px-3 py-1 text-base border rounded-md bg-white text-gray-600 btn-panel-hover transition-all" (click)="filterAndOrDialog()">
@@ -765,8 +765,8 @@
                               <div class="flex items-center justify-between rounded-lg px-3 py-2 gap-2">
 
                                 <div class="flex items-center gap-2">
-                                  <span i18n="@@uniqueRecordsGrouping" class="text-base font-medium text-gray-700 cursor-default" pTooltip="Aplica GROUP BY a todos los campos para eliminar duplicados" i18n-pTooltip="@@tooltipUniqueRecords" tooltipPosition="top">Registros únicos (agrupación)</span>
-                                  <i class="pi pi-info-circle cursor-pointer text-gray-400 text-sm" [pTooltip]="ptooltipUniqueRecords"></i>
+                                  <span i18n="@@uniqueRecordsGrouping" class="text-base font-medium text-gray-700 cursor-default">Registros únicos (agrupación)</span>
+                                  <i class="pi pi-info-circle cursor-pointer text-gray-400 text-sm" pTooltip="Aplica GROUP BY a todos los campos para eliminar duplicados" i18n-pTooltip="@@tooltipUniqueRecords"></i>
                                 </div>                                   
 
                                 <button
@@ -782,12 +782,12 @@
                               </div>
     
                               <!-- Dynamic filters -->
-                              @if (dynamicFiltersAvailable) {
+                              
                                 <div class="flex items-center justify-between rounded-lg px-3 py-2 gap-2">
 
                                   <div class="flex items-center gap-2">
-                                    <span i18n="@@dynamicFiltersText" class="text-base font-medium text-gray-700 cursor-default" pTooltip="Actívalo para que este panel ignore los filtros dinámicos de otros paneles" tooltipPosition="top">Filtros dinámicos</span>
-                                    <i class="pi pi-info-circle cursor-pointer text-gray-400 text-sm" [pTooltip]="ptooltipDynamicFilters"></i>
+                                    <span i18n="@@dynamicFiltersText" class="text-base font-medium text-gray-700 cursor-default">Filtros dinámicos</span>
+                                    <i class="pi pi-info-circle cursor-pointer text-gray-400 text-sm" pTooltip="Actívalo para que este panel ignore los filtros dinámicos de otros paneles" i18n-pTooltip="@@tooltipDynamicFilters"></i>
                                   </div>   
 
                                   <button
@@ -801,7 +801,7 @@
                                     {{ dynamicFilters ? yesText : noText }}
                                   </button>
                                 </div>
-                              }
+                              
                             </div>
 
                           </div>

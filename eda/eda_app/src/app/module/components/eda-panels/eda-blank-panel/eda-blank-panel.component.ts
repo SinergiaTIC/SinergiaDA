@@ -236,11 +236,6 @@ export class EdaBlankPanelComponent implements OnInit, AfterViewChecked {
     public ptooltipSQLmode: string = $localize`:@@sqlTooltip:Al cambiar de modo perderás la configuración de la consulta actual`;
     public ptooltipViewQuery: string = $localize`:@@ptooltipViewQuery:Ver consulta SQL`
     public ptooltipOrderByControl: string = $localize`:@@ptooltipOrderByControl:Arrastra aquí los atributos por los que quieres ordenar los resultados y colócalos en el orden que prefieras. En cada uno puedes elegir ascendente (ASC), descendente (DESC) o dejarlo sin indicar.`
-    public ptooltipIntersectionType: string = $localize`:@@ptooltipIntersectionType:Tipo de intersección`
-    public ptooltipScenarios: string = $localize`:@@ptooltipScenarios:Escenarios`
-    public ptooltipAdvancedFilters: string = $localize`:@@ptooltipAdvancedFilters:Filtros avanzados (AND/OR)`
-    public ptooltipUniqueRecords: string = $localize`:@@ptooltipUniqueRecords:Registros únicos (agrupación)`
-    public ptooltipDynamicFilters: string = $localize`:@@ptooltipDynamicFilters:Filtros dinámicos`
     public aggregationText: string = $localize`:@@aggregationText:Agregación`;
     public textBetween: string = $localize`:@@textBetween:Entre`
     public yesText: string = $localize`:@@si:Si`;

@@ -7241,26 +7241,6 @@ Po skonfigurowaniu możesz go wywołać w dowolnym momencie za pomocą przycisku
         <source>Arrastra aquí los atributos por los que quieres ordenar los resultados y colócalos en el orden que prefieras. En cada uno puedes elegir ascendente (ASC), descendente (DESC) o dejarlo sin indicar.</source>
         <target>Przeciągnij tutaj atrybuty, według których chcesz sortować wyniki, i ułóż je w preferowanej kolejności. Dla każdego z nich możesz wybrać sortowanie rosnące (ASC), malejące (DESC) lub pozostawić je bez określenia.</target>
       </trans-unit>
-      <trans-unit id="ptooltipIntersectionType">
-        <source>Tipo de intersección</source>
-        <target>Typ skrzyżowania</target>
-      </trans-unit>
-      <trans-unit id="ptooltipScenarios">
-        <source>Escenarios</source>
-        <target>Scenariusze</target>
-      </trans-unit>
-      <trans-unit id="ptooltipAdvancedFilters">
-        <source>Filtros avanzados (AND/OR)</source>
-        <target>Zaawansowane filtry (AND/OR)</target>
-      </trans-unit>
-      <trans-unit id="ptooltipUniqueRecords">
-        <source>Registros únicos (agrupación)</source>
-        <target>Unikalne rekordy (grupowanie)</target>
-      </trans-unit>
-      <trans-unit id="ptooltipDynamicFilters">
-        <source>Filtros dinámicos</source>
-        <target>Filtry dynamiczne</target>
-      </trans-unit>              
 </body>
 </file>
 </xliff>

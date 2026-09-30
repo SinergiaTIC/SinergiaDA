@@ -2482,6 +2482,10 @@ terms<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/>
 <source> Tipo de intersección:  </source>
 <target> Join type:  </target>
 </trans-unit>
+<trans-unit id="tooltipJoinType" datatype="html">
+<source>Define cómo se unen las tablas: LEFT, INNER o RIGHT JOIN</source>
+<target>Defines how the tables are joined: LEFT, INNER or RIGHT JOIN</target>
+</trans-unit>
 
 <trans-unit id="addCSV" datatype="html">
 <source>Añadir tabla desde CSV</source>
@@ -4842,6 +4846,10 @@ Once configured you can invoke it whenever you want from the button.</target>
 <source>Escenarios</source>
 <target>Scenarios</target>
 </trans-unit>
+<trans-unit id="tooltipScenarios" datatype="html">
+<source>Crea atributos derivados aplicando operaciones matemáticas</source>
+<target>Creates derived attributes by applying mathematical operations</target>
+</trans-unit>
 
 <trans-unit id="AdvanceOptions">
 <source>Opciones avanzadas</source>
@@ -5660,6 +5668,10 @@ What If<ph id="1"/>
 <source>Filtros avanzados</source>
 <target>Advanced Filters</target>
 </trans-unit>
+<trans-unit id="tooltipAdvancedFilters" datatype="html">
+<source>Combina los filtros del panel con operadores AND u OR</source>
+<target>Combines the panel filters with AND or OR operators</target>
+</trans-unit>
 
 <trans-unit id="filtrosAvanzados1">
 <source>La funcionalidad <ph id="0"/>
@@ -6352,9 +6364,17 @@ OR<ph id="5"/>
   <source>Filtros dinámicos</source>
   <target>Dynamic filters</target>
 </trans-unit>
+<trans-unit id="tooltipDynamicFilters" datatype="html">
+  <source>Actívalo para que este panel ignore los filtros dinámicos de otros paneles</source>
+  <target>Enable it so this panel ignores the dynamic filters of other panels</target>
+</trans-unit>
 <trans-unit id="uniqueRecordsGrouping" datatype="html">
   <source>Registros únicos (agrupación)?</source>
   <target>Unique records (grouping)?</target>
+</trans-unit>
+<trans-unit id="tooltipUniqueRecords" datatype="html">
+  <source>Aplica GROUP BY a todos los campos para eliminar duplicados</source>
+  <target>Applies GROUP BY to all fields to remove duplicates</target>
 </trans-unit>
 <trans-unit id="tableDescriptionDependentFilter" datatype="html">
   <source>Tabla:</source>
@@ -7174,6 +7194,7 @@ OR<ph id="5"/>
 <trans-unit id="filterHoverNotAffected">
 <source>Paneles no afectados por este filtro</source>
 <target>Panels not affected by this filter</target>
+</trans-unit>
 <trans-unit id="ResetZoom">
   <source>Restablecer (100%)</source>
   <target>Reset (100%)</target>
@@ -7302,26 +7323,6 @@ OR<ph id="5"/>
   <source>Arrastra aquí los atributos por los que quieres ordenar los resultados y colócalos en el orden que prefieras. En cada uno puedes elegir ascendente (ASC), descendente (DESC) o dejarlo sin indicar.</source>
   <target>Drag here the attributes you want to sort the results by and arrange them in the order you prefer. For each one, you can choose ascending (ASC), descending (DESC), or leave it unspecified.</target>
 </trans-unit>
-<trans-unit id="ptooltipIntersectionType">
-  <source>Tipo de intersección</source>
-  <target>Intersection type</target>
-</trans-unit>
-<trans-unit id="ptooltipScenarios">
-  <source>Escenarios</source>
-  <target>Scenarios</target>
-</trans-unit>
-<trans-unit id="ptooltipAdvancedFilters">
-  <source>Filtros avanzados (AND/OR)</source>
-  <target>Advanced filters (AND/OR)</target>
-</trans-unit>    
-<trans-unit id="ptooltipUniqueRecords">
-  <source>Registros únicos (agrupación)</source>
-  <target>Unique records (grouping)</target>
-</trans-unit>
-<trans-unit id="ptooltipDynamicFilters">
-  <source>Filtros dinámicos</source>
-  <target>Dynamic filters</target>
-</trans-unit>      
 </body>
 </file>
 </xliff>
