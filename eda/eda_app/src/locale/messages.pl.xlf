@@ -5400,8 +5400,8 @@ Po skonfigurowaniu możesz go wywołać w dowolnym momencie za pomocą przycisku
       </trans-unit>
 
       <trans-unit id="tooltipDynamicFilters">
-        <source>Actívalo para que este panel ignore los filtros dinámicos de otros paneles</source>
-        <target>Włącz, aby ten panel ignorował dynamiczne filtry z innych paneli</target>
+        <source>Permitir que el click en cualquier panel filtre este panel</source>
+        <target>Zezwól, aby kliknięcie dowolnego panelu filtrowało ten panel</target>
       </trans-unit>
 
       <trans-unit id="filtrosAvanzados">

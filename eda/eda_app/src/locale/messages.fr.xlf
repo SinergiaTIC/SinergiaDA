@@ -5776,8 +5776,8 @@ Une fois configurée, vous pouvez l'activer à tout moment à partir du bouton.<
       </trans-unit>
 
       <trans-unit id="tooltipDynamicFilters">
-        <source>Actívalo para que este panel ignore los filtros dinámicos de otros paneles</source>
-        <target>Activez-le pour que ce panneau ignore les filtres dynamiques des autres panneaux</target>
+        <source>Permitir que el click en cualquier panel filtre este panel</source>
+        <target>Permettre qu'un clic sur n'importe quel panneau filtre ce panneau</target>
       </trans-unit>
 
       <trans-unit id="dashboardSidebarDependentFilters">

@@ -5840,8 +5840,8 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
       </trans-unit>
 
       <trans-unit id="tooltipDynamicFilters">
-        <source>Actívalo para que este panel ignore los filtros dinámicos de otros paneles</source>
-        <target>Activa-ho perquè aquest panell ignori els filtres dinàmics d'altres panells</target>
+        <source>Permitir que el click en cualquier panel filtre este panel</source>
+        <target>Permet que el clic en qualsevol panell filtri aquest panell</target>
       </trans-unit>
 
       <trans-unit id="dashboardSidebarDependentFilters">

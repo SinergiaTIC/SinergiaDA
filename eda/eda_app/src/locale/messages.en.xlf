@@ -6268,8 +6268,8 @@ Once configured you can invoke it whenever you want from the button.</target>
   <target>Click filters</target>
 </trans-unit>
 <trans-unit id="tooltipDynamicFilters" datatype="html">
-  <source>Actívalo para que este panel ignore los filtros dinámicos de otros paneles</source>
-  <target>Enable it so this panel ignores the dynamic filters of other panels</target>
+  <source>Permitir que el click en cualquier panel filtre este panel</source>
+  <target>Allow a click on any panel to filter this panel</target>
 </trans-unit>
 <trans-unit id="uniqueRecordsGrouping" datatype="html">
   <source>Registros únicos (agrupación)</source>
