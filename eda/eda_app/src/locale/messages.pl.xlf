@@ -6224,8 +6224,8 @@ Po skonfigurowaniu możesz go wywołać w dowolnym momencie za pomocą przycisku
         <target>Kontroluje, czy agent AI ma dostęp do tych informacji: Full zezwala na pełny dostęp, Declaration udostępnia tylko nazwę i typ, None wyklucza je całkowicie.</target>
       </trans-unit>
       <trans-unit id="dynamicFiltersText" datatype="html">
-        <source>Filtros dinámicos</source>
-        <target>Filtry dynamiczne</target>
+        <source>Filtros en click</source>
+        <target>Filtry po kliknięciu</target>
       </trans-unit>
       <trans-unit id="uniqueRecordsGrouping" datatype="html">
         <source>Registros únicos (agrupación)</source>
