@@ -724,10 +724,13 @@
                                   <span i18n="@@joinTypeH4" class="text-base font-medium text-gray-700 cursor-default">Tipo de intersección</span>
                                   <i class="pi pi-info-circle cursor-pointer text-gray-400 text-sm" pTooltip="Define cómo se unen las tablas: LEFT, INNER o RIGHT JOIN" i18n-pTooltip="@@tooltipJoinType"></i>
                                 </div>
-                                <div class="flex gap-1">
-                                  <button *ngFor="let type of joinTypeOptions" (click)="onJoinTypeChange(type)"
-                                    [ngClass]="{'btn-panel-active': joinType === type.joinType, 'btn-panel-hover bg-white text-gray-600': joinType !== type.joinType}"
-                                    class="px-3 py-1 text-base border rounded-md transition-all">
+                                <!-- Segmented button group: one button per join type allowed in ALLOWED_JOIN_TYPES -->
+                                <div class="inline-flex rounded-md border border-gray-300 overflow-hidden">
+                                  <button *ngFor="let type of joinTypeOptions; let first = first"
+                                    type="button"
+                                    (click)="onJoinTypeChange(type)"
+                                    [ngClass]="[joinType === type.joinType ? 'bg-[var(--corporate-primary)] text-white' : 'bg-white text-gray-700 hover:bg-gray-100', !first ? 'border-l border-gray-300' : '']"
+                                    class="px-3 py-1 text-base min-w-[3rem] text-center transition-colors focus:outline-none">
                                     {{ type.label }}
                                   </button>
                                 </div>
