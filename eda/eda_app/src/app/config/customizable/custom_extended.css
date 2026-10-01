@@ -166,7 +166,7 @@ app-loginv2 .text-gray-500 {
    8.4→12.8px). !important beats the later html rules in style.css (custom.css
    is @import-ed first, so it would otherwise lose). */
 html {
-  font-size: 16.8px !important;
+  font-size: 14px !important;
 }
 
 /* ─── Preloader (index.html): corporate colour ──────────────────────────────
@@ -299,12 +299,12 @@ html {
 }
 
 .p-toast .p-toast-message .p-toast-summary {
-  font-size: 15px !important;
+  font-size: 14px !important;
   font-weight: 700 !important;
 }
 
 .p-toast .p-toast-message .p-toast-detail {
-  font-size: 15px !important;
+  font-size: 14px !important;
   font-weight: 600 !important;
   line-height: 1.45 !important;
 }
@@ -460,5 +460,114 @@ app-global-filter-dialog .grid.grid-cols-5 > *,
    depend on the order of the cards. Hiding only; the field and its logic stay. */
 .grid.gap-3 > .flex.flex-col.gap-3 > .section-card:has(> p-dropdown) {
   display: none !important;
+}
+
+/* ─── Panel edit dialogs: balanced text & spacing ───────────────────────────
+   The 16.8px root font-size (2.x look) makes the rem-based Tailwind text in
+   these dialogs large. Tighten the chrome and content spacing so the panel
+   editor and its inner dialogs (page, column, filter, chart-type, table
+   preview) feel balanced. Dialogs are teleported to <body>, so scope via
+   :has(). .font-sans is unique to the page dialog (query editor). */
+
+/* Chrome: header — smaller title, tighter padding */
+.p-dialog:has(panel-chart) .p-dialog-header,
+.p-dialog:has(.aggregation-list) .p-dialog-header,
+.p-dialog:has(.addFilter-button) .p-dialog-header,
+.p-dialog:has(.chart-type-selector-grid) .p-dialog-header,
+.p-dialog:has(.font-sans) .p-dialog-header {
+  padding: 0.5rem 0.75rem !important;
+}
+.p-dialog:has(panel-chart) .p-dialog-title,
+.p-dialog:has(.aggregation-list) .p-dialog-title,
+.p-dialog:has(.addFilter-button) .p-dialog-title,
+.p-dialog:has(.chart-type-selector-grid) .p-dialog-title,
+.p-dialog:has(.font-sans) .p-dialog-title {
+  font-size: 0.875rem !important;
+}
+
+/* Chrome: content — tighter padding */
+.p-dialog:has(panel-chart) .p-dialog-content,
+.p-dialog:has(.aggregation-list) .p-dialog-content,
+.p-dialog:has(.addFilter-button) .p-dialog-content,
+.p-dialog:has(.chart-type-selector-grid) .p-dialog-content,
+.p-dialog:has(.font-sans) .p-dialog-content {
+  padding: 0 0.75rem 0.75rem !important;
+}
+
+/* chart-dialog (chart properties): section spacing & text size */
+.p-dialog:has(panel-chart) .space-y-6 > :not([hidden]) ~ :not([hidden]) {
+  margin-top: 0.75rem !important;
+}
+.p-dialog:has(panel-chart) .p-4 {
+  padding: 0.5rem !important;
+}
+.p-dialog:has(panel-chart) .mb-6 {
+  margin-bottom: 0.75rem !important;
+}
+.p-dialog:has(panel-chart) .text-lg {
+  /* font-size: 0.875rem !important; */
+}
+.p-dialog:has(panel-chart) .text-base {
+  /* font-size: 0.8125rem !important; */
+}
+.p-dialog:has(panel-chart) .pl-6 {
+  /* padding-left: 0.75rem !important; */
+}
+.p-dialog:has(panel-chart) .gap-6 {
+  /* gap: 0.75rem !important; */
+}
+.p-dialog:has(panel-chart) .p-6 {
+  padding: 0.75rem !important;
+}
+
+/* page dialog (query editor — SQL / TREE / EDA): text & spacing */
+.p-dialog:has(.font-sans) .text-lg {
+  /* font-size: 0.875rem !important; */
+}
+.p-dialog:has(.font-sans) .text-base {
+  /* font-size: 0.8125rem !important; */
+}
+.p-dialog:has(.font-sans) .p-3 {
+  /* padding: 0.5rem !important; */
+}
+.p-dialog:has(.font-sans) .mb-4 {
+  /* margin-bottom: 0.75rem !important; */
+}
+.p-dialog:has(.font-sans) .mb-2 {
+  /* margin-bottom: 0.375rem !important; */
+}
+.p-dialog:has(.font-sans) .space-y-1 > :not([hidden]) ~ :not([hidden]) {
+  /* margin-top: 0.25rem !important; */
+}
+.p-dialog:has(.font-sans) .px-3 {
+  padding-left: 0.75rem !important;
+  padding-right: 0.75rem !important;
+}
+
+.p-dialog:has(.font-sans) .py-2 {
+  padding-top: 0.375rem !important;
+  padding-bottom: 0.375rem !important;
+}
+
+/* column-dialog: title, section cards, grid gap */
+.p-dialog:has(.aggregation-list) .text-base {
+  font-size: 0.8125rem !important;
+}
+.p-dialog:has(.aggregation-list) .section-card {
+  padding: 0.375rem 0 !important;
+}
+.p-dialog:has(.aggregation-list) .gap-3 {
+  gap: 0.375rem !important;
+}
+
+/* filter-dialog: top margin, label size, input height */
+.p-dialog:has(.addFilter-button) .mt-4 {
+  margin-top: 0.375rem !important;
+}
+.p-dialog:has(.addFilter-button) .text-base {
+  font-size: 0.8125rem !important;
+}
+.p-dialog:has(.addFilter-button) .h-\[3\.2rem\] {
+  height: 2.5rem !important;
 }
 
