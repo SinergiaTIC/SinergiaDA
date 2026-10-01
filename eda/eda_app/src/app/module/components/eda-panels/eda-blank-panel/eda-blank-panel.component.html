@@ -733,20 +733,6 @@
                                 </div>
                               </div>
     
-                              <!-- What-If Scenarios -->
-                              @if (showWhatIf) {
-                                <div class="flex items-center justify-between rounded-lg px-3 py-2 gap-2">
-                                  <div class="flex items-center gap-2">
-                                    <span i18n="@@scenarios" class="text-base font-medium text-gray-700 cursor-default">Escenarios</span>
-                                    <i class="pi pi-info-circle cursor-pointer text-gray-400 text-sm" pTooltip="Crea atributos derivados aplicando operaciones matemáticas" i18n-pTooltip="@@tooltipScenarios"></i>
-                                  </div>                                  
-
-                                  <button class="px-3 py-1 text-base border rounded-md bg-white text-gray-600 btn-panel-hover transition-all" (click)="onWhatIfDialog()">
-                                    What If?
-                                  </button>
-                                </div>
-                              }
-  
                               <!-- AND/OR Advanced filters -->
                               <div class="flex items-center justify-between rounded-lg px-3 py-2 gap-2">
                                 <div class="flex items-center gap-2">
@@ -759,9 +745,6 @@
                                 </button>
                               </div>
 
-                            </div>
-
-                            <div class="flex flex-col w-1/2">
                               <!-- Unique records -->
                               <div class="flex items-center justify-between rounded-lg px-3 py-2 gap-2">
 
@@ -788,7 +771,24 @@
                                   </button>
                                 </div>
                               </div>
-    
+
+                            </div>
+
+                            <div class="flex flex-col w-1/2">
+
+                              <!-- What-If Scenarios -->
+                              @if (showWhatIf) {
+                                <div class="flex items-center justify-between rounded-lg px-3 py-2 gap-2">
+                                  <div class="flex items-center gap-2">
+                                    <span i18n="@@scenarios" class="text-base font-medium text-gray-700 cursor-default">Escenarios</span>
+                                    <i class="pi pi-info-circle cursor-pointer text-gray-400 text-sm" pTooltip="Crea atributos derivados aplicando operaciones matemáticas" i18n-pTooltip="@@tooltipScenarios"></i>
+                                  </div>                                  
+
+                                  <button class="px-3 py-1 text-base border rounded-md bg-white text-gray-600 btn-panel-hover transition-all" (click)="onWhatIfDialog()">
+                                    What If?
+                                  </button>
+                                </div>
+                              }
                               <!-- Dynamic filters -->
                               @if (dynamicFiltersAvailable) {
                                 <div class="flex items-center justify-between rounded-lg px-3 py-2 gap-2">
