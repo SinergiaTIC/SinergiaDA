@@ -411,6 +411,35 @@ p-treeselect {
   padding-bottom: 0.375rem !important;
 }
 
+/* Panel edit tabs (Editar consulta / Vista previa): tab look.
+   The two <h3> are inside a .space-x-4 container; remove the gap so they
+   sit together, give them a padded tab shape, and colour active/inactive. */
+.p-dialog:has(.font-sans) .space-x-4 > :not([hidden]) ~ :not([hidden]) {
+  margin-left: 0 !important;
+}
+.p-dialog:has(.font-sans) .space-x-4 > h3.font-sans {
+  color: rgba(0, 0, 0, 0.40) !important;
+  background-color: transparent !important;
+  padding: 0.45rem 0.9rem !important;
+  margin-bottom: 0 !important;
+  border: 1px solid #d1d5db !important;
+  border-bottom: 0 !important;
+  border-radius: 0.375rem 0.375rem 0 0 !important;
+}
+.p-dialog:has(.font-sans) .space-x-4 > h3.font-sans.tab-active {
+  color: #000000 !important;
+  background-color: rgba(var(--corporate-primary-rgb), 0.35) !important;
+  border-color: var(--corporate-primary) !important;
+  /* Cover the container's green line under the active tab */
+  border-bottom: 2px solid #ffffff !important;
+}
+/* Corporate line under the tabs (marks the area they affect) and drop the
+   container's pl-3 so the first tab aligns with the content on its left. */
+.p-dialog:has(.font-sans) .space-x-4.pl-3 {
+  border-bottom: 2px solid var(--corporate-primary) !important;
+  padding-left: 0 !important;
+}
+
 /* column-dialog */
 .p-dialog:has(.aggregation-list) .section-card {
   padding: 0.375rem 0 !important;
