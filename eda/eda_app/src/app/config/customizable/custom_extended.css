@@ -201,10 +201,16 @@ html {
   width: 1.35rem !important;
   font-size: 13px !important;
 }
+/* Dropdown options: match the selected element's size and use black text. */
 .p-dropdown-panel .p-dropdown-items .p-dropdown-item {
-  padding: 0.25rem 0.75rem !important;
-  font-size: 13px !important;
-  line-height: 1.4 !important;
+  padding: 0.75rem !important;
+  font-size: 1rem !important;
+  line-height: 1.5 !important;
+  color: #000000 !important;
+}
+.p-dropdown-panel .p-dropdown-items .p-dropdown-item.p-highlight,
+.p-dropdown-panel .p-dropdown-items .p-dropdown-item:not(.p-highlight):not(.p-disabled):hover {
+  color: #000000 !important;
 }
 .items-length {
   font-size: 13px !important;
