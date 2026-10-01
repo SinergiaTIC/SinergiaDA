@@ -14,7 +14,7 @@ import { EdaChartComponent } from '@eda/components/eda-chart/eda-chart.component
 import * as _ from 'lodash';
 import { StyleConfig } from './style-provider.service';
 import { KpiConfig } from '@eda/components/eda-panels/eda-blank-panel/panel-charts/chart-configuration-models/kpi-config';
-import { DEFAULT_PALETTE_COLOR } from '@eda/configs/index';
+import { DEFAULT_PALETTE_COLOR } from '@eda/configs/customizable/customizable_merged';
 import { StyleProviderService } from '@eda/services/service.index';
 import { color } from 'd3';
 
@@ -31,6 +31,11 @@ export interface FilterType {
     label: string;
     value: string;
     typeof: string[];
+}
+
+export interface FilterTypeLabels {
+    label: string;
+    value: string;
 }
 
 export interface OrdenationType {
@@ -88,6 +93,23 @@ export class ChartUtilsService {
         { label: $localize`:@@chartTypes10:Mapa de coordenadas`, value: 'coordinatesMap', subValue: 'coordinatesMap', icon: 'pi pi-exclamation-triangle', ngIf: true, tooManyData: false },
         { label: $localize`:@@chartTypes11:Mapa de Capas`, value: 'geoJsonMap', subValue: 'geoJsonMap', icon: 'pi pi-exclamation-triangle', ngIf: true, tooManyData: false },
         { label: $localize`:@@chartTypesRadar:Radar`, value: 'radar', subValue: 'radar', icon: 'pi pi-exclamation-triangle', ngIf: true, tooManyData: false },
+    ];
+
+    public filterTypesLabels: FilterTypeLabels[] = [
+        { label: $localize`:@@filtersLabel1:=`, value: '=' },
+        { label: $localize`:@@filtersLabel2:≠`, value: '!=' },
+        { label: $localize`:@@filtersLabel3:>`, value: '>' },
+        { label: $localize`:@@filtersLabel4:<`, value: '<' },
+        { label: $localize`:@@filtersLabel5:≥`, value: '>=' },
+        { label: $localize`:@@filtersLabel6:≤`, value: '<=' },
+        { label: $localize`:@@filtersLabel7:Entre`, value: 'between' },
+        { label: $localize`:@@filtersLabel8:Dentro de`, value: 'in' },
+        { label: $localize`:@@filtersLabel9:Fuera de`, value: 'not_in' },
+        { label: $localize`:@@filtersLabel10:Parecido a`, value: 'like' },
+        { label: $localize`:@@filtersLabel11:No parecido a`, value: 'not_like' },
+        { label: $localize`:@@filtersLabel12:No nulos`, value: 'not_null' },
+        { label: $localize`:@@filtersLabel13:No nulos ni vacíos`, value: 'not_null_nor_empty' },
+        { label: $localize`:@@filtersLabel14:Nulos o vacíos`, value: 'null_or_empty' },
     ];
 
     public filterTypes: FilterType[] = [

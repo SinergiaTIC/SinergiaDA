@@ -343,6 +343,26 @@ export class IconService {
   </svg>
 `,
 
+"information-circle": `
+  <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+    <g style="stroke:currentColor;stroke-width:2;fill:none;fill-rule:evenodd;stroke-linecap:round;stroke-linejoin:round">
+      <circle cx="12" cy="12" r="9" />
+      <path d="M12 11.5v5" />
+      <path d="M12 7.75h.008" />
+    </g>
+  </svg>
+`,
+
+"language": `
+  <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+    <g style="stroke:currentColor;stroke-width:2;fill:none;fill-rule:evenodd;stroke-linecap:round;stroke-linejoin:round">
+      <circle cx="12" cy="12" r="9" />
+      <path d="M3.75 9.75h16.5M3.75 14.25h16.5" />
+      <path d="M12 3a15 15 0 0 1 0 18 15 15 0 0 1 0-18Z" />
+    </g>
+  </svg>
+`,
+
 
   };
 

@@ -9,6 +9,7 @@ import { authGuard } from '../../guards/auth-guard';
 import { buildEnhancedSystemPrompt, CHAT_MAIN_SYSTEM_PROMPT } from './mcp.prompts';
 import * as MCPUtils from './mcp.helpers';
 import * as mcpServer from './mcp.server';
+import { isFirstWorker } from '../../utils/cluster.util';
 
 const jwt    = require('jsonwebtoken');
 const SEED   = require('../../../config/seed').SEED;
@@ -20,17 +21,20 @@ const SEED   = require('../../../config/seed').SEED;
 // --- Express router ---
 const McpRouter = express.Router();
 
-// Log de arranque con valores clave
-{
+// Log de arranque: solo en el primer worker para evitar duplicados en cluster
+if (isFirstWorker()) {
     const { EDA_APP_URL, MODEL, AVAILABLE, MAX_TOKENS, MCP_EMAIL, MCP_PASSWORD } = MCPUtils.getAnthropicConfig();
-    console.log('[MCP] ========== ROUTER INICIADO ==========');
-    console.log('[MCP] EDA_APP_URL :', EDA_APP_URL || '(no configurado)');
-    console.log('[MCP] MODEL       :', MODEL || '(no configurado)');
-    console.log('[MCP] AVAILABLE   :', AVAILABLE);
-    console.log('[MCP] MAX_TOKENS  :', MAX_TOKENS);
-    console.log('[MCP] MCP_EMAIL   :', MCP_EMAIL || '(no configurado)');
-    console.log('[MCP] MCP_PASSWORD:', MCP_PASSWORD ? '(configurado)' : '(no configurado)');
-    console.log('[MCP] =========================================');
+    if (!AVAILABLE) {
+        console.log('[MCP] No configurado');
+    } else {
+        console.log('[MCP] ========== ROUTER INICIADO ==========');
+        console.log('[MCP] EDA_APP_URL :', EDA_APP_URL || '(no configurado)');
+        console.log('[MCP] MODEL       :', MODEL || '(no configurado)');
+        console.log('[MCP] MAX_TOKENS  :', MAX_TOKENS);
+        console.log('[MCP] MCP_EMAIL   :', MCP_EMAIL || '(no configurado)');
+        console.log('[MCP] MCP_PASSWORD:', MCP_PASSWORD ? '(configurado)' : '(no configurado)');
+        console.log('[MCP] =========================================');
+    }
 }
 
 /**

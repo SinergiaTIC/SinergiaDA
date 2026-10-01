@@ -2,8 +2,8 @@ import { ChangeDetectorRef, Component, CUSTOM_ELEMENTS_SCHEMA, inject, OnInit, Q
 import { ActivatedRoute } from '@angular/router';
 import { lastValueFrom, Subscription } from 'rxjs';
 import { DateUtils } from '@eda/services/utils/date-utils.service';
-import { normalizeQueryMode } from '@eda/shared/utils/query-mode.util';
-import { ALLOWED_QUERY_MODES } from '@eda/configs/customizable/customizable_default';
+import { resolveQueryMode, isEdaQueryMode } from '@eda/shared/utils/query-mode.util';
+import { ALLOWED_QUERY_MODES } from '@eda/configs/customizable/customizable_merged';
 import * as _ from 'lodash';
 import { ButtonModule } from 'primeng/button';
 import { DropdownModule } from 'primeng/dropdown';
@@ -13,7 +13,7 @@ import { CompactType, DisplayGrid, GridsterComponent, GridsterConfig, GridsterIt
 import { AlertService, DashboardService, FileUtiles, GlobalFiltersService, StyleProviderService, IGroup, DashboardStyles, ChartUtilsService, UserService } from '@eda/services/service.index';
 import { EdaPanel, EdaPanelType, InjectEdaPanel } from '@eda/models/model.index';
 import { DashboardSidebarComponent } from './dashboard-sidebar/dashboard-sidebar.component';
-import { GlobalFilterComponent } from '@eda/components/global-filter/global-filter.component'; 
+import { GlobalFilterComponent } from '@eda/components/global-filter/global-filter.component';
 import { EdaBlankPanelComponent, IPanelAction, QUERY_MODE_LABELS } from '@eda/components/eda-panels/eda-blank-panel/eda-blank-panel.component';
 import { FormsModule } from '@angular/forms';
 import { FocusOnShowDirective } from '@eda/shared/directives/autofocus.directive';
@@ -34,7 +34,7 @@ import { ImportPanelDialog } from "@eda/components/import-panel/import-panel.dia
 import { DashboardSaveAsDialog } from "@eda/components/dashboard-save-as/dashboard-save-as.dialog";
 import { DashboardEditStyleDialog } from "@eda/components/dashboard-edit-style/dashboard-edit-style.dialog";
 import { DashboardVisibleModal } from "@eda/components/dashboard-visible/dashboard-visible.modal";
-import { DashboardTagModal } from './dashboard-tag/dashboard-tag.modal'; 
+import { DashboardTagModal } from './dashboard-tag/dashboard-tag.modal';
 import { DashboardMailConfigModal } from "@eda/components/dashboard-mail-config/dashboard-mail-config.modal";
 import { DashboardCustomActionDialog } from "@eda/components/dashboard-custom-action/dashboard-custom-action.dialog";
 
@@ -58,8 +58,8 @@ const GRIDSTER_MODULES = [
 // Standalone Components
 const STANDALONE_COMPONENTS = [
   DashboardSidebarComponent,
-  EdaBlankPanelComponent, 
-  GlobalFilterComponent, 
+  EdaBlankPanelComponent,
+  GlobalFilterComponent,
   DashboardSaveAsDialog,
   DashboardEditStyleDialog,
   DashboardCustomActionDialog,
@@ -88,14 +88,14 @@ export class DashboardPage implements OnInit {
   @ViewChild(DashboardSidebarComponent) sidebar!: DashboardSidebarComponent;
   @ViewChild(GlobalFilterComponent) globalFilter: GlobalFilterComponent;
   @ViewChildren(EdaBlankPanelComponent) edaPanels: QueryList<EdaBlankPanelComponent>;
-  
+
   /**
    * Report component plugin (toolbar replacing the three dots ⠿).
    * Only the plugin declaring `type: 'report-toolbar'` is mounted; if none is
    * registered, the template falls back to the original three-dots menu.
    */
   public menuPlugin = COMPONENT_PLUGINS.find(p => p.type === 'report-toolbar');
-  
+
   private sidebarService = inject(DashboardSidebarService)
   private globalFiltersService = inject(GlobalFiltersService);
   private stylesProviderService = inject(StyleProviderService);
@@ -113,7 +113,7 @@ export class DashboardPage implements OnInit {
   public gridsterOptions: GridsterConfig;
   public gridsterDashboard: GridsterItem[];
   private edaPanelsSubscription: Subscription;
-  
+
   public reportTitle: any;
   public reportPanel: any;
   public backgroundColor: any;
@@ -202,12 +202,12 @@ export class DashboardPage implements OnInit {
           this.edaPanelsSubscription = this.edaPanels.changes.subscribe((comps: QueryList<EdaBlankPanelComponent>) => {
               const globalFilters = this.globalFilter?.globalFilters.filter(filter => filter.isGlobal === true);
               const unsetPanels = this.edaPanels.filter(panel => _.isNil(panel.panel.content));
-  
+
               this.setPanelsQueryMode();
-  
+
               setTimeout(() => {
                   const treeQueryMode = this.edaPanels.some((panel) => panel.selectedQueryMode === 'TREE');
-  
+
                   unsetPanels.forEach(panel => {
                       globalFilters.forEach(filter => {
                           if (panel && !treeQueryMode) {
@@ -217,11 +217,58 @@ export class DashboardPage implements OnInit {
                           }
                       });
                   });
-  
+
               }, 0);
           });
-  
+
       }
+
+  /**
+   * When a brand-new (non-duplicated) TREE panel gets its root table set for the first time,
+   * replicate the path of an existing TREE global filter that already targets a sibling panel
+   * sharing that same root table, so the new panel is filtered immediately without having to
+   * reopen the global filter dialog.
+   */
+  public onNewPanelRootTableSet(rootTableName: string, panel: EdaPanel): void {
+      if (!rootTableName) return;
+      const newPanelComp = this.edaPanels.find(p => p.panel.id === panel.id);
+      if (!newPanelComp) return;
+
+      const globalFilters = this.globalFilter?.globalFilters?.filter((f: any) => f.isGlobal && f.queryMode === 'TREE' && f.pathList) || [];
+
+      globalFilters.forEach((filter: any) => {
+          if (!filter.panelList?.length) return;
+
+          // Find the first active panel in this filter that shares the same rootTable
+          const matchingPanelId = filter.panelList.find((pid: string) => {
+              const existing = this.edaPanels.find(p => p.panel.id === pid);
+              return existing?.rootTable?.table_name === rootTableName;
+          });
+
+          if (matchingPanelId && filter.pathList[matchingPanelId]) {
+              filter.pathList[panel.id] = { ...filter.pathList[matchingPanelId] };
+              filter.panelList.push(panel.id);
+              const formatted = this.globalFiltersService.formatFilter(filter);
+              newPanelComp.assertGlobalFilter(formatted);
+          }
+      });
+  }
+
+  /**
+   * When a TREE panel loses its root table (all columns removed), it can no longer be a valid
+   * target for any global filter path, so we drop it from panelList/pathList to keep the
+   * global filters consistent.
+   */
+  public onNewPanelRootTableCleared(panel: EdaPanel): void {
+      const globalFilters = this.globalFilter?.globalFilters?.filter((f: any) => f.isGlobal && f.queryMode === 'TREE') || [];
+
+      globalFilters.forEach((filter: any) => {
+          filter.panelList = filter.panelList?.filter((pid: string) => pid !== panel.id) || [];
+          if (filter.pathList?.[panel.id]) {
+              delete filter.pathList[panel.id];
+          }
+      });
+  }
 
   ngOnDestroy() {
     // Reset styles to defaults
@@ -239,8 +286,8 @@ export class DashboardPage implements OnInit {
 
 
 
-  
-  
+
+
     private initializeGridsterOptions(): void {
     this.gridsterOptions = {
       gridType: GridType.VerticalFixed, // General Gridster configuration: enables vertical scrolling and generated items have fixed size.
@@ -318,12 +365,12 @@ export class DashboardPage implements OnInit {
       this.getUrlParams();
       this.globalFilter?.findGlobalFilterByUrlParams(this.queryParams);
       this.globalFilter?.fillFiltersData();
-      
+
       if (this.styles.palette !== undefined) {
         this.chartUtils.MyPaletteColors = this.styles.palette['paleta'];
       }
-      
-      
+
+
       if (this.dashboard.config.styles?.palette && this.dashboard.config.styles?.stylesApplied) {
         this.assignStyles();
         this.stylesProviderService.setStyles(this.styles, true)
@@ -361,6 +408,18 @@ export class DashboardPage implements OnInit {
 
   private updateFilterDatesInPanels(): void {
 
+        // A dynamic in/not_in date range was never supported as a literal SQL IN by the backend
+        // (it only reads value1, dropping the range's end). Filters saved before this was fixed —
+        // including ones from the old pre-migration app — still carry filter_type 'in'/'not_in'
+        // frozen from when they were created. Remap it here too so old dashboards get the correct
+        // between/not_between query, without needing to be re-saved.
+        const wireFilterType = (filter: any): string => {
+            if (filter.filter_column_type === 'date' && filter.selectedRange && ['in', 'not_in'].includes(filter.filter_type)) {
+                return filter.filter_type === 'in' ? 'between' : 'not_between';
+            }
+            return filter.filter_type;
+        };
+
         /**Set ranges for dates in panel filters */
         this.panels.filter(panel => panel.content).forEach(panel => {
 
@@ -376,12 +435,29 @@ export class DashboardPage implements OnInit {
 
                     pFilter.filter_elements[0] = { value1: [stringRange[0]] }
                     pFilter.filter_elements[1] = { value2: [stringRange[1]] }
+                    pFilter.filter_type = wireFilterType(pFilter);
 
                 }
 
                 panel.content.query.query.filters.push(pFilter);
 
             });
+
+            // Same date recompute + filter_type remap for the AND/OR filter tree, which the
+            // loop above doesn't touch — it lives at panel.content.query.query.sortedFilters.
+            const sortedFilters = panel.content.query.query.sortedFilters;
+            if (Array.isArray(sortedFilters)) {
+                sortedFilters.forEach(sFilter => {
+                    if (!!sFilter.selectedRange) {
+                        let range = this.dateUtilsService.getRange(sFilter.selectedRange);
+                        let stringRange = this.dateUtilsService.rangeToString(range);
+
+                        sFilter.filter_elements[0] = { value1: [stringRange[0]] };
+                        sFilter.filter_elements[1] = { value2: [stringRange[1]] };
+                        sFilter.filter_type = wireFilterType(sFilter);
+                    }
+                });
+            }
 
         });
 
@@ -409,7 +485,7 @@ export class DashboardPage implements OnInit {
             });
         });
     }
-    
+
 
   // Method that assigns styles
   public assignStyles() {
@@ -417,7 +493,7 @@ export class DashboardPage implements OnInit {
     this.reportPanel = {
       height: 5 + (this.dashboard.config.styles.title.fontSize*0.25) + 'vh',
     };
-    
+
     // Report title text
     this.reportTitle = {
       color: this.dashboard.config.styles.title.fontColor,
@@ -426,7 +502,7 @@ export class DashboardPage implements OnInit {
       display: 'flex',
     'justify-content': this.dashboard.config.styles.titleAlign === 'center' ? 'center'
                       : this.dashboard.config.styles.titleAlign === 'flex-end' ? 'right'
-                      : 'flex-start'  
+                      : 'flex-start'
     };
 
     // Chart title panel
@@ -601,7 +677,7 @@ export class DashboardPage implements OnInit {
       }
     }, 100); // checks every 100ms
   }
-  
+
   public async reloadPanels(): Promise<void> {
     const tasks = this.edaPanels.map(async (panel) => {
       if (panel.currentQuery.length > 0) {
@@ -631,8 +707,7 @@ export class DashboardPage implements OnInit {
     const isImportedPanel: boolean = panel?.globalFilterMap;
 
     if (panel) {
-      modeEDA = !event?.data.panel.content?.query?.query.modeSQL &&
-        (!event?.data.panel.content.query.query.queryMode || event?.data.panel.content.query.query.queryMode === 'EDA');
+      modeEDA = isEdaQueryMode(panel.content?.query?.query?.queryMode, panel.content?.query?.query?.modeSQL);
     }
 
     // Cancel event if the column is navigable
@@ -675,10 +750,15 @@ export class DashboardPage implements OnInit {
   // DYNAMIC FILTER FUNCTIONS
   // DYNAMIC FILTER FUNCTIONS
 
+  // Dynamic filter UI (sidebar/panel toggles) only makes sense if there's at least one EDA panel.
+  public dynamicFiltersAvailable(): boolean {
+    return this.panels.some((p: any) => isEdaQueryMode(p.content?.query?.query?.queryMode, p.content?.query?.query?.modeSQL));
+  }
+
    // Handles the case when a filter already exists
   private async handleExistingFilter(existingFilter: any, data: any, table: any, column: any): Promise<void> {
     const filterName = existingFilter.column?.label || existingFilter.selectedColumn?.display_name?.default ||"default";
-    
+
     if (existingFilter.selectedItems.length === 0) { // Existing filter is empty
       this.handleEmptyFilter(existingFilter, data);
     } else if (existingFilter.selectedItems.length === 1) { // Existing filter has 1 value
@@ -822,7 +902,7 @@ export class DashboardPage implements OnInit {
     }
   }
 
-  
+
 /**
  * Checks the security configuration of filters and hides the column if the filter is not visible to the user due to security filter reasons
  * @param filters - receives the report's filter array
@@ -855,18 +935,18 @@ export class DashboardPage implements OnInit {
   createChartFilter(table: any, column: any, dataLabel: string, config: any): any {
 
     let allNonDynamics = this.edaPanels.filter((panel: any) => !panel.dynamicFilters)
-    
+
     if(allNonDynamics.length === 0){
       const filter = {
         id: `${table.table_name}_${column.column_name}`,
-        filter_id: `${table.table_name}_${column.column_name}`, 
+        filter_id: `${table.table_name}_${column.column_name}`,
         isGlobal: true,
         isAutocompleted: config.isAutocompleted ?? false,
         applyToAll: config.applyToAll ?? true,
         panelList: config.panelList.map((p) => p.id),
         table: { label: table.display_name.default, value: table.table_name },
-        column: { 
-            label: column.display_name?.default || column.column_name, 
+        column: {
+            label: column.display_name?.default || column.column_name,
             value: column
         },
         selectedItems: [dataLabel],
@@ -878,19 +958,19 @@ export class DashboardPage implements OnInit {
       return filter;
 
     } else {
-      
+
       let allNonDynamicsPanels = allNonDynamics.map(panel => panel.panel.id)
 
       const filter = {
         id: `${table.table_name}_${column.column_name}`,
-        filter_id: `${table.table_name}_${column.column_name}`, 
+        filter_id: `${table.table_name}_${column.column_name}`,
         isGlobal: true,
         isAutocompleted: config.isAutocompleted ?? false,
         applyToAll: false,
         panelList: config.panelList.filter((panel: any) => !panel.id.includes(allNonDynamicsPanels)).map((p: any) => p.id),
         table: { label: table.display_name.default, value: table.table_name },
-        column: { 
-            label: column.display_name?.default || column.column_name, 
+        column: {
+            label: column.display_name?.default || column.column_name,
             value: column
         },
         selectedItems: [dataLabel],
@@ -901,7 +981,7 @@ export class DashboardPage implements OnInit {
 
       return filter;
     }
-    
+
       //FALSE ==> collect panels that do not have click enabled
         // Modify properties isGlobal? applyToAll? panelList?
 
@@ -914,10 +994,10 @@ export class DashboardPage implements OnInit {
     // Remove the fromChart filter from the global filter
     this.globalFilter.removeGlobalFilterOnClick(chartToRemove, true);
     // Retrieve the corresponding filter and remove it from the saved filters
-    if (filterToAddIndx !== -1 ) { 
+    if (filterToAddIndx !== -1 ) {
       this.globalFilter.onGlobalFilterAuto(this.lastFilters[filterToAddIndx].filter, table.table_name)
       this.lastFilters.splice(filterToAddIndx, 1);
-    }  
+    }
   }
 
   recoverDynamicFilter(chartToRemove?: any, existingFilter?: any, filterName?: string) {
@@ -935,13 +1015,13 @@ export class DashboardPage implements OnInit {
 
     let filterInPanel = data.panel.content.query.query?.filters.find((f: any) =>
       (f.filter_elements?.some((fe: any) => fe.value1?.includes(data.label))) ||
-      (data.label.includes(f.selectedItems))) 
+      (data.label.includes(f.selectedItems)))
       !== undefined;
 
     if(anyChartToRemove && filterInPanel) {
       // even if it matches, if it is not applied as a filter in the panel itself, we will create a new one
       return false;
-    }   
+    }
     return true;
   }
 
@@ -959,7 +1039,7 @@ export class DashboardPage implements OnInit {
 
   checkImportedPanels(dashboard) {
     dashboard.config.panel?.forEach(element => {
-      try {        
+      try {
         if (element.globalFilterMap) {
           const panelFilters = element.content.query.query.filters;
           element.globalFilterMap.forEach(filterLinkId => {
@@ -984,8 +1064,8 @@ export class DashboardPage implements OnInit {
           });
         }
       } catch (error) {
-        console.log('Error al cargar imported panels', error)      
-        this.alertService.addError('Error al cargar imported panels')  
+        console.log('Error al cargar imported panels', error)
+        this.alertService.addError('Error al cargar imported panels')
       }
     });
   }
@@ -1026,44 +1106,6 @@ export class DashboardPage implements OnInit {
     });
   }
 
-  /** When a brand-new (non-duplicated) panel gets its root table for the first time,
-   * auto-attach it to global filters that already apply to sibling panels sharing that root table. */
-  public onNewPanelRootTableSet(rootTableName: string, panel: EdaPanel): void {
-    if (!rootTableName) return;
-    const newPanelComp = this.edaPanels.find(p => p.panel.id === panel.id);
-    if (!newPanelComp) return;
-
-    const globalFilters = this.globalFilter?.globalFilters?.filter((f: any) => f.isGlobal && f.pathList) || [];
-
-    globalFilters.forEach((filter: any) => {
-      if (!filter.panelList?.length) return;
-
-      // Find the first active panel in this filter that has the same rootTable
-      const matchingPanelId = filter.panelList.find((pid: string) => {
-        const existing = this.edaPanels.find(p => p.panel.id === pid);
-        return existing?.rootTable?.table_name === rootTableName;
-      });
-
-      if (matchingPanelId && filter.pathList[matchingPanelId]) {
-        filter.pathList[panel.id] = { ...filter.pathList[matchingPanelId] };
-        filter.panelList.push(panel.id);
-        const formatted = this.globalFiltersService.formatFilter(filter);
-        newPanelComp.assertGlobalFilter(formatted);
-      }
-    });
-  }
-
-  public onNewPanelRootTableCleared(panel: EdaPanel): void {
-    const globalFilters = this.globalFilter?.globalFilters?.filter((f: any) => f.isGlobal) || [];
-
-    globalFilters.forEach((filter: any) => {
-      filter.panelList = filter.panelList?.filter((pid: string) => pid !== panel.id) || [];
-      if (filter.pathList?.[panel.id]) {
-        delete filter.pathList[panel.id];
-      }
-    });
-  }
-
   async onGlobalFilter(data: any) {
     // const data = action?.data;
     if (data && !_.isNil(data?.inx)) {
@@ -1086,7 +1128,7 @@ export class DashboardPage implements OnInit {
         };
 
         await this.globalFilter.onGlobalFilter(true, globalFilter);
-      
+
 
         this.dashboardService.setNotSaved(true);
 
@@ -1114,11 +1156,11 @@ export class DashboardPage implements OnInit {
 
   /** Selects the mode in which queries will be allowed. EDA and Tree type queries cannot be mixed in the same report. */
   private setPanelsQueryMode(): void {
-    const treeQueryMode = this.panels.some((p) => normalizeQueryMode(p.content?.query?.query?.queryMode) === 'TREE');
-    const standardQueryMode = this.panels.some((p) => p.content?.query?.query?.queryMode === 'EDA');
+    const treeQueryMode = this.panels.some((p) => resolveQueryMode(p.content?.query?.query?.queryMode, p.content?.query?.query?.modeSQL) === 'TREE');
+    const standardQueryMode = this.panels.some((p) => isEdaQueryMode(p.content?.query?.query?.queryMode, p.content?.query?.query?.modeSQL));
 
     for (const panel of this.edaPanels) {
-      const ownMode = normalizeQueryMode(panel.panel?.content?.query?.query?.queryMode);
+      const ownMode = resolveQueryMode(panel.panel?.content?.query?.query?.queryMode, panel.panel?.content?.query?.query?.modeSQL);
       let allowedModes = [...ALLOWED_QUERY_MODES];
 
       if (treeQueryMode) {
@@ -1276,8 +1318,8 @@ public startCountdown(seconds: number) {
     if (this.dashboard.config.stopRefresh) {
       clearInterval(this.countdownInterval);
       return;
-    }    
-    counter--; 
+    }
+    counter--;
     if (counter < 0) {
       this.onResetWidgets();
       counter = seconds; // Changed from recursion to counter
@@ -1371,11 +1413,11 @@ public startCountdown(seconds: number) {
     }
     else {
       // If the event is from a D3Chart or Leaflet library chart
-        return event.data.query.find((query: any) => query?.column_name?.localeCompare(event.data.filterBy, undefined, { sensitivity: 'base' }) === 0);    
-//        return event.data.query.find((query: any) => query?.display_name?.default.localeCompare(event.data.filterBy, undefined, { sensitivity: 'base' }) === 0);    
+        return event.data.query.find((query: any) => query?.column_name?.localeCompare(event.data.filterBy, undefined, { sensitivity: 'base' }) === 0);
+//        return event.data.query.find((query: any) => query?.display_name?.default.localeCompare(event.data.filterBy, undefined, { sensitivity: 'base' }) === 0);
     }
   }
-  
+
   //----------------------------------------//
   //-- Check if this is needed or can be removed --//
   // Gets the item at the bottommost position of the gridster -- Check if this is needed
@@ -1502,7 +1544,7 @@ public startCountdown(seconds: number) {
     this.mobileResizeObserver.observe(gridsterEl);
     measure();
   }
-  
+
   private sortPanelsForMobile(): void {
     if (!this.panels?.length) return;
     const isMobile = window.innerWidth < (this.gridsterOptions.mobileBreakpoint || 640);

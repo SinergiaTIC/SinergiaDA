@@ -11,7 +11,7 @@ import { TooltipModule } from "primeng/tooltip";
 import { DropdownModule, Dropdown } from "primeng/dropdown";
 import Swal from "sweetalert2";
 import * as _ from "lodash";
-import { ALLOW_NON_ADMIN_MANAGE_PUBLIC_REPORTS } from "@eda/configs/customizable/customizable_default";
+import { ALLOW_NON_ADMIN_MANAGE_PUBLIC_REPORTS } from "@eda/configs/customizable/customizable_merged";
 
 @Component({
   standalone: true,

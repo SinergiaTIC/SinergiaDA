@@ -2,13 +2,14 @@ import { Component, inject, OnInit, AfterViewChecked, NgZone, ViewChild, Element
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
-import { LogoImage, SubLogoImage, BackgroundImage } from '@eda/configs/index';
+import { LogoImage, SubLogoImage, BackgroundImage } from '@eda/configs/customizable/customizable_merged';
 import { ParticlesBackgroundComponent } from '@eda/shared/components/particles-background/particles-background';
 import { UserService } from '@eda/services/service.index';
 import { User } from '@eda/models/model.index';
 import { lastValueFrom } from 'rxjs';
 import { jwtDecode } from 'jwt-decode';
 import { GOOGLE_CLIENT_ID } from '@eda/configs/config';
+import { HOME_SCREEN_PARTICLE_COLOR, HOME_SCREEN_BACKGROUND_COLOR } from '@eda/configs/customizable/customizable_merged';
 import { MsalModule, MsalService } from '@azure/msal-angular';
 import Swal from 'sweetalert2';
 
@@ -35,6 +36,7 @@ export class LoginV2Component implements OnInit, AfterViewChecked {
     readonly subLogo = SubLogoImage
     readonly backgroundImage = BackgroundImage
     readonly currentYear = new Date().getFullYear().toString()
+    readonly showOrbs = !HOME_SCREEN_PARTICLE_COLOR && !HOME_SCREEN_BACKGROUND_COLOR // any home-screen color configured → orbs hidden
 
     loginForm: FormGroup;
     urlParams: any;
