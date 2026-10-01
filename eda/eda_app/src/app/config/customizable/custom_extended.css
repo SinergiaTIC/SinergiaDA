@@ -36,6 +36,22 @@ app-main-left-sidebar > div {
   height: 4rem;
   object-fit: contain;
 }
+/* Sidebar nav icons: the inner <span> from eda-icon (h-6 w-6) drives the SVG
+   size, so enlarge it here. Scoped to .sidebar-btn (main nav, not submenu). */
+app-main-left-sidebar .sidebar-btn eda-icon {
+  width: 2rem !important;
+  height: 2rem !important;
+  align-items: center;
+  justify-content: center;
+}
+app-main-left-sidebar .sidebar-btn eda-icon > span {
+  width: 2rem !important;
+  height: 2rem !important;
+}
+/* More vertical air between the sidebar menu items (was gap-2 = 0.5rem). */
+app-main-left-sidebar .flex.flex-col.items-center.gap-2 {
+  gap: 0.85rem !important;
+}
 
 /* ─── Report visibility/type selector: black text on corporate green ─────── */
 .visibility-selector .p-selectbutton .p-button.p-highlight,
