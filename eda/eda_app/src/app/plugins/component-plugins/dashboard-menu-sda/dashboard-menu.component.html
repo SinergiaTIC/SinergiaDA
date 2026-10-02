@@ -1,4 +1,9 @@
 <div class="dashboard-menu-sda">
+  <!-- Zoom control: hosted here because the plugin replaces the sidebar -->
+  @if (showZoomControl) {
+    <zoom-control [dashboard]="dashboard" layout="toolbar"></zoom-control>
+  }
+
   <!-- Add dropdown -->
   <p-menu #addMenu [model]="addMenuItems" [popup]="true" appendTo="body" styleClass="dsm-menu"></p-menu>
 
@@ -32,6 +37,25 @@
             <i class="pi pi-file-word dsm-fmt-word"></i>
           </button>
         </div>
+      } @else if (item.id === 'dataSourceInfo') {
+        <!-- Read-only data-source name (informational, not clickable) -->
+        <div class="dsm-info-item">
+          <span class="p-menuitem-icon" *ngIf="item.icon" [ngClass]="item.icon"></span>
+          <span class="p-menuitem-text">{{ item.label }}</span>
+        </div>
+      } @else if (item.id === 'liveDashboard') {
+        <!-- Live Dashboard row: opens the seconds input in place -->
+        <div class="p-menuitem-link dsm-livedashboard" (click)="onLiveDashboardClick($event)">
+          <span class="p-menuitem-icon" [ngClass]="item.icon"></span>
+          <span class="p-menuitem-text">{{ item.label }}</span>
+        </div>
+        @if (liveDashboardOpen) {
+          <div class="dsm-livedashboard-input" (click)="$event.stopPropagation()">
+            <input type="number" class="dsm-refresh-input" min="5" [(ngModel)]="refreshTime"
+              [placeholder]="secondsToRefreshPlaceholder" autofocusOnShow
+              (keydown.enter)="applyLiveDashboard()" (keydown.escape)="liveDashboardOpen = false" />
+          </div>
+        }
       } @else {
         <div class="p-menuitem-link" (click)="onFiltersItemClick($event, item)">
           <span class="p-menuitem-icon" *ngIf="item.icon" [ngClass]="item.icon"></span>
@@ -54,6 +78,7 @@
     </button>
   }
 
+
   @if (isEditable && !viewMode) {
     <button type="button" class="dsm-btn dsm-btn-primary" (click)="addMenu.toggle($event)">
       <i class="pi pi-plus dsm-btn-icon"></i>
@@ -68,6 +93,7 @@
       <span>{{ saveLabel }}</span>
     </button>
   }
+
 
   @if (!viewMode) {
     <button type="button" class="dsm-btn dsm-btn-ghost" [pTooltip]="moreLabel" tooltipPosition="bottom"

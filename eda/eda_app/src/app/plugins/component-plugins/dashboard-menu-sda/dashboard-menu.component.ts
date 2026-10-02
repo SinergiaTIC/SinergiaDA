@@ -1,5 +1,7 @@
-import { Component, DoCheck, Input, OnDestroy, OnInit, ViewChild, ViewEncapsulation, inject } from "@angular/core";
+import { Component, DoCheck, ElementRef, Input, OnDestroy, OnInit, ViewChild, ViewEncapsulation, inject } from "@angular/core";
 import { CommonModule } from "@angular/common";
+import { FormsModule } from "@angular/forms";
+import { FocusOnShowDirective } from "@eda/shared/directives/autofocus.directive";
 import { Subscription } from "rxjs";
 import { Menu, MenuModule } from "primeng/menu";
 import { MenuItem } from "primeng/api";
@@ -7,7 +9,11 @@ import { TooltipModule } from "primeng/tooltip";
 import { EdaPanel, EdaPanelType, EdaTitlePanel, EdaTabsPanel } from "@eda/models/model.index";
 import { FileUtiles, StyleProviderService, DashboardService } from "@eda/services/service.index";
 import { DashboardSidebarService } from "@eda/services/shared/dashboard-sidebar.service";
-import { SHOW_CUSTOM_ACTION } from "@eda/configs/customizable/customizable_default";
+import { IconService } from "@eda/services/utils/icons.service";
+// "Acción personalizada" hidden by design decision in SinergiaDA (see buildMoreMenu).
+// Restore together with its menu entry below.
+// import { SHOW_CUSTOM_ACTION } from "@eda/configs/customizable/customizable_default";
+import { ZoomSdaComponent } from "../../../module/pages/dashboard/zoom-control/zoom.component";
 
 /**
  * dashboard-menu-sda: replaces the three-dot (⠿) menu in the report header
@@ -19,7 +25,7 @@ import { SHOW_CUSTOM_ACTION } from "@eda/configs/customizable/customizable_defau
 @Component({
   selector: "dashboard-menu-sda",
   standalone: true,
-  imports: [CommonModule, MenuModule, TooltipModule],
+  imports: [CommonModule, FormsModule, MenuModule, TooltipModule, ZoomSdaComponent, FocusOnShowDirective],
   templateUrl: "./dashboard-menu.component.html",
   styleUrls: ["./dashboard-menu.component.css"],
   // Unencapsulated on purpose: the global toast rule in the CSS
@@ -37,6 +43,8 @@ export class DashboardMenuSdaComponent implements OnInit, OnDestroy, DoCheck {
   private stylesProviderService = inject(StyleProviderService);
   private dashboardService = inject(DashboardService);
   private sidebarService = inject(DashboardSidebarService);
+  private iconService = inject(IconService);
+  private host = inject(ElementRef);
   private notSavedSub?: Subscription;
 
   public isEditable: boolean = false;
@@ -61,6 +69,19 @@ export class DashboardMenuSdaComponent implements OnInit, OnDestroy, DoCheck {
   public downloadWordLabel = $localize`:@@dashboardSidebarDownloadWord:Descargar Word`;
   /** true when the report has unsaved changes. */
   public hasUnsavedChanges: boolean = false;
+  /** Live Dashboard: auto-refresh interval input (seconds). */
+  public liveDashboardOpen: boolean = false;
+  public refreshTime: number | null = null;
+  public liveDashboardLabel = $localize`:@@dashboardSidebarLiveDashboard:Live Dashboard`;
+  public secondsToRefreshPlaceholder = $localize`:@@secondsToRefresh:Segundos para refrescar`;
+  public renameLabel = $localize`:@@renameReportTooltip:Editar nombre`;
+  public panelTitlePlaceholder = $localize`:@@panelTitlePlaceholder:Título del panel`;
+  /** Bare pencil injected after the report title (core owns the title markup). */
+  private titlePencil?: HTMLElement;
+  private titleEl?: HTMLElement;
+  private titleInput?: HTMLInputElement;
+  private titleEditing = false;
+  private titleOriginalText = '';
   /**
    * View mode: hides all editing WITHOUT touching the core. Hot levers:
    * - `panel.readonly=true` (switches off everything governed by `isEditable()` in panels),
@@ -91,6 +112,7 @@ export class DashboardMenuSdaComponent implements OnInit, OnDestroy, DoCheck {
 
   ngOnDestroy(): void {
     this.notSavedSub?.unsubscribe();
+    this.teardownTitleAffordance();
     if (this.viewMode) this.restoreEditMode();
   }
 
@@ -114,6 +136,7 @@ export class DashboardMenuSdaComponent implements OnInit, OnDestroy, DoCheck {
       this.buildMoreMenu();
     }
     if (!this.viewModeInit) return; // never touch panels before knowing the report mode
+    this.syncTitleAffordance();
     if (!this.viewMode) return;
     this.ensureViewFlags();
     this.syncViewModeClass();
@@ -136,6 +159,16 @@ export class DashboardMenuSdaComponent implements OnInit, OnDestroy, DoCheck {
     } else {
       this.restoreEditMode();
     }
+  }
+
+  /**
+   * Zoom control is hosted by this plugin because it replaces the sidebar.
+   * Shown only when the report is editable, not in view mode, and the page is
+   * configured to place the zoom in the sidebar (otherwise the page renders it
+   * itself in the filters bar). Hidden in view mode, like the rest of editing.
+   */
+  public get showZoomControl(): boolean {
+    return this.isEditable && !this.viewMode && !!this.dashboard?.showZoomInSidebar;
   }
 
   /** Storage key for this report (null when the dashboard id is unknown). */
@@ -231,12 +264,145 @@ export class DashboardMenuSdaComponent implements OnInit, OnDestroy, DoCheck {
     this.gridsterBackup = {};
   }
 
+  /**
+   * Click on the Live Dashboard menu row: toggles the seconds input without
+   * closing the "More" menu (stopPropagation, same trick as report filters).
+   */
+  public onLiveDashboardClick(event: Event): void {
+    event.stopPropagation();
+    if (!this.liveDashboardOpen) {
+      this.refreshTime = this.dashboard?.dashboard?.config?.refreshTime ?? null;
+    }
+    this.liveDashboardOpen = !this.liveDashboardOpen;
+  }
+
+  /**
+   * Applies the auto-refresh interval: persists it on the report config (same
+   * field the sidebar uses) and restarts the page timer. A value under 5s is
+   * clamped to 5; empty or 0 stops the refresh.
+   */
+  public applyLiveDashboard(): void {
+    if (!this.dashboard?.dashboard?.config) return;
+    let value: number | null = Number(this.refreshTime);
+    if (!value || value <= 0) {
+      value = null;
+    } else if (value < 5) {
+      value = 5;
+    }
+    this.refreshTime = value;
+    this.dashboard.dashboard.config.refreshTime = value;
+    this.dashboardService.setNotSaved(true);
+    // The page owns the countdown; triggerTimer() restarts it from the config.
+    this.dashboard?.triggerTimer?.();
+    this.liveDashboardOpen = false;
+    this.closeMenus();
+  }
+
   /** Primary visible action: Save. */
   public async save(): Promise<void> {
     if (!this.dashboard) return;
     try {
       await this.dashboard.saveDashboard();
     } catch { /* the dashboard itself reports the error */ }
+  }
+
+  /**
+   * Replicates the panel-title edit pattern on the report header title:
+   * an <eda-icon name="pencil"> button right after the <h1>, and on click an
+   * <input> with the same look/placement as the panel's (px-3 py-2 bg-gray-100
+   * rounded-md, width 15vw, placeholder "Título del panel"), preloaded with the
+   * current title. Core renders the title, so this is a deliberate, fragile DOM
+   * hook (revisit if core changes the header). The pencil shows only in edit mode.
+   */
+  private syncTitleAffordance(): void {
+    if (this.titleEditing) return; // don't fight the input while editing
+    const header = this.host?.nativeElement?.parentElement as HTMLElement | null;
+    const title = header?.querySelector('h1') as HTMLElement | null;
+    if (!title) return;
+
+    // Re-inject if core re-created the title node or the pencil was removed.
+    if (this.titleEl !== title || !this.titlePencil?.isConnected) {
+      this.teardownTitleAffordance();
+      this.titleEl = title;
+      title.classList.add('dsm-title');
+
+      // Same affordance as the panel header: a button wrapping eda-icon pencil.
+      const button = document.createElement('button');
+      button.type = 'button';
+      button.className = 'dsm-title-pencil rounded-md cursor-pointer hover:bg-muted h-fit';
+      button.setAttribute('aria-label', this.renameLabel);
+      button.setAttribute('title', this.renameLabel);
+
+      // Same icon markup the panel uses (eda-icon renders IconService SVG into a span).
+      const icon = document.createElement('span');
+      icon.className = 'pointer-events-none inline-block h-5 w-5';
+      icon.innerHTML = this.iconService.getIcon('pencil');
+      button.appendChild(icon);
+      button.addEventListener('click', () => this.startTitleEdit());
+
+      title.insertAdjacentElement('afterend', button);
+      this.titlePencil = button;
+    }
+
+    this.titlePencil.style.display = (this.isEditable && !this.viewMode) ? '' : 'none';
+  }
+
+  /** Removes the injected pencil (and any pending edit) from the title. */
+  private teardownTitleAffordance(): void {
+    if (this.titleEditing) this.finishTitleEdit(true);
+    this.titleEl?.classList.remove('dsm-title');
+    this.titlePencil?.remove();
+    this.titlePencil = undefined;
+    this.titleEl = undefined;
+  }
+
+  /**
+   * Swaps the <h1> for an <input> replicating the panel-title edit control
+   * (same classes, width and placeholder), preloaded with the current title.
+   */
+  private startTitleEdit(): void {
+    const title = this.titleEl;
+    if (!title || this.titleEditing) return;
+    this.titleEditing = true;
+    this.titleOriginalText = title.textContent ?? '';
+    title.style.display = 'none';
+
+    const input = document.createElement('input');
+    input.type = 'text';
+    // Same look & placement as the panel-title editor.
+    input.className = 'dsm-title-input px-3 py-2 bg-gray-100 rounded-md focus:outline-none';
+    input.value = (this.dashboard?.title ?? this.titleOriginalText).trim();
+    input.setAttribute('placeholder', this.panelTitlePlaceholder);
+    input.addEventListener('blur', () => this.finishTitleEdit(false));
+    input.addEventListener('keydown', (event: KeyboardEvent) => {
+      if (event.key === 'Enter') {
+        event.preventDefault();
+        input.blur();
+      } else if (event.key === 'Escape') {
+        event.preventDefault();
+        this.finishTitleEdit(true);
+      }
+    });
+    title.insertAdjacentElement('afterend', input);
+    this.titleInput = input;
+    input.focus();
+    input.select();
+  }
+
+  /** Commits (or reverts) the title edit and restores the <h1>. */
+  private finishTitleEdit(revert: boolean): void {
+    if (!this.titleEditing) return;
+    const input = this.titleInput;
+    const title = this.titleEl;
+    const value = (input?.value || '').trim();
+    this.titleInput?.remove();
+    this.titleInput = undefined;
+    this.titleEditing = false;
+    if (title) title.style.display = '';
+    if (!revert && value && value !== (this.dashboard?.title ?? '').trim()) {
+      this.dashboard.title = value;
+      this.dashboardService.setNotSaved(true);
+    }
   }
 
   /** "Add" dropdown: new panel, filter, text, tabs and panel import. */
@@ -266,12 +432,13 @@ export class DashboardMenuSdaComponent implements OnInit, OnDestroy, DoCheck {
         visible: this.can('edit'),
         command: () => this.onAddTabsPanel()
       },
-      {
-        label: $localize`:@@dashboardSidebarImportPanel:Importar panel`,
-        icon: "pi pi-plus-circle",
-        visible: this.can('edit'),
-        command: () => this.sidebarService.invokeMethod("onImportPanel")
-      }
+      // "Importar panel" hidden in SinergiaDA until the feature is considered mature.
+      // {
+      //   label: $localize`:@@dashboardSidebarImportPanel:Importar panel`,
+      //   icon: "pi pi-plus-circle",
+      //   visible: this.can('edit'),
+      //   command: () => this.sidebarService.invokeMethod("onImportPanel")
+      // }
     ];
   }
 
@@ -290,6 +457,16 @@ export class DashboardMenuSdaComponent implements OnInit, OnDestroy, DoCheck {
     // along with their separator.
     const sections: MenuItem[][] = [
       [
+        // Read-only report data-source name, as shown in the old sidebar.
+        {
+          id: 'dataSourceInfo',
+          label: this.dashboard?.dataSource?.name,
+          icon: "pi pi-database",
+          disabled: true,
+          visible: !!this.dashboard?.dataSource?.name
+        }
+      ],
+      [
         // Single entry instead of one per filter (the list could grow too
         // long). It opens a flyout to the LEFT with one button per filter,
         // keeping the "More" menu open (see onFiltersItemClick).
@@ -299,11 +476,13 @@ export class DashboardMenuSdaComponent implements OnInit, OnDestroy, DoCheck {
           icon: "pi pi-filter",
           visible: this.hasReportFilters()
         },
-        {
-          label: $localize`:@@dashboardSidebarDependentFilters:Filtros dependientes`,
-          icon: "pi pi-sliders-h",
-          command: () => sidebar()?.dependentFilters()
-        }
+        // Temporarily hidden in SinergiaDA until the feature is considered mature.
+        // See https://github.com/SinergiaTIC/SinergiaDA/issues/626
+        // {
+        //   label: $localize`:@@dashboardSidebarDependentFilters:Filtros dependientes`,
+        //   icon: "pi pi-sliders-h",
+        //   command: () => sidebar()?.dependentFilters()
+        // }
       ],
       [
         {
@@ -318,17 +497,29 @@ export class DashboardMenuSdaComponent implements OnInit, OnDestroy, DoCheck {
           visible: this.can('edit'),
           command: () => { const s = sidebar(); if (s) s.isMailConfigDialogVisible = true; hide(); }
         },
-        ...(SHOW_CUSTOM_ACTION ? [{
-          label: $localize`:@@dashboardSidebarCustomAction:Acción personalizada`,
-          icon: "pi pi-cog",
-          visible: this.can('edit'),
-          command: () => { const s = sidebar(); if (s) s.isCustomActionDialogVisible = true; hide(); }
-        }] : [])
+        // "Acción personalizada" hidden by design decision in SinergiaDA.
+        // Restore by uncommenting this block (and the SHOW_CUSTOM_ACTION import above).
+        // ...(SHOW_CUSTOM_ACTION ? [{
+        //   label: $localize`:@@dashboardSidebarCustomAction:Acción personalizada`,
+        //   icon: "pi pi-cog",
+        //   visible: this.can('edit'),
+        //   command: () => { const s = sidebar(); if (s) s.isCustomActionDialogVisible = true; hide(); }
+        // }] : [])
       ],
       [
         // Own section: the 4 download formats render as a single icon row
         // (see the itemTemplate), not as 4 entries.
         { id: 'downloadGroup' }
+      ],
+      [
+        // Live Dashboard: auto-refresh interval. Handled from the custom
+        // itemTemplate (keeps the menu open while the seconds input shows).
+        {
+          id: 'liveDashboard',
+          label: this.liveDashboardLabel,
+          icon: "pi pi-desktop",
+          visible: this.can('edit')
+        }
       ],
       [
         {

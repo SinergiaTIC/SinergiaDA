@@ -37,6 +37,26 @@
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
 }
 
+/* Live Dashboard menu row: opens the seconds input in place, inside the menu. */
+.dsm-livedashboard-input {
+  padding: 0.35rem 0.75rem 0.5rem 2.25rem;
+}
+
+.dsm-refresh-input {
+  width: 100%;
+  height: 2rem;
+  padding: 0 0.6rem;
+  font-size: 0.9rem;
+  border-radius: 8px;
+  border: 1px solid #cbd5e1;
+  outline: none;
+}
+
+.dsm-refresh-input:focus {
+  border-color: #0284c7;
+  box-shadow: 0 0 0 2px rgba(2, 132, 199, 0.2);
+}
+
 .dsm-btn-primary {
   background: linear-gradient(135deg, #0284c7, #0ea5e9);
   border-color: transparent;
@@ -137,6 +157,57 @@
 
 .dsm-format-btn:hover {
   background: #f1f5f9;
+}
+
+/* Report title edit: replicates the panel-title pattern. The wrapper is turned
+ * into a flex row so the (block) title and the pencil button stay on one line.
+ * Injected from JS, so these rules never apply to the core markup otherwise
+ * (frail by design: revisit if core changes the header). */
+#myDashboard div:has(> h1.dsm-title) {
+  display: flex;
+  align-items: center;
+  flex-wrap: nowrap;
+  gap: 0.5rem;
+}
+
+#myDashboard div:has(> h1.dsm-title) > h1.dsm-title {
+  flex: 0 1 auto;
+  min-width: 0;
+}
+
+.dsm-title-pencil {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  padding: 0.15rem;
+}
+
+.dsm-title-pencil:hover {
+  color: #0284c7;
+}
+
+/* Report-title editor: same look/placement as the panel-title editor
+ * (px-3 py-2 bg-gray-100 rounded-md, width 15vw). */
+.dsm-title-input {
+  width: 15vw;
+  min-width: 12rem;
+}
+
+/* Read-only data-source name at the top of the "More" menu */
+.dsm-info-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  color: #6b7280;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: default;
+  user-select: text;
+}
+
+.dsm-info-item .p-menuitem-icon {
+  color: #9ca3af;
 }
 
 /* One brand colour per download format */
