@@ -56,7 +56,8 @@
                         @if(col.type && col.visible){
                             <th [pSortableColumn]="col.field" [class]="col.styleClass" [pTooltip]="getTooltip(col)"  [ngStyle]="getStyle()"
                                 [width]="col.width" [attr.rowspan]="col.rowspan">
-                                <div class="flex items-center "  [ngStyle]="getTextStyle()">
+                                <!-- flex ignores the th's text-align: right-aligned (numeric) columns need justify-end -->
+                                <div class="flex items-center " [class.justify-end]="col.styleClass === 'text-right'" [ngStyle]="getTextStyle()">
                                     {{col.header}}
                                     @if(col.sortable){
                                         <p-sortIcon [field]="col.field"  [ngStyle]="getTextStyle()"></p-sortIcon>
