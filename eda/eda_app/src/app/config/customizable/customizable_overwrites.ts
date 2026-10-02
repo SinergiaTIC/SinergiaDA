@@ -130,6 +130,26 @@ export const SubLogoImage = 'assets/images/logos/sub-logo_sda.png'; // Login sub
  *  Do not regroup the colours: append new ones at the end instead. */
 export const ChartsPalettes = [
     {
+        name: 'SDA 2',
+        paleta: [
+            '#024873', // dark blue
+            '#0fa697', // turquoise
+            '#f2c53d', // yellow
+            '#bf814b', // brown
+            '#591202', // dark red
+            '#ffae57', // orange
+            '#a9d531', // lime green
+            '#ff8400', // dark orange
+            '#e77770', // salmon
+            '#555555', // grey
+            '#1f9da5', // teal
+            '#2bd7e3', // cyan
+            '#feb714', // gold
+            '#b3cd7d', // light green
+            '#34956f', // forest green
+        ],
+    },
+    {
         name: 'SinergiaDA',
         paleta: [
             '#b4bc32', // corporate olive (brand primary)
@@ -271,4 +291,4 @@ export const ChartsPalettes = [
     },
 ];
 
-export const DEFAULT_PALETTE_COLOR: any = ChartsPalettes.find(palette => palette.name === 'SinergiaDA');
+export const DEFAULT_PALETTE_COLOR: any = ChartsPalettes.find(palette => palette.name === 'SDA 2');
