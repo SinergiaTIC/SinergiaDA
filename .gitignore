@@ -45,3 +45,4 @@ eda/eda_app/proxy.conf.json
 AGENTS.md
 .sda-migration/
 .vscode/
+eda/eda_api/metadata.json
