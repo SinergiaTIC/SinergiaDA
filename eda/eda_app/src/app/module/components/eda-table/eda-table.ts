@@ -655,89 +655,12 @@ export class EdaTable {
         return row;
     }
 
-    // Extract values used for noRepetitions
-    extractDataValues(val) {
-        // Separate values from keys
-        let values = [];
-        for (let i=0; i<val.length;i++) {
-            values.push(Object.values(val[i]));
-        }
-        return values;
-    }
-    // Extract labels used for noRepetitions
-    extractLabels(val) {
-        let labels = [];
-        labels.push(Object.keys(val[0])); // Insert the first object with the header to iterate and extract data
-        labels.forEach(e => {
-            e.forEach(function(key,val) {
-                labels.push(key);
-                
-            })
-        })
-        return labels;
-    }
-    
     noRepeatedRows() {
-
-        // This first iteration with this.noRepetitions set to false restores repeated words to the dialog.
-        // It is a sequence similar to removing values, but the opposite.
-        if(this.noRepetitions !== undefined){ // avoid no repetitions if they are not setted
-            if (!this.noRepetitions  && !this.resultAsPecentage && !this.onlyPercentages) {
-                // if nothing has been changed, keep the original value
+        // Repeated values are no longer blanked in the data: they are hidden at render time
+        // (EdaTableComponent.isRepeatedCell), so totals, sorting, filters and exports keep the real values.
+        // When repetitions are shown and no percentages are applied, keep restoring the original values as before.
+        if (this.noRepetitions === false && !this.resultAsPecentage && !this.onlyPercentages) {
             this.value = _.cloneDeep(this.origValues);
-            }  else if (!this.noRepetitions && ( this.resultAsPecentage || this.onlyPercentages)) {
-                // if repetitions are wanted but percentages are present...
-            // Separate values from keys
-            let values = this.extractDataValues(this.value);
-            // Get keys that will be the header
-            let labels = this.extractLabels(this.value)
-            labels.shift(); // Remove the first object.
-            let output = [];
-            // THIS IS DONE TO AVOID REPEATED VALUES IN THE TABLE. IF A FIELD HAS A COLUMN THAT REPEATS
-
-            for (let i = 0; i < values.length; i += 1) {
-                const obj = [];
-                for (let e = 0; e < values[i].length; e += 1) {
-                        const col = this.cols.find(c => c.field === labels[e]);
-                        if (!col || !['EdaColumnPercentage', 'EdaColumnNumber'].includes(col.type)) {
-                            obj[labels[e]] =  this.origValues[i][labels[e]];
-                        }else{
-                            obj[labels[e]] = values[i][e];
-                        }
-                }
-                output.push(obj);
-                }
-            this.value = output;
-
-            }else {
-                // Separate values from keys
-                let values = this.extractDataValues(this.value);
-                // Get keys that will be the header
-                let labels = this.extractLabels(this.value)
-                labels.shift(); // Remove the first object.
-                let output = [];
-                // THIS IS DONE TO AVOID REPEATED VALUES IN THE TABLE. IF A FIELD HAS A COLUMN THAT REPEATS
-                let first  = _.cloneDeep(values[0]);
-                for (let i = 0; i < values.length; i += 1) {
-                    const obj = [];
-                    if(i == 0){   
-                        for (let e = 0; e < values[i].length; e += 1) {
-                                obj[labels[e]] = values[i][e];
-                            }
-                    }else{
-                        for (let e = 0; e < values[i].length; e += 1) {
-                            if (values[i][e] === first[e]    &&  isNaN(values[i][e]) ) {
-                                obj[labels[e]] = "";   // REPEATED VALUES ARE REPLACED BY AN EMPTY STRING HERE
-                            } else {
-                                obj[labels[e]] = values[i][e];
-                            }
-                            first[e]  =  values[i][e]; // THE FIRST VALUE IS REPLACED HERE
-                            }
-                    }
-                    output.push(obj);   
-                }
-                this.value = output;  
-            }   
         }
     }
 
