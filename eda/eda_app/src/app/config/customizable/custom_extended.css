@@ -446,6 +446,35 @@ p-treeselect {
   padding-left: 0 !important;
 }
 
+/* Query mode tabs (Mi consulta / Opciones avanzadas / Consulta con la IA):
+   same tab look as the Editar consulta / Vista previa strip above. They live
+   in a 3-column grid instead of a .space-x-4 container, and each <h3> is
+   wrapped (the first one also holds the info icon), so the grid tracks are
+   collapsed to content to keep the tabs touching and the rail spans the row. */
+.p-dialog:has(.font-sans) .grid.grid-cols-3.items-end {
+  grid-template-columns: max-content max-content max-content !important;
+  justify-content: start !important;
+  column-gap: 0 !important;
+  /* Corporate line under the tabs */
+  border-bottom: 2px solid var(--corporate-primary) !important;
+}
+.p-dialog:has(.font-sans) .grid.grid-cols-3.items-end h3.font-sans {
+  color: rgba(0, 0, 0, 0.40) !important;
+  background-color: transparent !important;
+  padding: 0.45rem 0.9rem !important;
+  margin-bottom: 0 !important;
+  border: 1px solid #d1d5db !important;
+  border-bottom: 0 !important;
+  border-radius: 0.375rem 0.375rem 0 0 !important;
+}
+.p-dialog:has(.font-sans) .grid.grid-cols-3.items-end h3.font-sans.tab-active {
+  color: #000000 !important;
+  background-color: rgba(var(--corporate-primary-rgb), 0.35) !important;
+  border-color: var(--corporate-primary) !important;
+  /* Cover the grid's corporate line under the active tab */
+  border-bottom: 2px solid #ffffff !important;
+}
+
 /* column-dialog */
 .p-dialog:has(.aggregation-list) .section-card {
   padding: 0.375rem 0 !important;
