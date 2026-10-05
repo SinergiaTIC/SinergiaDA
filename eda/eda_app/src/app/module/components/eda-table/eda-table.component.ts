@@ -586,6 +586,25 @@ export class EdaTableComponent implements OnInit, AfterViewInit {
         this.inject.sortedColumn = { field: event.field, order: event.order };
     }
 
+    /**
+     * "Hide repeated values": true when the cell holds the same value as the cell right above it
+     * (same column, rows as currently displayed: sorted / filtered). Applies to text and numbers alike.
+     * Only hides at render time, so totals, sorting, filters and exports keep working on the real data.
+     * The first row of each page always shows its values.
+     */
+    public isRepeatedCell(rowData: any, rowIndex: number, col: any): boolean {
+        const valueTypes = ['EdaColumnText', 'EdaColumnHtml', 'EdaColumnNumber', 'EdaColumnDate', 'EdaColumnPercentage'];
+        if (!this.inject.noRepetitions || this.inject.pivot || !this.table || !valueTypes.includes(col.type)) return false;
+        if (rowIndex === this.table.first) return false;
+
+        const rows = this.table.filteredValue || this.table.value;
+        const previousRow = rows?.[rowIndex - 1];
+        if (!previousRow) return false;
+
+        const value = this.lodash.get(rowData, col.field);
+        return !_.isNil(value) && value !== '' && _.isEqual(value, this.lodash.get(previousRow, col.field));
+    }
+
     extractNumberRange(input) {
         const regex = /(?:<|<=|>|>=)?\s*(-?\d+)\s*(?:-|<|<=|>|>=)?\s*(-?\d+)?/;
         const match = input.trim().match(regex);

@@ -106,9 +106,6 @@ export const DEFAULT_FONT_FAMILY: string = 'Questrial'; /* THIS MUST BE SET ALSO
 export const DEFAULT_FONT_COLOR: string = '#67757c';
 export const DEFAULT_HOME_BACKGROUND_COLOR: string = '#f1f0f0'; // Page background fallback (2.x value)
 export const DEFAULT_BACKGROUND_COLOR: string = '#f1f0f0'; // Report/page background (2.x value)
-export const LogoImage = 'assets/images/logos/logo_sda.png';      // Login logo: SinergiaDA (new asset, originals untouched)
-export const LogoSidebar = 'assets/images/logos/logo_sda.png';    // Left sidebar logo: SinergiaDA
-export const SubLogoImage = 'assets/images/logos/sub-logo_sda.png'; // Login sub-logo: SinergiaDA
 
 /** Charts palettes — SinergiaDA first and set as default.
  *  NOTE: overriding ChartsPalettes replaces the whole array, so every palette

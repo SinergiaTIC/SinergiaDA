@@ -2713,8 +2713,8 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
   </trans-unit>
 
   <trans-unit id="yourQuerySQL">
-    <source>Mi consulta SQL</source>
-    <target>Moje zapytanie SQL</target>
+    <source>Mi consulta</source>
+    <target>Moje zapytanie</target>
   </trans-unit>
 
   <trans-unit id="openSqlMode">
@@ -5379,36 +5379,6 @@ Po skonfigurowaniu możesz go wywołać w dowolnym momencie za pomocą przycisku
         <target>Panel</target>
       </trans-unit>
 
-      <trans-unit id="filtrosAvanzados3">
-        <source>Solo es posible usar filtros definidos dentro del dashboard actual.</source>
-        <target>Można używać wyłącznie filtrów zdefiniowanych w bieżącym panelu.</target>
-      </trans-unit>
-
-      <trans-unit id="uniqueRecords1">
-        <source>La opción <ph id="0"/>Registros únicos<ph id="1"/> aplica un <ph id="2"/>GROUP BY<ph id="3"/> sobre todos los atributos de la consulta. Úsala cuando quieras eliminar duplicados y agrupar los resultados por la combinación de todos los campos seleccionados.</source>
-        <target>Opcja <ph id="0"/>Unikalne rekordy<ph id="1"/> stosuje <ph id="2"/>GROUP BY<ph id="3"/> do wszystkich atrybutów zapytania. Używaj jej, gdy chcesz wyeliminować duplikaty i pogrupować wyniki według kombinacji wszystkich wybranych pól.</target>
-      </trans-unit>
-
-      <trans-unit id="uniqueRecords3">
-        <source>Al activarla, las métricas numéricas se agrupan junto al resto de atributos, lo que puede alterar el resultado esperado si ya existen agregaciones definidas.</source>
-        <target>Po jej włączeniu metryki numeryczne są grupowane razem z pozostałymi atrybutami, co może zmienić oczekiwany wynik, jeśli zostały już zdefiniowane agregacje.</target>
-      </trans-unit>
-
-      <trans-unit id="dynamicFilters1">
-        <source>Al hacer clic en otros paneles del dashboard se crean <ph id="0"/>filtros dinámicos<ph id="1"/> que afectan al resto de paneles. Activar esta opción hace que este panel <ph id="2"/>ignore<ph id="3"/> esos filtros dinámicos y siempre muestre sus datos completos, independientemente de las selecciones del usuario en otros paneles.</source>
-        <target>Kliknięcie innych paneli dashboardu tworzy <ph id="0"/>filtry dynamiczne<ph id="1"/> wpływające na pozostałe panele. Włączenie tej opcji sprawia, że ten panel <ph id="2"/>ignoruje<ph id="3"/> te filtry dynamiczne i zawsze wyświetla pełne dane, niezależnie od wyborów użytkownika w innych panelach.</target>
-      </trans-unit>
-
-      <trans-unit id="dynamicFilters3">
-        <source>Los filtros de panel y globales definidos manualmente sí se siguen aplicando con normalidad.</source>
-        <target>Ręcznie zdefiniowane filtry panelu i globalne nadal działają normalnie.</target>
-      </trans-unit>
-
-      <trans-unit id="dynamicFilters4">
-        <source>Esta opción no afecta a los filtros creados desde el selector de filtros del dashboard.</source>
-        <target>Ta opcja nie dotyczy filtrów utworzonych za pomocą selektora filtrów dashboardu.</target>
-      </trans-unit>
-
       <trans-unit id="tooltipJoinType">
         <source>Define cómo se unen las tablas: LEFT, INNER o RIGHT JOIN</source>
         <target>Definiuje sposób łączenia tabel: LEFT, INNER lub RIGHT JOIN</target>
@@ -5430,48 +5400,13 @@ Po skonfigurowaniu możesz go wywołać w dowolnym momencie za pomocą przycisku
       </trans-unit>
 
       <trans-unit id="tooltipDynamicFilters">
-        <source>Actívalo para que este panel ignore los filtros dinámicos de otros paneles</source>
-        <target>Włącz, aby ten panel ignorował dynamiczne filtry z innych paneli</target>
-      </trans-unit>
-
-        <trans-unit id="joins">
-        <source>Tipo de intersección</source>
-        <target>Typ skrzyżowania</target>
-      </trans-unit>
-
-       <trans-unit id="joins1">
-        <source>La funcionalidad de <ph id="0"/>Intersección de Joins<ph id="1"/> permite definir cómo se relacionan las tablas de tu consulta mediante <ph id="2"/>LEFT<ph id="3"/>, <ph id="4"/>INNER<ph id="5"/> o <ph id="6"/>RIGHT JOIN<ph id="7"/>. Esto te da control sobre qué registros se incluyen en el resultado, dependiendo de la presencia o ausencia de coincidencias entre las tablas.</source>
-        <target>Funkcja <ph id="0"/>Join Intersection<ph id="1"/> pozwala określić, w jaki sposób tabele w zapytaniu są powiązane za pomocą <ph id="2"/>LEFT<ph id="3"/>, <ph id="4"/>INNER<ph id="5"/> lub <ph id="6"/>RIGHT JOIN<ph id="7"/>. Daje to kontrolę nad tym, które rekordy zostaną uwzględnione w wyniku, w zależności od obecności lub braku dopasowań między tabelami.</target>
-      </trans-unit>
-
-      <trans-unit id="joins3">
-        <source>Solo es posible hacer joins entre tablas definidas dentro del modelo o consulta actual.</source>
-        <target>Łączenie jest możliwe wyłącznie pomiędzy zdefiniowanymi wartościami w ramach bieżącego modelu lub zapytania.</target>
-      </trans-unit>
-
-      <trans-unit id="whatif1">
-        <source>La funcionalidad <ph id="0"/>What If<ph id="1"/> te permite crear atributos nuevos a partir de otros atributos en tu gráfico. A estos nuevos campos se les puede aplicar una operación matemática para modificar su valor según tus necesidades, y también es posible cambiarles el nombre para identificarlos fácilmente.</source>
-        <target>Funkcja <ph id="0"/>What If<ph id="1"/> umożliwia tworzenie nowych atrybutów na podstawie innych atrybutów na wykresie. W tych nowych polach można zastosować operację matematyczną, aby zmodyfikować ich wartości zgodnie z potrzebami, a także zmienić ich nazwy, aby łatwo je zidentyfikować.</target>
-      </trans-unit>
-
-      <trans-unit id="whatif3">
-        <source>Solo es posible crear nuevos atributos basados en los atributos existentes en el gráfico.</source>
-        <target>Nowe atrybuty można tworzyć wyłącznie na podstawie już istniejących atrybutów na wykresie.</target>
-      </trans-unit>
-
-      <trans-unit id="whatif4">
-        <source>Esta opción solo está disponible con atributos de tipo numérico.</source>
-        <target>Opcja ta jest dostępna tylko w przypadku atrybutów typu numerycznego.</target>
+        <source>Permitir que el click en cualquier panel filtre este panel</source>
+        <target>Zezwól, aby kliknięcie dowolnego panelu filtrowało ten panel</target>
       </trans-unit>
 
       <trans-unit id="filtrosAvanzados">
         <source>Filtros avanzados</source>
         <target>Zaawansowane filtry</target>
-      </trans-unit>
-
-      <trans-unit id="filtrosAvanzados1">
-        <source>La funcionalidad <ph id="0"/>Filtros Avanzados<ph id="1"/> permite relacionar los filtros globales y de panel utilizando operadores <ph id="2"/>AND<ph id="3"/> o <ph id="4"/>OR<ph id="5"/>. Esto posibilita que los filtros no solo se apliquen como un conjunto fijo de condiciones, sino que puedan interoperar entre sí según la relación definida.</source>
-        <target>Funkcja <ph id="0"/>Advanced Filters<ph id="1"/> umożliwia powiązanie filtrów globalnych i panelowych przy użyciu operatorów <ph id="2"/>AND<ph id="3"/> lub <ph id="4"/>OR<ph id="5"/>. Dzięki temu filtry nie tylko mogą być stosowane jako stały zestaw warunków, ale także współdziałać ze sobą zgodnie z określoną relacją.</target>
       </trans-unit>
 
       <trans-unit id="dashboardSidebarDependentFilters">
@@ -6289,12 +6224,12 @@ Po skonfigurowaniu możesz go wywołać w dowolnym momencie za pomocą przycisku
         <target>Kontroluje, czy agent AI ma dostęp do tych informacji: Full zezwala na pełny dostęp, Declaration udostępnia tylko nazwę i typ, None wyklucza je całkowicie.</target>
       </trans-unit>
       <trans-unit id="dynamicFiltersText" datatype="html">
-        <source>Filtros dinámicos</source>
-        <target>Filtry dynamiczne</target>
+        <source>Filtros en click</source>
+        <target>Filtry po kliknięciu</target>
       </trans-unit>
       <trans-unit id="uniqueRecordsGrouping" datatype="html">
-        <source>Registros únicos (agrupación)?</source>
-        <target>Unikalne rekordy (grupowanie)?</target>
+        <source>Registros únicos (agrupación)</source>
+        <target>Unikalne rekordy (grupowanie)</target>
       </trans-unit>
       <trans-unit id="tableDescriptionDependentFilter" datatype="html">
         <source>Tabla:</source>
@@ -7236,6 +7171,10 @@ Po skonfigurowaniu możesz go wywołać w dowolnym momencie za pomocą przycisku
       <trans-unit id="LogsActionUpdateModelFailed">
         <source>Update Model Failed</source>
         <target>Aktualizacja modelu nie powiodła się</target>
+      </trans-unit>
+      <trans-unit id="ptooltipOrderByControl">
+        <source>Arrastra aquí los atributos por los que quieres ordenar los resultados y colócalos en el orden que prefieras. En cada uno puedes elegir ascendente (ASC), descendente (DESC) o dejarlo sin indicar.</source>
+        <target>Przeciągnij tutaj atrybuty, według których chcesz sortować wyniki, i ułóż je w preferowanej kolejności. Dla każdego z nich możesz wybrać sortowanie rosnące (ASC), malejące (DESC) lub pozostawić je bez określenia.</target>
       </trans-unit>
 </body>
 </file>
