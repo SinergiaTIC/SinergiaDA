@@ -9,7 +9,7 @@ import * as _ from 'lodash';
 import Swal from 'sweetalert2';
 // PrimeNG
 import { ButtonModule } from 'primeng/button';
-import { DropdownModule } from 'primeng/dropdown';
+import { Dropdown, DropdownModule } from 'primeng/dropdown';
 import { TooltipModule } from 'primeng/tooltip';
 import { ConfirmationService, SharedModule } from 'primeng/api';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
@@ -232,9 +232,10 @@ export class EdaBlankPanelComponent implements OnInit, AfterViewChecked {
     public limitRowsInfo: string = $localize`:@@limitRowsInfo:Establece un Top n para la consulta`;
     public draggFields: string = $localize`:@@dragFields:Arrastre aquí los atributos que quiera ver en su panel`;
     public draggFilters: string = $localize`:@@draggFilters:Arrastre aquí los atributos sobre los que quiera filtrar`;
-    public draggResultSorting: string = $localize`:@@draggFilters:Arrastre aquí los atributos sobre los que quiere ordenar`;
+    public draggResultSorting: string = $localize`:@@draggResultSorting:Arrastre aquí los atributos sobre los que quiere ordenar`;
     public ptooltipSQLmode: string = $localize`:@@sqlTooltip:Al cambiar de modo perderás la configuración de la consulta actual`;
     public ptooltipViewQuery: string = $localize`:@@ptooltipViewQuery:Ver consulta SQL`
+    public ptooltipOrderByControl: string = $localize`:@@ptooltipOrderByControl:Arrastra aquí los atributos por los que quieres ordenar los resultados y colócalos en el orden que prefieras. En cada uno puedes elegir ascendente (ASC), descendente (DESC) o dejarlo sin indicar.`
     public aggregationText: string = $localize`:@@aggregationText:Agregación`;
     public textBetween: string = $localize`:@@textBetween:Entre`
     public yesText: string = $localize`:@@si:Si`;
@@ -259,6 +260,11 @@ export class EdaBlankPanelComponent implements OnInit, AfterViewChecked {
     public queryModes: any[] = ALLOWED_QUERY_MODES.map(v => QUERY_MODE_LABELS.find(l => l.value === v));
 
     public selectedQueryMode: string = ALLOWED_QUERY_MODES[0];
+
+    /** Keeps PrimeNG's keyboard focus on the selected mode so it doesn't look like two modes are selected. */
+    public syncQueryModeFocus(dropdown: Dropdown): void {
+        dropdown.focusedOptionIndex.set(dropdown.findSelectedOptionIndex());
+    }
 
     // Depreacted use selectedQueryMode instead of
     // public modeSQL: boolean;
@@ -552,7 +558,17 @@ public tableNodeExpand(event: any): void {
     public async changeHiddenMode(): Promise<void> {
         this.showHiddenColumn = !this.showHiddenColumn;
         const selectedTable = this.getUserSelectedTable();
-        this.loadColumns(selectedTable);
+        // Reload without clearing the attribute search, then re-apply the typed text
+        PanelInteractionUtils.loadColumns(this, selectedTable);
+        this.applyColumnSearch(this.columnInput);
+    }
+
+    /** Filters the attribute list by the search text, ignoring case and accents (e.g. "pub" matches "Público"). */
+    private applyColumnSearch(search: string): void {
+        if (!search) return;
+        const normalize = (text: string) => text.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
+        const term = normalize(search);
+        this.columns = this.columns.filter(col => normalize(col.display_name.default).includes(term));
     }
     readonly showWhatIf = SHOW_WHAT_IF;
 
@@ -1193,10 +1209,7 @@ public tableNodeExpand(event: any): void {
         if (!_.isNil(this.userSelectedTable)) {
             const selectedTable = this.getUserSelectedTable();
             PanelInteractionUtils.loadColumns(this, selectedTable) ;
-            if (event.target.value) {
-                this.columns = this.columns
-                    .filter(col => col.display_name.default.toLowerCase().includes(event.target.value.toLowerCase()));
-            }
+            this.applyColumnSearch(event.target.value);
         }
     }
 

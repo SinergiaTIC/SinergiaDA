@@ -1607,7 +1607,7 @@
         <source>En modo SQL, si necesita modificar la ruta, debe hacerlo en la consulta</source>
         <target>En mode SQL, si necessiteu modificar la ruta, heu de fer-ho a la consulta.</target>
       </trans-unit>
-      
+
       <!-- SECTION: SELECTOR DE FECHAS (DATEPICKER) -->
       <trans-unit id="dates1">
         <source>AÑO</source>
