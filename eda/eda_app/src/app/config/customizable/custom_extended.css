@@ -47,10 +47,16 @@ app-main-left-sidebar .sidebar-btn eda-icon {
 app-main-left-sidebar .sidebar-btn eda-icon > span {
   width: 2rem !important;
   height: 2rem !important;
+  /* The svg inside keeps its aspect ratio, so non-square icons (e.g. viewBox
+     14x13) end up shorter than the box and were sticking to its top edge.
+     Flex-centering the span makes every icon optically centred. */
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
 }
 /* More vertical air between the sidebar menu items (was gap-2 = 0.5rem). */
 app-main-left-sidebar .flex.flex-col.items-center.gap-2 {
-  gap: 0.85rem !important;
+  gap: 2rem !important;
 }
 
 /* ─── Report visibility/type selector: black text on corporate green ─────── */

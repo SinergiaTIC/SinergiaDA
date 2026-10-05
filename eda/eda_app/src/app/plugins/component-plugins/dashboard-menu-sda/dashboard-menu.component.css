@@ -57,28 +57,17 @@
   box-shadow: 0 0 0 2px rgba(2, 132, 199, 0.2);
 }
 
-.dsm-btn-primary {
-  background: linear-gradient(135deg, #0284c7, #0ea5e9);
-  border-color: transparent;
-  color: #ffffff;
-  box-shadow: 0 2px 6px rgba(2, 132, 199, 0.35);
-}
-
-.dsm-btn-primary:hover {
-  background: linear-gradient(135deg, #0369a1, #0284c7);
-  border-color: transparent;
-  box-shadow: 0 4px 12px rgba(2, 132, 199, 0.4);
-}
-
+/* Unsaved changes: the button turns into the warning colour. Flat on purpose —
+ * no gradient, matching the rest of the dashboard toolbar. */
 .dsm-btn-warning {
-  background: linear-gradient(135deg, #d97706, #f59e0b);
+  background: #d97706;
   border-color: transparent;
   color: #ffffff;
   box-shadow: 0 2px 6px rgba(217, 119, 6, 0.35);
 }
 
 .dsm-btn-warning:hover {
-  background: linear-gradient(135deg, #b45309, #d97706);
+  background: #b45309;
   border-color: transparent;
   box-shadow: 0 4px 12px rgba(217, 119, 6, 0.4);
 }

@@ -93,7 +93,6 @@ export class DashboardMenuSdaComponent implements OnInit, OnDestroy, DoCheck {
   private viewModeInit = false;
   private viewModeTouched = false;
   private viewModeBackup = new Map<string, any>();
-  private viewModeCompBackup = new Map<string, any>();
   private gridsterBackup: { draggable?: boolean; resizable?: boolean } = {};
   /** localStorage key prefix for the per-report view/edit preference. */
   private readonly VIEW_MODE_STORAGE_PREFIX = 'dsm-view-mode:';
@@ -207,17 +206,14 @@ export class DashboardMenuSdaComponent implements OnInit, OnDestroy, DoCheck {
         p.readonly = true;
       }
     }
-    // Blank-panel chrome (lock, ...) reads the COMPONENT's readonly snapshot
-    // taken in its ngOnInit, not the panel object: patch live instances too.
-    // Components created later snapshot panel.readonly (already true here).
+    // Blank-panel chrome (lock, ...) reads the COMPONENT's readonly, which is a
+    // snapshot of panel.readonly taken in its ngOnInit. View mode can flip the
+    // panel before the component is even built, so the snapshot may already be
+    // `true` and cannot be backed up. Force it here; restoreEditMode() re-syncs
+    // every live component from its panel, which is the single source of truth.
     for (const comp of this.dashboard?.edaPanels?.toArray?.() || []) {
       const compAny = comp as any;
-      if (compAny && compAny.readonly !== true) {
-        if (!this.viewModeCompBackup.has(compAny.panel?.id)) {
-          this.viewModeCompBackup.set(compAny.panel?.id, compAny.readonly);
-        }
-        compAny.readonly = true;
-      }
+      if (compAny) compAny.readonly = true;
     }
     const g: any = this.dashboard?.gridsterOptions;
     if (!g) return;
@@ -242,12 +238,13 @@ export class DashboardMenuSdaComponent implements OnInit, OnDestroy, DoCheck {
       p.readonly = this.viewModeBackup.get(p.id);
     }
     this.viewModeBackup.clear();
+    // Re-sync every live component from its panel object (restored just above).
+    // Backups are not an option here: components built while view mode was on
+    // snapshotted `true`, so the original value no longer exists to be stored.
     for (const comp of this.dashboard?.edaPanels?.toArray?.() || []) {
       const compAny = comp as any;
-      if (!compAny || !this.viewModeCompBackup.has(compAny.panel?.id)) continue;
-      compAny.readonly = this.viewModeCompBackup.get(compAny.panel?.id);
+      if (compAny?.panel) compAny.readonly = compAny.panel.readonly;
     }
-    this.viewModeCompBackup.clear();
     const g: any = this.dashboard?.gridsterOptions;
     if (g) {
       let changed = false;
