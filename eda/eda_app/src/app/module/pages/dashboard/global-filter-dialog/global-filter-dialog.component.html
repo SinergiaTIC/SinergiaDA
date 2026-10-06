@@ -52,12 +52,10 @@
             </div>
 
             <div class="space-x-2 flex items-center h-max">
+              <!-- SDA CUSTOM: etiqueta fija 'Selección múltiple'. No alternar a 'Selección única' según el estado
+                   para evitar confusión (ver issue UX filtros globales). OFF = selección única. -->
               <div class="min-w-[9rem]">
-                @if(multipleSelection) {
-                  <label i18n="@@multipleSelectionText" [pTooltip]="multipleSelectionDescription" tooltipPosition="top">Selección múltiple</label>
-                } @else {
-                  <label i18n="@@uniqueSelectionText" [pTooltip]="uniqueSelectionDescription" tooltipPosition="top">Selección única</label>
-                }
+                <label i18n="@@multipleSelectionText" [pTooltip]="multipleSelectionDescription" tooltipPosition="top">Selección múltiple</label>
               </div>
               <button type="button" role="switch" [attr.aria-checked]="isMandatory"
                 (click)="multipleSelectionCheck()"
