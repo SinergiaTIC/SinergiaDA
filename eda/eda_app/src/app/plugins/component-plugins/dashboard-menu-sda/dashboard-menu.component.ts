@@ -76,12 +76,16 @@ export class DashboardMenuSdaComponent implements OnInit, OnDestroy, DoCheck {
   public secondsToRefreshPlaceholder = $localize`:@@secondsToRefresh:Segundos para refrescar`;
   public renameLabel = $localize`:@@renameReportTooltip:Editar nombre`;
   public panelTitlePlaceholder = $localize`:@@panelTitlePlaceholder:Título del panel`;
+  /** Tooltip of the pencil injected next to every report filter. */
+  public filterEditLabel = $localize`:@@editFilterTooltip:Editar filtro`;
   /** Bare pencil injected after the report title (core owns the title markup). */
   private titlePencil?: HTMLElement;
   private titleEl?: HTMLElement;
   private titleInput?: HTMLInputElement;
   private titleEditing = false;
   private titleOriginalText = '';
+  /** Pencil injected into each filter card, keyed by the core's card node. */
+  private filterPencils = new Map<HTMLElement, HTMLButtonElement>();
   /**
    * View mode: hides all editing WITHOUT touching the core. Hot levers:
    * - `panel.readonly=true` (switches off everything governed by `isEditable()` in panels),
@@ -113,6 +117,7 @@ export class DashboardMenuSdaComponent implements OnInit, OnDestroy, DoCheck {
   ngOnDestroy(): void {
     this.notSavedSub?.unsubscribe();
     this.teardownTitleAffordance();
+    this.teardownFilterAffordances();
     if (this.viewMode) this.restoreEditMode();
   }
 
@@ -137,6 +142,7 @@ export class DashboardMenuSdaComponent implements OnInit, OnDestroy, DoCheck {
     }
     if (!this.viewModeInit) return; // never touch panels before knowing the report mode
     this.syncTitleAffordance();
+    this.syncFilterEditAffordances();
     if (!this.viewMode) return;
     this.ensureViewFlags();
     this.syncViewModeClass();
@@ -354,6 +360,119 @@ export class DashboardMenuSdaComponent implements OnInit, OnDestroy, DoCheck {
     this.titlePencil?.remove();
     this.titlePencil = undefined;
     this.titleEl = undefined;
+  }
+
+  /**
+   * Mirrors syncTitleAffordance for the report filters: injects a pencil into
+   * every filter card so a filter can be edited from the filter itself, not
+   * only from "More" > "Filtros de informe" (which is kept). Core renders the
+   * filter markup, so this is a deliberate DOM hook (revisit if core changes
+   * .filter-card / .filter-label-top). The card is already position:relative,
+   * so the button floats over its top-right corner, next to the label.
+   */
+  private syncFilterEditAffordances(): void {
+    const visible = this.isEditable && !this.viewMode;
+
+    // Nothing injected and nothing to show: skip the DOM query entirely.
+    if (!visible && this.filterPencils.size === 0) return;
+
+    const cards = Array.from(
+      document.querySelectorAll<HTMLElement>('#myDashboard .filter-card')
+    );
+
+    // Drop pencils whose card is gone (filters deleted, report reloaded...).
+    for (const [card, button] of this.filterPencils) {
+      if (!card.isConnected || !cards.includes(card)) {
+        button.remove();
+        card.classList.remove('dsm-has-pencil');
+        this.filterPencils.delete(card);
+      }
+    }
+
+    if (!visible) {
+      for (const button of this.filterPencils.values()) button.style.display = 'none';
+      return;
+    }
+
+    // Pair each card with its filter by label, consuming each filter once so
+    // duplicated labels still map to different cards in render order.
+    const available = this.editableFilterList();
+    const matched = new Set<HTMLElement>();
+    for (const card of cards) {
+      const index = available.findIndex((filter: any) => this.cardLabelMatches(card, filter));
+      if (index === -1) continue;
+      const [filter] = available.splice(index, 1);
+      this.attachFilterPencil(card, filter);
+      matched.add(card);
+    }
+
+    // Drop pencils whose filter is no longer present/editable this cycle.
+    for (const [card, button] of this.filterPencils) {
+      if (matched.has(card)) continue;
+      button.remove();
+      card.classList.remove('dsm-has-pencil');
+      this.filterPencils.delete(card);
+    }
+  }
+
+  /** Report filters the current user is allowed to edit. */
+  private editableFilterList(): any[] {
+    const globalFilter = this.dashboard?.globalFilter;
+    const filters = globalFilter?.globalFilters || [];
+    return filters.filter((filter: any) => !globalFilter?.disableGlobalFilter?.(filter));
+  }
+
+  /** Whether a card's rendered label corresponds to the given filter. */
+  private cardLabelMatches(card: HTMLElement, filter: any): boolean {
+    const labelEl = card.querySelector('.filter-label-top');
+    if (!labelEl) return false;
+    const domLabel = (labelEl.textContent || '').trim().replace(/:$/, '');
+    const globalFilter = this.dashboard?.globalFilter;
+    const filterLabel = globalFilter?.getFilterLabel
+      ? globalFilter.getFilterLabel(filter)
+      : (filter?.selectedColumn?.display_name?.default || filter?.column?.label || '');
+    return !!filterLabel && domLabel === String(filterLabel).trim();
+  }
+
+  /** Creates (once) or refreshes the pencil of a filter card. */
+  private attachFilterPencil(card: HTMLElement, filter: any): void {
+    let button = this.filterPencils.get(card);
+    if (!button) {
+      button = document.createElement('button');
+      button.type = 'button';
+      button.className = 'dsm-filter-pencil';
+      button.setAttribute('aria-label', this.filterEditLabel);
+      button.setAttribute('title', this.filterEditLabel);
+
+      // Same icon markup the panel/title use (eda-icon renders IconService SVG).
+      const icon = document.createElement('span');
+      icon.className = 'pointer-events-none inline-block h-3.5 w-3.5';
+      icon.innerHTML = this.iconService.getIcon('pencil');
+      button.appendChild(icon);
+
+      button.addEventListener('click', (event: Event) => {
+        event.preventDefault();
+        event.stopPropagation();
+        const target = (button as any).__dsmFilter;
+        if (target) this.dashboard?.sidebar?.handleSpecificFilter(target);
+      });
+
+      card.classList.add('dsm-has-pencil');
+      card.appendChild(button);
+      this.filterPencils.set(card, button);
+    }
+    // Resolved every cycle: the card node is stable per filter_id, the object is not.
+    (button as any).__dsmFilter = filter;
+    button.style.display = '';
+  }
+
+  /** Removes every injected filter pencil. */
+  private teardownFilterAffordances(): void {
+    for (const [card, button] of this.filterPencils) {
+      button.remove();
+      card.classList.remove('dsm-has-pencil');
+    }
+    this.filterPencils.clear();
   }
 
   /**
