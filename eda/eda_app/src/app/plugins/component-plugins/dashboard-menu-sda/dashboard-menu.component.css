@@ -222,8 +222,8 @@
 /* Pencil segment: same radius as the unified control, so the joint reads as
  * one piece for every filter type. */
 .filter-card.dsm-has-pencil .dsm-filter-pencil {
-  border-top-right-radius: 0.5rem;
-  border-bottom-right-radius: 0.5rem;
+  border-top-right-radius: 0.6rem;
+  border-bottom-right-radius: 0.6rem;
 }
 
 .filter-card.dsm-has-pencil:hover .dsm-filter-pencil,
@@ -283,12 +283,12 @@
   align-self: flex-end;
   margin-top: 0 !important;
   margin-bottom: 0.5rem;
-  padding: 0 0.9rem !important;
+  padding: 0 1.08rem !important;
   border: 1px solid #d1d5db !important;
   border-radius: 10px !important;
   background: #ffffff !important;
   color: #374151 !important;
-  font-size: 0.8rem !important;
+  font-size: 14px !important;
   font-weight: 600 !important;
   line-height: 1;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
@@ -308,7 +308,7 @@
 #myDashboard .filter-card .summary-overlay,
 #myDashboard .filter-card .p-autocomplete-multiple-container {
   border: 1px solid #d1d5db;
-  border-radius: 0.5rem;
+  border-radius: 0.6rem;
   height: 32px;
   box-sizing: border-box;
 }
@@ -327,14 +327,14 @@
   flex: 0 0 auto;
   font-family: "Font Awesome 5 Free";
   font-weight: 900;
-  font-size: 0.75rem;
+  font-size: 14px;
   line-height: 1;
   color: #9ca3af;
 }
 
 #myDashboard .filter-card .p-multiselect-label {
-  padding-left: 0.35rem;
-  padding-right: 0.35rem;
+  padding-left: 0.42rem;
+  padding-right: 0.42rem;
   padding-top: 0;
   padding-bottom: 0;
   line-height: 1;
@@ -342,17 +342,24 @@
 
 #myDashboard .filter-card .p-multiselect-label::before {
   content: "\f107"; /* chevron-down */
-  margin-right: 0.35rem;
+  margin-right: 0.42rem;
 }
 
 #myDashboard .filter-card .summary-overlay {
-  gap: 0.35rem;
-  padding-left: 0.35rem;
-  padding-right: 0.6rem;
+  gap: 0.42rem;
+  padding-left: 0.42rem;
+  padding-right: 0.72rem;
 }
 
 #myDashboard .filter-card .summary-overlay::before {
   content: "\f073"; /* calendar */
+}
+
+/* The root font-size is 14px (css-appearance) instead of our previous 16.8px,
+ * so the core label (.filter-label-top, 0.75rem) would render at 10.5px.
+ * Bring it back to the previous 12.6px (0.9rem at 14px). */
+#myDashboard .filter-card .filter-label-top {
+  font-size: 14px;
 }
 
 /* One font for every filter control: the app font (inherited), one size and
@@ -367,7 +374,7 @@
 #myDashboard .filter-card .p-autocomplete input,
 #myDashboard .filter-card .p-autocomplete .p-autocomplete-token {
   font-family: inherit;
-  font-size: 0.8rem;
+  font-size: 14px;
   font-weight: 400;
   line-height: 1;
 }
