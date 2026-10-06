@@ -42,16 +42,16 @@
         <target>Create user</target>
       </trans-unit>
       <trans-unit id="inputNombre">
-        <source>Nombre *</source>
-        <target>Name *</target>
+        <source> Nombre <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/></source>
+        <target> Name <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/></target>
       </trans-unit>
       <trans-unit id="inputEmail">
         <source>Correo *</source>
         <target>Email *</target>
       </trans-unit>
       <trans-unit id="inputPassword">
-        <source>Contraseña *</source>
-        <target>Password *</target>
+        <source> Password <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/></source>
+        <target> Password <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/></target>
       </trans-unit>
       <trans-unit id="inputSeguridad">
         <source>Seguridad *</source>
@@ -874,8 +874,8 @@
         <target>My SQL query</target>
       </trans-unit>
       <trans-unit id="openSqlMode">
-        <source>Abrir en modo SQL</source>
-        <target>Open in SQL mode</target>
+        <source><x id="START_ITALIC_TEXT" ctype="x-i" equiv-text="&lt;i class=&quot;fa fa-database mr-1.5 text-sm&quot;&gt;"/><x id="CLOSE_ITALIC_TEXT" ctype="x-i" equiv-text="&lt;/i&gt;"/> Abrir en modo SQL </source>
+        <target><x id="START_ITALIC_TEXT" ctype="x-i" equiv-text="&lt;i class=&quot;fa fa-database mr-1.5 text-sm&quot;&gt;"/><x id="CLOSE_ITALIC_TEXT" ctype="x-i" equiv-text="&lt;/i&gt;"/> Open in SQL mode </target>
       </trans-unit>
       <trans-unit id="sqlTooltip">
         <source>Al cambiar de modo perderás la configuración de la consulta actual</source>
@@ -924,8 +924,8 @@
         <target>Technical name</target>
       </trans-unit>
       <trans-unit id="inputDescripcion">
-        <source>Descripción *</source>
-        <target>Description *</target>
+        <source> Descripción <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/></source>
+        <target> Description <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/></target>
       </trans-unit>
       <trans-unit id="inputEsconderTabla">
         <source>Esconder tabla</source>
@@ -940,8 +940,8 @@
         <target>Add relation</target>
       </trans-unit>
       <trans-unit id="inputTipoColumna">
-        <source>Tipo de columna *</source>
-        <target>Column type *</target>
+        <source> Tipo de columna <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/></source>
+        <target> Column type <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/></target>
       </trans-unit>
       <trans-unit id="rolesPermisos">
         <source>Roles y permisos de fila</source>
@@ -1874,8 +1874,8 @@
         <target>Alerts</target>
       </trans-unit>
       <trans-unit id="addAlert">
-        <source>Añadir alerta</source>
-        <target>Add alert</target>
+        <source><x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span&gt;"/>Añadir alerta<x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/></source>
+        <target><x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span&gt;"/>Add alert<x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/></target>
       </trans-unit>
       <trans-unit id="alertsInfo">
         <source>Cuando el valor del kpi sea (=, &lt;,&gt;) que el valor definido cambiará el color del texto</source>
@@ -2488,12 +2488,8 @@ Ingresa ahora<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;" />
  registres</target>
 </trans-unit>
 <trans-unit id="topQueryH4" datatype="html">
-<source>Mostrar Top: <x id="START_TAG_P-INPUTNUMBER" ctype="x-p-inputNumber" equiv-text="&lt;p-inputNumber&gt;" />
-<x id="CLOSE_TAG_P-INPUTNUMBER" ctype="x-p-inputNumber" equiv-text="&lt;/p-inputNumber&gt;" />
-</source>
-<target>Show Top: <x id="START_TAG_P-INPUTNUMBER" ctype="x-p-inputNumber" equiv-text="&lt;p-inputNumber&gt;"/>
-<x id="CLOSE_TAG_P-INPUTNUMBER" ctype="x-p-inputNumber" equiv-text="&lt;/p-inputNumber&gt;"/>
-</target>
+<source>Mostrar Top:</source>
+<target>Show Top:</target>
 </trans-unit>
 <trans-unit id="atributosH4interpolation" datatype="html">
 <source>

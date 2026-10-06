@@ -12,8 +12,8 @@
         <target>Create new report</target>
       </trans-unit>
       <trans-unit id="inputPassword" datatype="html">
-        <source>Contraseña *</source>
-        <target>Password *</target>
+        <source> Password <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/></source>
+        <target> Password <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/></target>
       </trans-unit>
       <trans-unit id="inputRepitePassword" datatype="html">
         <source>Repite la contraseña</source>
@@ -56,12 +56,8 @@
         <target>Average</target>
       </trans-unit>
       <trans-unit id="topQueryH4" datatype="html">
-        <source> Mostrar Top:   <x id="START_TAG_P-INPUTNUMBER" ctype="x-p-inputNumber" equiv-text="&lt;p-inputNumber&gt;" />
-        <x id="CLOSE_TAG_P-INPUTNUMBER" ctype="x-p-inputNumber" equiv-text="&lt;/p-inputNumber&gt;" />
-      </source>
-      <target> Show Top:   <x id="START_TAG_P-INPUTNUMBER" ctype="x-p-inputNumber" equiv-text="&lt;p-inputNumber&gt;" />
-      <x id="CLOSE_TAG_P-INPUTNUMBER" ctype="x-p-inputNumber" equiv-text="&lt;/p-inputNumber&gt;" />
-    </target>
+        <source>Mostrar Top:</source>
+      <target>Show Top:</target>
   </trans-unit>
   <trans-unit id="hiddenAttributes">
     <source>Atributos ocultos</source>

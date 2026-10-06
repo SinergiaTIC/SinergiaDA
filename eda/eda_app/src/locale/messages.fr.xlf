@@ -1069,8 +1069,8 @@
 </trans-unit>
 
 <trans-unit id="inputNombre" datatype="html">
-<source>Nombre *</source>
-<target>Nom *</target>
+<source> Nombre <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/></source>
+<target> Nom <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/></target>
 <context-group purpose="location">
 <context context-type="sourcefile">app/module/pages/users-management/users-detail/users-detail.component.html</context>
 <context context-type="linenumber">4</context>
@@ -1117,8 +1117,8 @@
 </context-group>
 </trans-unit>
 <trans-unit id="inputPassword" datatype="html">
-<source>Contraseña *</source>
-<target>Mot de passe *</target>
+<source> Password <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/></source>
+<target> Mot de passe <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/></target>
 <context-group purpose="location">
 <context context-type="sourcefile">app/module/pages/users-management/users-detail/users-detail.component.html</context>
 <context context-type="linenumber">12</context>
@@ -1233,8 +1233,8 @@
 </context-group>
 </trans-unit>
 <trans-unit id="inputDescripcion" datatype="html">
-<source> Descripción </source>
-<target> Description </target>
+<source> Descripción <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/></source>
+<target> Description <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/></target>
 <context-group purpose="location">
 <context context-type="sourcefile">app/module/pages/data-sources/data-source-detail/data-source-detail.component.html</context>
 <context context-type="linenumber">16</context>
@@ -1273,8 +1273,8 @@
 </context-group>
 </trans-unit>
 <trans-unit id="inputTipoColumna" datatype="html">
-<source>Tipo de columna</source>
-<target>Type de colonne</target>
+<source> Tipo de columna <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/></source>
+<target> Type de colonne <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/></target>
 <context-group purpose="location">
 <context context-type="sourcefile">app/module/pages/data-sources/data-source-detail/data-source-detail.component.html</context>
 <context context-type="linenumber">80</context>
@@ -2649,8 +2649,8 @@
   <target>Incrementer la taille du KPI</target>
 </trans-unit>
 <trans-unit id="addAlert" datatype="html">
-<source> Añadir alerta    </source>
-<target> Ajouter une alerte    </target>
+<source><x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span&gt;"/>Añadir alerta<x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/></source>
+<target><x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span&gt;"/>Ajouter une alerte<x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/></target>
 <context-group purpose="location">
   <context context-type="sourcefile">app/module/components/eda-panels/eda-blank-panel/kpi-dialog/kpi-dialog.component.html</context>
   <context context-type="linenumber">77</context>
@@ -2707,8 +2707,8 @@
   </trans-unit>
 
   <trans-unit id="topQueryH4" datatype="html">
-    <source> Mostrar Top:</source>
-    <target> Afficher le haut:</target>
+    <source>Mostrar Top:</source>
+    <target>Afficher le haut:</target>
     <context-group purpose="location">
       <context context-type="sourcefile">app/module/components/eda-panels/eda-blank-panel/eda-blank-panel.component.html</context>
       <context context-type="linenumber">131</context>
@@ -3044,8 +3044,8 @@
   </trans-unit>
 
   <trans-unit id="openSqlMode">
-    <source>Abrir en modo SQL</source>
-    <target>Ouvrir en mode SQL</target>
+    <source><x id="START_ITALIC_TEXT" ctype="x-i" equiv-text="&lt;i class=&quot;fa fa-database mr-1.5 text-sm&quot;&gt;"/><x id="CLOSE_ITALIC_TEXT" ctype="x-i" equiv-text="&lt;/i&gt;"/> Abrir en modo SQL </source>
+    <target><x id="START_ITALIC_TEXT" ctype="x-i" equiv-text="&lt;i class=&quot;fa fa-database mr-1.5 text-sm&quot;&gt;"/><x id="CLOSE_ITALIC_TEXT" ctype="x-i" equiv-text="&lt;/i&gt;"/> Ouvrir en mode SQL </target>
   </trans-unit>
 
   <trans-unit id="sqlTooltip">

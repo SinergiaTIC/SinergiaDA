@@ -731,8 +731,8 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 </trans-unit>
 
 <trans-unit id="inputNombre" datatype="html">
-<source>Nombre *</source>
-<target>Nazwa *</target>
+<source> Nombre <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/></source>
+<target> Nazwa <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/></target>
 <context-group purpose="location">
 <context context-type="sourcefile">app/module/pages/users-management/users-detail/users-detail.component.html</context>
 <context context-type="linenumber">4</context>
@@ -779,8 +779,8 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 </context-group>
 </trans-unit>
 <trans-unit id="inputPassword" datatype="html">
-<source>Contraseña *</source>
-<target>Hasło *</target>
+<source> Password <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/></source>
+<target> Hasło <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/></target>
 <context-group purpose="location">
 <context context-type="sourcefile">app/module/pages/users-management/users-detail/users-detail.component.html</context>
 <context context-type="linenumber">12</context>
@@ -895,8 +895,8 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 </context-group>
 </trans-unit>
 <trans-unit id="inputDescripcion" datatype="html">
-<source> Descripción </source>
-<target> Opis </target>
+<source> Descripción <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/></source>
+<target> Opis <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/></target>
 <context-group purpose="location">
 <context context-type="sourcefile">app/module/pages/data-sources/data-source-detail/data-source-detail.component.html</context>
 <context context-type="linenumber">16</context>
@@ -935,8 +935,8 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 </context-group>
 </trans-unit>
 <trans-unit id="inputTipoColumna" datatype="html">
-<source>Tipo de columna</source>
-<target>Rodzaj kolumny</target>
+<source> Tipo de columna <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/></source>
+<target> Rodzaj kolumny <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/></target>
 <context-group purpose="location">
 <context context-type="sourcefile">app/module/pages/data-sources/data-source-detail/data-source-detail.component.html</context>
 <context context-type="linenumber">80</context>
@@ -2311,8 +2311,8 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
   <target>Incrementuj rozmiar KPI</target>
 </trans-unit>
 <trans-unit id="addAlert" datatype="html">
-<source> Añadir alerta    </source>
-<target>Dodaj alert    </target>
+<source><x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span&gt;"/>Añadir alerta<x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/></source>
+<target><x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span&gt;"/>Dodaj alert<x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/></target>
 <context-group purpose="location">
   <context context-type="sourcefile">app/module/components/eda-panels/eda-blank-panel/kpi-dialog/kpi-dialog.component.html</context>
   <context context-type="linenumber">77</context>
@@ -2371,8 +2371,8 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
   </trans-unit>
 
   <trans-unit id="topQueryH4" datatype="html">
-    <source> Mostrar Top:</source>
-    <target> Pokaż górę:</target>
+    <source>Mostrar Top:</source>
+    <target>Pokaż górę:</target>
     <context-group purpose="location">
       <context context-type="sourcefile">app/module/components/eda-panels/eda-blank-panel/eda-blank-panel.component.html</context>
       <context context-type="linenumber">131</context>
@@ -2718,8 +2718,8 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
   </trans-unit>
 
   <trans-unit id="openSqlMode">
-    <source>Abrir en modo SQL</source>
-    <target>Otwórz w trybie SQL</target>
+    <source><x id="START_ITALIC_TEXT" ctype="x-i" equiv-text="&lt;i class=&quot;fa fa-database mr-1.5 text-sm&quot;&gt;"/><x id="CLOSE_ITALIC_TEXT" ctype="x-i" equiv-text="&lt;/i&gt;"/> Abrir en modo SQL </source>
+    <target><x id="START_ITALIC_TEXT" ctype="x-i" equiv-text="&lt;i class=&quot;fa fa-database mr-1.5 text-sm&quot;&gt;"/><x id="CLOSE_ITALIC_TEXT" ctype="x-i" equiv-text="&lt;/i&gt;"/> Otwórz w trybie SQL </target>
   </trans-unit>
 
   <trans-unit id="sqlTooltip">
