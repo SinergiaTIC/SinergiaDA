@@ -230,20 +230,11 @@
   transition: opacity 0.18s ease, transform 0.22s ease-out, background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease, box-shadow 0.18s ease;
 }
 
-.filter-card.dsm-has-pencil:has(.p-multiselect) .dsm-filter-pencil {
-  border-color: #e5e7eb;
-  border-top-right-radius: 6px;
-  border-bottom-right-radius: 6px;
-}
-
-.filter-card.dsm-has-pencil:has(.summary-overlay) .dsm-filter-pencil {
+/* Pencil segment: same radius as the unified control, so the joint reads as
+ * one piece for every filter type. */
+.filter-card.dsm-has-pencil .dsm-filter-pencil {
   border-top-right-radius: 0.5rem;
   border-bottom-right-radius: 0.5rem;
-}
-
-.filter-card.dsm-has-pencil:has(.p-autocomplete-multiple-container) .dsm-filter-pencil {
-  border-top-right-radius: 10px;
-  border-bottom-right-radius: 10px;
 }
 
 .filter-card.dsm-has-pencil:hover .dsm-filter-pencil,
@@ -257,13 +248,14 @@
 
 /* Use the same hover border and balanced shadow on both pieces, so the control
  * and its pencil read as one control. Also applied to the sticky card, whose
- * pencil stays visible after the mouse leaves. */
-.filter-card.dsm-has-pencil:hover .p-multiselect,
-.filter-card.dsm-has-pencil.dsm-sticky .p-multiselect,
-.filter-card.dsm-has-pencil:hover .summary-overlay,
-.filter-card.dsm-has-pencil.dsm-sticky .summary-overlay,
-.filter-card.dsm-has-pencil:hover .p-autocomplete-multiple-container,
-.filter-card.dsm-has-pencil.dsm-sticky .p-autocomplete-multiple-container {
+ * pencil stays visible after the mouse leaves. #myDashboard keeps this above
+ * the normalization rule below. */
+#myDashboard .filter-card.dsm-has-pencil:hover .p-multiselect,
+#myDashboard .filter-card.dsm-has-pencil.dsm-sticky .p-multiselect,
+#myDashboard .filter-card.dsm-has-pencil:hover .summary-overlay,
+#myDashboard .filter-card.dsm-has-pencil.dsm-sticky .summary-overlay,
+#myDashboard .filter-card.dsm-has-pencil:hover .p-autocomplete-multiple-container,
+#myDashboard .filter-card.dsm-has-pencil.dsm-sticky .p-autocomplete-multiple-container {
   border-color: #9ca3af;
   box-shadow: 0 1px 2px rgba(16, 24, 40, 0.08), 0 6px 16px rgba(16, 24, 40, 0.08);
   transition: border-color 0.15s ease, box-shadow 0.18s ease;
@@ -292,32 +284,121 @@
   color: #111827;
 }
 
-/* Dropdown arrow on the left instead of the right (filter bar only): the
- * pencil now lives on the right end, so the chevron moves left to balance
- * the control. .filter-card is only used by app-v2-global-filter. The wide
- * default trigger is narrowed so the arrow sits against the left edge and
- * close to the text. */
-.filter-card .p-multiselect-trigger {
-  order: -1;
-  width: 1.1rem;
+/* ---- Filter bar: one consistent family ---- */
+
+/* "Filtrar" button: the app's own button look (same family as the toolbar
+ * buttons) instead of the dynamic theme colours. Core applies an inline
+ * [style], so these overrides need !important. */
+#myDashboard .filter-btn-responsive {
+  height: 32px;
+  align-self: flex-end;
+  margin-top: 0 !important;
+  margin-bottom: 0.5rem;
+  padding: 0 0.9rem !important;
+  border: 1px solid #d1d5db !important;
+  border-radius: 10px !important;
+  background: #ffffff !important;
+  color: #374151 !important;
+  font-size: 0.8rem !important;
+  font-weight: 600 !important;
+  line-height: 1;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  transition: background-color 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
 }
 
-.filter-card .p-multiselect-trigger-icon {
-  display:none;
-  /* font-size: 0.4px !important; */
+#myDashboard .filter-btn-responsive:hover {
+  background: #f8fafc !important;
+  border-color: #cbd5e1 !important;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.12);
 }
 
-.filter-card .p-multiselect-label {
-  padding-left: 0;
-  margin-left:0.25rem; ;
-
+/* Every filter control shares the same box (border, radius, height), so the
+ * multiselect, date and autocomplete filters look like one family. Scoped
+ * with #myDashboard to beat the core rules' encapsulated specificity. */
+#myDashboard .filter-card .p-multiselect,
+#myDashboard .filter-card .summary-overlay,
+#myDashboard .filter-card .p-autocomplete-multiple-container {
+  border: 1px solid #d1d5db;
+  border-radius: 0.5rem;
+  height: 32px;
+  box-sizing: border-box;
 }
-.filter-card .p-multiselect-label:before {
-  content: "\f107";
+
+/* The native multiselect trigger box is dropped: its own chevron is hidden and
+ * the arrow is drawn by the label's ::before, so nothing pushes the content
+ * right and the arrow sits flush with the left edge. */
+#myDashboard .filter-card .p-multiselect-trigger {
+  display: none;
+}
+
+/* Left icon slot, shared by every filter type: the dropdown shows a chevron,
+ * the date filter a calendar. Same size, gap and colour. */
+#myDashboard .filter-card .p-multiselect-label::before,
+#myDashboard .filter-card .summary-overlay::before {
+  flex: 0 0 auto;
   font-family: "Font Awesome 5 Free";
   font-weight: 900;
   font-size: 0.75rem;
-  margin-right: 0.25rem;
+  line-height: 1;
+  color: #9ca3af;
+}
+
+#myDashboard .filter-card .p-multiselect-label {
+  padding-left: 0.35rem;
+  padding-right: 0.35rem;
+  padding-top: 0;
+  padding-bottom: 0;
+  line-height: 1;
+}
+
+#myDashboard .filter-card .p-multiselect-label::before {
+  content: "\f107"; /* chevron-down */
+  margin-right: 0.35rem;
+}
+
+#myDashboard .filter-card .summary-overlay {
+  gap: 0.35rem;
+  padding-left: 0.35rem;
+  padding-right: 0.6rem;
+}
+
+#myDashboard .filter-card .summary-overlay::before {
+  content: "\f073"; /* calendar */
+}
+
+/* One font for every filter control: the app font (inherited), one size and
+ * one weight. PrimeNG forces "Inter var" on the autocomplete, so it is reset
+ * to inherit here. */
+#myDashboard .filter-card .p-multiselect-label,
+#myDashboard .filter-card .summary-overlay .summary-placeholder-text,
+#myDashboard .filter-card .summary-overlay .summary-value-text,
+#myDashboard .filter-card .summary-operator-badge,
+#myDashboard .filter-card .p-autocomplete,
+#myDashboard .filter-card .p-autocomplete .p-autocomplete-multiple-container,
+#myDashboard .filter-card .p-autocomplete input,
+#myDashboard .filter-card .p-autocomplete .p-autocomplete-token {
+  font-family: inherit;
+  font-size: 0.8rem;
+  font-weight: 400;
+  line-height: 1;
+}
+
+/* Same text colour for the value in every control (dropdown, date and
+ * autocomplete): the date value was pure black while the dropdowns use the
+ * app's blue-grey. Placeholders keep the lighter grey. */
+#myDashboard .filter-card .p-multiselect-label:not(.p-placeholder),
+#myDashboard .filter-card .summary-overlay .summary-value-text,
+#myDashboard .filter-card .summary-operator-badge,
+#myDashboard .filter-card .p-autocomplete input,
+#myDashboard .filter-card .p-autocomplete .p-autocomplete-token {
+  color: #455a64;
+}
+
+/* Placeholders are clearly lighter than a selected value, in every control. */
+#myDashboard .filter-card .p-multiselect-label.p-placeholder,
+#myDashboard .filter-card .summary-overlay .summary-placeholder-text,
+#myDashboard .filter-card .p-autocomplete input::placeholder {
+  color: #9ca3af;
 }
 
 
