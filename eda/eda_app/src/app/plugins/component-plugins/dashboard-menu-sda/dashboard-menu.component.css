@@ -292,6 +292,36 @@
   color: #111827;
 }
 
+/* Dropdown arrow on the left instead of the right (filter bar only): the
+ * pencil now lives on the right end, so the chevron moves left to balance
+ * the control. .filter-card is only used by app-v2-global-filter. The wide
+ * default trigger is narrowed so the arrow sits against the left edge and
+ * close to the text. */
+.filter-card .p-multiselect-trigger {
+  order: -1;
+  width: 1.1rem;
+}
+
+.filter-card .p-multiselect-trigger-icon {
+  display:none;
+  /* font-size: 0.4px !important; */
+}
+
+.filter-card .p-multiselect-label {
+  padding-left: 0;
+  margin-left:0.25rem; ;
+
+}
+.filter-card .p-multiselect-label:before {
+  content: "\f107";
+  font-family: "Font Awesome 5 Free";
+  font-weight: 900;
+  font-size: 0.75rem;
+  margin-right: 0.25rem;
+}
+
+
+
 /* Read-only data-source name at the top of the "More" menu */
 .dsm-info-item {
   display: flex;
