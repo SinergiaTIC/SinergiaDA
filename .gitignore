@@ -46,3 +46,4 @@ AGENTS.md
 .sda-migration/
 .vscode/
 eda/eda_api/config/SMPT.config.json
+eda/eda_api/metadata.json
