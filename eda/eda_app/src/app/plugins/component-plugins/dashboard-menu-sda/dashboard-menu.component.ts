@@ -86,6 +86,8 @@ export class DashboardMenuSdaComponent implements OnInit, OnDestroy, DoCheck {
   private titleOriginalText = '';
   /** Pencil injected into each filter card, keyed by the core's card node. */
   private filterPencils = new Map<HTMLElement, HTMLButtonElement>();
+  /** Last hovered filter card: keeps its pencil until another card takes over. */
+  private stickyFilterCard: HTMLElement | null = null;
   /**
    * View mode: hides all editing WITHOUT touching the core. Hot levers:
    * - `panel.readonly=true` (switches off everything governed by `isEditable()` in panels),
@@ -384,7 +386,7 @@ export class DashboardMenuSdaComponent implements OnInit, OnDestroy, DoCheck {
     for (const [card, button] of this.filterPencils) {
       if (!card.isConnected || !cards.includes(card)) {
         button.remove();
-        card.classList.remove('dsm-has-pencil');
+        card.classList.remove('dsm-has-pencil', 'dsm-sticky');
         this.filterPencils.delete(card);
       }
     }
@@ -410,8 +412,21 @@ export class DashboardMenuSdaComponent implements OnInit, OnDestroy, DoCheck {
     for (const [card, button] of this.filterPencils) {
       if (matched.has(card)) continue;
       button.remove();
-      card.classList.remove('dsm-has-pencil');
+      card.classList.remove('dsm-has-pencil', 'dsm-sticky');
       this.filterPencils.delete(card);
+    }
+
+    // Sticky pencil: the last hovered card keeps its affordance until another
+    // card's pencil is shown, so it stays reachable without any hide timer.
+    const hoveredCard = cards.find(card => this.filterPencils.has(card) && card.matches(':hover'));
+    if (hoveredCard && hoveredCard !== this.stickyFilterCard) {
+      this.stickyFilterCard?.classList.remove('dsm-sticky');
+      this.stickyFilterCard = hoveredCard;
+      hoveredCard.classList.add('dsm-sticky');
+    }
+    if (this.stickyFilterCard && !this.filterPencils.has(this.stickyFilterCard)) {
+      this.stickyFilterCard.classList.remove('dsm-sticky');
+      this.stickyFilterCard = null;
     }
   }
 
@@ -470,9 +485,10 @@ export class DashboardMenuSdaComponent implements OnInit, OnDestroy, DoCheck {
   private teardownFilterAffordances(): void {
     for (const [card, button] of this.filterPencils) {
       button.remove();
-      card.classList.remove('dsm-has-pencil');
+      card.classList.remove('dsm-has-pencil', 'dsm-sticky');
     }
     this.filterPencils.clear();
+    this.stickyFilterCard = null;
   }
 
   /**

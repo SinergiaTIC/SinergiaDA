@@ -200,7 +200,8 @@
  * grows outward from the control edge and does not reserve space inside the
  * control, so its text, chevron, calendar icon and other content stay where
  * they were. While visible, it may briefly overlap the gap or neighbouring
- * edge. It appears on the immediate card hover. */
+ * edge. It appears on the immediate card hover, and the last hovered card
+ * keeps it (dsm-sticky, managed from TS) until another card takes over. */
 .dsm-filter-pencil {
   position: absolute;
   right: auto;
@@ -246,6 +247,7 @@
 }
 
 .filter-card.dsm-has-pencil:hover .dsm-filter-pencil,
+.filter-card.dsm-has-pencil.dsm-sticky .dsm-filter-pencil,
 .dsm-filter-pencil:hover,
 .dsm-filter-pencil:focus-visible {
   opacity: 1;
@@ -254,16 +256,21 @@
 }
 
 /* Use the same hover border and balanced shadow on both pieces, so the control
- * and its pencil read as one control. */
+ * and its pencil read as one control. Also applied to the sticky card, whose
+ * pencil stays visible after the mouse leaves. */
 .filter-card.dsm-has-pencil:hover .p-multiselect,
+.filter-card.dsm-has-pencil.dsm-sticky .p-multiselect,
 .filter-card.dsm-has-pencil:hover .summary-overlay,
-.filter-card.dsm-has-pencil:hover .p-autocomplete-multiple-container {
+.filter-card.dsm-has-pencil.dsm-sticky .summary-overlay,
+.filter-card.dsm-has-pencil:hover .p-autocomplete-multiple-container,
+.filter-card.dsm-has-pencil.dsm-sticky .p-autocomplete-multiple-container {
   border-color: #9ca3af;
   box-shadow: 0 1px 2px rgba(16, 24, 40, 0.08), 0 6px 16px rgba(16, 24, 40, 0.08);
   transition: border-color 0.15s ease, box-shadow 0.18s ease;
 }
 
 .filter-card.dsm-has-pencil:hover .dsm-filter-pencil,
+.filter-card.dsm-has-pencil.dsm-sticky .dsm-filter-pencil,
 .dsm-filter-pencil:hover {
   border-color: #9ca3af;
   box-shadow: 0 1px 2px rgba(16, 24, 40, 0.08), 0 6px 16px rgba(16, 24, 40, 0.08);
