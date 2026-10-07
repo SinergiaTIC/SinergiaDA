@@ -1,0 +1,480 @@
+.dashboard-menu-sda {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-left: 0.5rem;
+}
+
+.dsm-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  height: 2.5rem;
+  padding: 0 1.1rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+  line-height: 1;
+  border-radius: 10px;
+  border: 1px solid #d1d5db;
+  background: #ffffff;
+  color: #374151;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  cursor: pointer;
+  user-select: none;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+}
+
+.dsm-btn:hover {
+  background: #f8fafc;
+  border-color: #cbd5e1;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.12);
+}
+
+.dsm-btn:active {
+  transform: translateY(1px);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+}
+
+/* Live Dashboard menu row: opens the seconds input in place, inside the menu. */
+.dsm-livedashboard-input {
+  padding: 0.35rem 0.75rem 0.5rem 2.25rem;
+}
+
+.dsm-refresh-input {
+  width: 100%;
+  height: 2rem;
+  padding: 0 0.6rem;
+  font-size: 0.9rem;
+  border-radius: 8px;
+  border: 1px solid #cbd5e1;
+  outline: none;
+}
+
+.dsm-refresh-input:focus {
+  border-color: #0284c7;
+  box-shadow: 0 0 0 2px rgba(2, 132, 199, 0.2);
+}
+
+/* Unsaved changes: the button turns into the warning colour. Flat on purpose —
+ * no gradient, matching the rest of the dashboard toolbar. */
+.dsm-btn-warning {
+  background: #d97706;
+  border-color: transparent;
+  color: #ffffff;
+  box-shadow: 0 2px 6px rgba(217, 119, 6, 0.35);
+}
+
+.dsm-btn-warning:hover {
+  background: #b45309;
+  border-color: transparent;
+  box-shadow: 0 4px 12px rgba(217, 119, 6, 0.4);
+}
+
+.dsm-btn-icon {
+  font-size: 1rem;
+}
+
+.dsm-btn-caret {
+  font-size: 0.75rem;
+  opacity: 0.85;
+}
+
+.dsm-btn-ghost {
+  height: 2.5rem;
+  padding: 0 0.85rem;
+  background: transparent;
+  box-shadow: none;
+  border-color: transparent;
+  color: #4b5563;
+}
+
+.dsm-btn-ghost:hover {
+  background: #f1f5f9;
+  border-color: #e2e8f0;
+  box-shadow: none;
+}
+
+.dsm-menu .p-menuitem-link {
+  padding: 0.7rem 1rem;
+  font-size: 0.95rem;
+  font-weight: 500;
+}
+
+/* Left flyout listing the report filters (from "More" > "Filtros de informe") */
+.dsm-filters-flyout {
+  min-width: 12rem;
+}
+
+/* Caret on the "Filtros de informe" entry, hinting the left flyout */
+.dsm-flyout-caret {
+  margin-left: auto;
+  opacity: 0.6;
+  font-size: 0.75rem;
+}
+
+/* Thin separators between blocks (replacing the old section headers).
+ * Unlayered rule, so it wins over the @layer primeng theme defaults. */
+.dsm-menu .p-menuitem-separator {
+  width: 60%;
+  margin: 0.3rem auto;
+  border-top: 1px solid #e2e8f0;
+}
+
+/* Single row with one icon per download format */
+.dsm-download-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.4rem 1rem;
+}
+
+.dsm-format-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 9999px;
+  border: 1px solid #e2e8f0;
+  background: #ffffff;
+  color: #4b5563;
+  cursor: pointer;
+}
+
+.dsm-format-btn:hover {
+  background: #f1f5f9;
+}
+
+/* Report title edit: replicates the panel-title pattern. The wrapper is turned
+ * into a flex row so the (block) title and the pencil button stay on one line.
+ * Injected from JS, so these rules never apply to the core markup otherwise
+ * (frail by design: revisit if core changes the header). */
+#myDashboard div:has(> h1.dsm-title) {
+  display: flex;
+  align-items: center;
+  flex-wrap: nowrap;
+  gap: 0.5rem;
+}
+
+#myDashboard div:has(> h1.dsm-title) > h1.dsm-title {
+  flex: 0 1 auto;
+  min-width: 0;
+}
+
+.dsm-title-pencil {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  padding: 0.15rem;
+}
+
+.dsm-title-pencil:hover {
+  color: #0284c7;
+}
+
+/* Report-title editor: same look/placement as the panel-title editor
+ * (px-3 py-2 bg-gray-100 rounded-md, width 15vw). */
+.dsm-title-input {
+  width: 15vw;
+  min-width: 12rem;
+}
+
+/* Filter edit affordance: pencil injected into each .filter-card from JS
+ * (core owns the filter markup). It is an attached segment at the control's
+ * right end, with the same height and outer border as that control. It starts
+ * 10px inside that edge so it covers the control's right rounded corners. It
+ * grows outward from the control edge and does not reserve space inside the
+ * control, so its text, chevron, calendar icon and other content stay where
+ * they were. While visible, it may briefly overlap the gap or neighbouring
+ * edge. It appears on the immediate card hover, and the last hovered card
+ * keeps it (dsm-sticky, managed from TS) until another card takes over. */
+.dsm-filter-pencil {
+  position: absolute;
+  right: auto;
+  left: calc(100% - 0.25rem - 17px);
+  bottom: 0.5rem;
+  transform: scaleX(0);
+  transform-origin: left center;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 32px;
+  box-sizing: border-box;
+  padding: 0;
+  border: 1px solid #d1d5db;
+  border-left: none;
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+  background: #e5e7eb;
+  color: #111827;
+  box-shadow: none;
+  cursor: pointer;
+  z-index: 3;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.18s ease, transform 0.22s ease-out, background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease, box-shadow 0.18s ease;
+}
+
+/* Pencil segment: same radius as the unified control, so the joint reads as
+ * one piece for every filter type. */
+.filter-card.dsm-has-pencil .dsm-filter-pencil {
+  border-top-right-radius: 0.6rem;
+  border-bottom-right-radius: 0.6rem;
+}
+
+.filter-card.dsm-has-pencil:hover .dsm-filter-pencil,
+.filter-card.dsm-has-pencil.dsm-sticky .dsm-filter-pencil,
+.dsm-filter-pencil:hover,
+.dsm-filter-pencil:focus-visible {
+  opacity: 1;
+  pointer-events: auto;
+  transform: scaleX(1);
+}
+
+/* Use the same hover border and balanced shadow on both pieces, so the control
+ * and its pencil read as one control. Also applied to the sticky card, whose
+ * pencil stays visible after the mouse leaves. #myDashboard keeps this above
+ * the normalization rule below. */
+#myDashboard .filter-card.dsm-has-pencil:hover .p-multiselect,
+#myDashboard .filter-card.dsm-has-pencil.dsm-sticky .p-multiselect,
+#myDashboard .filter-card.dsm-has-pencil:hover .summary-overlay,
+#myDashboard .filter-card.dsm-has-pencil.dsm-sticky .summary-overlay,
+#myDashboard .filter-card.dsm-has-pencil:hover .p-autocomplete-multiple-container,
+#myDashboard .filter-card.dsm-has-pencil.dsm-sticky .p-autocomplete-multiple-container {
+  border-color: #9ca3af;
+  box-shadow: 0 1px 2px rgba(16, 24, 40, 0.08), 0 6px 16px rgba(16, 24, 40, 0.08);
+  transition: border-color 0.15s ease, box-shadow 0.18s ease;
+}
+
+.filter-card.dsm-has-pencil:hover .dsm-filter-pencil,
+.filter-card.dsm-has-pencil.dsm-sticky .dsm-filter-pencil,
+.dsm-filter-pencil:hover {
+  border-color: #9ca3af;
+  box-shadow: 0 1px 2px rgba(16, 24, 40, 0.08), 0 6px 16px rgba(16, 24, 40, 0.08);
+}
+
+/* The card's delayed hover (.filter-hover-active, ~2s) exists to highlight the
+ * affected panels and show the explanatory tooltip; the card itself needs no
+ * glow. Neutralizing it here (cards with pencil only, so view mode is
+ * untouched) also removes the need to wrap the attached pencil segment in
+ * the highlight. Scoped with #myDashboard to beat the core rule's
+ * encapsulated specificity. */
+#myDashboard .filter-card.dsm-has-pencil.filter-hover-active {
+  box-shadow: none;
+  background-color: transparent;
+}
+
+.dsm-filter-pencil:hover {
+  background: #d4d7dd;
+  color: #111827;
+}
+
+/* ---- Filter bar: one consistent family ---- */
+
+/* "Filtrar" button: the app's own button look (same family as the toolbar
+ * buttons) instead of the dynamic theme colours. Core applies an inline
+ * [style], so these overrides need !important. */
+#myDashboard .filter-btn-responsive {
+  height: 32px;
+  align-self: flex-end;
+  margin-top: 0 !important;
+  margin-bottom: 0.5rem;
+  padding: 0 1.08rem !important;
+  border: 1px solid #d1d5db !important;
+  border-radius: 10px !important;
+  background: #ffffff !important;
+  color: #374151 !important;
+  font-size: 14px !important;
+  font-weight: 600 !important;
+  line-height: 1;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  transition: background-color 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+#myDashboard .filter-btn-responsive:hover {
+  background: #f8fafc !important;
+  border-color: #cbd5e1 !important;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.12);
+}
+
+/* Every filter control shares the same box (border, radius, height), so the
+ * multiselect, date and autocomplete filters look like one family. Scoped
+ * with #myDashboard to beat the core rules' encapsulated specificity. */
+#myDashboard .filter-card .p-multiselect,
+#myDashboard .filter-card .summary-overlay,
+#myDashboard .filter-card .p-autocomplete-multiple-container {
+  border: 1px solid #d1d5db;
+  border-radius: 0.6rem;
+  height: 32px;
+  box-sizing: border-box;
+}
+
+/* The native multiselect trigger box is dropped: its own chevron is hidden and
+ * the arrow is drawn by the label's ::before, so nothing pushes the content
+ * right and the arrow sits flush with the left edge. */
+#myDashboard .filter-card .p-multiselect-trigger {
+  display: none;
+}
+
+/* Left icon slot, shared by every filter type: the dropdown shows a chevron,
+ * the date filter a calendar. Same size, gap and colour. */
+#myDashboard .filter-card .p-multiselect-label::before,
+#myDashboard .filter-card .summary-overlay::before {
+  flex: 0 0 auto;
+  font-family: "Font Awesome 5 Free";
+  font-weight: 900;
+  font-size: 14px;
+  line-height: 1;
+  color: #9ca3af;
+}
+
+#myDashboard .filter-card .p-multiselect-label {
+  padding-left: 0.42rem;
+  padding-right: 0.42rem;
+  padding-top: 0;
+  padding-bottom: 0;
+  line-height: 1;
+}
+
+#myDashboard .filter-card .p-multiselect-label::before {
+  content: "\f107"; /* chevron-down */
+  margin-right: 0.42rem;
+}
+
+#myDashboard .filter-card .summary-overlay {
+  gap: 0.42rem;
+  padding-left: 0.42rem;
+  padding-right: 0.72rem;
+}
+
+#myDashboard .filter-card .summary-overlay::before {
+  content: "\f073"; /* calendar */
+}
+
+/* The root font-size is 14px (css-appearance) instead of our previous 16.8px,
+ * so the core label (.filter-label-top, 0.75rem) would render at 10.5px.
+ * Bring it back to the previous 12.6px (0.9rem at 14px). */
+#myDashboard .filter-card .filter-label-top {
+  font-size: 14px;
+}
+
+/* One font for every filter control: the app font (inherited), one size and
+ * one weight. PrimeNG forces "Inter var" on the autocomplete, so it is reset
+ * to inherit here. */
+#myDashboard .filter-card .p-multiselect-label,
+#myDashboard .filter-card .summary-overlay .summary-placeholder-text,
+#myDashboard .filter-card .summary-overlay .summary-value-text,
+#myDashboard .filter-card .summary-operator-badge,
+#myDashboard .filter-card .p-autocomplete,
+#myDashboard .filter-card .p-autocomplete .p-autocomplete-multiple-container,
+#myDashboard .filter-card .p-autocomplete input,
+#myDashboard .filter-card .p-autocomplete .p-autocomplete-token {
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1;
+}
+
+/* Same text colour for the value in every control (dropdown, date and
+ * autocomplete): the date value was pure black while the dropdowns use the
+ * app's blue-grey. Placeholders keep the lighter grey. */
+#myDashboard .filter-card .p-multiselect-label:not(.p-placeholder),
+#myDashboard .filter-card .summary-overlay .summary-value-text,
+#myDashboard .filter-card .summary-operator-badge,
+#myDashboard .filter-card .p-autocomplete input,
+#myDashboard .filter-card .p-autocomplete .p-autocomplete-token {
+  color: #455a64;
+}
+
+/* Placeholders are clearly lighter than a selected value, in every control. */
+#myDashboard .filter-card .p-multiselect-label.p-placeholder,
+#myDashboard .filter-card .summary-overlay .summary-placeholder-text,
+#myDashboard .filter-card .p-autocomplete input::placeholder {
+  color: #9ca3af;
+}
+
+
+
+/* Read-only data-source name at the top of the "More" menu */
+.dsm-info-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  color: #6b7280;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: default;
+  user-select: text;
+}
+
+.dsm-info-item .p-menuitem-icon {
+  color: #9ca3af;
+}
+
+/* One brand colour per download format */
+.dsm-fmt-pdf {
+  color: #d32f2f;
+}
+
+.dsm-fmt-image {
+  color: #0891b2;
+}
+
+.dsm-fmt-excel {
+  color: #217346;
+}
+
+.dsm-fmt-word {
+  color: #2b579a;
+}
+
+/* Global toasts pinned top-center (p-toast defaults to top-right).
+ * Intentionally global: the single <p-toast> lives in app.component. */
+.p-toast.p-toast-top-right {
+  left: 50%;
+  right: auto;
+  transform: translateX(-50%);
+}
+
+/* VIEW-MODE (no core changes): hides edit chrome NOT governed by flags
+ * (panel.readonly covers data panels via isEditable()).
+ * Fragile by design: if the core changes this markup, revisit here. */
+#myDashboard.dsm-view-mode eda-title-panel {
+  pointer-events: none; /* blocks dblclick-editing and its chrome clicks */
+}
+#myDashboard.dsm-view-mode eda-title-panel .pi-ellipsis-v,
+#myDashboard.dsm-view-mode eda-tabs-panel .pi-ellipsis-v,
+#myDashboard.dsm-view-mode eda-blank-panel .pi-ellipsis-v {
+  display: none; /* ungated panel-menu triggers (titles stay visible) */
+}
+#myDashboard.dsm-view-mode eda-title-panel .pi-lock,
+#myDashboard.dsm-view-mode eda-title-panel .pi-lock-open {
+  display: none; /* title-panel lock runs on internal editMode, not flippable */
+}
+#myDashboard.dsm-view-mode .drag-handler {
+  cursor: default; /* the header bar doubles as drag handle: keep it, just not draggable */
+}
+#myDashboard.dsm-view-mode .gridster-item-resizable-handler {
+  display: none; /* visual handles (gridster off stops the behavior) */
+}
+#myDashboard.dsm-view-mode zoom-control {
+  display: none; /* zoom control: viewing aid, out in view mode */
+}
+
+/* "Unsaved changes" notice: lives in dashboard.page.html with
+ * `absolute -top-12 right-16` classes. Centered on top like the toasts,
+ * without touching the core. Fragile by design: if the core changes those
+ * classes, revisit here. */
+#myDashboard div.absolute.-top-12.right-16 {
+  position: fixed;
+  top: 1rem;
+  bottom: auto;
+  left: 50%;
+  right: auto;
+  transform: translateX(-50%);
+}

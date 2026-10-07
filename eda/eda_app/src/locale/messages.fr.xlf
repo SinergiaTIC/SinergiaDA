@@ -1009,7 +1009,7 @@ Une fois configurée, vous pouvez l'activer à tout moment à partir du bouton.<
         <target>La fonction « ajouter une tendance » ne peut être activée que sur les graphiques linéaires</target>
       </trans-unit>
       <trans-unit id="cumulativeSumTooltip">
-        <source>Si activas ésta función se calculará la suma acumulativa 
+        <source>Si activas ésta función se calculará la suma acumulativa
                                             para los campos numéricos que eligas. Sólo se puede activar si la fecha está agregada por mes, semana o dia.</source>
         <target>Si vous activez cette fonction, la somme cumulée sera calculée pour les champs numériques que vous choisissez.
     Elle ne peut être activée que si la date est ajoutée par mois ou par jour.</target>
@@ -1139,7 +1139,7 @@ Une fois configurée, vous pouvez l'activer à tout moment à partir du bouton.<
         <source> Puedes realizar consultas SQL sobre el esquema definido en tu modelo. Para ello introduce la consulta en el cuadro de texto y selecciona la tabla principal (puede ser cualquiera de las que aparecen en la consulta). Usaremos esta tabla para vincular la consulta a los filtros del informe. </source>
         <target> Vous pouvez effectuer des requêtes SQL sur le schéma défini dans votre modèle.
                                     Pour ce faire, saisissez la requête dans la zone de texte et sélectionnez la table principale
-                                    (il peut s'agir de n'importe lequel de ceux qui apparaissent dans la requête). 
+                                    (il peut s'agir de n'importe lequel de ceux qui apparaissent dans la requête).
                                     Nous utiliserons ce tableau pour lier la requête aux filtres du rapport. </target>
       </trans-unit>
       <trans-unit id="indicaciones2">
@@ -1149,7 +1149,7 @@ Une fois configurée, vous pouvez l'activer à tout moment à partir du bouton.<
       <trans-unit id="indicaciones3">
         <source> Solo es posible usar las tablas del esquema definido en el modelo (si lo hay) </source>
         <target>
-                                        Il est uniquement possible d'utiliser les tables du schéma du modèle (le cas échéant). 
+                                        Il est uniquement possible d'utiliser les tables du schéma du modèle (le cas échéant).
 </target>
       </trans-unit>
       <trans-unit id="indicaciones4">
@@ -1164,7 +1164,7 @@ Une fois configurée, vous pouvez l'activer à tout moment à partir du bouton.<
       </trans-unit>
       <trans-unit id="indicaciones8">
         <source> Si la tabla por la que filtramos no está en la consulta, recuerda que debes añadir las cláusulas JOIN necesarias para poder vicular la tabla del filtro con tu consulta </source>
-        <target>Si la table sur laquelle nous filtrons ne figure pas dans la requête, n'oubliez pas que vous avez 
+        <target>Si la table sur laquelle nous filtrons ne figure pas dans la requête, n'oubliez pas que vous avez
                                       ajouter les clauses JOIN nécessaires pour pouvoir établir la liaison
                                       le tableau de filtres avec votre requête
 </target>
@@ -2339,7 +2339,7 @@ Une fois configurée, vous pouvez l'activer à tout moment à partir du bouton.<
       </trans-unit>
       <trans-unit id="dangerQueryText1">
         <source>La consulta que estás a punto de realizar es potencialmente pesada y puede tardar mas de lo normal en ejecutarse. </source>
-        <target>La requête que vous vous apprêtez à exécuter est potentiellement volumineuse et peut prendre plus de temps que d'habitude. 
+        <target>La requête que vous vous apprêtez à exécuter est potentiellement volumineuse et peut prendre plus de temps que d'habitude.
 </target>
       </trans-unit>
       <trans-unit id="dangerQueryText2">
@@ -2757,7 +2757,7 @@ Une fois configurée, vous pouvez l'activer à tout moment à partir du bouton.<
       </trans-unit>
       <trans-unit id="indicaciones6" datatype="html">
         <source> Para hacerlo sólo tienes que añadir: <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span style=&quot;color:rgb(0, 62, 119); font-weight: bold&quot;&gt;"/> AND <x id="INTERPOLATION" equiv-text="{{&apos; ${alias_tabla.columna_filtrada} &apos;}}"/> <x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/> en la cláusula &apos;WHERE&apos; de la consulta donde quieras inyectar el filtro </source>
-        <target> Pour ce faire, il vous suffit d'ajouter : 
+        <target> Pour ce faire, il vous suffit d'ajouter :
 <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span&gt;"/>
  AND
 <x id="INTERPOLATION" equiv-text="{{&apos; ${alias_taula.columna_filtrada} &apos;}}"/>

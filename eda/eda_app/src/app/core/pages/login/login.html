@@ -7,7 +7,8 @@
 
     <app-particles-background></app-particles-background>
 
-    <!-- Animated gradient orbs -->
+    <!-- Animated gradient orbs (hidden when HOME_SCREEN_PARTICLE_COLOR or HOME_SCREEN_BACKGROUND_COLOR is set) -->
+    @if (showOrbs) {
     <div class="absolute inset-0 overflow-hidden">
         <div
             class="absolute -left-[10%] top-[20%] w-[500px] h-[500px] bg-blue-200/30 rounded-full blur-3xl animate-blob">
@@ -19,6 +20,7 @@
             class="absolute left-[20%] -bottom-[10%] w-[600px] h-[600px] bg-cyan-200/20 rounded-full blur-3xl animate-blob animation-delay-4000">
         </div>
     </div>
+    }
 
     <!-- Login Card -->
     <div

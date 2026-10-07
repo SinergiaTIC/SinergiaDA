@@ -1008,7 +1008,7 @@ Po skonfigurowaniu możesz go wywołać w dowolnym momencie za pomocą przycisku
         <target>Funkcja trendu jest dozwolona tylko na wykresach liniowych</target>
       </trans-unit>
       <trans-unit id="cumulativeSumTooltip">
-        <source>Si activas ésta función se calculará la suma acumulativa 
+        <source>Si activas ésta función se calculará la suma acumulativa
                                             para los campos numéricos que eligas. Sólo se puede activar si la fecha está agregada por mes, semana o dia.</source>
         <target>Aktywacja tej funkcji spowoduje obliczenie sumy skumulowanej dla plików numerycznych.
                                         Można go aktywować tylko wtedy, gdy pole danych jest agregowane według miesiąca, tygodnia lub dnia. </target>

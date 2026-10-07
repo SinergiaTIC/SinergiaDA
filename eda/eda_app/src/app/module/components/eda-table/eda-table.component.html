@@ -56,7 +56,8 @@
                         @if(col.type && col.visible){
                             <th [pSortableColumn]="col.field" [class]="col.styleClass" [pTooltip]="getTooltip(col)"  [ngStyle]="getStyle()"
                                 [width]="col.width" [attr.rowspan]="col.rowspan">
-                                <div class="flex items-center "  [ngStyle]="getTextStyle()">
+                                <!-- flex ignores the th's text-align: right-aligned (numeric) columns need justify-end -->
+                                <div class="flex items-center " [class.justify-end]="col.styleClass === 'text-right'" [ngStyle]="getTextStyle()">
                                     {{col.header}}
                                     @if(col.sortable){
                                         <p-sortIcon [field]="col.field"  [ngStyle]="getTextStyle()"></p-sortIcon>
@@ -89,11 +90,13 @@
 
         <!-- COLUMN CONTENT -->
 
-        <ng-template pTemplate="body" let-rowData let-columns="columns">
+        <ng-template pTemplate="body" let-rowData let-columns="columns" let-rowIndex="rowIndex">
             <tr>
                 <ng-container *ngFor="let col of inject.cols">
                     @if(col.visible===true){
                         <td [class]="col.styleClass" [width]="col.width" (click)="handleClick(lodash.get(rowData, col.field), col.field )" style="cursor: pointer; height: 35px;" [ngClass]="getStyleClass(col, rowData)" [ngStyle]="getTextStyle()">
+                            <!-- "Hide repeated values": the cell is left empty at render time, data stays untouched -->
+                            @if(!isRepeatedCell(rowData, rowIndex, col)){
                             <ng-container [ngSwitch]="col.type">
                                 <!-- ngSwitch TEXT -->
 
@@ -248,6 +251,7 @@
 
                                 </ng-container>
                             </ng-container>
+                            }
                         </td>
                     }
                 </ng-container>

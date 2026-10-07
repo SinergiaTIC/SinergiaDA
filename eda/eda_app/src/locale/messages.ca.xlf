@@ -1009,7 +1009,7 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
         <target>La funció d'afegir una tendència només es pot activar en els gràfics de línies</target>
       </trans-unit>
       <trans-unit id="cumulativeSumTooltip">
-        <source>Si activas ésta función se calculará la suma acumulativa 
+        <source>Si activas ésta función se calculará la suma acumulativa
                                             para los campos numéricos que eligas. Sólo se puede activar si la fecha está agregada por mes, semana o dia.</source>
         <target>Si actives questa funció es calcularà la suma acumulativa per els camps numèrics que escullis.
     Només es pot activar si la data està agregada per mes, setmana o dia.</target>
@@ -1137,9 +1137,9 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
       </trans-unit>
       <trans-unit id="indicaciones1">
         <source> Puedes realizar consultas SQL sobre el esquema definido en tu modelo. Para ello introduce la consulta en el cuadro de texto y selecciona la tabla principal (puede ser cualquiera de las que aparecen en la consulta). Usaremos esta tabla para vincular la consulta a los filtros del informe. </source>
-        <target> Pots realitzar consultes SQL sobre l'esquema definit en el teu model. 
+        <target> Pots realitzar consultes SQL sobre l'esquema definit en el teu model.
                                     Per fer-ho introdueix la consulta en el quadre de text i selecciona la taula principal
-                                    (pot ser qualsevol de les que aparèixen en la consulta). 
+                                    (pot ser qualsevol de les que aparèixen en la consulta).
                                     Farem servir aquesta taula per vincular la consulta amb els filtres de l'informe. </target>
       </trans-unit>
       <trans-unit id="indicaciones2">
@@ -1149,7 +1149,7 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
       <trans-unit id="indicaciones3">
         <source> Solo es posible usar las tablas del esquema definido en el modelo (si lo hay) </source>
         <target>
-                                        Només és possible fer servir les taules de l'esquema del model (si n'hi ha). 
+                                        Només és possible fer servir les taules de l'esquema del model (si n'hi ha).
 </target>
       </trans-unit>
       <trans-unit id="indicaciones4">
@@ -1164,7 +1164,7 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
       </trans-unit>
       <trans-unit id="indicaciones8">
         <source> Si la tabla por la que filtramos no está en la consulta, recuerda que debes añadir las cláusulas JOIN necesarias para poder vicular la tabla del filtro con tu consulta </source>
-        <target>Si la taula per la que filtrem no és a la consulta, recorda que has 
+        <target>Si la taula per la que filtrem no és a la consulta, recorda que has
                                       d'afegir les clàusules JOIN necessàries per poder vincular
                                       la taula del filtre amb la teva consulta
 </target>
@@ -2339,7 +2339,7 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
       </trans-unit>
       <trans-unit id="dangerQueryText1">
         <source>La consulta que estás a punto de realizar es potencialmente pesada y puede tardar mas de lo normal en ejecutarse. </source>
-        <target>La consulta que estàs a punt de realitzar és potencialment pesada i pot trigar més del compte a executar-se. 
+        <target>La consulta que estàs a punt de realitzar és potencialment pesada i pot trigar més del compte a executar-se.
 </target>
       </trans-unit>
       <trans-unit id="dangerQueryText2">
@@ -2757,7 +2757,7 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
       </trans-unit>
       <trans-unit id="indicaciones6" datatype="html">
         <source> Para hacerlo sólo tienes que añadir: <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span style=&quot;color:rgb(0, 62, 119); font-weight: bold&quot;&gt;"/> AND <x id="INTERPOLATION" equiv-text="{{&apos; ${alias_tabla.columna_filtrada} &apos;}}"/> <x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/> en la cláusula &apos;WHERE&apos; de la consulta donde quieras inyectar el filtro </source>
-        <target> Per fer-ho només has d'afegir: 
+        <target> Per fer-ho només has d'afegir:
 <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span&gt;"/>
  AND
 <x id="INTERPOLATION" equiv-text="{{&apos; ${alias_taula.columna_filtrada} &apos;}}"/>
@@ -4565,13 +4565,13 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
       <trans-unit id="anyCanSeeNoTable">
         <source>Define quién puede acceder y ver esta tabla. Solo los usuarios y grupos explícitamente autorizados tendrán
           acceso.</source>
-        <target>Defineix qui hi pot accedir i veure aquesta taula. Només els usuaris i grups explícitament autoritzats tindran 
+        <target>Defineix qui hi pot accedir i veure aquesta taula. Només els usuaris i grups explícitament autoritzats tindran
           accés.</target>
       </trans-unit>
       <trans-unit id="anyCanSeeYesTable">
         <source>Cualquier usuario puede ver la tabla.
           Los filtros de seguridad se definen a nivel de tabla y columna concreta.</source>
-        <target>Qualsevol usuari pot veure la taula. 
+        <target>Qualsevol usuari pot veure la taula.
           Els filtres de seguretat es defineixen a nivell de taula i columna concreta.</target>
       </trans-unit>
       <trans-unit id="showLines">

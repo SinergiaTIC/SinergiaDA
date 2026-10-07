@@ -1008,9 +1008,9 @@ Once configured you can invoke it whenever you want from the button.</target>
         <target>Trend function is only allowed in line charts</target>
       </trans-unit>
       <trans-unit id="cumulativeSumTooltip">
-        <source>Si activas ésta función se calculará la suma acumulativa 
+        <source>Si activas ésta función se calculará la suma acumulativa
                                             para los campos numéricos que eligas. Sólo se puede activar si la fecha está agregada por mes, semana o dia.</source>
-        <target>Activating this function the cumulative sum for numeric filelds will be calculated. 
+        <target>Activating this function the cumulative sum for numeric filelds will be calculated.
                                         It can only be activated if date field is aggregated by month, week or day. </target>
       </trans-unit>
       <trans-unit id="cumsumAlertMessage1">
@@ -1136,7 +1136,7 @@ Once configured you can invoke it whenever you want from the button.</target>
       </trans-unit>
       <trans-unit id="indicaciones1">
         <source> Puedes realizar consultas SQL sobre el esquema definido en tu modelo. Para ello introduce la consulta en el cuadro de texto y selecciona la tabla principal (puede ser cualquiera de las que aparecen en la consulta). Usaremos esta tabla para vincular la consulta a los filtros del informe. </source>
-        <target>  You can perform SQL queries on the schema defined in your model. 
+        <target>  You can perform SQL queries on the schema defined in your model.
                                     To do this, enter the query in the text box and select the main table
                                     (It can be any of those that appear in the query).
                                     We will use this table to link the query to the report filters. </target>
@@ -4846,12 +4846,20 @@ OR<ph id="5"/>
   <target>Controls whether the AI agent has access to this information: Full allows full access, Declaration exposes only name and type, None excludes it entirely.</target>
 </trans-unit>
 <trans-unit id="dynamicFiltersText" datatype="html">
-  <source>Filtros dinámicos</source>
-  <target>Dynamic filters</target>
+  <source>Filtros en click</source>
+  <target>Click filters</target>
+</trans-unit>
+<trans-unit id="tooltipDynamicFilters" datatype="html">
+  <source>Permitir que el click en cualquier panel filtre este panel</source>
+  <target>Allow a click on any panel to filter this panel</target>
 </trans-unit>
 <trans-unit id="uniqueRecordsGrouping" datatype="html">
-  <source>Registros únicos (agrupación)?</source>
-  <target>Unique records (grouping)?</target>
+  <source>Registros únicos (agrupación)</source>
+  <target>Unique records (grouping)</target>
+</trans-unit>
+<trans-unit id="tooltipUniqueRecords" datatype="html">
+  <source>Aplica GROUP BY a todos los campos para eliminar duplicados</source>
+  <target>Applies GROUP BY to all fields to remove duplicates</target>
 </trans-unit>
 <trans-unit id="tableDescriptionDependentFilter" datatype="html">
   <source>Tabla:</source>
@@ -5691,6 +5699,7 @@ OR<ph id="5"/>
 <trans-unit id="filterHoverNotAffected">
 <source>Paneles no afectados por este filtro</source>
 <target>Panels not affected by this filter</target>
+</trans-unit>
 <trans-unit id="ResetZoom">
   <source>Restablecer (100%)</source>
   <target>Reset (100%)</target>
@@ -5814,6 +5823,10 @@ OR<ph id="5"/>
 <trans-unit id="LogsActionUpdateModelFailed">
   <source>Update Model Failed</source>
   <target>Model update failed</target>
+</trans-unit>
+<trans-unit id="ptooltipOrderByControl">
+  <source>Arrastra aquí los atributos por los que quieres ordenar los resultados y colócalos en el orden que prefieras. En cada uno puedes elegir ascendente (ASC), descendente (DESC) o dejarlo sin indicar.</source>
+  <target>Drag here the attributes you want to sort the results by and arrange them in the order you prefer. For each one, you can choose ascending (ASC), descending (DESC), or leave it unspecified.</target>
 </trans-unit>
 </body>
 </file>
