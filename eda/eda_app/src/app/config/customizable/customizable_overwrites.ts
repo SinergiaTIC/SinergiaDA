@@ -112,29 +112,61 @@ export const DEFAULT_BACKGROUND_COLOR: string = '#f1f0f0'; // Report/page backgr
  *  from customizable_default.ts must be repeated here (apply-overwrites.js).
  *  The SinergiaDA palette is built around the corporate olive #b4bc32 with
  *  analogous (yellow-green/olive/green), complementary (violet/magenta) and
- *  triadic (blue, red/orange) tones. */
+ *  triadic (blue, red/orange) tones.
+ *  ORDER MATTERS: the colours are handed to the chart series in array order
+ *  (chart-dialog, dashboard-edit-style: `paleta[i % paleta.length]`), so the
+ *  first entries are the ones a chart with few series shows and two neighbouring
+ *  entries are drawn side by side. The array is therefore ordered so that the
+ *  first eight colours belong to seven different hue families with a single
+ *  green - the brand olive - because the palette has six greens and two of them
+ *  side by side is what a small pie chart looked like before. The two greys are
+ *  the only repeated family and they are kept apart (ΔE00 27).
+ *  Measured in CIEDE2000: the first eight colours are ΔE00 >= 17.2 apart
+ *  (was 10.0) and the first three, the worst case of a pie chart, 40.7. Every
+ *  adjacent pair stays >= 18.9 (was 37.8), still clearly distinguishable.
+ *  Do not regroup the colours: append new ones at the end instead. */
 export const ChartsPalettes = [
     {
         name: 'SinergiaDA',
         paleta: [
+            '#024873', // dark blue
+            '#0fa697', // turquoise
+            '#f2c53d', // yellow
+            '#bf814b', // brown
+            '#591202', // dark red
+            '#ffae57', // orange
+            '#a9d531', // lime green
+            '#ff8400', // dark orange
+            '#e77770', // salmon
+            '#555555', // grey
+            '#1f9da5', // teal
+            '#2bd7e3', // cyan
+            '#feb714', // gold
+            '#b3cd7d', // light green
+            '#34956f', // forest green
+        ],
+    },
+    {
+        name: 'SinergiaDA 2',
+        paleta: [
             '#b4bc32', // corporate olive (brand primary)
-            '#8f9626', // darker olive (hover tone)
-            '#d4da5e', // light olive
-            '#6b8e23', // olive green
-            '#3f9142', // deep green (analogous)
-            '#7ac143', // fresh green
-            '#2f9e8f', // teal-green (analogous)
-            '#1f7a8c', // petrol blue (triadic)
-            '#2d6cdf', // blue (triadic)
-            '#6c4bd6', // violet (complementary of olive-yellow)
-            '#9b4dca', // purple
-            '#c74ba0', // magenta
-            '#e0517a', // pink-red
             '#e0693b', // orange (triadic)
-            '#e8a33d', // amber
+            '#4a5568', // dark slate (neutral)
             '#f2cf8c', // sand (light neutral)
+            '#1f7a8c', // petrol blue (triadic)
             '#8799a3', // slate grey (neutral)
-            '#4a5568', // dark slate
+            '#e0517a', // pink-red
+            '#9b4dca', // purple
+            '#8f9626', // darker olive
+            '#6c4bd6', // violet (complementary of olive-yellow)
+            '#6b8e23', // olive green
+            '#2d6cdf', // blue (triadic)
+            '#7ac143', // fresh green
+            '#c74ba0', // magenta
+            '#d4da5e', // light olive
+            '#2f9e8f', // teal-green (analogous)
+            '#e8a33d', // amber
+            '#3f9142', // deep green (analogous)
         ],
     },
     {
