@@ -3021,6 +3021,10 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
         <source>Cancelar</source>
         <target>Anuluj</target>
       </trans-unit>
+      <trans-unit id="cancelarButton">
+        <source>Cancelar</source>
+        <target>Anuluj</target>
+      </trans-unit>
       <trans-unit id="formDialogCalculatedColumn">
         <source>Recuerde rellenar todos los campos</source>
         <target>Pamiętaj, aby wypełnić wszystkie pola</target>
@@ -3140,6 +3144,10 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
       <trans-unit id="rangeDescriptionCharacterError">
         <source>El último caracter del rango debe ser un número</source>
         <target>Ostatni znak zakresu musi być liczbą</target>
+      </trans-unit>
+      <trans-unit id="rangeDescriptionB">
+        <source>• Rango:</source>
+        <target>• Zakres:</target>
       </trans-unit>
       <trans-unit id="ptooltipNotAvailableRanges">
         <source>No es posible crear un rango nuevo por que ya existe uno configurado</source>
@@ -4073,6 +4081,10 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
         <source>Buscar atributos...</source>
         <target>Znajdź atrybuty...</target>
       </trans-unit>
+      <trans-unit id="hiddenAttributes">
+        <source>Mostrar/ocultar campos ocultos</source>
+        <target>Pokaż/ukryj ukryte pola</target>
+      </trans-unit>
       <trans-unit id="groupSelect">
         <source>Selecciona...</source>
         <target>Wybierać...</target>
@@ -4855,6 +4867,26 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
       <trans-unit id="mustAddTheGroupingsToRunWithAggregations">
         <source>Debe activar las agrupaciones para ejecutar con agregaciones configuradas en los atributos</source>
         <target>Należy włączyć grupowanie, aby wykonać operację z agregacjami skonfigurowanymi w atrybutach</target>
+      </trans-unit>
+      <trans-unit id="withoutFilters">
+        <source>Aún no has configurado filtros. Usa el panel de filtros o los filtros globales</source>
+        <target>Nie skonfigurowano jeszcze żadnych filtrów. Użyj panelu filtrów lub filtrów globalnych.</target>
+      </trans-unit>
+      <trans-unit id="filterSettingsReboot">
+        <source>La configuración de filtros se ha reiniciado</source>
+        <target>Konfiguracja filtrów została zresetowana</target>
+      </trans-unit>
+      <trans-unit id="globalFilterSettingsReboot">
+        <source>La configuración de filtros del panel involucrado se ha reiniciado</source>
+        <target>Konfiguracja filtrów danego panelu została zresetowana</target>
+      </trans-unit>
+      <trans-unit id="filterSettingsHeader">
+        <source>Configuración de filtros</source>
+        <target>Konfiguracja filtrów</target>
+      </trans-unit>
+      <trans-unit id="descriptionFilterSettings">
+        <source>Configuración avanzada de todos los filtros</source>
+        <target>Zaawansowana konfiguracja wszystkich filtrów</target>
       </trans-unit>
       <trans-unit id="chatAssistantTitle">
         <source>Asistente Edalitics</source>

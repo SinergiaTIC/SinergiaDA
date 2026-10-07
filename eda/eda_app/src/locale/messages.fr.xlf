@@ -3046,6 +3046,10 @@ Une fois configurée, vous pouvez l'activer à tout moment à partir du bouton.<
         <source>Cancelar</source>
         <target>Annuler</target>
       </trans-unit>
+      <trans-unit id="cancelarButton">
+        <source>Cancelar</source>
+        <target>Annuler</target>
+      </trans-unit>
       <trans-unit id="formDialogCalculatedColumn">
         <source>Recuerde rellenar todos los campos</source>
         <target>Veuillez remplir tous les champs</target>
@@ -3165,6 +3169,10 @@ Une fois configurée, vous pouvez l'activer à tout moment à partir du bouton.<
       <trans-unit id="rangeDescriptionCharacterError">
         <source>El último caracter del rango debe ser un número</source>
         <target>Le dernier caractère de la plage doit être un nombre</target>
+      </trans-unit>
+      <trans-unit id="rangeDescriptionB">
+        <source>• Rango:</source>
+        <target>• Plage :</target>
       </trans-unit>
       <trans-unit id="ptooltipNotAvailableRanges">
         <source>No es posible crear un rango nuevo por que ya existe uno configurado</source>
@@ -4098,6 +4106,10 @@ Une fois configurée, vous pouvez l'activer à tout moment à partir du bouton.<
         <source>Buscar atributos...</source>
         <target>Attributs de recherche...</target>
       </trans-unit>
+      <trans-unit id="hiddenAttributes">
+        <source>Mostrar/ocultar campos ocultos</source>
+        <target>Afficher/masquer les champs masqués</target>
+      </trans-unit>
       <trans-unit id="groupSelect">
         <source>Selecciona...</source>
         <target>Sélectionner...</target>
@@ -4881,6 +4893,26 @@ Une fois configurée, vous pouvez l'activer à tout moment à partir du bouton.<
         <source>Debe activar las agrupaciones para ejecutar con agregaciones configuradas en los atributos</source>
         <target>Vous devez activer les regroupements pour exécuter avec des agrégations configurées dans les attributs</target>
       </trans-unit>
+      <trans-unit id="withoutFilters">
+        <source>Aún no has configurado filtros. Usa el panel de filtros o los filtros globales</source>
+        <target>Vous n'avez encore configuré aucun filtre. Utilisez le panneau des filtres ou les filtres globaux.</target>
+      </trans-unit>
+      <trans-unit id="filterSettingsReboot">
+        <source>La configuración de filtros se ha reiniciado</source>
+        <target>La configuration des filtres a été réinitialisée</target>
+      </trans-unit>
+      <trans-unit id="globalFilterSettingsReboot">
+        <source>La configuración de filtros del panel involucrado se ha reiniciado</source>
+        <target>La configuration des filtres du panneau concerné a été réinitialisée</target>
+      </trans-unit>
+      <trans-unit id="filterSettingsHeader">
+        <source>Configuración de filtros</source>
+        <target>Configuration des filtres</target>
+      </trans-unit>
+      <trans-unit id="descriptionFilterSettings">
+        <source>Configuración avanzada de todos los filtros</source>
+        <target>Configuration avancée de tous les filtres</target>
+      </trans-unit>
       <trans-unit id="chatAssistantTitle">
         <source>Asistente Edalitics</source>
         <target>Assistant Edalitics</target>
@@ -5612,6 +5644,7 @@ Une fois configurée, vous pouvez l'activer à tout moment à partir du bouton.<
       <trans-unit id="filterHoverNotAffected">
         <source>Paneles no afectados por este filtro</source>
         <target>Panneaux non affectés par ce filtre</target>
+      </trans-unit>
       <trans-unit id="ResetZoom">
         <source>Restablecer (100%)</source>
         <target>Réinitialiser (100%)</target>

@@ -2950,6 +2950,10 @@ Ingresa ahora<ph id="2"/>
         <source>Cancelar</source>
         <target>Cancelar</target>
       </trans-unit>
+      <trans-unit id="cancelarButton">
+        <source>Cancelar</source>
+        <target>Cancelar</target>
+      </trans-unit>
       <trans-unit id="formDialogCalculatedColumn">
         <source>Recuerde rellenar todos los campos</source>
         <target>Lembre cubrir todos os campos</target>
@@ -3069,6 +3073,10 @@ Ingresa ahora<ph id="2"/>
       <trans-unit id="rangeDescriptionCharacterError">
         <source>El último caracter del rango debe ser un número</source>
         <target>O último carácter do rango debe ser un número</target>
+      </trans-unit>
+      <trans-unit id="rangeDescriptionB">
+        <source>• Rango:</source>
+        <target>• Rango:</target>
       </trans-unit>
       <trans-unit id="ptooltipNotAvailableRanges">
         <source>No es posible crear un rango nuevo por que ya existe uno configurado</source>
@@ -4002,6 +4010,10 @@ Ingresa ahora<ph id="2"/>
         <source>Buscar atributos...</source>
         <target>Buscar atributos...</target>
       </trans-unit>
+      <trans-unit id="hiddenAttributes">
+        <source>Mostrar/ocultar campos ocultos</source>
+        <target>Amosar/ocultar campos ocultos</target>
+      </trans-unit>
       <trans-unit id="groupSelect">
         <source>Selecciona...</source>
         <target>Selecciona...</target>
@@ -4785,6 +4797,26 @@ Ingresa ahora<ph id="2"/>
       <trans-unit id="mustAddTheGroupingsToRunWithAggregations">
         <source>Debe activar las agrupaciones para ejecutar con agregaciones configuradas en los atributos</source>
         <target>Debe activar as agrupacións para executar con agregacións configuradas nos atributos</target>
+      </trans-unit>
+      <trans-unit id="withoutFilters">
+        <source>Aún no has configurado filtros. Usa el panel de filtros o los filtros globales</source>
+        <target>Aínda non configuraches ningún filtro. Usa o panel de filtros ou os filtros globais.</target>
+      </trans-unit>
+      <trans-unit id="filterSettingsReboot">
+        <source>La configuración de filtros se ha reiniciado</source>
+        <target>Restableceuse a configuración dos filtros</target>
+      </trans-unit>
+      <trans-unit id="globalFilterSettingsReboot">
+        <source>La configuración de filtros del panel involucrado se ha reiniciado</source>
+        <target>Restableceuse a configuración dos filtros do panel implicado</target>
+      </trans-unit>
+      <trans-unit id="filterSettingsHeader">
+        <source>Configuración de filtros</source>
+        <target>Configuración dos filtros</target>
+      </trans-unit>
+      <trans-unit id="descriptionFilterSettings">
+        <source>Configuración avanzada de todos los filtros</source>
+        <target>Configuración avanzada de todos os filtros</target>
       </trans-unit>
       <trans-unit id="chatAssistantTitle">
         <source>Asistente Edalitics</source>

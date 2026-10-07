@@ -2929,6 +2929,10 @@ edo http bidezko karga prozesu bati deitzea ere bai. Behin konfiguratuta, botoit
         <source>Cancelar</source>
         <target>Utzi</target>
       </trans-unit>
+      <trans-unit id="cancelarButton">
+        <source>Cancelar</source>
+        <target>Utzi</target>
+      </trans-unit>
       <trans-unit id="formDialogCalculatedColumn">
         <source>Recuerde rellenar todos los campos</source>
         <target>Gogoratu eremu guztiak betetzea</target>
@@ -3048,6 +3052,10 @@ edo http bidezko karga prozesu bati deitzea ere bai. Behin konfiguratuta, botoit
       <trans-unit id="rangeDescriptionCharacterError">
         <source>El último caracter del rango debe ser un número</source>
         <target>Tartearen azken karakterea zenbaki bat izan behar da</target>
+      </trans-unit>
+      <trans-unit id="rangeDescriptionB">
+        <source>• Rango:</source>
+        <target>• Tartea:</target>
       </trans-unit>
       <trans-unit id="ptooltipNotAvailableRanges">
         <source>No es posible crear un rango nuevo por que ya existe uno configurado</source>
@@ -3981,6 +3989,10 @@ edo http bidezko karga prozesu bati deitzea ere bai. Behin konfiguratuta, botoit
         <source>Buscar atributos...</source>
         <target>Bilatu atributuak...</target>
       </trans-unit>
+      <trans-unit id="hiddenAttributes">
+        <source>Mostrar/ocultar campos ocultos</source>
+        <target>Erakutsi/ezkutatu eremu ezkutuak</target>
+      </trans-unit>
       <trans-unit id="groupSelect">
         <source>Selecciona...</source>
         <target>Hautatu...</target>
@@ -4764,6 +4776,26 @@ edo http bidezko karga prozesu bati deitzea ere bai. Behin konfiguratuta, botoit
       <trans-unit id="mustAddTheGroupingsToRunWithAggregations">
         <source>Debe activar las agrupaciones para ejecutar con agregaciones configuradas en los atributos</source>
         <target>Taldekatzeak aktibatu behar dituzu atributuetan konfiguratutako agregazioekin exekutatzeko</target>
+      </trans-unit>
+      <trans-unit id="withoutFilters">
+        <source>Aún no has configurado filtros. Usa el panel de filtros o los filtros globales</source>
+        <target>Oraindik ez duzu iragazkirik konfiguratu. Erabili iragazkien panela edo iragazki globalak.</target>
+      </trans-unit>
+      <trans-unit id="filterSettingsReboot">
+        <source>La configuración de filtros se ha reiniciado</source>
+        <target>Iragazkien konfigurazioa berrezarri da</target>
+      </trans-unit>
+      <trans-unit id="globalFilterSettingsReboot">
+        <source>La configuración de filtros del panel involucrado se ha reiniciado</source>
+        <target>Eragindako panelaren iragazkien konfigurazioa berrezarri da</target>
+      </trans-unit>
+      <trans-unit id="filterSettingsHeader">
+        <source>Configuración de filtros</source>
+        <target>Iragazkien konfigurazioa</target>
+      </trans-unit>
+      <trans-unit id="descriptionFilterSettings">
+        <source>Configuración avanzada de todos los filtros</source>
+        <target>Iragazki guztien ezarpen aurreratuak</target>
       </trans-unit>
       <trans-unit id="chatAssistantTitle">
         <source>Asistente Edalitics</source>
