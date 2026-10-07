@@ -28,49 +28,17 @@
         <source>Correo de usuario</source>
         <target>Email użytkownika</target>
       </trans-unit>
-      <trans-unit id="labelImagenUsuario">
-        <source>Fotografía del usuario</source>
-        <target>Zdjęcie</target>
-      </trans-unit>
-      <trans-unit id="button">
-        <source>Actualizar Foto</source>
-        <target>Aktualizuj zdjęcie</target>
-      </trans-unit>
       <trans-unit id="inputNombre">
-        <source>Nombre</source>
-        <target>Nazwa *</target>
-      </trans-unit>
-      <trans-unit id="inputEmail">
-        <source>Correo *</source>
-        <target>E-mail *</target>
+        <source>Nombre <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/></source>
+        <target>Nazwa <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/></target>
       </trans-unit>
       <trans-unit id="inputPassword">
-        <source> Password </source>
-        <target>Hasło *</target>
-      </trans-unit>
-      <trans-unit id="inputSeguridad">
-        <source>Seguridad *</source>
-        <target>Bezpieczeństwo *</target>
+        <source>Password <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/></source>
+        <target>Hasło</target>
       </trans-unit>
       <trans-unit id="userTable">
         <source>USUARIO</source>
         <target>UŻYTKOWNIKs</target>
-      </trans-unit>
-      <trans-unit id="labelnewPass">
-        <source>Nueva Contraseña (Si no quieres modificar tu contraseña actual deja el campo en blanco)</source>
-        <target>Nowe hasło</target>
-      </trans-unit>
-      <trans-unit id="labelRepeatPass">
-        <source>Repite la nueva contraseña </source>
-        <target>Potwierdź hasło</target>
-      </trans-unit>
-      <trans-unit id="nameNewPass">
-        <source>newPassword</source>
-        <target>nowe hasło</target>
-      </trans-unit>
-      <trans-unit id="usersRole">
-        <source>ROLE</source>
-        <target>ROLA</target>
       </trans-unit>
       <trans-unit id="direccionMail">
         <source>Dirección Email / Usuario</source>
@@ -96,14 +64,6 @@
         <source>Usuario actualizado</source>
         <target>Zaktualizowano użytkowanika</target>
       </trans-unit>
-      <trans-unit id="fileNotPicture">
-        <source>El archivo seleccionado no es una imagen</source>
-        <target>Wybrany plik nie jest obrazem</target>
-      </trans-unit>
-      <trans-unit id="newUserTitle">
-        <source>CREAR NUEVO USUARIO</source>
-        <target>STWÓRZ NOWEGO UŻYTKOWNIKA</target>
-      </trans-unit>
       <trans-unit id="usersPermissions">
         <source>Permisos de usuario</source>
         <target>Uprawnienia użytkownika</target>
@@ -111,22 +71,6 @@
       <trans-unit id="users">
         <source>Usuarios</source>
         <target>Użytkownicy</target>
-      </trans-unit>
-      <trans-unit id="passwordLogin">
-        <source>Contraseña</source>
-        <target>Hasło</target>
-      </trans-unit>
-      <trans-unit id="d554461cfe5e5317e9257ceb0f9f96bec13c86c4">
-        <source>Confirma contraseña</source>
-        <target>Potwierdź hasło</target>
-      </trans-unit>
-      <trans-unit id="PasswordsNotEqual">
-        <source>Las contraseñas no coinciden</source>
-        <target>Hasła nie są zgodne</target>
-      </trans-unit>
-      <trans-unit id="groups3">
-        <source>AUTH</source>
-        <target>AUTH</target>
       </trans-unit>
       <!-- SECTION: MENÚS Y NAVEGACIÓN (SIDEBAR) -->
       <trans-unit id="languageSelectorTitle">
@@ -141,37 +85,13 @@
         <source>Gestión de logs</source>
         <target>Przeglądarka logów</target>
       </trans-unit>
-      <trans-unit id="sidebarGroupManagement">
-        <source>Gestión de Grupos</source>
-        <target>Zarządzanie grupami</target>
-      </trans-unit>
-      <trans-unit id="sidebarLogOut">
-        <source>Cerrar sesión</source>
-        <target>Zamknij sesję</target>
-      </trans-unit>
       <trans-unit id="sidebarMyDashboards">
         <source> Ver informes</source>
         <target>Moje raporty</target>
       </trans-unit>
-      <trans-unit id="sidebarNewDb">
-        <source>Nueva Fuente</source>
-        <target>Nowa baza danych</target>
-      </trans-unit>
-      <trans-unit id="sidebarEditDb">
-        <source>Editar Fuente</source>
-        <target>Edytuj bazę danych</target>
-      </trans-unit>
       <trans-unit id="tituloGrupoComunes">
         <source> COMUNES </source>
         <target>WSPÓLNE</target>
-      </trans-unit>
-      <trans-unit id="sidebarModelsManagement">
-        <source>Gestión de Modelos</source>
-        <target>Zarządzanie modelami</target>
-      </trans-unit>
-      <trans-unit id="sidebarUserManagement">
-        <source>Gestión de Usuarios</source>
-        <target>Zarządzanie użytkownikami</target>
       </trans-unit>
       <!-- SECTION: GESTIÓN DE INFORMES (DASHBOARDS) -->
       <trans-unit id="publicDashboardTitle">
@@ -198,10 +118,6 @@
         <source>Dame un nombre *</source>
         <target>Nazwa raportu *</target>
       </trans-unit>
-      <trans-unit id="buscarPorNombre">
-        <source>Buscar por nombre del informe</source>
-        <target>Szukaj po nazwie raportu</target>
-      </trans-unit>
       <trans-unit id="buscar">
         <source>Buscar</source>
         <target>Szukaj</target>
@@ -209,18 +125,6 @@
       <trans-unit id="selectFuenteDatos">
         <source>Selecciona una fuente de datos *</source>
         <target>Wybierz źródło danych *</target>
-      </trans-unit>
-      <trans-unit id="opcionGuardar">
-        <source>GUARDAR</source>
-        <target>ZAPSZ</target>
-      </trans-unit>
-      <trans-unit id="opcionPdf">
-        <source>DESCARGAR PDF</source>
-        <target>POBIERZ PDF</target>
-      </trans-unit>
-      <trans-unit id="opcionImagen">
-        <source>DESCARGAR IMAGEN</source>
-        <target>POBIERZ OBRAZ</target>
       </trans-unit>
       <trans-unit id="dahsboardSaved">
         <source>Informe guardado correctamente</source>
@@ -250,22 +154,6 @@
         <source> Nueva etiqueta </source>
         <target>Nowy tag</target>
       </trans-unit>
-      <trans-unit id="Dashboards_ms">
-        <source>Informes</source>
-        <target>Raporty</target>
-      </trans-unit>
-      <trans-unit id="ExportDashboard">
-        <source>Exportar Informe</source>
-        <target>Eksportuj Raport</target>
-      </trans-unit>
-      <trans-unit id="importDashboard">
-        <source>Importar Informe</source>
-        <target>Prześlij Raport</target>
-      </trans-unit>
-      <trans-unit id="downloadDashboard">
-        <source>Descargar informe</source>
-        <target>Pobierz raport</target>
-      </trans-unit>
       <trans-unit id="gotodashboard">
         <source>Ir al informe</source>
         <target>Przejdź do raportu</target>
@@ -277,18 +165,6 @@
       <trans-unit id="SaveAs">
         <source>GUARDAR COMO...</source>
         <target>ZAPISZ JAKO...</target>
-      </trans-unit>
-      <trans-unit id="opcionGuardarComo">
-        <source>GUARDAR COMO</source>
-        <target>ZAPISZ JAKO</target>
-      </trans-unit>
-      <trans-unit id="eliminarInforme">
-        <source>ELIMINAR INFORME</source>
-        <target>USUŃ RAPORT</target>
-      </trans-unit>
-      <trans-unit id="opcionUrls">
-        <source>ACCIÓN PERSONALIZADA</source>
-        <target>DZIAŁANIE NIESTANDARDOWE</target>
       </trans-unit>
       <trans-unit id="urlEditSave">
         <source>URL editado correctamente</source>
@@ -317,18 +193,6 @@
       <trans-unit id="urlConnectionError">
         <source>ERROR en la llamada</source>
         <target>Zadzwoń BŁĄD</target>
-      </trans-unit>
-      <trans-unit id="actionUrl">
-        <source>Acción</source>
-        <target>Działanie</target>
-      </trans-unit>
-      <trans-unit id="editionUrl">
-        <source>Edición</source>
-        <target>Wydanie</target>
-      </trans-unit>
-      <trans-unit id="urlTextConfiguration">
-        <source>Configuración de url y nombre de acción personalizada: </source>
-        <target>Niestandardowa nazwa akcji i ustawienia adresu URL:</target>
       </trans-unit>
       <trans-unit id="resumeTextConfiguration">
         <source> Puedes configurar una acción personalizada que quieras ejecutar. Te permite llamar a una URL que haga una acción que quieras invocar. Puede ser una llamada a una api, a un endpoint de una app
@@ -364,10 +228,6 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
         <source>Con el menu oscuro</source>
         <target>Ciemny motyw</target>
       </trans-unit>
-      <trans-unit id="noStyle">
-        <source>Sin estilo</source>
-        <target>Bez koloru</target>
-      </trans-unit>
       <trans-unit id="showLabels">
         <source> Mostrar Etiquetas </source>
         <target>Pokaż tagi</target>
@@ -383,10 +243,6 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       <trans-unit id="showLablesPercentTooltip">
         <source>Mostrar o ocultar las etiquetas en porcentaje sobre los gráficos</source>
         <target>Pokaż lub ukryj etykiety procentowe na wykresach</target>
-      </trans-unit>
-      <trans-unit id="editStylesTitle">
-        <source>EDITAR ESTILOS DEL INFORME</source>
-        <target>EDYCJA STYLU PANELU</target>
       </trans-unit>
       <trans-unit id="ChangeFontFamily">
         <source> Tipo de fuente</source>
@@ -407,10 +263,6 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       <trans-unit id="ChangePaneColor">
         <source> Color del panel</source>
         <target>Kolor panelu</target>
-      </trans-unit>
-      <trans-unit id="opcionEditarEstilos">
-        <source>EDITAR ESTILOS</source>
-        <target>EDYTUJ STYL</target>
       </trans-unit>
       <trans-unit id="left">
         <source>Izquierda</source>
@@ -568,23 +420,11 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
         <source>Quitar formato</source>
         <target>Wyczyść formatowanie</target>
       </trans-unit>
-      <trans-unit id="panelTitleEdit">
-        <source>Título del panel</source>
-        <target>Tytuł panelu</target>
+      <trans-unit id="qlLabelClearColor">
+        <source>Quitar</source>
+        <target>Usuń</target>
       </trans-unit>
       <!-- SECTION: OPERACIONES DEL PANEL (DASHBOARD PANELS) -->
-      <trans-unit id="opcionTitulo">
-        <source>NUEVO TEXTO</source>
-        <target>NOWY TEKST</target>
-      </trans-unit>
-      <trans-unit id="opcionFiltro">
-        <source>NUEVO FILTRO</source>
-        <target>NOWY FILTR</target>
-      </trans-unit>
-      <trans-unit id="opcionInforme">
-        <source>RECARGAR INFORME</source>
-        <target>ODŚWIEŻ RAPORT</target>
-      </trans-unit>
       <trans-unit id="loading">
         <source>Cargando informe...</source>
         <target>Ładownie raportu...</target>
@@ -592,10 +432,6 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       <trans-unit id="panelOptions2">
         <source>Editar opciones del gráfico</source>
         <target>Edytuj opcje wykresu</target>
-      </trans-unit>
-      <trans-unit id="panelOptions3">
-        <source>Exportar a Excel</source>
-        <target>Eksportuj do Excela</target>
       </trans-unit>
       <trans-unit id="panelOptions4">
         <source>Eliminar panel</source>
@@ -636,10 +472,6 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       <trans-unit id="unselecteddot">
         <source>Paneles no filtrados</source>
         <target>Panele niefiltrowane</target>
-      </trans-unit>
-      <trans-unit id="seconds_to_refresh">
-        <source>Intervalo de recarga</source>
-        <target>Częstotliwość odświeżania</target>
       </trans-unit>
       <trans-unit id="seeRepetitions">
         <source> ver/ocultar valores repetidos</source>
@@ -717,6 +549,18 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
         <source>Nuevo nombre:</source>
         <target>Nowa nazwa</target>
       </trans-unit>
+      <trans-unit id="selectMeasure">
+        <source>Seleccionar mesura</source>
+        <target>Wybierz miarę</target>
+      </trans-unit>
+      <trans-unit id="selectOperation">
+        <source>Seleccionar operació</source>
+        <target>Wybierz operację</target>
+      </trans-unit>
+      <trans-unit id="generateAliasTooltip">
+        <source> Generar alias automático </source>
+        <target>Wygeneruj alias automatycznie</target>
+      </trans-unit>
       <trans-unit id="noDataAllowed">
         <source>Este panel no está disponible por falta de permisos</source>
         <target>Ten Panel nie jest dostępny ze względu na brak uprawnień</target>
@@ -732,14 +576,6 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       <trans-unit id="treeTableTitleDialog">
         <source>Propiedades de la tabla árbol</source>
         <target>Właściwości tabeli drzewa</target>
-      </trans-unit>
-      <trans-unit id="uniqueRecords1" datatype="html">
-        <source>La opción <x id="START_TAG_STRONG" ctype="x-strong"/>Registros únicos<x id="CLOSE_TAG_STRONG" ctype="x-strong"/> aplica un <x id="START_TAG_STRONG_1" ctype="x-strong"/>GROUP BY<x id="CLOSE_TAG_STRONG_1" ctype="x-strong"/> sobre todos los atributos de la consulta. Úsala cuando quieras eliminar duplicados y agrupar los resultados por la combinación de todos los campos seleccionados.</source>
-        <target>Opcja <x id="START_TAG_STRONG" ctype="x-strong"/>Unikalne rekordy<x id="CLOSE_TAG_STRONG" ctype="x-strong"/> stosuje <x id="START_TAG_STRONG_1" ctype="x-strong"/>GROUP BY<x id="CLOSE_TAG_STRONG_1" ctype="x-strong"/> do wszystkich atrybutów zapytania. Używaj jej, gdy chcesz wyeliminować duplikaty i pogrupować wyniki według kombinacji wszystkich wybranych pól.</target>
-      </trans-unit>
-      <trans-unit id="uniqueRecords3">
-        <source>Al activarla, las métricas numéricas se agrupan junto al resto de atributos, lo que puede alterar el resultado esperado si ya existen agregaciones definidas.</source>
-        <target>Po jej włączeniu metryki numeryczne są grupowane razem z pozostałymi atrybutami, co może zmienić oczekiwany wynik, jeśli zostały już zdefiniowane agregacje.</target>
       </trans-unit>
       <trans-unit id="tooltipUniqueRecords">
         <source>Aplica GROUP BY a todos los campos para eliminar duplicados</source>
@@ -1043,17 +879,9 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
         <source>Asigna un color único a cada barra o elemento</source>
         <target>Przypisuje unikalny kolor do każdego słupka lub elementu</target>
       </trans-unit>
-      <trans-unit id="chartUniqueColorsOptionDescription">
-        <source>Cada elemento tendrá un color diferente</source>
-        <target>Każdy element będzie miał inny kolor</target>
-      </trans-unit>
       <trans-unit id="addComparative">
         <source> Comparativa </source>
         <target>Porównawczy</target>
-      </trans-unit>
-      <trans-unit id="uniqueColorsPerBar">
-        <source>Color por valor único:</source>
-        <target>Kolor na unikalną wartość:</target>
       </trans-unit>
       <trans-unit id="noUniqueLabels">
         <source>No hay valores únicos disponibles.</source>
@@ -1075,10 +903,6 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       <trans-unit id="filtrosH4">
         <source> Filtrar los resultados por: </source>
         <target>Filtruj wyniki według:</target>
-      </trans-unit>
-      <trans-unit id="consultaH4">
-        <source> Mi consulta </source>
-        <target>Moje zapytanie</target>
       </trans-unit>
       <trans-unit id="resumenAtrH6">
         <source> Resumen de atributos </source>
@@ -1185,8 +1009,8 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
         <target>Moje zapytanie SQL</target>
       </trans-unit>
       <trans-unit id="openSqlMode">
-        <source>Abrir en modo SQL</source>
-        <target>Otwórz w trybie SQL</target>
+        <source><x id="START_ITALIC_TEXT" ctype="x-i" equiv-text="&lt;i class=&quot;fa fa-database mr-1.5 text-sm&quot;&gt;"/><x id="CLOSE_ITALIC_TEXT" ctype="x-i" equiv-text="&lt;/i&gt;"/> Abrir en modo SQL</source>
+        <target><x id="START_ITALIC_TEXT" ctype="x-i" equiv-text="&lt;i class=&quot;fa fa-database mr-1.5 text-sm&quot;&gt;"/><x id="CLOSE_ITALIC_TEXT" ctype="x-i" equiv-text="&lt;/i&gt;"/> Otwórz w trybie SQL</target>
       </trans-unit>
       <trans-unit id="sqlTooltip">
         <source>Al cambiar de modo perderás la configuración de la consulta actual</source>
@@ -1301,12 +1125,16 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
         <source>MODELO DE DATOS</source>
         <target>Model danych</target>
       </trans-unit>
+      <trans-unit id="buscarTabla">
+        <source>Buscar...</source>
+        <target>Szukaj...</target>
+      </trans-unit>
       <trans-unit id="inputNombreTecnico">
         <source>Nombre técnico</source>
         <target>Nazwa techniczna</target>
       </trans-unit>
       <trans-unit id="inputDescripcion">
-        <source>Descripción</source>
+        <source>Descripción <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/></source>
         <target>Opis</target>
       </trans-unit>
       <trans-unit id="inputEsconderTabla">
@@ -1322,7 +1150,7 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
         <target>Dodaj relacje</target>
       </trans-unit>
       <trans-unit id="inputTipoColumna">
-        <source> Tipo de columna </source>
+        <source>Tipo de columna <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/></source>
         <target>Rodzaj kolumny</target>
       </trans-unit>
       <trans-unit id="rolesPermisos">
@@ -1437,10 +1265,6 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
         <source>Descripción de la columna</source>
         <target>Opis kolumny</target>
       </trans-unit>
-      <trans-unit id="columnaCalculada">
-        <source> Nueva columna calculada </source>
-        <target>Nowa skalkulowana kolumna</target>
-      </trans-unit>
       <trans-unit id="aggTsum">
         <source>Suma</source>
         <target>Dodatek</target>
@@ -1501,33 +1325,9 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
         <source>Configurar nuevo orígen de datos</source>
         <target>Nowe źródło danych</target>
       </trans-unit>
-      <trans-unit id="Models_ms">
-        <source>Modelos</source>
-        <target>Modele</target>
-      </trans-unit>
-      <trans-unit id="ExportModel">
-        <source>Exportar Modelo</source>
-        <target>Eksportuj Model</target>
-      </trans-unit>
-      <trans-unit id="importModel">
-        <source>Importar Modelo</source>
-        <target>Prześlij Model</target>
-      </trans-unit>
-      <trans-unit id="DBInconsistencies">
-        <source>Se han encontrado inconsistencias en el informe, los siguientes elementos no existen en el modelo: </source>
-        <target>Znaleziono niespójności w bieżacym raporcie, następujące elementy nie isnieją w modelu:</target>
-      </trans-unit>
-      <trans-unit id="modelInconsistenciesS">
-        <source>Se han encontrado inconsistencias en los siguientes informes: </source>
-        <target>Znaleziono niespójności w bieżącym raporcie:</target>
-      </trans-unit>
       <trans-unit id="ModelSaved">
         <source>Modelo guardado correctamente</source>
         <target>Model zapisany pomyślnie</target>
-      </trans-unit>
-      <trans-unit id="downloadModel">
-        <source>Descargar modelo</source>
-        <target>Pobierz model</target>
       </trans-unit>
       <trans-unit id="adChacheConfig">
         <source>Configurar caché del modelo </source>
@@ -1569,22 +1369,6 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
         <source>Visibilidad a nivel de modelo</source>
         <target>Widoczność na poziomie modelu</target>
       </trans-unit>
-      <trans-unit id="tablePermissionNO">
-        <source>No tiene permiso para ver esta tabla</source>
-        <target>Nie masz uprawnień do przeglądania tej tabeli</target>
-      </trans-unit>
-      <trans-unit id="tablePpermissionYES">
-        <source>SI tiene permiso para ver esta tabla</source>
-        <target>Masz uprawnienia do przeglądania tej tabeli</target>
-      </trans-unit>
-      <trans-unit id="modelPermissionNO">
-        <source>No tiene permiso para ver este modelo</source>
-        <target>Nie masz uprawnień do oglądania tego modelu</target>
-      </trans-unit>
-      <trans-unit id="modelPermissionYES">
-        <source>SI tiene permiso para ver este modelo</source>
-        <target>Masz uprawnienia do oglądania tego modelu</target>
-      </trans-unit>
       <trans-unit id="anyCanSeeNO">
         <source>Los usuarios y grupos que pueden ver el modelo son SOLO los definidos explicitamente.</source>
         <target>Użytkownicy i grupy, które mogą zobaczyć model, to TYLKO osoby wyraźnie zdefiniowane</target>
@@ -1620,14 +1404,6 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       <trans-unit id="allowCache">
         <source> Habilitar caché</source>
         <target>Zezwalaj na pamięć podręczną</target>
-      </trans-unit>
-      <trans-unit id="inputTipoDatamodel">
-        <source> Tipo </source>
-        <target>Typ</target>
-      </trans-unit>
-      <trans-unit id="OptimizeQuery">
-        <source>Optimizar consultas</source>
-        <target>Optymalizuj zapytania</target>
       </trans-unit>
       <!-- SECTION: CONEXIÓN Y FUENTES DE DATOS (DATASOURCES) -->
       <trans-unit id="inputServidor">
@@ -1682,10 +1458,6 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
         <source>Agregar nuevo tag</source>
         <target>Dodaj nowy tag</target>
       </trans-unit>
-      <trans-unit id="saveTag">
-        <source>Guardar Tags</source>
-        <target>Zapisz tagi</target>
-      </trans-unit>
       <trans-unit id="addTagDataSource">
         <source> Añadir Tag</source>
         <target>Dodaj tag</target>
@@ -1702,10 +1474,6 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
         <source>Datos de conexión incorrectos</source>
         <target>Nieprawidłowe dane dotyczące połączenia</target>
       </trans-unit>
-      <trans-unit id="inputBigQueryKeys">
-        <source>Subir archivo de claves (json) *</source>
-        <target>Prześlij klucze (json) *</target>
-      </trans-unit>
       <trans-unit id="DatasourceText">
         <source>Creada correctamente</source>
         <target>Utworzono prawidłowo</target>
@@ -1715,7 +1483,7 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
         <target>Uprawnienia grupy</target>
       </trans-unit>
       <trans-unit id="agregacionh5">
-        <source> Agregación </source>
+        <source>Agregación <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/></source>
         <target>Agregacja</target>
       </trans-unit>
       <trans-unit id="allowSSL">
@@ -1750,14 +1518,6 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
         <source>Añadir lista de valores posibles</source>
         <target>Dodaj listę możliwych wartości</target>
       </trans-unit>
-      <trans-unit id="inputPoolDb">
-        <source>Pool Limit</source>
-        <target>Pool Limit</target>
-      </trans-unit>
-      <trans-unit id="inputWarehouse">
-        <source>WAREHOUSE*</source>
-        <target>WAREHOUSE*</target>
-      </trans-unit>
       <!-- SECTION: FILTROS, AGREGACIONES Y RANGOS -->
       <trans-unit id="agregacionesH4">
         <source> Agregaciones </source>
@@ -1774,14 +1534,6 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       <trans-unit id="tiposFiltrosLabel">
         <source> Tipos de filtro </source>
         <target>Typy filtrów</target>
-      </trans-unit>
-      <trans-unit id="fechaLabel">
-        <source> Fecha </source>
-        <target>Dane</target>
-      </trans-unit>
-      <trans-unit id="valorFiltrarLabel">
-        <source> Valor a filtrar </source>
-        <target>Filtr wartości</target>
       </trans-unit>
       <trans-unit id="valor1Label">
         <source> Valor 1 </source>
@@ -1911,18 +1663,6 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
         <source>Alias del filtro (opcional)</source>
         <target>Filtruj alias (opcjonalnie)</target>
       </trans-unit>
-      <trans-unit id="dynamicFilters1" datatype="html">
-        <source>Al hacer clic en otros paneles del dashboard se crean <x id="START_TAG_STRONG" ctype="x-strong"/>filtros dinámicos<x id="CLOSE_TAG_STRONG" ctype="x-strong"/> que afectan al resto de paneles. Activar esta opción hace que este panel <x id="START_TAG_STRONG_1" ctype="x-strong"/>ignore<x id="CLOSE_TAG_STRONG_1" ctype="x-strong"/> esos filtros dinámicos y siempre muestre sus datos completos, independientemente de las selecciones del usuario en otros paneles.</source>
-        <target>Kliknięcie innych paneli dashboardu tworzy <x id="START_TAG_STRONG" ctype="x-strong"/>filtry dynamiczne<x id="CLOSE_TAG_STRONG" ctype="x-strong"/> wpływające na pozostałe panele. Włączenie tej opcji sprawia, że ten panel <x id="START_TAG_STRONG_1" ctype="x-strong"/>ignoruje<x id="CLOSE_TAG_STRONG_1" ctype="x-strong"/> te filtry dynamiczne i zawsze wyświetla pełne dane, niezależnie od wyborów użytkownika w innych panelach.</target>
-      </trans-unit>
-      <trans-unit id="dynamicFilters3">
-        <source>Los filtros de panel y globales definidos manualmente sí se siguen aplicando con normalidad.</source>
-        <target>Ręcznie zdefiniowane filtry panelu i globalne nadal działają normalnie.</target>
-      </trans-unit>
-      <trans-unit id="dynamicFilters4">
-        <source>Esta opción no afecta a los filtros creados desde el selector de filtros del dashboard.</source>
-        <target>Ta opcja nie dotyczy filtrów utworzonych za pomocą selektora filtrów dashboardu.</target>
-      </trans-unit>
       <trans-unit id="tooltipAdvancedFilters">
         <source>Combina los filtros del panel con operadores AND u OR</source>
         <target>Łączy filtry panelu za pomocą operatorów AND lub OR</target>
@@ -1946,10 +1686,6 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       <trans-unit id="filterHoverNotAffected">
         <source>Paneles no afectados por este filtro</source>
         <target>Panele nieobjęte tym filtrem</target>
-      </trans-unit>
-      <trans-unit id="FiltersH4">
-        <source> Filtros </source>
-        <target>Filtry</target>
       </trans-unit>
       <!-- SECTION: SELECTOR DE FECHAS (DATEPICKER) -->
       <trans-unit id="dates1">
@@ -2113,26 +1849,14 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
         <source> Posición de la leyenda </source>
         <target>Pozycja legendy</target>
       </trans-unit>
-      <trans-unit id="noMouseH6">
-        <source> Activar funciones del mouse </source>
-        <target>Aktywuj funkcje myszy</target>
-      </trans-unit>
       <trans-unit id="mapClusteredPoints">
         <source>puntos agrupados</source>
         <target>zgrupowane punkty</target>
       </trans-unit>
       <!-- SECTION: ALERTAS Y NOTIFICACIONES (EMAIL/KPI) -->
-      <trans-unit id="kpiAlertH6">
-        <source> Generar alerta </source>
-        <target>Stwórz komunikat</target>
-      </trans-unit>
       <trans-unit id="DynamicTextColor">
         <source> Cambiar Color </source>
         <target>Zmień kolor</target>
-      </trans-unit>
-      <trans-unit id="kpiGreatSmallEqualH6">
-        <source> Operador </source>
-        <target>Operator</target>
       </trans-unit>
       <trans-unit id="colorKpiH6">
         <source> Color </source>
@@ -2143,16 +1867,12 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
         <target>Alerty</target>
       </trans-unit>
       <trans-unit id="addAlert">
-        <source>Añadir alerta</source>
-        <target>Dodaj alert</target>
+        <source><x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span&gt;"/>Añadir alerta<x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/></source>
+        <target><x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span&gt;"/>Dodaj alert<x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/></target>
       </trans-unit>
       <trans-unit id="alertsInfo">
         <source> Cuando el valor del kpi sea (=, &lt;,&gt;) que el valor definido cambiará el color del texto</source>
         <target>Gdy wartość kpi jest (=, &lt;,&gt;) niż zdefiniowana wartość, kolor tekstu ulegnie zmianie</target>
-      </trans-unit>
-      <trans-unit id="MailSending">
-        <source> Envío de alertas por mail </source>
-        <target>Wysyłanie alertów e-mailem</target>
       </trans-unit>
       <trans-unit id="SendMailEvery">
         <source> Enviar mail de alerta cada: </source>
@@ -2182,14 +1902,6 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
         <source>Credenciales  correctas</source>
         <target>Prawidłowe dane uwierzytelniające</target>
       </trans-unit>
-      <trans-unit id="checkCredentials">
-        <source>Comprobar credenciales</source>
-        <target>Sprawdź dane uwierzytelniające</target>
-      </trans-unit>
-      <trans-unit id="mailmanagementHeader">
-        <source>Gestión de correo</source>
-        <target>Zarządzanie pocztą e-mail i wysyłanie</target>
-      </trans-unit>
       <trans-unit id="mailConfSaved">
         <source>Configuración guardada correctamente</source>
         <target>Ustawienia zapisane pomyślnie</target>
@@ -2214,6 +1926,18 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
         <source>Configurar alertas</source>
         <target>Ustawienia powiadomień</target>
       </trans-unit>
+      <trans-unit id="lineStyleSolid">
+        <source>Sólida</source>
+        <target>Ciągła</target>
+      </trans-unit>
+      <trans-unit id="lineStyleDashed">
+        <source>Discontinua</source>
+        <target>Przerywana</target>
+      </trans-unit>
+      <trans-unit id="lineStyleDotted">
+        <source>Punteada</source>
+        <target>Kropkowana</target>
+      </trans-unit>
       <trans-unit id="thresholdValuePercent">
         <source>Valor umbral (%)</source>
         <target>Wartość progowa (%)</target>
@@ -2225,10 +1949,6 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       <trans-unit id="whenKpiDeviationIs">
         <source>Cuando el % es</source>
         <target>Gdy % wynosi</target>
-      </trans-unit>
-      <trans-unit id="inputSecurity">
-        <source>TLS *</source>
-        <target>TLS *</target>
       </trans-unit>
       <!-- SECTION: MENSAJES DEL SISTEMA Y BOTONES GENÉRICOS -->
       <trans-unit id="conditionsP1">
@@ -2275,10 +1995,6 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
         <source>Cancelar</source>
         <target>Odrzuć</target>
       </trans-unit>
-      <trans-unit id="LogarithmicScaleH6">
-        <source> ¿Escala logaritmica? </source>
-        <target>Skala logarytmiczna?</target>
-      </trans-unit>
       <trans-unit id="inputx">
         <source>Centro del mapa (Latitud, Longitud)</source>
         <target>Środek mapy (Latitude, Longitude)</target>
@@ -2290,10 +2006,6 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       <trans-unit id="valueTable">
         <source>VALOR</source>
         <target>WARTOŚĆ</target>
-      </trans-unit>
-      <trans-unit id="groups1">
-        <source>EMAIL</source>
-        <target>E-MAIL</target>
       </trans-unit>
       <trans-unit id="informacionGeneral">
         <source>Información general</source>
@@ -2363,17 +2075,9 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
         <source>Solo puedes añadir filtros cuando todos los paneles están configurados</source>
         <target>Możesz dodać filtry tylko wtedy, gdy wszytkkie panele są skofigurowane</target>
       </trans-unit>
-      <trans-unit id="AddFiltersWarningText">
-        <source>Puedes borrar los paneles en blanco o configurarlos</source>
-        <target>Możesz usunąć puste panele lub je skofigurować</target>
-      </trans-unit>
       <trans-unit id="AddFiltersWarningButton">
         <source>Entendido</source>
         <target>Zrozumiany</target>
-      </trans-unit>
-      <trans-unit id="DeleteGroup">
-        <source>ELIMINAR GRUPO</source>
-        <target>UNUŃ GRUPĘ</target>
       </trans-unit>
       <trans-unit id="DeleteGroupText">
         <source>Eliminarás todos los elementos relacionados con este grupo, ¿Deseas continuar?</source>
@@ -2394,18 +2098,6 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       <trans-unit id="DeleteUser">
         <source>Si, ¡Bórralo!</source>
         <target>Tak, usuń!</target>
-      </trans-unit>
-      <trans-unit id="rowOptions">
-        <source>OPCIONES DE LA FILA</source>
-        <target>OPCJE WIERSZY</target>
-      </trans-unit>
-      <trans-unit id="EDITCAP">
-        <source>EDITAR</source>
-        <target>EDYTUJ</target>
-      </trans-unit>
-      <trans-unit id="deleteCAP">
-        <source>ELIMINAR</source>
-        <target>USUŃ</target>
       </trans-unit>
       <trans-unit id="generateView">
         <source>Generar vista</source>
@@ -2434,10 +2126,6 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       <trans-unit id="placeholderInputSeparator">
         <source>Separador</source>
         <target>Separator</target>
-      </trans-unit>
-      <trans-unit id="saveCSV">
-        <source>Generar tabla</source>
-        <target>Stwórz tabele</target>
       </trans-unit>
       <trans-unit id="addTableTitle">
         <source>Añadir Tabla</source>
@@ -2470,10 +2158,6 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       <trans-unit id="hideAllRelations">
         <source> Ocultar todas las relaciones</source>
         <target>Ukryj wszytskie relacje</target>
-      </trans-unit>
-      <trans-unit id="addFile">
-        <source>Subir archivo</source>
-        <target>Dodaj plik</target>
       </trans-unit>
       <trans-unit id="NotSavedWarning">
         <source>Hay cambios sin guardar. ¿Seguro que quieres salir?</source>
@@ -2575,14 +2259,6 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
         <source>La función de comparar sólo se puede activar si se dispone de un campo de fecha agregado por mes o semana y un único campo numérico agregado</source>
         <target>Funkcję porównywania można aktywować tylko wtedy, gdy istnieje pole zbiorczej daty dla każdego miesiąca i pojedyncze pole zbiorczej wartości liczbowej.</target>
       </trans-unit>
-      <trans-unit id="canIeditTooltip">
-        <source>Si esta opción está seleccionada sólo el propietario del informe y los administradores podrán guardar los cambios</source>
-        <target>Jeśli ta opcja jest zaznaczona, tylko właściciel raportu i administratorzy będą mogli zapisywać zmiany</target>
-      </trans-unit>
-      <trans-unit id="onlyIcanEditTag">
-        <source> Edición privada: </source>
-        <target>Edycja prywatna:</target>
-      </trans-unit>
       <trans-unit id="filterTooltip">
         <source>Puedes añadir palabras separadas por comas, que se aplicarán como filtros de tipo LIKE a la hora de recuperar las tablas de tu base de datos</source>
         <target>Można dodać słowa oddzielone przecinkami, które zostaną zastosowane jako filtry LIKE podczas pobierania tabel z bazy danych.</target>
@@ -2602,10 +2278,6 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       <trans-unit id="no">
         <source>No</source>
         <target>Nie</target>
-      </trans-unit>
-      <trans-unit id="aplicarBtn">
-        <source>Aplicar</source>
-        <target>Stosować</target>
       </trans-unit>
       <trans-unit id="disenoTablaCruzada">
         <source>Diseño de la tabla cruzada: </source>
@@ -2639,37 +2311,11 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
         <source>Importar</source>
         <target>Prześlij</target>
       </trans-unit>
-      <trans-unit id="logFileBtn">
-        <source>Logs</source>
-        <target>Logs</target>
-      </trans-unit>
-      <trans-unit id="logErrorFileBtn">
-        <source>Logs Error</source>
-        <target>Logs Error</target>
-      </trans-unit>
       <trans-unit id="whereDoWeBegin">
         <source>¿ Por dónde empezamos ?</source>
         <target>Od czego zaczynamy?</target>
       </trans-unit>
-      <trans-unit id="inputQueryView">
-        <source> Vista </source>
-        <target>Widok</target>
-      </trans-unit>
-      <trans-unit id="crearGrupoLabel">
-        <source>Crear grupo</source>
-        <target>Utwórz grupę</target>
-      </trans-unit>
       <!-- SECTION: CONTENIDO HTML (INTERPOLACIONES) -->
-      <trans-unit id="terms1" datatype="html">
-        <source> Estoy de acuerdo con los <x id="START_LINK" ctype="x-a" equiv-text="&lt;a
-									(click)=&quot;conditionsDialog()&quot;&gt;"/>términos<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/></source>
-        <target>zgadzam się na <x id="START_LINK" ctype="x-a" equiv-text="&lt;a
-									(click)=&quot;conditionsDialog()&quot;&gt;"/> warunki<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/></target>
-      </trans-unit>
-      <trans-unit id="haveAccount" datatype="html">
-        <source> ¿Tienes una cuenta? <x id="START_LINK" ctype="x-a" equiv-text="&lt;a [routerLink]=&quot;[&apos;/login&apos;]&quot; class=&quot;text-info ml-2&quot;&gt;"/><x id="START_BOLD_TEXT" ctype="x-b" equiv-text="&lt;b&gt;"/>Ingresa ahora<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/><x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/></source>
-        <target>Masz już konto? <x id="START_LINK" ctype="x-a" equiv-text="&lt;a [routerLink]=&quot;[&apos;/login&apos;]&quot; class=&quot;text-info ml-2&quot;&gt;"/> <x id="START_BOLD_TEXT" ctype="x-b" equiv-text="&lt;b&gt;"/> Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/> <x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/></target>
-      </trans-unit>
       <trans-unit id="indicaciones6" datatype="html">
         <source> Para hacerlo sólo tienes que añadir: <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span style=&quot;color:rgb(0, 62, 119); font-weight: bold&quot;&gt;"/> AND <x id="INTERPOLATION" equiv-text="{{&apos; ${alias_tabla.columna_filtrada} &apos;}}"/> <x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/> en la cláusula &apos;WHERE&apos; de la consulta donde quieras inyectar el filtro </source>
         <target>Żeby to zrobić musisz dodać:: <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span style=&quot;color:rgb(0, 62, 119); font-weight: bold&quot;&gt;"/> I <x id="INTERPOLATION" equiv-text="{{&apos; ${alias_tabla.columna_filtrada} &apos;}}"/> <x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/> W &apos;GDZIE&apos; klauzula z zapytania</target>
@@ -2699,42 +2345,8 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
         <target><x id="INTERPOLATION" equiv-text="{{ table.value.length }}"/> rejestry</target>
       </trans-unit>
       <trans-unit id="topQueryH4" datatype="html">
-        <source> Mostrar Top:   <x id="START_TAG_P_INPUTNUMBER" ctype="x-p_inputnumber" equiv-text="&lt;p-inputNumber [(ngModel)]=&quot;queryLimit&quot; (onInput)=&quot;onTopChange()&quot;&gt;"/><x id="CLOSE_TAG_P_INPUTNUMBER" ctype="x-p_inputnumber"/></source>
+        <source>Mostrar Top:</source>
         <target>Pokaż górę:</target>
-      </trans-unit>
-      <trans-unit id="visitYouTubeLink">
-        <source>Consulta nuestros videotutoriales en youtube</source>
-        <target>Obejrzyj nasze samouczki wideo na YouTube</target>
-      </trans-unit>
-      <trans-unit id="tituloAbout">
-        <source>Enterprise Data Analytics</source>
-        <target>Analityka danych przedsiębiorstwa</target>
-      </trans-unit>
-      <trans-unit id="firstAboutParagraphSpan" datatype="html">
-        <source><x id="START_LINK" ctype="x-a" equiv-text="&lt;a class=&quot;stronger-paragraph&quot; href=&quot;https://eda.jortilles.com&quot;&gt;"/>Enterprise Data Analytics (EDA)<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/> es una aplicación web de código libre que permite realizar informes gráficos e interactivos de forma sencilla. EDA es una aplicación que se puede instalar en tus propios servidores o se puede difrutar en su versión SaaS <x id="START_LINK_1" equiv-text="&lt;a class=&quot;stronger-paragraph&quot; href=&quot;https://www.edalitics.com&quot;&gt;"/>Edalitics<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/>. Edalitics permite disfrutar de toda la potencia de EDA sin tener que preocuparte de instalaciones, configuraciones, actualizaciones, etc. Conectas tus fuentes de datos y listo. </source>
-        <target><a class="stronger-paragraph" href="https://eda.jortilles.com">Enterprise Data Analytics (EDA)</a> to aplikacja internetowa typu open source, która umożliwia wykonywanie graficzne i interaktywne raporty w prosty sposób. EDA to aplikacja, którą można zainstalować na własnych serwerach lub możesz cieszyć się nim w wersji SaaS <a class="stronger-paragraph" href="https://www.edalitics.com">Edalityka</a>. Edalitics pozwala cieszyć się pełną mocą EDA bez konieczności martwienia się o instalacje, ustawienia, aktualizacje itp. Łączysz swoje źródła danych i tyle.</target>
-      </trans-unit>
-      <trans-unit id="secondAboutParagraph" datatype="html">
-        <source> EDA ha sido desarrollado por <x id="START_LINK" ctype="x-a" equiv-text="&lt;a class=&quot;stronger-paragraph&quot; href=&quot;https://www.jortilles.com&quot;&gt;"/>Jortilles<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/>. Si necesita soporte empresarial, no dude en contactar con nosotros. Así mismo cómo si quiere solicitar nuevas funcionalidades o carácteristicas. Jortilles financia el desarrollo de EDA mediante las suscripciones a Edalitics y el soporte empresarial que ofrece a sus clientes. </source>
-        <target>EDA został opracowany przez <a class="stronger-paragraph" href="https://www.jortilles.com">Jortilles</a>. Jeśli potrzebujesz wsparcia biznesowego, nie wahaj się z nami skontaktować. Podobnie, jeśli chcesz poprosić o nowe funkcjonalności lub właściwości. Jortilles finansuje rozwój EDA poprzez subskrypcje Edalitics oraz wsparcie biznesowe, jakie oferuje swoim klientom.</target>
-      </trans-unit>
-      <trans-unit id="thirdAboutParagraph" datatype="html">
-        <source> El código fuente de EDA está disponible en <x id="START_LINK" ctype="x-a" equiv-text="&lt;a class=&quot;stronger-paragraph&quot; href=&quot;https://github.com/jortilles/EDA&quot;&gt;"/>Github<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/>. </source>
-        <target>Kod źródłowy EDA jest dostępny na <a class="stronger-paragraph" href="https://github.com/jortilles/EDA">Github</a></target>
-      </trans-unit>
-      <trans-unit id="fourthAboutParagraph" datatype="html">
-        <source> La documentación de EDA está disponible en <x id="START_LINK" ctype="x-a" equiv-text="&lt;a class=&quot;stronger-paragraph&quot; href=&quot;https://edadoc.jortilles.com/#/&quot;&gt;"/>Este Link<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/></source>
-        <target>Dokumentacja EDA jest dostępna pod <a class="stronger-paragraph" href="https://edadoc.jortilles.com/#/">Ten link</a></target>
-      </trans-unit>
-      <trans-unit id="fifthAboutParagraph" datatype="html">
-        <source> Existe un foro donde puedes compartir tu experiencia con la comunidad en <x id="START_LINK" ctype="x-a" equiv-text="&lt;a class=&quot;stronger-paragraph&quot; href=&quot;https://github.com/jortilles/EDA/discussions&quot;&gt;"/>Este Link<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/></source>
-        <target>Istnieje forum, na którym możesz podzielić się swoimi doświadczeniami ze społecznością <a class="stronger-paragraph" href="https://github.com/jortilles/EDA/discussions">Ten link</a></target>
-      </trans-unit>
-      <trans-unit id="atributosH4interpolation" datatype="html">
-        <source><x id="INTERPOLATION" equiv-text="&lt;/span&gt;
-                                &lt;/h5&gt;"/></source>
-        <target><x id="INTERPOLATION" equiv-text="&lt;/span&gt;
-                                &lt;/h5&gt;"/></target>
       </trans-unit>
       <!-- SECTION: FUNCIONALIDADES PENDIENTES DE EXTRACCIÓN (no están en messages.xlf, requiere ng extract-i18n) -->
       <trans-unit id="placeholderRelationName">
@@ -2989,6 +2601,62 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
         <source>Tabla Árbol</source>
         <target>Stół Drzewny</target>
       </trans-unit>
+      <trans-unit id="filtersLabel1">
+        <source>=</source>
+        <target>=</target>
+      </trans-unit>
+      <trans-unit id="filtersLabel2">
+        <source>≠</source>
+        <target>≠</target>
+      </trans-unit>
+      <trans-unit id="filtersLabel3">
+        <source>&gt;</source>
+        <target>&gt;</target>
+      </trans-unit>
+      <trans-unit id="filtersLabel4">
+        <source>&lt;</source>
+        <target>&lt;</target>
+      </trans-unit>
+      <trans-unit id="filtersLabel5">
+        <source>≥</source>
+        <target>≥</target>
+      </trans-unit>
+      <trans-unit id="filtersLabel6">
+        <source>≤</source>
+        <target>≤</target>
+      </trans-unit>
+      <trans-unit id="filtersLabel7">
+        <source>Entre</source>
+        <target>Pomiędzy</target>
+      </trans-unit>
+      <trans-unit id="filtersLabel8">
+        <source>Dentro de</source>
+        <target>W</target>
+      </trans-unit>
+      <trans-unit id="filtersLabel9">
+        <source>Fuera de</source>
+        <target>Poza</target>
+      </trans-unit>
+      <trans-unit id="filtersLabel10">
+        <source>Parecido a</source>
+        <target>Podobne do</target>
+      </trans-unit>
+      <trans-unit id="filtersLabel11">
+        <source>No parecido a</source>
+        <target>Niepodobne do</target>
+      </trans-unit>
+      <trans-unit id="filtersLabel12">
+        <source>No nulos</source>
+        <target>Niepuste (not null)</target>
+      </trans-unit>
+      <trans-unit id="filtersLabel13">
+        <source>No nulos ni vacíos</source>
+        <target>Ani null, ani puste</target>
+      </trans-unit>
+      <trans-unit id="filtersLabel14">
+        <source>Nulos o vacíos</source>
+        <target>Null lub puste</target>
+      </trans-unit>
       <trans-unit id="SureDataQuality">
         <source>¿Estás seguro de que deseas continuar con la visualización de DataQuality? Esta acción puede tomar un poco de tiempo.</source>
         <target>Czy na pewno chcesz kontynuować wizualizację DataQuality? Ta czynność może chwilę potrwać.</target>
@@ -3125,9 +2793,33 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
         <source>Tipo</source>
         <target>Typ</target>
       </trans-unit>
+      <trans-unit id="updateFileTitle">
+        <source>Actualizar fichero de datos</source>
+        <target>Zaktualizuj plik danych</target>
+      </trans-unit>
+      <trans-unit id="updateFileDescription">
+        <source> Sube un nuevo fichero para reemplazar los datos de esta fuente </source>
+        <target>Prześlij nowy plik, aby zastąpić dane tego źródła</target>
+      </trans-unit>
+      <trans-unit id="goBack">
+        <source>Volver</source>
+        <target>Wstecz</target>
+      </trans-unit>
+      <trans-unit id="lockedType">
+        <source><x id="INTERPOLATION" equiv-text="{{ connectionType }}"/></source>
+        <target><x id="INTERPOLATION" equiv-text="{{ connectionType }}"/></target>
+      </trans-unit>
+      <trans-unit id="excelFile">
+        <source>Archivo Excel</source>
+        <target>Plik Excel</target>
+      </trans-unit>
+      <trans-unit id="cancel">
+        <source> Cancelar </source>
+        <target>Anuluj</target>
+      </trans-unit>
       <trans-unit id="server">
-        <source>Servidor</source>
-        <target>Serwer</target>
+        <source>Servidor <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/></source>
+        <target>Serwer <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/></target>
       </trans-unit>
       <trans-unit id="account">
         <source>Cuenta</source>
@@ -3425,6 +3117,14 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
         <source>Opciones de visualización</source>
         <target>Opcje wyświetlania</target>
       </trans-unit>
+      <trans-unit id="knobSemaphoreLabel">
+        <source>Color semafórico</source>
+        <target>Kolor sygnalizacji świetlnej</target>
+      </trans-unit>
+      <trans-unit id="knobSemaphoreDesc">
+        <source>Rojo → amarillo → verde según el valor</source>
+        <target>Czerwony → żółty → zielony w zależności od wartości</target>
+      </trans-unit>
       <trans-unit id="chartTrendOption">
         <source>Mostrar línea de tendencia en el gráfico</source>
         <target>Pokaż linię trendu na wykresie</target>
@@ -3460,6 +3160,22 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       <trans-unit id="tooltipBlockedByTrendOrPrediction">
         <source>Bloqueado porque tendencia o predicción está activa</source>
         <target>Zablokowane, ponieważ trend lub prognoza jest aktywna</target>
+      </trans-unit>
+      <trans-unit id="RemovePredictionTitle">
+        <source>¿Quieres quitar la predicción?</source>
+        <target>Czy chcesz usunąć prognozę?</target>
+      </trans-unit>
+      <trans-unit id="RemovePredictionText">
+        <source>Se quitará la predicción y se ejecutará la consulta del gráfico.</source>
+        <target>Prognoza zostanie usunięta, a zapytanie wykresu zostanie wykonane.</target>
+      </trans-unit>
+      <trans-unit id="RemovePredictionYes">
+        <source>Sí, quitar</source>
+        <target>Tak, usuń</target>
+      </trans-unit>
+      <trans-unit id="RemovePredictionNo">
+        <source>No, mantener</source>
+        <target>Nie, zachowaj</target>
       </trans-unit>
       <trans-unit id="chartLabelOption">
         <source>Muestra las etiquetas de cada segmento</source>
@@ -3613,6 +3329,10 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
         <source> o arrastra y suelta</source>
         <target>lub przeciągnij i upuść</target>
       </trans-unit>
+      <trans-unit id="addDuckdbTableTitle">
+        <source>Añadir tabla CSV a DuckDB</source>
+        <target>Dodaj tabelę CSV do DuckDB</target>
+      </trans-unit>
       <trans-unit id="manageDashboards">
         <source>Gestiona la importación y exportación de dashboards</source>
         <target>Zarządzaj importem i eksportem pulpitów nawigacyjnych</target>
@@ -3650,8 +3370,8 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
         <target>Generowanie...</target>
       </trans-unit>
       <trans-unit id="selectedTags">
-        <source>Tags seleccionados</source>
-        <target>Wybrane tagi</target>
+        <source>Tags seleccionados <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/></source>
+        <target>Wybrane tagi <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/></target>
       </trans-unit>
       <trans-unit id="emptyMessageTags">
         <source>No se encontraron resultados</source>
@@ -3682,7 +3402,7 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
         <target>Źródło danych</target>
       </trans-unit>
       <trans-unit id="Cargando">
-        <source>Cargando... </source>
+        <source><x id="START_ITALIC_TEXT" ctype="x-i" equiv-text="&lt;i class=&quot;pi pi-spin pi-spinner mr-2&quot;&gt;"/><x id="CLOSE_ITALIC_TEXT" ctype="x-i" equiv-text="&lt;/i&gt;"/> Cargando...</source>
         <target>Załadunek...</target>
       </trans-unit>
       <trans-unit id="Initial">
@@ -3889,6 +3609,10 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
         <source>Permite arrastrar y hacer zoom con el ratón</source>
         <target>Umożliwia przeciąganie i powiększanie za pomocą myszy</target>
       </trans-unit>
+      <trans-unit id="mpa">
+        <source>Aplica escala logarítmica a los valores del mapa</source>
+        <target>Zastosuj skalę logarytmiczną do wartości mapy</target>
+      </trans-unit>
       <trans-unit id="enableBaseLayerTooltip">
         <source>Muestra u oculta la capa base del mapa</source>
         <target>Pokaż lub ukryj warstwę bazową mapy</target>
@@ -3926,8 +3650,8 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
         <target>dostępne elementy</target>
       </trans-unit>
       <trans-unit id="noItemsAvailable">
-        <source>No hay elementos disponibles</source>
-        <target>Brak dostępnych elementów</target>
+        <source><x id="INTERPOLATION" equiv-text="{{ searchTerm() ? &apos;No se encontraron elementos&apos; : &apos;No hay elementos disponibles&apos; }}"/></source>
+        <target><x id="INTERPOLATION" equiv-text="{{ searchTerm() ? &apos;No se encontraron elementos&apos; : &apos;No hay elementos disponibles&apos; }}"/></target>
       </trans-unit>
       <trans-unit id="itemsSelected1">
         <source>Seleccionados</source>
@@ -3938,8 +3662,8 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
         <target>Wyczyść wszystko</target>
       </trans-unit>
       <trans-unit id="cleanConnections">
-        <source>Limpiar </source>
-        <target>Posprzątać</target>
+        <source><x id="START_TAG__SVG_SVG" ctype="x-_svg_svg" equiv-text="&lt;svg class=&quot;w-3 h-3 mr-1&quot; fill=&quot;none&quot; stroke=&quot;currentColor&quot; viewBox=&quot;0 0 24 24&quot;&gt;"/><x id="START_TAG__SVG_PATH" ctype="x-_svg_path" equiv-text="&lt;path stroke-linecap=&quot;round&quot; stroke-linejoin=&quot;round&quot; stroke-width=&quot;2&quot; d=&quot;M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16&quot;&gt;"/><x id="CLOSE_TAG__SVG_PATH" ctype="x-_svg_path" equiv-text="&lt;/path&gt;"/><x id="CLOSE_TAG__SVG_SVG" ctype="x-_svg_svg" equiv-text="&lt;/svg&gt;"/> Limpiar</source>
+        <target><x id="START_TAG__SVG_SVG" ctype="x-_svg_svg" equiv-text="&lt;svg class=&quot;w-3 h-3 mr-1&quot; fill=&quot;none&quot; stroke=&quot;currentColor&quot; viewBox=&quot;0 0 24 24&quot;&gt;"/><x id="START_TAG__SVG_PATH" ctype="x-_svg_path" equiv-text="&lt;path stroke-linecap=&quot;round&quot; stroke-linejoin=&quot;round&quot; stroke-width=&quot;2&quot; d=&quot;M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16&quot;&gt;"/><x id="CLOSE_TAG__SVG_PATH" ctype="x-_svg_path" equiv-text="&lt;/path&gt;"/><x id="CLOSE_TAG__SVG_SVG" ctype="x-_svg_svg" equiv-text="&lt;/svg&gt;"/> Posprzątać</target>
       </trans-unit>
       <trans-unit id="connections">
         <source>conexiones </source>
@@ -3965,6 +3689,14 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
         <source>Selecciona los destinatarios *</source>
         <target>Wybierz odbiorców *</target>
       </trans-unit>
+      <trans-unit id="kpiMailConfigTitle">
+        <source>Configuración de envío por email</source>
+        <target>Konfiguracja wysyłki e-mail</target>
+      </trans-unit>
+      <trans-unit id="noRecipientsSelected">
+        <source>Sin destinatarios seleccionados</source>
+        <target>Nie wybrano odbiorców</target>
+      </trans-unit>
       <trans-unit id="noContentToExport">
         <source>No tienes contenido para exportar</source>
         <target>Nie masz żadnej treści do wyeksportowania.</target>
@@ -3980,6 +3712,90 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       <trans-unit id="CouldNotCloneReport">
         <source>No se pudo clonar el informe. Por favor, inténtalo de nuevo.</source>
         <target>Nie udało się sklonować raportu. Spróbuj ponownie..</target>
+      </trans-unit>
+      <trans-unit id="activateReport">
+        <source>Activar informe</source>
+        <target>Aktywuj raport</target>
+      </trans-unit>
+      <trans-unit id="deactivateReport">
+        <source>Desactivar informe</source>
+        <target>Dezaktywuj raport</target>
+      </trans-unit>
+      <trans-unit id="NoGroup">
+        <source>Sin Grupo</source>
+        <target>Bez grupy</target>
+      </trans-unit>
+      <trans-unit id="Public">
+        <source>Público</source>
+        <target>Publiczny</target>
+      </trans-unit>
+      <trans-unit id="Group">
+        <source>Grupo</source>
+        <target>Grupa</target>
+      </trans-unit>
+      <trans-unit id="Private">
+        <source>Privado</source>
+        <target>Prywatny</target>
+      </trans-unit>
+      <trans-unit id="Common">
+        <source>Común</source>
+        <target>Wspólny</target>
+      </trans-unit>
+      <trans-unit id="ErrorCloningDashboard">
+        <source>Error al clonar el dashboard:</source>
+        <target>Błąd podczas klonowania pulpitu:</target>
+      </trans-unit>
+      <trans-unit id="Error">
+        <source>Error</source>
+        <target>Błąd</target>
+      </trans-unit>
+      <trans-unit id="URLCopied">
+        <source>URL copiada al portapapeles</source>
+        <target>URL skopiowany do schowka</target>
+      </trans-unit>
+      <trans-unit id="ErrorCopyingURL">
+        <source>Error al copiar URL: </source>
+        <target>Błąd kopiowania URL:</target>
+      </trans-unit>
+      <trans-unit id="DashboardTitleUpdated">
+        <source>Título del informe actualizado correctamente.</source>
+        <target>Tytuł raportu został pomyślnie zaktualizowany.</target>
+      </trans-unit>
+      <trans-unit id="ErrorUpdatingDashboardTitle">
+        <source>Error al actualizar el título del informe.</source>
+        <target>Błąd podczas aktualizacji tytułu raportu.</target>
+      </trans-unit>
+      <trans-unit id="DashboardTypeUpdated">
+        <source>Tipo de informe actualizado correctamente.</source>
+        <target>Typ raportu został pomyślnie zaktualizowany.</target>
+      </trans-unit>
+      <trans-unit id="ErrorUpdatingDashboardType">
+        <source>Error al actualizar el tipo de informe.</source>
+        <target>Błąd podczas aktualizacji typu raportu.</target>
+      </trans-unit>
+      <trans-unit id="deactivatePublicDashboardWarning">
+        <source>Si desactiva este informe público, la URL pública dejará de estar disponible y el informe ya no podrá visualizarse.</source>
+        <target>Jeśli dezaktywujesz ten publiczny raport, publiczny URL przestanie być dostępny, a raportu nie będzie można wyświetlić.</target>
+      </trans-unit>
+      <trans-unit id="ConfirmDeactivate">
+        <source>Yes, deactivate it!</source>
+        <target>Tak, dezaktywuj!</target>
+      </trans-unit>
+      <trans-unit id="Cancel">
+        <source>Cancelar</source>
+        <target>Anuluj</target>
+      </trans-unit>
+      <trans-unit id="DashboardActivated">
+        <source>Informe activado correctamente.</source>
+        <target>Raport został pomyślnie aktywowany.</target>
+      </trans-unit>
+      <trans-unit id="DashboardDeactivated">
+        <source>Informe desactivado correctamente.</source>
+        <target>Raport został pomyślnie dezaktywowany.</target>
+      </trans-unit>
+      <trans-unit id="ErrorUpdatingDashboardStatus">
+        <source>Error al actualizar el estado del informe.</source>
+        <target>Błąd podczas aktualizacji statusu raportu.</target>
       </trans-unit>
       <trans-unit id="searchEntities">
         <source>Buscar entidades...</source>
@@ -4006,8 +3822,8 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
         <target>Dostępni użytkownicy</target>
       </trans-unit>
       <trans-unit id="copyPublicURL">
-        <source>copiar URL pública</source>
-        <target>skopiuj publiczny adres URL</target>
+        <source><x id="START_ITALIC_TEXT" ctype="x-i" equiv-text="&lt;i class=&quot;pi pi-copy&quot;&gt;"/><x id="CLOSE_ITALIC_TEXT" ctype="x-i" equiv-text="&lt;/i&gt;"/> copiar URL pública</source>
+        <target><x id="START_ITALIC_TEXT" ctype="x-i" equiv-text="&lt;i class=&quot;pi pi-copy&quot;&gt;"/><x id="CLOSE_ITALIC_TEXT" ctype="x-i" equiv-text="&lt;/i&gt;"/> skopiuj publiczny adres URL</target>
       </trans-unit>
       <trans-unit id="importPanelsTitle">
         <source>Importar paneles</source>
@@ -4109,41 +3925,9 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
         <source>Panel</source>
         <target>Panel</target>
       </trans-unit>
-      <trans-unit id="joins">
-        <source>Tipo de intersección</source>
-        <target>Typ skrzyżowania</target>
-      </trans-unit>
-      <trans-unit id="joins1" datatype="html">
-        <source>La funcionalidad de <ph id="0"/>Intersección de Joins<ph id="1"/> permite definir cómo se relacionan las tablas de tu consulta mediante <ph id="2"/>LEFT<ph id="3"/>, <ph id="4"/>INNER<ph id="5"/> o <ph id="6"/>RIGHT JOIN<ph id="7"/>. Esto te da control sobre qué registros se incluyen en el resultado, dependiendo de la presencia o ausencia de coincidencias entre las tablas.</source>
-        <target>Funkcja <ph id="0"/>Join Intersection<ph id="1"/> pozwala określić, w jaki sposób tabele w zapytaniu są powiązane za pomocą <ph id="2"/>LEFT<ph id="3"/>, <ph id="4"/>INNER<ph id="5"/> lub <ph id="6"/>RIGHT JOIN<ph id="7"/>. Daje to kontrolę nad tym, które rekordy zostaną uwzględnione w wyniku, w zależności od obecności lub braku dopasowań między tabelami.</target>
-      </trans-unit>
-      <trans-unit id="joins3">
-        <source>Solo es posible hacer joins entre tablas definidas dentro del modelo o consulta actual.</source>
-        <target>Łączenie jest możliwe wyłącznie pomiędzy zdefiniowanymi wartościami w ramach bieżącego modelu lub zapytania.</target>
-      </trans-unit>
-      <trans-unit id="whatif1" datatype="html">
-        <source>La funcionalidad <ph id="0"/>What If<ph id="1"/> te permite crear atributos nuevos a partir de otros atributos en tu gráfico. A estos nuevos campos se les puede aplicar una operación matemática para modificar su valor según tus necesidades, y también es posible cambiarles el nombre para identificarlos fácilmente.</source>
-        <target>Funkcja <ph id="0"/>What If<ph id="1"/> umożliwia tworzenie nowych atrybutów na podstawie innych atrybutów na wykresie. W tych nowych polach można zastosować operację matematyczną, aby zmodyfikować ich wartości zgodnie z potrzebami, a także zmienić ich nazwy, aby łatwo je zidentyfikować.</target>
-      </trans-unit>
-      <trans-unit id="whatif3">
-        <source>Solo es posible crear nuevos atributos basados en los atributos existentes en el gráfico.</source>
-        <target>Nowe atrybuty można tworzyć wyłącznie na podstawie już istniejących atrybutów na wykresie.</target>
-      </trans-unit>
-      <trans-unit id="whatif4">
-        <source>Esta opción solo está disponible con atributos de tipo numérico.</source>
-        <target>Opcja ta jest dostępna tylko w przypadku atrybutów typu numerycznego.</target>
-      </trans-unit>
       <trans-unit id="filtrosAvanzados">
         <source>Filtros avanzados</source>
         <target>Zaawansowane filtry</target>
-      </trans-unit>
-      <trans-unit id="filtrosAvanzados1" datatype="html">
-        <source>La funcionalidad <ph id="0"/>Filtros Avanzados<ph id="1"/> permite relacionar los filtros globales y de panel utilizando operadores <ph id="2"/>AND<ph id="3"/> o <ph id="4"/>OR<ph id="5"/>. Esto posibilita que los filtros no solo se apliquen como un conjunto fijo de condiciones, sino que puedan interoperar entre sí según la relación definida.</source>
-        <target>Funkcja <ph id="0"/>Advanced Filters<ph id="1"/> umożliwia powiązanie filtrów globalnych i panelowych przy użyciu operatorów <ph id="2"/>AND<ph id="3"/> lub <ph id="4"/>OR<ph id="5"/>. Dzięki temu filtry nie tylko mogą być stosowane jako stały zestaw warunków, ale także współdziałać ze sobą zgodnie z określoną relacją.</target>
-      </trans-unit>
-      <trans-unit id="filtrosAvanzados3">
-        <source>Solo es posible usar filtros definidos dentro del dashboard actual.</source>
-        <target>Można używać wyłącznie filtrów zdefiniowanych w bieżącym panelu.</target>
       </trans-unit>
       <trans-unit id="dashboardSidebarDependentFilters">
         <source>Filtros dependientes</source>
@@ -4154,8 +3938,8 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
         <target>Konfigurowanie filtrów zależnych</target>
       </trans-unit>
       <trans-unit id="preparingDependentFilters">
-        <source> filtros globales para la configuracion de los filtros dependientes: </source>
-        <target>globalne filtry do konfiguracji filtrów zależnych:</target>
+        <source><x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span&gt;"/><x id="INTERPOLATION" equiv-text="{{dependentFilterGrid.length}}"/><x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/> filtros globales para la configuracion de los filtros dependientes:</source>
+        <target><x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span&gt;"/><x id="INTERPOLATION" equiv-text="{{dependentFilterGrid.length}}"/><x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/> globalne filtry do konfiguracji filtrów zależnych:</target>
       </trans-unit>
       <trans-unit id="autocompleteFilter">
         <source>¿Filtro autocomplete?</source>
@@ -4184,6 +3968,10 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       <trans-unit id="wrongGeoJsonFormat">
         <source>El archivo no tiene un formato GeoJson válido.</source>
         <target>Plik nie ma prawidłowego formatu GeoJSON.</target>
+      </trans-unit>
+      <trans-unit id="unsupportedGeoJsonType">
+        <source>El tipo de geometría &quot;<x id="PH" equiv-text="unsupportedType"/>&quot; no está admitido. Solo se admiten &quot;Polygon&quot; y &quot;MultiPolygon&quot;.</source>
+        <target>Typ geometrii &quot;<x id="PH" equiv-text="unsupportedType"/>&quot; nie jest obsługiwany. Obsługiwane są tylko &quot;Polygon&quot; i &quot;MultiPolygon&quot;.</target>
       </trans-unit>
       <trans-unit id="AddMandatoryFilters">
         <source>Los siguientes filtros son obligatorios y no tienen valor asignado:</source>
@@ -4234,16 +4022,16 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
         <target>konfiguracja zakładek</target>
       </trans-unit>
       <trans-unit id="tabsDashboardSettings">
-        <source>Configura las pestañas para mostrar dashboards</source>
-        <target>Skonfiguruj karty, aby wyświetlić pulpity nawigacyjne</target>
+        <source><x id="START_ITALIC_TEXT" ctype="x-i" equiv-text="&lt;i class=&quot;pi pi-info-circle mr-2&quot;&gt;"/><x id="CLOSE_ITALIC_TEXT" ctype="x-i" equiv-text="&lt;/i&gt;"/> Configura las pestañas para mostrar dashboards</source>
+        <target><x id="START_ITALIC_TEXT" ctype="x-i" equiv-text="&lt;i class=&quot;pi pi-info-circle mr-2&quot;&gt;"/><x id="CLOSE_ITALIC_TEXT" ctype="x-i" equiv-text="&lt;/i&gt;"/> Skonfiguruj karty, aby wyświetlić pulpity nawigacyjne</target>
       </trans-unit>
       <trans-unit id="filterByPrivacy">
-        <source>Filtrar por Privacidad</source>
-        <target>Filtruj według prywatnościa</target>
+        <source><x id="START_ITALIC_TEXT" ctype="x-i" equiv-text="&lt;i class=&quot;pi pi-lock mr-2&quot;&gt;"/><x id="CLOSE_ITALIC_TEXT" ctype="x-i" equiv-text="&lt;/i&gt;"/> Filtrar por Privacidad</source>
+        <target><x id="START_ITALIC_TEXT" ctype="x-i" equiv-text="&lt;i class=&quot;pi pi-lock mr-2&quot;&gt;"/><x id="CLOSE_ITALIC_TEXT" ctype="x-i" equiv-text="&lt;/i&gt;"/> Filtruj według prywatnościa</target>
       </trans-unit>
       <trans-unit id="filterByTags">
-        <source>Filtrar por Tags</source>
-        <target>Filtruj według tagóws</target>
+        <source><x id="START_ITALIC_TEXT" ctype="x-i" equiv-text="&lt;i class=&quot;pi pi-tags mr-2&quot;&gt;"/><x id="CLOSE_ITALIC_TEXT" ctype="x-i" equiv-text="&lt;/i&gt;"/> Filtrar por Tags</source>
+        <target><x id="START_ITALIC_TEXT" ctype="x-i" equiv-text="&lt;i class=&quot;pi pi-tags mr-2&quot;&gt;"/><x id="CLOSE_ITALIC_TEXT" ctype="x-i" equiv-text="&lt;/i&gt;"/> Filtruj według tagóws</target>
       </trans-unit>
       <trans-unit id="selectEditTabs">
         <source>Seleccionar...</source>
@@ -4294,20 +4082,20 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
         <target>Włączyć, aby ograniczyć dostęp tylko do upoważnionych użytkowników lub grup</target>
       </trans-unit>
       <trans-unit id="tableRestrictionAccess">
-        <source>Los usuarios y grupos configurados tendrán acceso autorizado a la tabla: </source>
-        <target>Skonfigurowani użytkownicy i grupy będą mieć autoryzowany dostęp do tabeli:</target>
+        <source>Los usuarios y grupos configurados tendrán acceso autorizado a la tabla: <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span class=&quot;font-bold&quot;&gt;"/><x id="INTERPOLATION" equiv-text="{{table.description}}"/><x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/></source>
+        <target>Skonfigurowani użytkownicy i grupy będą mieć autoryzowany dostęp do tabeli: <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span class=&quot;font-bold&quot;&gt;"/><x id="INTERPOLATION" equiv-text="{{table.description}}"/><x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/></target>
       </trans-unit>
       <trans-unit id="tableActivationAccess">
-        <source>Los usuarios y grupos configurados NO tendrán acceso a la tabla: </source>
-        <target>Skonfigurowani użytkownicy i grupy NIE będą mieć dostępu do tabeli:</target>
+        <source>Los usuarios y grupos configurados NO tendrán acceso a la tabla: <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span class=&quot;font-bold&quot;&gt;"/><x id="INTERPOLATION" equiv-text="{{table.description}}"/><x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/></source>
+        <target>Skonfigurowani użytkownicy i grupy NIE będą mieć dostępu do tabeli: <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span class=&quot;font-bold&quot;&gt;"/><x id="INTERPOLATION" equiv-text="{{table.description}}"/><x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/></target>
       </trans-unit>
       <trans-unit id="tableActivationAccessMessageOption">
         <source>Activar para habilitar un acceso restringido</source>
         <target>Włączyć, aby umożliwić dostęp ograniczony</target>
       </trans-unit>
       <trans-unit id="decimalNumberText">
-        <source>Número de decimales</source>
-        <target>Liczba miejsc dziesiętnych</target>
+        <source>Número de decimales <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/></source>
+        <target>Liczba miejsc dziesiętnych <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/></target>
       </trans-unit>
       <trans-unit id="CheckExpression">
         <source>Comprobar expresión</source>
@@ -4409,6 +4197,26 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
         <source>Todo hasta hoy</source>
         <target>Wszystko do dziś</target>
       </trans-unit>
+      <trans-unit id="DatePickerCustomDate">
+        <source>Seleccionar fecha</source>
+        <target>Wybierz datę</target>
+      </trans-unit>
+      <trans-unit id="filterOperatorSelectionText">
+        <source>Selección de operador del filtro:</source>
+        <target>Wybór operatora filtra:</target>
+      </trans-unit>
+      <trans-unit id="dateSelectionText">
+        <source>Selección de fecha:</source>
+        <target>Wybór daty:</target>
+      </trans-unit>
+      <trans-unit id="datePickerCleanBtn">
+        <source>Limpiar</source>
+        <target>Wyczyść</target>
+      </trans-unit>
+      <trans-unit id="filterOperatorPlaceholder">
+        <source>Selecciona un operador</source>
+        <target>Wybierz operator</target>
+      </trans-unit>
       <trans-unit id="noNameProvided">
         <source>Debe proporcionar un nombre para el datasource</source>
         <target>Musisz podać nazwę źródła danych</target>
@@ -4436,6 +4244,10 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       <trans-unit id="errorParseCsv2">
         <source>Error al parsear el archivo CSV. Verifica el separador.</source>
         <target>Błąd podczas parsowania pliku CSV. Sprawdź separator.</target>
+      </trans-unit>
+      <trans-unit id="noExcelFile">
+        <source>Debe cargar un archivo Excel primero</source>
+        <target>Najpierw musisz wczytać plik Excel</target>
       </trans-unit>
       <trans-unit id="errorParseCsv3">
         <source>Error al parsear el archivo CSV. Verifique el separador y formato del archivo.</source>
@@ -4491,6 +4303,14 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
         <source>es menor que:</source>
         <target>jest mniejsze niż:</target>
       </trans-unit>
+      <trans-unit id="opacityLabel">
+        <source>Opacidad</source>
+        <target>Krycie</target>
+      </trans-unit>
+      <trans-unit id="colorsTab">
+        <source>Colores</source>
+        <target>Kolory</target>
+      </trans-unit>
       <trans-unit id="gradientMin">
         <source>Min</source>
         <target>Min</target>
@@ -4510,6 +4330,14 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       <trans-unit id="nextStepBtn">
         <source>Siguiente paso</source>
         <target>Następny krok</target>
+      </trans-unit>
+      <trans-unit id="openInNewTabBtn">
+        <source>Abrir en NUEVA pestaña</source>
+        <target>Otwórz w NOWEJ karcie</target>
+      </trans-unit>
+      <trans-unit id="openInSameTabBtn">
+        <source>Abrir en MISMA pestaña</source>
+        <target>Otwórz w TEJ SAMEJ karcie</target>
       </trans-unit>
       <trans-unit id="predictionDialogTitle">
         <source>Configuración de Predicción</source>
@@ -4719,9 +4547,37 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
         <source>Selecciona tags...</source>
         <target>Wybierz tagi...</target>
       </trans-unit>
+      <trans-unit id="tagsTooltipLabel">
+        <source>Tags:</source>
+        <target>Tagi:</target>
+      </trans-unit>
+      <trans-unit id="folderReportCount">
+        <source>informes</source>
+        <target>raporty</target>
+      </trans-unit>
       <trans-unit id="hechoCon">
         <source> HECHO CON </source>
         <target>ZROBIONE Z</target>
+      </trans-unit>
+      <trans-unit id="noInitialDashboard">
+        <source>No hay ningún dashboard inicial configurado.</source>
+        <target>Nie skonfigurowano żadnego pulpitu początkowego.</target>
+      </trans-unit>
+      <trans-unit id="configureInitialDashboard">
+        <source>Edita el portal para seleccionar uno.</source>
+        <target>Edytuj portal, aby wybrać jeden.</target>
+      </trans-unit>
+      <trans-unit id="initialDashboardLabel">
+        <source> Dashboard inicial: </source>
+        <target>Pulpit początkowy:</target>
+      </trans-unit>
+      <trans-unit id="noneOption">
+        <source>— Ninguno —</source>
+        <target>— Brak —</target>
+      </trans-unit>
+      <trans-unit id="noPublicDashboards">
+        <source>No hay dashboards públicos disponibles.</source>
+        <target>Brak dostępnych publicznych pulpitów.</target>
       </trans-unit>
       <trans-unit id="adminPortal">
         <source>Portal de datos</source>
@@ -4746,6 +4602,18 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       <trans-unit id="mcpVisibilityTooltipCol">
         <source>Controla si el agente de IA tiene acceso a esta información: Full permite acceso completo, Declaration expone solo nombre y tipo, None lo excluye totalmente.</source>
         <target>Kontroluje, czy agent AI ma dostęp do tych informacji: Full zezwala na pełny dostęp, Declaration udostępnia tylko nazwę i typ, None wyklucza je całkowicie.</target>
+      </trans-unit>
+      <trans-unit id="protectedDataSourceNotice">
+        <source>Algunas áreas de la configuración de esta fuente de datos se encuentran desactivadas porque es una fuente de datos protegida.</source>
+        <target>Niektóre obszary konfiguracji tego źródła danych są wyłączone, ponieważ jest to chronione źródło danych.</target>
+      </trans-unit>
+      <trans-unit id="deleteDuckdbTable">
+        <source>Eliminar tabla CSV</source>
+        <target>Usuń tabelę CSV</target>
+      </trans-unit>
+      <trans-unit id="addDuckdbTable">
+        <source>Añadir tabla CSV</source>
+        <target>Dodaj tabelę CSV</target>
       </trans-unit>
       <trans-unit id="dynamicFiltersText">
         <source>Filtros dinámicos</source>
@@ -4795,6 +4663,14 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
         <source>Configuración avanzada de todos los filtros</source>
         <target>Zaawansowana konfiguracja wszystkich filtrów</target>
       </trans-unit>
+      <trans-unit id="globalFilter">
+        <source>Filtro de informe</source>
+        <target>Filtr raportu</target>
+      </trans-unit>
+      <trans-unit id="panelFilter">
+        <source>Filtro de panel</source>
+        <target>Filtr panelu</target>
+      </trans-unit>
       <trans-unit id="chatAssistantTitle">
         <source>Asistente Edalitics</source>
         <target>Asystent Edalitics</target>
@@ -4831,6 +4707,18 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
         <source>Asistente IA</source>
         <target>Asystent AI</target>
       </trans-unit>
+      <trans-unit id="chatResetBtn">
+        <source>Nueva conversación</source>
+        <target>Nowa rozmowa</target>
+      </trans-unit>
+      <trans-unit id="chatScrollDown">
+        <source>Ir al final</source>
+        <target>Przejdź na dół</target>
+      </trans-unit>
+      <trans-unit id="chatStopBtn">
+        <source>Parar generación</source>
+        <target>Zatrzymaj generowanie</target>
+      </trans-unit>
       <trans-unit id="saveAsModel">
         <source>Guardar como, para el modelo de datos</source>
         <target>Zapisz jako, dla modelu danych</target>
@@ -4854,6 +4742,26 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       <trans-unit id="chatFallbackSearchInPrefix">
         <source>Buscar en: </source>
         <target>Szukaj w :</target>
+      </trans-unit>
+      <trans-unit id="chatStatusConnecting">
+        <source>Conectando con las fuentes de datos...</source>
+        <target>Łączenie ze źródłami danych...</target>
+      </trans-unit>
+      <trans-unit id="chatStatusAnalyzing">
+        <source>Analizando tu pregunta...</source>
+        <target>Analizowanie pytania...</target>
+      </trans-unit>
+      <trans-unit id="chatStatusSearching">
+        <source>Buscando datos...</source>
+        <target>Wyszukiwanie danych...</target>
+      </trans-unit>
+      <trans-unit id="chatStatusProcessing">
+        <source>Procesando resultados...</source>
+        <target>Przetwarzanie wyników...</target>
+      </trans-unit>
+      <trans-unit id="chatStatusPreparing">
+        <source>Preparando respuesta...</source>
+        <target>Przygotowywanie odpowiedzi...</target>
       </trans-unit>
       <trans-unit id="analyzingTheScheme">
         <source>Analizando el esquema</source>
@@ -4911,6 +4819,14 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
         <source>DISPONIBLE</source>
         <target>DOSTĘPNY</target>
       </trans-unit>
+      <trans-unit id="aiConfigSaved">
+        <source>Configuración de IA guardada correctamente</source>
+        <target>Konfiguracja AI została pomyślnie zapisana</target>
+      </trans-unit>
+      <trans-unit id="aiBaseUrl">
+        <source>BASE URL</source>
+        <target>BAZOWY URL</target>
+      </trans-unit>
       <trans-unit id="navegableFrom">
         <source>Navegable desde</source>
         <target>Możliwość nawigacji z</target>
@@ -4922,6 +4838,18 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       <trans-unit id="noParentText">
         <source>Sin padre</source>
         <target>Brak rodzica</target>
+      </trans-unit>
+      <trans-unit id="rangeTitle">
+        <source>Rangos</source>
+        <target>Zakresy</target>
+      </trans-unit>
+      <trans-unit id="dateNavLabel">
+        <source>Navegación por fecha</source>
+        <target>Nawigacja po dacie</target>
+      </trans-unit>
+      <trans-unit id="whereHavingLabel">
+        <source>Ámbito del filtro</source>
+        <target>Zakres filtra</target>
       </trans-unit>
       <trans-unit id="noDataAvailable">
         <source>Sin datos disponibles</source>
@@ -4955,6 +4883,14 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
         <source>Ordenar los resultados por:</source>
         <target>Sortuj wyniki według:</target>
       </trans-unit>
+      <trans-unit id="draggResultSorting">
+        <source>Arrastre aquí los atributos sobre los que quiere ordenar</source>
+        <target>Przeciągnij tutaj atrybuty, według których chcesz sortować</target>
+      </trans-unit>
+      <trans-unit id="ptooltipOrderByControl">
+        <source>Arrastra aquí los atributos por los que quieres ordenar los resultados y colócalos en el orden que prefieras. En cada uno puedes elegir ascendente (ASC), descendente (DESC) o dejarlo sin indicar.</source>
+        <target>Przeciągnij tutaj atrybuty, według których chcesz sortować wyniki, i ułóż je w preferowanej kolejności. Dla każdego możesz wybrać rosnąco (ASC), malejąco (DESC) lub pozostawić bez wskazania.</target>
+      </trans-unit>
       <trans-unit id="noDuckDbFile">
         <source>Debe cargar un archivo CSV primero</source>
         <target>Musisz najpierw załadować plik CSV</target>
@@ -4971,9 +4907,13 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
         <source>Error al parsear el archivo CSV. Verifica el separador.</source>
         <target>Błąd podczas analizowania pliku CSV. Sprawdź separator.</target>
       </trans-unit>
+      <trans-unit id="duckdbTableAdded">
+        <source>Tabla añadida correctamente</source>
+        <target>Tabela została pomyślnie dodana</target>
+      </trans-unit>
       <trans-unit id="duckdbFolderLabel">
-        <source>Carpeta padre</source>
-        <target>Folder nadrzędny</target>
+        <source>Fuente de datos <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/></source>
+        <target>Źródło danych <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/></target>
       </trans-unit>
       <trans-unit id="duckdbFolderPlaceholder">
         <source>nombre_carpeta_nueva</source>
@@ -4991,6 +4931,10 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
         <source>(<x id="INTERPOLATION" equiv-text="{{ csv.columnsConfig.length }}"/> columnas)</source>
         <target>(<x id="INTERPOLATION" equiv-text="{{ csv.columnsConfig.length }}"/> kolumn)</target>
       </trans-unit>
+      <trans-unit id="duckdbFolderExistsError">
+        <source>Este nombre ya existe. Escribe un nombre diferente.</source>
+        <target>Ta nazwa już istnieje. Wpisz inną nazwę.</target>
+      </trans-unit>
       <trans-unit id="odooUrlLabel" datatype="html">
         <source>URL de Odoo <x id="START_TAG_SPAN" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" equiv-text="&lt;/span&gt;"/></source>
         <target>URL Odoo <x id="START_TAG_SPAN" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" equiv-text="&lt;/span&gt;"/></target>
@@ -5004,16 +4948,16 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
         <target>Źródło danych Odoo zostało pomyślnie utworzone</target>
       </trans-unit>
       <trans-unit id="ga4PropertyIdLabel">
-        <source>ID de Propiedad GA4</source>
-        <target>ID właściwości GA4</target>
+        <source>ID de Propiedad GA4 <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/></source>
+        <target>ID właściwości GA4 <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/></target>
       </trans-unit>
       <trans-unit id="ga4PropertyIdHint">
         <source>Puedes encontrarlo en Google Analytics → Administrar → Información de la propiedad</source>
         <target>Znajdziesz go w Google Analytics → Administrowanie → Informacje o właściwości</target>
       </trans-unit>
       <trans-unit id="ga4FolderNameLabel">
-        <source>Nombre de carpeta</source>
-        <target>Nazwa folderu</target>
+        <source>Nombre de carpeta <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/></source>
+        <target>Nazwa folderu <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/></target>
       </trans-unit>
       <trans-unit id="ga4FolderNameHint">
         <source>Se creará la carpeta duckdb/&lt;nombre&gt;/ con los CSV de métricas</source>
@@ -5024,8 +4968,8 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
         <target>ga4_mojafirma</target>
       </trans-unit>
       <trans-unit id="ga4AuthLabel">
-        <source>Autorización de Google Analytics</source>
-        <target>Autoryzacja Google Analytics</target>
+        <source>Autorización de Google Analytics <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/></source>
+        <target>Autoryzacja Google Analytics <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/></target>
       </trans-unit>
       <trans-unit id="ga4AuthButton">
         <source>Autorizar con Google Analytics</source>
@@ -5079,6 +5023,14 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
         <source>Fuente de datos Holded creada correctamente</source>
         <target>Źródło danych Holded zostało pomyślnie utworzone</target>
       </trans-unit>
+      <trans-unit id="holdedFolderRequired">
+        <source>Debe indicar el nombre de la carpeta</source>
+        <target>Musisz podać nazwę folderu</target>
+      </trans-unit>
+      <trans-unit id="holdedApiKeyRequired">
+        <source>Debe proporcionar la API Key de Holded</source>
+        <target>Musisz podać klucz API Holded</target>
+      </trans-unit>
       <trans-unit id="multipleSelectionText">
         <source>Selección múltiple</source>
         <target>Wielokrotny wybór</target>
@@ -5086,6 +5038,14 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       <trans-unit id="uniqueSelectionText">
         <source>Selección única</source>
         <target>Jednokrotny wybór</target>
+      </trans-unit>
+      <trans-unit id="panelColHeader">
+        <source>Panel</source>
+        <target>Panel</target>
+      </trans-unit>
+      <trans-unit id="filterPathColHeader">
+        <source>Ruta del filtro</source>
+        <target>Ścieżka filtra</target>
       </trans-unit>
       <trans-unit id="uniqueSelectionDescription">
         <source>Active esta opción para permitir la selección múltiple.</source>
@@ -5103,6 +5063,50 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
         <source>Desbloquear los paneles</source>
         <target>Odblokować panele</target>
       </trans-unit>
+      <trans-unit id="dashboardSidebarReportAdd">
+        <source>Añadir</source>
+        <target>Dodaj</target>
+      </trans-unit>
+      <trans-unit id="dashboardSidebarSaveTooltip">
+        <source>Guardar informe</source>
+        <target>Zapisz raport</target>
+      </trans-unit>
+      <trans-unit id="dashboardMenuViewMode">
+        <source>Ver</source>
+        <target>Podgląd</target>
+      </trans-unit>
+      <trans-unit id="dashboardMenuViewModeTooltip">
+        <source>Pasar a modo ver (oculta la edición)</source>
+        <target>Przełącz na tryb podglądu (ukrywa edycję)</target>
+      </trans-unit>
+      <trans-unit id="dashboardMenuEditMode">
+        <source>Editar</source>
+        <target>Edytuj</target>
+      </trans-unit>
+      <trans-unit id="dashboardMenuEditModeTooltip">
+        <source>Volver a modo edición</source>
+        <target>Wróć do trybu edycji</target>
+      </trans-unit>
+      <trans-unit id="editFilterTooltip">
+        <source>Editar filtro</source>
+        <target>Edytuj filtr</target>
+      </trans-unit>
+      <trans-unit id="dashboardMenuReportFilters">
+        <source>Filtros de informe</source>
+        <target>Filtry raportu</target>
+      </trans-unit>
+      <trans-unit id="newTitlePanel">
+        <source>Titulo Panel</source>
+        <target>Panel tytułu</target>
+      </trans-unit>
+      <trans-unit id="newTabsPanel">
+        <source>Tabs</source>
+        <target>Karty</target>
+      </trans-unit>
+      <trans-unit id="dashboardSidebarDownloadWord">
+        <source>Descargar Word</source>
+        <target>Pobierz Word</target>
+      </trans-unit>
       <trans-unit id="noAttributes">
         <source>Sin atributos</source>
         <target>Bez atrybutów</target>
@@ -5110,6 +5114,22 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       <trans-unit id="noFilters">
         <source>Sin filtros</source>
         <target>Bez filtrów</target>
+      </trans-unit>
+      <trans-unit id="panelTitlePlaceholder">
+        <source>Título del panel</source>
+        <target>Tytuł panelu</target>
+      </trans-unit>
+      <trans-unit id="panelDescriptionPlaceholder">
+        <source>Descripción (opcional)</source>
+        <target>Opis (opcjonalnie)</target>
+      </trans-unit>
+      <trans-unit id="configurarFiltrosAvanzados">
+        <source>Configurar</source>
+        <target>Konfiguruj</target>
+      </trans-unit>
+      <trans-unit id="selectOriginTable">
+        <source>Seleccionar tabla</source>
+        <target>Wybierz tabelę</target>
       </trans-unit>
       <trans-unit id="reportName">
         <source>Nombre del Informe</source>
@@ -5147,13 +5167,33 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
         <source>Tutorial</source>
         <target>Samouczek</target>
       </trans-unit>
-      <trans-unit id="kpiSizeHover">
-        <source>Tamaño del KPI</source>
-        <target>Rozmiar KPI</target>
+      <trans-unit id="logotipoSdaAlt">
+        <source>Logotipo de Sinergia Data Analitycs</source>
+        <target>Logo Sinergia Data Analytics</target>
       </trans-unit>
-      <trans-unit id="kpiSizeHoverHint">
-        <source> Pasa el ratón por encima del KPI para ver los botones que permiten ajustar su tamaño. </source>
-        <target>Najedź kursorem na KPI, aby zobaczyć przyciski umożliwiające zmianę jego rozmiaru.</target>
+      <trans-unit id="aboutPageSinergiaDAVersion">
+        <source>Versión de SinergiaDA</source>
+        <target>Wersja SinergiaDA</target>
+      </trans-unit>
+      <trans-unit id="aboutPageEdaVersionAPI">
+        <source>Puerto / Versión de EDA (API)</source>
+        <target>Port / wersja EDA (API)</target>
+      </trans-unit>
+      <trans-unit id="aboutPageLastUpdateModelDate">
+        <source> Última sincronización con SinergiaCRM (updateModel) </source>
+        <target>Ostatnia synchronizacja z SinergiaCRM (updateModel)</target>
+      </trans-unit>
+      <trans-unit id="aboutPageLastRebuildDate">
+        <source> Última reconstrucción de origenes de datos en SinergiaCRM (rebuild) </source>
+        <target>Ostatnia przebudowa źródeł danych w SinergiaCRM (rebuild)</target>
+      </trans-unit>
+      <trans-unit id="1674473955394759605">
+        <source>Base de datos de SinergiaCRM</source>
+        <target>Baza danych SinergiaCRM</target>
+      </trans-unit>
+      <trans-unit id="SDALicense">
+        <source>Licencia</source>
+        <target>Licencja</target>
       </trans-unit>
       <trans-unit id="colorChartBorderLabel">
         <source>Color del borde</source>
@@ -5167,10 +5207,6 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
         <source>Color de área</source>
         <target>Kolor obszaru</target>
       </trans-unit>
-      <trans-unit id="kpiLineSettings">
-        <source>Línea</source>
-        <target>Linia</target>
-      </trans-unit>
       <trans-unit id="resetSectionButton">
         <source>Restaurar</source>
         <target>Przywróć</target>
@@ -5182,10 +5218,6 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       <trans-unit id="lineStyleLabel">
         <source>Tipo de línea</source>
         <target>Typ linii</target>
-      </trans-unit>
-      <trans-unit id="kpiAxisAndLabels">
-        <source>Eje X y etiquetas de valor</source>
-        <target>Oś X i etykiety wartości</target>
       </trans-unit>
       <trans-unit id="axisScaleH6">
         <source>Ejes y escala</source>
@@ -5231,10 +5263,6 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
         <source>Aspecto</source>
         <target>Wygląd</target>
       </trans-unit>
-      <trans-unit id="kpiVisualStyle">
-        <source>Estilo visual del KPI</source>
-        <target>Styl wizualny KPI</target>
-      </trans-unit>
       <trans-unit id="kpiBgColor">
         <source>Color de fondo</source>
         <target>Kolor tła</target>
@@ -5259,19 +5287,11 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
         <source>Imagen prefijo</source>
         <target>Obraz prefiksu</target>
       </trans-unit>
-      <trans-unit id="duplicatePanel">
-        <source>Duplicar panel</source>
-        <target>Duplikuj panel</target>
-      </trans-unit>
-      <trans-unit id="titlePanelOptions">
-        <source>Opciones del panel</source>
-        <target>Opcje panelu</target>
-      </trans-unit>
-      <trans-unit id="kpiDecreaseFontSize" datatype="html">
+      <trans-unit id="kpiDecreaseFontSize">
         <source>Reducir tamaño</source>
         <target>Zmniejsz rozmiar</target>
       </trans-unit>
-      <trans-unit id="kpiIncreaseFontSize" datatype="html">
+      <trans-unit id="kpiIncreaseFontSize">
         <source>Aumentar tamaño</source>
         <target>Zwiększ rozmiar</target>
       </trans-unit>
@@ -5383,9 +5403,353 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
         <source>Update Model Failed</source>
         <target>Aktualizacja modelu nie powiodła się</target>
       </trans-unit>
+      <trans-unit id="ServerConsoleLive">
+        <source>En vivo</source>
+        <target>Na żywo</target>
+      </trans-unit>
+      <trans-unit id="ServerConsoleReset">
+        <source>El fichero de log se reinició.</source>
+        <target>Plik logu został zresetowany.</target>
+      </trans-unit>
+      <trans-unit id="ServerConsoleEmpty">
+        <source>Sin contenido.</source>
+        <target>Brak zawartości.</target>
+      </trans-unit>
+      <trans-unit id="LogsAuditTab">
+        <source>Auditoría</source>
+        <target>Audyt</target>
+      </trans-unit>
+      <trans-unit id="LogsConsoleTab">
+        <source>Consola del servidor</source>
+        <target>Konsola serwera</target>
+      </trans-unit>
+      <trans-unit id="SelectPeriodPlaceholder">
+        <source>Selecciona periodo</source>
+        <target>Wybierz okres</target>
+      </trans-unit>
+      <trans-unit id="Today">
+        <source>Hoy</source>
+        <target>Dzisiaj</target>
+      </trans-unit>
+      <trans-unit id="Yesterday">
+        <source>Ayer</source>
+        <target>Wczoraj</target>
+      </trans-unit>
+      <trans-unit id="Last5Days">
+        <source>Últimos 5 días</source>
+        <target>Ostatnie 5 dni</target>
+      </trans-unit>
+      <trans-unit id="Last10Days">
+        <source>Últimos 10 días</source>
+        <target>Ostatnie 10 dni</target>
+      </trans-unit>
+      <trans-unit id="FilterByPeriod">
+        <source>Periodo</source>
+        <target>Okres</target>
+      </trans-unit>
+      <trans-unit id="FilterByDate">
+        <source>Fecha</source>
+        <target>Data</target>
+      </trans-unit>
+      <trans-unit id="FilterColumn">
+        <source>Buscar...</source>
+        <target>Szukaj...</target>
+      </trans-unit>
+      <trans-unit id="LogsQueryFailureTitle">
+        <source>Detalles del error de consulta</source>
+        <target>Szczegóły błędu zapytania</target>
+      </trans-unit>
+      <trans-unit id="Date">
+        <source>Fecha</source>
+        <target>Data</target>
+      </trans-unit>
+      <trans-unit id="Level">
+        <source>Nivel</source>
+        <target>Poziom</target>
+      </trans-unit>
+      <trans-unit id="Action">
+        <source>Acción</source>
+        <target>Akcja</target>
+      </trans-unit>
+      <trans-unit id="User">
+        <source>Usuario</source>
+        <target>Użytkownik</target>
+      </trans-unit>
+      <trans-unit id="IP">
+        <source>IP</source>
+        <target>IP</target>
+      </trans-unit>
+      <trans-unit id="Type">
+        <source>Tipo</source>
+        <target>Typ</target>
+      </trans-unit>
+      <trans-unit id="LogsSqlNotAvailable">
+        <source>SQL no disponible</source>
+        <target>SQL niedostępny</target>
+      </trans-unit>
+      <trans-unit id="LogsSqlCopied">
+        <source>SQL copiado</source>
+        <target>Skopiowano SQL</target>
+      </trans-unit>
+      <trans-unit id="LogsCopyFailed">
+        <source>Error al copiar</source>
+        <target>Błąd kopiowania</target>
+      </trans-unit>
+      <trans-unit id="LogsActionAccess">
+        <source>Acceso</source>
+        <target>Dostęp</target>
+      </trans-unit>
+      <trans-unit id="LogsActionCreation">
+        <source>Creación</source>
+        <target>Utworzenie</target>
+      </trans-unit>
+      <trans-unit id="LogsActionUpdate">
+        <source>Actualización</source>
+        <target>Aktualizacja</target>
+      </trans-unit>
+      <trans-unit id="LogsActionRename">
+        <source>Renombrado</source>
+        <target>Zmiana nazwy</target>
+      </trans-unit>
+      <trans-unit id="LogsActionVisibilityChange">
+        <source>Cambio de visibilidad</source>
+        <target>Zmiana widoczności</target>
+      </trans-unit>
+      <trans-unit id="LogsActionDeletion">
+        <source>Eliminación</source>
+        <target>Usunięcie</target>
+      </trans-unit>
+      <trans-unit id="LogsActionQueryFailure">
+        <source>Fallo de consulta</source>
+        <target>Błąd zapytania</target>
+      </trans-unit>
+      <trans-unit id="LogsActionUserCreation">
+        <source>Creación de usuario</source>
+        <target>Utworzenie użytkownika</target>
+      </trans-unit>
+      <trans-unit id="LogsActionUserUpdate">
+        <source>Actualización de usuario</source>
+        <target>Aktualizacja użytkownika</target>
+      </trans-unit>
+      <trans-unit id="LogsActionUserDeletion">
+        <source>Eliminación de usuario</source>
+        <target>Usunięcie użytkownika</target>
+      </trans-unit>
+      <trans-unit id="LogsActionUserRolesChange">
+        <source>Cambio de roles de usuario</source>
+        <target>Zmiana ról użytkownika</target>
+      </trans-unit>
+      <trans-unit id="LogsActionUserPasswordChange">
+        <source>Cambio de contraseña de usuario</source>
+        <target>Zmiana hasła użytkownika</target>
+      </trans-unit>
+      <trans-unit id="LogsActionGroupCreation">
+        <source>Creación de grupo</source>
+        <target>Utworzenie grupy</target>
+      </trans-unit>
+      <trans-unit id="LogsActionGroupUpdate">
+        <source>Actualización de grupo</source>
+        <target>Aktualizacja grupy</target>
+      </trans-unit>
+      <trans-unit id="LogsActionGroupDeletion">
+        <source>Eliminación de grupo</source>
+        <target>Usunięcie grupy</target>
+      </trans-unit>
+      <trans-unit id="LogsActionGroupMembershipChange">
+        <source>Cambio de membresía de grupo</source>
+        <target>Zmiana członkostwa w grupie</target>
+      </trans-unit>
+      <trans-unit id="LogsActionModelUpdateStart">
+        <source>Inicio de actualización del modelo</source>
+        <target>Rozpoczęcie aktualizacji modelu</target>
+      </trans-unit>
+      <trans-unit id="LogsActionUsersGroupsSync">
+        <source>Sincronización de usuarios/grupos</source>
+        <target>Synchronizacja użytkowników/grup</target>
+      </trans-unit>
+      <trans-unit id="LogsActionUsersGroupsSyncFailure">
+        <source>Fallo en sincronización de usuarios/grupos</source>
+        <target>Błąd synchronizacji użytkowników/grup</target>
+      </trans-unit>
+      <trans-unit id="LogsActionRoleMapping">
+        <source>Mapeo de roles</source>
+        <target>Mapowanie ról</target>
+      </trans-unit>
+      <trans-unit id="LogsActionRoleMappingFailure">
+        <source>Fallo en mapeo de roles</source>
+        <target>Błąd mapowania ról</target>
+      </trans-unit>
+      <trans-unit id="LogsActionDataModelBuild">
+        <source>Construcción del modelo de datos</source>
+        <target>Budowa modelu danych</target>
+      </trans-unit>
+      <trans-unit id="LogsActionDataModelBuildFailure">
+        <source>Fallo en construcción del modelo de datos</source>
+        <target>Błąd budowy modelu danych</target>
+      </trans-unit>
+      <trans-unit id="LogsActionModelUpdateCompleted">
+        <source>Actualización del modelo completada</source>
+        <target>Aktualizacja modelu zakończona</target>
+      </trans-unit>
+      <trans-unit id="LogsActionModelPushFailure">
+        <source>Fallo en push del modelo</source>
+        <target>Błąd wypychania modelu</target>
+      </trans-unit>
+      <trans-unit id="LogsActionModelUpdateFailure">
+        <source>Fallo en actualización del modelo</source>
+        <target>Błąd aktualizacji modelu</target>
+      </trans-unit>
+      <trans-unit id="LogsActionAttempt">
+        <source>Intento</source>
+        <target>Próba</target>
+      </trans-unit>
+      <trans-unit id="LogsActionLogin">
+        <source>Inicio de sesión</source>
+        <target>Logowanie</target>
+      </trans-unit>
+      <trans-unit id="LogsViewer">
+        <source>Visor de logs</source>
+        <target>Przeglądarka logów</target>
+      </trans-unit>
+      <trans-unit id="LogsAuditSubtitle">
+        <source>Registro de auditoría de la aplicación</source>
+        <target>Dziennik audytu aplikacji</target>
+      </trans-unit>
+      <trans-unit id="HideDashboardAccessed">
+        <source>Mostrar accesos a informes</source>
+        <target>Pokaż dostępy do raportów</target>
+      </trans-unit>
+      <trans-unit id="LogsViewDetails">
+        <source>Ver detalles</source>
+        <target>Zobacz szczegóły</target>
+      </trans-unit>
+      <trans-unit id="NoLogsFound">
+        <source>No se encontraron logs para esta fecha.</source>
+        <target>Nie znaleziono logów dla tej daty.</target>
+      </trans-unit>
+      <trans-unit id="LogsFoundCount">
+        <source>registros encontrados</source>
+        <target>znalezionych rekordów</target>
+      </trans-unit>
+      <trans-unit id="LogsReportName">
+        <source>Nombre del informe:</source>
+        <target>Nazwa raportu:</target>
+      </trans-unit>
+      <trans-unit id="LogsReportId">
+        <source>ID del informe:</source>
+        <target>ID raportu:</target>
+      </trans-unit>
+      <trans-unit id="LogsPanelName">
+        <source>Nombre del panel:</source>
+        <target>Nazwa panelu:</target>
+      </trans-unit>
+      <trans-unit id="LogsPanelId">
+        <source>ID del panel:</source>
+        <target>ID panelu:</target>
+      </trans-unit>
+      <trans-unit id="LogsMode">
+        <source>Modo:</source>
+        <target>Tryb:</target>
+      </trans-unit>
+      <trans-unit id="LogsError">
+        <source>Error:</source>
+        <target>Błąd:</target>
+      </trans-unit>
+      <trans-unit id="LogsSql">
+        <source>SQL:</source>
+        <target>SQL:</target>
+      </trans-unit>
+      <trans-unit id="LogsCopySql">
+        <source>Copiar SQL</source>
+        <target>Kopiuj SQL</target>
+      </trans-unit>
       <trans-unit id="reportDataSourceName">
         <source>Fuente de datos</source>
         <target>Źródło danych</target>
+      </trans-unit>
+      <trans-unit id="newReport">
+        <source>Nuevo informe</source>
+        <target>Nowy raport</target>
+      </trans-unit>
+      <trans-unit id="tableView">
+        <source>Vista de tabla</source>
+        <target>Widok tabeli</target>
+      </trans-unit>
+      <trans-unit id="cardView">
+        <source>Vista de fichas</source>
+        <target>Widok kart</target>
+      </trans-unit>
+      <trans-unit id="tags">
+        <source>Etiquetas</source>
+        <target>Tagi</target>
+      </trans-unit>
+      <trans-unit id="tagSearch">
+        <source>Buscar etiqueta</source>
+        <target>Szukaj tagu</target>
+      </trans-unit>
+      <trans-unit id="removeFilter">
+        <source>Quitar filtro</source>
+        <target>Usuń filtr</target>
+      </trans-unit>
+      <trans-unit id="groupSearch">
+        <source>Buscar grupo</source>
+        <target>Szukaj grupy</target>
+      </trans-unit>
+      <trans-unit id="status">
+        <source>Estado</source>
+        <target>Status</target>
+      </trans-unit>
+      <trans-unit id="active">
+        <source>Activos</source>
+        <target>Aktywne</target>
+      </trans-unit>
+      <trans-unit id="inactive">
+        <source>Inactivos</source>
+        <target>Nieaktywne</target>
+      </trans-unit>
+      <trans-unit id="typeSearch">
+        <source>Buscar tipo</source>
+        <target>Szukaj typu</target>
+      </trans-unit>
+      <trans-unit id="nameFilter">
+        <source>Filtrar por nombre del informe</source>
+        <target>Filtruj według nazwy raportu</target>
+      </trans-unit>
+      <trans-unit id="clearAllFilters">
+        <source>Eliminar todos los filtros</source>
+        <target>Usuń wszystkie filtry</target>
+      </trans-unit>
+      <trans-unit id="clickToEditName">
+        <source>Pulse para editar el nombre</source>
+        <target>Kliknij, aby edytować nazwę</target>
+      </trans-unit>
+      <trans-unit id="goToDashboard">
+        <source>Abrir informe</source>
+        <target>Otwórz raport</target>
+      </trans-unit>
+      <trans-unit id="cloneReport">
+        <source>Clonar informe</source>
+        <target>Klonuj raport</target>
+      </trans-unit>
+      <trans-unit id="deleteReport">
+        <source>Eliminar informe</source>
+        <target>Usuń raport</target>
+      </trans-unit>
+      <trans-unit id="copyURL">
+        <source>Copiar url pública</source>
+        <target>Kopiuj publiczny URL</target>
+      </trans-unit>
+      <trans-unit id="activeLabel">
+        <source>Activo</source>
+        <target>Aktywny</target>
+      </trans-unit>
+      <trans-unit id="inactiveLabel">
+        <source>Inactivo</source>
+        <target>Nieaktywny</target>
+      </trans-unit>
+      <trans-unit id="showReport">
+        <source>Mostrar informe</source>
+        <target>Pokaż raport</target>
       </trans-unit>
     </body>
   </file>
