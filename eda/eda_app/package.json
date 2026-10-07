@@ -77,7 +77,6 @@
     "sweetalert2": "^11.15.10",
     "topojson-client": "^3.1.0",
     "tslib": "^2.6.2",
-    "xliff-simple-merge": "1.2.2",
     "zone.js": "^0.14.10"
   },
   "devDependencies": {

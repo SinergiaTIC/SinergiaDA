@@ -169,11 +169,8 @@ function replaceUnitTarget(unitXml, targetXml) {
  * Writes the targets of `overrides` over `contents`, keeping every unit of
  * `contents` and ignoring the override ids it does not declare.
  *
- * `xliff-simple-merge` gives the `<target>` of a unit to the destination file and
- * the `<source>` to the last input, but it appends a unit once per input when the
- * destination does not declare it. Building a destination that already holds
- * every message is therefore the only way to combine "source from the skeleton,
- * target from the custom file" without duplicates.
+ * `mergeCatalogs` uses it to lay the custom targets over the catalog without
+ * touching the catalog units the custom file does not declare.
  */
 function overlayTargets(contents, overrides) {
     if (!overrides || !overrides.size) {
