@@ -10,7 +10,6 @@ eda/eda_api/.vscode/
 eda/eda_api/node_modules/
 eda/eda_api/dist/
 eda/eda_api/logs/
-eda/eda_api/package-lock.json
 eda/eda_api/config/custom
 eda/eda_api/config/database.config.js
 eda/eda_api/config/database.config-dist.js
@@ -32,7 +31,6 @@ eda/eda_app/.vscode
 eda/eda_app/node_modules
 eda/eda_app/dist
 eda/eda_app/AddEdaCharInstructions.txt
-eda/eda_app/package-lock.json
 eda/eda_app/src/app/config/config.ts
 eda/eda_mcp/dist
 eda/eda_mcp/node_modules
