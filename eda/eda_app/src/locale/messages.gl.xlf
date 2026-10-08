@@ -198,10 +198,6 @@
         <source>Gestión de modelos</source>
         <target>Xestión de modelos</target>
       </trans-unit>
-      <trans-unit id="languageSelectorTitle">
-        <source>Seleccionar idioma</source>
-        <target>Seleccionar idioma</target>
-      </trans-unit>
       <trans-unit id="logsManagement">
         <source>Gestión de logs</source>
         <target>Xestión de logs</target>
@@ -6226,12 +6222,8 @@ Entra agora<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;" />
  rexistros</target>
       </trans-unit>
       <trans-unit datatype="html" id="topQueryH4">
-        <source>Mostrar Top: <x id="START_TAG_P-INPUTNUMBER" ctype="x-p-inputNumber" equiv-text="&lt;p-inputNumber&gt;" />
-<x id="CLOSE_TAG_P-INPUTNUMBER" ctype="x-p-inputNumber" equiv-text="&lt;/p-inputNumber&gt;" />
-</source>
-        <target>Mostrar Top: <x id="START_TAG_P-INPUTNUMBER" ctype="x-p-inputNumber" equiv-text="&lt;p-inputNumber&gt;" />
-<x id="CLOSE_TAG_P-INPUTNUMBER" ctype="x-p-inputNumber" equiv-text="&lt;/p-inputNumber&gt;" />
-</target>
+        <source>Mostrar Top:</source>
+        <target>Mostrar Top:</target>
       </trans-unit>
       <trans-unit datatype="html" id="atributosH4interpolation">
         <source>
