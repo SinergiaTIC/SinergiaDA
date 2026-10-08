@@ -1,6 +1,6 @@
 import { Component, ElementRef, HostListener, Inject, LOCALE_ID } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ENABLED_LANGUAGES } from '@eda/configs/customizable/customizable_default';
+import { ENABLED_LANGUAGES } from '@eda/configs/customizable/customizable_merged';
 
 interface LanguageOption {
   code: string;
@@ -9,7 +9,7 @@ interface LanguageOption {
 
 /**
  * Every locale the app can be built for (angular.json i18n.locales + sourceLocale).
- * ENABLED_LANGUAGES (customizable_default.ts) decides which of these are actually offered.
+ * ENABLED_LANGUAGES (customizable_merged.ts: defaults + overwrites) decides which of these are actually offered.
  */
 const ALL_LANGUAGES: LanguageOption[] = [
   { code: 'es', nativeName: 'Español' },

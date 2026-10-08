@@ -10,9 +10,7 @@
           "en": "src/locale/messages.en.xlf",
           "ca": "src/locale/messages.ca.xlf",
           "pl": "src/locale/messages.pl.xlf",
-          "fr": "src/locale/messages.fr.xlf",
-          "gl": "src/locale/messages.gl.xlf",
-          "eu": "src/locale/messages.eu.xlf"
+          "fr": "src/locale/messages.fr.xlf"
         }
       },
       "projectType": "application",
@@ -47,8 +45,7 @@
                 "node_modules/quill/dist/quill.snow.css",
                 "node_modules/primeicons/primeicons.css",
                 "node_modules/leaflet/dist/leaflet.css",
-                "src/assets/sass/css/style.css",
-                "src/app/config/customizable/custom_extended.css"
+                "src/assets/sass/css/style.css"
             ],
             "scripts": [
                 "node_modules/quill/dist/quill.js"
@@ -57,10 +54,7 @@
               "es",
               "ca",
               "en",
-              "pl",
-              "fr",
-              "gl",
-              "eu"
+              "pl"
             ]
           },
           "configurations": {
@@ -98,21 +92,6 @@
               "localize": [
                 "pl"
               ]
-            },
-            "fr": {
-              "localize": [
-                "fr"
-              ]
-            },
-            "gl": {
-              "localize": [
-                "gl"
-              ]
-            },
-            "eu": {
-              "localize": [
-                "eu"
-              ]
             }
           },
           "defaultConfiguration": "development"
@@ -138,15 +117,6 @@
             },
             "pl": {
               "buildTarget": "app-eda:build:pl"
-            },
-            "fr": {
-              "buildTarget": "app-eda:build:fr"
-            },
-            "gl": {
-              "buildTarget": "app-eda:build:gl"
-            },
-            "eu": {
-              "buildTarget": "app-eda:build:eu"
             }
           },
           "defaultConfiguration": "development"
