@@ -12,7 +12,7 @@ export const SHOW_CUSTOM_ACTION: boolean = false;
 export const SHOW_ZOOM_IN_SIDEBAR: boolean = false;
 export const USE_EDA_KPI_SIZE_LOGIC: boolean = false;
 export const PRIVATE_EDITION_ACTIVATED: boolean =  false;
-export const ENABLED_LANGUAGES: string[] = ['es', 'en', 'ca', 'fr', 'pl', 'gl', 'eu'];
+export const ENABLED_LANGUAGES: string[] = ['es', 'ca', 'en', 'gl'];
 export const CUSTOMIZE_SIDE_MENU_ICONS: any = { // Icon name (IconService registry) per side-menu entry | 'none' or '' → entry hidden
     create: 'plus',
     management: 'settings',
