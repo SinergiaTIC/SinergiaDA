@@ -417,64 +417,83 @@ p-treeselect {
   padding-bottom: 0.375rem !important;
 }
 
-/* Panel edit tabs (Editar consulta / Vista previa): tab look.
-   The two <h3> are inside a .space-x-4 container; remove the gap so they
-   sit together, give them a padded tab shape, and colour active/inactive. */
+/* Panel edit tabs (Editar consulta / Vista previa): professional text-tab system.
+   Both strips use the same language as the classic UI: flat tabs, body-grey
+   inactive text, dark active text, and one slim corporate indicator. The full
+   green rail is replaced by a neutral hairline, so only the active tab shows
+   colour. Shared selectors keep the two strips visually identical. */
+.p-dialog:has(.font-sans) .space-x-4,
+.p-dialog:has(.font-sans) .grid.grid-cols-3.items-end {
+  border-bottom: 1px solid #e5e7eb !important;
+}
+.p-dialog:has(.font-sans) .space-x-4 > h3.font-sans,
+.p-dialog:has(.font-sans) .grid.grid-cols-3.items-end h3.font-sans {
+  position: relative !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  min-height: 2.5rem !important;
+  padding: 0.375rem 0.125rem !important;
+  margin-bottom: 0 !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background-color: transparent !important;
+  color: #67757c !important;
+  font-size: 1rem !important;
+  line-height: 1.25 !important;
+  letter-spacing: 0.01em !important;
+  text-decoration: none !important;
+}
+.p-dialog:has(.font-sans) .space-x-4 > h3.font-sans::after,
+.p-dialog:has(.font-sans) .grid.grid-cols-3.items-end h3.font-sans::after {
+  content: "" !important;
+  position: absolute !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: -1px !important;
+  height: 3px !important;
+  border-radius: 3px 3px 0 0 !important;
+  background-color: transparent !important;
+  transition: background-color 180ms ease !important;
+}
+.p-dialog:has(.font-sans) .space-x-4 > h3.font-sans:not(.tab-active):hover,
+.p-dialog:has(.font-sans) .grid.grid-cols-3.items-end h3.font-sans:not(.tab-active):hover {
+  color: #1f2937 !important;
+}
+.p-dialog:has(.font-sans) .space-x-4 > h3.font-sans:not(.tab-active):hover::after,
+.p-dialog:has(.font-sans) .grid.grid-cols-3.items-end h3.font-sans:not(.tab-active):hover::after {
+  background-color: #d8dde3 !important;
+}
+.p-dialog:has(.font-sans) .space-x-4 > h3.font-sans.tab-active,
+.p-dialog:has(.font-sans) .grid.grid-cols-3.items-end h3.font-sans.tab-active {
+  color: #1f2937 !important;
+}
+.p-dialog:has(.font-sans) .space-x-4 > h3.font-sans.tab-active::after,
+.p-dialog:has(.font-sans) .grid.grid-cols-3.items-end h3.font-sans.tab-active::after {
+  background-color: var(--corporate-primary, #b4bc32) !important;
+}
+/* First strip layout: evenly spaced flat tabs instead of boxed folder tabs. */
+.p-dialog:has(.font-sans) .space-x-4 {
+  display: flex !important;
+  align-items: flex-end !important;
+  gap: 1.75rem !important;
+  padding-left: 0 !important;
+}
 .p-dialog:has(.font-sans) .space-x-4 > :not([hidden]) ~ :not([hidden]) {
   margin-left: 0 !important;
 }
-.p-dialog:has(.font-sans) .space-x-4 > h3.font-sans {
-  color: rgba(0, 0, 0, 0.40) !important;
-  background-color: transparent !important;
-  padding: 0.45rem 0.9rem !important;
-  /* Pull the tab 2px down so its bottom edge overlaps the container rail */
-  margin-bottom: -2px !important;
-  border: 1px solid #d1d5db !important;
-  border-bottom: 0 !important;
-  border-radius: 0.375rem 0.375rem 0 0 !important;
-}
-.p-dialog:has(.font-sans) .space-x-4 > h3.font-sans.tab-active {
-  color: #000000 !important;
-  background-color: rgba(var(--corporate-primary-rgb), 0.35) !important;
-  border-color: var(--corporate-primary) !important;
-  /* Hide the container's green line under the active tab */
-  border-bottom: 2px solid #ffffff !important;
-}
-/* Corporate line under the tabs (marks the area they affect) and drop the
-   container's pl-3 so the first tab aligns with the content on its left. */
-.p-dialog:has(.font-sans) .space-x-4.pl-3 {
-  border-bottom: 2px solid var(--corporate-primary) !important;
-  padding-left: 0 !important;
-}
-
-/* Query mode tabs (Mi consulta / Opciones avanzadas / Consulta con la IA):
-   same tab look as the Editar consulta / Vista previa strip above. They live
-   in a 3-column grid instead of a .space-x-4 container, and each <h3> is
-   wrapped (the first one also holds the info icon), so the grid tracks are
-   collapsed to content to keep the tabs touching and the rail spans the row. */
+/* Second strip layout: the same flat row, despite the grid wrappers around
+   each option in “Mi consulta / Opciones avanzadas / Consulta con la IA”. */
 .p-dialog:has(.font-sans) .grid.grid-cols-3.items-end {
-  grid-template-columns: max-content max-content max-content !important;
+  display: flex !important;
+  align-items: flex-end !important;
+  gap: 1.75rem !important;
+  grid-template-columns: none !important;
   justify-content: start !important;
-  column-gap: 0 !important;
-  /* Corporate line under the tabs */
-  border-bottom: 2px solid var(--corporate-primary) !important;
+  column-gap: 1.75rem !important;
 }
-.p-dialog:has(.font-sans) .grid.grid-cols-3.items-end h3.font-sans {
-  color: rgba(0, 0, 0, 0.40) !important;
-  background-color: transparent !important;
-  padding: 0.45rem 0.9rem !important;
-  /* Pull the tab 2px down so its bottom edge overlaps the grid rail */
-  margin-bottom: -2px !important;
-  border: 1px solid #d1d5db !important;
-  border-bottom: 0 !important;
-  border-radius: 0.375rem 0.375rem 0 0 !important;
-}
-.p-dialog:has(.font-sans) .grid.grid-cols-3.items-end h3.font-sans.tab-active {
-  color: #000000 !important;
-  background-color: rgba(var(--corporate-primary-rgb), 0.35) !important;
-  border-color: var(--corporate-primary) !important;
-  /* Hide the grid's green line under the active tab */
-  border-bottom: 2px solid #ffffff !important;
+.p-dialog:has(.font-sans) .grid.grid-cols-3.items-end > div {
+  display: inline-flex !important;
+  align-items: center !important;
 }
 
 /* column-dialog */
