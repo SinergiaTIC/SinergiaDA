@@ -1,0 +1,1048 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xliff version="1.2"
+  xmlns="urn:oasis:names:tc:xliff:document:1.2">
+  <file source-language="ca-ES" datatype="plaintext" original="ng2.template">
+    <body>
+      <trans-unit id="sidebarMyDashboards" datatype="html">
+        <source>Mis informes</source>
+        <target>Els meus informes</target>
+      </trans-unit>
+      <trans-unit id="tituloNuevoInforme" datatype="html">
+        <source> Crear nuevo informe</source>
+        <target>Crea un nou informe</target>
+      </trans-unit>
+      <trans-unit id="inputPassword" datatype="html">
+        <source> Password <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/></source>
+        <target> Contrasenya <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/></target>
+      </trans-unit>
+      <trans-unit id="inputRepitePassword" datatype="html">
+        <source>Repite la contraseña</source>
+        <target>Repetiu la contrasenya</target>
+      </trans-unit>
+      <trans-unit id="saveModel" datatype="html">
+        <source>Guardar modelo de datos</source>
+        <target>Desa el model de dades</target>
+      </trans-unit>
+      <trans-unit id="labelnewPass" datatype="html">
+        <source>Nueva Contraseña (Si no quieres modificar tu contraseña actual deja el campo en blanco)</source>
+        <target>Nova contrasenya (si no voleu modificar la vostra contrasenya actual deixeu el camp en blanc)</target>
+      </trans-unit>
+      <trans-unit id="namePass" datatype="html">
+        <source>password</source>
+        <target>contrasenya</target>
+      </trans-unit>
+      <trans-unit id="labelRepeatPass" datatype="html">
+        <source>Repite la nueva contraseña </source>
+        <target>Repetiu la nova contrasenya </target>
+      </trans-unit>
+      <trans-unit id="nameNewPass" datatype="html">
+        <source>newPassword</source>
+        <target>nova contrasenya</target>
+      </trans-unit>
+      <trans-unit id="newPassPlaceholderProfile" datatype="html">
+        <source>Repite la contraseña</source>
+        <target>Repetiu la contrasenya</target>
+      </trans-unit>
+      <trans-unit id="direccionMail" datatype="html">
+        <source>Dirección Email</source>
+        <target>Nom d'usuari</target>
+      </trans-unit>
+      <trans-unit id="passwordLogin" datatype="html">
+        <source>Contraseña</source>
+        <target>Contrasenya</target>
+      </trans-unit>
+      <trans-unit id="aggTmean">
+        <source>Media</source>
+        <target>Mitjana</target>
+      </trans-unit>
+      <trans-unit id="topQueryH4" datatype="html">
+        <source>Mostrar Top:</source>
+      <target>Mostra Top:</target>
+  </trans-unit>
+  <trans-unit id="hiddenAttributes">
+    <source>Atributos ocultos</source>
+    <target>Mostra/amaga les columnes</target>
+  </trans-unit>
+  <trans-unit id="atributosH4" datatype="html">
+    <source>Columnas de:</source>
+    <target>Columnes de:</target>
+  </trans-unit>
+  <trans-unit id="atributosH4interpolation" datatype="html">
+    <source>
+      <x id="INTERPOLATION" equiv-text="{{getDisplayName(userSelectedTable)}" />
+    </source>
+    <target>
+      <x id="INTERPOLATION" equiv-text="{{getDisplayName(userSelectedTable)}" />
+    </target>
+  </trans-unit>
+  <trans-unit id="public">
+    <source>público</source>
+    <target>Públic</target>
+  </trans-unit>
+  <trans-unit id="readOnly">
+    <source>deshabilitado</source>
+    <target>Només lectura</target>
+  </trans-unit>
+  <trans-unit id="hidden">
+    <source>oculto</source>
+    <target>Ocult</target>
+  </trans-unit>
+  <trans-unit id="filterVisibleScope">
+    <source>Definir la visibilidad del filtro. Público: todos pueden usarlo. Deshabilitado: El resto de usuarios pueden ver el filtro pero no pueden modificarlo. Oculto: El resto de usuario no pueden ver el filtro. pero se les aplica</source>
+    <target>Defineix la visibilitat del filtre.  Públic: tots poden utilitzar-lo.  Deshabilitat: els altres usuaris poden veure el filtre però no el poden modificar.  Ocult: els altres usuaris no poden veure el filtre però els és d'aplicació.</target>
+  </trans-unit>  <!-- ABOUT PAGE -->
+  <trans-unit id="aboutPageTitle" datatype="html">
+    <source>Acerca de</source>
+    <target>Quant a</target>
+  </trans-unit>
+  <trans-unit id="aboutPageSinergiaDAVersion" datatype="html">
+    <source>Versión de SinergiaDA</source>
+    <target>Versió de SinergiaDA</target>
+  </trans-unit>
+  <trans-unit id="aboutPageEdaVersionAPI" datatype="html">
+    <source>Puerto / Versión de EDA (API)</source>
+    <target>Port / Versió d'EDA (API)</target>
+  </trans-unit>
+  <trans-unit id="aboutPageEdaVersionAPP" datatype="html">
+    <source>Versión de EDA (APP)</source>
+    <target>Versió d'EDA (APP)</target>
+  </trans-unit>
+  <trans-unit id="aboutPageLastUpdateModelDate" datatype="html">
+    <source>Última sincronización con SinergiaCRM (updateModel)</source>
+    <target>Última sincronització amb SinergiaCRM (updateModel)</target>
+  </trans-unit>
+  <trans-unit id="aboutPageLastRebuildDate" datatype="html">
+    <source>Última reconstrucción de origenes de datos en SinergiaCRM (rebuild)</source>
+    <target>Última reconstrucció de les fonts de dades a SinergiaCRM (rebuild)</target>
+  </trans-unit>
+  <trans-unit id="aboutPageDB" datatype="html">
+    <source>Base de datos de SinergiaCRM</source>
+    <target>Base de dades de SinergiaCRM</target>
+  </trans-unit>
+  <trans-unit id="logotipoSdaAlt" datatype="html">
+    <source>Logotipo de Sinergia Data Analytics</source>
+    <target>Logotip de Sinergia Data Analytics</target>
+  </trans-unit>  <!-- END ABOUT PAGE -->  <!-- PARTIAL SDA DATASOURCE EDIT-->
+  <trans-unit id="partialEditDataSourceNotice" datatype="html">
+    <source>Algunas áreas de la configuración de la fuente de datos SinergiaCRM se encuentran desactivadas porque se configuran automáticamente durante el proceso de sincronización de datos con SinergiaCRM.</source>
+    <target>Algunes àrees de la configuració de la font de dades SinergiaCRM estan desactivades perquè es configuren automàticament durant el procés de sincronització de dades amb SinergiaCRM.</target>
+  </trans-unit>  <!-- END PARTIAL SDA DATASOURCE EDIT-->
+  <trans-unit id="DataModelHeader">
+    <source> Configurar nuevo orígen de datos </source>
+    <target> Configura una nova font de dades </target>
+  </trans-unit>
+  <trans-unit id="seleccionH4" datatype="html">
+    <source> Mostrar los siguientes atributos: </source>
+    <target> Mostra les següents columnes: </target>
+  </trans-unit>
+  <trans-unit id="dragFields">
+    <source>Arrastre aquí los atributos que quiera ver en su panel</source>
+    <target>Arrossegueu aquí les columnes que vulgueu veure al vostre panell.</target>
+  </trans-unit>
+  <trans-unit id="draggFilters">
+    <source>Arrastre aquí los atributos sobre los que quiera filtrar</source>
+    <target>Arrossegueu aquí les columnes per les quals vulgueu filtrar.</target>
+  </trans-unit>
+  <trans-unit id="placeholderColumns" datatype="html">
+    <source>Atributos</source>
+    <target>Columnes</target>
+  </trans-unit>
+  <trans-unit id="resumenAtrH6" datatype="html">
+    <source> Resumen de atributos </source>
+    <target> Resum de columnes </target>
+  </trans-unit>
+  <trans-unit id="atributsTitle">
+    <source>Atributos de una entidad.Arrastre los atrubutos a la selección o los filtros para consultarlos. Haciendo click sobre el atributo se accede a sus propiedaes.</source>
+    <target>Columnes de la taula seleccionada. Per afegir-les al panell, feu-hi clic o arrossegueu-les a "Mostra les següents columnes". Per fer-les servir com a filtre, arrossegueu-les a "Filtra els resultats per".</target>
+  </trans-unit>
+  <trans-unit id="entidadesH4" datatype="html">
+    <source> Entidades </source>
+    <target> Taules </target>
+  </trans-unit>
+  <trans-unit id="newReport" datatype="html">
+    <source>Nuevo informe</source>
+    <target>Nou informe</target>
+  </trans-unit>
+  <trans-unit id="view" datatype="html">
+    <source>Vista</source>
+    <target>Vista</target>
+  </trans-unit>
+  <trans-unit id="filter" datatype="html">
+    <source>Filtros</source>
+    <target>Filtres</target>
+  </trans-unit>
+  <trans-unit id="tags" datatype="html">
+    <source>Etiquetas</source>
+    <target>Etiquetes</target>
+  </trans-unit>
+  <trans-unit id="groups" datatype="html">
+    <source>Grupos</source>
+    <target>Grups</target>
+  </trans-unit>
+  <trans-unit id="reportName" datatype="html">
+    <source>Nombre del Informe</source>
+    <target>Nom de l'informe</target>
+  </trans-unit>
+  <trans-unit id="type" datatype="html">
+    <source>Tipo</source>
+    <target>Tipus</target>
+  </trans-unit>
+  <trans-unit id="autor" datatype="html">
+    <source>Autor</source>
+    <target>Autor</target>
+  </trans-unit>
+  <trans-unit id="createdAt" datatype="html">
+    <source>Fecha creación</source>
+    <target>Data de creació</target>
+  </trans-unit>
+  <trans-unit id="modifiedAt" datatype="html">
+    <source>Fecha modificación</source>
+    <target>Data de modificació</target>
+  </trans-unit>
+  <trans-unit id="privateEdition" datatype="html">
+    <source>Edición privada</source>
+    <target>Edició privada</target>
+  </trans-unit>
+  <trans-unit id="actions" datatype="html">
+    <source>Acciones</source>
+    <target>Accions</target>
+  </trans-unit>
+  <trans-unit id="Public" datatype="html">
+    <source>Público</source>
+    <target>Públic</target>
+  </trans-unit>
+  <trans-unit id="Common" datatype="html">
+    <source>Común</source>
+    <target>Comú</target>
+  </trans-unit>
+  <trans-unit id="Group" datatype="html">
+    <source>Grupo</source>
+    <target>Grup</target>
+  </trans-unit>
+  <trans-unit id="Private" datatype="html">
+    <source>Privado</source>
+    <target>Privat</target>
+  </trans-unit>
+  <trans-unit id="NoTag" datatype="html">
+    <source>Sin Etiqueta</source>
+    <target>Sense etiqueta</target>
+  </trans-unit>
+  <trans-unit id="NoGroup" datatype="html">
+    <source>Sin Grupo</source>
+    <target>Sense grup</target>
+  </trans-unit>
+  <trans-unit id="deleteDashboardWarning">
+    <source>Estás a punto de borrar el informe:</source>
+    <target>Esteu a punt d'esborrar l'informe:</target>
+  </trans-unit>
+  <trans-unit id="Sure">
+    <source>¿Estás seguro?</source>
+    <target>N'esteu segur?</target>
+  </trans-unit>
+  <trans-unit id="ConfirmDeleteModel">
+    <source>Si, ¡Eliminalo!</source>
+    <target>Sí, elimina'l!</target>
+  </trans-unit>
+  <trans-unit id="DeleteGroupCancel">
+    <source>Cancelar</source>
+    <target>Cancel·la</target>
+  </trans-unit>
+  <trans-unit id="DashboardDeletedInfo">
+    <source>Informe eliminado correctamente.</source>
+    <target>L'informe s'ha eliminat correctament.</target>
+  </trans-unit>
+  <trans-unit id="ErrorMessage">
+    <source>Ha ocurrido un error</source>
+    <target>S'ha produït un error.</target>
+  </trans-unit>
+  <trans-unit id="REPORTCloned">
+    <source>Informe clonado correctamente</source>
+    <target>L'informe s'ha clonat correctament.</target>
+  </trans-unit>
+  <trans-unit id="InvalidServerResponse">
+    <source>Respuesta inválida del servidor</source>
+    <target>El servidor ha emès una resposta invàlida.</target>
+  </trans-unit>
+  <trans-unit id="Error">
+    <source>Error</source>
+    <target>Error</target>
+  </trans-unit>
+  <trans-unit id="CouldNotCloneReport">
+    <source>No se pudo clonar el informe. Por favor, inténtalo de nuevo.</source>
+    <target>No s'ha pogut clonar l'informe. Torneu a provar-ho.</target>
+  </trans-unit>
+  <trans-unit id="URLCopied">
+    <source>URL copiada al portapapeles</source>
+    <target>S'ha copiat la URL al porta-retalls.</target>
+  </trans-unit>
+  <trans-unit id="ErrorCopyingURL">
+    <source>Error al copiar la URL</source>
+    <target>S'ha produït un error en copiar la URL.</target>
+  </trans-unit>
+  <trans-unit id="DashboardTitleUpdated">
+    <source>Título del informe actualizado correctamente.</source>
+    <target>El títol de l'informe s'ha actualitzat correctament.</target>
+  </trans-unit>
+  <trans-unit id="ErrorUpdatingDashboardTitle">
+    <source>Error al actualizar el título del informe.</source>
+    <target>S'ha produït un error en actualitzar el títol de l'informe.</target>
+  </trans-unit>
+  <trans-unit id="DashboardTypeUpdated">
+    <source>Tipo de informe actualizado correctamente.</source>
+    <target>El tipus d'informe s'ha actualitzat correctament.</target>
+  </trans-unit>
+  <trans-unit id="ErrorUpdatingDashboardType">
+    <source>Error al actualizar el tipo de informe.</source>
+    <target>S'ha produït un error en actualitzar el tipus d'informe.</target>
+  </trans-unit>
+  <trans-unit id="nameFilter" datatype="html">
+    <source>Filtrar por nombre del informe.</source>
+    <target>Filtra pel nom de l'informe.</target>
+  </trans-unit>
+  <trans-unit id="tableView" datatype="html">
+    <source>Vista de tabla</source>
+    <target>Vista de taula</target>
+  </trans-unit>
+  <trans-unit id="cardView" datatype="html">
+    <source>Vista de fichas</source>
+    <target>Vista de fitxes</target>
+  </trans-unit>
+  <trans-unit id="clickToEditName" datatype="html">
+    <source>Pulse para editar el nombre</source>
+    <target>Feu clic per editar el nom.</target>
+  </trans-unit>
+  <trans-unit id="goToDashboard" datatype="html">
+    <source>Abrir informe</source>
+    <target>Obre l'informe</target>
+  </trans-unit>
+  <trans-unit id="cloneReport" datatype="html">
+    <source>Clonar informe</source>
+    <target>Clona l'informe</target>
+  </trans-unit>
+  <trans-unit id="copyURL" datatype="html">
+    <source>Copiar url pública</source>
+    <target>Copia la URL pública</target>
+  </trans-unit>
+  <trans-unit id="showReport" datatype="html">
+    <source>Mostrar informe</source>
+    <target>Mostra l'informe</target>
+  </trans-unit>
+  <trans-unit id="deleteReport" datatype="html">
+    <source>Eliminar informe</source>
+    <target>Elimina l'informe</target>
+  </trans-unit>
+  <trans-unit id="dataSourceName" datatype="html">
+    <source>Fuente de datos</source>
+    <target>Font de dades</target>
+  </trans-unit>
+  <trans-unit id="removeFilter" datatype="html">
+    <source>Quitar filtro</source>
+    <target>Treu el filtre</target>
+  </trans-unit>
+  <trans-unit id="tagSearch" datatype="html">
+    <source>Buscar etiqueta</source>
+    <target>Cerca una etiqueta</target>
+  </trans-unit>
+  <trans-unit id="groupSearch" datatype="html">
+    <source>Buscar grupo</source>
+    <target>Cerca un grup</target>
+  </trans-unit>
+  <trans-unit id="typeSearch" datatype="html">
+    <source>Buscar tipo</source>
+    <target>Cerca un tipus</target>
+  </trans-unit>
+  <trans-unit id="modoEDAAlert" datatype="html">
+    <source>Este panel utiliza el modo EDA, que está obsoleto y dejará de funcionar futuras versiones de SinergiaDA. Por esa misma razón no se pueden hacer cambios sobre este informe. Para garantizar su funcionamiento se recomienda rehacerlo usando el <b>Modo Árbol</b>.</source>
+    <target>Aquest panell utilitza el mode <b>EDA</b>, que està obsolet i deixarà de funcionar futures versions de SinergiaDA. Per aquesta mateixa raó no es poden fer canvis sobre aquest informe. Per garantir el seu funcionament es recomana refer-lo fent servir el <b>Mode Arbre</b>.</target>
+  </trans-unit>
+  <trans-unit id="clearAllFilters" datatype="html">
+    <source>Eliminar todos los filtros</source>
+    <target>Elimina tots els filtres</target>
+  </trans-unit>
+  <trans-unit id="clearFilters" datatype="html">
+    <source>Eliminar filtros</source>
+    <target>Elimina filtres</target>
+  </trans-unit>
+  <trans-unit id="status" datatype="html">
+    <source>Estado</source>
+    <target>Estat</target>
+  </trans-unit>
+  <trans-unit id="active" datatype="html">
+    <source>Activos</source>
+    <target>Actius</target>
+  </trans-unit>
+  <trans-unit id="inactive" datatype="html">
+    <source>Inactivos</source>
+    <target>Inactius</target>
+  </trans-unit>
+  <trans-unit id="activeLabel" datatype="html">
+    <source>Activo</source>
+    <target>Actiu</target>
+  </trans-unit>
+  <trans-unit id="inactiveLabel" datatype="html">
+    <source>Inactivo</source>
+    <target>Inactiu</target>
+  </trans-unit>
+  <trans-unit id="activateReport" datatype="html">
+    <source>Activar informe</source>
+    <target>Activa l'informe</target>
+  </trans-unit>
+  <trans-unit id="deactivateReport" datatype="html">
+    <source>Desactivar informe</source>
+    <target>Desactiva l'informe</target>
+  </trans-unit>
+  <trans-unit id="DashboardActivated" datatype="html">
+    <source>Informe activado correctamente.</source>
+    <target>L'informe s'ha activat correctament.</target>
+  </trans-unit>
+  <trans-unit id="DashboardDeactivated" datatype="html">
+    <source>Informe desactivado correctamente.</source>
+    <target>L'informe s'ha desactivat correctament.</target>
+  </trans-unit>
+  <trans-unit id="ErrorUpdatingDashboardStatus" datatype="html">
+    <source>Error al actualizar el estado del informe.</source>
+    <target>S'ha produït un error a l'actualitzar l'estat de l'informe.</target>
+  </trans-unit>
+  <trans-unit id="deactivatePublicDashboardWarning" datatype="html">
+    <source>Si desactiva este informe público, la URL pública dejará de estar disponible y el informe ya no podrá visualizarse.</source>
+    <target>Si desactiveu aquest informe públic, la URL pública deixarà d'estar disponible i l'informe ja no es podrà visualitzar.</target>
+  </trans-unit>
+  <trans-unit id="ConfirmDeactivate" datatype="html">
+    <source>Sí, desactivarlo</source>
+    <target>Sí, desactiva'l</target>
+  </trans-unit>
+  <trans-unit id="Cancel" datatype="html">
+    <source>Cancelar</source>
+    <target>Cancel·la</target>
+  </trans-unit>
+  <trans-unit id="nombreColumnaH4" datatype="html">
+    <source>Etiqueta para el campo</source>
+    <target>Etiqueta per al camp</target>
+  </trans-unit>
+  <trans-unit id="lockPanel">
+    <source>Bloquear panel</source>
+    <target>Bloqueja el panell</target>
+  </trans-unit>
+  <trans-unit id="unlockPanel">
+    <source>Desbloquear panel</source>
+    <target>Desbloqueja el panell</target>
+  </trans-unit>
+  <trans-unit id="colorKpiLabel">
+    <source>Color del KPI</source>
+    <target>Color del KPI</target>
+  </trans-unit>
+  <trans-unit id="colorChartLabel">
+    <source>Color del gráfico</source>
+    <target>Color del gràfic</target>
+  </trans-unit>
+  <trans-unit id="appearanceSection">
+    <source>Apariencia</source>
+    <target>Aparença</target>
+  </trans-unit>
+  <trans-unit id="panelTitleOptions">
+    <source>Opciones de visualización</source>
+    <target>Opcions de visualització</target>
+  </trans-unit>
+  <trans-unit id="resetSectionButton">
+    <source>Restaurar</source>
+    <target>Restableix</target>
+  </trans-unit>
+  <trans-unit id="colorLabelIndicator">
+    <source>Color del indicador</source>
+    <target>Color de l'indicador</target>
+  </trans-unit>
+  <trans-unit id="colorLabelSeries">
+    <source>Color de la serie</source>
+    <target>Color de la sèrie</target>
+  </trans-unit>
+  <trans-unit id="colorLabelLine">
+    <source>Color de línea</source>
+    <target>Color de línia</target>
+  </trans-unit>
+  <trans-unit id="colorLabelArea">
+    <source>Color de área</source>
+    <target>Color d'àrea</target>
+  </trans-unit>
+  <trans-unit id="axisScaleH6">
+    <source>Ejes y escala</source>
+    <target>Eixos i escala</target>
+  </trans-unit>
+  <trans-unit id="labelsValuesH6">
+    <source>Etiquetas y valores</source>
+    <target>Etiquetes i valors</target>
+  </trans-unit>
+  <trans-unit id="widthLabelLine">
+    <source>Grosor de línea</source>
+    <target>Gruix de línia</target>
+  </trans-unit>
+  <trans-unit id="lineStyleLabel">
+    <source>Tipo de línea</source>
+    <target>Tipus de línia</target>
+  </trans-unit>
+  <trans-unit id="lineStyleSolid">
+    <source>Sólida</source>
+    <target>Sòlida</target>
+  </trans-unit>
+  <trans-unit id="lineStyleDashed">
+    <source>Discontinua</source>
+    <target>Discontínua</target>
+  </trans-unit>
+  <trans-unit id="lineStyleDotted">
+    <source>Punteada</source>
+    <target>De punts</target>
+  </trans-unit>
+  <trans-unit id="xAxisShowLabel">
+    <source>Mostrar eje X</source>
+    <target>Mostra l'eix X</target>
+  </trans-unit>
+  <trans-unit id="xAxisLabelsLabel">
+    <source>Mostrar etiquetas del eje X</source>
+    <target>Mostra les etiquetes de l'eix X</target>
+  </trans-unit>
+  <trans-unit id="xAxisAllLabelsLabel">
+    <source>Mostrar todas las etiquetas</source>
+    <target>Mostra totes les etiquetes</target>
+  </trans-unit>
+  <trans-unit id="xAxisLabelCountLabel">
+    <source>Máximo de etiquetas</source>
+    <target>Màxim d'etiquetes</target>
+  </trans-unit>
+  <trans-unit id="showChartLabels">
+    <source>Mostrar etiquetas del gráfico</source>
+    <target>Mostra les etiquetes del gràfic</target>
+  </trans-unit>
+  <trans-unit id="showValueLabelsLabel">
+    <source>Mostrar valores en el gráfico</source>
+    <target>Mostra els valors al gràfic</target>
+  </trans-unit>
+  <trans-unit id="showChartLabelsPercent">
+    <source>Mostrar Etiquetas en Porcentajes</source>
+    <target>Mostra les etiquetes en percentatge</target>
+  </trans-unit>
+  <trans-unit id="showValuePercentLabel">
+    <source>Mostrar valores en porcentaje</source>
+    <target>Mostra els valors en percentatge</target>
+  </trans-unit>
+  <trans-unit id="valueLabelsTooltip">
+    <source>Mostrar u ocultar los valores en el gráfico</source>
+    <target>Mostra o oculta els valors al gràfic</target>
+  </trans-unit>
+  <trans-unit id="valueLabelsPercentTooltip">
+    <source>Mostrar u ocultar los valores en porcentaje en el gráfico</source>
+    <target>Mostra o oculta els valors en percentatge al gràfic</target>
+  </trans-unit>
+  <trans-unit id="colorChartBorderLabel">
+    <source>Color del borde</source>
+    <target>Color de la vora</target>
+  </trans-unit>
+  <trans-unit id="colorChartFillLabel">
+    <source>Color de relleno</source>
+    <target>Color d'emplenat</target>
+  </trans-unit>
+  <trans-unit id="labelColorLabel">
+    <source>Color del texto de etiquetas</source>
+    <target>Color del text de les etiquetes</target>
+  </trans-unit>
+  <trans-unit id="labelBackgroundColorLabel">
+    <source>Fondo de etiquetas</source>
+    <target>Fons de les etiquetes</target>
+  </trans-unit>
+  <trans-unit id="LogsViewer" datatype="html">
+    <source>Visor de logs</source>
+    <target>Visor de registres</target>
+  </trans-unit>
+  <trans-unit id="FilterByPeriod" datatype="html">
+    <source>Periodo:</source>
+    <target>Període:</target>
+  </trans-unit>
+  <trans-unit id="FilterByDate" datatype="html">
+    <source>Fecha:</source>
+    <target>Data:</target>
+  </trans-unit>
+  <trans-unit id="SelectPeriodPlaceholder" datatype="html">
+    <source>Selecciona periodo</source>
+    <target>Selecciona període</target>
+  </trans-unit>
+  <trans-unit id="Today" datatype="html">
+    <source>Hoy</source>
+    <target>Avui</target>
+  </trans-unit>
+  <trans-unit id="Yesterday" datatype="html">
+    <source>Ayer</source>
+    <target>Ahir</target>
+  </trans-unit>
+  <trans-unit id="Last5Days" datatype="html">
+    <source>Últimos 5 días</source>
+    <target>Últims 5 dies</target>
+  </trans-unit>
+  <trans-unit id="Last10Days" datatype="html">
+    <source>Últimos 10 días</source>
+    <target>Últims 10 dies</target>
+  </trans-unit>
+  <trans-unit id="Date" datatype="html">
+    <source>Fecha</source>
+    <target>Data</target>
+  </trans-unit>
+  <trans-unit id="Level" datatype="html">
+    <source>Nivel</source>
+    <target>Nivell</target>
+  </trans-unit>
+  <trans-unit id="Action" datatype="html">
+    <source>Acción</source>
+    <target>Acció</target>
+  </trans-unit>
+  <trans-unit id="User" datatype="html">
+    <source>Usuario</source>
+    <target>Usuari</target>
+  </trans-unit>
+  <trans-unit id="IP" datatype="html">
+    <source>IP</source>
+    <target>IP</target>
+  </trans-unit>
+  <trans-unit id="Type" datatype="html">
+    <source>Tipo</source>
+    <target>Tipus</target>
+  </trans-unit>
+  <trans-unit id="Search" datatype="html">
+    <source>Buscar...</source>
+    <target>Cerca...</target>
+  </trans-unit>
+  <trans-unit id="FilterColumn" datatype="html">
+    <source>Filtro...</source>
+    <target>Filtre...</target>
+  </trans-unit>
+  <trans-unit id="ShowingRecordsTemplate" datatype="html">
+    <source>Mostrando {first} a {last} de {totalRecords} registros</source>
+    <target>Mostrant {first} a {last} de {totalRecords} registres</target>
+  </trans-unit>
+  <trans-unit id="NoLogsFound" datatype="html">
+    <source>No se encontraron logs para esta fecha.</source>
+    <target>No s'han trobat registres per a aquesta data.</target>
+  </trans-unit>
+  <trans-unit id="LogsQueryFailureTitle" datatype="html">
+    <source>Detalles del error de consulta</source>
+    <target>Detalls de l'error de consulta</target>
+  </trans-unit>
+  <trans-unit id="LogsReportName" datatype="html">
+    <source>Nombre del informe:</source>
+    <target>Nom de l'informe:</target>
+  </trans-unit>
+  <trans-unit id="LogsReportId" datatype="html">
+    <source>ID del informe:</source>
+    <target>ID de l'informe:</target>
+  </trans-unit>
+  <trans-unit id="LogsPanelName" datatype="html">
+    <source>Nombre del panel:</source>
+    <target>Nom del panell:</target>
+  </trans-unit>
+  <trans-unit id="LogsPanelId" datatype="html">
+    <source>ID del panel:</source>
+    <target>ID del panell:</target>
+  </trans-unit>
+  <trans-unit id="LogsMode" datatype="html">
+    <source>Modo:</source>
+    <target>Mode:</target>
+  </trans-unit>
+  <trans-unit id="LogsError" datatype="html">
+    <source>Error:</source>
+    <target>Error:</target>
+  </trans-unit>
+  <trans-unit id="LogsSql" datatype="html">
+    <source>SQL:</source>
+    <target>SQL:</target>
+  </trans-unit>
+  <trans-unit id="LogsCopySql" datatype="html">
+    <source>Copiar SQL</source>
+    <target>Copia SQL</target>
+  </trans-unit>
+  <trans-unit id="LogsViewDetails" datatype="html">
+    <source>Ver detalles</source>
+    <target>Veure detalls</target>
+  </trans-unit>
+  <trans-unit id="LogsSqlNotAvailable" datatype="html">
+    <source>SQL no disponible</source>
+    <target>SQL no disponible</target>
+  </trans-unit>
+  <trans-unit id="LogsSqlCopied" datatype="html">
+    <source>SQL copiado</source>
+    <target>SQL copiat</target>
+  </trans-unit>
+  <trans-unit id="LogsCopyFailed" datatype="html">
+    <source>Error al copiar</source>
+    <target>Error en copiar</target>
+  </trans-unit>
+  <trans-unit id="HideDashboardAccessed" datatype="html">
+    <source>Mostrar accesos a informes</source>
+    <target>Mostrar accessos als informes</target>
+  </trans-unit>
+  <trans-unit id="LogsActionAccess">
+    <source>Access</source>
+    <target>Accés</target>
+  </trans-unit>
+  <trans-unit id="LogsActionCreation">
+    <source>Creation</source>
+    <target>Creació</target>
+  </trans-unit>
+  <trans-unit id="LogsActionUpdate">
+    <source>Update</source>
+    <target>Actualització</target>
+  </trans-unit>
+  <trans-unit id="LogsActionRename">
+    <source>Rename</source>
+    <target>Canvi de nom</target>
+  </trans-unit>
+  <trans-unit id="LogsActionVisibilityChange">
+    <source>Visibility Change</source>
+    <target>Canvi de visibilitat</target>
+  </trans-unit>
+  <trans-unit id="LogsActionDeletion">
+    <source>Deletion</source>
+    <target>Eliminació</target>
+  </trans-unit>
+  <trans-unit id="LogsActionQueryFailure">
+    <source>Query Failure</source>
+    <target>Error de consulta</target>
+  </trans-unit>
+  <trans-unit id="LogsActionUserCreation">
+    <source>User Creation</source>
+    <target>Creació d'usuari</target>
+  </trans-unit>
+  <trans-unit id="LogsActionUserUpdate">
+    <source>User Update</source>
+    <target>Actualització d'usuari</target>
+  </trans-unit>
+  <trans-unit id="LogsActionUserDeletion">
+    <source>User Deletion</source>
+    <target>Eliminació d'usuari</target>
+  </trans-unit>
+  <trans-unit id="LogsActionUserRolesChange">
+    <source>User Roles Change</source>
+    <target>Canvi de rols d'usuari</target>
+  </trans-unit>
+  <trans-unit id="LogsActionUserPasswordChange">
+    <source>User Password Change</source>
+    <target>Canvi de contrasenya d'usuari</target>
+  </trans-unit>
+  <trans-unit id="LogsActionGroupCreation">
+    <source>Group Creation</source>
+    <target>Creació de grup</target>
+  </trans-unit>
+  <trans-unit id="LogsActionGroupUpdate">
+    <source>Group Update</source>
+    <target>Actualització de grup</target>
+  </trans-unit>
+  <trans-unit id="LogsActionGroupDeletion">
+    <source>Group Deletion</source>
+    <target>Eliminació de grup</target>
+  </trans-unit>
+  <trans-unit id="LogsActionGroupMembershipChange">
+    <source>Group Membership Change</source>
+    <target>Canvi de pertinença de grup</target>
+  </trans-unit>
+  <trans-unit id="LogsActionModelUpdateStart">
+    <source>Model Update Start</source>
+    <target>Inici d'actualització del model</target>
+  </trans-unit>
+  <trans-unit id="LogsActionUsersGroupsSync">
+    <source>Users/Groups Sync</source>
+    <target>Sincronització d'usuaris/grups</target>
+  </trans-unit>
+  <trans-unit id="LogsActionUsersGroupsSyncFailure">
+    <source>Users/Groups Sync Failure</source>
+    <target>Error en sincronització d'usuaris/grups</target>
+  </trans-unit>
+  <trans-unit id="LogsActionRoleMapping">
+    <source>Role Mapping</source>
+    <target>Mapeig de rols</target>
+  </trans-unit>
+  <trans-unit id="LogsActionRoleMappingFailure">
+    <source>Role Mapping Failure</source>
+    <target>Error en mapeig de rols</target>
+  </trans-unit>
+  <trans-unit id="LogsActionDataModelBuild">
+    <source>Data Model Build</source>
+    <target>Construcció del model de dades</target>
+  </trans-unit>
+  <trans-unit id="LogsActionDataModelBuildFailure">
+    <source>Data Model Build Failure</source>
+    <target>Error en construcció del model de dades</target>
+  </trans-unit>
+  <trans-unit id="LogsActionModelUpdateCompleted">
+    <source>Model Update Completed</source>
+    <target>Actualització del model completada</target>
+  </trans-unit>
+  <trans-unit id="LogsActionModelPushFailure">
+    <source>Model Push Failure</source>
+    <target>Error en push del model</target>
+  </trans-unit>
+  <trans-unit id="LogsActionModelUpdateFailure">
+    <source>Model Update Failure</source>
+    <target>Error en actualització del model</target>
+  </trans-unit>
+  <trans-unit id="LogsActionAttempt">
+    <source>Attempt</source>
+    <target>Intent</target>
+  </trans-unit>
+  <trans-unit id="LogsActionLogin">
+    <source>Login</source>
+    <target>Inici de sessió</target>
+  </trans-unit>
+  <trans-unit id="LogsActionNewLogin">
+    <source>Login</source>
+    <target>Inici de sessió</target>
+  </trans-unit>
+  <trans-unit id="LogsActionDashboardAccessed">
+    <source>Dashboard Accessed</source>
+    <target>Informe accedit</target>
+  </trans-unit>
+  <trans-unit id="LogsActionDashboardCreated">
+    <source>Dashboard Created</source>
+    <target>Informe creat</target>
+  </trans-unit>
+  <trans-unit id="LogsActionDashboardUpdated">
+    <source>Dashboard Updated</source>
+    <target>Informe actualitzat</target>
+  </trans-unit>
+  <trans-unit id="LogsActionDashboardRenamed">
+    <source>Dashboard Renamed</source>
+    <target>Informe renombrat</target>
+  </trans-unit>
+  <trans-unit id="LogsActionDashboardVisibilityChanged">
+    <source>Dashboard Visibility Changed</source>
+    <target>Visibilitat de l'informe canviada</target>
+  </trans-unit>
+  <trans-unit id="LogsActionDashboardDeleted">
+    <source>Dashboard Deleted</source>
+    <target>Informe eliminat</target>
+  </trans-unit>
+  <trans-unit id="LogsActionPanelQueryFailed">
+    <source>Panel Query Failed</source>
+    <target>Consulta del panell fallida</target>
+  </trans-unit>
+  <trans-unit id="LogsActionUserCreated">
+    <source>User Created</source>
+    <target>Usuari creat</target>
+  </trans-unit>
+  <trans-unit id="LogsActionUserUpdated">
+    <source>User Updated</source>
+    <target>Usuari actualitzat</target>
+  </trans-unit>
+  <trans-unit id="LogsActionUserDeleted">
+    <source>User Deleted</source>
+    <target>Usuari eliminat</target>
+  </trans-unit>
+  <trans-unit id="LogsActionUserRolesChanged">
+    <source>User Roles Changed</source>
+    <target>Rols d'usuari canviats</target>
+  </trans-unit>
+  <trans-unit id="LogsActionUserPasswordChanged">
+    <source>User Password Changed</source>
+    <target>Contrasenya d'usuari canviada</target>
+  </trans-unit>
+  <trans-unit id="LogsActionGroupCreated">
+    <source>Group Created</source>
+    <target>Grup creat</target>
+  </trans-unit>
+  <trans-unit id="LogsActionGroupUpdated">
+    <source>Group Updated</source>
+    <target>Grup actualitzat</target>
+  </trans-unit>
+  <trans-unit id="LogsActionGroupDeleted">
+    <source>Group Deleted</source>
+    <target>Grup eliminat</target>
+  </trans-unit>
+  <trans-unit id="LogsActionGroupMembershipChanged">
+    <source>Group Membership Changed</source>
+    <target>Pertinença de grup canviada</target>
+  </trans-unit>
+  <trans-unit id="LogsActionUpdateModelStarted">
+    <source>Update Model Started</source>
+    <target>Actualització del model iniciada</target>
+  </trans-unit>
+  <trans-unit id="LogsActionUpdateModelUsersAndGroupsSynced">
+    <source>Update Model Users/Groups Synced</source>
+    <target>Usuaris/Grups sincronitzats</target>
+  </trans-unit>
+  <trans-unit id="LogsActionUpdateModelUsersAndGroupsSyncFailed">
+    <source>Update Model Users/Groups Sync Failed</source>
+    <target>Error en sincronització d'Usuaris/Grups</target>
+  </trans-unit>
+  <trans-unit id="LogsActionUpdateModelRolesMapped">
+    <source>Update Model Roles Mapped</source>
+    <target>Rols mapejats</target>
+  </trans-unit>
+  <trans-unit id="LogsActionUpdateModelRolesMappingFailed">
+    <source>Update Model Roles Mapping Failed</source>
+    <target>Error en mapeig de rols</target>
+  </trans-unit>
+  <trans-unit id="LogsActionUpdateModelDataModelBuilt">
+    <source>Update Model Data Model Built</source>
+    <target>Model de dades construït</target>
+  </trans-unit>
+  <trans-unit id="LogsActionUpdateModelDataModelBuildFailed">
+    <source>Update Model Data Model Build Failed</source>
+    <target>Error en construcció del model de dades</target>
+  </trans-unit>
+  <trans-unit id="LogsActionUpdateModelCompleted">
+    <source>Update Model Completed</source>
+    <target>Actualització del model completada</target>
+  </trans-unit>
+  <trans-unit id="LogsActionUpdateModelPushFailed">
+    <source>Update Model Push Failed</source>
+    <target>Error en push del model</target>
+  </trans-unit>
+  <trans-unit id="LogsActionUpdateModelFailed">
+    <source>Update Model Failed</source>
+    <target>Error en actualització del model</target>
+  </trans-unit>
+  <trans-unit id="downloadJsonTitle">
+    <source>Download JSON</source>
+    <target>Descarregar JSON</target>
+  </trans-unit>
+  <trans-unit id="filterHoverGreen">
+    <source>Verde</source>
+    <target>Verd</target>
+  </trans-unit>
+  <trans-unit id="filterHoverRed">
+    <source>Rojo</source>
+    <target>Vermell</target>
+  </trans-unit>
+  <trans-unit id="filterHoverAffected">
+    <source>Paneles afectados por este filtro</source>
+    <target>Panells afectats per aquest filtre</target>
+  </trans-unit>
+  <trans-unit id="filterHoverNotAffected">
+    <source>Paneles no afectados por este filtro</source>
+    <target>Panells no afectats per aquest filtre</target>
+  </trans-unit>
+  <trans-unit id="opcionTitulo">
+    <source>NUEVO TEXTO</source>
+    <target>NOU PANELL DE TEXT</target>
+  </trans-unit>
+  <trans-unit id="titlePanelOptions">
+    <source>Opciones del panel</source>
+    <target>Opcions del panell</target>
+  </trans-unit>
+  <trans-unit id="titlePanelAppearance">
+    <source>Apariencia</source>
+    <target>Aparença</target>
+  </trans-unit>
+  <trans-unit id="titlePanelShowBg">
+    <source>Mostrar fondo del panel</source>
+    <target>Mostra el fons del panell</target>
+  </trans-unit>
+  <trans-unit id="titlePanelBgColor">
+    <source>Color de fondo</source>
+    <target>Color del fons</target>
+  </trans-unit>
+  <trans-unit id="titlePanelShowBorder">
+    <source>Mostrar borde</source>
+    <target>Mostra la vora</target>
+  </trans-unit>
+  <trans-unit id="titlePanelBorderColor">
+    <source>Color del borde</source>
+    <target>Color de la vora</target>
+  </trans-unit>
+  <trans-unit id="titlePanelVerticalAlign">
+    <source>Alineación vertical</source>
+    <target>Alineació vertical</target>
+  </trans-unit>
+  <trans-unit id="titlePanelAlignTop">
+    <source>Arriba</source>
+    <target>A dalt</target>
+  </trans-unit>
+  <trans-unit id="titlePanelAlignCenter">
+    <source>Centro</source>
+    <target>Al centre</target>
+  </trans-unit>
+  <trans-unit id="titlePanelAlignBottom">
+    <source>Abajo</source>
+    <target>A baix</target>
+  </trans-unit>
+  <trans-unit id="duplicatePanel">
+    <source>Duplicar panel</source>
+    <target>Duplica el panell</target>
+  </trans-unit>
+  <trans-unit id="sqlModeFilterPathText">
+    <source>En modo SQL, si necesita modificar la ruta, debe hacerlo en la consulta</source>
+    <target>En mode SQL, si necessiteu modificar la ruta heu de fer-ho a la consulta.</target>
+  </trans-unit>
+  <trans-unit id="DatePickerCustomDate">
+    <source>Seleccionar fecha</source>
+    <target>Seleccioneu la data</target>
+  </trans-unit>
+  <trans-unit id="dateFormatDialogTextHeader">
+    <source>Filtro</source>
+    <target>Filtre</target>
+  </trans-unit>
+  <trans-unit id="filterOperatorSelectionText">
+    <source>Selección de operador del filtro:</source>
+    <target>Selecció d'operador del filtre:</target>
+  </trans-unit>
+  <trans-unit id="dateSelectionText">
+    <source>Selección de fecha:</source>
+    <target>Selecció de la data:</target>
+  </trans-unit>
+  <trans-unit id="calendarSelectionText">
+    <source>Selección en calendario:</source>
+    <target>Selecció al calendari:</target>
+  </trans-unit>
+  <trans-unit id="filters1">
+    <source>IGUAL A (=)</source>
+    <target>Igual a (=)</target>
+  </trans-unit>
+  <trans-unit id="filters2">
+    <source>NO IGUAL A (!=)</source>
+    <target>No igual a (≠)</target>
+  </trans-unit>
+  <trans-unit id="filters3">
+    <source>MAYOR A (&gt;)</source>
+    <target>Més gran que (&gt;)</target>
+  </trans-unit>
+  <trans-unit id="filters4">
+    <source>MENOR A (&lt;)</source>
+    <target>Més petit que (&lt;)</target>
+  </trans-unit>
+  <trans-unit id="filters5">
+    <source>MAYOR o IGUAL A (&gt;=)</source>
+    <target>Més gran o igual que (≥)</target>
+  </trans-unit>
+  <trans-unit id="filters6">
+    <source>MENOR o IGUAL A (&lt;=)</source>
+    <target>Més petit o igual que (≤)</target>
+  </trans-unit>
+  <trans-unit id="filters7">
+    <source>ENTRE (between)</source>
+    <target>Entre</target>
+  </trans-unit>
+  <trans-unit id="filters8">
+    <source>DENTRO DE (in)</source>
+    <target>Dins de</target>
+  </trans-unit>
+  <trans-unit id="filters9">
+    <source>FUERA DE (not in)</source>
+    <target>Fora de</target>
+  </trans-unit>
+  <trans-unit id="filters10">
+    <source>PARECIDO A (like)</source>
+    <target>Semblant a</target>
+  </trans-unit>
+  <trans-unit id="filters11">
+    <source>NO PARECIDO A (not like)</source>
+    <target>No semblant a</target>
+  </trans-unit>
+  <trans-unit id="filters12">
+    <source>VALORES NO NULOS (not null)</source>
+    <target>Valors no nuls</target>
+  </trans-unit>
+  <trans-unit id="filters13">
+    <source>VALORES NO NULOS NI VACÍOS (not null and != '')</source>
+    <target>Valors no nuls ni buits (not null and ≠ '')</target>
+  </trans-unit>
+  <trans-unit id="filters14">
+    <source>VALORES NULOS O VACÍOS (null or = '')</source>
+    <target>Valors nuls o buits (null or = '')</target>
+  </trans-unit>
+</body>
+  </file>
+</xliff>

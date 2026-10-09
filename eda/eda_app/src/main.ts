@@ -7,7 +7,7 @@ import { registerLocaleData } from '@angular/common';
 
 import localeEs from '@angular/common/locales/es';
 import localeCa from '@angular/common/locales/ca';
-import localePl from '@angular/common/locales/pl';
+import localeGl from '@angular/common/locales/gl';
 import localeEn from '@angular/common/locales/en';
 
 // MSAL
@@ -21,7 +21,7 @@ import { URL_SERVICES } from '../src/app/config/config';
 // Register locales
 registerLocaleData(localeEs);
 registerLocaleData(localeCa);
-registerLocaleData(localePl);
+registerLocaleData(localeGl);
 registerLocaleData(localeEn);
 
 // Detect IE
