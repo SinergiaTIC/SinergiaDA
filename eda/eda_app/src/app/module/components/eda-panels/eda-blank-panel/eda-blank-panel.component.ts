@@ -6,7 +6,6 @@ import { DragDropModule, CdkDrag, CdkDragDrop, moveItemInArray, transferArrayIte
 import { ActivatedRoute } from '@angular/router';
 import { lastValueFrom } from 'rxjs';
 import * as _ from 'lodash';
-import { format as formatSql } from 'sql-formatter';
 import Swal from 'sweetalert2';
 // PrimeNG
 import { ButtonModule } from 'primeng/button';
@@ -2282,14 +2281,19 @@ public tableNodeExpand(event: any): void {
         let whereIndex = serverQuery.lastIndexOf('where 1 = 1');
         const TO_REPLACE_SIZE = 16;
         if (whereIndex >= 0) {
-            serverQuery = serverQuery.substring(0, whereIndex - 1) + 'where ' + serverQuery.substring(whereIndex + TO_REPLACE_SIZE, serverQuery.length);
+            serverQuery = serverQuery.substring(0, whereIndex - 1) + '\nwhere ' + serverQuery.substring(whereIndex + TO_REPLACE_SIZE, serverQuery.length);
+        }
+        let length = serverQuery.length;
+
+        for (let i = 0; i < length; i++) {
+            if (serverQuery[i] === '\n') {
+                serverQuery = serverQuery.slice(0, i) + " " + serverQuery.slice(i);
+                length++;
+                i++;
+            }
         }
         this.display_v.minispinnerSQL = false;
-        try {
-            this.queryFromServer = formatSql(serverQuery, { language: 'mysql' });
-        } catch {
-            this.queryFromServer = serverQuery;
-        }
+        this.queryFromServer = serverQuery;
     }
 
     public migrateQuery() {
