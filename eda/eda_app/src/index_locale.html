@@ -3,16 +3,33 @@
 </head>
 <body>
 <script type="text/javascript">
+        // Filled by scripts/copy-index.js with ENABLED_LANGUAGES (customizable_merged.ts). null = no restriction
+        var enabledLanguages = null;
+
         var userLang = navigator.language || navigator.userLanguage;
-        if(userLang.indexOf('es') >=0){
-                window.location.href = window.location.href.replace('/index.html','')+'/es';
-        }else if(userLang === 'ca-ES'){
-                window.location.href = window.location.href.replace('/index.html','')+'/ca';
+        var targetLang;
+        if(userLang === 'ca-ES' || userLang.indexOf('ca') === 0){
+                targetLang = 'ca';
+        }else if(userLang === 'gl-ES' || userLang.indexOf('gl') === 0){
+                targetLang = 'gl';
+        }else if(userLang === 'eu-ES' || userLang.indexOf('eu') === 0){
+                targetLang = 'eu';
+        }else if(userLang.indexOf('es') >=0){
+                targetLang = 'es';
         }else if(userLang.indexOf('pl') >=0){
-                window.location.href = window.location.href.replace('/index.html','')+'/pl';
+                targetLang = 'pl';
+        }else if(userLang.indexOf('fr') >=0){
+                targetLang = 'fr';
         }else{
-                window.location.href = window.location.href.replace('/index.html','')+'/en';
+                targetLang = 'en';
         }
+
+        // Language not enabled: fall back to 'en', or to the first enabled one if 'en' isn't enabled either
+        if(enabledLanguages && enabledLanguages.length > 0 && enabledLanguages.indexOf(targetLang) < 0){
+                targetLang = enabledLanguages.indexOf('en') >= 0 ? 'en' : enabledLanguages[0];
+        }
+
+        window.location.href = window.location.href.replace('/index.html','')+'/'+targetLang;
 </script>
 </body>
 </html>
