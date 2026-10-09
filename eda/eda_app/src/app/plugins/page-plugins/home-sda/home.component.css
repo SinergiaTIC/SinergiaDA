@@ -84,7 +84,9 @@ span.ml-auto {
   top: 0;
   z-index: 1;
   cursor: pointer;
-  background-color: #242A33;
+  /* Same token as the left sidebar (--left-sidebar-bg = #242A33): single
+     source of truth so both can never drift apart. */
+  background-color: hsl(var(--left-sidebar-bg));
   color: #ffffff;
   font-size: 14px;
   font-weight: 700;
