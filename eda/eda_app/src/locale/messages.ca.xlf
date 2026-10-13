@@ -1,10 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xliff version="1.2"
   xmlns="urn:oasis:names:tc:xliff:document:1.2">
-  <file source-language="ca_ES" datatype="plaintext" original="ng2.template">
+  <file source-language="ca" datatype="plaintext" original="ng2.template">
     <body>
 
+
       <!-- SECTION: AUTENTICACIÓN Y PERFIL DE USUARIO -->
+
       <trans-unit id="placeholderInputUsuario">
         <source>Usuario</source>
         <target>Usuari</target>
@@ -42,16 +44,16 @@
         <target>Crea un usuari</target>
       </trans-unit>
       <trans-unit id="inputNombre">
-        <source> Nombre <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/></source>
-        <target> Nom <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/></target>
+        <source>Nombre *</source>
+        <target>Nom *</target>
       </trans-unit>
       <trans-unit id="inputEmail">
         <source>Correo *</source>
         <target>Correu *</target>
       </trans-unit>
       <trans-unit id="inputPassword">
-        <source> Password <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/></source>
-        <target> Contrasenya <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/></target>
+        <source>Contraseña *</source>
+        <target>Contrasenya *</target>
       </trans-unit>
       <trans-unit id="inputSeguridad">
         <source>Seguridad *</source>
@@ -155,6 +157,7 @@
       </trans-unit>
 
       <!-- SECTION: MENÚS Y NAVEGACIÓN (SIDEBAR) -->
+
       <trans-unit id="sidebarProfile">
         <source>Perfil</source>
         <target>Perfil</target>
@@ -195,8 +198,13 @@
         <source>Gestión de modelos</source>
         <target>Gestió de models</target>
       </trans-unit>
+      <trans-unit id="logsManagement">
+        <source>Gestión de logs</source>
+        <target>Visor de logs</target>
+      </trans-unit>
 
       <!-- SECTION: GESTIÓN DE INFORMES (DASHBOARDS) -->
+
       <trans-unit id="publicDashboardTitle">
         <source>Informe público EDA</source>
         <target>Informe públic EDA</target>
@@ -301,8 +309,66 @@
         <source>GUARDAR COMO</source>
         <target>DESA COM</target>
       </trans-unit>
+      <trans-unit id="dahsboardSaved">
+        <source>Informe guardado correctamente</source>
+        <target>Informe guardat correctament</target>
+      </trans-unit>
+      <trans-unit id="newTag">
+        <source> Nueva etiqueta </source>
+        <target>Nova etiqueta</target>
+      </trans-unit>
+      <trans-unit id="urlEditSave">
+        <source>URL editado correctamente</source>
+        <target>URL editat correctament</target>
+      </trans-unit>
+      <trans-unit id="urlEditSaveError">
+        <source>Formulario incompleto, rellene todos los campos</source>
+        <target>FORMULARI INCORRECTE, COMPLETAR ELS CAMPS</target>
+      </trans-unit>
+      <trans-unit id="addUrlDashboardUndefined">
+        <source>Faltan rellenar algunos campos</source>
+        <target>VALORS NO DEFINITS O FALTA COMPLETAR CAMPS</target>
+      </trans-unit>
+      <trans-unit id="urlAddedSuccessfully">
+        <source>URL agregado correctamente</source>
+        <target>URL AGREGAT CORRECTAMENT</target>
+      </trans-unit>
+      <trans-unit id="urlAddedIncomplete">
+        <source>Formulario incompleto</source>
+        <target>FORMULARI D'AGREGAT URL INCOMPLET</target>
+      </trans-unit>
+      <trans-unit id="urlSuccessfulConnection">
+        <source>Llamada EXITOSA</source>
+        <target>Crida EXITOSA</target>
+      </trans-unit>
+      <trans-unit id="urlConnectionError">
+        <source>ERROR en la llamada</source>
+        <target>ERROR a la crida</target>
+      </trans-unit>
+      <trans-unit id="resumeTextConfiguration">
+        <source> Puedes configurar una acción personalizada que quieras ejecutar. Te permite llamar a una URL que haga una acción que quieras invocar. Puede ser una llamada a una api, a un endpoint de una app
+o incluso invocar procesos de carga desde una llamada http. Una vez configurado podrás invocarlo siempre que que quieras desde el botón. </source>
+        <target>Podeu configurar una acció personalitzada que voleu executar. Et permet trucar a un URL que faci una acció que vulguis invocar. Pot ser una trucada a una api, a un endpoint d'una app o fins i tot invocar processos de càrrega des d'una trucada http. Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
+      </trans-unit>
+      <trans-unit id="urlString">
+        <source>URL: </source>
+        <target>URL:</target>
+      </trans-unit>
+      <trans-unit id="urlName">
+        <source>Nombre: </source>
+        <target>Nom:</target>
+      </trans-unit>
+      <trans-unit id="urlDescription">
+        <source>Descripción: </source>
+        <target>Descripció:</target>
+      </trans-unit>
+      <trans-unit id="textLabelUrl">
+        <source>Agregar url</source>
+        <target>Afegir url</target>
+      </trans-unit>
 
       <!-- SECTION: DISEÑO Y ESTILOS DEL INFORME -->
+
       <trans-unit id="temasColors">
         <source>Temas</source>
         <target>Temes</target>
@@ -395,8 +461,145 @@
         <source>Título del panel</source>
         <target>Títol del panell</target>
       </trans-unit>
+      <trans-unit id="ChangelignTitle">
+        <source> Alineación</source>
+        <target>Alineació</target>
+      </trans-unit>
+      <trans-unit id="PanelOptions">
+        <source>PANEL OPTIONS</source>
+        <target>OPCIONS DEL PANELL</target>
+      </trans-unit>
+      <trans-unit id="titlePanelAppearance">
+        <source>Apariencia</source>
+        <target>Aparença</target>
+      </trans-unit>
+      <trans-unit id="titlePanelShowBg">
+        <source>Mostrar fondo del panel</source>
+        <target>Mostra el fons del panell</target>
+      </trans-unit>
+      <trans-unit id="titlePanelBgColor">
+        <source>Color de fondo</source>
+        <target>Color del fons</target>
+      </trans-unit>
+      <trans-unit id="titlePanelShowBorder">
+        <source>Mostrar borde</source>
+        <target>Mostra la vora</target>
+      </trans-unit>
+      <trans-unit id="titlePanelBorderColor">
+        <source>Color del borde</source>
+        <target>Color de la vora</target>
+      </trans-unit>
+      <trans-unit id="titlePanelVerticalAlign">
+        <source>Alineación vertical</source>
+        <target>Alineació vertical</target>
+      </trans-unit>
+      <trans-unit id="titlePanelAlignTop">
+        <source>Arriba</source>
+        <target>A dalt</target>
+      </trans-unit>
+      <trans-unit id="titlePanelAlignCenter">
+        <source>Centro</source>
+        <target>Al centre</target>
+      </trans-unit>
+      <trans-unit id="titlePanelAlignBottom">
+        <source>Abajo</source>
+        <target>A baix</target>
+      </trans-unit>
+      <trans-unit id="qlTooltipSize">
+        <source>Tamaño de letra</source>
+        <target>Mida de lletra</target>
+      </trans-unit>
+      <trans-unit id="qlTooltipBold">
+        <source>Negrita</source>
+        <target>Negreta</target>
+      </trans-unit>
+      <trans-unit id="qlTooltipItalic">
+        <source>Cursiva</source>
+        <target>Cursiva</target>
+      </trans-unit>
+      <trans-unit id="qlTooltipUnderline">
+        <source>Subrayado</source>
+        <target>Subratllat</target>
+      </trans-unit>
+      <trans-unit id="qlTooltipStrike">
+        <source>Tachado</source>
+        <target>Ratllat</target>
+      </trans-unit>
+      <trans-unit id="qlTooltipTextColor">
+        <source>Color del texto</source>
+        <target>Color del text</target>
+      </trans-unit>
+      <trans-unit id="qlTooltipTextBgColor">
+        <source>Color de resaltado del texto</source>
+        <target>Color de ressaltat del text</target>
+      </trans-unit>
+      <trans-unit id="qlTooltipSub">
+        <source>Subíndice</source>
+        <target>Subíndex</target>
+      </trans-unit>
+      <trans-unit id="qlTooltipSuper">
+        <source>Superíndice</source>
+        <target>Superíndex</target>
+      </trans-unit>
+      <trans-unit id="qlTooltipH1">
+        <source>Título 1</source>
+        <target>Títol 1</target>
+      </trans-unit>
+      <trans-unit id="qlTooltipH2">
+        <source>Título 2</source>
+        <target>Títol 2</target>
+      </trans-unit>
+      <trans-unit id="functionalities">
+        <source>Extender el modelo</source>
+        <target>Estén el model</target>
+      </trans-unit>
+      <trans-unit id="utilities">
+        <source>Utilidades</source>
+        <target>Utilitats</target>
+      </trans-unit>
+      <trans-unit id="hideTables">
+        <source>Ocultar todas las tablas</source>
+        <target>Oculta totes les taules</target>
+      </trans-unit>
+      <trans-unit id="hideColumns">
+        <source>Ocultar todas las columnas</source>
+        <target>Oculta totes les columnes</target>
+      </trans-unit>
+      <trans-unit id="hideAllRelations">
+        <source>Ocultar todas las relaciones</source>
+        <target>Oculta totes les relacions</target>
+      </trans-unit>
+      <trans-unit id="addFile">
+        <source>Subir archivo</source>
+        <target>Puja un arxiu</target>
+      </trans-unit>
+      <trans-unit id="import">
+        <source>Importar</source>
+        <target>Importa</target>
+      </trans-unit>
+      <trans-unit id="NotSavedWarning">
+        <source>Hay cambios sin guardar. ¿Seguro que quieres salir?</source>
+        <target>Hi ha canvis sense desar, segur que voleu sortir?</target>
+      </trans-unit>
+      <trans-unit id="csvSep">
+        <source>Separador Decimal</source>
+        <target>Separador de decimals</target>
+      </trans-unit>
+      <trans-unit id="viewOk">
+        <source>Vista generada correctamente</source>
+        <target>Vista generada correctament</target>
+      </trans-unit>
+      <trans-unit id="groupsPermissions">
+        <source>Permisos de grupo</source>
+        <target>Permisos de grup</target>
+      </trans-unit>
+      <trans-unit id="qlLabelClearColor">
+        <source>Quitar</source>
+        <target>Treu</target>
+      </trans-unit>
 
       <!-- SECTION: OPERACIONES DEL PANEL (DASHBOARD PANELS) -->
+
       <trans-unit id="opcionPanel">
         <source>NUEVO PANEL</source>
         <target>NOU PANELL</target>
@@ -497,8 +700,97 @@
         <source>Este panel no está disponible por falta de permisos en un filtro</source>
         <target>Aquest panell no està disponible per manca de permisos en un filtre, l'informe s'obrirà en mode de només lectura.</target>
       </trans-unit>
+      <trans-unit id="seeRepetitions">
+        <source> ver/ocultar valores repetidos</source>
+        <target>Veure valors repetits</target>
+      </trans-unit>
+      <trans-unit id="seeNegativeNumbers">
+        <source> Números negativos</source>
+        <target>Números negatius</target>
+      </trans-unit>
+      <trans-unit id="addCrossSorting">
+        <source>Ordenación</source>
+        <target>Ordenació</target>
+      </trans-unit>
+      <trans-unit id="sortByValue">
+        <source>Por valor descendente</source>
+        <target>Per valor descendent</target>
+      </trans-unit>
+      <trans-unit id="sortByValueAsc">
+        <source>Por valor ascendente</source>
+        <target>Per valor ascendent</target>
+      </trans-unit>
+      <trans-unit id="sortAlphabetical">
+        <source>Alfabética</source>
+        <target>Alfabètica</target>
+      </trans-unit>
+      <trans-unit id="withNegativeNumbers">
+        <source> Con números negativos</source>
+        <target>Amb números negatius</target>
+      </trans-unit>
+      <trans-unit id="withoutNegativeNumbers">
+        <source> Sin números negativos</source>
+        <target>Sense números negatius</target>
+      </trans-unit>
+      <trans-unit id="tableColors">
+        <source>Colores de tabla</source>
+        <target>Colors de la taula</target>
+      </trans-unit>
+      <trans-unit id="tableColorsEnabled">
+        <source>Colores activos</source>
+        <target>Colors actius</target>
+      </trans-unit>
+      <trans-unit id="tableHeaderColor">
+        <source>Color cabecera</source>
+        <target>Color de la capçalera</target>
+      </trans-unit>
+      <trans-unit id="tableBandingColor">
+        <source>Color filas alternas</source>
+        <target>Color de files alternes</target>
+      </trans-unit>
+      <trans-unit id="measureLabel">
+        <source>Medida:</source>
+        <target>Mesura:</target>
+      </trans-unit>
+      <trans-unit id="operationLabel">
+        <source>Operación:</source>
+        <target>Operació</target>
+      </trans-unit>
+      <trans-unit id="numericalValueLabel">
+        <source>Valor numérico:</source>
+        <target>Valor numèric</target>
+      </trans-unit>
+      <trans-unit id="newNameLabel">
+        <source>Nuevo nombre:</source>
+        <target>Nou nom</target>
+      </trans-unit>
+      <trans-unit id="selectMeasure">
+        <source>Seleccionar mesura</source>
+        <target>Selecciona una mesura</target>
+      </trans-unit>
+      <trans-unit id="selectOperation">
+        <source>Seleccionar operació</source>
+        <target>Selecciona una operació</target>
+      </trans-unit>
+      <trans-unit id="generateAliasTooltip">
+        <source> Generar alias automático </source>
+        <target>Genera un àlies automàtic</target>
+      </trans-unit>
+      <trans-unit id="filterByTreetable">
+        <source>Filtro: </source>
+        <target>Filtre:</target>
+      </trans-unit>
+      <trans-unit id="treeTableTitleDialog">
+        <source>Propiedades de la tabla árbol</source>
+        <target>Propietats de la taula arbre</target>
+      </trans-unit>
+      <trans-unit id="tooltipUniqueRecords">
+        <source>Aplica GROUP BY a todos los campos para eliminar duplicados</source>
+        <target>Aplica GROUP BY a tots els camps per eliminar duplicats</target>
+      </trans-unit>
 
       <!-- SECTION: TIPOS DE GRÁFICOS Y DOCUMENTACIÓN -->
+
       <trans-unit id="chartTypes1">
         <source>Tabla de Datos</source>
         <target>Taula de dades</target>
@@ -743,8 +1035,93 @@
         <source>Una tabla árbol se puede configurar de dos formas. Mediante campos que se van anidando por medio de agrupaciones o mediante la definición de dos columnas numéricas que definan una relación padre-hijo. Si las dos primeras columnas son numéricas, se asumirá que describen una relación padre hijo.</source>
         <target>Una taula arbre es pot configurar de dues maneres: mitjançant camps que es van aniuant per mitjà d'agrupacions o mitjançant la definició de dues columnes numèriques que defineixin una relació pare-fill. Si les dues primeres columnes són numèriques, cal assumir que descriuen una relació pare-fill.</target>
       </trans-unit>
+      <trans-unit id="chartTypes19">
+        <source>Gráfico de Barras Apiladas al 100%</source>
+        <target>Gràfic de Barres Apilades al 100%</target>
+      </trans-unit>
+      <trans-unit id="chartTypes12">
+        <source>ParallelSets</source>
+        <target>Conjunts paral·lels</target>
+      </trans-unit>
+      <trans-unit id="chartTypes13">
+        <source>TreeMap</source>
+        <target>Mapa d'arbre</target>
+      </trans-unit>
+      <trans-unit id="chartTypes14">
+        <source>ScatterPlot</source>
+        <target>Diagrama de dispersió</target>
+      </trans-unit>
+      <trans-unit id="chartTypes16">
+        <source>Funnel</source>
+        <target>Embut</target>
+      </trans-unit>
+      <trans-unit id="chartTypesBubblechart">
+        <source>Bubblechart</source>
+        <target>Gràfic de bombolles</target>
+      </trans-unit>
+      <trans-unit id="chartTypesRadar">
+        <source>Radar</source>
+        <target>Radar</target>
+      </trans-unit>
+      <trans-unit id="chartInfo6">
+        <source>Un gráfico de barras necesita una o más categorías y una série numérica. Además, si hay mas de una série los datos numéricos deben agregarse.</source>
+        <target>Un gràfic de barres necessita una o més categories i una sèrie numèrica. A més, si hi ha més d'una sèrie les dades numèriques han d'agregar-se.</target>
+      </trans-unit>
+      <trans-unit id="chartInfoKpiTrend">
+        <source>KPI Tendencia necesita una columna de fecha en formato mes y una columna numérica</source>
+        <target>KPI Tendència necessita una columna de data en format mes i una columna numèrica</target>
+      </trans-unit>
+      <trans-unit id="chartInfoKpiDeviation">
+        <source>KPI Desviación necesita dos columnas numéricas: valor actual y valor de referencia</source>
+        <target>KPI Desviació necessita dues columnes numèriques: valor actual i valor de referència</target>
+      </trans-unit>
+      <trans-unit id="showUniqueColors">
+        <source>Activar Colores Únicos</source>
+        <target>Activa Colors Únics</target>
+      </trans-unit>
+      <trans-unit id="histoGramRangesTxt">
+        <source>Rango</source>
+        <target>Rang</target>
+      </trans-unit>
+      <trans-unit id="chartTypesKPIBAR">
+        <source>KPI + Gráfico de Barras</source>
+        <target>KPI + Gràfic de barres</target>
+      </trans-unit>
+      <trans-unit id="chartTypesKPILINE">
+        <source>KPI + Gráfico de Lineas</source>
+        <target>KPI + Gràfic de línies</target>
+      </trans-unit>
+      <trans-unit id="chartTypesKPIAREA">
+        <source>KPI + Gráfico de Áreas</source>
+        <target>KPI + Gràfic d'àrees</target>
+      </trans-unit>
+      <trans-unit id="chartTypesKPITrend">
+        <source>KPI Tendencia</source>
+        <target>KPI Tendència</target>
+      </trans-unit>
+      <trans-unit id="chartTypesKPIDeviation">
+        <source>KPI Desviación</source>
+        <target>KPI Desviació</target>
+      </trans-unit>
+      <trans-unit id="chartTypesTableAnalized">
+        <source>Tabla DataQuality</source>
+        <target>Taula DataQuality</target>
+      </trans-unit>
+      <trans-unit id="chartUniqueColorsOption">
+        <source>Asigna un color único a cada barra o elemento</source>
+        <target>Assigna un color únic a cada barra o element</target>
+      </trans-unit>
+      <trans-unit id="addComparative">
+        <source> Comparativa </source>
+        <target>Comparativa</target>
+      </trans-unit>
+      <trans-unit id="noUniqueLabels">
+        <source>No hay valores únicos disponibles.</source>
+        <target>No hi ha valors únics disponibles.</target>
+      </trans-unit>
 
       <!-- SECTION: CONSTRUCCIÓN DE CONSULTAS (QUERY BUILDER) -->
+
       <trans-unit id="entidadesH4">
         <source>Entidades</source>
         <target>Entitats</target>
@@ -874,8 +1251,8 @@
         <target>La meva consulta SQL</target>
       </trans-unit>
       <trans-unit id="openSqlMode">
-        <source><x id="START_ITALIC_TEXT" ctype="x-i" equiv-text="&lt;i class=&quot;fa fa-database mr-1.5 text-sm&quot;&gt;"/><x id="CLOSE_ITALIC_TEXT" ctype="x-i" equiv-text="&lt;/i&gt;"/> Abrir en modo SQL </source>
-        <target><x id="START_ITALIC_TEXT" ctype="x-i" equiv-text="&lt;i class=&quot;fa fa-database mr-1.5 text-sm&quot;&gt;"/><x id="CLOSE_ITALIC_TEXT" ctype="x-i" equiv-text="&lt;/i&gt;"/> Obre en mode SQL </target>
+        <source>Abrir en modo SQL</source>
+        <target>Obre en mode SQL</target>
       </trans-unit>
       <trans-unit id="sqlTooltip">
         <source>Al cambiar de modo perderás la configuración de la consulta actual</source>
@@ -913,8 +1290,85 @@
         <source>Modo Árbol</source>
         <target>Mode Arbre</target>
       </trans-unit>
+      <trans-unit id="atributoLabel">
+        <source>Atributo</source>
+        <target>Atribut</target>
+      </trans-unit>
+      <trans-unit id="atributoConsulta">
+        <source>Consulta</source>
+        <target>Consulta</target>
+      </trans-unit>
+      <trans-unit id="count_tablesLabel">
+        <source>Tablas implicadas</source>
+        <target>Taules implicades</target>
+      </trans-unit>
+      <trans-unit id="count_rowsLabel">
+        <source>TTotal de registros</source>
+        <target>Total de registres</target>
+      </trans-unit>
+      <trans-unit id="count_nullsLabel">
+        <source>Total nulos</source>
+        <target>Total nulls</target>
+      </trans-unit>
+      <trans-unit id="count_emptyLabel">
+        <source>Total cadenas vacías</source>
+        <target>Total cadenes buides</target>
+      </trans-unit>
+      <trans-unit id="count_distinctLabel">
+        <source>Total valores distintos</source>
+        <target>Total valors distints</target>
+      </trans-unit>
+      <trans-unit id="most_duplicatedLabel">
+        <source>Más repetido</source>
+        <target>Mes repetit</target>
+      </trans-unit>
+      <trans-unit id="least_duplicatedLabel">
+        <source>Menos duplicado</source>
+        <target>Menys repetit</target>
+      </trans-unit>
+      <trans-unit id="maxLabel">
+        <source>Valor máximo</source>
+        <target>Valor màxim</target>
+      </trans-unit>
+      <trans-unit id="minLabel">
+        <source>Valor mínimo</source>
+        <target>Valor mínim</target>
+      </trans-unit>
+      <trans-unit id="moda_countsLabel">
+        <source>Moda</source>
+        <target>Moda</target>
+      </trans-unit>
+      <trans-unit id="medianLabel">
+        <source>Mediana</source>
+        <target>Mediana</target>
+      </trans-unit>
+      <trans-unit id="median_count_bymonthLabel">
+        <source>Mediana por mes</source>
+        <target>Mediana per mes</target>
+      </trans-unit>
+      <trans-unit id="max_bymonthLabel">
+        <source>Máximos por mes</source>
+        <target>Màxims per mes</target>
+      </trans-unit>
+      <trans-unit id="min_bymonthLabel">
+        <source>Mínimos por mes</source>
+        <target>Mínims per mes</target>
+      </trans-unit>
+      <trans-unit id="EmptyValueMessage">
+        <source>Sin Informar</source>
+        <target>Sense Informar</target>
+      </trans-unit>
+      <trans-unit id="tooltipJoinType">
+        <source>Define cómo se unen las tablas: LEFT, INNER o RIGHT JOIN</source>
+        <target>Defineix com s'uneixen les taules: LEFT, INNER o RIGHT JOIN</target>
+      </trans-unit>
+      <trans-unit id="tooltipScenarios">
+        <source>Crea atributos derivados aplicando operaciones matemáticas</source>
+        <target>Crea atributs derivats aplicant operacions matemàtiques</target>
+      </trans-unit>
 
       <!-- SECTION: MODELADO DE DATOS (DATA MODEL) -->
+
       <trans-unit id="tituloCard">
         <source>Modelo de datos</source>
         <target>Model de dades</target>
@@ -924,8 +1378,8 @@
         <target>Nom tècnic</target>
       </trans-unit>
       <trans-unit id="inputDescripcion">
-        <source> Descripción <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/></source>
-        <target> Descripció <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/></target>
+        <source>Descripción *</source>
+        <target>Descripció *</target>
       </trans-unit>
       <trans-unit id="inputEsconderTabla">
         <source>Esconder tabla</source>
@@ -940,8 +1394,8 @@
         <target>Afegeix una relació</target>
       </trans-unit>
       <trans-unit id="inputTipoColumna">
-        <source> Tipo de columna <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/></source>
-        <target> Tipus de columna <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/></target>
+        <source>Tipo de columna *</source>
+        <target>Tipus de columna *</target>
       </trans-unit>
       <trans-unit id="rolesPermisos">
         <source>Roles y permisos de fila</source>
@@ -1299,8 +1753,13 @@
         <source>Esta es una columna calculada y no tiene formatos disponibles</source>
         <target>Aquesta és una columna calculada i no té formats disponibles.</target>
       </trans-unit>
+      <trans-unit id="buscarTabla">
+        <source>Buscar...</source>
+        <target>Cerca...</target>
+      </trans-unit>
 
       <!-- SECTION: CONEXIÓN Y FUENTES DE DATOS (DATASOURCES) -->
+
       <trans-unit id="inputTipo">
         <source>TIPO *</source>
         <target>TIPUS *</target>
@@ -1377,8 +1836,81 @@
         <source>Creada correctamente</source>
         <target>Creada correctament</target>
       </trans-unit>
+      <trans-unit id="updateModelXLCSV">
+        <source>Actualizar el fichero origen para buscar nuevas tablas y columnas</source>
+        <target>Actualitzar el fitxer origen per cercar noves taules i columnes</target>
+      </trans-unit>
+      <trans-unit id="confirmationExcel">
+        <source>Confirmación</source>
+        <target>Confirmació</target>
+      </trans-unit>
+      <trans-unit id="confirmationExcelMessage">
+        <source>¿Estás seguro de que quieres sobreescribir este modelo de datos?</source>
+        <target>¿Segur que vols sobreescriure aquest model de dades?</target>
+      </trans-unit>
+      <trans-unit id="emptyTag">
+        <source>Este tag esta vacío</source>
+        <target>Aquest tag és buit</target>
+      </trans-unit>
+      <trans-unit id="existentTag">
+        <source>Este tag ya existe</source>
+        <target>Aquest tag ja existeix</target>
+      </trans-unit>
+      <trans-unit id="newTagPlaceholder">
+        <source>Agregar nuevo tag</source>
+        <target>Afegir nou Tag</target>
+      </trans-unit>
+      <trans-unit id="addTagDataSource">
+        <source> Añadir Tag</source>
+        <target>Afegir Tag</target>
+      </trans-unit>
+      <trans-unit id="DatadourceTitle">
+        <source>Fuente de datos: </source>
+        <target>Font de dades:</target>
+      </trans-unit>
+      <trans-unit id="groupsPersmissions">
+        <source>Permisos de grupo</source>
+        <target>Permisos de grup</target>
+      </trans-unit>
+      <trans-unit id="agregacionh5">
+        <source>Agregación *</source>
+        <target>Agregació</target>
+      </trans-unit>
+      <trans-unit id="allowSSL">
+        <source>Conexión mediante SSL</source>
+        <target>Conexió mitjançant SSL</target>
+      </trans-unit>
+      <trans-unit id="IncorrectFile">
+        <source>Archivo incorrecto, verifique que el formato del archivo sea json o geojson.</source>
+        <target>Fitxer incorrecte, verifiqueu que el format del fitxer sigui json o geojson.</target>
+      </trans-unit>
+      <trans-unit id="viewEdition">
+        <source>Edición de la vista</source>
+        <target>Edició de la vista</target>
+      </trans-unit>
+      <trans-unit id="CollectionText">
+        <source>Colección creada correctamente</source>
+        <target>Col·lecció creada correctament</target>
+      </trans-unit>
+      <trans-unit id="ErrorExcel">
+        <source>Cargue un archivo .xls o .xlsx</source>
+        <target>Carregueu un fitxer .xls o .xlsx</target>
+      </trans-unit>
+      <trans-unit id="DynamicTags">
+        <source>Dinámico</source>
+        <target>Dinàmic</target>
+      </trans-unit>
+      <trans-unit id="inputConsultaDinamica">
+        <source>Consulta dinámica</source>
+        <target>Consulta dinàmica</target>
+      </trans-unit>
+      <trans-unit id="addValueList">
+        <source>Añadir lista de valores posibles</source>
+        <target>Afegir llista de valors possibles</target>
+      </trans-unit>
 
       <!-- SECTION: FILTROS, AGREGACIONES Y RANGOS -->
+
       <trans-unit id="agregacionesH4">
         <source>Agregaciones</source>
         <target>Agregacions</target>
@@ -1607,8 +2139,53 @@
         <source>En modo SQL, si necesita modificar la ruta, debe hacerlo en la consulta</source>
         <target>En mode SQL, si necessiteu modificar la ruta, heu de fer-ho a la consulta.</target>
       </trans-unit>
+      <trans-unit id="draggFilters">
+        <source>Arrastre aquí los atributos sobre los que quiera filtrar</source>
+        <target>Arrossega aquí els atributs sobre els que vols filtrar</target>
+      </trans-unit>
+      <trans-unit id="canIfilter">
+        <source> Visiblidad del filtro</source>
+        <target>Visibilitat del filtre</target>
+      </trans-unit>
+      <trans-unit id="public">
+        <source>público</source>
+        <target>públic</target>
+      </trans-unit>
+      <trans-unit id="readOnly">
+        <source>deshabilitado</source>
+        <target>deshabilitat</target>
+      </trans-unit>
+      <trans-unit id="hidden">
+        <source>oculto</source>
+        <target>ocult</target>
+      </trans-unit>
+      <trans-unit id="tooltipAdvancedFilters">
+        <source>Combina los filtros del panel con operadores AND u OR</source>
+        <target>Combina els filtres del panell amb operadors AND o OR</target>
+      </trans-unit>
+      <trans-unit id="tooltipDynamicFilters">
+        <source>Permitir que el click en cualquier panel filtre este panel</source>
+        <target>Permet que el clic a qualsevol panell filtri aquest panell</target>
+      </trans-unit>
+      <trans-unit id="filterHoverGreen">
+        <source>Verde</source>
+        <target>Verd</target>
+      </trans-unit>
+      <trans-unit id="filterHoverRed">
+        <source>Rojo</source>
+        <target>Vermell</target>
+      </trans-unit>
+      <trans-unit id="filterHoverAffected">
+        <source>Paneles afectados por este filtro</source>
+        <target>Panells afectats per aquest filtre</target>
+      </trans-unit>
+      <trans-unit id="filterHoverNotAffected">
+        <source>Paneles no afectados por este filtro</source>
+        <target>Panells no afectats per aquest filtre</target>
+      </trans-unit>
 
       <!-- SECTION: SELECTOR DE FECHAS (DATEPICKER) -->
+
       <trans-unit id="dates1">
         <source>AÑO</source>
         <target>ANY</target>
@@ -1817,8 +2394,13 @@
         <source>Selecciona un rango</source>
         <target>Seleccioneu un rang</target>
       </trans-unit>
+      <trans-unit id="DatePickerNull">
+        <source>Fecha nula</source>
+        <target>Data nula</target>
+      </trans-unit>
 
       <!-- SECTION: MAPAS Y GEOJSON -->
+
       <trans-unit id="inputMapTables">
         <source>Propiedades del mapa</source>
         <target>Propietats del mapa</target>
@@ -1851,8 +2433,21 @@
         <source>Mapas</source>
         <target>Mapes</target>
       </trans-unit>
+      <trans-unit id="availableMaps">
+        <source>Mapas disponibles</source>
+        <target>Mapes disponibles</target>
+      </trans-unit>
+      <trans-unit id="legendPosition">
+        <source> Posición de la leyenda </source>
+        <target>Posició de la llegenda</target>
+      </trans-unit>
+      <trans-unit id="mapClusteredPoints">
+        <source>puntos agrupados</source>
+        <target>punts agrupats</target>
+      </trans-unit>
 
       <!-- SECTION: ALERTAS Y NOTIFICACIONES (EMAIL/KPI) -->
+
       <trans-unit id="kpiAlertH6">
         <source>Generar alerta</source>
         <target>Genera una alerta</target>
@@ -1874,8 +2469,8 @@
         <target>Alertes</target>
       </trans-unit>
       <trans-unit id="addAlert">
-        <source><x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span&gt;"/>Añadir alerta<x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/></source>
-        <target><x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span&gt;"/>Afegeix una alerta<x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/></target>
+        <source>Añadir alerta</source>
+        <target>Afegeix una alerta</target>
       </trans-unit>
       <trans-unit id="alertsInfo">
         <source>Cuando el valor del kpi sea (=, &lt;,&gt;) que el valor definido cambiará el color del texto</source>
@@ -1945,8 +2540,33 @@
         <source>Configurar alertas</source>
         <target>Configura les alertes</target>
       </trans-unit>
+      <trans-unit id="lineStyleSolid">
+        <source>Sólida</source>
+        <target>Contínua</target>
+      </trans-unit>
+      <trans-unit id="lineStyleDashed">
+        <source>Discontinua</source>
+        <target>Discontínua</target>
+      </trans-unit>
+      <trans-unit id="lineStyleDotted">
+        <source>Punteada</source>
+        <target>Puntejada</target>
+      </trans-unit>
+      <trans-unit id="thresholdValuePercent">
+        <source>Valor umbral (%)</source>
+        <target>Valor llindar (%)</target>
+      </trans-unit>
+      <trans-unit id="deviationPercTrigAlert">
+        <source>% de desviación que activará la alerta (ej: -10 = cuando la desviación sea inferior al -10%)</source>
+        <target>% de desviació que activarà l'alerta (ex: -10 = quan la desviació sigui inferior al -10%)</target>
+      </trans-unit>
+      <trans-unit id="whenKpiDeviationIs">
+        <source>Cuando el % es</source>
+        <target>Quan el % és</target>
+      </trans-unit>
 
       <!-- SECTION: MENSAJES DEL SISTEMA Y BOTONES GENÉRICOS -->
+
       <trans-unit id="conditionsP1">
         <source>Esta aplicación es una demo.</source>
         <target>Aquesta aplicació és una demo.</target>
@@ -2415,90 +3035,3296 @@
         <source>Error al guardar el informe. Error en el panel:</source>
         <target>S'ha produït un error al desar l'informe. L'error és al panell</target>
       </trans-unit>
+      <trans-unit id="guardarBtn">
+        <source>Confirmar</source>
+        <target>Confirmar</target>
+      </trans-unit>
+      <trans-unit id="cancelarBtn">
+        <source>Cancelar</source>
+        <target>Cancel·lar</target>
+      </trans-unit>
+      <trans-unit id="whereDoWeBegin">
+        <source>¿ Por dónde empezamos ?</source>
+        <target>Per on comencem?</target>
+      </trans-unit>
+
+      <!-- SECTION: FUNCIONALIDADES PENDIENTES DE EXTRACCIÓN (no están en messages.xlf, requiere ng extract-i18n) -->
+
+      <trans-unit id="placeholderRelationName">
+        <source>Nombre relación</source>
+        <target>Nom relació</target>
+      </trans-unit>
+      <trans-unit id="panelOptionsChangeChartType">
+        <source>Cambiar tipo de gráfico</source>
+        <target>Canviar tipus de gràfic</target>
+      </trans-unit>
+      <trans-unit id="panelOptionsLock">
+        <source>Bloquear panel</source>
+        <target>Bloquejar panell</target>
+      </trans-unit>
+      <trans-unit id="panelOptionsUnlock">
+        <source>Desbloquear panel</source>
+        <target>Desbloquejar panell</target>
+      </trans-unit>
+      <trans-unit id="publicPanel">
+        <source>Publico</source>
+        <target>Públic</target>
+      </trans-unit>
+      <trans-unit id="modifyRelationTo">
+        <source>Modificar relación de la tabla</source>
+        <target>Modificar relació de la taula</target>
+      </trans-unit>
+      <trans-unit id="UpdatedUserError">
+        <source>Error al actualizar el usuario </source>
+        <target>Error al actualitzar l'usuari</target>
+      </trans-unit>
+      <trans-unit id="DatePickerLast365">
+        <source> Últimos 365 días </source>
+        <target>Últims 365 dies</target>
+      </trans-unit>
+      <trans-unit id="kpiSize">
+        <source>Modificar el tamaño del KPI</source>
+        <target>Modificar la mida del KPI</target>
+      </trans-unit>
+      <trans-unit id="increaseKpiSize">
+        <source>Incrementar el tamaño del KPI</source>
+        <target>Incrementar la mida del KPI</target>
+      </trans-unit>
+      <trans-unit id="AllTagsFlat">
+        <source>Todo</source>
+        <target>Tot</target>
+      </trans-unit>
+      <trans-unit id="AllTagsGrouped">
+        <source>Todo agrupado</source>
+        <target>Tot agrupat</target>
+      </trans-unit>
+      <trans-unit id="tooltipApplyToAll">
+        <source>Si está activado, el filtro se aplica a todos los paneles del informe.</source>
+        <target>Si està activat, el filtre s'aplica a tots els panells de l'informe.</target>
+      </trans-unit>
+      <trans-unit id="tooltipAutocomplete">
+        <source>Si está activado, los valores se buscan dinámicamente mediante autocompletado.</source>
+        <target>Si està activat, els valors es busquen dinàmicament mitjançant autocompletat.</target>
+      </trans-unit>
+      <trans-unit id="tooltipMandatory">
+        <source>Si está activado, el filtro debe tener un valor seleccionado para poder visualizar el informe.</source>
+        <target>Si està activat, el filtre ha de tenir un valor seleccionat per poder visualitzar l'informe.</target>
+      </trans-unit>
+      <trans-unit id="tooltipVisibility">
+        <source>Público: todos pueden usarlo. Deshabilitado: otros usuarios pueden ver el filtro pero no modificarlo. Oculto: no visible para otros pero se aplica igualmente.</source>
+        <target>Públic: tothom pot usar-lo. Deshabilitat: altres usuaris poden veure el filtre però no modificar-lo. Ocult: no visible per a altres però s'aplica igualment.</target>
+      </trans-unit>
+      <trans-unit id="seeHideRepetitions">
+        <source>Ver/ocultar valores repetidos</source>
+        <target>Veure/amagar valors repetits</target>
+      </trans-unit>
+      <trans-unit id="hideRepetitions">
+        <source>Ocultar valores repetidos</source>
+        <target>Amagar valors repetits</target>
+      </trans-unit>
+      <trans-unit id="sendMailHeader">
+        <source>Configuración de los envíos por email</source>
+        <target>Configuració dels enviaments per email</target>
+      </trans-unit>
+      <trans-unit id="saveAsHeader">
+        <source>Guardar como...</source>
+        <target>Guardar com...</target>
+      </trans-unit>
+      <trans-unit id="chartInfo18">
+        <source>El sunburst necesita al menos una categoria y un campo numérico </source>
+        <target>El sunburst necesita almenys una categoria y un campo numèric</target>
+      </trans-unit>
+      <trans-unit id="trendTitleYear">
+        <source>Año actual</source>
+        <target>Any actual</target>
+      </trans-unit>
+      <trans-unit id="trendTitleMonth">
+        <source>Mes actual</source>
+        <target>Mes actual</target>
+      </trans-unit>
+      <trans-unit id="trendTitleWeek">
+        <source>Semana actual</source>
+        <target>Setmana actual</target>
+      </trans-unit>
+      <trans-unit id="trendTitleDay">
+        <source>Hoy</source>
+        <target>Avui</target>
+      </trans-unit>
+      <trans-unit id="trendTitlePeriod">
+        <source>Período actual</source>
+        <target>Període actual</target>
+      </trans-unit>
+      <trans-unit id="trendCompYear">
+        <source>Año anterior</source>
+        <target>Any anterior</target>
+      </trans-unit>
+      <trans-unit id="trendCompMonth">
+        <source>Mes anterior</source>
+        <target>Mes anterior</target>
+      </trans-unit>
+      <trans-unit id="trendCompWeek">
+        <source>Semana anterior</source>
+        <target>Setmana anterior</target>
+      </trans-unit>
+      <trans-unit id="trendCompDay">
+        <source>Día anterior</source>
+        <target>Dia anterior</target>
+      </trans-unit>
+      <trans-unit id="trendCompPeriod">
+        <source>Período anterior</source>
+        <target>Període anterior</target>
+      </trans-unit>
+      <trans-unit id="alertMailDeleted">
+        <source>Alerta de correo eliminada</source>
+        <target>Alerta de correu eliminada</target>
+      </trans-unit>
+      <trans-unit id="dashboardMailDeleted">
+        <source>Configuración de envío eliminada</source>
+        <target>Configuració d'enviament eliminada</target>
+      </trans-unit>
+      <trans-unit id="mailSentNow">
+        <source>Envío iniciado correctamente</source>
+        <target>Enviament iniciat correctament</target>
+      </trans-unit>
+      <trans-unit id="sendingNow">
+        <source>Enviando...</source>
+        <target>Enviant...</target>
+      </trans-unit>
+      <trans-unit id="sendScheduledMails">
+        <source>Enviar todos los correos programados</source>
+        <target>Enviar tots els correus programats</target>
+      </trans-unit>
+      <trans-unit id="adminEmail">
+        <source>Gestión de correo</source>
+        <target>Gestió de correu</target>
+      </trans-unit>
+      <trans-unit id="adminEmailSubtitle">
+        <source>Configure los ajustes y credenciales de su servidor de correo electrónico</source>
+        <target>Configureu els ajustos i credencials del vostre servidor de correu electrònic</target>
+      </trans-unit>
+      <trans-unit id="alertsConfigSubtitle">
+        <source>Administra tus configuraciones de alertas</source>
+        <target>Administra les teves configuracions d'alertes</target>
+      </trans-unit>
+      <trans-unit id="dashbaordsMailingSubtitle">
+        <source>Administrar las configuraciones de correo electrónico del panel</source>
+        <target>Administrar les configuracions de correu electrònic del panell</target>
+      </trans-unit>
+      <trans-unit id="enableCache">
+        <source>Habilitar caché </source>
+        <target>Habilitar caché</target>
+      </trans-unit>
+      <trans-unit id="editCalculatedField">
+        <source>Edición de campo calculado</source>
+        <target>Edició de camp calculat</target>
+      </trans-unit>
+      <trans-unit id="DeleteGroupCancel">
+        <source>Cancelar</source>
+        <target>Cancel·lar</target>
+      </trans-unit>
+      <trans-unit id="setNewAlert">
+        <source>Configurar nueva alerta</source>
+        <target>Configurar nova alerta</target>
+      </trans-unit>
+      <trans-unit id="onlyIcanEditTagEnable">
+        <source>Edición privada habilitada</source>
+        <target>Edició privada habilitada</target>
+      </trans-unit>
+      <trans-unit id="onlyIcanEditTagDisable">
+        <source>Edición privada deshabilitada</source>
+        <target>Edició privada deshabilitada</target>
+      </trans-unit>
+      <trans-unit id="ChangeDefaultsColors">
+        <source>Color del los gráficos</source>
+        <target>Color dels gràfics</target>
+      </trans-unit>
+      <trans-unit id="properties">
+        <source>Propiedades</source>
+        <target>Propietats</target>
+      </trans-unit>
+      <trans-unit id="deleteFilters">
+        <source>Eliminar filtros</source>
+        <target>Eliminar filtres</target>
+      </trans-unit>
+      <trans-unit id="samplePanelDBName">
+        <source>Título del informe</source>
+        <target>Títol de l'informe</target>
+      </trans-unit>
+      <trans-unit id="urlAction">
+        <source>Acciones: </source>
+        <target>Accions:</target>
+      </trans-unit>
+      <trans-unit id="dialogHeaderCustomActions">
+        <source>ACCIONES PERSONALIZADAS </source>
+        <target>ACCIONS PERSONALITZADES</target>
+      </trans-unit>
+      <trans-unit id="chartTypesTreeTable">
+        <source>Tabla Árbol</source>
+        <target>Taula Arbre</target>
+      </trans-unit>
+      <trans-unit id="filtersLabel1">
+        <source>=</source>
+        <target>=</target>
+      </trans-unit>
+      <trans-unit id="filtersLabel2">
+        <source>≠</source>
+        <target>≠</target>
+      </trans-unit>
+      <trans-unit id="filtersLabel3">
+        <source>&gt;</source>
+        <target>&gt;</target>
+      </trans-unit>
+      <trans-unit id="filtersLabel4">
+        <source>&lt;</source>
+        <target>&lt;</target>
+      </trans-unit>
+      <trans-unit id="filtersLabel5">
+        <source>≥</source>
+        <target>≥</target>
+      </trans-unit>
+      <trans-unit id="filtersLabel6">
+        <source>≤</source>
+        <target>≤</target>
+      </trans-unit>
+      <trans-unit id="filtersLabel7">
+        <source>Entre</source>
+        <target>Entre</target>
+      </trans-unit>
+      <trans-unit id="filtersLabel8">
+        <source>Dentro de</source>
+        <target>Dins de</target>
+      </trans-unit>
+      <trans-unit id="filtersLabel9">
+        <source>Fuera de</source>
+        <target>Fora de</target>
+      </trans-unit>
+      <trans-unit id="filtersLabel10">
+        <source>Parecido a</source>
+        <target>Semblant a</target>
+      </trans-unit>
+      <trans-unit id="filtersLabel11">
+        <source>No parecido a</source>
+        <target>No semblant a</target>
+      </trans-unit>
+      <trans-unit id="filtersLabel12">
+        <source>No nulos</source>
+        <target>No nuls</target>
+      </trans-unit>
+      <trans-unit id="filtersLabel13">
+        <source>No nulos ni vacíos</source>
+        <target>No nuls ni buits</target>
+      </trans-unit>
+      <trans-unit id="filtersLabel14">
+        <source>Nulos o vacíos</source>
+        <target>Nuls o buits</target>
+      </trans-unit>
+      <trans-unit id="SureDataQuality">
+        <source>¿Estás seguro de que deseas continuar con la visualización de DataQuality? Esta acción puede tomar un poco de tiempo.</source>
+        <target>Segur que vols continuar amb la visualització de DataQuality? Aquesta acció pot trigar una mica de temps.</target>
+      </trans-unit>
+      <trans-unit id="ContinueTablaQuality">
+        <source>Continuar</source>
+        <target>Continuar</target>
+      </trans-unit>
+      <trans-unit id="filteredReportMessage">
+        <source>Por favor, espera un momento mientras procesamos la selección.</source>
+        <target>Si us plau, espereu un moment mentre processem la vostra selecció.</target>
+      </trans-unit>
+      <trans-unit id="GroupCreated">
+        <source>Grupo creado</source>
+        <target>Grup creat</target>
+      </trans-unit>
+      <trans-unit id="GroupUpdated">
+        <source>Grupo actualizado</source>
+        <target>Grup actualitzat</target>
+      </trans-unit>
+      <trans-unit id="GroupDeletedOk">
+        <source>El grupo a sido eliminado correctamente</source>
+        <target>El grup ha sigut eliminat correctament</target>
+      </trans-unit>
+      <trans-unit id="UpdatedGroupError">
+        <source>El grupo no se ha podido actualizar</source>
+        <target>El grup no s'ha pogut actualitzar</target>
+      </trans-unit>
+      <trans-unit id="loginTitle">
+        <source>Inicio de sesión</source>
+        <target>Inici de sessió</target>
+      </trans-unit>
+      <trans-unit id="permissionType">
+        <source>Tipo de Permisos</source>
+        <target>Tipus de Permisos</target>
+      </trans-unit>
+      <trans-unit id="permissionTypeDescription">
+        <source>Selecciona cómo quieres gestionar los permisos</source>
+        <target>Selecciona com vols gestionar els permisos</target>
+      </trans-unit>
+      <trans-unit id="permissionTypeUser">
+        <source>Permisos por Usuario</source>
+        <target>Permisos per Usuari</target>
+      </trans-unit>
+      <trans-unit id="permissionTypeGroup">
+        <source>Permisos por Grupo</source>
+        <target>Permisos per Grup</target>
+      </trans-unit>
+      <trans-unit id="permissionTypeUserDescription">
+        <source>Asignar permisos individualmente a usuarios específicos</source>
+        <target>Assignar permisos individualment a usuaris específics</target>
+      </trans-unit>
+      <trans-unit id="permissionTypeGroupDescription">
+        <source>Asignar permisos a grupos de usuarios</source>
+        <target>Assignar permisos a grups d'usuaris</target>
+      </trans-unit>
+      <trans-unit id="selectUsers">
+        <source>Seleccionar Usuarios</source>
+        <target>Seleccionar Usuaris</target>
+      </trans-unit>
+      <trans-unit id="selectGroups">
+        <source>Seleccionar Grupos</source>
+        <target>Seleccionar Grups</target>
+      </trans-unit>
+      <trans-unit id="DataModelDB">
+        <source>Configurar nuevo orígen de datos</source>
+        <target>Configurar nova font de dades</target>
+      </trans-unit>
+      <trans-unit id="newDataSourceDescription">
+        <source>Conéctese a su base de datos para comenzar a consultar y visualizar sus datos</source>
+        <target>Connecteu-vos a la vostra base de dades per començar a consultar i visualitzar les vostres dades</target>
+      </trans-unit>
+      <trans-unit id="name">
+        <source>Nombre</source>
+        <target>Nom</target>
+      </trans-unit>
+      <trans-unit id="nameRequired">
+        <source>El nombre es obligatorio</source>
+        <target>El nom és obligatori</target>
+      </trans-unit>
+      <trans-unit id="separatorRequired">
+        <source>El separador es obligatorio</source>
+        <target>El separador és obligatori</target>
+      </trans-unit>
+      <trans-unit id="type">
+        <source>Tipo</source>
+        <target>Tipus</target>
+      </trans-unit>
+      <trans-unit id="updateFileTitle">
+        <source>Actualizar fichero de datos</source>
+        <target>Actualitza el fitxer de dades</target>
+      </trans-unit>
+      <trans-unit id="updateFileDescription">
+        <source> Sube un nuevo fichero para reemplazar los datos de esta fuente </source>
+        <target>Puja un nou fitxer per substituir les dades d'aquesta font</target>
+      </trans-unit>
+      <trans-unit id="goBack">
+        <source>Volver</source>
+        <target>Torna</target>
+      </trans-unit>
+      <trans-unit id="excelFile">
+        <source>Archivo Excel</source>
+        <target>Fitxer Excel</target>
+      </trans-unit>
+      <trans-unit id="cancel">
+        <source> Cancelar </source>
+        <target>Cancel·la</target>
+      </trans-unit>
+      <trans-unit id="account">
+        <source>Cuenta</source>
+        <target>Compte</target>
+      </trans-unit>
+      <trans-unit id="serverRequired">
+        <source>Url del servidor es obligatorio</source>
+        <target>L’URL del servidor és obligatòria</target>
+      </trans-unit>
+      <trans-unit id="accountRequired">
+        <source>El nombre de cuenta es obligatorio</source>
+        <target>El nom del compte és obligatori</target>
+      </trans-unit>
+      <trans-unit id="port">
+        <source>Puerto</source>
+        <target>Port</target>
+      </trans-unit>
+      <trans-unit id="portRequired">
+        <source>El puerto es obligatorio</source>
+        <target>El port és obligatori</target>
+      </trans-unit>
+      <trans-unit id="databaseRequired">
+        <source>Base de datos es obligatorio</source>
+        <target>La base de dades és obligatòria</target>
+      </trans-unit>
+      <trans-unit id="schema">
+        <source>Esquema</source>
+        <target>Esquema</target>
+      </trans-unit>
+      <trans-unit id="usernameRequired">
+        <source>El usuario es obligatorio</source>
+        <target>L’usuari és obligatori</target>
+      </trans-unit>
+      <trans-unit id="password">
+        <source>Contraseña</source>
+        <target>Contrasenya</target>
+      </trans-unit>
+      <trans-unit id="passwordRequired">
+        <source>La contraseña es obligatorio</source>
+        <target>La contrasenya és obligatòria</target>
+      </trans-unit>
+      <trans-unit id="bigqueryKeyDragDrop">
+        <source>Sube un archivo de claves</source>
+        <target>Pugeu un fitxer de claus</target>
+      </trans-unit>
+      <trans-unit id="filters">
+        <source>Filtros</source>
+        <target>Filtres</target>
+      </trans-unit>
+      <trans-unit id="optionalFilterDescription">
+        <source>Optional filters to limit the scope of your connection</source>
+        <target>Filtres opcionals per limitar l’abast de la vostra connexió</target>
+      </trans-unit>
+      <trans-unit id="connectionOptions">
+        <source>Opciones de conexión</source>
+        <target>Opcions de connexió</target>
+      </trans-unit>
+      <trans-unit id="optimizedQueries">
+        <source>Optimizar consultas</source>
+        <target>Optimitzar consultes</target>
+      </trans-unit>
+      <trans-unit id="optimizedQueriesTooltipDescription">
+        <source>Optimice automáticamente las consultas para un mejor rendimiento</source>
+        <target>Optimitza automàticament les consultes per millorar el rendiment</target>
+      </trans-unit>
+      <trans-unit id="optimizedQueriesDescription">
+        <source>Mejore el rendimiento de las consultas con la optimización automática</source>
+        <target>Milloreu el rendiment de les consultes amb l’optimització automàtica</target>
+      </trans-unit>
+      <trans-unit id="allowCacheTooltipDescription">
+        <source>Almacenar en caché los resultados de las consultas para mejorar el rendimiento de los datos a los que se accede con frecuencia</source>
+        <target>Emmagatzema en memòria cau els resultats de les consultes per millorar el rendiment de les dades accedides amb freqüència</target>
+      </trans-unit>
+      <trans-unit id="allowCacheDescription">
+        <source>Almacenar en caché los resultados de las consultas para una recuperación de datos más rápida</source>
+        <target>Emmagatzema en memòria cau els resultats de les consultes per a una recuperació de dades més ràpida</target>
+      </trans-unit>
+      <trans-unit id="sslConnection">
+        <source>Conexión SSL</source>
+        <target>Connexió SSL</target>
+      </trans-unit>
+      <trans-unit id="sslConnectionTooltipDescription">
+        <source>Utilice SSL para cifrar la conexión a su base de datos para una mayor seguridad</source>
+        <target>Utilitzeu SSL per xifrar la connexió a la base de dades i augmentar-ne la seguretat</target>
+      </trans-unit>
+      <trans-unit id="sslConnectionDescription">
+        <source>Proteja su conexión con encriptación SSL</source>
+        <target>Protegiu la vostra connexió amb encriptació SSL</target>
+      </trans-unit>
+      <trans-unit id="testConnection">
+        <source>Probar conexión</source>
+        <target>Provar connexió</target>
+      </trans-unit>
+      <trans-unit id="basicInformation">
+        <source>Información básica</source>
+        <target>Informació bàsica</target>
+      </trans-unit>
+      <trans-unit id="advancedSettings">
+        <source>Configuración avanzada</source>
+        <target>Configuració avançada</target>
+      </trans-unit>
+      <trans-unit id="noCacheDescription">
+        <source>Desactiva el sistema de caché para obtener datos en tiempo real</source>
+        <target>Desactiva el sistema de memòria cau per obtenir dades en temps real</target>
+      </trans-unit>
+      <trans-unit id="atTime">
+        <source>A las:</source>
+        <target>A les:</target>
+      </trans-unit>
+      <trans-unit id="mapDescription">
+        <source>Configurar las propiedades básicas de la visualización de su mapa</source>
+        <target>Configura les propietats bàsiques de la visualització del teu mapa</target>
+      </trans-unit>
+      <trans-unit id="selectField">
+        <source>Selecciona un campo</source>
+        <target>Selecciona un camp</target>
+      </trans-unit>
+      <trans-unit id="linkMapColumnsDescription">
+        <source>Conecte sus columnas de datos a la visualización geográfica</source>
+        <target>Connecta les teves columnes de dades amb la visualització geogràfica</target>
+      </trans-unit>
+      <trans-unit id="selectTable">
+        <source>Selecciona una tabla</source>
+        <target>Selecciona una taula</target>
+      </trans-unit>
+      <trans-unit id="selectColumn">
+        <source>Selecciona una columna</source>
+        <target>Selecciona una columna</target>
+      </trans-unit>
+      <trans-unit id="linkColumn">
+        <source>Vincular columna</source>
+        <target>Vincular columna</target>
+      </trans-unit>
+      <trans-unit id="mapsAvailableDescription">
+        <source>Mapas que están actualmente configurados y disponibles para su uso</source>
+        <target>Mapes que actualment estan configurats i disponibles per al seu ús</target>
+      </trans-unit>
+      <trans-unit id="noMapsAvailable">
+        <source>No hay mapas disponibles</source>
+        <target>No hi ha mapes disponibles</target>
+      </trans-unit>
+      <trans-unit id="noMapsAvailableDescription">
+        <source>Configurar un mapa en la pestaña Propiedades del mapa</source>
+        <target>Configura un mapa a la pestanya Propietats del mapa</target>
+      </trans-unit>
+      <trans-unit id="filterReports">
+        <source>FILTRAR INFORMES:</source>
+        <target>FILTRAR INFORMES:</target>
+      </trans-unit>
+      <trans-unit id="sortReports">
+        <source>ORDENAR INFORMES:</source>
+        <target>ORDENAR INFORMES:</target>
+      </trans-unit>
+      <trans-unit id="createdAt">
+        <source>Fecha (asc.)</source>
+        <target>Data (asc.)</target>
+      </trans-unit>
+      <trans-unit id="createdAtDesc">
+        <source>Fecha (desc.)</source>
+        <target>Data (desc.)</target>
+      </trans-unit>
+      <trans-unit id="withoutContentYet">
+        <source>Sin contenido</source>
+        <target>Sense contingut</target>
+      </trans-unit>
+      <trans-unit id="searchGroups">
+        <source>Buscar grupos...</source>
+        <target>Cercar grups...</target>
+      </trans-unit>
+      <trans-unit id="newGroup">
+        <source>Crear Nuevo Grupo</source>
+        <target>Crear Nou Grup</target>
+      </trans-unit>
+      <trans-unit id="editGroup">
+        <source>Editar Grupo</source>
+        <target>Edita el Grup</target>
+      </trans-unit>
+      <trans-unit id="adminGroupsTitle">
+        <source>Gestión de Grupos</source>
+        <target>Gestió de Grups</target>
+      </trans-unit>
+      <trans-unit id="addGroup">
+        <source>Crear Grupo</source>
+        <target>Crear Grup</target>
+      </trans-unit>
+      <trans-unit id="foundGroups">
+        <source>grupos encontrados</source>
+        <target>grups trobats</target>
+      </trans-unit>
+      <trans-unit id="role">
+        <source>Rol</source>
+        <target>Rol</target>
+      </trans-unit>
+      <trans-unit id="newUser">
+        <source>Crear Nuevo Usuario</source>
+        <target>Crear Nou Usuari</target>
+      </trans-unit>
+      <trans-unit id="editUser">
+        <source>Editar Usuario</source>
+        <target>Edita Usuari</target>
+      </trans-unit>
+      <trans-unit id="adminUsers">
+        <source>Gestión de Usuarios</source>
+        <target>Gestió d'usuaris</target>
+      </trans-unit>
+      <trans-unit id="addUser">
+        <source>Crear Usuario</source>
+        <target>Crear Usuari</target>
+      </trans-unit>
+      <trans-unit id="searchUsers">
+        <source>Buscar usuarios...</source>
+        <target>Cercar usuaris...</target>
+      </trans-unit>
+      <trans-unit id="foundUsers">
+        <source>usuarios encontrados</source>
+        <target>usuaris trobats</target>
+      </trans-unit>
+      <trans-unit id="group">
+        <source>Grupo</source>
+        <target>Grup</target>
+      </trans-unit>
+      <trans-unit id="adminDatasource">
+        <source>Gestión de fuentes de datos</source>
+        <target>Gestió de fonts de dades</target>
+      </trans-unit>
+      <trans-unit id="addDatasource">
+        <source>Crear fuente de datos</source>
+        <target>Crear font de dades</target>
+      </trans-unit>
+      <trans-unit id="foundDatasource">
+        <source>fuentes de datos encontradas</source>
+        <target>font de dades trobades</target>
+      </trans-unit>
+      <trans-unit id="profileSubtitle">
+        <source>Administra tu información personal y preferencias de cuenta</source>
+        <target>Administra la teva informació personal i preferències del compte</target>
+      </trans-unit>
+      <trans-unit id="profileInfoTitle">
+        <source>Información Personal</source>
+        <target>Informació personal</target>
+      </trans-unit>
+      <trans-unit id="profileInfoSubtitle">
+        <source>Actualiza tu información básica de perfil</source>
+        <target>Actualitza la teva informació bàsica del perfil</target>
+      </trans-unit>
+      <trans-unit id="usernameLengthValidation">
+        <source>El nombre de usuario debe tener al menos 2 caracteres.</source>
+        <target>El nom d'usuari ha de tenir almenys 2 caràcters.</target>
+      </trans-unit>
+      <trans-unit id="emailValidation">
+        <source>Por favor ingresa un email válido.</source>
+        <target>Si us plau, introdueix un correu electrònic vàlid.</target>
+      </trans-unit>
+      <trans-unit id="changePassword">
+        <source>Cambiar contraseña</source>
+        <target>Canviar contrasenya</target>
+      </trans-unit>
+      <trans-unit id="newPassword">
+        <source>Nueva contraseña</source>
+        <target>Nova contrasenya</target>
+      </trans-unit>
+      <trans-unit id="confirmNewPassword">
+        <source>Confirmar nueva contraseña</source>
+        <target>Confirmar nova contrasenya</target>
+      </trans-unit>
+      <trans-unit id="passwordValidation">
+        <source>Las contraseñas no coinciden</source>
+        <target>Les contrasenyes no coincideixen</target>
+      </trans-unit>
+      <trans-unit id="saveChanges">
+        <source>Guardar cambios</source>
+        <target>Desar canvis</target>
+      </trans-unit>
+      <trans-unit id="profileImage">
+        <source>Foto de perfil</source>
+        <target>Foto de perfil</target>
+      </trans-unit>
+      <trans-unit id="profileImageSubtitle">
+        <source>Actualiza tu foto de perfil</source>
+        <target>Actualitza la teva foto de perfil</target>
+      </trans-unit>
+      <trans-unit id="uploadImage">
+        <source>Subir imagen</source>
+        <target>Pujar imatge</target>
+      </trans-unit>
+      <trans-unit id="selectedImage">
+        <source>Imagen seleccionada</source>
+        <target>Imatge seleccionada</target>
+      </trans-unit>
+      <trans-unit id="noImageSelected">
+        <source>No hay imagen seleccionada</source>
+        <target>Cap imatge seleccionada</target>
+      </trans-unit>
+      <trans-unit id="chartDisplayOptionsTitle">
+        <source>Opciones de visualización</source>
+        <target>Opcions de visualització</target>
+      </trans-unit>
+      <trans-unit id="knobSemaphoreLabel">
+        <source>Color semafórico</source>
+        <target>Color semafòric</target>
+      </trans-unit>
+      <trans-unit id="knobSemaphoreDesc">
+        <source>Rojo → amarillo → verde según el valor</source>
+        <target>Vermell → groc → verd segons el valor</target>
+      </trans-unit>
+      <trans-unit id="chartTrendOption">
+        <source>Mostrar línea de tendencia en el gráfico</source>
+        <target>Mostra la línia de tendència al gràfic</target>
+      </trans-unit>
+      <trans-unit id="chartComparationOption">
+        <source>Habilita la comparación con períodos anteriores</source>
+        <target>Habilita la comparació amb períodes anteriors</target>
+      </trans-unit>
+      <trans-unit id="showLegend">
+        <source>Mostrar Leyenda</source>
+        <target>Mostra la llegenda</target>
+      </trans-unit>
+      <trans-unit id="chartLegendOptionDescription">
+        <source>Muestra la leyenda del gráfico</source>
+        <target>Mostra la llegenda del gràfic</target>
+      </trans-unit>
+      <trans-unit id="showGridLines">
+        <source>Mostrar Líneas Guía</source>
+        <target>Mostra les línies guia</target>
+      </trans-unit>
+      <trans-unit id="chartGridLinesOptionDescription">
+        <source>Muestra u oculta las líneas guía del gráfico</source>
+        <target>Mostra o amaga les línies guia del gràfic</target>
+      </trans-unit>
+      <trans-unit id="histogramColum">
+        <source>Columnas</source>
+        <target>Columnes</target>
+      </trans-unit>
+      <trans-unit id="tooltipBlockedByComparative">
+        <source>Bloqueado porque comparativa está activa</source>
+        <target>Blocat perquè la comparativa està activa</target>
+      </trans-unit>
+      <trans-unit id="tooltipBlockedByTrendOrPrediction">
+        <source>Bloqueado porque tendencia o predicción está activa</source>
+        <target>Blocat perquè la tendència o la predicció està activa</target>
+      </trans-unit>
+      <trans-unit id="RemovePredictionTitle">
+        <source>¿Quieres quitar la predicción?</source>
+        <target>Vols treure la predicció?</target>
+      </trans-unit>
+      <trans-unit id="RemovePredictionText">
+        <source>Se quitará la predicción y se ejecutará la consulta del gráfico.</source>
+        <target>Es traurà la predicció i s'executarà la consulta del gràfic.</target>
+      </trans-unit>
+      <trans-unit id="RemovePredictionYes">
+        <source>Sí, quitar</source>
+        <target>Sí, treu-la</target>
+      </trans-unit>
+      <trans-unit id="RemovePredictionNo">
+        <source>No, mantener</source>
+        <target>No, mantén-la</target>
+      </trans-unit>
+      <trans-unit id="chartLabelOption">
+        <source>Muestra las etiquetas de cada segmento</source>
+        <target>Mostra les etiquetes de cada segment</target>
+      </trans-unit>
+      <trans-unit id="chartLabelPercentOption">
+        <source>Muestra los porcentajes en las etiquetas</source>
+        <target>Mostra els percentatges a les etiquetes</target>
+      </trans-unit>
+      <trans-unit id="aboutEdaP1">
+        <source>Una aplicación web de código libre que permite realizar informes gráficos e interactivos de forma sencilla.</source>
+        <target>Una aplicació web de codi lliure que permet fer informes gràfics i interactius de forma senzilla.</target>
+      </trans-unit>
+      <trans-unit id="aboutEdaH1">
+        <source>Código Abierto</source>
+        <target>Codi obert</target>
+      </trans-unit>
+      <trans-unit id="aboutEdaP2">
+        <source>EDA es una aplicación que se puede instalar en tus propios servidores o disfrutar en su versión SaaS Edalitics.</source>
+        <target>EDA és una aplicació que es pot instal·lar als teus propis servidors o gaudir a la seva versió SaaS Edalitics.</target>
+      </trans-unit>
+      <trans-unit id="aboutEdaA1">
+        <source>Ver en Github</source>
+        <target>Veure a Github</target>
+      </trans-unit>
+      <trans-unit id="aboutEdaH2">
+        <source>Documentación</source>
+        <target>Documentació</target>
+      </trans-unit>
+      <trans-unit id="aboutEdaP3">
+        <source>Accede a nuestra documentación completa para aprender a sacar el máximo provecho de EDA.</source>
+        <target>Accediu a la nostra documentació completa per aprendre a treure el màxim profit d'EDA.</target>
+      </trans-unit>
+      <trans-unit id="aboutEdaA2">
+        <source>Ver Documentación</source>
+        <target>Veure Documentació</target>
+      </trans-unit>
+      <trans-unit id="aboutEdaH3">
+        <source>Comunidad</source>
+        <target>Comunitat</target>
+      </trans-unit>
+      <trans-unit id="aboutEdaP4">
+        <source>Únete a nuestra comunidad para compartir experiencias y obtener ayuda.</source>
+        <target>Uneix-te a la nostra comunitat per compartir experiències i obtenir ajuda.</target>
+      </trans-unit>
+      <trans-unit id="aboutEdaA3">
+        <source>Ir al Foro</source>
+        <target>Anar al Fòrum</target>
+      </trans-unit>
+      <trans-unit id="aboutEdaP5">
+        <source>Aprende a usar EDA con nuestros tutoriales paso a paso.</source>
+        <target>Aprèn a fer servir EDA amb els nostres tutorials pas a pas.</target>
+      </trans-unit>
+      <trans-unit id="aboutEdaB1">
+        <source>Crear Modelo de Datos</source>
+        <target>Crear Model de Dades</target>
+      </trans-unit>
+      <trans-unit id="aboutEdaB2">
+        <source>Crear Informe</source>
+        <target>Crear informe</target>
+      </trans-unit>
+      <trans-unit id="aboutEdaH4">
+        <source>¿Quieres probar EDA en el cloud?</source>
+        <target>Vols provar EDA al cloud?</target>
+      </trans-unit>
+      <trans-unit id="aboutEdaP6">
+        <source>Edalitics te permitirá estar siempre a la última sin preocuparte por nada.</source>
+        <target>Edalitics et permetrà estar sempre a l'última sense preocupar-te de res.</target>
+      </trans-unit>
+      <trans-unit id="aboutEdaH5">
+        <source>Tutoriales en video</source>
+        <target>Tutorials en vídeo</target>
+      </trans-unit>
+      <trans-unit id="aboutEdaA4">
+        <source>Prueba Edalitics gratis </source>
+        <target>Prova Edalitics gratis</target>
+      </trans-unit>
+      <trans-unit id="aboutEdaP7">
+        <source>Si necesita soporte empresarial o desea solicitar nuevas funcionalidades, no dude en contactar con nosotros.</source>
+        <target>Si necessiteu suport empresarial o voleu sol·licitar noves funcionalitats, no dubteu a contactar amb nosaltres.</target>
+      </trans-unit>
+      <trans-unit id="multiSelectDefaultLabel">
+        <source>Selecciona un grupo *</source>
+        <target>Selecciona un grup *</target>
+      </trans-unit>
+      <trans-unit id="allElementsConnected">
+        <source>Todos los elementos están conectados</source>
+        <target>Tots els elements estan connectats</target>
+      </trans-unit>
+      <trans-unit id="dashboardFiltersMin">
+        <source>Filtros del dashboard</source>
+        <target>Filtres del dashboard</target>
+      </trans-unit>
+      <trans-unit id="noConnection">
+        <source>No hay conexiones activas</source>
+        <target>No hi ha connexions actives</target>
+      </trans-unit>
+      <trans-unit id="select1to1">
+        <source>Selecciona un elemento del listado izquierdo y luego uno del listado derecho para crear una conexión 1:1.</source>
+        <target>Seleccioneu un element del llistat esquerre i després un del llistat dret per crear una connexió 1:1.</target>
+      </trans-unit>
+      <trans-unit id="connectDashboardPanel">
+        <source>Conecta los filtros entre el dashboard y el panel, (los únicos filtros de panel que se visualizan son aquellos cuyo tipo de filtro es IN)</source>
+        <target>Connecta els filtres entre el tauler i el panell (els únics filtres de panell que es visualitzen són aquells el tipus de filtre dels quals és IN)</target>
+      </trans-unit>
+      <trans-unit id="mapFilters">
+        <source>Mapear Filtros</source>
+        <target>Mapejar Filtres</target>
+      </trans-unit>
+      <trans-unit id="searcherInput">
+        <source>Buscador</source>
+        <target>Cercador</target>
+      </trans-unit>
+      <trans-unit id="manageDBModels">
+        <source>Gestiona la importación y exportación de fuentes de datos</source>
+        <target>Gestiona la importació i exportació de fonts de dades</target>
+      </trans-unit>
+      <trans-unit id="SelectModelToExport">
+        <source>Selecciona una fuente de datos para exportar</source>
+        <target>Selecciona una font de dades per exportar</target>
+      </trans-unit>
+      <trans-unit id="SelectDashboardToExport">
+        <source>Selecciona un dashboard para exportar</source>
+        <target>Seleccioneu un dashboard per exportar</target>
+      </trans-unit>
+      <trans-unit id="SelectModel">
+        <source>Selecciona una fuente de datos</source>
+        <target>Selecciona una font de dades</target>
+      </trans-unit>
+      <trans-unit id="SelectDashboard">
+        <source>Selecciona un dashboard</source>
+        <target>Selecciona un dashboard</target>
+      </trans-unit>
+      <trans-unit id="UploadModel">
+        <source>Sube un archivo de modelo</source>
+        <target>Puja un fitxer de model</target>
+      </trans-unit>
+      <trans-unit id="UploadDashboard">
+        <source>Sube un archivo de dashboard</source>
+        <target>Puja un fitxer de dashboard</target>
+      </trans-unit>
+      <trans-unit id="export">
+        <source>Exportar</source>
+        <target>Exportar</target>
+      </trans-unit>
+      <trans-unit id="clickToUpload">
+        <source>Click para subir</source>
+        <target>Click per pujar</target>
+      </trans-unit>
+      <trans-unit id="dragDrop">
+        <source> o arrastra y suelta</source>
+        <target>o arrossega i deixa anar</target>
+      </trans-unit>
+      <trans-unit id="addDuckdbTableTitle">
+        <source>Añadir tabla CSV a DuckDB</source>
+        <target>Afegeix una taula CSV a DuckDB</target>
+      </trans-unit>
+      <trans-unit id="manageDashboards">
+        <source>Gestiona la importación y exportación de dashboards</source>
+        <target>Gestiona la importació i exportació de dashboards</target>
+      </trans-unit>
+      <trans-unit id="askPanelData">
+        <source>Pregunta sobre los datos de tu panel ...</source>
+        <target>Pregunta sobre les dades del teu panell ...</target>
+      </trans-unit>
+      <trans-unit id="askEdaliticsText">
+        <source>Pregúntale a Edalitics</source>
+        <target>Pregunta-li a Edalitics</target>
+      </trans-unit>
+      <trans-unit id="escribeMensaje">
+        <source>Escribe tu mensaje...</source>
+        <target>Escriu el teu missatge...</target>
+      </trans-unit>
+      <trans-unit id="viewName">
+        <source>Introduzca el nombre de la vista</source>
+        <target>Introdueix el nom de la vista</target>
+      </trans-unit>
+      <trans-unit id="viewDescription">
+        <source>Introduce una breve descripción</source>
+        <target>Introdueix una breu descripció</target>
+      </trans-unit>
+      <trans-unit id="viewTNameP">
+        <source>Introduzca el identificador técnico</source>
+        <target>Introduïu l'identificador tècnic</target>
+      </trans-unit>
+      <trans-unit id="enterSQLExpression">
+        <source>Ingrese su consulta SQL aquí</source>
+        <target>Introduïu la vostra consulta SQL aquí</target>
+      </trans-unit>
+      <trans-unit id="generating">
+        <source>Generando...</source>
+        <target>Generant...</target>
+      </trans-unit>
+      <trans-unit id="emptyMessageTags">
+        <source>No se encontraron resultados</source>
+        <target>No s'ha trobat cap resultat</target>
+      </trans-unit>
+      <trans-unit id="dimensionLabel">
+        <source>Dimension</source>
+        <target>Dimensió</target>
+      </trans-unit>
+      <trans-unit id="factLabel">
+        <source>Hecho</source>
+        <target>Fet</target>
+      </trans-unit>
+      <trans-unit id="viewLabel">
+        <source>Vista</source>
+        <target>Vista</target>
+      </trans-unit>
+      <trans-unit id="tagCreated">
+        <source>Etiqueta creada correctamente</source>
+        <target>Etiqueta creada correctament</target>
+      </trans-unit>
+      <trans-unit id="tagAssigned">
+        <source>Etiqueta asignada correctamente</source>
+        <target>Etiqueta assignada correctament</target>
+      </trans-unit>
+      <trans-unit id="Cargando">
+        <source>Cargando...</source>
+        <target>Carregant...</target>
+      </trans-unit>
+      <trans-unit id="Initial">
+        <source>Inicio</source>
+        <target>Inici</target>
+      </trans-unit>
+      <trans-unit id="Final">
+        <source>Final</source>
+        <target>Final</target>
+      </trans-unit>
+      <trans-unit id="DashboardUpdatedInfo">
+        <source>El dashboard ha sido actualizado correctamente.</source>
+        <target>El dashboard ha sigut actualitzat correctament.</target>
+      </trans-unit>
+      <trans-unit id="dsConnectionRefused">
+        <source>No se ha podido conectar a la base de datos.</source>
+        <target>No s'ha pogut connectar a la base de dades.</target>
+      </trans-unit>
+      <trans-unit id="searchDatasource">
+        <source>Buscar fuente de datos</source>
+        <target>Buscar font de dades</target>
+      </trans-unit>
+      <trans-unit id="selectPalette">
+        <source>-- Seleccione una paleta --</source>
+        <target>-- Seleccioneu una paleta --</target>
+      </trans-unit>
+      <trans-unit id="scenarios">
+        <source>Escenarios</source>
+        <target>Escenaris</target>
+      </trans-unit>
+      <trans-unit id="AdvanceOptions">
+        <source>Opciones avanzadas</source>
+        <target>Opcions avançades</target>
+      </trans-unit>
+      <trans-unit id="condition">
+        <source>Condición</source>
+        <target>Condició</target>
+      </trans-unit>
+      <trans-unit id="alertColor">
+        <source>Color de la alerta</source>
+        <target>Color d'alerta</target>
+      </trans-unit>
+      <trans-unit id="noAlertsConfigured">
+        <source>No hay alertas configuradas </source>
+        <target>No hi ha alertes configurades</target>
+      </trans-unit>
+      <trans-unit id="alertsConfigured">
+        <source>Alertas configuradas </source>
+        <target>Alertes configurades</target>
+      </trans-unit>
+      <trans-unit id="lessThan">
+        <source>Menor que </source>
+        <target>Menor que</target>
+      </trans-unit>
+      <trans-unit id="equalTo">
+        <source>Igual a </source>
+        <target>Igual a</target>
+      </trans-unit>
+      <trans-unit id="greaterThan">
+        <source>Mayor que</source>
+        <target>Major que</target>
+      </trans-unit>
+      <trans-unit id="thresholdValue">
+        <source>Valor umbral</source>
+        <target>Valor llindar</target>
+      </trans-unit>
+      <trans-unit id="numValTrigAlert">
+        <source>Valor numérico que activará la alerta</source>
+        <target>Valor numèric que activarà l'alerta</target>
+      </trans-unit>
+      <trans-unit id="textChangeColor">
+        <source>el texto cambiará a este color</source>
+        <target>el text canviarà a aquest color</target>
+      </trans-unit>
+      <trans-unit id="value">
+        <source>Valor</source>
+        <target>Valor</target>
+      </trans-unit>
+      <trans-unit id="actions">
+        <source>Acciones</source>
+        <target>Accions</target>
+      </trans-unit>
+      <trans-unit id="orderAlerts">
+        <source>Las alertas se aplicarán en orden de creación. Haga clic en el botón X para eliminar una alerta.</source>
+        <target>Les alertes s'han d'aplicar en ordre de creació. Feu clic al botó X per eliminar una alerta.</target>
+      </trans-unit>
+      <trans-unit id="useFormAlertConfigure">
+        <source>Configure una alerta usando el formulario de arriba para visualizar cambios en el gráfico.</source>
+        <target>Configureu una alerta usant el formulari de dalt per visualitzar canvis al gràfic.</target>
+      </trans-unit>
+      <trans-unit id="dashboardSidebarNewText">
+        <source>Nuevo texto</source>
+        <target>Nou text</target>
+      </trans-unit>
+      <trans-unit id="dashboardSidebarNewFilter">
+        <source>Nuevo filtro</source>
+        <target>Nou filtre</target>
+      </trans-unit>
+      <trans-unit id="dashboardSidebarEditFilter">
+        <source>Editar filtro</source>
+        <target>Editar filtre</target>
+      </trans-unit>
+      <trans-unit id="dashboardSidebarImportPanel">
+        <source>Importar panel</source>
+        <target>Importar panell</target>
+      </trans-unit>
+      <trans-unit id="dashboardSidebarRefreshDashboard">
+        <source>Recargar informe</source>
+        <target>Recarregar informe</target>
+      </trans-unit>
+      <trans-unit id="dashboardSidebarDashboardPrivacity">
+        <source>Privacidad informe</source>
+        <target>Privacitat informe</target>
+      </trans-unit>
+      <trans-unit id="dashboardSidebarLiveDashboard">
+        <source>Live Dashboard</source>
+        <target>Live Dashboard</target>
+      </trans-unit>
+      <trans-unit id="secondsToRefresh">
+        <source>Segundos para refrescar</source>
+        <target>Segons per refrescar</target>
+      </trans-unit>
+      <trans-unit id="dashboardSidebarSave">
+        <source>Guardar</source>
+        <target>Guardar</target>
+      </trans-unit>
+      <trans-unit id="dashboardSidebarSaveAs">
+        <source>Guardar como</source>
+        <target>Guardar com</target>
+      </trans-unit>
+      <trans-unit id="dashboardSidebarDeleteDashboard">
+        <source>Eliminar informe</source>
+        <target>Eliminar informe</target>
+      </trans-unit>
+      <trans-unit id="dashboardSidebarMoreOptions">
+        <source>Más opciones</source>
+        <target>Més opcions</target>
+      </trans-unit>
+      <trans-unit id="dashboardSidebarEditStyles">
+        <source>Editar estilos</source>
+        <target>Editar estils</target>
+      </trans-unit>
+      <trans-unit id="dashboardSidebarDownloadPDF">
+        <source>Descargar PDF</source>
+        <target>Descarregar PDF</target>
+      </trans-unit>
+      <trans-unit id="dashboardSidebarDownloadImage">
+        <source>Descargar imagen</source>
+        <target>Descarregar imatge</target>
+      </trans-unit>
+      <trans-unit id="dashboardSidebarDownloadExcel">
+        <source>Descargar Excel</source>
+        <target>Descarregar Excel</target>
+      </trans-unit>
+      <trans-unit id="dashboardSidebarDownload">
+        <source>Descargar</source>
+        <target>Descarregar</target>
+      </trans-unit>
+      <trans-unit id="dashboardSidebarCustomAction">
+        <source>Acción personalizada</source>
+        <target>Acció personalitzada</target>
+      </trans-unit>
+      <trans-unit id="deleteBtn">
+        <source>Eliminar</source>
+        <target>Eliminar</target>
+      </trans-unit>
+      <trans-unit id="valueKPI">
+        <source>Cuando el valor KPI es</source>
+        <target>Quan el valor KPI és</target>
+      </trans-unit>
+      <trans-unit id="alertsPreview">
+        <source>Vista previa:</source>
+        <target>Vista prèvia:</target>
+      </trans-unit>
+      <trans-unit id="enableFilters">
+        <source>Click en filtros habilitado</source>
+        <target>Click en filtres habilitat</target>
+      </trans-unit>
+      <trans-unit id="disableFilters">
+        <source>Click en filtros deshabilitado</source>
+        <target>Click en filtres deshabilitat</target>
+      </trans-unit>
+      <trans-unit id="selectFileImport">
+        <source>Por favor selecciona un archivo para importar</source>
+        <target>Si us plau selecciona un fitxer per importar</target>
+      </trans-unit>
+      <trans-unit id="logarithmicScale">
+        <source>Escala logarítmica</source>
+        <target>Escala logarítmica</target>
+      </trans-unit>
+      <trans-unit id="activeMouseFunctions">
+        <source>Activar funciones del ratón</source>
+        <target>Activar funcions del ratolí</target>
+      </trans-unit>
+      <trans-unit id="enableBaseLayer">
+        <source>Activar capa base</source>
+        <target>Activar capa base</target>
+      </trans-unit>
+      <trans-unit id="logarithmicScaleTooltip">
+        <source>Aplica escala logarítmica a los valores del mapa</source>
+        <target>Aplica escala logarítmica als valors del mapa</target>
+      </trans-unit>
+      <trans-unit id="activeMouseFunctionsTooltip">
+        <source>Permite arrastrar y hacer zoom con el ratón</source>
+        <target>Permet arrossegar i fer zoom amb el ratolí</target>
+      </trans-unit>
+      <trans-unit id="mpa">
+        <source>Aplica escala logarítmica a los valores del mapa</source>
+        <target>Aplica una escala logarítmica als valors del mapa</target>
+      </trans-unit>
+      <trans-unit id="enableBaseLayerTooltip">
+        <source>Muestra u oculta la capa base del mapa</source>
+        <target>Mostra o amaga la capa base del mapa</target>
+      </trans-unit>
+      <trans-unit id="layerColor">
+        <source>Color de capa</source>
+        <target>Color de capa</target>
+      </trans-unit>
+      <trans-unit id="topleftPosition">
+        <source>Superior izquierda</source>
+        <target>Superior esquerra</target>
+      </trans-unit>
+      <trans-unit id="bottomleftPosition">
+        <source>Inferior izquierda</source>
+        <target>Inferior esquerra</target>
+      </trans-unit>
+      <trans-unit id="toprightPosition">
+        <source>Superior derecha</source>
+        <target>Superior dreta</target>
+      </trans-unit>
+      <trans-unit id="bottomrightPosition">
+        <source>Inferior derecha</source>
+        <target>Inferior dreta</target>
+      </trans-unit>
+      <trans-unit id="selectDashboardPrivacity">
+        <source>Selecciona la privacidad del informe</source>
+        <target>Seleccioneu la privacitat de l'informe</target>
+      </trans-unit>
+      <trans-unit id="defaultValueLabel">
+        <source>Valor por defecto</source>
+        <target>Valor per defecte</target>
+      </trans-unit>
+      <trans-unit id="filteredItems">
+        <source>elementos disponibles</source>
+        <target>elements disponibles</target>
+      </trans-unit>
+      <trans-unit id="itemsSelected1">
+        <source>Seleccionados</source>
+        <target>Seleccionats</target>
+      </trans-unit>
+      <trans-unit id="cleanEverything">
+        <source>Limpiar todo</source>
+        <target>Netejar-ho tot</target>
+      </trans-unit>
+      <trans-unit id="connections">
+        <source>conexiones </source>
+        <target>connexions</target>
+      </trans-unit>
+      <trans-unit id="panelFilters">
+        <source>Filtros del panel </source>
+        <target>Filtres del panell</target>
+      </trans-unit>
+      <trans-unit id="updateProfilePic">
+        <source>Actualizar foto</source>
+        <target>Actualitzar foto</target>
+      </trans-unit>
+      <trans-unit id="uploadingProfilePic">
+        <source>Subiendo...</source>
+        <target>Pujant...</target>
+      </trans-unit>
+      <trans-unit id="attachNewImage">
+        <source>Debe adjuntar una nueva imagen </source>
+        <target>Heu d'adjuntar una nova imatge</target>
+      </trans-unit>
+      <trans-unit id="selectRecipients">
+        <source>Selecciona los destinatarios *</source>
+        <target>Selecciona els destinataris *</target>
+      </trans-unit>
+      <trans-unit id="kpiMailConfigTitle">
+        <source>Configuración de envío por email</source>
+        <target>Configuració d'enviament per correu electrònic</target>
+      </trans-unit>
+      <trans-unit id="noRecipientsSelected">
+        <source>Sin destinatarios seleccionados</source>
+        <target>Sense destinataris seleccionats</target>
+      </trans-unit>
+      <trans-unit id="noContentToExport">
+        <source>No tienes contenido para exportar</source>
+        <target>No tens contingut per exportar</target>
+      </trans-unit>
+      <trans-unit id="REPORTCloned">
+        <source>Informe clonado correctamente</source>
+        <target>Informe clonat correctament</target>
+      </trans-unit>
+      <trans-unit id="InvalidServerResponse">
+        <source>Respuesta inválida del servidor</source>
+        <target>Resposta invàlida del servidor</target>
+      </trans-unit>
+      <trans-unit id="CouldNotCloneReport">
+        <source>No se pudo clonar el informe. Por favor, inténtalo de nuevo.</source>
+        <target>No s'ha pogut clonar l'informe. Si us plau, torna-ho a intentar.</target>
+      </trans-unit>
+      <trans-unit id="activateReport">
+        <source>Activar informe</source>
+        <target>Activa l'informe</target>
+      </trans-unit>
+      <trans-unit id="deactivateReport">
+        <source>Desactivar informe</source>
+        <target>Desactiva l'informe</target>
+      </trans-unit>
+      <trans-unit id="NoGroup">
+        <source>Sin Grupo</source>
+        <target>Sense grup</target>
+      </trans-unit>
+      <trans-unit id="Public">
+        <source>Público</source>
+        <target>Públic</target>
+      </trans-unit>
+      <trans-unit id="Group">
+        <source>Grupo</source>
+        <target>Grup</target>
+      </trans-unit>
+      <trans-unit id="Private">
+        <source>Privado</source>
+        <target>Privat</target>
+      </trans-unit>
+      <trans-unit id="Common">
+        <source>Común</source>
+        <target>Comú</target>
+      </trans-unit>
+      <trans-unit id="ErrorCloningDashboard">
+        <source>Error al clonar el dashboard:</source>
+        <target>Error en clonar l'informe:</target>
+      </trans-unit>
+      <trans-unit id="Error">
+        <source>Error</source>
+        <target>Error</target>
+      </trans-unit>
+      <trans-unit id="URLCopied">
+        <source>URL copiada al portapapeles</source>
+        <target>URL copiada al porta-retalls</target>
+      </trans-unit>
+      <trans-unit id="ErrorCopyingURL">
+        <source>Error al copiar URL: </source>
+        <target>Error en copiar l'URL:</target>
+      </trans-unit>
+      <trans-unit id="DashboardTitleUpdated">
+        <source>Título del informe actualizado correctamente.</source>
+        <target>Títol de l'informe actualitzat correctament.</target>
+      </trans-unit>
+      <trans-unit id="ErrorUpdatingDashboardTitle">
+        <source>Error al actualizar el título del informe.</source>
+        <target>Error en actualitzar el títol de l'informe.</target>
+      </trans-unit>
+      <trans-unit id="DashboardTypeUpdated">
+        <source>Tipo de informe actualizado correctamente.</source>
+        <target>Tipus d'informe actualitzat correctament.</target>
+      </trans-unit>
+      <trans-unit id="ErrorUpdatingDashboardType">
+        <source>Error al actualizar el tipo de informe.</source>
+        <target>Error en actualitzar el tipus d'informe.</target>
+      </trans-unit>
+      <trans-unit id="deactivatePublicDashboardWarning">
+        <source>Si desactiva este informe público, la URL pública dejará de estar disponible y el informe ya no podrá visualizarse.</source>
+        <target>Si desactives aquest informe públic, l'URL pública deixarà d'estar disponible i l'informe ja no es podrà visualitzar.</target>
+      </trans-unit>
+      <trans-unit id="ConfirmDeactivate">
+        <source>Yes, deactivate it!</source>
+        <target>Sí, desactiva'l!</target>
+      </trans-unit>
+      <trans-unit id="Cancel">
+        <source>Cancelar</source>
+        <target>Cancel·la</target>
+      </trans-unit>
+      <trans-unit id="DashboardActivated">
+        <source>Informe activado correctamente.</source>
+        <target>Informe activat correctament.</target>
+      </trans-unit>
+      <trans-unit id="DashboardDeactivated">
+        <source>Informe desactivado correctamente.</source>
+        <target>Informe desactivat correctament.</target>
+      </trans-unit>
+      <trans-unit id="ErrorUpdatingDashboardStatus">
+        <source>Error al actualizar el estado del informe.</source>
+        <target>Error en actualitzar l'estat de l'informe.</target>
+      </trans-unit>
+      <trans-unit id="searchEntities">
+        <source>Buscar entidades...</source>
+        <target>Buscar entitats...</target>
+      </trans-unit>
+      <trans-unit id="searchAttributes">
+        <source>Buscar atributos...</source>
+        <target>Buscar atributs...</target>
+      </trans-unit>
+      <trans-unit id="groupSelect">
+        <source>Selecciona...</source>
+        <target>Selecciona...</target>
+      </trans-unit>
+      <trans-unit id="selectedUsers">
+        <source>Usuarios seleccionados</source>
+        <target>Usuaris seleccionats</target>
+      </trans-unit>
+      <trans-unit id="availableUsers">
+        <source>Usuarios disponibles</source>
+        <target>Usuaris disponibles</target>
+      </trans-unit>
+      <trans-unit id="importPanelsTitle">
+        <source>Importar paneles</source>
+        <target>Importar panells</target>
+      </trans-unit>
+      <trans-unit id="selectPanels">
+        <source>Selecciona los paneles</source>
+        <target>Selecciona els panells</target>
+      </trans-unit>
+      <trans-unit id="searchPanels">
+        <source>Buscar paneles...</source>
+        <target>Buscar panells...</target>
+      </trans-unit>
+      <trans-unit id="dashboardExportedSuccessfully">
+        <source>Dashboard exportado correctamente</source>
+        <target>Dashboard exportat correctament</target>
+      </trans-unit>
+      <trans-unit id="selectDashboardToExport">
+        <source>Por favor selecciona un dashboard para exportar</source>
+        <target>Si us plau selecciona un dashboard per exportar</target>
+      </trans-unit>
+      <trans-unit id="problemExportingModel">
+        <source>Ocurrió un problema al exportar el modelo</source>
+        <target>Ha passat un problema en exportar el model</target>
+      </trans-unit>
+      <trans-unit id="modelExportedSucessfully">
+        <source>Modelo exportado correctamente</source>
+        <target>Model exportat correctament</target>
+      </trans-unit>
+      <trans-unit id="selectModelToExport">
+        <source>Por favor selecciona un modelo para exportar</source>
+        <target>Si us plau selecciona un model per exportar</target>
+      </trans-unit>
+      <trans-unit id="dashboardUpdatedSuccessfully">
+        <source>Dashboard actualizado correctamente</source>
+        <target>Dashboard actualitzat correctament</target>
+      </trans-unit>
+      <trans-unit id="dashboardCreatedSuccessfully">
+        <source>Dashboard creado correctamente</source>
+        <target>Dashboard creat correctament</target>
+      </trans-unit>
+      <trans-unit id="notPossibleImportDashboard">
+        <source>No se pudo importar el dashboard</source>
+        <target>No s'ha pogut importar el dashboard</target>
+      </trans-unit>
+      <trans-unit id="noValidJsonFormat">
+        <source>El archivo no tiene un formato JSON válido:</source>
+        <target>El fitxer no té un format JSON vàlid:</target>
+      </trans-unit>
+      <trans-unit id="notPossibleReadFile">
+        <source>No se pudo leer el archivo seleccionado</source>
+        <target>No s'ha pogut llegir el fitxer seleccionat</target>
+      </trans-unit>
+      <trans-unit id="noCorrectJsonFormat">
+        <source>El archivo no tiene un formato JSON válido</source>
+        <target>El fitxer no té un format JSON vàlid</target>
+      </trans-unit>
+      <trans-unit id="errorImportModel">
+        <source>Ha ocurrido un error al importar el modelo</source>
+        <target>S'ha produït un error en importar el model</target>
+      </trans-unit>
+      <trans-unit id="modelImportedSuccessfully">
+        <source>Modelo importado correctamente</source>
+        <target>Model importat correctament</target>
+      </trans-unit>
+      <trans-unit id="errorVerifyingModelIntegrity">
+        <source>Error al verificar integridad del modelo</source>
+        <target>Error en verificar integritat del model</target>
+      </trans-unit>
+      <trans-unit id="fillRequiredFields">
+        <source>Recuerde llenar los campos obligatorios</source>
+        <target>Recordeu omplir els camps obligatoris</target>
+      </trans-unit>
+      <trans-unit id="connectedWithServer">
+        <source>Conectado con el servidor</source>
+        <target>Connectat amb el servidor</target>
+      </trans-unit>
+      <trans-unit id="differentFiltersCannotBeConnected">
+        <source>No se pueden vincular filtros de tipos distintos.</source>
+        <target>No es poden enllaçar filtres de tipus diferents.</target>
+      </trans-unit>
+      <trans-unit id="scrollError">
+        <source>Error haciendo scroll</source>
+        <target>Error fent scroll</target>
+      </trans-unit>
+      <trans-unit id="viewEditionTitle">
+        <source>Edición de la Vista</source>
+        <target>Edició de la vista</target>
+      </trans-unit>
+      <trans-unit id="viewEditionDescription">
+        <source>La edición de la vista permite modificar únicamente la consulta (query), pero no debe cambiar los nombres de las columnas.</source>
+        <target>L'edició de la vista només permet modificar la consulta (query), però no ha de canviar els noms de les columnes.</target>
+      </trans-unit>
+      <trans-unit id="columnDashboard">
+        <source>Columna</source>
+        <target>Columna</target>
+      </trans-unit>
+      <trans-unit id="fieldDashboardDashboard">
+        <source>Panel</source>
+        <target>Panell</target>
+      </trans-unit>
+      <trans-unit id="filtrosAvanzados">
+        <source>Filtros avanzados</source>
+        <target>Filtres avançats</target>
+      </trans-unit>
+      <trans-unit id="dashboardSidebarDependentFilters">
+        <source>Filtros dependientes</source>
+        <target>Filtres dependents</target>
+      </trans-unit>
+      <trans-unit id="dependentFiltersTitle">
+        <source>Configuración de filtros dependientes</source>
+        <target>Configuració de filtres dependents</target>
+      </trans-unit>
+      <trans-unit id="autocompleteFilter">
+        <source>¿Filtro autocomplete?</source>
+        <target>Filtre autocomplete?</target>
+      </trans-unit>
+      <trans-unit id="globalFiltersToDF">
+        <source>Debe disponer de filtros globales para poder avanzar con la configuración de los filtros dependientes.</source>
+        <target>Heu de disposar de filtres globals per poder avançar amb la configuració dels filtres dependents.</target>
+      </trans-unit>
+      <trans-unit id="newFilterAddToDF">
+        <source>Se agregó un nuevo filtro a la relación de filtros dependientes</source>
+        <target>S'ha afegit un nou filtre a la relació de filtres dependents</target>
+      </trans-unit>
+      <trans-unit id="DFSettingsRestarted">
+        <source>Se ha reiniciado la configuración de los filtros dependientes</source>
+        <target>S'ha reiniciat la configuració dels filtres dependents</target>
+      </trans-unit>
+      <trans-unit id="showField">
+        <source>Mostrar campo de origen</source>
+        <target>Mostrar camp d'origen</target>
+      </trans-unit>
+      <trans-unit id="correctGeoJsonFormat">
+        <source>El archivo tiene un formato GeoJson válido.</source>
+        <target>El fitxer té un format GeoJson vàlid.</target>
+      </trans-unit>
+      <trans-unit id="wrongGeoJsonFormat">
+        <source>El archivo no tiene un formato GeoJson válido.</source>
+        <target>El fitxer no té un format GeoJson vàlid.</target>
+      </trans-unit>
+      <trans-unit id="AddMandatoryFilters">
+        <source>Los siguientes filtros son obligatorios y no tienen valor asignado:</source>
+        <target>Els filtres següents són obligatoris i no tenen valor assignat:</target>
+      </trans-unit>
+      <trans-unit id="panelOptionsMapFilters">
+        <source>Mapear filtros</source>
+        <target>Mapejar filtres</target>
+      </trans-unit>
+      <trans-unit id="dataExportImport">
+        <source>Data Export/Import</source>
+        <target>Exportació/Importació de dades</target>
+      </trans-unit>
+      <trans-unit id="AllTagsDescription">
+        <source>Acceso a todos los elementos sin restricciones</source>
+        <target>Accés a tots els elements sense restriccions</target>
+      </trans-unit>
+      <trans-unit id="NoneTagsDescription">
+        <source>No se muestra ningún elemento para este usuario/grupo</source>
+        <target>No es mostra cap element per a aquest usuari/grup</target>
+      </trans-unit>
+      <trans-unit id="DynamicTagsDescription">
+        <source>Filtrado avanzado mediante una consulta personalizada</source>
+        <target>Filtratge avançat mitjançant una consulta personalitzada</target>
+      </trans-unit>
+      <trans-unit id="placeholderConsultaDinamica">
+        <source>Introduzca la expresión dinámica…</source>
+        <target>Introduïu l'expressió dinàmica…</target>
+      </trans-unit>
+      <trans-unit id="showLinesPrediction">
+        <source>Mostrar Predicción</source>
+        <target>Mostrar Predicció</target>
+      </trans-unit>
+      <trans-unit id="removePrediction">
+        <source>Quitar Predicción</source>
+        <target>Eliminar Predicció</target>
+      </trans-unit>
+      <trans-unit id="Prediction">
+        <source>Predicción</source>
+        <target>Predicció</target>
+      </trans-unit>
+      <trans-unit id="TabsPanelConfig">
+        <source>CONFIGURACION DE PESTAÑAS</source>
+        <target>CONFIGURACIÓ DE PESTANYES</target>
+      </trans-unit>
+      <trans-unit id="TabsPanelConfig2">
+        <source>Configuración de pestañas</source>
+        <target>Configuració de pestanyes</target>
+      </trans-unit>
+      <trans-unit id="selectEditTabs">
+        <source>Seleccionar...</source>
+        <target>Seleccionar...</target>
+      </trans-unit>
+      <trans-unit id="searchTag">
+        <source>Buscar tag...</source>
+        <target>Buscar tag...</target>
+      </trans-unit>
+      <trans-unit id="dashboardsSelected">
+        <source>Dashboards seleccionados</source>
+        <target>Dashboards seleccionats</target>
+      </trans-unit>
+      <trans-unit id="dashboardsAvailable">
+        <source>Dashboards disponibles</source>
+        <target>Dashboards disponibles</target>
+      </trans-unit>
+      <trans-unit id="filterSearchDashboards">
+        <source>Usa los filtros para buscar dashboards</source>
+        <target>Fes servir els filtres per cercar dashboards</target>
+      </trans-unit>
+      <trans-unit id="noCoincidenceDashFilters">
+        <source>No hay dashboards que coincidan con los filtros</source>
+        <target>No hi ha dashboards que coincideixin amb els filtres</target>
+      </trans-unit>
+      <trans-unit id="addDashListAvailable">
+        <source>Añade dashboards desde la lista de disponibles</source>
+        <target>Afegeix dashboards des de la llista de disponibles</target>
+      </trans-unit>
+      <trans-unit id="filterOptions">
+        <source>Opciones del filtro:</source>
+        <target>Opcions del filtre:</target>
+      </trans-unit>
+      <trans-unit id="ModelRestrictionAccess">
+        <source>Modelo con acceso restringido</source>
+        <target>Model amb accés restringit</target>
+      </trans-unit>
+      <trans-unit id="ModelRestrictionAccessMessageOption">
+        <source>Desactivar para habilitar el acceso a todos los usuarios</source>
+        <target>Desactivar per habilitar l'accés a tots els usuaris</target>
+      </trans-unit>
+      <trans-unit id="ModelActivationAccess">
+        <source>Modelo con acceso para todos los usuarios</source>
+        <target>Model amb accés per a tots els usuaris</target>
+      </trans-unit>
+      <trans-unit id="ModelActivationAccessMessageOption">
+        <source>Activar para limitar el acceso solo a usuarios o grupos autorizados</source>
+        <target>Activar per limitar l'accés només a usuaris o grups autoritzats</target>
+      </trans-unit>
+      <trans-unit id="tableActivationAccessMessageOption">
+        <source>Activar para habilitar un acceso restringido</source>
+        <target>Activar per habilitar un accés restringit</target>
+      </trans-unit>
+      <trans-unit id="CheckExpression">
+        <source>Comprobar expresión</source>
+        <target>Comprovar expressió</target>
+      </trans-unit>
+      <trans-unit id="panelOptionsExportTo">
+        <source>Exportar a </source>
+        <target>Exportar a</target>
+      </trans-unit>
+      <trans-unit id="DatePickerNext365">
+        <source>Próximos 365 días</source>
+        <target>Propers 365 dies</target>
+      </trans-unit>
+      <trans-unit id="DatePickerCustomDate">
+        <source>Seleccionar fecha</source>
+        <target>Selecciona una data</target>
+      </trans-unit>
+      <trans-unit id="filterOperatorSelectionText">
+        <source>Selección de operador del filtro:</source>
+        <target>Selecció de l'operador del filtre:</target>
+      </trans-unit>
+      <trans-unit id="dateSelectionText">
+        <source>Selección de fecha:</source>
+        <target>Selecció de data:</target>
+      </trans-unit>
+      <trans-unit id="datePickerCleanBtn">
+        <source>Limpiar</source>
+        <target>Neteja</target>
+      </trans-unit>
+      <trans-unit id="filterOperatorPlaceholder">
+        <source>Selecciona un operador</source>
+        <target>Selecciona un operador</target>
+      </trans-unit>
+      <trans-unit id="noNameProvided">
+        <source>Debe proporcionar un nombre para el datasource</source>
+        <target>Heu de proporcionar un nom per al datasource</target>
+      </trans-unit>
+      <trans-unit id="noCsvData">
+        <source>Debe cargar un archivo CSV primero</source>
+        <target>Heu de carregar un fitxer CSV primer</target>
+      </trans-unit>
+      <trans-unit id="noCsvColumns">
+        <source>No se detectaron columnas en el archivo CSV. Verifique el separador.</source>
+        <target>No s'han detectat columnes al fitxer CSV. Verifiqueu el separador.</target>
+      </trans-unit>
+      <trans-unit id="emptyCsvFile">
+        <source>El archivo CSV está vacío o no se pudo leer con este separador</source>
+        <target>El fitxer CSV és buit o no s'ha pogut llegir amb aquest separador</target>
+      </trans-unit>
+      <trans-unit id="emptyCsvFile2">
+        <source>El archivo CSV está vacío o no se pudo leer</source>
+        <target>El fitxer CSV és buit o no s'ha pogut llegir</target>
+      </trans-unit>
+      <trans-unit id="errorParseCsv">
+        <source>Error al parsear el archivo CSV con el separador especificado</source>
+        <target>Error en parsejar el fitxer CSV amb el separador especificat</target>
+      </trans-unit>
+      <trans-unit id="errorParseCsv2">
+        <source>Error al parsear el archivo CSV. Verifica el separador.</source>
+        <target>Error en parsejar el fitxer CSV. Verifica el separador.</target>
+      </trans-unit>
+      <trans-unit id="noExcelFile">
+        <source>Debe cargar un archivo Excel primero</source>
+        <target>Primer has de carregar un fitxer Excel</target>
+      </trans-unit>
+      <trans-unit id="errorParseCsv3">
+        <source>Error al parsear el archivo CSV. Verifique el separador y formato del archivo.</source>
+        <target>Error en parsejar el fitxer CSV. Verifiqueu el separador i format del fitxer.</target>
+      </trans-unit>
+      <trans-unit id="dashboardSidebarNewTabs">
+        <source>Nuevo navegador</source>
+        <target>Nou navegador</target>
+      </trans-unit>
+      <trans-unit id="anyCanSeeNoTable">
+        <source>Define quién puede acceder y ver esta tabla. Solo los usuarios y grupos explícitamente autorizados tendrán
+          acceso.</source>
+        <target>Defineix qui hi pot accedir i veure aquesta taula. Només els usuaris i grups explícitament autoritzats tindran accés.</target>
+      </trans-unit>
+      <trans-unit id="anyCanSeeYesTable">
+        <source>Cualquier usuario puede ver la tabla.
+          Los filtros de seguridad se definen a nivel de tabla y columna concreta.</source>
+        <target>Qualsevol usuari pot veure la taula. Els filtres de seguretat es defineixen a nivell de taula i columna concreta.</target>
+      </trans-unit>
+      <trans-unit id="showLines">
+        <source>Mostrar Líneas de Puntos</source>
+        <target>Mostra Línies de Punts</target>
+      </trans-unit>
+      <trans-unit id="chartLabelLineOptionDescription">
+        <source>Muestra líneas conectando los puntos</source>
+        <target>Mostra línies connectant els punts</target>
+      </trans-unit>
+      <trans-unit id="chartLabelLinePredictionOptionDescription">
+        <source>Muestra la predicción de la serie</source>
+        <target>Mostra la predicció de la sèrie</target>
+      </trans-unit>
+      <trans-unit id="gradientTab">
+        <source>Colores por intervalo</source>
+        <target>Colors per interval</target>
+      </trans-unit>
+      <trans-unit id="semaphoreTab">
+        <source>Código semafórico</source>
+        <target>Codi semafòric</target>
+      </trans-unit>
+      <trans-unit id="aboveThreshold">
+        <source>es mayor que:</source>
+        <target>és més gran que:</target>
+      </trans-unit>
+      <trans-unit id="betweenThresholds">
+        <source>mayor que:</source>
+        <target>més gran que:</target>
+      </trans-unit>
+      <trans-unit id="betweenThresholds2">
+        <source>y menor que</source>
+        <target>i menor que</target>
+      </trans-unit>
+      <trans-unit id="belowThreshold">
+        <source>es menor que:</source>
+        <target>és menor que:</target>
+      </trans-unit>
+      <trans-unit id="opacityLabel">
+        <source>Opacidad</source>
+        <target>Opacitat</target>
+      </trans-unit>
+      <trans-unit id="colorsTab">
+        <source>Colores</source>
+        <target>Colors</target>
+      </trans-unit>
+      <trans-unit id="gradientMin">
+        <source>Min</source>
+        <target>Min</target>
+      </trans-unit>
+      <trans-unit id="gradientMax">
+        <source>Max</source>
+        <target>Màx</target>
+      </trans-unit>
+      <trans-unit id="mandatoryFilter">
+        <source>¿Filtro obligatorio?</source>
+        <target>Filtre obligatori?</target>
+      </trans-unit>
+      <trans-unit id="email">
+        <source>Correo</source>
+        <target>Correu</target>
+      </trans-unit>
+      <trans-unit id="nextStepBtn">
+        <source>Siguiente paso</source>
+        <target>Següent pas</target>
+      </trans-unit>
+      <trans-unit id="openInNewTabBtn">
+        <source>Abrir en NUEVA pestaña</source>
+        <target>Obre en una pestanya NOVA</target>
+      </trans-unit>
+      <trans-unit id="openInSameTabBtn">
+        <source>Abrir en MISMA pestaña</source>
+        <target>Obre a la MATEIXA pestanya</target>
+      </trans-unit>
+      <trans-unit id="predictionDialogTitle">
+        <source>Configuración de Predicción</source>
+        <target>Configuració de Predicció</target>
+      </trans-unit>
+      <trans-unit id="predictionMethodLabel">
+        <source>Método de predicción</source>
+        <target>Mètode de predicció</target>
+      </trans-unit>
+      <trans-unit id="predictionMethodNone">
+        <source>-- Selecciona el método de predicción --</source>
+        <target>-- Selecciona el mètode de predicció --</target>
+      </trans-unit>
+      <trans-unit id="predictionStepsLabel">
+        <source>Pasos a predecir</source>
+        <target>Passos a predir</target>
+      </trans-unit>
+      <trans-unit id="predictionStepsDesc">
+        <source>Número de periodos futuros a predecir</source>
+        <target>Nombre de períodes futurs a predir</target>
+      </trans-unit>
+      <trans-unit id="tfTargetColumnLabel">
+        <source>Columna a predecir</source>
+        <target>Columna a predir</target>
+      </trans-unit>
+      <trans-unit id="tfTargetColumnDesc">
+        <source>Las demás columnas numéricas se usarán automáticamente como variables de referencia</source>
+        <target>Les altres columnes numèriques s'utilitzaran automàticament com a variables de referència</target>
+      </trans-unit>
+      <trans-unit id="arimaTargetColumnDesc">
+        <source>Columna numérica a predecir</source>
+        <target>Columna numèrica a predir</target>
+      </trans-unit>
+      <trans-unit id="advancedConfigDesc">
+        <source>Personalizar los parámetros del modelo</source>
+        <target>Personalitzar els paràmetres del model</target>
+      </trans-unit>
+      <trans-unit id="arimaVariablesTitle">
+        <source>Variables ARIMA</source>
+        <target>Variables ARIMA</target>
+      </trans-unit>
+      <trans-unit id="arimaFormula">
+        <source>Formula ARIMA(p, d, q)</source>
+        <target>Fórmula ARIMA(p, d, q)</target>
+      </trans-unit>
+      <trans-unit id="arimaParamPTooltip">
+        <source>Número de términos autoregresivos. Indica cuántos valores pasados de la serie influyen en el valor actual.</source>
+        <target>Nombre de termes autoregressius. Indica quants valors passats de la sèrie influeixen en el valor actual.</target>
+      </trans-unit>
+      <trans-unit id="arimaParamDTooltip">
+        <source>Número de veces que se diferencia la serie para hacerla estacionaria. Normalmente 0, 1 o 2.</source>
+        <target>Nombre de vegades que es diferencia la sèrie per fer-la estacionària. Normalment 0, 1 o 2.</target>
+      </trans-unit>
+      <trans-unit id="arimaParamQTooltip">
+        <source>Número de términos de media móvil. Indica cuántos errores pasados influyen en el valor actual.</source>
+        <target>Nombre de termes de mitjana mòbil. Indica quants errors passats influeixen en el valor actual.</target>
+      </trans-unit>
+      <trans-unit id="tensorflowVariablesTitle">
+        <source>Variables TensorFlow (LSTM)</source>
+        <target>Variables TensorFlow (LSTM)</target>
+      </trans-unit>
+      <trans-unit id="tfEpochsLabel">
+        <source>Épocas</source>
+        <target>Èpoques</target>
+      </trans-unit>
+      <trans-unit id="tfEpochsTooltip">
+        <source>Número de veces que el modelo recorre el conjunto de datos completo durante el entrenamiento. Más épocas pueden mejorar la precisión pero aumentan el tiempo de entrenamiento.</source>
+        <target>Nombre de vegades que el model recorre el conjunt de dades complet durant l'entrenament. Més èpoques poden millorar la precisió però augmenten el temps d'entrenament.</target>
+      </trans-unit>
+      <trans-unit id="tfLookbackLabel">
+        <source>Lookback</source>
+        <target>Lookback</target>
+      </trans-unit>
+      <trans-unit id="tfLookbackTooltip">
+        <source>Número de pasos de tiempo pasados que el modelo usa como entrada para predecir el siguiente valor. Un valor mayor captura más contexto histórico.</source>
+        <target>Nombre de passos de temps passats que el model usa com a entrada per predir el valor següent. Un valor més gran captura més context històric.</target>
+      </trans-unit>
+      <trans-unit id="tfLrLabel">
+        <source>Learning rate</source>
+        <target>Learning rate</target>
+      </trans-unit>
+      <trans-unit id="tfLrTooltip">
+        <source>Velocidad a la que el modelo actualiza sus pesos durante el entrenamiento. Valores pequeños son más estables pero aprenden más lento; valores grandes aprenden rápido pero pueden ser inestables.</source>
+        <target>Velocitat a la qual el model actualitza els seus pesos durant l'entrenament. Valors petits són més estables però aprenen més lent; valors grans aprenen ràpid però poden ser inestables.</target>
+      </trans-unit>
+      <trans-unit id="predictionConfigDescription">
+        <source>Se ejecutará la consulta con la predicción seleccionada y se guardarán los cambios.</source>
+        <target>S'executarà la consulta amb la predicció seleccionada i es guardaran els canvis.</target>
+      </trans-unit>
+      <trans-unit id="askTheAIText">
+        <source>Consulta con la IA</source>
+        <target>Consulta amb la IA</target>
+      </trans-unit>
+      <trans-unit id="filterSummarySingular">
+        <source>Resumen de filtro</source>
+        <target>Resum de filtre</target>
+      </trans-unit>
+      <trans-unit id="copyPublicLinkTooltip">
+        <source>Copiar enlace público</source>
+        <target>Copiar enllaç públic</target>
+      </trans-unit>
+      <trans-unit id="copyPublicLinkSuccessText">
+        <source>El enlace público ha sido copiado al portapapeles.</source>
+        <target>L'enllaç públic s'ha copiat al porta-retalls.</target>
+      </trans-unit>
+      <trans-unit id="renameReportTooltip">
+        <source>Editar nombre</source>
+        <target>Editar nom</target>
+      </trans-unit>
+      <trans-unit id="confirmRenameTooltip">
+        <source>Confirmar nombre</source>
+        <target>Confirmar nom</target>
+      </trans-unit>
+      <trans-unit id="duplicateReportTooltip">
+        <source>Duplicar informe</source>
+        <target>Duplicar informe</target>
+      </trans-unit>
+      <trans-unit id="deleteReportTooltip">
+        <source>Eliminar informe</source>
+        <target>Eliminar informe</target>
+      </trans-unit>
+      <trans-unit id="authorTooltipLabel">
+        <source>Autor:</source>
+        <target>Autor:</target>
+      </trans-unit>
+      <trans-unit id="createdAtTooltipLabel">
+        <source>Creado:</source>
+        <target>Creat:</target>
+      </trans-unit>
+      <trans-unit id="modifiedAtTooltipLabel">
+        <source>Modificado:</source>
+        <target>Modificat:</target>
+      </trans-unit>
+      <trans-unit id="emailAlreadyExistsTitle">
+        <source>Email en uso</source>
+        <target>Email en ús</target>
+      </trans-unit>
+      <trans-unit id="emailAlreadyExistsMsg">
+        <source>Ya existe un usuario con este correo electrónico.</source>
+        <target>Ja existeix un usuari amb aquest correu electrònic.</target>
+      </trans-unit>
+      <trans-unit id="assistantTitle">
+        <source>Pregunta en lenguaje natural: </source>
+        <target>Pregunta en llenguatge natural:</target>
+      </trans-unit>
+      <trans-unit id="assistantSubtitle">
+        <source>Construye tu consulta en lenguaje natural</source>
+        <target>Construeix la teva consulta en llenguatge natural</target>
+      </trans-unit>
+      <trans-unit id="AIManagement">
+        <source>Gestión del asistente</source>
+        <target>Gestió de l'assistent</target>
+      </trans-unit>
+      <trans-unit id="customHtmlSaved">
+        <source>HTML personalizado guardado correctamente.</source>
+        <target>HTML personalitzat guardat correctament.</target>
+      </trans-unit>
+      <trans-unit id="advancedFilterTitle">
+        <source>Filtro avanzado</source>
+        <target>Filtre avançat</target>
+      </trans-unit>
+      <trans-unit id="clearFiltersBtn">
+        <source>Limpiar</source>
+        <target>Netejar</target>
+      </trans-unit>
+      <trans-unit id="authorFilterLabel">
+        <source>Propietario</source>
+        <target>Propietari</target>
+      </trans-unit>
+      <trans-unit id="authorFilterPlaceholder">
+        <source>Autor...</source>
+        <target>Autor...</target>
+      </trans-unit>
+      <trans-unit id="datasourceFilterLabel">
+        <source>Datasource</source>
+        <target>Datasource</target>
+      </trans-unit>
+      <trans-unit id="datasourceFilterPlaceholder">
+        <source>postgres, mysql...</source>
+        <target>postgres, mysql...</target>
+      </trans-unit>
+      <trans-unit id="createdFilterLabel">
+        <source>Creado en</source>
+        <target>Creat el</target>
+      </trans-unit>
+      <trans-unit id="modifiedFilterLabel">
+        <source>Modificado en</source>
+        <target>Modificat el</target>
+      </trans-unit>
+      <trans-unit id="tagsFilterLabel">
+        <source>Tags</source>
+        <target>Etiquetes</target>
+      </trans-unit>
+      <trans-unit id="tagsFilterPlaceholder">
+        <source>Selecciona tags...</source>
+        <target>Selecciona etiquetes...</target>
+      </trans-unit>
+      <trans-unit id="tagsTooltipLabel">
+        <source>Tags:</source>
+        <target>Etiquetes:</target>
+      </trans-unit>
+      <trans-unit id="folderReportCount">
+        <source>informes</source>
+        <target>informes</target>
+      </trans-unit>
+      <trans-unit id="hechoCon">
+        <source> HECHO CON </source>
+        <target>FET AMB</target>
+      </trans-unit>
+      <trans-unit id="noInitialDashboard">
+        <source>No hay ningún dashboard inicial configurado.</source>
+        <target>No hi ha cap informe inicial configurat.</target>
+      </trans-unit>
+      <trans-unit id="configureInitialDashboard">
+        <source>Edita el portal para seleccionar uno.</source>
+        <target>Edita el portal per seleccionar-ne un.</target>
+      </trans-unit>
+      <trans-unit id="initialDashboardLabel">
+        <source> Dashboard inicial: </source>
+        <target>Informe inicial:</target>
+      </trans-unit>
+      <trans-unit id="noneOption">
+        <source>— Ninguno —</source>
+        <target>— Cap —</target>
+      </trans-unit>
+      <trans-unit id="noPublicDashboards">
+        <source>No hay dashboards públicos disponibles.</source>
+        <target>No hi ha informes públics disponibles.</target>
+      </trans-unit>
+      <trans-unit id="adminPortal">
+        <source>Portal de datos</source>
+        <target>Portal de dades</target>
+      </trans-unit>
+      <trans-unit id="inputDescripcionModelo">
+        <source>Descripción</source>
+        <target>Descripció</target>
+      </trans-unit>
+      <trans-unit id="placeholderDescripcionModelo">
+        <source>Describe el propósito y contenido de este modelo de datos...</source>
+        <target>Descriu el propòsit i el contingut d'aquest model de dades...</target>
+      </trans-unit>
+      <trans-unit id="mcpVisibilityLabel">
+        <source>Visibilidad MCP</source>
+        <target>Visibilitat MCP</target>
+      </trans-unit>
+      <trans-unit id="mcpVisibilityTooltipTableModel">
+        <source>Controla si el agente de IA tiene acceso a esta información: Full permite acceso completo, None lo excluye totalmente.</source>
+        <target>Controla si l'agent d'IA té accés a aquesta informació: Full permet accés complet, None l'exclou totalment.</target>
+      </trans-unit>
+      <trans-unit id="mcpVisibilityTooltipCol">
+        <source>Controla si el agente de IA tiene acceso a esta información: Full permite acceso completo, Declaration expone solo nombre y tipo, None lo excluye totalmente.</source>
+        <target>Controla si l'agent d'IA té accés a aquesta informació: Full permet accés complet, Declaration exposa només nom i tipus, None l'exclou totalment.</target>
+      </trans-unit>
+      <trans-unit id="protectedDataSourceNotice">
+        <source>Algunas áreas de la configuración de esta fuente de datos se encuentran desactivadas porque es una fuente de datos protegida.</source>
+        <target>Algunes àrees de la configuració d'aquesta font de dades estan desactivades perquè és una font de dades protegida.</target>
+      </trans-unit>
+      <trans-unit id="deleteDuckdbTable">
+        <source>Eliminar tabla CSV</source>
+        <target>Elimina la taula CSV</target>
+      </trans-unit>
+      <trans-unit id="addDuckdbTable">
+        <source>Añadir tabla CSV</source>
+        <target>Afegeix una taula CSV</target>
+      </trans-unit>
+      <trans-unit id="dynamicFiltersText">
+        <source>Filtros dinámicos</source>
+        <target>Filtres dinàmics</target>
+      </trans-unit>
+      <trans-unit id="uniqueRecordsGrouping">
+        <source>Registros únicos (agrupación)?</source>
+        <target>Registres únics (agrupació)?</target>
+      </trans-unit>
+      <trans-unit id="tableDescriptionDependentFilter">
+        <source>Tabla:</source>
+        <target>Taula:</target>
+      </trans-unit>
+      <trans-unit id="columnDescriptionDependentFilter">
+        <source>Columna:</source>
+        <target>Columna:</target>
+      </trans-unit>
+      <trans-unit id="noAttributeShouldHaveAggregation">
+        <source>Ningún Atributo debe tener agregación</source>
+        <target>Cap atribut ha de tenir agregació</target>
+      </trans-unit>
+      <trans-unit id="mustConfigureAtLeastOneAttribute">
+        <source>Debe configurar un atributo como mínimo para habilitar esta opción</source>
+        <target>Cal configurar com a mínim un atribut per habilitar aquesta opció</target>
+      </trans-unit>
+      <trans-unit id="mustAddTheGroupingsToRunWithAggregations">
+        <source>Debe activar las agrupaciones para ejecutar con agregaciones configuradas en los atributos</source>
+        <target>Cal activar les agrupacions per executar amb agregacions configurades als atributs</target>
+      </trans-unit>
+      <trans-unit id="filterSettingsHeader">
+        <source>Configuración de filtros</source>
+        <target>Configuració de filtres</target>
+      </trans-unit>
+      <trans-unit id="globalFilter">
+        <source>Filtro de informe</source>
+        <target>Filtre d'informe</target>
+      </trans-unit>
+      <trans-unit id="panelFilter">
+        <source>Filtro de panel</source>
+        <target>Filtre de panell</target>
+      </trans-unit>
+      <trans-unit id="chatAssistantTitle">
+        <source>Asistente Edalitics</source>
+        <target>Assistent Edalitics</target>
+      </trans-unit>
+      <trans-unit id="chatAssistantSubtitle">
+        <source>Asistente IA para facilitar tu trabajo</source>
+        <target>Assistent IA per facilitar la teva feina</target>
+      </trans-unit>
+      <trans-unit id="chatCloseBtn">
+        <source>Cerrar</source>
+        <target>Tancar</target>
+      </trans-unit>
+      <trans-unit id="chatEmptyTitle">
+        <source>¿En qué puedo ayudarte?</source>
+        <target>En què et puc ajudar?</target>
+      </trans-unit>
+      <trans-unit id="chatEmptySubtitle">
+        <source>Consulta dashboards, datasources y datos</source>
+        <target>Consulta dashboards, datasources i dades</target>
+      </trans-unit>
+      <trans-unit id="chatSuggestion2">
+        <source>¿Qué fuentes de datos hay?</source>
+        <target>Quines fonts de dades hi ha?</target>
+      </trans-unit>
+      <trans-unit id="chatSuggestion4">
+        <source>¿Qué informes tengo disponibles?</source>
+        <target>Quins informes tinc disponibles?</target>
+      </trans-unit>
+      <trans-unit id="chatInputPlaceholder">
+        <source>Escribe un mensaje...</source>
+        <target>Escriu un missatge...</target>
+      </trans-unit>
+      <trans-unit id="chatFabTitle">
+        <source>Asistente IA</source>
+        <target>Assistent IA</target>
+      </trans-unit>
+      <trans-unit id="chatResetBtn">
+        <source>Nueva conversación</source>
+        <target>Nova conversa</target>
+      </trans-unit>
+      <trans-unit id="chatScrollDown">
+        <source>Ir al final</source>
+        <target>Ves al final</target>
+      </trans-unit>
+      <trans-unit id="chatStopBtn">
+        <source>Parar generación</source>
+        <target>Atura la generació</target>
+      </trans-unit>
+      <trans-unit id="saveAsModel">
+        <source>Guardar como, para el modelo de datos</source>
+        <target>Guardar com, per al model de dades</target>
+      </trans-unit>
+      <trans-unit id="chatOptionSelectedLabel">
+        <source>Opción</source>
+        <target>Opció</target>
+      </trans-unit>
+      <trans-unit id="chatErrorConnecting">
+        <source>Error al conectar con el asistente.</source>
+        <target>Error en connectar amb l'assistent.</target>
+      </trans-unit>
+      <trans-unit id="chatFallbackYes">
+        <source>Sí</source>
+        <target>Sí</target>
+      </trans-unit>
+      <trans-unit id="chatFallbackSearchIn">
+        <source>Buscar en...</source>
+        <target>Cercar a...</target>
+      </trans-unit>
+      <trans-unit id="chatFallbackSearchInPrefix">
+        <source>Buscar en: </source>
+        <target>Cercar a:</target>
+      </trans-unit>
+      <trans-unit id="chatStatusConnecting">
+        <source>Conectando con las fuentes de datos...</source>
+        <target>Connectant amb les fonts de dades...</target>
+      </trans-unit>
+      <trans-unit id="chatStatusAnalyzing">
+        <source>Analizando tu pregunta...</source>
+        <target>Analitzant la teva pregunta...</target>
+      </trans-unit>
+      <trans-unit id="chatStatusSearching">
+        <source>Buscando datos...</source>
+        <target>Cercant dades...</target>
+      </trans-unit>
+      <trans-unit id="chatStatusProcessing">
+        <source>Procesando resultados...</source>
+        <target>Processant resultats...</target>
+      </trans-unit>
+      <trans-unit id="chatStatusPreparing">
+        <source>Preparando respuesta...</source>
+        <target>Preparant la resposta...</target>
+      </trans-unit>
+      <trans-unit id="analyzingTheScheme">
+        <source>Analizando el esquema</source>
+        <target>Analitzant l'esquema</target>
+      </trans-unit>
+      <trans-unit id="aiManagementTitle">
+        <source>Gestión de IA</source>
+        <target>Gestió d'IA</target>
+      </trans-unit>
+      <trans-unit id="aiManagementSubtitle">
+        <source>Configura los parámetros del asistente de inteligencia artificial</source>
+        <target>Configura els paràmetres de l'assistent d'intel·ligència artificial</target>
+      </trans-unit>
+      <trans-unit id="aiProvider">
+        <source>PROVEEDOR</source>
+        <target>PROVEÏDOR</target>
+      </trans-unit>
+      <trans-unit id="aiApiKey">
+        <source>API KEY</source>
+        <target>API KEY</target>
+      </trans-unit>
+      <trans-unit id="aiAwsAccessKey">
+        <source>CLAVE DE ACCESO DE AWS</source>
+        <target>CLAU D'ACCES A AWS</target>
+      </trans-unit>
+      <trans-unit id="aiAwsRegion">
+        <source>REGIÓN DE AWS</source>
+        <target>REGIÓ D'AWS</target>
+      </trans-unit>
+      <trans-unit id="aiAwsSecretKey">
+        <source>CLAVE SECRETA DE AWS</source>
+        <target>CLAU SECRETA D'AWS</target>
+      </trans-unit>
+      <trans-unit id="aiModel">
+        <source>MODELO DE IA</source>
+        <target>MODEL D'IA</target>
+      </trans-unit>
+      <trans-unit id="aiContext">
+        <source>CONTEXTO</source>
+        <target>CONTEXT</target>
+      </trans-unit>
+      <trans-unit id="aiEDAApp">
+        <source>EDA APP URL</source>
+        <target>EDA APP URL</target>
+      </trans-unit>
+      <trans-unit id="aiMCPURL">
+        <source>MCP URL</source>
+        <target>MCP URL</target>
+      </trans-unit>
+      <trans-unit id="aiLimit">
+        <source>LÍMITE</source>
+        <target>LIMIT</target>
+      </trans-unit>
+      <trans-unit id="aiAvailable">
+        <source>DISPONIBLE</source>
+        <target>DISPONIBLE</target>
+      </trans-unit>
+      <trans-unit id="aiConfigSaved">
+        <source>Configuración de IA guardada correctamente</source>
+        <target>Configuració d'IA desada correctament</target>
+      </trans-unit>
+      <trans-unit id="aiBaseUrl">
+        <source>BASE URL</source>
+        <target>URL BASE</target>
+      </trans-unit>
+      <trans-unit id="navegableFrom">
+        <source>Navegable desde</source>
+        <target>Navegable des de</target>
+      </trans-unit>
+      <trans-unit id="noParentAttributes">
+        <source>Añade más atributos para activar la navegación</source>
+        <target>Afegeix més atributs per activar la navegació</target>
+      </trans-unit>
+      <trans-unit id="noParentText">
+        <source>Sin padre</source>
+        <target>Sense pare</target>
+      </trans-unit>
+      <trans-unit id="rangeTitle">
+        <source>Rangos</source>
+        <target>Rangs</target>
+      </trans-unit>
+      <trans-unit id="dateNavLabel">
+        <source>Navegación por fecha</source>
+        <target>Navegació per data</target>
+      </trans-unit>
+      <trans-unit id="whereHavingLabel">
+        <source>Ámbito del filtro</source>
+        <target>Àmbit del filtre</target>
+      </trans-unit>
+      <trans-unit id="noDataAvailable">
+        <source>Sin datos disponibles</source>
+        <target>Sense dades disponibles</target>
+      </trans-unit>
+      <trans-unit id="noDataChatMessage">
+        <source>Para utilizar este chat necesitas tener un panel con datos seleccionado.</source>
+        <target>Per utilitzar aquest xat necessites tenir un tauler amb dades seleccionat.</target>
+      </trans-unit>
+      <trans-unit id="copyToClipboard">
+        <source>Copiar</source>
+        <target>Copiar</target>
+      </trans-unit>
+      <trans-unit id="askEdaliticsPrefix">
+        <source>Pregúntale a </source>
+        <target>Pregunta a</target>
+      </trans-unit>
+      <trans-unit id="askEdaliticsSubtitle">
+        <source>Análisis de datos con IA</source>
+        <target>Anàlisi de dades amb IA</target>
+      </trans-unit>
+      <trans-unit id="volver">
+        <source>Volver</source>
+        <target>Tornar</target>
+      </trans-unit>
+      <trans-unit id="navegar">
+        <source>Navegar</source>
+        <target>Navegar</target>
+      </trans-unit>
+      <trans-unit id="resultSortingText">
+        <source>Ordenar los resultados por:</source>
+        <target>Ordenar els resultats per:</target>
+      </trans-unit>
+      <trans-unit id="draggResultSorting">
+        <source>Arrastre aquí los atributos sobre los que quiere ordenar</source>
+        <target>Arrossegueu aquí els atributs pels quals voleu ordenar</target>
+      </trans-unit>
+      <trans-unit id="ptooltipOrderByControl">
+        <source>Arrastra aquí los atributos por los que quieres ordenar los resultados y colócalos en el orden que prefieras. En cada uno puedes elegir ascendente (ASC), descendente (DESC) o dejarlo sin indicar.</source>
+        <target>Arrossega aquí els atributs pels quals vols ordenar els resultats i col·loca'ls en l'ordre que prefereixis. En cadascun pots triar ascendent (ASC), descendent (DESC) o deixar-ho sense indicar.</target>
+      </trans-unit>
+      <trans-unit id="noDuckDbFile">
+        <source>Debe cargar un archivo CSV primero</source>
+        <target>Cal carregar un arxiu CSV primer</target>
+      </trans-unit>
+      <trans-unit id="noFolderName">
+        <source>Debe proporcionar el nombre de la carpeta</source>
+        <target>Cal proporcionar el nom de la carpeta</target>
+      </trans-unit>
+      <trans-unit id="duckdbCreated">
+        <source>Fuente de datos DuckDB creada correctamente</source>
+        <target>Font de dades DuckDB creada correctament</target>
+      </trans-unit>
+      <trans-unit id="errorParseDuckDb">
+        <source>Error al parsear el archivo CSV. Verifica el separador.</source>
+        <target>Error en analitzar l&apos;arxiu CSV. Verifica el separador.</target>
+      </trans-unit>
+      <trans-unit id="duckdbTableAdded">
+        <source>Tabla añadida correctamente</source>
+        <target>Taula afegida correctament</target>
+      </trans-unit>
+      <trans-unit id="duckdbFolderPlaceholder">
+        <source>nombre_carpeta_nueva</source>
+        <target>nom_carpeta_nova</target>
+      </trans-unit>
+      <trans-unit id="duckdbAddAnotherCsv">
+        <source>Añadir otro CSV</source>
+        <target>Afegir un altre CSV</target>
+      </trans-unit>
+      <trans-unit id="duckdbFolderExistsError">
+        <source>Este nombre ya existe. Escribe un nombre diferente.</source>
+        <target>Aquest nom ja existeix. Escriu un nom diferent.</target>
+      </trans-unit>
+      <trans-unit id="odooInfoMessage">
+        <source>Al confirmar se descargarán las facturas, líneas, clientes, productos y vendedores de Odoo y se crearán como tablas en un datasource DuckDB. La descarga puede tardar unos segundos dependiendo del volumen de datos.</source>
+        <target>En confirmar es descarregaran les factures, línies, clients, productes i venedors d'Odoo i es crearan com a taules en un datasource DuckDB. La descàrrega pot tardar uns segons depenent del volum de dades.</target>
+      </trans-unit>
+      <trans-unit id="odooCreated">
+        <source>Fuente de datos Odoo creada correctamente</source>
+        <target>Font de dades Odoo creada correctament</target>
+      </trans-unit>
+      <trans-unit id="ga4PropertyIdHint">
+        <source>Puedes encontrarlo en Google Analytics → Administrar → Información de la propiedad</source>
+        <target>Pots trobar-lo a Google Analytics → Administrar → Informació de la propietat</target>
+      </trans-unit>
+      <trans-unit id="ga4FolderNameHint">
+        <source>Se creará la carpeta duckdb/&lt;nombre&gt;/ con los CSV de métricas</source>
+        <target>Es crearà la carpeta duckdb/&lt;nom&gt;/ amb els CSV de mètriques</target>
+      </trans-unit>
+      <trans-unit id="ga4FolderPlaceholder">
+        <source>ga4_miempresa</source>
+        <target>ga4_laevamempresa</target>
+      </trans-unit>
+      <trans-unit id="ga4AuthButton">
+        <source>Autorizar con Google Analytics</source>
+        <target>Autoritza amb Google Analytics</target>
+      </trans-unit>
+      <trans-unit id="ga4AuthWaiting">
+        <source>Esperando autorización en la ventana emergente...</source>
+        <target>Esperant autorització a la finestra emergent...</target>
+      </trans-unit>
+      <trans-unit id="ga4AuthSuccess">
+        <source>Cuenta de Google Analytics autorizada correctamente</source>
+        <target>Compte de Google Analytics autoritzat correctament</target>
+      </trans-unit>
+      <trans-unit id="ga4AuthRevoke">
+        <source>Cambiar cuenta</source>
+        <target>Canviar compte</target>
+      </trans-unit>
+      <trans-unit id="ga4AuthError">
+        <source>Error durante la autorización. Inténtalo de nuevo.</source>
+        <target>Error durant l'autorització. Torna-ho a intentar.</target>
+      </trans-unit>
+      <trans-unit id="ga4InfoMessage">
+        <source>Al confirmar se descargarán los datos de los últimos 365 días de Google Analytics 4: sesiones por canal, páginas vistas, eventos, dispositivos y datos geográficos. La descarga puede tardar según el volumen de datos de la propiedad.</source>
+        <target>En confirmar es descarregaran les dades dels últims 365 dies de Google Analytics 4: sessions per canal, pàgines vistes, esdeveniments, dispositius i dades geogràfiques. La descàrrega pot trigar segons el volum de dades de la propietat.</target>
+      </trans-unit>
+      <trans-unit id="ga4Created">
+        <source>Fuente de datos Google Analytics 4 creada correctamente</source>
+        <target>Font de dades Google Analytics 4 creada correctament</target>
+      </trans-unit>
+      <trans-unit id="ga4PropertyIdRequired">
+        <source>Debe indicar el ID de propiedad de Google Analytics 4</source>
+        <target>Cal indicar l'ID de propietat de Google Analytics 4</target>
+      </trans-unit>
+      <trans-unit id="ga4AuthRequired">
+        <source>Debes autorizar el acceso a Google Analytics primero</source>
+        <target>Cal autoritzar l'accés a Google Analytics primer</target>
+      </trans-unit>
+      <trans-unit id="holdedInfoMessage">
+        <source>Al confirmar se descargarán las facturas, líneas, contactos, productos y asientos contables de Holded y se crearán como tablas en un datasource DuckDB. La descarga puede tardar unos minutos dependiendo del volumen de datos.</source>
+        <target>En confirmar es descarregaran les factures, línies, contactes, productes i assentaments comptables de Holded i es crearan com a taules en un datasource DuckDB. La descàrrega pot tardar uns minuts depenent del volum de dades.</target>
+      </trans-unit>
+      <trans-unit id="holdedCreated">
+        <source>Fuente de datos Holded creada correctamente</source>
+        <target>Font de dades Holded creada correctament</target>
+      </trans-unit>
+      <trans-unit id="holdedFolderRequired">
+        <source>Debe indicar el nombre de la carpeta</source>
+        <target>Has d'indicar el nom de la carpeta</target>
+      </trans-unit>
+      <trans-unit id="holdedApiKeyRequired">
+        <source>Debe proporcionar la API Key de Holded</source>
+        <target>Has de proporcionar l'API Key de Holded</target>
+      </trans-unit>
+      <trans-unit id="multipleSelectionText">
+        <source>Selección múltiple</source>
+        <target>Selecció múltiple</target>
+      </trans-unit>
+      <trans-unit id="uniqueSelectionText">
+        <source>Selección única</source>
+        <target>Selecció única</target>
+      </trans-unit>
+      <trans-unit id="panelColHeader">
+        <source>Panel</source>
+        <target>Panell</target>
+      </trans-unit>
+      <trans-unit id="filterPathColHeader">
+        <source>Ruta del filtro</source>
+        <target>Ruta del filtre</target>
+      </trans-unit>
+      <trans-unit id="uniqueSelectionDescription">
+        <source>Active esta opción para permitir la selección múltiple.</source>
+        <target>Activeu aquesta opció per permetre la selecció múltiple.</target>
+      </trans-unit>
+      <trans-unit id="multipleSelectionDescription">
+        <source>Desactive esta opción para permitir la selección única.</source>
+        <target>Desactiveu aquesta opció per permetre la selecció única.</target>
+      </trans-unit>
+      <trans-unit id="enablePanelLockButton">
+        <source>Bloquear los paneles</source>
+        <target>Bloquejar els panells</target>
+      </trans-unit>
+      <trans-unit id="disablePanelLockButton">
+        <source>Desbloquear los paneles</source>
+        <target>Desbloquejar els panells</target>
+      </trans-unit>
+      <trans-unit id="dashboardSidebarReportAdd">
+        <source>Añadir</source>
+        <target>Afegeix</target>
+      </trans-unit>
+      <trans-unit id="dashboardSidebarSaveTooltip">
+        <source>Guardar informe</source>
+        <target>Desa l'informe</target>
+      </trans-unit>
+      <trans-unit id="dashboardMenuViewMode">
+        <source>Ver</source>
+        <target>Veure</target>
+      </trans-unit>
+      <trans-unit id="dashboardMenuViewModeTooltip">
+        <source>Pasar a modo ver (oculta la edición)</source>
+        <target>Passa al mode de visualització (amaga l'edició)</target>
+      </trans-unit>
+      <trans-unit id="dashboardMenuEditMode">
+        <source>Editar</source>
+        <target>Edita</target>
+      </trans-unit>
+      <trans-unit id="dashboardMenuEditModeTooltip">
+        <source>Volver a modo edición</source>
+        <target>Torna al mode d'edició</target>
+      </trans-unit>
+      <trans-unit id="editFilterTooltip">
+        <source>Editar filtro</source>
+        <target>Edita el filtre</target>
+      </trans-unit>
+      <trans-unit id="dashboardMenuReportFilters">
+        <source>Filtros de informe</source>
+        <target>Filtres d'informe</target>
+      </trans-unit>
+      <trans-unit id="newTitlePanel">
+        <source>Titulo Panel</source>
+        <target>Panell de títol</target>
+      </trans-unit>
+      <trans-unit id="newTabsPanel">
+        <source>Tabs</source>
+        <target>Pestanyes</target>
+      </trans-unit>
+      <trans-unit id="dashboardSidebarDownloadWord">
+        <source>Descargar Word</source>
+        <target>Descarrega Word</target>
+      </trans-unit>
+      <trans-unit id="noAttributes">
+        <source>Sin atributos</source>
+        <target>Sense atributs</target>
+      </trans-unit>
+      <trans-unit id="noFilters">
+        <source>Sin filtros</source>
+        <target>Sense filtres</target>
+      </trans-unit>
+      <trans-unit id="panelTitlePlaceholder">
+        <source>Título del panel</source>
+        <target>Títol del panell</target>
+      </trans-unit>
+      <trans-unit id="panelDescriptionPlaceholder">
+        <source>Descripción (opcional)</source>
+        <target>Descripció (opcional)</target>
+      </trans-unit>
+      <trans-unit id="configurarFiltrosAvanzados">
+        <source>Configurar</source>
+        <target>Configura</target>
+      </trans-unit>
+      <trans-unit id="selectOriginTable">
+        <source>Seleccionar tabla</source>
+        <target>Selecciona una taula</target>
+      </trans-unit>
+      <trans-unit id="reportName">
+        <source>Nombre del Informe</source>
+        <target>Nom de l'informe</target>
+      </trans-unit>
+      <trans-unit id="reportType">
+        <source>Tipo</source>
+        <target>Tipus</target>
+      </trans-unit>
+      <trans-unit id="reportTags">
+        <source>Etiquetas</source>
+        <target>Etiquetes</target>
+      </trans-unit>
+      <trans-unit id="reportAutor">
+        <source>Autor</source>
+        <target>Autor</target>
+      </trans-unit>
+      <trans-unit id="reportCreatedAt">
+        <source>Fecha creación</source>
+        <target>Data de creació</target>
+      </trans-unit>
+      <trans-unit id="reportModifiedAt">
+        <source>Fecha modificación</source>
+        <target>Data de modificació</target>
+      </trans-unit>
+      <trans-unit id="reportPrivateEdition">
+        <source>Edición privada</source>
+        <target>Edició privada</target>
+      </trans-unit>
+      <trans-unit id="ResetZoom">
+        <source>Restablecer (100%)</source>
+        <target>Restableix (100%)</target>
+      </trans-unit>
+      <trans-unit id="aboutPageTitle">
+        <source>Tutorial</source>
+        <target>Tutorial</target>
+      </trans-unit>
+      <trans-unit id="logotipoSdaAlt">
+        <source>Logotipo de Sinergia Data Analitycs</source>
+        <target>Logotip de Sinergia Data Analytics</target>
+      </trans-unit>
+      <trans-unit id="aboutPageSinergiaDAVersion">
+        <source>Versión de SinergiaDA</source>
+        <target>Versió de SinergiaDA</target>
+      </trans-unit>
+      <trans-unit id="aboutPageEdaVersionAPI">
+        <source>Puerto / Versión de EDA (API)</source>
+        <target>Port / Versió d'EDA (API)</target>
+      </trans-unit>
+      <trans-unit id="aboutPageLastUpdateModelDate">
+        <source> Última sincronización con SinergiaCRM (updateModel) </source>
+        <target>Última sincronització amb SinergiaCRM (updateModel)</target>
+      </trans-unit>
+      <trans-unit id="aboutPageLastRebuildDate">
+        <source> Última reconstrucción de origenes de datos en SinergiaCRM (rebuild) </source>
+        <target>Última reconstrucció d'orígens de dades a SinergiaCRM (rebuild)</target>
+      </trans-unit>
+      <trans-unit id="1674473955394759605">
+        <source>Base de datos de SinergiaCRM</source>
+        <target>Base de dades de SinergiaCRM</target>
+      </trans-unit>
+      <trans-unit id="SDALicense">
+        <source>Licencia</source>
+        <target>Llicència</target>
+      </trans-unit>
+      <trans-unit id="colorChartBorderLabel">
+        <source>Color del borde</source>
+        <target>Color de la vora</target>
+      </trans-unit>
+      <trans-unit id="colorLabelLine">
+        <source>Color de línea</source>
+        <target>Color de línia</target>
+      </trans-unit>
+      <trans-unit id="colorLabelArea">
+        <source>Color de área</source>
+        <target>Color d'àrea</target>
+      </trans-unit>
+      <trans-unit id="resetSectionButton">
+        <source>Restaurar</source>
+        <target>Restableix</target>
+      </trans-unit>
+      <trans-unit id="widthLabelLine">
+        <source>Grosor de línea</source>
+        <target>Gruix de línia</target>
+      </trans-unit>
+      <trans-unit id="lineStyleLabel">
+        <source>Tipo de línea</source>
+        <target>Tipus de línia</target>
+      </trans-unit>
+      <trans-unit id="axisScaleH6">
+        <source>Ejes y escala</source>
+        <target>Eixos i escala</target>
+      </trans-unit>
+      <trans-unit id="xAxisShowLabel">
+        <source>Mostrar eje X</source>
+        <target>Mostra l'eix X</target>
+      </trans-unit>
+      <trans-unit id="xAxisLabelsLabel">
+        <source>Mostrar etiquetas del eje X</source>
+        <target>Mostra les etiquetes de l'eix X</target>
+      </trans-unit>
+      <trans-unit id="xAxisAllLabelsLabel">
+        <source>Mostrar todas las etiquetas</source>
+        <target>Mostra totes les etiquetes</target>
+      </trans-unit>
+      <trans-unit id="xAxisLabelCountLabel">
+        <source>Máximo de etiquetas</source>
+        <target>Màxim d'etiquetes</target>
+      </trans-unit>
+      <trans-unit id="labelsValuesH6">
+        <source>Etiquetas y valores</source>
+        <target>Etiquetes i valors</target>
+      </trans-unit>
+      <trans-unit id="showValueLabelsLabel">
+        <source>Mostrar valores en el gráfico</source>
+        <target>Mostra els valors al gràfic</target>
+      </trans-unit>
+      <trans-unit id="showValuePercentLabel">
+        <source>Mostrar valores en porcentaje</source>
+        <target>Mostra els valors en percentatge</target>
+      </trans-unit>
+      <trans-unit id="labelColorLabel">
+        <source>Color del texto de etiquetas</source>
+        <target>Color del text de les etiquetes</target>
+      </trans-unit>
+      <trans-unit id="labelBackgroundColorLabel">
+        <source>Fondo de etiquetas</source>
+        <target>Fons de les etiquetes</target>
+      </trans-unit>
+      <trans-unit id="kpiAspecto">
+        <source>Aspecto</source>
+        <target>Aparença</target>
+      </trans-unit>
+      <trans-unit id="kpiBgColor">
+        <source>Color de fondo</source>
+        <target>Color del fons</target>
+      </trans-unit>
+      <trans-unit id="kpiTextColor">
+        <source>Color del indicador</source>
+        <target>Color de l'indicador</target>
+      </trans-unit>
+      <trans-unit id="colorLabelSeries">
+        <source>Color de la serie</source>
+        <target>Color de la sèrie</target>
+      </trans-unit>
+      <trans-unit id="panelTitleOptions">
+        <source>Opciones de visualización</source>
+        <target>Opcions de visualització</target>
+      </trans-unit>
+      <trans-unit id="appearanceSection">
+        <source>Apariencia</source>
+        <target>Aparença</target>
+      </trans-unit>
+      <trans-unit id="kpiPrefixImage">
+        <source>Imagen prefijo</source>
+        <target>Imatge de prefix</target>
+      </trans-unit>
+      <trans-unit id="kpiDecreaseFontSize">
+        <source>Reducir tamaño</source>
+        <target>Reduir mida</target>
+      </trans-unit>
+      <trans-unit id="kpiIncreaseFontSize">
+        <source>Aumentar tamaño</source>
+        <target>Augmentar mida</target>
+      </trans-unit>
+      <trans-unit id="removeRowTotals">
+        <source>Quitar totales de fila</source>
+        <target>Elimina els totals de fila</target>
+      </trans-unit>
+      <trans-unit id="removeColSubtotals">
+        <source>Quitar subtotales de columna</source>
+        <target>Elimina els subtotals de columna</target>
+      </trans-unit>
+      <trans-unit id="addRowTotals">
+        <source>Totales de fila</source>
+        <target>Totals de fila</target>
+      </trans-unit>
+      <trans-unit id="addColSubtotals">
+        <source>Subtotales de columna</source>
+        <target>Subtotals de columna</target>
+      </trans-unit>
+      <trans-unit id="addColTotals">
+        <source>Totales de columna</source>
+        <target>Totals de columna</target>
+      </trans-unit>
+      <trans-unit id="removeColTotals">
+        <source>Quitar totales de columna</source>
+        <target>Elimina els totals de columna</target>
+      </trans-unit>
+      <trans-unit id="addOnlyPercentages">
+        <source>Sólo porcentajes</source>
+        <target>Només percentatges</target>
+      </trans-unit>
+      <trans-unit id="addOnlyValues">
+        <source>Solo valores</source>
+        <target>Només valors</target>
+      </trans-unit>
+      <trans-unit id="addValuesPercentages">
+        <source>Valores y porcentajes</source>
+        <target>Valors i percentatges</target>
+      </trans-unit>
+      <trans-unit id="addTotals">
+        <source>Totales</source>
+        <target>Totals</target>
+      </trans-unit>
+      <trans-unit id="addPercentages">
+        <source>Porcentajes</source>
+        <target>Percentatges</target>
+      </trans-unit>
+      <trans-unit id="addStyles">
+        <source>Código de color</source>
+        <target>Codi de color</target>
+      </trans-unit>
+      <trans-unit id="tableTitleDialog">
+        <source>Propiedades de la tabla</source>
+        <target>Propietats de la taula</target>
+      </trans-unit>
+      <trans-unit id="LogsActionGroupCreated">
+        <source>Group Created</source>
+        <target>Grup creat</target>
+      </trans-unit>
+      <trans-unit id="LogsActionGroupUpdated">
+        <source>Group Updated</source>
+        <target>Grup actualitzat</target>
+      </trans-unit>
+      <trans-unit id="LogsActionGroupDeleted">
+        <source>Group Deleted</source>
+        <target>Grup eliminat</target>
+      </trans-unit>
+      <trans-unit id="LogsActionGroupMembershipChanged">
+        <source>Group Membership Changed</source>
+        <target>Pertinença de grup canviada</target>
+      </trans-unit>
+      <trans-unit id="LogsActionUpdateModelStarted">
+        <source>Update Model Started</source>
+        <target>Actualització del model iniciada</target>
+      </trans-unit>
+      <trans-unit id="LogsActionUpdateModelUsersAndGroupsSynced">
+        <source>Update Model Users/Groups Synced</source>
+        <target>Usuaris/Grups sincronitzats</target>
+      </trans-unit>
+      <trans-unit id="LogsActionUpdateModelUsersAndGroupsSyncFailed">
+        <source>Update Model Users/Groups Sync Failed</source>
+        <target>Error en sincronització d'Usuaris/Grups</target>
+      </trans-unit>
+      <trans-unit id="LogsActionUpdateModelRolesMapped">
+        <source>Update Model Roles Mapped</source>
+        <target>Rols mapejats</target>
+      </trans-unit>
+      <trans-unit id="LogsActionUpdateModelRolesMappingFailed">
+        <source>Update Model Roles Mapping Failed</source>
+        <target>Error en mapeig de rols</target>
+      </trans-unit>
+      <trans-unit id="LogsActionUpdateModelDataModelBuilt">
+        <source>Update Model Data Model Built</source>
+        <target>Model de dades construït</target>
+      </trans-unit>
+      <trans-unit id="LogsActionUpdateModelDataModelBuildFailed">
+        <source>Update Model Data Model Build Failed</source>
+        <target>Error en construcció del model de dades</target>
+      </trans-unit>
+      <trans-unit id="LogsActionUpdateModelCompleted">
+        <source>Update Model Completed</source>
+        <target>Actualització del model completada</target>
+      </trans-unit>
+      <trans-unit id="LogsActionUpdateModelPushFailed">
+        <source>Update Model Push Failed</source>
+        <target>Error en push del model</target>
+      </trans-unit>
+      <trans-unit id="LogsActionUpdateModelFailed">
+        <source>Update Model Failed</source>
+        <target>Error en actualització del model</target>
+      </trans-unit>
+      <trans-unit id="ServerConsoleLive">
+        <source>En vivo</source>
+        <target>En directe</target>
+      </trans-unit>
+      <trans-unit id="ServerConsoleReset">
+        <source>El fichero de log se reinició.</source>
+        <target>El fitxer de log s'ha reiniciat.</target>
+      </trans-unit>
+      <trans-unit id="ServerConsoleEmpty">
+        <source>Sin contenido.</source>
+        <target>Sense contingut.</target>
+      </trans-unit>
+      <trans-unit id="LogsAuditTab">
+        <source>Auditoría</source>
+        <target>Auditoria</target>
+      </trans-unit>
+      <trans-unit id="LogsConsoleTab">
+        <source>Consola del servidor</source>
+        <target>Consola del servidor</target>
+      </trans-unit>
+      <trans-unit id="SelectPeriodPlaceholder">
+        <source>Selecciona periodo</source>
+        <target>Selecciona un període</target>
+      </trans-unit>
+      <trans-unit id="Today">
+        <source>Hoy</source>
+        <target>Avui</target>
+      </trans-unit>
+      <trans-unit id="Yesterday">
+        <source>Ayer</source>
+        <target>Ahir</target>
+      </trans-unit>
+      <trans-unit id="Last5Days">
+        <source>Últimos 5 días</source>
+        <target>Últims 5 dies</target>
+      </trans-unit>
+      <trans-unit id="Last10Days">
+        <source>Últimos 10 días</source>
+        <target>Últims 10 dies</target>
+      </trans-unit>
+      <trans-unit id="FilterByPeriod">
+        <source>Periodo</source>
+        <target>Període</target>
+      </trans-unit>
+      <trans-unit id="FilterByDate">
+        <source>Fecha</source>
+        <target>Data</target>
+      </trans-unit>
+      <trans-unit id="FilterColumn">
+        <source>Buscar...</source>
+        <target>Cerca...</target>
+      </trans-unit>
+      <trans-unit id="LogsQueryFailureTitle">
+        <source>Detalles del error de consulta</source>
+        <target>Detalls de l'error de consulta</target>
+      </trans-unit>
+      <trans-unit id="Date">
+        <source>Fecha</source>
+        <target>Data</target>
+      </trans-unit>
+      <trans-unit id="Level">
+        <source>Nivel</source>
+        <target>Nivell</target>
+      </trans-unit>
+      <trans-unit id="Action">
+        <source>Acción</source>
+        <target>Acció</target>
+      </trans-unit>
+      <trans-unit id="User">
+        <source>Usuario</source>
+        <target>Usuari</target>
+      </trans-unit>
+      <trans-unit id="IP">
+        <source>IP</source>
+        <target>IP</target>
+      </trans-unit>
+      <trans-unit id="Type">
+        <source>Tipo</source>
+        <target>Tipus</target>
+      </trans-unit>
+      <trans-unit id="LogsSqlNotAvailable">
+        <source>SQL no disponible</source>
+        <target>SQL no disponible</target>
+      </trans-unit>
+      <trans-unit id="LogsSqlCopied">
+        <source>SQL copiado</source>
+        <target>SQL copiat</target>
+      </trans-unit>
+      <trans-unit id="LogsCopyFailed">
+        <source>Error al copiar</source>
+        <target>Error en copiar</target>
+      </trans-unit>
+      <trans-unit id="LogsActionAccess">
+        <source>Acceso</source>
+        <target>Accés</target>
+      </trans-unit>
+      <trans-unit id="LogsActionCreation">
+        <source>Creación</source>
+        <target>Creació</target>
+      </trans-unit>
+      <trans-unit id="LogsActionUpdate">
+        <source>Actualización</source>
+        <target>Actualització</target>
+      </trans-unit>
+      <trans-unit id="LogsActionRename">
+        <source>Renombrado</source>
+        <target>Canvi de nom</target>
+      </trans-unit>
+      <trans-unit id="LogsActionVisibilityChange">
+        <source>Cambio de visibilidad</source>
+        <target>Canvi de visibilitat</target>
+      </trans-unit>
+      <trans-unit id="LogsActionDeletion">
+        <source>Eliminación</source>
+        <target>Eliminació</target>
+      </trans-unit>
+      <trans-unit id="LogsActionQueryFailure">
+        <source>Fallo de consulta</source>
+        <target>Error de consulta</target>
+      </trans-unit>
+      <trans-unit id="LogsActionUserCreation">
+        <source>Creación de usuario</source>
+        <target>Creació d'usuari</target>
+      </trans-unit>
+      <trans-unit id="LogsActionUserUpdate">
+        <source>Actualización de usuario</source>
+        <target>Actualització d'usuari</target>
+      </trans-unit>
+      <trans-unit id="LogsActionUserDeletion">
+        <source>Eliminación de usuario</source>
+        <target>Eliminació d'usuari</target>
+      </trans-unit>
+      <trans-unit id="LogsActionUserRolesChange">
+        <source>Cambio de roles de usuario</source>
+        <target>Canvi de rols d'usuari</target>
+      </trans-unit>
+      <trans-unit id="LogsActionUserPasswordChange">
+        <source>Cambio de contraseña de usuario</source>
+        <target>Canvi de contrasenya d'usuari</target>
+      </trans-unit>
+      <trans-unit id="LogsActionGroupCreation">
+        <source>Creación de grupo</source>
+        <target>Creació de grup</target>
+      </trans-unit>
+      <trans-unit id="LogsActionGroupUpdate">
+        <source>Actualización de grupo</source>
+        <target>Actualització de grup</target>
+      </trans-unit>
+      <trans-unit id="LogsActionGroupDeletion">
+        <source>Eliminación de grupo</source>
+        <target>Eliminació de grup</target>
+      </trans-unit>
+      <trans-unit id="LogsActionGroupMembershipChange">
+        <source>Cambio de membresía de grupo</source>
+        <target>Canvi de membres del grup</target>
+      </trans-unit>
+      <trans-unit id="LogsActionModelUpdateStart">
+        <source>Inicio de actualización del modelo</source>
+        <target>Inici de l'actualització del model</target>
+      </trans-unit>
+      <trans-unit id="LogsActionUsersGroupsSync">
+        <source>Sincronización de usuarios/grupos</source>
+        <target>Sincronització d'usuaris/grups</target>
+      </trans-unit>
+      <trans-unit id="LogsActionUsersGroupsSyncFailure">
+        <source>Fallo en sincronización de usuarios/grupos</source>
+        <target>Error en la sincronització d'usuaris/grups</target>
+      </trans-unit>
+      <trans-unit id="LogsActionRoleMapping">
+        <source>Mapeo de roles</source>
+        <target>Mapatge de rols</target>
+      </trans-unit>
+      <trans-unit id="LogsActionRoleMappingFailure">
+        <source>Fallo en mapeo de roles</source>
+        <target>Error en el mapatge de rols</target>
+      </trans-unit>
+      <trans-unit id="LogsActionDataModelBuild">
+        <source>Construcción del modelo de datos</source>
+        <target>Construcció del model de dades</target>
+      </trans-unit>
+      <trans-unit id="LogsActionDataModelBuildFailure">
+        <source>Fallo en construcción del modelo de datos</source>
+        <target>Error en la construcció del model de dades</target>
+      </trans-unit>
+      <trans-unit id="LogsActionModelUpdateCompleted">
+        <source>Actualización del modelo completada</source>
+        <target>Actualització del model completada</target>
+      </trans-unit>
+      <trans-unit id="LogsActionModelPushFailure">
+        <source>Fallo en push del modelo</source>
+        <target>Error en el push del model</target>
+      </trans-unit>
+      <trans-unit id="LogsActionModelUpdateFailure">
+        <source>Fallo en actualización del modelo</source>
+        <target>Error en l'actualització del model</target>
+      </trans-unit>
+      <trans-unit id="LogsActionAttempt">
+        <source>Intento</source>
+        <target>Intent</target>
+      </trans-unit>
+      <trans-unit id="LogsActionLogin">
+        <source>Inicio de sesión</source>
+        <target>Inici de sessió</target>
+      </trans-unit>
+      <trans-unit id="LogsViewer">
+        <source>Visor de logs</source>
+        <target>Visor de logs</target>
+      </trans-unit>
+      <trans-unit id="LogsAuditSubtitle">
+        <source>Registro de auditoría de la aplicación</source>
+        <target>Registre d'auditoria de l'aplicació</target>
+      </trans-unit>
+      <trans-unit id="HideDashboardAccessed">
+        <source>Mostrar accesos a informes</source>
+        <target>Mostra els accessos a informes</target>
+      </trans-unit>
+      <trans-unit id="LogsViewDetails">
+        <source>Ver detalles</source>
+        <target>Mostra els detalls</target>
+      </trans-unit>
+      <trans-unit id="NoLogsFound">
+        <source>No se encontraron logs para esta fecha.</source>
+        <target>No s'han trobat logs per a aquesta data.</target>
+      </trans-unit>
+      <trans-unit id="LogsFoundCount">
+        <source>registros encontrados</source>
+        <target>registres trobats</target>
+      </trans-unit>
+      <trans-unit id="LogsReportName">
+        <source>Nombre del informe:</source>
+        <target>Nom de l'informe:</target>
+      </trans-unit>
+      <trans-unit id="LogsReportId">
+        <source>ID del informe:</source>
+        <target>ID de l'informe:</target>
+      </trans-unit>
+      <trans-unit id="LogsPanelName">
+        <source>Nombre del panel:</source>
+        <target>Nom del panell:</target>
+      </trans-unit>
+      <trans-unit id="LogsPanelId">
+        <source>ID del panel:</source>
+        <target>ID del panell:</target>
+      </trans-unit>
+      <trans-unit id="LogsMode">
+        <source>Modo:</source>
+        <target>Mode:</target>
+      </trans-unit>
+      <trans-unit id="LogsError">
+        <source>Error:</source>
+        <target>Error:</target>
+      </trans-unit>
+      <trans-unit id="LogsSql">
+        <source>SQL:</source>
+        <target>SQL:</target>
+      </trans-unit>
+      <trans-unit id="LogsCopySql">
+        <source>Copiar SQL</source>
+        <target>Copia l'SQL</target>
+      </trans-unit>
+      <trans-unit id="reportDataSourceName">
+        <source>Fuente de datos</source>
+        <target>Font de dades</target>
+      </trans-unit>
+      <trans-unit id="newReport">
+        <source>Nuevo informe</source>
+        <target>Nou informe</target>
+      </trans-unit>
+      <trans-unit id="tableView">
+        <source>Vista de tabla</source>
+        <target>Vista de taula</target>
+      </trans-unit>
+      <trans-unit id="cardView">
+        <source>Vista de fichas</source>
+        <target>Vista de fitxes</target>
+      </trans-unit>
+      <trans-unit id="tags">
+        <source>Etiquetas</source>
+        <target>Etiquetes</target>
+      </trans-unit>
+      <trans-unit id="tagSearch">
+        <source>Buscar etiqueta</source>
+        <target>Cerca una etiqueta</target>
+      </trans-unit>
+      <trans-unit id="removeFilter">
+        <source>Quitar filtro</source>
+        <target>Treu el filtre</target>
+      </trans-unit>
+      <trans-unit id="groupSearch">
+        <source>Buscar grupo</source>
+        <target>Cerca un grup</target>
+      </trans-unit>
+      <trans-unit id="status">
+        <source>Estado</source>
+        <target>Estat</target>
+      </trans-unit>
+      <trans-unit id="active">
+        <source>Activos</source>
+        <target>Actius</target>
+      </trans-unit>
+      <trans-unit id="inactive">
+        <source>Inactivos</source>
+        <target>Inactius</target>
+      </trans-unit>
+      <trans-unit id="typeSearch">
+        <source>Buscar tipo</source>
+        <target>Cerca un tipus</target>
+      </trans-unit>
+      <trans-unit id="nameFilter">
+        <source>Filtrar por nombre del informe</source>
+        <target>Filtra pel nom de l'informe</target>
+      </trans-unit>
+      <trans-unit id="clearAllFilters">
+        <source>Eliminar todos los filtros</source>
+        <target>Elimina tots els filtres</target>
+      </trans-unit>
+      <trans-unit id="clickToEditName">
+        <source>Pulse para editar el nombre</source>
+        <target>Fes clic per editar el nom</target>
+      </trans-unit>
+      <trans-unit id="goToDashboard">
+        <source>Abrir informe</source>
+        <target>Obre l'informe</target>
+      </trans-unit>
+      <trans-unit id="cloneReport">
+        <source>Clonar informe</source>
+        <target>Clona l'informe</target>
+      </trans-unit>
+      <trans-unit id="deleteReport">
+        <source>Eliminar informe</source>
+        <target>Elimina l'informe</target>
+      </trans-unit>
+      <trans-unit id="copyURL">
+        <source>Copiar url pública</source>
+        <target>Copia l'URL pública</target>
+      </trans-unit>
+      <trans-unit id="activeLabel">
+        <source>Activo</source>
+        <target>Actiu</target>
+      </trans-unit>
+      <trans-unit id="inactiveLabel">
+        <source>Inactivo</source>
+        <target>Inactiu</target>
+      </trans-unit>
+      <trans-unit id="showReport">
+        <source>Mostrar informe</source>
+        <target>Mostra l'informe</target>
+      </trans-unit>
 
       <!-- SECTION: CONTENIDO HTML (INTERPOLACIONES) -->
-      <trans-unit id="terms1" datatype="html">
+
+      <trans-unit datatype="html" id="terms1">
         <source>Estoy de acuerdo con los <x id="START_LINK" ctype="x-a" equiv-text="&lt;a&gt;" />
  términos<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;" />
       </source>
-      <target>Estic d'acord amb els <x id="START_LINK" ctype="x-a" equiv-text="&lt;a&gt;"/>
+        <target>Estic d'acord amb els <x id="START_LINK" ctype="x-a" equiv-text="&lt;a&gt;"/>
  termes<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/>
     </target>
-  </trans-unit>
-  <trans-unit id="haveAccount" datatype="html">
-    <source>¿Tienes una cuenta? <x id="START_LINK" ctype="x-a" equiv-text="&lt;a&gt;" />
+      </trans-unit>
+      <trans-unit datatype="html" id="haveAccount">
+        <source>¿Tienes una cuenta? <x id="START_LINK" ctype="x-a" equiv-text="&lt;a&gt;" />
     <x id="START_BOLD_TEXT" ctype="x-b" equiv-text="&lt;b&gt;" />
 Ingresa ahora<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;" />
   <x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;" />
 </source>
-<target>Teniu un compte? <x id="START_LINK" ctype="x-a" equiv-text="&lt;a&gt;"/>
+        <target>Teniu un compte? <x id="START_LINK" ctype="x-a" equiv-text="&lt;a&gt;"/>
 <x id="START_BOLD_TEXT" ctype="x-b" equiv-text="&lt;b&gt;"/>
  Entreu<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/>
 </target>
-</trans-unit>
-<trans-unit id="indicaciones6" datatype="html">
-<source>Para hacerlo sólo tienes que añadir: <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span&gt;" />
+      </trans-unit>
+      <trans-unit datatype="html" id="indicaciones6">
+        <source>Para hacerlo sólo tienes que añadir: <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span&gt;" />
  AND <x id="INTERPOLATION" equiv-text="{{&apos; ${alias_tabla.columna_filtrada} &apos;}}" />
 <x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;" />
  en la cláusula &apos;WHERE&apos; de la consulta donde quieras inyectar el filtro</source>
-<target>Per fer-ho només heu d'afegir: <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span&gt;"/>
+        <target>Per fer-ho només heu d'afegir: <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span&gt;"/>
  AND <x id="INTERPOLATION" equiv-text="{{&apos; ${alias_taula.columna_filtrada} &apos;}}"/>
 <x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/>
  a la clàusula &apos;WHERE&apos; de la consulta on voleu injectar el filtre</target>
-</trans-unit>
-<trans-unit id="indicaciones7" datatype="html">
-<source>Si no has añadido ninguna cláusula WHERE, añádela a la consulta y haz los joins necesarios, junto con el filtro en el formato <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span&gt;" />
+      </trans-unit>
+      <trans-unit datatype="html" id="indicaciones7">
+        <source>Si no has añadido ninguna cláusula WHERE, añádela a la consulta y haz los joins necesarios, junto con el filtro en el formato <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span&gt;" />
 <x id="INTERPOLATION" equiv-text="{{&apos; ${alias_tabla.columna_filtrada} &apos;}}" />
 <x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;" />
 </source>
-<target>Si no heu afegit cap clàusula WHERE, afegiu-la a la consulta i feu els JOIN necessaris, juntament amb el el filtre en el format <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span&gt;"/>
+        <target>Si no heu afegit cap clàusula WHERE, afegiu-la a la consulta i feu els JOIN necessaris, juntament amb el el filtre en el format <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span&gt;"/>
 <x id="INTERPOLATION" equiv-text="{{&apos; ${alias_taula.columna_filtrada} &apos;}}"/>
 <x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/>
 </target>
-</trans-unit>
-<trans-unit id="vistaSeleccionador" datatype="html">
-<source>
+      </trans-unit>
+      <trans-unit datatype="html" id="vistaSeleccionador">
+        <source>
 <x id="INTERPOLATION" equiv-text="{{!modeSQL ? editQuery : editSQLQuery}}" />
 </source>
-<target>
+        <target>
 <x id="INTERPOLATION" equiv-text="{{!modeSQL ? editQuery : editSQLQuery}}"/>
 </target>
-</trans-unit>
-<trans-unit id="editModelHeaders" datatype="html">
-<source>Editar <x id="INTERPOLATION" equiv-text="{{tablePanel.type ? tablePanel.name : &apos;&apos;}}" />
+      </trans-unit>
+      <trans-unit datatype="html" id="editModelHeaders">
+        <source>Editar <x id="INTERPOLATION" equiv-text="{{tablePanel.type ? tablePanel.name : &apos;&apos;}}" />
 </source>
-<target>Edita <x id="INTERPOLATION" equiv-text="{{tablePanel.type ? tablePanel.name : &apos;&apos;}}"/>
+        <target>Edita <x id="INTERPOLATION" equiv-text="{{tablePanel.type ? tablePanel.name : &apos;&apos;}}"/>
 </target>
-</trans-unit>
-<trans-unit id="registers1" datatype="html">
-<source>
+      </trans-unit>
+      <trans-unit datatype="html" id="registers1">
+        <source>
 <x id="INTERPOLATION" equiv-text="{{ table.filteredValue.length }}" />
  registros</source>
-<target>
+        <target>
 <x id="INTERPOLATION" equiv-text="{{ table.filteredValue.length }}"/>
  registres</target>
-</trans-unit>
-<trans-unit id="registers2" datatype="html">
-<source>
+      </trans-unit>
+      <trans-unit datatype="html" id="registers2">
+        <source>
 <x id="INTERPOLATION" equiv-text="{{ table.value.length }}" />
  registros</source>
-<target>
+        <target>
 <x id="INTERPOLATION" equiv-text="{{ table.value.length }}"/>
  registres</target>
-</trans-unit>
-<trans-unit id="topQueryH4" datatype="html">
-<source>Mostrar Top:</source>
-<target>Mostra els Top:</target>
-</trans-unit>
-<trans-unit id="atributosH4interpolation" datatype="html">
-<source>
+      </trans-unit>
+      <trans-unit datatype="html" id="topQueryH4">
+        <source>Mostrar Top:</source>
+        <target>Mostra els Top:</target>
+      </trans-unit>
+      <trans-unit datatype="html" id="atributosH4interpolation">
+        <source>
 <x id="INTERPOLATION" equiv-text="{{getDisplayName(userSelectedTable)}" />
 </source>
-<target>
+        <target>
 <x id="INTERPOLATION" equiv-text="{{getDisplayName(userSelectedTable)}" />
 </target>
-</trans-unit>
-</body>
-</file>
+      </trans-unit>
+      <trans-unit datatype="html" id="lockedType">
+        <source><x id="INTERPOLATION" equiv-text="{{ connectionType }}"/></source>
+        <target><x id="INTERPOLATION" equiv-text="{{ connectionType }}"/></target>
+      </trans-unit>
+      <trans-unit datatype="html" id="server">
+        <source>Servidor <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/></source>
+        <target>Servidor <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/></target>
+      </trans-unit>
+      <trans-unit datatype="html" id="selectedTags">
+        <source>Tags seleccionados <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/></source>
+        <target>Tags seleccionats <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/></target>
+      </trans-unit>
+      <trans-unit datatype="html" id="noItemsAvailable">
+        <source><x id="INTERPOLATION" equiv-text="{{ searchTerm() ? &apos;No se encontraron elementos&apos; : &apos;No hay elementos disponibles&apos; }}"/></source>
+        <target><x id="INTERPOLATION" equiv-text="{{ searchTerm() ? &apos;No se encontraron elementos&apos; : &apos;No hay elementos disponibles&apos; }}"/></target>
+      </trans-unit>
+      <trans-unit datatype="html" id="cleanConnections">
+        <source><x id="START_TAG__SVG_SVG" ctype="x-_svg_svg" equiv-text="&lt;svg class=&quot;w-3 h-3 mr-1&quot; fill=&quot;none&quot; stroke=&quot;currentColor&quot; viewBox=&quot;0 0 24 24&quot;&gt;"/><x id="START_TAG__SVG_PATH" ctype="x-_svg_path" equiv-text="&lt;path stroke-linecap=&quot;round&quot; stroke-linejoin=&quot;round&quot; stroke-width=&quot;2&quot; d=&quot;M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16&quot;&gt;"/><x id="CLOSE_TAG__SVG_PATH" ctype="x-_svg_path" equiv-text="&lt;/path&gt;"/><x id="CLOSE_TAG__SVG_SVG" ctype="x-_svg_svg" equiv-text="&lt;/svg&gt;"/> Limpiar</source>
+        <target><x id="START_TAG__SVG_SVG" ctype="x-_svg_svg" equiv-text="&lt;svg class=&quot;w-3 h-3 mr-1&quot; fill=&quot;none&quot; stroke=&quot;currentColor&quot; viewBox=&quot;0 0 24 24&quot;&gt;"/><x id="START_TAG__SVG_PATH" ctype="x-_svg_path" equiv-text="&lt;path stroke-linecap=&quot;round&quot; stroke-linejoin=&quot;round&quot; stroke-width=&quot;2&quot; d=&quot;M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16&quot;&gt;"/><x id="CLOSE_TAG__SVG_PATH" ctype="x-_svg_path" equiv-text="&lt;/path&gt;"/><x id="CLOSE_TAG__SVG_SVG" ctype="x-_svg_svg" equiv-text="&lt;/svg&gt;"/> Netejar</target>
+      </trans-unit>
+      <trans-unit datatype="html" id="copyPublicURL">
+        <source><x id="START_ITALIC_TEXT" ctype="x-i" equiv-text="&lt;i class=&quot;pi pi-copy&quot;&gt;"/><x id="CLOSE_ITALIC_TEXT" ctype="x-i" equiv-text="&lt;/i&gt;"/> copiar URL pública</source>
+        <target><x id="START_ITALIC_TEXT" ctype="x-i" equiv-text="&lt;i class=&quot;pi pi-copy&quot;&gt;"/><x id="CLOSE_ITALIC_TEXT" ctype="x-i" equiv-text="&lt;/i&gt;"/> copiar URL pública</target>
+      </trans-unit>
+      <trans-unit datatype="html" id="preparingDependentFilters">
+        <source><x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span&gt;"/><x id="INTERPOLATION" equiv-text="{{dependentFilterGrid.length}}"/><x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/> filtros globales para la configuracion de los filtros dependientes:</source>
+        <target><x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span&gt;"/><x id="INTERPOLATION" equiv-text="{{dependentFilterGrid.length}}"/><x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/> filtres globals per a la configuració dels filtres dependents:</target>
+      </trans-unit>
+      <trans-unit datatype="html" id="unsupportedGeoJsonType">
+        <source>El tipo de geometría &quot;<x id="PH" equiv-text="unsupportedType"/>&quot; no está admitido. Solo se admiten &quot;Polygon&quot; y &quot;MultiPolygon&quot;.</source>
+        <target>El tipus de geometria &quot;<x id="PH" equiv-text="unsupportedType"/>&quot; no és compatible. Només s'admeten &quot;Polygon&quot; i &quot;MultiPolygon&quot;.</target>
+      </trans-unit>
+      <trans-unit datatype="html" id="tabsDashboardSettings">
+        <source><x id="START_ITALIC_TEXT" ctype="x-i" equiv-text="&lt;i class=&quot;pi pi-info-circle mr-2&quot;&gt;"/><x id="CLOSE_ITALIC_TEXT" ctype="x-i" equiv-text="&lt;/i&gt;"/> Configura las pestañas para mostrar dashboards</source>
+        <target><x id="START_ITALIC_TEXT" ctype="x-i" equiv-text="&lt;i class=&quot;pi pi-info-circle mr-2&quot;&gt;"/><x id="CLOSE_ITALIC_TEXT" ctype="x-i" equiv-text="&lt;/i&gt;"/> Configura les pestanyes per mostrar dashboards</target>
+      </trans-unit>
+      <trans-unit datatype="html" id="filterByPrivacy">
+        <source><x id="START_ITALIC_TEXT" ctype="x-i" equiv-text="&lt;i class=&quot;pi pi-lock mr-2&quot;&gt;"/><x id="CLOSE_ITALIC_TEXT" ctype="x-i" equiv-text="&lt;/i&gt;"/> Filtrar por Privacidad</source>
+        <target><x id="START_ITALIC_TEXT" ctype="x-i" equiv-text="&lt;i class=&quot;pi pi-lock mr-2&quot;&gt;"/><x id="CLOSE_ITALIC_TEXT" ctype="x-i" equiv-text="&lt;/i&gt;"/> Filtrar per Privadesa</target>
+      </trans-unit>
+      <trans-unit datatype="html" id="filterByTags">
+        <source><x id="START_ITALIC_TEXT" ctype="x-i" equiv-text="&lt;i class=&quot;pi pi-tags mr-2&quot;&gt;"/><x id="CLOSE_ITALIC_TEXT" ctype="x-i" equiv-text="&lt;/i&gt;"/> Filtrar por Tags</source>
+        <target><x id="START_ITALIC_TEXT" ctype="x-i" equiv-text="&lt;i class=&quot;pi pi-tags mr-2&quot;&gt;"/><x id="CLOSE_ITALIC_TEXT" ctype="x-i" equiv-text="&lt;/i&gt;"/> Filtrar per Tags</target>
+      </trans-unit>
+      <trans-unit datatype="html" id="tableRestrictionAccess">
+        <source>Los usuarios y grupos configurados tendrán acceso autorizado a la tabla: <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span class=&quot;font-bold&quot;&gt;"/><x id="INTERPOLATION" equiv-text="{{table.description}}"/><x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/></source>
+        <target>Els usuaris i grups configurats tindran accés autoritzat a la taula: <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span class=&quot;font-bold&quot;&gt;"/><x id="INTERPOLATION" equiv-text="{{table.description}}"/><x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/></target>
+      </trans-unit>
+      <trans-unit datatype="html" id="tableActivationAccess">
+        <source>Los usuarios y grupos configurados NO tendrán acceso a la tabla: <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span class=&quot;font-bold&quot;&gt;"/><x id="INTERPOLATION" equiv-text="{{table.description}}"/><x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/></source>
+        <target>Els usuaris i grups configurats NO tindran accés a la taula: <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span class=&quot;font-bold&quot;&gt;"/><x id="INTERPOLATION" equiv-text="{{table.description}}"/><x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/></target>
+      </trans-unit>
+      <trans-unit datatype="html" id="decimalNumberText">
+        <source>Número de decimales <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/></source>
+        <target>Nombre de decimals <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/></target>
+      </trans-unit>
+      <trans-unit datatype="html" id="duckdbFolderLabel">
+        <source>Fuente de datos <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/></source>
+        <target>Font de dades <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/></target>
+      </trans-unit>
+      <trans-unit datatype="html" id="duckdbCsvListTitle">
+        <source>CSVs en la carpeta (<x id="INTERPOLATION" equiv-text="{{ duckdbCsvList.length }}"/>):</source>
+        <target>CSVs a la carpeta (<x id="INTERPOLATION" equiv-text="{{ duckdbCsvList.length }}"/>):</target>
+      </trans-unit>
+      <trans-unit datatype="html" id="duckdbCsvColumns">
+        <source>(<x id="INTERPOLATION" equiv-text="{{ csv.columnsConfig.length }}"/> columnas)</source>
+        <target>(<x id="INTERPOLATION" equiv-text="{{ csv.columnsConfig.length }}"/> columnes)</target>
+      </trans-unit>
+      <trans-unit datatype="html" id="odooUrlLabel">
+        <source>URL de Odoo <x id="START_TAG_SPAN" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" equiv-text="&lt;/span&gt;"/></source>
+        <target>URL d'Odoo <x id="START_TAG_SPAN" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" equiv-text="&lt;/span&gt;"/></target>
+      </trans-unit>
+      <trans-unit datatype="html" id="ga4PropertyIdLabel">
+        <source>ID de Propiedad GA4 <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/></source>
+        <target>ID de Propietat GA4 <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/></target>
+      </trans-unit>
+      <trans-unit datatype="html" id="ga4FolderNameLabel">
+        <source>Nombre de carpeta <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/></source>
+        <target>Nom de la carpeta <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/></target>
+      </trans-unit>
+      <trans-unit datatype="html" id="ga4AuthLabel">
+        <source>Autorización de Google Analytics <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/></source>
+        <target>Autorització de Google Analytics <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/></target>
+      </trans-unit>
+      <trans-unit datatype="html" id="holdedFolderLabel">
+        <source>Nombre de carpeta <x id="START_TAG_SPAN" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" equiv-text="&lt;/span&gt;"/></source>
+        <target>Nom de la carpeta <x id="START_TAG_SPAN" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" equiv-text="&lt;/span&gt;"/></target>
+      </trans-unit>
+      <trans-unit datatype="html" id="holdedApiKeyLabel">
+        <source>API Key de Holded <x id="START_TAG_SPAN" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" equiv-text="&lt;/span&gt;"/></source>
+        <target>API Key de Holded <x id="START_TAG_SPAN" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" equiv-text="&lt;/span&gt;"/></target>
+      </trans-unit>
+    </body>
+  </file>
 </xliff>
