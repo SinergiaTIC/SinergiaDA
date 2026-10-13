@@ -7,19 +7,12 @@
         var enabledLanguages = null;
 
         var userLang = navigator.language || navigator.userLanguage;
-        var targetLang;
-        if(userLang === 'ca-ES' || userLang.indexOf('ca') === 0){
-                targetLang = 'ca';
-        }else if(userLang === 'gl-ES' || userLang.indexOf('gl') === 0){
-                targetLang = 'gl';
-        }else if(userLang === 'eu-ES' || userLang.indexOf('eu') === 0){
-                targetLang = 'eu';
+        if(userLang.indexOf('ca') >=0){
+                window.location.href = window.location.href.replace('/index.html','')+'/ca';
+        }else if(userLang.indexOf('gl') >=0){
+                window.location.href = window.location.href.replace('/index.html','')+'/gl';
         }else if(userLang.indexOf('es') >=0){
-                targetLang = 'es';
-        }else if(userLang.indexOf('pl') >=0){
-                targetLang = 'pl';
-        }else if(userLang.indexOf('fr') >=0){
-                targetLang = 'fr';
+                window.location.href = window.location.href.replace('/index.html','')+'/es';
         }else{
                 targetLang = 'en';
         }

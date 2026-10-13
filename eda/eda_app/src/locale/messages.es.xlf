@@ -157,7 +157,6 @@
       </trans-unit>
 
       <!-- SECTION: MENÚS Y NAVEGACIÓN (SIDEBAR) -->
-
       <trans-unit id="sidebarProfile">
         <source>Perfil</source>
         <target>Perfil</target>

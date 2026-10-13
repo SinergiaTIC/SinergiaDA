@@ -549,49 +549,49 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
         <source>Título 2</source>
         <target>Títol 2</target>
       </trans-unit>
-      <trans-unit id="qlTooltipQuote">
-        <source>Cita</source>
-        <target>Cita</target>
+      <trans-unit id="functionalities">
+        <source>Extender el modelo</source>
+        <target>Estén el model</target>
       </trans-unit>
-      <trans-unit id="qlTooltipOrderedList">
-        <source>Lista numerada</source>
-        <target>Llista numerada</target>
+      <trans-unit id="utilities">
+        <source>Utilidades</source>
+        <target>Utilitats</target>
       </trans-unit>
-      <trans-unit id="qlTooltipBulletList">
-        <source>Lista con viñetas</source>
-        <target>Llista amb pics</target>
+      <trans-unit id="hideTables">
+        <source>Ocultar todas las tablas</source>
+        <target>Oculta totes les taules</target>
       </trans-unit>
-      <trans-unit id="qlTooltipAlignLeft">
-        <source>Alinear a la izquierda</source>
-        <target>Alinear a l'esquerra</target>
+      <trans-unit id="hideColumns">
+        <source>Ocultar todas las columnas</source>
+        <target>Oculta totes les columnes</target>
       </trans-unit>
-      <trans-unit id="qlTooltipAlignCenter">
-        <source>Centrar</source>
-        <target>Centrar</target>
+      <trans-unit id="hideAllRelations">
+        <source>Ocultar todas las relaciones</source>
+        <target>Oculta totes les relacions</target>
       </trans-unit>
-      <trans-unit id="qlTooltipAlignRight">
-        <source>Alinear a la derecha</source>
-        <target>Alinear a la dreta</target>
+      <trans-unit id="addFile">
+        <source>Subir archivo</source>
+        <target>Puja un arxiu</target>
       </trans-unit>
-      <trans-unit id="qlTooltipLink">
-        <source>Insertar enlace</source>
-        <target>Inserir enllaç</target>
+      <trans-unit id="import">
+        <source>Importar</source>
+        <target>Importa</target>
       </trans-unit>
-      <trans-unit id="qlTooltipImage">
-        <source>Insertar imagen desde un archivo</source>
-        <target>Inserir imatge des d'un arxiu</target>
+      <trans-unit id="NotSavedWarning">
+        <source>Hay cambios sin guardar. ¿Seguro que quieres salir?</source>
+        <target>Hi ha canvis sense desar, segur que voleu sortir?</target>
       </trans-unit>
-      <trans-unit id="qlTooltipVideo">
-        <source>Insertar vídeo</source>
-        <target>Inserir vídeo</target>
+      <trans-unit id="csvSep">
+        <source>Separador Decimal</source>
+        <target>Separador de decimals</target>
       </trans-unit>
-      <trans-unit id="qlTooltipUrlImage">
-        <source>Insertar imagen desde una URL</source>
-        <target>Inserir imatge des d'una URL</target>
+      <trans-unit id="viewOk">
+        <source>Vista generada correctamente</source>
+        <target>Vista generada correctament</target>
       </trans-unit>
-      <trans-unit id="qlTooltipClean">
-        <source>Quitar formato</source>
-        <target>Eliminar format</target>
+      <trans-unit id="groupsPermissions">
+        <source>Permisos de grupo</source>
+        <target>Permisos de grup</target>
       </trans-unit>
       <trans-unit id="qlLabelClearColor">
         <source>Quitar</source>
@@ -5692,57 +5692,57 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
         <source>Aumentar tamaño</source>
         <target>Augmentar mida</target>
       </trans-unit>
-      <trans-unit id="LogsActionNewLogin">
-        <source>Login</source>
-        <target>Inici de sessió</target>
+      <trans-unit id="removeRowTotals">
+        <source>Quitar totales de fila</source>
+        <target>Elimina els totals de fila</target>
       </trans-unit>
-      <trans-unit id="LogsActionDashboardAccessed">
-        <source>Dashboard Accessed</source>
-        <target>Informe accedit</target>
+      <trans-unit id="removeColSubtotals">
+        <source>Quitar subtotales de columna</source>
+        <target>Elimina els subtotals de columna</target>
       </trans-unit>
-      <trans-unit id="LogsActionDashboardCreated">
-        <source>Dashboard Created</source>
-        <target>Informe creat</target>
+      <trans-unit id="addRowTotals">
+        <source>Totales de fila</source>
+        <target>Totals de fila</target>
       </trans-unit>
-      <trans-unit id="LogsActionDashboardUpdated">
-        <source>Dashboard Updated</source>
-        <target>Informe actualitzat</target>
+      <trans-unit id="addColSubtotals">
+        <source>Subtotales de columna</source>
+        <target>Subtotals de columna</target>
       </trans-unit>
-      <trans-unit id="LogsActionDashboardRenamed">
-        <source>Dashboard Renamed</source>
-        <target>Informe renombrat</target>
+      <trans-unit id="addColTotals">
+        <source>Totales de columna</source>
+        <target>Totals de columna</target>
       </trans-unit>
-      <trans-unit id="LogsActionDashboardVisibilityChanged">
-        <source>Dashboard Visibility Changed</source>
-        <target>Visibilitat de l'informe canviada</target>
+      <trans-unit id="removeColTotals">
+        <source>Quitar totales de columna</source>
+        <target>Elimina els totals de columna</target>
       </trans-unit>
-      <trans-unit id="LogsActionDashboardDeleted">
-        <source>Dashboard Deleted</source>
-        <target>Informe eliminat</target>
+      <trans-unit id="addOnlyPercentages">
+        <source>Sólo porcentajes</source>
+        <target>Només percentatges</target>
       </trans-unit>
-      <trans-unit id="LogsActionPanelQueryFailed">
-        <source>Panel Query Failed</source>
-        <target>Consulta del panell fallida</target>
+      <trans-unit id="addOnlyValues">
+        <source>Solo valores</source>
+        <target>Només valors</target>
       </trans-unit>
-      <trans-unit id="LogsActionUserCreated">
-        <source>User Created</source>
-        <target>Usuari creat</target>
+      <trans-unit id="addValuesPercentages">
+        <source>Valores y porcentajes</source>
+        <target>Valors i percentatges</target>
       </trans-unit>
-      <trans-unit id="LogsActionUserUpdated">
-        <source>User Updated</source>
-        <target>Usuari actualitzat</target>
+      <trans-unit id="addTotals">
+        <source>Totales</source>
+        <target>Totals</target>
       </trans-unit>
-      <trans-unit id="LogsActionUserDeleted">
-        <source>User Deleted</source>
-        <target>Usuari eliminat</target>
+      <trans-unit id="addPercentages">
+        <source>Porcentajes</source>
+        <target>Percentatges</target>
       </trans-unit>
-      <trans-unit id="LogsActionUserRolesChanged">
-        <source>User Roles Changed</source>
-        <target>Rols d'usuari canviats</target>
+      <trans-unit id="addStyles">
+        <source>Código de color</source>
+        <target>Codi de color</target>
       </trans-unit>
-      <trans-unit id="LogsActionUserPasswordChanged">
-        <source>User Password Changed</source>
-        <target>Contrasenya d'usuari canviada</target>
+      <trans-unit id="tableTitleDialog">
+        <source>Propiedades de la tabla</source>
+        <target>Propietats de la taula</target>
       </trans-unit>
       <trans-unit id="LogsActionGroupCreated">
         <source>Group Created</source>
