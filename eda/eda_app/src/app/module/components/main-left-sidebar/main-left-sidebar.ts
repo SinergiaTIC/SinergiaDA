@@ -1,4 +1,4 @@
-import { Component, inject, ViewEncapsulation } from '@angular/core';
+import { Component, inject, LOCALE_ID, ViewEncapsulation } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { NgClass } from '@angular/common';
 import Swal from 'sweetalert2';
@@ -9,7 +9,7 @@ import { CreateDashboardService } from '@eda/services/utils/create-dashboard.ser
 import { GroupService } from '@eda/services/api/group.service';
 import { DashboardService } from '@eda/services/api/dashboard.service';
 import { IconService } from '@eda/services/utils/icons.service';
-import { CUSTOMIZE_SIDE_MENU_ICONS } from '@eda/configs/customizable/customizable_merged';
+import { CUSTOMIZE_SIDE_MENU_ICONS, ENABLED_LANGUAGES } from '@eda/configs/customizable/customizable_merged';
 
 interface NavItem {
   path?: string;
@@ -37,6 +37,7 @@ export class MainLeftSidebarComponent {
   private groupService = inject(GroupService);
   private dashboardService = inject(DashboardService);
   private iconService = inject(IconService);
+  private currentLocale = inject(LOCALE_ID);
   public queryParams: any = {};
   public hideWheel: boolean = false;
   public panelMode: boolean = false;
@@ -68,6 +69,13 @@ export class MainLeftSidebarComponent {
   }
 
   assignNavItems() {
+    // Languages come only from the ENABLED_LANGUAGES flag
+    const languageItems = ENABLED_LANGUAGES.map(code => ({
+      lang: code,
+      label: this.getLanguageLabel(code),
+      icon: this.getLanguageIcon(code),
+    }));
+
     // Basic for all users
     const baseNav: NavItem[] = [
       { path: '/home', icon: this.resolveSideMenuIcon('home') },
@@ -75,11 +83,7 @@ export class MainLeftSidebarComponent {
         icon: this.resolveSideMenuIcon('settings'),
         items: [
           { path: '/profile', label: $localize`:@@sidebarProfile:Perfil`, icon: 'profile' },
-          { lang: 'EN', label: 'English', icon: 'en-flag' },
-          { lang: 'ES', label: 'Español', icon: 'es-flag' },
-          { lang: 'CA', label: 'Català', icon: 'cat-flag' },
-          { lang: 'FR', label: 'Francés', icon: 'fr-flag' },
-          { lang: 'PL', label: 'Polski', icon: 'pl-flag' },
+          ...languageItems,
         ]
       },
       {
@@ -147,6 +151,22 @@ export class MainLeftSidebarComponent {
       console.warn(`CUSTOMIZE_SIDE_MENU_ICONS.${key}: icon "${name}" not found in IconService`);
     }
     return name;
+  }
+
+  /** Native name of the language (es → Español, ca → Català...), provided by the browser */
+  private getLanguageLabel(code: string): string {
+    try {
+      const name = new Intl.DisplayNames([code], { type: 'language' }).of(code);
+      return name ? name.charAt(0).toLocaleUpperCase(code) + name.slice(1) : code.toUpperCase();
+    } catch (e) {
+      return code.toUpperCase();
+    }
+  }
+
+  /** '<code>-flag' icon (Catalan one is registered as 'cat-flag'), generic 'language' icon if there's no flag */
+  private getLanguageIcon(code: string): string {
+    const flag = code === 'ca' ? 'cat-flag' : `${code}-flag`;
+    return this.iconService.getIcon(flag) ? flag : 'language';
   }
 
   showOverlay(item: NavItem) {
@@ -238,20 +258,11 @@ menuCommand(item: any, event: MouseEvent) {
   public redirectLocale(lan: string) {
     let baseUrl = window.location.href.split('#')[0];
 
-    if (baseUrl.slice(-4) == '/es/' ||
-        baseUrl.slice(-4) == '/ca/' ||
-        baseUrl.slice(-4) == '/pl/' ||
-        baseUrl.slice(-4) == '/fr/' ||
-        baseUrl.slice(-4) == '/en/') {
-        baseUrl = baseUrl.slice(0, baseUrl.length - 3)
+    // Drop the current locale folder (/es/, /ca/...) to get the app root
+    if (baseUrl.endsWith(`/${this.currentLocale}/`)) {
+        baseUrl = baseUrl.slice(0, baseUrl.length - this.currentLocale.length - 1);
     }
-    switch (lan) {
-      case 'EN': window.location.href = baseUrl + 'en/#/home'; break;
-      case 'CA': window.location.href = baseUrl + 'ca/#/home'; break;
-      case 'ES': window.location.href = baseUrl + 'es/#/home'; break;
-      case 'FR': window.location.href = baseUrl + 'fr/#/home'; break;
-      case 'PL'  : window.location.href = baseUrl + 'pl/#/home'; break;
-    }
+    window.location.href = baseUrl + lan + '/#/home';
   }
   private getUrlParams(): void {
         this.route.queryParams.subscribe(params => {

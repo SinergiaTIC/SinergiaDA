@@ -5,12 +5,27 @@
   "projects": {
     "app-eda": {
       "i18n": {
-        "sourceLocale": "es",
         "locales": {
-          "en": "src/locale/messages.en.xlf",
-          "ca": "src/locale/messages.ca.xlf",
-          "pl": "src/locale/messages.pl.xlf",
-          "fr": "src/locale/messages.fr.xlf"
+          "es": {
+            "translation": [
+              "src/locale/merged/messages.es.xlf"
+            ]
+          },
+          "en": {
+            "translation": [
+              "src/locale/merged/messages.en.xlf"
+            ]
+          },
+          "ca": {
+            "translation": [
+              "src/locale/merged/messages.ca.xlf"
+            ]
+          },
+          "gl": {
+            "translation": [
+              "src/locale/merged/messages.gl.xlf"
+            ]
+          }
         }
       },
       "projectType": "application",
@@ -39,23 +54,23 @@
               "src/favicon.ico",
               "src/assets"
             ],
-           "styles": [
-                "node_modules/font-awesome/css/font-awesome.css",
-                "node_modules/quill/dist/quill.core.css",
-                "node_modules/quill/dist/quill.snow.css",
-                "node_modules/primeicons/primeicons.css",
-                "node_modules/leaflet/dist/leaflet.css",
-                "src/assets/sass/css/style.css",
-                "src/app/config/customizable/custom_extended.css"
+            "styles": [
+              "node_modules/font-awesome/css/font-awesome.css",
+              "node_modules/quill/dist/quill.core.css",
+              "node_modules/quill/dist/quill.snow.css",
+              "node_modules/primeicons/primeicons.css",
+              "node_modules/leaflet/dist/leaflet.css",
+              "src/assets/sass/css/style.css",
+              "src/app/config/customizable/custom_extended.css"
             ],
             "scripts": [
-                "node_modules/quill/dist/quill.js"
+              "node_modules/quill/dist/quill.js"
             ],
             "localize": [
               "es",
               "ca",
               "en",
-              "pl"
+              "gl"
             ]
           },
           "configurations": {
@@ -79,6 +94,11 @@
               "extractLicenses": false,
               "sourceMap": true
             },
+            "es": {
+              "localize": [
+                "es"
+              ]
+            },
             "ca": {
               "localize": [
                 "ca"
@@ -89,9 +109,9 @@
                 "en"
               ]
             },
-            "pl": {
+            "gl": {
               "localize": [
-                "pl"
+                "gl"
               ]
             }
           },
@@ -110,14 +130,17 @@
             "development": {
               "buildTarget": "app-eda:build:development"
             },
+            "es": {
+              "buildTarget": "app-eda:build:es"
+            },
             "ca": {
               "buildTarget": "app-eda:build:ca"
             },
             "en": {
               "buildTarget": "app-eda:build:en"
             },
-            "pl": {
-              "buildTarget": "app-eda:build:pl"
+            "gl": {
+              "buildTarget": "app-eda:build:gl"
             }
           },
           "defaultConfiguration": "development"

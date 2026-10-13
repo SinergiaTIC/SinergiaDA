@@ -565,7 +565,9 @@ export class DashboardController {
         // Normalize legacy visibility values
         DashboardController.normalizeVisibility(dashboard);
 
-        if (DashboardController.isPublicVisibility(dashboard.config.visible) && !DashboardController.canManagePublicDashboards(req)) {
+        // El usuario anónimo es quien abre los enlaces públicos (#/public/:id): siempre puede verlos
+        const isAnonymous = DashboardController.isAnonymousUser(req.user);
+        if (DashboardController.isPublicVisibility(dashboard.config.visible) && !isAnonymous && !DashboardController.canManagePublicDashboards(req)) {
           return next(new HttpException(403, 'Only an administrator can view public dashboards'));
         }
 
@@ -595,8 +597,9 @@ export class DashboardController {
         const toJson = JSON.parse(JSON.stringify(datasource));
 
         // Filtrar tablas y columnas prohibidas
-        const uniquesForbiddenTables = DashboardController.getForbiddenTables(toJson, userGroups, req.user._id);
-        const uniquesForbiddenColumns = DashboardController.getForbiddenColumns(toJson, userGroups, req.user._id);
+        // Informe público: el usuario anónimo no tiene tablas ni columnas prohibidas
+        const uniquesForbiddenTables = isAnonymous ? [] : DashboardController.getForbiddenTables(toJson, userGroups, req.user._id);
+        const uniquesForbiddenColumns = isAnonymous ? [] : DashboardController.getForbiddenColumns(toJson, userGroups, req.user._id);
 
         const includesAdmin = req.user.role.includes("135792467811111111111110");
 
@@ -1451,8 +1454,8 @@ static  convertColumnToForbiddenColumn(columns: any[], sample: any): any[] {
 
 
       const includesAdmin = req['user'].role.includes("135792467811111111111110")
-      if (includesAdmin) {
-        // el admin ve todo
+      if (includesAdmin || DashboardController.isAnonymousUser(req.user)) {
+        // el admin ve todo, y el usuario anónimo (informes públicos) también
         uniquesForbiddenTables = [];
       }
 
@@ -1955,8 +1958,8 @@ static  convertColumnToForbiddenColumn(columns: any[], sample: any): any[] {
       )
 
       const includesAdmin = req['user'].role.includes("135792467811111111111110")
-      if (includesAdmin) {
-        // el admin ve todo
+      if (includesAdmin || DashboardController.isAnonymousUser(req.user)) {
+        // el admin ve todo, y el usuario anónimo (informes públicos) también
         uniquesForbiddenTables = [];
       }
 
@@ -2250,6 +2253,10 @@ static  convertColumnToForbiddenColumn(columns: any[], sample: any): any[] {
   static securityCheck(dataModel: any, user: any) {
     /** un admin  lo ve todo */
     if (user.role.includes('135792467811111111111110')) {
+      return true;
+    }
+    /** el usuario anónimo (informes públicos) también */
+    if (DashboardController.isAnonymousUser(user)) {
       return true;
     }
     if (dataModel.ds.metadata.model_granted_roles.length > 0) {
@@ -2549,6 +2556,15 @@ static  convertColumnToForbiddenColumn(columns: any[], sample: any): any[] {
   private static canManagePublicDashboards(req: Request): boolean {
     const isAdmin = req.user.role.includes('135792467811111111111110');
     return isAdmin || !!eda_api_config.custom_behaviour?.ALLOW_NON_ADMIN_MANAGE_PUBLIC_REPORTS;
+  }
+
+  /**
+   * El usuario anónimo (edaanonim) es quien abre los enlaces públicos (#/public/:id).
+   * Sobre él no se aplican permisos de modelo, tablas ni columnas.
+   * @param user Usuario de la request
+   */
+  private static isAnonymousUser(user: any): boolean {
+    return user?._id?.toString() === '135792467811111111111112';
   }
 
 }
