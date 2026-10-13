@@ -83,7 +83,9 @@ export class userAndGroupsToMongo {
           name: users[i].name,
           email: users[i].email,
           password: users[i].password,
-          role: userRoles
+          role: userRoles,
+          // Users imported from SinergiaCRM (sda_def_users) are SCRM-managed.
+          info: { scrm_user: true }
         })
         try {
           const savedUser = await user.save()
@@ -100,6 +102,8 @@ export class userAndGroupsToMongo {
           { name: users[i].name },
           {
             password: users[i].password,
+            // Already-known CRM users stay flagged as SCRM-managed.
+            'info.scrm_user': true,
             $addToSet: { role: { $each: userRoles } }
           }
         )
