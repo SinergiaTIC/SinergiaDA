@@ -700,6 +700,10 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
         <source>Este panel no está disponible por falta de permisos en un filtro</source>
         <target>Este panel non está dispoñible por falta de permisos nun filtro</target>
       </trans-unit>
+      <trans-unit id="mandatoryFilterMissing">
+        <source>Este panel no está disponible: falta asignar un valor a un filtro obligatorio</source>
+        <target>Este panel non está dispoñible: falta asignar un valor a un filtro obrigatorio</target>
+      </trans-unit>
       <trans-unit id="seeRepetitions">
         <source> ver/ocultar valores repetidos</source>
         <target> ver/agochar valores repetidos</target>
