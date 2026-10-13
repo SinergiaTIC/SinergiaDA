@@ -1043,6 +1043,106 @@
     <source>VALORES NULOS O VACÍOS (null or = '')</source>
     <target>Valors nuls o buits (null or = '')</target>
   </trans-unit>
+  <trans-unit id="emailAlreadyExistsTitle" datatype="html">
+    <source>Email en uso</source>
+    <target>Correu en ús</target>
+  </trans-unit>
+  <trans-unit id="emailAlreadyExistsMsg" datatype="html">
+    <source>Ya existe un usuario con este correo electrónico.</source>
+    <target>Ja existeix un usuari amb aquest correu electrònic.</target>
+  </trans-unit>
+  <trans-unit id="UpdatedUserError" datatype="html">
+    <source>Error al actualizar el usuario</source>
+    <target>Error en actualitzar l'usuari</target>
+  </trans-unit>
+  <trans-unit id="profileSubtitle" datatype="html">
+    <source>Administra tu información personal y preferencias de cuenta</source>
+    <target>Administra la teva informació personal i preferències del compte</target>
+  </trans-unit>
+  <trans-unit id="saveChanges" datatype="html">
+    <source>Guardar cambios</source>
+    <target>Desar canvis</target>
+  </trans-unit>
+  <trans-unit id="profileLoading" datatype="html">
+    <source>Cargando perfil...</source>
+    <target>Carregant perfil...</target>
+  </trans-unit>
+  <trans-unit id="profileScrmLocked" datatype="html">
+    <source>Tu usuario está gestionado por SinergiaCRM y no se puede modificar desde SinergiaDA. Para cambiar tus datos, contacta con tu administrador.</source>
+    <target>El teu usuari està gestionat per SinergiaCRM i no es pot modificar des de SinergiaDA. Per canviar les teves dades, contacta amb l'administrador.</target>
+  </trans-unit>
+  <trans-unit id="profileInfoTitle" datatype="html">
+    <source>Información Personal</source>
+    <target>Informació personal</target>
+  </trans-unit>
+  <trans-unit id="profileReadOnlySubtitle" datatype="html">
+    <source>Datos de solo lectura sincronizados desde SinergiaCRM</source>
+    <target>Dades de només lectura sincronitzades des de SinergiaCRM</target>
+  </trans-unit>
+  <trans-unit id="labelUsuarioLogin" datatype="html">
+    <source>Usuario de acceso</source>
+    <target>Usuari d'accés</target>
+  </trans-unit>
+  <trans-unit id="profileAccountTitle" datatype="html">
+    <source>Mi cuenta</source>
+    <target>El meu compte</target>
+  </trans-unit>
+  <trans-unit id="profileAccountType" datatype="html">
+    <source>Tipo de usuario</source>
+    <target>Tipus d'usuari</target>
+  </trans-unit>
+  <trans-unit id="profileScrmBadge" datatype="html">
+    <source>Gestionado por SinergiaCRM</source>
+    <target>Gestionat per SinergiaCRM</target>
+  </trans-unit>
+  <trans-unit id="profileGroupsLabel" datatype="html">
+    <source>Grupos</source>
+    <target>Grups</target>
+  </trans-unit>
+  <trans-unit id="profileGroupsEmpty" datatype="html">
+    <source>No perteneces a ningún grupo.</source>
+    <target>No pertanys a cap grup.</target>
+  </trans-unit>
+  <trans-unit id="profileInfoSubtitle" datatype="html">
+    <source>Actualiza tu información básica de perfil</source>
+    <target>Actualitza la teva informació bàsica de perfil</target>
+  </trans-unit>
+  <trans-unit id="usernamePlaceholder" datatype="html">
+    <source>Tu nombre</source>
+    <target>El teu nom</target>
+  </trans-unit>
+  <trans-unit id="usernameLengthValidation" datatype="html">
+    <source>El nombre de usuario debe tener al menos 2 caracteres.</source>
+    <target>El nom d'usuari ha de tenir com a mínim 2 caràcters.</target>
+  </trans-unit>
+  <trans-unit id="emailPlaceholder" datatype="html">
+    <source>tu@ejemplo.com</source>
+    <target>tu@exemple.com</target>
+  </trans-unit>
+  <trans-unit id="emailValidation" datatype="html">
+    <source>Por favor ingresa un email válido.</source>
+    <target>Si us plau, introdueix un correu electrònic vàlid.</target>
+  </trans-unit>
+  <trans-unit id="changePassword" datatype="html">
+    <source>Cambiar contraseña</source>
+    <target>Canviar contrasenya</target>
+  </trans-unit>
+  <trans-unit id="changePasswordSubtitle" datatype="html">
+    <source>Deja los campos vacíos si no quieres cambiarla</source>
+    <target>Deixa els camps buits si no vols canviar-la</target>
+  </trans-unit>
+  <trans-unit id="newPassword" datatype="html">
+    <source>Nueva contraseña</source>
+    <target>Nova contrasenya</target>
+  </trans-unit>
+  <trans-unit id="confirmNewPassword" datatype="html">
+    <source>Confirmar nueva contraseña</source>
+    <target>Confirmar nova contrasenya</target>
+  </trans-unit>
+  <trans-unit id="passwordValidation" datatype="html">
+    <source>Las contraseñas no coinciden</source>
+    <target>Les contrasenyes no coincideixen</target>
+  </trans-unit>
 </body>
   </file>
 </xliff>

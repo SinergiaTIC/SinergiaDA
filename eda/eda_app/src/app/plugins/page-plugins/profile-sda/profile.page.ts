@@ -44,6 +44,8 @@ export class ProfileSdaPage implements OnInit {
   isScrmUser = signal(false);
   /** true while the origin is being resolved (flag + SCRM_* groups) */
   isCheckingOrigin = signal(true);
+  /** groups the current user belongs to (getGroupsByUser) */
+  userGroups = signal<Array<{ name: string }>>([]);
 
   constructor() {
     this.initForm();
@@ -89,15 +91,16 @@ export class ProfileSdaPage implements OnInit {
   private resolveOrigin(): void {
     this.groupService.getGroupsByUser().subscribe({
       next: (groups: any[]) => {
-        const belongsToScrmGroup = Array.isArray(groups)
-          && groups.some(g => (g?.name || '').startsWith('SCRM_'));
+        const list = Array.isArray(groups) ? groups : [];
+        this.userGroups.set(list);
+        const belongsToScrmGroup = list.some(g => (g?.name || '').startsWith('SCRM_'));
         if (belongsToScrmGroup) {
           this.lockProfile();
         }
         this.isCheckingOrigin.set(false);
       },
       error: () => {
-        // No groups: fall back to the email criterion.
+        this.userGroups.set([]);
         this.isCheckingOrigin.set(false);
       }
     });

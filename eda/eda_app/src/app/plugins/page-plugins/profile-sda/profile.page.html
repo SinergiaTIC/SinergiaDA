@@ -50,9 +50,6 @@
       <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm">
         <div class="p-6">
           <h2 class="text-xl font-semibold" i18n="@@profileAccountTitle">Mi cuenta</h2>
-          <p class="text-sm text-gray-500 dark:text-gray-400" i18n="@@profileAccountSubtitle">
-            Origen y grupos de tu usuario
-          </p>
         </div>
 
         <div class="p-6 pt-0 space-y-6">
@@ -60,6 +57,19 @@
             <label class="block text-sm font-medium" i18n="@@profileAccountType">Tipo de usuario</label>
             <div>
               <span class="inline-flex items-center rounded-md bg-amber-100 px-2.5 py-1 text-sm font-medium text-amber-800 dark:bg-amber-900/30 dark:text-amber-200" i18n="@@profileScrmBadge">Gestionado por SinergiaCRM</span>
+            </div>
+          </div>
+
+          <div class="space-y-2">
+            <label class="block text-sm font-medium" i18n="@@profileGroupsLabel">Grupos</label>
+            <div class="flex flex-wrap gap-2">
+              @for (group of userGroups(); track group.name) {
+                <span class="inline-flex items-center rounded-md bg-gray-100 px-2.5 py-1 text-sm font-medium text-gray-700 dark:bg-gray-900 dark:text-gray-200">
+                  {{ group.name }}
+                </span>
+              } @empty {
+                <span class="text-sm text-gray-500 dark:text-gray-400" i18n="@@profileGroupsEmpty">No perteneces a ningún grupo.</span>
+              }
             </div>
           </div>
         </div>
