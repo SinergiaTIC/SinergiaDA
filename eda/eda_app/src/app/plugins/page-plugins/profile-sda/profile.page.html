@@ -6,7 +6,7 @@
         Administra tu información personal y preferencias de cuenta
       </p>
     </div>
-    @if (!isCheckingOrigin() && !isScrmUser()) {
+    @if (!isCheckingOrigin()) {
       <button (click)="onSubmit()" [disabled]="profileForm.invalid" class="btn-corporate-gradient px-4 py-2 rounded font-semibold text-white flex items-center disabled:opacity-50 disabled:pointer-events-none">
         <eda-icon name="check" class="mr-2"></eda-icon>
         <span i18n="@@saveChanges">Guardar cambios</span>
@@ -56,10 +56,15 @@
           <div class="space-y-2">
             <label class="block text-sm font-medium" i18n="@@profileAccountType">Tipo de usuario</label>
             <div>
-              <span class="inline-flex items-center rounded-md bg-amber-100 px-2.5 py-1 text-sm font-medium text-amber-800 dark:bg-amber-900/30 dark:text-amber-200" i18n="@@profileScrmBadge">Gestionado por SinergiaCRM</span>
+              @if (isAdmin()) {
+                <span class="inline-flex items-center rounded-md bg-gray-900 px-2.5 py-1 text-sm font-medium text-white dark:bg-gray-100 dark:text-gray-900">EDA_ADMIN</span>
+              } @else {
+                <span class="inline-flex items-center rounded-md bg-amber-100 px-2.5 py-1 text-sm font-medium text-amber-800 dark:bg-amber-900/30 dark:text-amber-200" i18n="@@profileScrmBadge">Gestionado por SinergiaCRM</span>
+              }
             </div>
           </div>
 
+          @if (!isAdmin()) {
           <div class="space-y-2">
             <label class="block text-sm font-medium" i18n="@@profileGroupsLabel">Grupos</label>
             <div class="flex flex-wrap gap-2">
@@ -72,6 +77,7 @@
               }
             </div>
           </div>
+          }
         </div>
       </div>
     </div>

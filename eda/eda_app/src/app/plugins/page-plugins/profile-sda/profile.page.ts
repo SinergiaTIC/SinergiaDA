@@ -10,10 +10,13 @@ import Swal from 'sweetalert2';
  * SDA profile (page plugin replacing the core 'profile' route).
  *
  * - SCRM users (synced from sda_def_users via updateModel, flagged with
- *   info.scrm_user=true in Mongo): LOCKED profile, read-only. Their record is
- *   managed in SinergiaCRM, not in SDA.
+ *   info.scrm_user=true in Mongo): name/email read-only (managed in
+ *   SinergiaCRM), but password CAN be changed from SDA.
  * - Users created in SDA (info.scrm_user=false): EDITABLE profile (name, email,
  *   password and picture), same UX as the core.
+ * - Admins: the groups section is hidden (getMineGroups returns every
+ *   existing group for them, so listing it makes no sense). SCRM origin for
+ *   admins relies solely on the info.scrm_user flag.
  */
 @Component({
   selector: "profile-sda",
@@ -40,8 +43,10 @@ export class ProfileSdaPage implements OnInit {
   profileForm: FormGroup
   activeTab = signal("email")
 
-  /** true → SCRM user (updateModel): profile cannot be modified */
+  /** true → SCRM user (updateModel): name/email read-only, password editable */
   isScrmUser = signal(false);
+  /** true → admin: groups section hidden (getMineGroups returns ALL groups) */
+  isAdmin = signal(false);
   /** true while the origin is being resolved (flag + SCRM_* groups) */
   isCheckingOrigin = signal(true);
   /** groups the current user belongs to (getGroupsByUser) */
@@ -57,6 +62,7 @@ export class ProfileSdaPage implements OnInit {
 
   private initForm() {
     this.user = this.userService.getUserObject();
+    this.isAdmin.set(this.checkIsAdmin(this.user));
 
     this.profileForm = this.fb.group(
       {
@@ -84,11 +90,26 @@ export class ProfileSdaPage implements OnInit {
     return (user as any)?.info?.scrm_user === true;
   }
 
+  private checkIsAdmin(user: User): boolean {
+    if (this.userService?.isAdmin === true) {
+      return true;
+    }
+    const roles = (user as any)?.role || [];
+    return roles.some((r: any) => (r?._id ?? r)?.toString() === '135792467811111111111110');
+  }
+
   /**
    * Confirms the origin against the user groups: belonging to any
    * 'SCRM_*' group marks the user as managed by SinergiaCRM.
+   * Skipped for admins: getMineGroups returns every existing group for
+   * them, so the list is not their membership (flag already applied above).
    */
   private resolveOrigin(): void {
+    if (this.isAdmin()) {
+      this.userGroups.set([]);
+      this.isCheckingOrigin.set(false);
+      return;
+    }
     this.groupService.getGroupsByUser().subscribe({
       next: (groups: any[]) => {
         const list = Array.isArray(groups) ? groups : [];
@@ -106,10 +127,11 @@ export class ProfileSdaPage implements OnInit {
     });
   }
 
-  /** Disables the whole form so the profile cannot be modified. */
+  /** Locks name/email but keeps the password fields enabled (SCRM can change it). */
   private lockProfile(): void {
     this.isScrmUser.set(true);
-    this.profileForm?.disable();
+    this.profileForm?.get('username')?.disable();
+    this.profileForm?.get('email')?.disable();
   }
 
   passwordMatchValidator(group: FormGroup) {
@@ -128,8 +150,13 @@ export class ProfileSdaPage implements OnInit {
   }
 
   onSubmit() {
-    // Extra guard: even though the template hides the form, never save for SCRM.
+    // SCRM users: password-only save (name/email are managed in SinergiaCRM).
     if (this.isScrmUser()) {
+      const password = this.profileForm.get('password')?.value;
+      if (!password || this.profileForm.hasError('passwordMismatch') || this.profileForm.get('password')?.invalid) {
+        return;
+      }
+      this.savePasswordOnly();
       return;
     }
 
@@ -147,6 +174,22 @@ export class ProfileSdaPage implements OnInit {
       });
     } else {
       this.saveUser();
+    }
+  }
+
+  private savePasswordOnly() {
+    this.user.password = this.profileForm.get('password')?.value;
+
+    if (this.userService.isAdmin) {
+      this.userService.manageUpdateUsers(this.user).subscribe(
+        res => Swal.fire(this.msgUpdatedUser, res.email, 'success'),
+        err => Swal.fire(this.msgUpdateError, err.text, 'error')
+      );
+    } else {
+      this.userService.updateUser(this.user).subscribe(
+        _ => {},
+        err => Swal.fire(this.msgUpdateError, err.text, 'error')
+      );
     }
   }
 
