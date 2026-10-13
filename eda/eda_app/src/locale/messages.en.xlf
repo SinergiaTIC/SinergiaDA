@@ -69,7 +69,7 @@
       </trans-unit>
       <trans-unit id="userTable">
         <source>USUARIO</source>
-        <target>USER</target>
+        <target>User</target>
       </trans-unit>
       <trans-unit id="labelnewPass">
         <source>Nueva Contraseña (Si no quieres modificar tu contraseña actual deja el campo en blanco)</source>
@@ -89,11 +89,11 @@
       </trans-unit>
       <trans-unit id="usersName">
         <source>NOMBRE</source>
-        <target>NAME</target>
+        <target>Name</target>
       </trans-unit>
       <trans-unit id="usersRole">
         <source>ROLE</source>
-        <target>ROLE</target>
+        <target>Role</target>
       </trans-unit>
       <trans-unit id="direccionMail">
         <source>Dirección Email</source>
@@ -121,7 +121,7 @@
       </trans-unit>
       <trans-unit id="userDetailSaveButton">
         <source>GUARDAR</source>
-        <target>SAVE</target>
+        <target>Save</target>
       </trans-unit>
       <trans-unit id="UpdatedUser">
         <source>Usuario actualizado</source>
@@ -137,7 +137,7 @@
       </trans-unit>
       <trans-unit id="newUserTitle">
         <source>CREAR NUEVO USUARIO</source>
-        <target>CREATE NEW USER</target>
+        <target>Create new user</target>
       </trans-unit>
       <trans-unit id="usersPermissions">
         <source>Permisos de usuario</source>
@@ -149,7 +149,7 @@
       </trans-unit>
       <trans-unit id="inputCuenta">
         <source>CUENTA*</source>
-        <target>ACCOUNT*</target>
+        <target>Account*</target>
       </trans-unit>
       <trans-unit id="inputCuentaEdit">
         <source>CUENTA</source>
@@ -191,7 +191,7 @@
       </trans-unit>
       <trans-unit id="tituloGrupoComunes">
         <source>COMUNES</source>
-        <target>COMMON</target>
+        <target>Common</target>
       </trans-unit>
       <trans-unit id="sidebarModelsManagement">
         <source>Gestión de modelos</source>
@@ -214,15 +214,15 @@
       </trans-unit>
       <trans-unit id="tituloGrupoPublicos">
         <source>PUBLICOS</source>
-        <target>PUBLIC</target>
+        <target>Public</target>
       </trans-unit>
       <trans-unit id="tituloGrupoMisGrupos">
         <source>MIS GRUPOS</source>
-        <target>MY GROUPS</target>
+        <target>My groups</target>
       </trans-unit>
       <trans-unit id="tituloGrupoPersonales">
         <source>PRIVADOS</source>
-        <target>PRIVATE</target>
+        <target>Private</target>
       </trans-unit>
       <trans-unit id="labelDameNombre">
         <source>Dame un nombre *</source>
@@ -242,11 +242,11 @@
       </trans-unit>
       <trans-unit id="opcionPdf">
         <source>DESCARGAR PDF</source>
-        <target>DOWNLOAD PDF</target>
+        <target>Download PDF</target>
       </trans-unit>
       <trans-unit id="opcionImagen">
         <source>DESCARGAR IMAGEN</source>
-        <target>DOWNLOAD IMAGE</target>
+        <target>Download image</target>
       </trans-unit>
       <trans-unit id="dashboardSaved">
         <source>Informe guardado correctamente</source>
@@ -294,19 +294,19 @@
       </trans-unit>
       <trans-unit id="dashboardTable">
         <source>INFORME</source>
-        <target>DASHBOARD</target>
+        <target>Dashboard</target>
       </trans-unit>
       <trans-unit id="newDashboardtitle">
         <source>CREA UN NUEVO INFORME</source>
-        <target>YOUR NEW DASHBOARD</target>
+        <target>Your new dashboard</target>
       </trans-unit>
       <trans-unit id="SaveAs">
         <source>GUARDAR COMO...</source>
-        <target>SAVE AS...</target>
+        <target>Save as...</target>
       </trans-unit>
       <trans-unit id="opcionGuardarComo">
         <source>GUARDAR COMO</source>
-        <target>SAVE AS</target>
+        <target>Save as</target>
       </trans-unit>
       <trans-unit id="dahsboardSaved">
         <source>Informe guardado correctamente</source>
@@ -342,7 +342,7 @@
       </trans-unit>
       <trans-unit id="urlConnectionError">
         <source>ERROR en la llamada</source>
-        <target>ERROR</target>
+        <target>Error</target>
       </trans-unit>
       <trans-unit id="resumeTextConfiguration">
         <source> Puedes configurar una acción personalizada que quieras ejecutar. Te permite llamar a una URL que haga una acción que quieras invocar. Puede ser una llamada a una api, a un endpoint de una app
@@ -406,7 +406,7 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       </trans-unit>
       <trans-unit id="editStylesTitle">
         <source>EDITAR ESTILOS DEL INFORME</source>
-        <target>EDIT DASHBOARD STYLES</target>
+        <target>Edit dashboard styles</target>
       </trans-unit>
       <trans-unit id="dashboardTitleEdit">
         <source>Título del informe</source>
@@ -434,7 +434,7 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       </trans-unit>
       <trans-unit id="opcionEditarEstilos">
         <source>EDITAR ESTILOS</source>
-        <target>EDIT STYLES</target>
+        <target>Edit styles</target>
       </trans-unit>
       <trans-unit id="left">
         <source>Izquierda</source>
@@ -466,7 +466,7 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       </trans-unit>
       <trans-unit id="PanelOptions">
         <source>PANEL OPTIONS</source>
-        <target>PANEL OPTIONS</target>
+        <target>Panel options</target>
       </trans-unit>
       <trans-unit id="titlePanelAppearance">
         <source>Apariencia</source>
@@ -601,19 +601,19 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
 
       <trans-unit id="opcionPanel">
         <source>NUEVO PANEL</source>
-        <target>NEW PANEL</target>
+        <target>New panel</target>
       </trans-unit>
       <trans-unit id="opcionTitulo">
         <source>NUEVO TEXTO</source>
-        <target>NEW TEXT</target>
+        <target>New text</target>
       </trans-unit>
       <trans-unit id="opcionFiltro">
         <source>NUEVO FILTRO</source>
-        <target>NEW FILTER</target>
+        <target>New filter</target>
       </trans-unit>
       <trans-unit id="opcionInforme">
         <source>RECARGAR INFORME</source>
-        <target>RELOAD DASHBOARD</target>
+        <target>Reload dashboard</target>
       </trans-unit>
       <trans-unit id="loading">
         <source>Cargando panel de control...</source>
@@ -661,7 +661,7 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       </trans-unit>
       <trans-unit id="panelOptions0">
         <source>OPCIONES DEL PANEL</source>
-        <target>PANEL OPTIONS</target>
+        <target>Panel options</target>
       </trans-unit>
       <trans-unit id="greendot">
         <source>Paneles filtrados</source>
@@ -681,7 +681,7 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       </trans-unit>
       <trans-unit id="panelTable">
         <source>PANEL</source>
-        <target>PANEL</target>
+        <target>Panel</target>
       </trans-unit>
       <trans-unit id="columnsTooltip">
         <source>Elige cuantas columnas quieres mostrar</source>
@@ -864,7 +864,7 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       </trans-unit>
       <trans-unit id="ChartProps">
         <source>PROPIEDADES DEL GRÁFICO</source>
-        <target>CHART PROPERTIES</target>
+        <target>Chart properties</target>
       </trans-unit>
       <trans-unit id="chartInfo1">
         <source>Los datos seleccionados no permiten utilizar este gráfico.</source>
@@ -940,7 +940,7 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       </trans-unit>
       <trans-unit id="addTag">
         <source>AÑADIR ETIQUETA</source>
-        <target>ADD TAG</target>
+        <target>Add tag</target>
       </trans-unit>
       <trans-unit id="AllTags">
         <source>Todos</source>
@@ -1219,7 +1219,7 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       </trans-unit>
       <trans-unit id="vistaPrevia">
         <source>VISTA PREVIA</source>
-        <target>PREVIEW</target>
+        <target>Preview</target>
       </trans-unit>
       <trans-unit id="ejecutarBtn">
         <source>Ejecutar</source>
@@ -1227,11 +1227,11 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       </trans-unit>
       <trans-unit id="EditQuery">
         <source>EDITAR CONSULTA</source>
-        <target>EDIT QUERY</target>
+        <target>Edit query</target>
       </trans-unit>
       <trans-unit id="EditSQLQuery">
         <source>EDITAR CONSULTA SQL</source>
-        <target>EDIT SQL QUERY</target>
+        <target>Edit SQL query</target>
       </trans-unit>
       <trans-unit id="dragFields">
         <source>Arrastre aquí los atributos que quiera ver en su panel</source>
@@ -1650,7 +1650,7 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       </trans-unit>
       <trans-unit id="tablesd">
         <source>TABLAS</source>
-        <target>TABLES</target>
+        <target>Tables</target>
       </trans-unit>
       <trans-unit id="rolesPermisosTabla">
         <source>Visibilidad de tablas</source>
@@ -1686,15 +1686,15 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       </trans-unit>
       <trans-unit id="permisos">
         <source>PERMISOS</source>
-        <target>PERMISSIONS</target>
+        <target>Permissions</target>
       </trans-unit>
       <trans-unit id="visible">
         <source>VISIBLE</source>
-        <target>VISIBLE</target>
+        <target>Visible</target>
       </trans-unit>
       <trans-unit id="column">
         <source>COLUMNAS</source>
-        <target>COLUMNS</target>
+        <target>Columns</target>
       </trans-unit>
       <trans-unit id="allowCache">
         <source>Habilitar caché</source>
@@ -1761,7 +1761,7 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
 
       <trans-unit id="inputTipo">
         <source>TIPO *</source>
-        <target>TYPE*</target>
+        <target>Type*</target>
       </trans-unit>
       <trans-unit id="placeholderSelectTipo">
         <source>Selecciona un tipo</source>
@@ -1769,27 +1769,27 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       </trans-unit>
       <trans-unit id="inputServidor">
         <source>SERVIDOR *</source>
-        <target>SERVER *</target>
+        <target>Server *</target>
       </trans-unit>
       <trans-unit id="inputNombreDb">
         <source>BASE DE DATOS *</source>
-        <target>DATABASE *</target>
+        <target>Database *</target>
       </trans-unit>
       <trans-unit id="inputNombreDb2">
         <source>BASE DE DATOS *</source>
-        <target>DATABASE *</target>
+        <target>Database *</target>
       </trans-unit>
       <trans-unit id="inputNombreEsquema">
         <source>ESQUEMA</source>
-        <target>SCHEMA</target>
+        <target>Schema</target>
       </trans-unit>
       <trans-unit id="inputPort">
         <source>PUERTO *</source>
-        <target>PORT *</target>
+        <target>Port *</target>
       </trans-unit>
       <trans-unit id="inputUsuario">
         <source>USUARIO *</source>
-        <target>USER *</target>
+        <target>User *</target>
       </trans-unit>
       <trans-unit id="conexionh4">
         <source>Conexión</source>
@@ -1980,27 +1980,27 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       </trans-unit>
       <trans-unit id="filters1">
         <source>IGUAL A (=)</source>
-        <target>EQUAL TO (=)</target>
+        <target>Equal to (=)</target>
       </trans-unit>
       <trans-unit id="filters2">
         <source>NO IGUAL A (!=)</source>
-        <target>NOT EQUAL TO (!=)</target>
+        <target>Not equal to (!=)</target>
       </trans-unit>
       <trans-unit id="filters3">
         <source>MAYOR A (&gt;)</source>
-        <target>GREATER THAN (&gt;)</target>
+        <target>Greater than (&gt;)</target>
       </trans-unit>
       <trans-unit id="filters4">
         <source>MENOR A (&lt;)</source>
-        <target>SMALLER THAN (&lt;)</target>
+        <target>Smaller than (&lt;)</target>
       </trans-unit>
       <trans-unit id="filters5">
         <source>MAYOR o IGUAL A (&gt;=)</source>
-        <target>BIGGER OR EQUAL TO (&gt;=)</target>
+        <target>Bigger or equal to (&gt;=)</target>
       </trans-unit>
       <trans-unit id="filters6">
         <source>MENOR o IGUAL A (&lt;=)</source>
-        <target>SMALLER OR EQUAL TO (&lt;=)</target>
+        <target>Smaller or equal to (&lt;=)</target>
       </trans-unit>
       <trans-unit id="filters7">
         <source>ENTRE (between)</source>
@@ -2028,7 +2028,7 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       </trans-unit>
       <trans-unit id="DashboardFilters">
         <source>FILTROS DEL INFORME</source>
-        <target>DASHBOARD FILTERS</target>
+        <target>Dashboard filters</target>
       </trans-unit>
       <trans-unit id="unlink">
         <source>Desvincular del informe:</source>
@@ -2187,43 +2187,43 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
 
       <trans-unit id="dates1">
         <source>AÑO</source>
-        <target>YEAR</target>
+        <target>Year</target>
       </trans-unit>
       <trans-unit id="datesQ">
         <source>TRIMESTRE</source>
-        <target>QUARTER</target>
+        <target>Quarter</target>
       </trans-unit>
       <trans-unit id="dates2">
         <source>MES</source>
-        <target>MONTH</target>
+        <target>Month</target>
       </trans-unit>
       <trans-unit id="dates3">
         <source>DÍA</source>
-        <target>DAY</target>
+        <target>Day</target>
       </trans-unit>
       <trans-unit id="dates4">
         <source>NO</source>
-        <target>NO</target>
+        <target>No</target>
       </trans-unit>
       <trans-unit id="dates5">
         <source>SEMANA</source>
-        <target>SETMANA</target>
+        <target>Setmana</target>
       </trans-unit>
       <trans-unit id="dates6">
         <source>DÍA DE LA SEMANA</source>
-        <target>DIA DE LA SETMANA</target>
+        <target>Dia de la setmana</target>
       </trans-unit>
       <trans-unit id="dates7">
         <source>FECHA COMPLETA</source>
-        <target>TIMESTAMP</target>
+        <target>Timestamp</target>
       </trans-unit>
       <trans-unit id="dates8">
         <source>DÍA HORA</source>
-        <target>DAY HOUR</target>
+        <target>Day hour</target>
       </trans-unit>
       <trans-unit id="dates9">
         <source>DÍA HORA MINUTO</source>
-        <target>DAY HOUR MINUTE</target>
+        <target>Day hour minute</target>
       </trans-unit>
       <trans-unit id="DatePickerAll">
         <source>Todas</source>
@@ -2497,7 +2497,7 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       </trans-unit>
       <trans-unit id="alertTable">
         <source>ALERTAS</source>
-        <target>ALERTS</target>
+        <target>Alerts</target>
       </trans-unit>
       <trans-unit id="alertsConfigTitle">
         <source>Gestión de alertas</source>
@@ -2628,7 +2628,7 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       </trans-unit>
       <trans-unit id="valueTable">
         <source>VALOR</source>
-        <target>VALUE</target>
+        <target>Value</target>
       </trans-unit>
       <trans-unit id="inputNombreEsquemaModel">
         <source>Esquema</source>
@@ -2636,11 +2636,11 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       </trans-unit>
       <trans-unit id="groups1">
         <source>EMAIL</source>
-        <target>EMAIL</target>
+        <target>Email</target>
       </trans-unit>
       <trans-unit id="groups2">
         <source>GRUPOS</source>
-        <target>GROUPS</target>
+        <target>Groups</target>
       </trans-unit>
       <trans-unit id="informacionGeneral">
         <source>Información general</source>
@@ -2728,7 +2728,7 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       </trans-unit>
       <trans-unit id="DeleteGroup">
         <source>ELIMINAR GRUPO</source>
-        <target>DELETE GROUP</target>
+        <target>Delete group</target>
       </trans-unit>
       <trans-unit id="DeleteGroupText">
         <source>Eliminarás todos los elementos relacionados con este grupo, ¿Deseas continuar?</source>
@@ -2756,15 +2756,15 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       </trans-unit>
       <trans-unit id="rowOptions">
         <source>OPCIONES DE LA FILA</source>
-        <target>ROW OPTIONS</target>
+        <target>Row options</target>
       </trans-unit>
       <trans-unit id="EDITCAP">
         <source>EDITAR</source>
-        <target>EDIT</target>
+        <target>Edit</target>
       </trans-unit>
       <trans-unit id="deleteCAP">
         <source>ELIMINAR</source>
-        <target>DELETE</target>
+        <target>Delete</target>
       </trans-unit>
       <trans-unit id="generateView">
         <source>Generar vista</source>
@@ -2884,7 +2884,7 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       </trans-unit>
       <trans-unit id="groupTable">
         <source>GRUPO</source>
-        <target>GROUP</target>
+        <target>Group</target>
       </trans-unit>
       <trans-unit id="removeRowTotals">
         <source>Quitar totales de fila</source>
@@ -3255,7 +3255,7 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       </trans-unit>
       <trans-unit id="dialogHeaderCustomActions">
         <source>ACCIONES PERSONALIZADAS </source>
-        <target>CUSTOM ACTIONS</target>
+        <target>Custom actions</target>
       </trans-unit>
       <trans-unit id="chartTypesTreeTable">
         <source>Tabla Árbol</source>
@@ -3571,11 +3571,11 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       </trans-unit>
       <trans-unit id="filterReports">
         <source>FILTRAR INFORMES:</source>
-        <target>FILTER REPORTS:</target>
+        <target>Filter reports:</target>
       </trans-unit>
       <trans-unit id="sortReports">
         <source>ORDENAR INFORMES:</source>
-        <target>SORT REPORTS:</target>
+        <target>Sort reports:</target>
       </trans-unit>
       <trans-unit id="createdAt">
         <source>Fecha (asc.)</source>
@@ -4587,7 +4587,7 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       </trans-unit>
       <trans-unit id="TabsPanelConfig">
         <source>CONFIGURACION DE PESTAÑAS</source>
-        <target>TAB CONFIGURATION</target>
+        <target>Tab configuration</target>
       </trans-unit>
       <trans-unit id="TabsPanelConfig2">
         <source>Configuración de pestañas</source>
@@ -5005,7 +5005,7 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       </trans-unit>
       <trans-unit id="hechoCon">
         <source> HECHO CON </source>
-        <target>MADE WITH</target>
+        <target>Made with</target>
       </trans-unit>
       <trans-unit id="noInitialDashboard">
         <source>No hay ningún dashboard inicial configurado.</source>
@@ -5209,31 +5209,31 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       </trans-unit>
       <trans-unit id="aiProvider">
         <source>PROVEEDOR</source>
-        <target>PROVIDER</target>
+        <target>Provider</target>
       </trans-unit>
       <trans-unit id="aiApiKey">
         <source>API KEY</source>
-        <target>API KEY</target>
+        <target>API key</target>
       </trans-unit>
       <trans-unit id="aiAwsAccessKey">
         <source>CLAVE DE ACCESO DE AWS</source>
-        <target>AWS ACCESS KEY</target>
+        <target>AWS access key</target>
       </trans-unit>
       <trans-unit id="aiAwsRegion">
         <source>REGIÓN DE AWS</source>
-        <target>AWS REGION</target>
+        <target>AWS region</target>
       </trans-unit>
       <trans-unit id="aiAwsSecretKey">
         <source>CLAVE SECRETA DE AWS</source>
-        <target>AWS SECRET KEY</target>
+        <target>AWS secret key</target>
       </trans-unit>
       <trans-unit id="aiModel">
         <source>MODELO DE IA</source>
-        <target>AI MODEL</target>
+        <target>Ai model</target>
       </trans-unit>
       <trans-unit id="aiContext">
         <source>CONTEXTO</source>
-        <target>CONTEXT</target>
+        <target>Context</target>
       </trans-unit>
       <trans-unit id="aiEDAApp">
         <source>EDA APP URL</source>
@@ -5245,11 +5245,11 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       </trans-unit>
       <trans-unit id="aiLimit">
         <source>LÍMITE</source>
-        <target>LIMIT</target>
+        <target>Limit</target>
       </trans-unit>
       <trans-unit id="aiAvailable">
         <source>DISPONIBLE</source>
-        <target>AVAILABLE</target>
+        <target>Available</target>
       </trans-unit>
       <trans-unit id="aiConfigSaved">
         <source>Configuración de IA guardada correctamente</source>
@@ -5257,7 +5257,7 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       </trans-unit>
       <trans-unit id="aiBaseUrl">
         <source>BASE URL</source>
-        <target>BASE URL</target>
+        <target>Base URL</target>
       </trans-unit>
       <trans-unit id="navegableFrom">
         <source>Navegable desde</source>
