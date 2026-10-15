@@ -77,6 +77,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
     public NO_DATA: boolean;
     public NO_DATA_ALLOWED: boolean;
     public NO_FILTER_ALLOWED: boolean;
+    public MANDATORY_FILTER_MISSING: boolean;
 
     /**Styles */
     public fontColor: string;
@@ -118,6 +119,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         this.NO_DATA = false;
         this.NO_DATA_ALLOWED = false;
         this.NO_FILTER_ALLOWED = false;
+        this.MANDATORY_FILTER_MISSING = false;
     }
 
     ngAfterContentInit(): void {
@@ -150,10 +152,17 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
                     this.NO_DATA = false;
                     this.NO_DATA_ALLOWED = true;
                     this.NO_FILTER_ALLOWED = false;
+                    this.MANDATORY_FILTER_MISSING = false;
                 }else if( this.props.data?.labels[0]== "noFilterAllowed") {
                     this.NO_DATA = false;
                     this.NO_DATA_ALLOWED = false;
                     this.NO_FILTER_ALLOWED = true;
+                    this.MANDATORY_FILTER_MISSING = false;
+                }else if( this.props.data?.labels[0]== "mandatoryFilterMissing") {
+                    this.NO_DATA = false;
+                    this.NO_DATA_ALLOWED = false;
+                    this.NO_FILTER_ALLOWED = false;
+                    this.MANDATORY_FILTER_MISSING = true;
                 }
             })
         }
