@@ -565,6 +565,7 @@ export class GlobalFilterComponent implements OnInit {
                     filter.isGlobal = this.globalFilter.isGlobal;
                     filter.visible = this.globalFilter.visible;
                     filter.isAutocompleted = this.globalFilter.isAutocompleted !== undefined ? this.globalFilter.isAutocompleted : false;
+                    filter.isMandatory = this.globalFilter.isMandatory ?? false;
                     filter.applyToAll = this.globalFilter.applyToAll;
                     filter.multipleSelection = this.globalFilter.multipleSelection ?? true;
 
