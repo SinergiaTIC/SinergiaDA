@@ -211,9 +211,13 @@ export class EdaKpiTrendComponent implements OnInit, OnChanges, AfterViewInit, O
         return String(period);
     }
 
+    /** Decimals shown when the column configures none (see panel-chart KPI_MAX_DECIMALS). */
+    private readonly MAX_DECIMALS = 10;
+
     private _round(value: number, decimals: number): number {
-        if (!decimals) return Math.round(value);
-        return Number(value.toFixed(decimals));
+        if (!Number.isFinite(value)) return value;
+        if (decimals > 0) return Number(value.toFixed(decimals));
+        return Number(value.toFixed(this.MAX_DECIMALS));
     }
 
     getValueStyle(): any {
@@ -249,7 +253,9 @@ export class EdaKpiTrendComponent implements OnInit, OnChanges, AfterViewInit, O
         const sign = value < 0 ? '-' : '';
         if (abs >= 1_000_000) return sign + (abs / 1_000_000).toFixed(1).replace(/\.0$/, '') + 'M';
         if (abs >= 1_000) return sign + (abs / 1_000).toFixed(1).replace(/\.0$/, '') + 'K';
-        return sign + abs.toLocaleString('es');
+        // Default toLocaleString caps at 3 fraction digits: raise the cap so the
+        // real decimals of the value are shown (issue #650).
+        return sign + abs.toLocaleString('es', { minimumFractionDigits: 0, maximumFractionDigits: this.MAX_DECIMALS });
     }
 
     absVal(v: number): number { return Math.abs(v); }
