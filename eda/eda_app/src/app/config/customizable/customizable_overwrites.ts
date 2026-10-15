@@ -13,6 +13,7 @@ export const SHOW_ZOOM_IN_SIDEBAR: boolean = false;
 export const USE_EDA_KPI_SIZE_LOGIC: boolean = false;
 export const PRIVATE_EDITION_ACTIVATED: boolean =  false;
 export const ENABLED_LANGUAGES: string[] = ['es', 'ca', 'en'];
+export const MAP_BASEMAP_PROVIDER: 'esri' | 'osm' = 'osm'; // Basemap used by the map charts (MapUtilsService.getBaseLayer) | 'esri' → Esri World_Light_Gray_Base | 'osm' → OpenStreetMap standard tiles 
 export const CUSTOMIZE_SIDE_MENU_ICONS: any = { // Icon name (IconService registry) per side-menu entry | 'none' or '' → entry hidden
     create: 'plus',
     management: 'settings',
