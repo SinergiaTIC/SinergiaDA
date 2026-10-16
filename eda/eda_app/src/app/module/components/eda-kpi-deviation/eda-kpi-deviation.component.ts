@@ -157,9 +157,7 @@ export class EdaKpiDeviationComponent implements OnInit, OnChanges, AfterViewIni
         const sign = value < 0 ? '-' : '';
         if (abs >= 1_000_000) return sign + (abs / 1_000_000).toFixed(1).replace(/\.0$/, '') + 'M';
         if (abs >= 1_000) return sign + (abs / 1_000).toFixed(1).replace(/\.0$/, '') + 'K';
-        // Default toLocaleString caps at 3 fraction digits: raise the cap so the
-        // real decimals of the value are shown (issue #650).
-        return sign + abs.toLocaleString(this.locale, { minimumFractionDigits: 0, maximumFractionDigits: 10 });
+        return sign + abs.toLocaleString(this.locale);
     }
 
     public updateChart(): void {

@@ -801,9 +801,9 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
 
     if (chartData[1][0]?.data) {
         kpiValue = _.sum(chartData[1][0]?.data);
-        // Rounds to the column's configured decimals; with none configured the
-        // real decimals of the value are kept (issue #650).
-        kpiValue = this._roundDecimals(kpiValue, decimals);
+        if (this.countDecimals(kpiValue) > decimals) {
+            kpiValue = Number(kpiValue.toFixed(decimals));
+        }
     }
     
     chartConfig.chartType = this.props.chartType;
@@ -834,6 +834,13 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
 
     this.createEdaKpiChartComponent(chartConfig);
 }
+    /**
+     * count the decimal places in the numbers.
+     */
+    private countDecimals (value) {
+        if(Math.floor(value) === value) return 0;
+        return value.toString().split(".")[1].length || 0;
+    }
 
     /** Applies border width/dash to every dataset of a KPI+chart (kpiline/kpiarea). */
     private applyKpiLineStyle(datasets: any[], lineWidth: number, lineStyle: string): void {
@@ -1279,17 +1286,9 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         }
     }
 
-    /**
-     * Decimals shown when the column configures none: keeps the real decimals
-     * of the value while killing binary float dust (e.g. 0.30000000000000004).
-     * Matches the display cap of the KPI templates (`number:'1.0-10'`).
-     */
-    private readonly KPI_MAX_DECIMALS = 10;
-
     private _roundDecimals(value: number, decimals: number): number {
-        if (!Number.isFinite(value)) return value;
-        if (decimals > 0) return Number(value.toFixed(decimals));
-        return Number(value.toFixed(this.KPI_MAX_DECIMALS));
+        if (!decimals) return Math.round(value);
+        return Number(value.toFixed(decimals));
     }
 
     /**

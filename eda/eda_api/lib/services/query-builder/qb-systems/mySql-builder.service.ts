@@ -1,6 +1,8 @@
 import { EdaQueryParams, QueryBuilderService } from '../query-builder.service';
 import * as _ from 'lodash';
 
+const eda_api_config = require('../../../../config/eda_api_config');
+
 
 
 export class MySqlBuilderService extends QueryBuilderService {
@@ -927,18 +929,10 @@ export class MySqlBuilderService extends QueryBuilderService {
     if (!el.hasOwnProperty('minimumFractionDigits')) {
       el.minimumFractionDigits = 0;
     }
+    /*SDA CUSTOM*/ if (el.aggregation_type === 'avg') {
+    /*SDA CUSTOM*/   el.minimumFractionDigits = eda_api_config.custom_behaviour?.AVG_DECIMALS ?? 2;
+    /*SDA CUSTOM*/ }
     return el;
-  }
-
-  /**
-   * Casts a numeric SELECT expression to decimal(32, N). Columns without
-   * configured decimals default to 2 so aggregations like AVG keep two
-   * decimals (issue #650): casting to decimal(32, 0) would round them away in
-   * the database before the frontend ever sees them.
-   */
-  private castDecimal(expression: string, minimumFractionDigits: any): string {
-    const decimals = Number(minimumFractionDigits) || 2;
-    return `cast(${expression} as decimal(32,${decimals}))`;
   }
 
   private getDateFormat(SQLexpression: string, fomrat: string): string {
@@ -998,9 +992,9 @@ export class MySqlBuilderService extends QueryBuilderService {
           else if(el.aggregation_type === 'count_distinct') {columns.push(` count( distinct ${el.SQLexpression} ) as \`${el.display_name}\``);}
           else {columns.push(` ${el.aggregation_type}(${el.SQLexpression}) as \`${el.display_name}\``);}
         }else if(el.column_type=='numeric'){
-          if(el.aggregation_type === 'none') { columns.push(` ${this.castDecimal(`${el.SQLexpression} ${whatIfExpression}`, el.minimumFractionDigits)}   as \`${el.display_name}\``);}
+          if(el.aggregation_type === 'none') { columns.push(` cast( ${el.SQLexpression} ${whatIfExpression} as decimal(32,${el.minimumFractionDigits}))   as \`${el.display_name}\``);}
           else if(el.aggregation_type === 'count_distinct') { columns.push(` cast( count( distinct( ${el.SQLexpression} ${whatIfExpression})) as decimal(32,${el.minimumFractionDigits}))   as \`${el.display_name}\``);}
-          else {columns.push(` ${this.castDecimal(`${el.aggregation_type}(${el.SQLexpression} ${whatIfExpression})`, el.minimumFractionDigits)}   as \`${el.display_name}\``);}
+          else {columns.push(` cast( ${el.aggregation_type}(${el.SQLexpression} ${whatIfExpression}) as decimal(32,${el.minimumFractionDigits}))   as \`${el.display_name}\``);}
         }else if(el.column_type=='date'){
           if(el.aggregation_type === 'none') { columns.push( ` ${this.getDateFormat(el.SQLexpression, el.format)}  as \`${el.display_name}\``);}
           else if(el.aggregation_type === 'count_distinct') { columns.push(` count( distinct ${this.getDateFormat(el.SQLexpression, el.format)} ) as \`${el.display_name}\``);}
@@ -1023,11 +1017,11 @@ export class MySqlBuilderService extends QueryBuilderService {
           if (el.aggregation_type === 'count_distinct') {
             columns.push(`cast( count( distinct ${table_column}) ${whatIfExpression}  as decimal(32,${el.minimumFractionDigits||0}) )  as \`${el.display_name}\``);
           } else {
-            columns.push(`${this.castDecimal(`${el.aggregation_type}(${table_column})  ${whatIfExpression}`, el.minimumFractionDigits)} as \`${el.display_name}\``);
+            columns.push(`cast(${el.aggregation_type}(${table_column})  ${whatIfExpression} as decimal(32,${el.minimumFractionDigits||0}) ) as \`${el.display_name}\``);
           }
         } else {
           if (el.column_type === 'numeric') {
-            columns.push(`${this.castDecimal(`${table_column} ${whatIfExpression}`, el.minimumFractionDigits)} as \`${el.display_name}\``);
+            columns.push(`cast(${table_column} ${whatIfExpression}  as decimal(32,${el.minimumFractionDigits})) as \`${el.display_name}\``);
           } else if (el.column_type === 'date') {
              columns.push( this.getDateFormat(table_column, el.format)  + ` as \`${el.display_name}\``);
           } else {
