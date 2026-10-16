@@ -930,7 +930,7 @@ export class MySqlBuilderService extends QueryBuilderService {
       el.minimumFractionDigits = 0;
     }
     /*SDA CUSTOM*/ if (el.aggregation_type === 'avg') {
-    /*SDA CUSTOM*/   el.minimumFractionDigits = eda_api_config.custom_behaviour?.AVG_DECIMALS ?? 2;
+    /*SDA CUSTOM*/   el.minimumFractionDigits = eda_api_config.custom_behaviour?.AVG_DECIMALS ?? 0;
     /*SDA CUSTOM*/ }
     return el;
   }
