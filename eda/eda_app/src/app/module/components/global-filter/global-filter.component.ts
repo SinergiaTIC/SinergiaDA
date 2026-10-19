@@ -675,6 +675,11 @@ export class GlobalFilterComponent implements OnInit {
         return type;
     }
 
+    /** Resolves a raw selectedItems entry (e.g. the 'emptyString' sentinel) back to its display label */
+    public getFilterItemLabel(filter: any, item: any): string {
+        return filter.data?.find((d: any) => d.value === item)?.label ?? item;
+    }
+
     public getFilterLabel(globalFilter: any): string {
         let label = '';
 
@@ -877,7 +882,13 @@ export class GlobalFilterComponent implements OnInit {
                 }
             }
             
-            const data = res[1].filter(item => !!item[0] || item[0] == '').map(item => ({ label: item[0], value: item[0] }));
+            const data = res[1].filter(item => !!item[0]).map(item => ({ label: item[0], value: item[0] }));
+
+            // If I have empty values I replace them with the empty string text — equivalent to IS NULL OR EMPTY
+            if (res[1].filter(item => item[0]?.toString() == '').length > 0) {
+                data.unshift({ label: $localize`:@@emptyStringTxt:Vacío`, value: 'emptyString' });
+            }
+
             // Before assigning:
             const foundFilter = this.globalFilters.find((gf: any) => gf.id == globalFilter.id);
 
