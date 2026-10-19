@@ -14,9 +14,11 @@ import Swal from 'sweetalert2';
  *   SinergiaCRM), but password CAN be changed from SDA.
  * - Users created in SDA (info.scrm_user=false): EDITABLE profile (name, email,
  *   password and picture), same UX as the core.
+ * - The info.scrm_user flag is the ONLY source of truth: updateModel sets it
+ *   to true for users in sda_def_users and to false for everyone else, so
+ *   group membership (e.g. SCRM_* groups) must NOT be used to infer origin.
  * - Admins: the groups section is hidden (getMineGroups returns every
- *   existing group for them, so listing it makes no sense). SCRM origin for
- *   admins relies solely on the info.scrm_user flag.
+ *   existing group for them, so listing it makes no sense).
  */
 @Component({
   selector: "profile-sda",
@@ -47,8 +49,6 @@ export class ProfileSdaPage implements OnInit {
   isScrmUser = signal(false);
   /** true → admin: groups section hidden (getMineGroups returns ALL groups) */
   isAdmin = signal(false);
-  /** true while the origin is being resolved (flag + SCRM_* groups) */
-  isCheckingOrigin = signal(true);
   /** groups the current user belongs to (getGroupsByUser) */
   userGroups = signal<Array<{ name: string }>>([]);
 
@@ -57,7 +57,7 @@ export class ProfileSdaPage implements OnInit {
   }
 
   ngOnInit(): void {
-    this.resolveOrigin();
+    this.loadGroups();
   }
 
   private initForm() {
@@ -74,9 +74,7 @@ export class ProfileSdaPage implements OnInit {
       { validators: this.passwordMatchValidator },
     )
 
-    // Immediate synchronous lock based on the info.scrm_user flag from Mongo.
-    // The async SCRM_* groups check confirms it right after (covers users
-    // synced before the flag existed, until the next updateModel run).
+    // Lock based on the info.scrm_user flag from Mongo: the only criterion.
     if (this.isScrmUserByFlag(this.user)) {
       this.lockProfile();
     }
@@ -84,7 +82,8 @@ export class ProfileSdaPage implements OnInit {
 
   /**
    * Users synced from SinergiaCRM (sda_def_users) via updateModel carry
-   * info.scrm_user=true in Mongo. Users created directly in SDA do not.
+   * info.scrm_user=true in Mongo; updateModel marks every other user as
+   * info.scrm_user=false, so no further origin checks are needed.
    */
   private isScrmUserByFlag(user: User): boolean {
     return (user as any)?.info?.scrm_user === true;
@@ -99,30 +98,22 @@ export class ProfileSdaPage implements OnInit {
   }
 
   /**
-   * Confirms the origin against the user groups: belonging to any
-   * 'SCRM_*' group marks the user as managed by SinergiaCRM.
+   * Loads the groups of the current user for display only. Group
+   * membership (including SCRM_* groups) does NOT determine the origin.
    * Skipped for admins: getMineGroups returns every existing group for
-   * them, so the list is not their membership (flag already applied above).
+   * them, so the list is not their membership.
    */
-  private resolveOrigin(): void {
+  private loadGroups(): void {
     if (this.isAdmin()) {
       this.userGroups.set([]);
-      this.isCheckingOrigin.set(false);
       return;
     }
     this.groupService.getGroupsByUser().subscribe({
       next: (groups: any[]) => {
-        const list = Array.isArray(groups) ? groups : [];
-        this.userGroups.set(list);
-        const belongsToScrmGroup = list.some(g => (g?.name || '').startsWith('SCRM_'));
-        if (belongsToScrmGroup) {
-          this.lockProfile();
-        }
-        this.isCheckingOrigin.set(false);
+        this.userGroups.set(Array.isArray(groups) ? groups : []);
       },
       error: () => {
         this.userGroups.set([]);
-        this.isCheckingOrigin.set(false);
       }
     });
   }

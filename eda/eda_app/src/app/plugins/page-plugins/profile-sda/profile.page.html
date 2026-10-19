@@ -6,17 +6,13 @@
         Administra tu información personal y preferencias de cuenta
       </p>
     </div>
-    @if (!isCheckingOrigin()) {
-      <button (click)="onSubmit()" [disabled]="profileForm.invalid" class="btn-corporate-gradient px-4 py-2 rounded font-semibold text-white flex items-center disabled:opacity-50 disabled:pointer-events-none">
-        <eda-icon name="check" class="mr-2"></eda-icon>
-        <span i18n="@@saveChanges">Guardar cambios</span>
-      </button>
-    }
+    <button (click)="onSubmit()" [disabled]="profileForm.invalid" class="btn-corporate-gradient px-4 py-2 rounded font-semibold text-white flex items-center disabled:opacity-50 disabled:pointer-events-none">
+      <eda-icon name="check" class="mr-2"></eda-icon>
+      <span i18n="@@saveChanges">Guardar cambios</span>
+    </button>
   </div>
 
-  @if (isCheckingOrigin()) {
-    <div class="flex items-center justify-center py-16 text-gray-500" i18n="@@profileLoading">Cargando perfil...</div>
-  } @else if (isScrmUser()) {
+  @if (isScrmUser()) {
     <!-- SCRM users (updateModel): locked profile, read-only -->
     <div class="rounded-md border border-amber-300 bg-amber-50 px-4 py-3 text-sm text-amber-800 dark:border-amber-700 dark:bg-amber-900/20 dark:text-amber-200" i18n="@@profileScrmLocked">
       Tu usuario está gestionado por SinergiaCRM y no se puede modificar desde SinergiaDA. Para cambiar tus datos, contacta con tu administrador.
@@ -66,7 +62,9 @@
 
           @if (!isAdmin()) {
           <div class="space-y-2">
-            <label class="block text-sm font-medium" i18n="@@profileGroupsLabel">Grupos</label>
+            <p class="text-sm text-gray-500 dark:text-gray-400" i18n="@@profileGroupsReadOnlySubtitle">
+              Grupos a los que pertenece tu usuario
+            </p>
             <div class="flex flex-wrap gap-2">
               @for (group of userGroups(); track group.name) {
                 <span class="inline-flex items-center rounded-md bg-gray-100 px-2.5 py-1 text-sm font-medium text-gray-700 dark:bg-gray-900 dark:text-gray-200">
@@ -176,6 +174,32 @@
           </div>
         </div>
       </div>
+
+      @if (!isAdmin()) {
+      <!-- Non-SCRM users: show the groups they belong to (read-only) -->
+      <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm">
+        <div class="p-6">
+          <h2 class="text-xl font-semibold" i18n="@@profileAccountTitle">Mi cuenta</h2>
+          <p class="text-sm text-gray-500 dark:text-gray-400" i18n="@@profileGroupsReadOnlySubtitle">
+            Grupos a los que pertenece tu usuario
+          </p>
+        </div>
+
+        <div class="p-6 pt-0 space-y-6">
+          <div class="space-y-2">
+            <div class="flex flex-wrap gap-2">
+              @for (group of userGroups(); track group.name) {
+                <span class="inline-flex items-center rounded-md bg-gray-100 px-2.5 py-1 text-sm font-medium text-gray-700 dark:bg-gray-900 dark:text-gray-200">
+                  {{ group.name }}
+                </span>
+              } @empty {
+                <span class="text-sm text-gray-500 dark:text-gray-400" i18n="@@profileGroupsEmpty">No perteneces a ningún grupo.</span>
+              }
+            </div>
+          </div>
+        </div>
+      </div>
+      }
     </form>
   }
 </div>

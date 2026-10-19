@@ -136,6 +136,14 @@ export class userAndGroupsToMongo {
       }
     }
 
+    // Bidirectional SCRM flag: users NOT present in sda_def_users are
+    // not managed by SinergiaCRM, so mark them as such on every sync.
+    const crmEmails = users.map((u: any) => u.email)
+    await User.updateMany(
+      { email: { $nin: crmEmails } },
+      { 'info.scrm_user': false }
+    )
+
     // Synchronize the rest of the relationships
     mongoUsers = await User.find()
     await this.syncronizeUsersGroups(mongoUsers, mongoGroups, users, roles)

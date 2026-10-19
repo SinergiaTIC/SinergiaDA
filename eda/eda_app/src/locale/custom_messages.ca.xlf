@@ -1063,10 +1063,6 @@
     <source>Guardar cambios</source>
     <target>Desar canvis</target>
   </trans-unit>
-  <trans-unit id="profileLoading" datatype="html">
-    <source>Cargando perfil...</source>
-    <target>Carregant perfil...</target>
-  </trans-unit>
   <trans-unit id="profileScrmLocked" datatype="html">
     <source>Tu usuario está gestionado por SinergiaCRM y no se puede modificar desde SinergiaDA. Para cambiar tus datos, contacta con tu administrador.</source>
     <target>El teu usuari està gestionat per SinergiaCRM i no es pot modificar des de SinergiaDA. Per canviar les teves dades, contacta amb l'administrador.</target>
@@ -1095,9 +1091,9 @@
     <source>Gestionado por SinergiaCRM</source>
     <target>Gestionat per SinergiaCRM</target>
   </trans-unit>
-  <trans-unit id="profileGroupsLabel" datatype="html">
-    <source>Grupos</source>
-    <target>Grups</target>
+  <trans-unit id="profileGroupsReadOnlySubtitle" datatype="html">
+    <source>Grupos a los que pertenece tu usuario</source>
+    <target>Grups als quals pertany el teu usuari</target>
   </trans-unit>
   <trans-unit id="profileGroupsEmpty" datatype="html">
     <source>No perteneces a ningún grupo.</source>
