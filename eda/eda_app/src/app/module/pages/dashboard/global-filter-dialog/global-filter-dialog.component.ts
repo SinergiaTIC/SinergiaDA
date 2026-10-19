@@ -430,7 +430,12 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
             if (Array.isArray(response) && response.length > 1) {
                 const data = response[1];
                 this.totalValues = data;
-                this.columnValues = data.filter(item => !!item[0] || item[0] === '').map(item => ({ label: item[0], value: item[0] }));
+                this.columnValues = data.filter(item => !!item[0]).map(item => ({ label: item[0], value: item[0] }));
+
+                // If I have empty values I replace them with the empty string text — equivalent to IS NULL OR EMPTY
+                if (data.filter(item => item[0]?.toString() === '').length > 0) {
+                    this.columnValues.unshift({ label: $localize`:@@emptyStringTxt:Vacío`, value: 'emptyString' });
+                }
             }
         } catch (err) {
             this.alertService.addError(err)
