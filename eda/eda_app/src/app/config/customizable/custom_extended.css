@@ -530,3 +530,13 @@ p-treeselect {
   margin-top: 0 !important;
   margin-bottom: 0 !important;
 }
+
+/* ─── Side menu: hide the "Perfil" entry ──────────────────────────────────
+   In the profile + languages submenu, "Perfil" is redundant: the current user
+   is already represented by the side-menu user badge (initials, links to the
+   profile). The whole entry is hidden so only the languages remain (hiding the
+   li avoids the leftover gap of the space-y). It is targeted through its href,
+   which contains "/profile". */
+app-main-left-sidebar ul > li:has(> .sidebar-submenu-link[href*="profile"]) {
+  display: none !important;
+}

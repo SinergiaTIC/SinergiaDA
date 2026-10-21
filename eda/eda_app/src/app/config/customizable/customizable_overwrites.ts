@@ -17,7 +17,7 @@ export const MAP_BASEMAP_PROVIDER: 'esri' | 'osm' = 'osm'; // Basemap used by th
 export const CUSTOMIZE_SIDE_MENU_ICONS: any = { // Icon name (IconService registry) per side-menu entry | 'none' or '' → entry hidden
     create: 'plus',
     management: 'settings',
-    settings: 'profile',
+    settings: 'language', // the entry opens the profile + languages submenu
     information: 'information-circle',
     logout: 'logout',
 
