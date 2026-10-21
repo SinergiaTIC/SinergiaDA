@@ -1043,6 +1043,102 @@
     <source>VALORES NULOS O VACÍOS (null or = '')</source>
     <target>Valores nulos o vacíos (null or = '')</target>
   </trans-unit>
+  <trans-unit id="emailAlreadyExistsTitle" datatype="html">
+    <source>Email en uso</source>
+    <target>Email en uso</target>
+  </trans-unit>
+  <trans-unit id="emailAlreadyExistsMsg" datatype="html">
+    <source>Ya existe un usuario con este correo electrónico.</source>
+    <target>Ya existe un usuario con este correo electrónico.</target>
+  </trans-unit>
+  <trans-unit id="UpdatedUserError" datatype="html">
+    <source>Error al actualizar el usuario</source>
+    <target>Error al actualizar el usuario</target>
+  </trans-unit>
+  <trans-unit id="profileSubtitle" datatype="html">
+    <source>Administra tu información personal y preferencias de cuenta</source>
+    <target>Administra tu información personal y preferencias de cuenta</target>
+  </trans-unit>
+  <trans-unit id="saveChanges" datatype="html">
+    <source>Guardar cambios</source>
+    <target>Guardar cambios</target>
+  </trans-unit>
+  <trans-unit id="profileScrmLocked" datatype="html">
+    <source>Tu usuario está gestionado por SinergiaCRM y no se puede modificar desde SinergiaDA. Para cambiar tus datos, contacta con tu administrador.</source>
+    <target>Tu usuario está gestionado por SinergiaCRM y no se puede modificar desde SinergiaDA. Para cambiar tus datos, contacta con tu administrador.</target>
+  </trans-unit>
+  <trans-unit id="profileInfoTitle" datatype="html">
+    <source>Información Personal</source>
+    <target>Información Personal</target>
+  </trans-unit>
+  <trans-unit id="profileReadOnlySubtitle" datatype="html">
+    <source>Datos de solo lectura sincronizados desde SinergiaCRM</source>
+    <target>Datos de solo lectura sincronizados desde SinergiaCRM</target>
+  </trans-unit>
+  <trans-unit id="labelUsuarioLogin" datatype="html">
+    <source>Usuario de acceso</source>
+    <target>Usuario de acceso</target>
+  </trans-unit>
+  <trans-unit id="profileAccountTitle" datatype="html">
+    <source>Mi cuenta</source>
+    <target>Mi cuenta</target>
+  </trans-unit>
+  <trans-unit id="profileAccountType" datatype="html">
+    <source>Tipo de usuario</source>
+    <target>Tipo de usuario</target>
+  </trans-unit>
+  <trans-unit id="profileScrmBadge" datatype="html">
+    <source>Gestionado por SinergiaCRM</source>
+    <target>Gestionado por SinergiaCRM</target>
+  </trans-unit>
+  <trans-unit id="profileGroupsReadOnlySubtitle" datatype="html">
+    <source>Grupos a los que pertenece tu usuario</source>
+    <target>Grupos a los que pertenece tu usuario</target>
+  </trans-unit>
+  <trans-unit id="profileGroupsEmpty" datatype="html">
+    <source>No perteneces a ningún grupo.</source>
+    <target>No perteneces a ningún grupo.</target>
+  </trans-unit>
+  <trans-unit id="profileInfoSubtitle" datatype="html">
+    <source>Actualiza tu información básica de perfil</source>
+    <target>Actualiza tu información básica de perfil</target>
+  </trans-unit>
+  <trans-unit id="usernamePlaceholder" datatype="html">
+    <source>Tu nombre</source>
+    <target>Tu nombre</target>
+  </trans-unit>
+  <trans-unit id="usernameLengthValidation" datatype="html">
+    <source>El nombre de usuario debe tener al menos 2 caracteres.</source>
+    <target>El nombre de usuario debe tener al menos 2 caracteres.</target>
+  </trans-unit>
+  <trans-unit id="emailPlaceholder" datatype="html">
+    <source>tu@ejemplo.com</source>
+    <target>tu@ejemplo.com</target>
+  </trans-unit>
+  <trans-unit id="emailValidation" datatype="html">
+    <source>Por favor ingresa un email válido.</source>
+    <target>Por favor ingresa un email válido.</target>
+  </trans-unit>
+  <trans-unit id="changePassword" datatype="html">
+    <source>Cambiar contraseña</source>
+    <target>Cambiar contraseña</target>
+  </trans-unit>
+  <trans-unit id="changePasswordSubtitle" datatype="html">
+    <source>Deja los campos vacíos si no quieres cambiarla</source>
+    <target>Deja los campos vacíos si no quieres cambiarla</target>
+  </trans-unit>
+  <trans-unit id="newPassword" datatype="html">
+    <source>Nueva contraseña</source>
+    <target>Nueva contraseña</target>
+  </trans-unit>
+  <trans-unit id="confirmNewPassword" datatype="html">
+    <source>Confirmar nueva contraseña</source>
+    <target>Confirmar nueva contraseña</target>
+  </trans-unit>
+  <trans-unit id="passwordValidation" datatype="html">
+    <source>Las contraseñas no coinciden</source>
+    <target>Las contraseñas no coinciden</target>
+  </trans-unit>
 </body>
   </file>
 </xliff>

@@ -83,7 +83,9 @@ export class userAndGroupsToMongo {
           name: users[i].name,
           email: users[i].email,
           password: users[i].password,
-          role: userRoles
+          role: userRoles,
+          // Users imported from SinergiaCRM (sda_def_users) are SCRM-managed.
+          info: { scrm_user: true }
         })
         try {
           const savedUser = await user.save()
@@ -100,6 +102,8 @@ export class userAndGroupsToMongo {
           { name: users[i].name },
           {
             password: users[i].password,
+            // Already-known CRM users stay flagged as SCRM-managed.
+            'info.scrm_user': true,
             $addToSet: { role: { $each: userRoles } }
           }
         )
@@ -131,6 +135,14 @@ export class userAndGroupsToMongo {
         }
       }
     }
+
+    // Bidirectional SCRM flag: users NOT present in sda_def_users are
+    // not managed by SinergiaCRM, so mark them as such on every sync.
+    const crmEmails = users.map((u: any) => u.email)
+    await User.updateMany(
+      { email: { $nin: crmEmails } },
+      { 'info.scrm_user': false }
+    )
 
     // Synchronize the rest of the relationships
     mongoUsers = await User.find()
