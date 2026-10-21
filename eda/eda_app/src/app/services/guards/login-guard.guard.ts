@@ -21,11 +21,7 @@ export class LoginGuardGuard implements CanActivate {
 
         const token = route.queryParams.token;
 
-        if (this.userService.isLogged()) {
-            return true;
-        }
-
-        if (token) {
+        if (token && !this.userService.isLogged()) {
             this.userService.tokenUrl(token).subscribe(() => {
                 const urlInforme = state.url.split('?')[0];
                 this.router.navigate([urlInforme], { queryParams: route.queryParams });
@@ -37,6 +33,11 @@ export class LoginGuardGuard implements CanActivate {
             if (result === 'authenticated' || result === 'redirecting') {
                 return false;
             }
+
+            if (this.userService.isLogged()) {
+                return this.isRootUrl(state) ? this.router.createUrlTree(['/home']) : true;
+            }
+
             return this.resolveLogin(state);
         });
     }
@@ -69,6 +70,9 @@ export class LoginGuardGuard implements CanActivate {
 
     /** Default behaviour: public dashboards open as anonymous, the rest goes to the login page. */
     private resolveLogin(state: RouterStateSnapshot): boolean | UrlTree | Promise<boolean | UrlTree> {
+        if (this.isRootUrl(state)) {
+            return true;
+        }
         const dashboardMatch = state.url.match(/\/dashboard\/([^?/]+)/);
         const loginUrl = { returnUrl: state.url.split('?')[0], params: state.url.split('?')[1] };
         const loginUrlTree = this.router.createUrlTree(['/login'], { queryParams: loginUrl });
@@ -88,5 +92,10 @@ export class LoginGuardGuard implements CanActivate {
             });
         }
         return loginUrlTree;
+    }
+
+    private isRootUrl(state: RouterStateSnapshot): boolean {
+        const path = state.url.split('?')[0];
+        return path === '' || path === '/';
     }
 }

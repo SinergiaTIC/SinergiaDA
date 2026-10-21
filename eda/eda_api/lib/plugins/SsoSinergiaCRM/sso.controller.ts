@@ -114,7 +114,7 @@ export class SsoController {
                 return next(new HttpException(503, 'SinergiaCRM SSO is not configured'));
             }
 
-            const returnUrl = typeof req.query.return === 'string' ? req.query.return : '';
+            const returnUrl = typeof req.qs?.return === 'string' ? req.qs.return : '';
             const crmUrl = String(SSO_CRM_URL).replace(/\/+$/, '');
             const target = `${crmUrl}/index.php?module=Home&action=sdaRedirect`
                 + (returnUrl ? `&return=${encodeURIComponent(returnUrl)}` : '');
