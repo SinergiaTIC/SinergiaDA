@@ -1532,6 +1532,23 @@ static  convertColumnToForbiddenColumn(columns: any[], sample: any): any[] {
       filters.forEach(a => {
         a.filter_elements.forEach(b => {
           if (b.value1) {
+            if (b.value1.includes('emptyString') && b.value1.length == 1) {
+              /** if it is the only value selected I turn the filter into a null or empty*/
+              a.filter_type = 'null_or_empty';
+            } if (b.value1.includes('emptyString') && b.value1.length > 1) {
+              /** if there are more than one, remove it to a separate filter */
+              const nullFilter = JSON.parse(JSON.stringify(a));
+              nullFilter.filter_id = 'is_null';
+              nullFilter.filter_type = 'null_or_empty';
+              nullFilter.source_filter_id = a.filter_id;
+              nullFilter.filter_elements = [{ value1: ['null'] }];
+              b.value1 = b.value1.filter(c => c != 'emptyString');
+              filters.push(nullFilter);
+            }
+          }
+        });
+        a.filter_elements.forEach(b => {
+          if (b.value1) {
             if (
               (b.value1.includes('null') || b.value1.includes('1900-01-01'))
               && b.value1.length > 1  /** Si tengo varios elementos  */

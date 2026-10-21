@@ -19,6 +19,7 @@ import { ButtonModule } from "primeng/button";
 import { CommonModule } from '@angular/common';
 import { DragDropModule } from '@angular/cdk/drag-drop';
 import { AutoCompleteModule } from "primeng/autocomplete";
+import { SHOW_EMPTY_VALUE_IN_FILTERS } from '@eda/configs/customizable/customizable_merged';
 
 const ANGULAR_MODULES = [
     CommonModule,
@@ -433,7 +434,7 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
                 this.columnValues = data.filter(item => !!item[0]).map(item => ({ label: item[0], value: item[0] }));
 
                 // If I have empty values I replace them with the empty string text — equivalent to IS NULL OR EMPTY
-                if (data.filter(item => item[0]?.toString() === '').length > 0) {
+                if (SHOW_EMPTY_VALUE_IN_FILTERS && data.filter(item => item[0]?.toString() === '').length > 0) {
                     this.columnValues.unshift({ label: $localize`:@@emptyStringTxt:Vacío`, value: 'emptyString' });
                 }
             }

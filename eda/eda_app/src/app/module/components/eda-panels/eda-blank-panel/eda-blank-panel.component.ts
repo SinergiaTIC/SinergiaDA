@@ -238,6 +238,7 @@ export class EdaBlankPanelComponent implements OnInit, AfterViewChecked {
     public ptooltipOrderByControl: string = $localize`:@@ptooltipOrderByControl:Arrastra aquí los atributos por los que quieres ordenar los resultados y colócalos en el orden que prefieras. En cada uno puedes elegir ascendente (ASC), descendente (DESC) o dejarlo sin indicar.`
     public aggregationText: string = $localize`:@@aggregationText:Agregación`;
     public textBetween: string = $localize`:@@textBetween:Entre`
+    public emptyStringString: string = $localize`:@@emptyStringTxt:Vacío`
     public yesText: string = $localize`:@@si:Si`;
     public noText: string = $localize`:@@no:No`;
     /** Query Variables */
@@ -2417,6 +2418,7 @@ public tableNodeExpand(event: any): void {
                     valueStr = `"${values[0]}"`;
                 }  else if (values.length > 1 || ['in', 'not_in'].includes(filter.filter_type)) {
                     valueStr = `[${values.map((v: string) => (`"${v}"`) ).join(', ')}]`;
+                    valueStr = valueStr.replace('emptyString', this.emptyStringString); // This is done in case nulls are filtered out from the dashboard that can be internationalised.
                 }
 
                 if (values2) {
