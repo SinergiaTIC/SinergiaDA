@@ -276,7 +276,12 @@ export class DashboardPage implements OnInit {
     this.stylesProviderService.setDefaultBackgroundColor();
     this.stylesProviderService.loadingFromPalette = false;
     this.stopRefresh = true;
-    this.dashboard.config.stopRefresh = true;
+    // The report may have not been loaded (e.g. a 401 closing the session), so
+    // there is nothing to stop. Throwing here used to cancel the navigation and
+    // leave the user stuck in the report view.
+    if (this.dashboard) {
+      this.dashboard.config.stopRefresh = true;
+    }
     clearInterval(this.countdownInterval);
     this.mobileResizeObserver?.disconnect();
     if (this.edaPanelsSubscription) {

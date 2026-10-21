@@ -195,7 +195,16 @@ export class UserController {
 
     static async refreshToken(req: Request, res: Response, next: NextFunction) {
         try {
-            const token = jwt.sign({ user: req.user }, SEED, { expiresIn: 14400 }); // 4 hours
+            const payload: any = { user: req.user };
+            // Keep the SSO marker and the original session start, so a refreshed
+            // session is still revoked when the user logs out of SinergiaCRM.
+            const raw: any = req.qs?.token;
+            const incoming: any = typeof raw === 'string' ? (jwt.decode(raw) || {}) : {};
+            if (incoming?.sso) {
+                payload.sso = true;
+                payload.ssoIssuedAt = incoming.ssoIssuedAt ?? incoming.iat;
+            }
+            const token = jwt.sign(payload, SEED, { expiresIn: 14400 }); // 4 hours
             return res.status(200).json({ ok: true, token });
         } catch (err) {
             next(err);
