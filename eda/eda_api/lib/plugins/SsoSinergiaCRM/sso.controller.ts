@@ -13,6 +13,13 @@ const SSO_ISSUER = 'sinergiacrm';
 const SSO_AUDIENCE = 'sinergiada';
 const SESSION_EXPIRES_IN = 14400;
 
+/**
+ * Claim holding the moment the SSO session really started. It is copied over on
+ * every token refresh so a refreshed session can still be revoked after the user
+ * logs out of SinergiaCRM (see sso-revocations.store.ts).
+ */
+const SESSION_STARTED_CLAIM = 'ssoIssuedAt';
+
 const SSO_CONFIG = applyConfigOverwrite('sso_config', {
     SECRET: '',
     CRM_URL: '',
@@ -96,7 +103,15 @@ export class SsoController {
             const sessionUser: any = user.toObject ? user.toObject() : user;
             sessionUser.password = ':)';
 
-            const sessionToken = jwt.sign({ user: sessionUser, sso: true }, SEED, { expiresIn: SESSION_EXPIRES_IN });
+            const sessionToken = jwt.sign(
+                {
+                    user: sessionUser,
+                    sso: true,
+                    [SESSION_STARTED_CLAIM]: Math.floor(Date.now() / 1000),
+                },
+                SEED,
+                { expiresIn: SESSION_EXPIRES_IN }
+            );
 
             insertServerLog(req, 'info', 'newLogin', sessionUser.name?.toString() || payload.sub, 'sso');
 

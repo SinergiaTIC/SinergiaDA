@@ -27,6 +27,8 @@ export const SsoSinergiaCRMPlugin: IFeaturePlugin = {
         if (!payload?.sso) {
             return true;
         }
-        return !(await isSessionRevoked(payload?.user?.email, payload?.iat));
+        // ssoIssuedAt survives token refreshes; iat covers sessions issued before it existed.
+        const startedAt = payload?.ssoIssuedAt ?? payload?.iat;
+        return !(await isSessionRevoked(payload?.user?.email, startedAt));
     },
 };
