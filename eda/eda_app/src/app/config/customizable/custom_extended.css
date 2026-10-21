@@ -302,7 +302,20 @@ html {
 }
 
 /* ─── Report/dashboard tables: mirror the 2.x PrimeNG look ───────────────── */
+/* Defaults only. The panel options set these variables inline on this same
+   element (eda-table.component.ts -> applyBandingColors), and an !important
+   here would win over them (a stylesheet !important beats an inline value),
+   which silently disabled the header/banding colour options. */
 .eda-table {
+  --table-header-color: rgba(219, 223, 228, 0.5);
+  --table-banding-color: transparent;
+  --table-total-color: rgba(219, 223, 228, 0.5);
+}
+/* When the panel's colour option is switched off, the component writes
+   #ffffff inline for every table colour: keep the previous look for that case
+   only, so with the option on the colours chosen in the panel still apply. */
+.eda-table[style*="--table-header-color:#ffffff"],
+.eda-table[style*="--table-header-color: #ffffff"] {
   --table-header-color: rgba(219, 223, 228, 0.5) !important;
   --table-banding-color: transparent !important;
   --table-total-color: rgba(219, 223, 228, 0.5) !important;
@@ -315,7 +328,10 @@ html {
   font-size: 13px !important;
   font-weight: 700 !important;
   padding: 6.6px !important;
-  border: 1px solid #ffffff !important;
+  /* Same tone as the body cell borders: the header background is painted under
+     the border, so a white border ate 1px of it and read as a bright frame
+     (the header looked 1px smaller than the rows). */
+  border: 1px solid #e9ecef !important;
   border-radius: 0 !important;
 }
 .eda-table .p-datatable .p-datatable-tbody > tr > td {
@@ -324,6 +340,19 @@ html {
   font-weight: 400 !important;
   padding: 4.4px !important;
   border: 1px solid #e9ecef !important;
+}
+/* Sort icon in the header: the global rule (style.css) paints it corporate
+   green with 0.6 opacity on hover, which is invisible over the light header.
+   Use the header text colour, and a slightly darker tone for hover / active. */
+.eda-table .p-datatable .p-sortable-column .p-sortable-column-icon {
+  color: #455a64 !important;
+  opacity: 1 !important;
+}
+.eda-table .p-datatable .p-sortable-column:not(.p-highlight):hover .p-sortable-column-icon,
+.eda-table .p-datatable .p-sortable-column.p-highlight .p-sortable-column-icon,
+.eda-table .p-datatable .p-sortable-column.p-highlight:hover .p-sortable-column-icon {
+  color: #37474f !important;
+  opacity: 1 !important;
 }
 @media (max-width: 1370px) {
   .eda-table .p-datatable .p-datatable-thead > tr > th,
@@ -552,6 +581,13 @@ p-treeselect {
   margin-bottom: 0 !important;
 }
 
+/* ─── DISABLED (provisional): Panel edit → Preview customisation ──────────
+   The rules below (chart type column at 25% plus available chart types first)
+   are kept for reference but disabled: `@media not all` never matches, so
+   they are inert. To re-enable, delete the `@media not all {` line and the
+   closing brace at the end of the file, and remove this note.
+   History: added in commit d51addb72 (PR #645). */
+@media not all {
 /* ─── Panel edit → Preview: chart type column always takes 25% ──────────── */
 /* The preview is a 4/5 + 1/5 grid (grid-cols-5) and the chart type dropdown
    is fixed at 16.5vw, so the selector column is too narrow for its content.
@@ -599,3 +635,4 @@ p-treeselect {
 .p-dropdown-panel[style*="16.5vw"] .p-dropdown-items > *:has(.texto-rallado-alert) {
   order: 1 !important;
 }
+} /* end of the disabled provisional block */
