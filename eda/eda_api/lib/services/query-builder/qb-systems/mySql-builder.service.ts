@@ -929,8 +929,10 @@ export class MySqlBuilderService extends QueryBuilderService {
     if (!el.hasOwnProperty('minimumFractionDigits')) {
       el.minimumFractionDigits = 0;
     }
-    if (el.aggregation_type === 'avg') {
-       el.minimumFractionDigits = eda_api_config.custom_behaviour?.AVG_DECIMALS ?? 0;
+    // AVG_DECIMALS only forces the decimals of the AVG aggregations when it is defined in the config.
+    // Otherwise, the decimals defined on the numeric column itself are respected (as in sum, max, min, ...)
+    if (el.aggregation_type === 'avg' && eda_api_config.custom_behaviour?.AVG_DECIMALS !== undefined) {
+      el.minimumFractionDigits = eda_api_config.custom_behaviour.AVG_DECIMALS;
     }
     return el;
   }
