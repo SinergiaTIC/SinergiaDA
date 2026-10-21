@@ -12,6 +12,9 @@
   color: var(--corporate-primary);
   border: 1px solid rgba(var(--corporate-primary-rgb), 0.35);
   letter-spacing: 0.02em;
+  /* Bigger initials than the template's text-xs (10.5px with the 14px root). At 18px the two
+     characters (~23px wide, line box ~22px) still fit inside the 35px circle. */
+  font-size: 18px;
   transition: background-color 0.15s ease, color 0.15s ease;
 }
 
