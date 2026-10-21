@@ -1,0 +1,21 @@
+/* ---- Side-menu user badge (component plugin 'sidebar-user') ---- */
+/* Pinned to the bottom of the side menu (see the mounted slot in main-left-sidebar.html). */
+:host {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  margin-top: auto;
+}
+
+.sidebar-user-badge {
+  background: rgba(var(--corporate-primary-rgb), 0.12);
+  color: var(--corporate-primary);
+  border: 1px solid rgba(var(--corporate-primary-rgb), 0.35);
+  letter-spacing: 0.02em;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.sidebar-user-badge:hover {
+  background: var(--corporate-primary);
+  color: #ffffff;
+}

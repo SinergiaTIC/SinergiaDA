@@ -59,6 +59,10 @@
       }
       }
     </div>
+    @if (!isAnonim && userPlugin) {
+      <!-- Component plugin: current user badge, pinned to the bottom -->
+      <ng-container *ngComponentOutlet="userPlugin.component"></ng-container>
+    }
   </div>
 }
  
