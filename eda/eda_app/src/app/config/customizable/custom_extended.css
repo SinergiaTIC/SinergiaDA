@@ -551,3 +551,51 @@ p-treeselect {
   margin-top: 0 !important;
   margin-bottom: 0 !important;
 }
+
+/* ─── Panel edit → Preview: chart type column always takes 25% ──────────── */
+/* The preview is a 4/5 + 1/5 grid (grid-cols-5) and the chart type dropdown
+   is fixed at 16.5vw, so the selector column is too narrow for its content.
+   Everything is anchored to #chartSelector, which is unique in the app, so
+   other grid-cols-5 usages (drag-drop, global filters) are not affected. */
+.grid-cols-5:has(#chartSelector) {
+  grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+}
+.grid-cols-5:has(#chartSelector) > .col-span-4 {
+  grid-column: span 3 / span 3 !important;
+}
+.grid-cols-5:has(#chartSelector) > .col-start-5 {
+  grid-column: span 1 / span 1 !important;
+}
+/* The inner wrapper uses w-96 (384px) and a w-3/6 override for crosstables:
+   both must fill the column so the chart types never lose their 25%. */
+.grid-cols-5:has(#chartSelector) > .col-start-5 > div {
+  width: 100% !important;
+}
+#chartSelector {
+  width: 100% !important;
+}
+/* Its options panel is limited to 16.5vw inline, which truncates long labels
+   such as "- Demasiados valores". Only that panel is targeted. */
+.p-dropdown-panel[style*="16.5vw"] {
+  max-width: none !important;
+}
+
+/* Available chart types first. The template flags the unusable ones (either
+   "- No Disponible" or "- Demasiados valores") with texto-rallado-alert, so
+   `order` pushes exactly those to the end of the list. Inside both groups the
+   original order is preserved. The panel is identified by the 16.5vw that the
+   template sets in [panelStyle] (unique in the app); update this selector if
+   that value ever changes in core. */
+.p-dropdown-panel[style*="16.5vw"] .p-dropdown-items {
+  display: flex !important;
+  flex-direction: column !important;
+}
+/* PrimeNG renders every row as a wrapper component (<p-dropdownItem>) that
+   contains the li.p-dropdown-item, so the flex items of the list are those
+   wrappers: `order` must be set on the direct children of the list. */
+.p-dropdown-panel[style*="16.5vw"] .p-dropdown-items > * {
+  order: 0;
+}
+.p-dropdown-panel[style*="16.5vw"] .p-dropdown-items > *:has(.texto-rallado-alert) {
+  order: 1 !important;
+}
