@@ -636,3 +636,24 @@ p-treeselect {
   order: 1 !important;
 }
 } /* end of the disabled provisional block */
+
+/* ─── Panel: recover the 2.x usable area for the chart ─────────────────────
+   3.x reserves 21px per side and a taller header than 2.x (which used ~4px and
+   a 30px header), so the chart canvas ended up ~50px narrower and ~25px
+   shorter for the same panel. Both versions scale the grid with the window
+   (dashboard.page.ts computes fixedRowHeight = floor(gridWidth / 40), keeping
+   square cells), so panels grow with the screen; these values only bring back
+   the 2.x proportions of usable chart area.
+   NOTE: capping the grid width (gridster { max-width: X }) would freeze the
+   panel size, but it was rejected because the report must fill the screen. */
+eda-blank-panel > div.flex.flex-col {
+  padding-left: 4px !important;
+  padding-right: 4px !important;
+  padding-bottom: 4px !important;
+}
+eda-blank-panel > div.flex.flex-col > div.drag-handler {
+  min-height: 36px !important;
+}
+eda-blank-panel panel-chart {
+  padding-bottom: 0 !important;
+}
