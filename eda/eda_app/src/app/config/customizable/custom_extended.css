@@ -657,3 +657,17 @@ eda-blank-panel > div.flex.flex-col > div.drag-handler {
 eda-blank-panel panel-chart {
   padding-bottom: 0 !important;
 }
+
+/* ─── Panel title: same size everywhere, proportional to the page ──────────
+   Every panel must show the SAME title size, so the size is tied to the
+   viewport instead of the panel width: 1.05vw = 16.8px on a 1600px page, and
+   it grows/shrinks with the page. The clamp keeps it legible on small pages
+   (13px floor) and bounded on very large ones (20px ceiling). Semibold (600):
+   the template's font-base leaves it light (300) and full bold was too heavy.
+   Dark grey: the inline panelText sets a lighter blue-grey (#455a64).
+   The h2 carries Tailwind classes and an inline [ngStyle]="panelText". */
+eda-blank-panel > div.flex.flex-col > div.drag-handler h2 {
+  font-size: clamp(13px, 1.05vw, 20px) !important;
+  font-weight: 600 !important;
+  color: #37474f !important;
+}
