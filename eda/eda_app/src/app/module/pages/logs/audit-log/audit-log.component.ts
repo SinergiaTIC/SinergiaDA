@@ -327,6 +327,7 @@ export class AuditLogComponent {
     private getActionLabel(action: string): string {
         const labels = {
             newLogin: $localize`:@@LogsActionNewLogin:Login`,
+            newLogout: $localize`:@@LogsActionNewLogout:Cierre de sesión`,
             DashboardAccessed: $localize`:@@LogsActionDashboardAccessed:Acceso a informe`,
             DashboardCreated: $localize`:@@LogsActionDashboardCreated:Informe creado`,
             DashboardUpdated: $localize`:@@LogsActionDashboardUpdated:Informe actualizado`,

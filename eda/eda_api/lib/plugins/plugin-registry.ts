@@ -30,6 +30,24 @@ export class PluginRegistry {
         return this.getAll().filter((p): p is IAuthPlugin => isAuthPlugin(p));
     }
 
+    /** Runs the session checks of every plugin that defines one. Fails closed on errors. */
+    static async rejectsSession(payload: any): Promise<boolean> {
+        for (const plugin of this.plugins.values()) {
+            if (!plugin.validateSession) {
+                continue;
+            }
+            try {
+                if (!(await plugin.validateSession(payload))) {
+                    return true;
+                }
+            } catch (error) {
+                console.error(`[PluginRegistry] Session check of "${plugin.type}" failed`, error);
+                return true;
+            }
+        }
+        return false;
+    }
+
     static getDatasource(type: string): IDatasourcePlugin | undefined {
         const plugin = this.plugins.get(type);
         return plugin && isDatasourcePlugin(plugin) ? plugin : undefined;
