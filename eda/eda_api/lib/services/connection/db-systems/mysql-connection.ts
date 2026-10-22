@@ -218,7 +218,7 @@ async execQuery(query: string): Promise<any> {
 
 
     /**
-     * SDA CUSTOM - issue #667: value-list filters may carry the label (or nothing) in filter_codes — that is how
+     * issue #667: value-list filters may carry the label (or nothing) in filter_codes — that is how
      * 2.x kept them and how the old selector built them. When USE_VALUE_LIST_CODE_FOR_FILTERS is on the query must
      * compare the internal `code` column against codes, so the selected values are translated to their codes here,
      * before building the SQL (a small read per value-list table; never a subquery inside the panel query).

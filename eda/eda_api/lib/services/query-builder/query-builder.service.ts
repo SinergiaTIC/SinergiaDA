@@ -142,7 +142,7 @@ export abstract class QueryBuilderService {
                 }
             })
 
-            /** SDA CUSTOM - A selector must also return the internal code of each value-list column (issue #667) */
+            /** A selector must also return the internal code of each value-list column (issue #667) */
             if (this.queryTODO.forSelector === true) {
                 this.addSelectorCodeFields(this.queryTODO.fields);
             }
@@ -311,7 +311,7 @@ export abstract class QueryBuilderService {
             processFields(this.queryTODO.fields);
             processFields(this.queryTODO.filters);
 
-            /** SDA CUSTOM - A selector must also return the internal code of each value-list column (issue #667) */
+            /** A selector must also return the internal code of each value-list column (issue #667) */
             if (this.queryTODO.forSelector === true) {
                 this.addSelectorCodeFields(this.queryTODO.fields);
             }
@@ -945,7 +945,7 @@ export abstract class QueryBuilderService {
     }
 
     /**
-     * SDA CUSTOM - A selector query has to return, for every value-list column, the display label AND its internal
+     * A selector query has to return, for every value-list column, the display label AND its internal
      * code (two columns). The frontend builds filter_codes from that code (column-utils.service.ts -> setFilter);
      * without it the label ends up in filter_codes and code-mode filters compare labels against the code column,
      * returning nothing (issue #667). No-op for regular panel queries (forSelector is only set by the selectors).
