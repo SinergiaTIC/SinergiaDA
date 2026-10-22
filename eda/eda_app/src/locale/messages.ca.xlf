@@ -581,6 +581,14 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
         <source>Hay cambios sin guardar. ¿Seguro que quieres salir?</source>
         <target>Hi ha canvis sense desar, segur que voleu sortir?</target>
       </trans-unit>
+      <trans-unit id="SaveAndExitButton">
+        <source>Guardar y salir</source>
+        <target>Desa i surt</target>
+      </trans-unit>
+      <trans-unit id="ExitWithoutSavingButton">
+        <source>Salir sin guardar</source>
+        <target>Surt sense desar</target>
+      </trans-unit>
       <trans-unit id="csvSep">
         <source>Separador Decimal</source>
         <target>Separador de decimals</target>
@@ -2866,6 +2874,14 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       <trans-unit id="NotSavedWarning">
         <source>Hay cambios sin guardar. ¿Seguro que quieres salir?</source>
         <target>Hi ha canvis sense desar, segur que voleu sortir?</target>
+      </trans-unit>
+      <trans-unit id="SaveAndExitButton">
+        <source>Guardar y salir</source>
+        <target>Desa i surt</target>
+      </trans-unit>
+      <trans-unit id="ExitWithoutSavingButton">
+        <source>Salir sin guardar</source>
+        <target>Surt sense desar</target>
       </trans-unit>
       <trans-unit id="csvSep">
         <source>Separador Decimal</source>

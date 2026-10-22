@@ -2866,6 +2866,14 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
         <source>Hay cambios sin guardar. ¿Seguro que quieres salir?</source>
         <target>There are unsaved changes, do you want to continue anyway?</target>
       </trans-unit>
+      <trans-unit id="SaveAndExitButton">
+        <source>Guardar y salir</source>
+        <target>Save and exit</target>
+      </trans-unit>
+      <trans-unit id="ExitWithoutSavingButton">
+        <source>Salir sin guardar</source>
+        <target>Exit without saving</target>
+      </trans-unit>
       <trans-unit id="csvSep">
         <source>Separador Decimal</source>
         <target>Decimal separator</target>

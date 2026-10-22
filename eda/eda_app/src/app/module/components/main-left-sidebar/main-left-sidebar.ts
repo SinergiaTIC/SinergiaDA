@@ -227,7 +227,8 @@ menuCommand(item: any, event: MouseEvent) {
 
   /**
    * Runs the given navigation only after confirming, when the report currently open has unsaved
-   * changes. Every side-menu destination goes through here, not only home.
+   * changes. Every side-menu destination goes through here, not only home. The default action is
+   * saving the report before leaving; the secondary one discards the changes.
    */
   public confirmLeaveNotSaved(action: () => void): void {
     if (!this.notSaved) {
@@ -238,10 +239,18 @@ menuCommand(item: any, event: MouseEvent) {
     Swal.fire({
       text: $localize`:@@NotSavedWarning:Hay cambios sin guardar. ¿Seguro que quieres salir?`,
       icon: 'warning',
+      confirmButtonText: $localize`:@@SaveAndExitButton:Guardar y salir`,
+      denyButtonText: $localize`:@@ExitWithoutSavingButton:Salir sin guardar`,
       showDenyButton: true,
-      denyButtonText: $localize`:@@cancelarButton:Cancelar`,
+      showCancelButton: true,
+      cancelButtonText: $localize`:@@cancelarButton:Cancelar`,
+      focusConfirm: true,
+      showLoaderOnConfirm: true,
+      preConfirm: () => this.dashboardService.requestSave(),
+      // The button that opened the dialog keeps the focus, so the default action is focused here.
+      didOpen: () => (Swal.getConfirmButton() as HTMLElement)?.focus(),
     }).then(result => {
-      if (result.isConfirmed) {
+      if (result.isConfirmed || result.isDenied) {
         this.dashboardService.setNotSaved(false);
         action();
       }

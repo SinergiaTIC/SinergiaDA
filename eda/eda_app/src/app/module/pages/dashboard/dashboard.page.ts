@@ -200,6 +200,9 @@ export class DashboardPage implements OnInit {
       (data) => this.notSaved = data
     );
 
+    // Allow other components (e.g. the side menu) to save the report before leaving it.
+    this.dashboardService.registerSaveHandler(() => this.saveDashboard());
+
     // When navigating between reports (same component, different id), reset the
     // unsaved-changes flag and reload the dashboard so it never opens marked as modified.
     this.routeDashboardId = this.route.snapshot.paramMap.get('id');
@@ -311,6 +314,7 @@ export class DashboardPage implements OnInit {
     if (this.routeParamsSubscription) {
         this.routeParamsSubscription.unsubscribe();
     }
+    this.dashboardService.clearSaveHandler();
   }
 
 
