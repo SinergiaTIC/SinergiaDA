@@ -13,13 +13,13 @@ export const SHOW_ZOOM_IN_SIDEBAR: boolean = false;
 export const USE_EDA_KPI_SIZE_LOGIC: boolean = false;
 export const PRIVATE_EDITION_ACTIVATED: boolean =  false;
 export const ENABLED_LANGUAGES: string[] = ['es', 'ca', 'en'];
-export const MAP_BASEMAP_PROVIDER: 'esri' | 'osm' = 'osm'; // Basemap used by the map charts (MapUtilsService.getBaseLayer) | 'esri' → Esri World_Light_Gray_Base | 'osm' → OpenStreetMap standard tiles 
+export const MAP_BASEMAP_PROVIDER: 'esri' | 'osm' = 'osm'; // Basemap used by the map charts (MapUtilsService.getBaseLayer) | 'esri' → Esri World_Light_Gray_Base | 'osm' → OpenStreetMap standard tiles
 export const DEFAULT_TABLE_HEADER_COLOR: string = '#d2d7df'; // Default header background of table charts: chosen so that, applied with 0.4 opacity, it matches the "no colours" look (rgba(219,223,228,0.5) over the panel background)
 export const DEFAULT_TABLE_BANDING_COLOR: string = '#cbd5e1'; // Default colour of the even (banded) rows: slate-300, so rows stay distinguishable when the colour option is on (applied with 0.15 opacity, totals with 0.3)
 export const CUSTOMIZE_SIDE_MENU_ICONS: any = { // Icon name (IconService registry) per side-menu entry | 'none' or '' → entry hidden
-    create: 'plus',
+    create: '',
     management: 'settings',
-    settings: 'profile',
+    settings: 'language', // the entry opens the profile + languages submenu
     information: 'information-circle',
     logout: 'logout',
 
