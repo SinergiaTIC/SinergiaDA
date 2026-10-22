@@ -1474,7 +1474,8 @@ public tableNodeExpand(event: any): void {
             }
 
             this.sortedFilters.push(newSortedFilter);
-            this.savePanel()
+            this.savePanel();
+            this.dashboardService.setNotSaved(true);
         }
     }    
 
@@ -1487,6 +1488,7 @@ public tableNodeExpand(event: any): void {
         if(this.sortedFilters.some((sortedFilter: any) => _filter.id === sortedFilter.filter_id)){
             this.sortedFilters = [];
             this.savePanel(); // Panel setting saved
+            this.dashboardService.setNotSaved(true);
         }
 
     }
@@ -2728,6 +2730,7 @@ public tableNodeExpand(event: any): void {
     public newSortedFiltersFunction(event: any[]): void {
         this.sortedFilters = event;
         this.display_v.btnSave = true;
+        this.dashboardService.setNotSaved(true);
     }
 
     public updateSortedFiltersColumnDialogFunction(e: any): void {
@@ -2747,12 +2750,14 @@ public tableNodeExpand(event: any): void {
                     value: 'and',
                 };
                 this.sortedFilters.push(newSortedFilter);
+                this.dashboardService.setNotSaved(true);
             }
         } else {
             if (this.sortedFilters.length !== 0) {
                 this.alertService.addWarning($localize`:@@filterSettingsReboot:La configuración de filtros se ha reiniciado`);
             }
             this.sortedFilters = [];
+            this.dashboardService.setNotSaved(true);
         }
     }
 
@@ -2773,12 +2778,14 @@ public tableNodeExpand(event: any): void {
                     value: 'and',
                 };
                 this.sortedFilters.push(newSortedFilter);
+                this.dashboardService.setNotSaved(true);
             }
         } else {
             if (this.sortedFilters.length !== 0) {
                 this.alertService.addWarning($localize`:@@filterSettingsReboot:La configuración de filtros se ha reiniciado`);
             }
             this.sortedFilters = [];
+            this.dashboardService.setNotSaved(true);
         }
     }
 

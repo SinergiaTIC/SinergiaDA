@@ -1444,6 +1444,7 @@ public startCountdown(seconds: number) {
 
   // Function that updates the gridster height value each time an element changes
   onItemChange(item: GridsterItem): void {
+    this.dashboardService.setNotSaved(true);
     if (this.panels) {
       const rowHeight = this.gridsterOptions.fixedRowHeight || 150;
       const isMobile = window.innerWidth < (this.gridsterOptions.mobileBreakpoint || 640);
