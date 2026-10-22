@@ -195,42 +195,43 @@ menuCommand(item: any, event: MouseEvent) {
     return;
   }
 
-  // Going to home can discard unsaved changes on the current dashboard, so confirm first
-  if (path === '/home' && !item.command) {
-    this.checkNotSavedHome();
+  // Side-menu sections (no route and no language) only open their submenu, they don't leave the report
+  if (!path && !item.lang) {
+    item.command ? item.command() : null;
     return;
   }
 
-  // Any other destination silently drops the unsaved-changes flag (page is left behind)
-  this.ignoreNotSaved();
+  // Any destination leaves the current report, so confirm first when it has unsaved changes
+  this.confirmLeaveNotSaved(() => {
+    if (path.includes('logout')) {
 
-  if (path.includes('logout')) {
+      const user = JSON.parse(localStorage.getItem('user'));
 
-    const user = JSON.parse(localStorage.getItem('user'));
+      if(user.nameID && user.nameIDFormat && user.sessionIndex) {
+        // SAML logout
+        this.userService.SAMLlogout();
+      }
+      else {
+        // Default logout
+        this.userService.logout();
+      }
 
-    if(user.nameID && user.nameIDFormat && user.sessionIndex) {
-      // SAML logout
-      this.userService.SAMLlogout();
+    } else if (path) {
+      item.command ? item.command() : this.router.navigate([path]);
+    } else if (item.lang) {
+      this.redirectLocale(item.lang);
+
     }
-    else {
-      // Default logout
-      this.userService.logout();
-    }
-
-  } else if (path) {
-    item.command ? item.command() : this.router.navigate([path]);
-  } else if (item.lang) {
-    this.redirectLocale(item.lang);
-
-  }
+  });
 }
 
   /**
-   * Navigates to home, warning the user first if the current dashboard has unsaved changes.
+   * Runs the given navigation only after confirming, when the report currently open has unsaved
+   * changes. Every side-menu destination goes through here, not only home.
    */
-  public checkNotSavedHome(): void {
+  public confirmLeaveNotSaved(action: () => void): void {
     if (!this.notSaved) {
-      this.router.navigate(['/home']);
+      action();
       return;
     }
 
@@ -242,17 +243,9 @@ menuCommand(item: any, event: MouseEvent) {
     }).then(result => {
       if (result.isConfirmed) {
         this.dashboardService.setNotSaved(false);
-        this.router.navigate(['/home']);
+        action();
       }
     });
-  }
-
-  /**
-   * Drops the unsaved-changes flag without asking, used when navigating to a page
-   * other than home (the destination isn't the dashboard, so nothing to lose there).
-   */
-  public ignoreNotSaved(): void {
-    this.dashboardService.setNotSaved(false);
   }
 
   public redirectLocale(lan: string) {
