@@ -501,8 +501,11 @@ export class GlobalFilterComponent implements OnInit {
 
     checkAllMandatoryFilters(): {value :boolean, items: any}{
         let nonEmptyFilters: {value :boolean, items: any} = {value: true,items: []};
+        // Date operators that filter on the field being (not) empty do not need a value
+        const noValueDateTypes = ['not_null', 'not_null_nor_empty', 'null_or_empty'];
         this.globalFilters.forEach(element => {
             if(element.isMandatory && element.isMandatory === true){
+                if (noValueDateTypes.includes(element.dateFilterType)) return;
                 if(element.selectedItems.length < 1){
                     nonEmptyFilters.value = false;
                     nonEmptyFilters.items.push(element.selectedColumn.display_name.default);
