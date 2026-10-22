@@ -800,8 +800,10 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
             }
         }
         if(this.isMandatory){
-            valid = this.globalFilter.selectedItems.length > 0;  
-            this.isMandatoryError = !valid;      
+            // Date operators that filter on the field being (not) empty do not need a value
+            const noValueDateTypes = ['not_null', 'not_null_nor_empty', 'null_or_empty'];
+            valid = noValueDateTypes.includes(this.globalFilter.dateFilterType) || this.globalFilter.selectedItems.length > 0;
+            this.isMandatoryError = !valid;
         }
 
         return valid;
@@ -1104,6 +1106,9 @@ public async loadFilterAutoComplete(event: any, filtro: any) {
     }
 
     public disableApply(): boolean {
+        // Date operators that filter on the field being (not) empty do not need a value
+        const noValueDateTypes = ['not_null', 'not_null_nor_empty', 'null_or_empty'];
+        if (noValueDateTypes.includes(this.globalFilter?.dateFilterType)) return false;
         return this.isMandatory && this.globalFilter.selectedItems.length < 1;
     }
 
