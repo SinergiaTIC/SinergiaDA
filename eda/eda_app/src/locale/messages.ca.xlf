@@ -578,8 +578,8 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
         <target>Importa</target>
       </trans-unit>
       <trans-unit id="NotSavedWarning">
-        <source>Hay cambios sin guardar. ¿Seguro que quieres salir?</source>
-        <target>Hi ha canvis sense desar, segur que voleu sortir?</target>
+        <source>Hay cambios sin guardar. ¿Qué deseas hacer?</source>
+        <target>Hi ha canvis sense desar. Què vols fer?</target>
       </trans-unit>
       <trans-unit id="SaveAndExitButton">
         <source>Guardar y salir</source>
@@ -2872,8 +2872,8 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
         <target>Importa</target>
       </trans-unit>
       <trans-unit id="NotSavedWarning">
-        <source>Hay cambios sin guardar. ¿Seguro que quieres salir?</source>
-        <target>Hi ha canvis sense desar, segur que voleu sortir?</target>
+        <source>Hay cambios sin guardar. ¿Qué deseas hacer?</source>
+        <target>Hi ha canvis sense desar. Què vols fer?</target>
       </trans-unit>
       <trans-unit id="SaveAndExitButton">
         <source>Guardar y salir</source>

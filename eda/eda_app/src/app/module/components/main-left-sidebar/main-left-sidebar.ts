@@ -237,20 +237,34 @@ menuCommand(item: any, event: MouseEvent) {
     }
 
     Swal.fire({
-      text: $localize`:@@NotSavedWarning:Hay cambios sin guardar. ¿Seguro que quieres salir?`,
+      text: $localize`:@@NotSavedWarning:Hay cambios sin guardar. ¿Qué deseas hacer?`,
       icon: 'warning',
+      // Wider dialog and no wrapping so the three actions stay on the same line.
+      width: '38em',
+      // The corporate SweetAlert theme paints the "cancel" role red as the discard action, so
+      // "Salir sin guardar" uses it. "Cancelar" keeps the deny role. Tailwind's order utilities
+      // restore the visual order Guardar y salir | Salir sin guardar | Cancelar.
+      customClass: {
+        actions: '!flex-nowrap',
+        confirmButton: 'order-1',
+        cancelButton: 'order-2',
+        denyButton: 'order-3',
+      },
       confirmButtonText: $localize`:@@SaveAndExitButton:Guardar y salir`,
-      denyButtonText: $localize`:@@ExitWithoutSavingButton:Salir sin guardar`,
+      denyButtonText: $localize`:@@cancelarButton:Cancelar`,
+      cancelButtonText: $localize`:@@ExitWithoutSavingButton:Salir sin guardar`,
       showDenyButton: true,
       showCancelButton: true,
-      cancelButtonText: $localize`:@@cancelarButton:Cancelar`,
       focusConfirm: true,
       showLoaderOnConfirm: true,
       preConfirm: () => this.dashboardService.requestSave(),
       // The button that opened the dialog keeps the focus, so the default action is focused here.
       didOpen: () => (Swal.getConfirmButton() as HTMLElement)?.focus(),
     }).then(result => {
-      if (result.isConfirmed || result.isDenied) {
+      // "Cancelar" (deny) closes the dialog without doing anything: the confirm button saves and
+      // leaves, and "Salir sin guardar" (cancel) leaves discarding the changes.
+      const discard = result.isDismissed && result.dismiss === Swal.DismissReason.cancel;
+      if (result.isConfirmed || discard) {
         this.dashboardService.setNotSaved(false);
         action();
       }
