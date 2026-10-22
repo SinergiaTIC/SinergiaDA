@@ -973,6 +973,7 @@ public tableNodeExpand(event: any): void {
                 if(borrado.value){
                     try {
                         this.changeChartType(type, subType, config);
+                        this.dashboardService.setNotSaved(true);
                         if (hadChildNav) { QueryUtils.runQuery(this, false); }
                     } catch (err) {
                         this.alertService.addError(err);
@@ -984,6 +985,7 @@ public tableNodeExpand(event: any): void {
             this.closeEditarConsulta();
         } else {
             this.changeChartType(type, subType, config);
+            this.dashboardService.setNotSaved(true);
             if (hadChildNav) { QueryUtils.runQuery(this, false); }
         }
     }
@@ -2482,6 +2484,7 @@ public tableNodeExpand(event: any): void {
     public onCloseFilterMapperDialog(response?: any): void {
         if (response) {
             this.panel.globalFilterMap = response.connections || [];
+            this.dashboardService.setNotSaved(true);
         }
 
         this.display_v.filterMapperDialog = false;
