@@ -136,7 +136,19 @@ export class DashboardMenuSdaComponent implements OnInit, OnDestroy, DoCheck {
       this.isEditable = this.canIedit();
       this.isReadOnly = this.isReadOnlyCheck();
       if (!this.viewModeTouched) {
-        this.viewMode = this.isEditable && this.readStoredViewMode();
+        if (this.hasStoredViewMode()) {
+          this.viewMode = this.isEditable && this.readStoredViewMode();
+        } else {
+          // First opening with no saved preference: a brand-new (empty) report
+          // starts in edit mode; any report that already holds content keeps
+          // the default view mode. Only the auto-edit decision is persisted
+          // (so the authoring session sticks across reloads); auto-view is
+          // never stored, so a transient mis-evaluation can never lock a new
+          // report in view mode - the next load simply re-evaluates.
+          const isNew = this.isNewReport();
+          this.viewMode = this.isEditable && !isNew;
+          if (this.isEditable && isNew) this.storeViewMode(false);
+        }
       }
       this.buildAddMenu();
       this.buildMoreMenu();
@@ -193,6 +205,37 @@ export class DashboardMenuSdaComponent implements OnInit, OnDestroy, DoCheck {
     } catch {
       return true;
     }
+  }
+
+  /** Whether the user already chose a view/edit mode for this report. */
+  private hasStoredViewMode(): boolean {
+    try {
+      const key = this.viewModeStorageKey();
+      if (!key) return false;
+      const stored = localStorage.getItem(key);
+      return stored === 'view' || stored === 'edit';
+    } catch {
+      return false;
+    }
+  }
+
+  /**
+   * A report counts as new while nothing was ever saved into it: no panels
+   * in the persisted config, no saved filters, and no live content either
+   * (the page always injects a single empty blank panel for new reports,
+   * which must not count as content).
+   */
+  private isNewReport(): boolean {
+    const config = this.dashboard?.dashboard?.config;
+    if (!config) return false; // dashboard not loaded yet: keep default view
+    if ((config.panel?.length ?? 0) > 0) return false;
+    if ((config.filters?.length ?? 0) > 0) return false;
+    const livePanels = this.dashboard?.panels || [];
+    const hasLiveContent = livePanels.some((p: any) => !!p?.content || (p?.type !== undefined && p.type !== 0));
+    if (hasLiveContent) return false;
+    const liveFilters = this.dashboard?.globalFilter?.globalFilters?.length ?? 0;
+    if (liveFilters > 0) return false;
+    return true;
   }
 
   private storeViewMode(enabled: boolean): void {

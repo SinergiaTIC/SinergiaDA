@@ -228,6 +228,7 @@ export const SHOW_ZOOM_IN_SIDEBAR: boolean = true; // true → zoom control live
 export const USE_EDA_KPI_SIZE_LOGIC: boolean = true; // true → EDA mode: numeric input in the KPI dialog (modifiedFontPoints, additive) | false → SDA mode: +/- buttons on hover over the KPI (fontScale, multiplicative)
 export const PRIVATE_EDITION_ACTIVATED: boolean =  true;
 export const ENABLED_LANGUAGES: string[] = ['es', 'en', 'ca', 'fr', 'pl', 'gl', 'eu']; // Locale codes shown in the language selector. Each one must have a matching build in angular.json's i18n.locales (or be the sourceLocale) — this flag only controls what's offered in the UI, it doesn't build/remove locales.
+export const MAP_BASEMAP_PROVIDER: 'esri' | 'osm' = 'esri'; // Basemap used by the map charts (MapUtilsService.getBaseLayer) | 'esri' → Esri World_Light_Gray_Base | 'osm' → OpenStreetMap standard tiles 
 export const CUSTOMIZE_SIDE_MENU_ICONS: any = { // Icon name (IconService registry) per side-menu entry | 'none' or '' → entry hidden
     home: 'home',
     create: 'plus',
