@@ -402,6 +402,9 @@ export class DashboardPage implements OnInit {
       this.selectedTags = this.dashboard.config.tag;
     }
 
+    // A dashboard that has just been loaded has no unsaved changes yet.
+    this.dashboardService.setNotSaved(false);
+
     this.checkImportedPanels(dashboard);
     this.updateFilterDatesInPanels();
   }
