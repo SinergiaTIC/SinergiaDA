@@ -24,6 +24,7 @@ module.exports = applyConfigOverwrite('eda_api_config', {
       USE_VALUE_LIST_CODE_FOR_FILTERS: false, // true -> For using the filters with code values.
       USE_RECURSIVE_PERMISSIONS: false, // true -> QueryBuilderService.builder() getRecursivePermissions (EDA). false -> with getFlatPermissions (SDA).
       RESTRICT_TABLE_TO_GRANTED_COLUMN: false, // true -> closed model: granting permission on one column hides the rest of the table's columns (EDA). false -> row-level permissions never hide sibling columns (SDA).
-      // AVG_DECIMALS: 2 // Optional. When defined, forces the decimals of the AVG aggregations in the generated SQL (cast as decimal(32,N)), overwriting the column's own minimumFractionDigits. When not defined, the decimals defined on the numeric field are respected (as in sum, max, min, ...)
+      SHOW_EMPTY_VALUE_IN_FILTERS: true // true -> selector queries for global filters always include an empty/null row (UNION SELECT '').
+      
     }
   });
