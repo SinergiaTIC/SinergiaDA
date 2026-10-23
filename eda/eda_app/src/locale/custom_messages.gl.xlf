@@ -1139,6 +1139,38 @@
     <source>Las contraseñas no coinciden</source>
     <target>Os contrasinais non coinciden</target>
   </trans-unit>
+    <trans-unit id="dashboardSidebarLiveDashboard" datatype="html">
+      <source>Live Dashboard</source>
+      <target>Actualización automática</target>
+    </trans-unit>
+    <trans-unit id="tooltipReportFilters" datatype="html">
+      <source>Abrir la lista de filtros del informe</source>
+      <target>Abrir a lista de filtros do informe</target>
+    </trans-unit>
+    <trans-unit id="tooltipLiveDashboard" datatype="html">
+      <source>Configurar el refresco automático del informe</source>
+      <target>Configurar a actualización automática do informe</target>
+    </trans-unit>
+    <trans-unit id="tooltipEditStyles" datatype="html">
+      <source>Cambiar los estilos visuales del informe</source>
+      <target>Cambiar os estilos visuais do informe</target>
+    </trans-unit>
+    <trans-unit id="tooltipPrivacy" datatype="html">
+      <source>Configurar quién puede ver el informe</source>
+      <target>Configurar quen pode ver o informe</target>
+    </trans-unit>
+    <trans-unit id="tooltipTag" datatype="html">
+      <source>Añadir o editar etiquetas del informe</source>
+      <target>Engadir ou editar etiquetas do informe</target>
+    </trans-unit>
+    <trans-unit id="tooltipPanelLock" datatype="html">
+      <source>Bloquear o desbloquear el movimiento y redimensionado de los paneles</source>
+      <target>Bloquear ou desbloquear o movemento e redimensionado dos paneis</target>
+    </trans-unit>
+    <trans-unit id="tooltipPrivateEdition" datatype="html">
+      <source>Permitir que solo el propietario edite el informe</source>
+      <target>Permitir que só o propietario edite o informe</target>
+    </trans-unit>
 </body>
   </file>
 </xliff>

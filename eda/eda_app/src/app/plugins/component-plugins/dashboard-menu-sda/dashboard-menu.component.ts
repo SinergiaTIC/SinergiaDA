@@ -74,6 +74,13 @@ export class DashboardMenuSdaComponent implements OnInit, OnDestroy, DoCheck {
   public liveDashboardOpen: boolean = false;
   public refreshTime: number | null = null;
   public liveDashboardLabel = $localize`:@@dashboardSidebarLiveDashboard:Live Dashboard`;
+  public tooltipReportFilters = $localize`:@@tooltipReportFilters:Abrir la lista de filtros del informe`;
+  public tooltipLiveDashboard = $localize`:@@tooltipLiveDashboard:Configurar el refresco automático del informe`;
+  public tooltipEditStyles = $localize`:@@tooltipEditStyles:Cambiar los estilos visuales del informe`;
+  public tooltipPrivacy = $localize`:@@tooltipPrivacy:Configurar quién puede ver el informe`;
+  public tooltipTag = $localize`:@@tooltipTag:Añadir o editar etiquetas del informe`;
+  public tooltipPanelLock = $localize`:@@tooltipPanelLock:Bloquear o desbloquear el movimiento y redimensionado de los paneles`;
+  public tooltipPrivateEdition = $localize`:@@tooltipPrivateEdition:Permitir que solo el propietario edite el informe`;
   public secondsToRefreshPlaceholder = $localize`:@@secondsToRefresh:Segundos para refrescar`;
   public renameLabel = $localize`:@@renameReportTooltip:Editar nombre`;
   public panelTitlePlaceholder = $localize`:@@panelTitlePlaceholder:Título del panel`;
@@ -341,6 +348,7 @@ export class DashboardMenuSdaComponent implements OnInit, OnDestroy, DoCheck {
     this.refreshTime = value;
     this.dashboard.dashboard.config.refreshTime = value;
     this.dashboardService.setNotSaved(true);
+    this.alertService.addSuccess(value ? `Refresco automático: ${value}s` : 'Refresco automático desactivado');
     // The page owns the countdown; triggerTimer() restarts it from the config.
     this.dashboard?.triggerTimer?.();
     this.liveDashboardOpen = false;
@@ -637,7 +645,8 @@ export class DashboardMenuSdaComponent implements OnInit, OnDestroy, DoCheck {
         {
           id: 'dataSourceInfo',
           label: this.dashboard?.dataSource?.name,
-          icon: "pi pi-database",
+          icon: "pi pi-database text-gray-400",
+styleClass: "text-gray-500 italic",
           disabled: true,
           visible: !!this.dashboard?.dataSource?.name
         }
@@ -650,6 +659,7 @@ export class DashboardMenuSdaComponent implements OnInit, OnDestroy, DoCheck {
           id: 'reportFilters',
           label: $localize`:@@dashboardMenuReportFilters:Filtros de informe`,
           icon: "pi pi-filter",
+           tooltip: this.tooltipReportFilters,
           visible: this.hasReportFilters()
         },
         // Temporarily hidden in SinergiaDA until the feature is considered mature.
@@ -694,6 +704,7 @@ export class DashboardMenuSdaComponent implements OnInit, OnDestroy, DoCheck {
           id: 'liveDashboard',
           label: this.liveDashboardLabel,
           icon: "pi pi-desktop",
+          tooltip: this.tooltipLiveDashboard,
           visible: this.can('edit')
         }
       ],
@@ -701,52 +712,50 @@ export class DashboardMenuSdaComponent implements OnInit, OnDestroy, DoCheck {
         {
           label: $localize`:@@dashboardSidebarEditStyles:Editar estilos`,
           icon: "pi pi-palette",
+          tooltip: this.tooltipEditStyles,
           visible: this.can('edit'),
           command: () => { const s = sidebar(); if (s) s.isEditStyleDialogVisible = true; hide(); }
         },
         {
           label: $localize`:@@dashboardSidebarDashboardPrivacity:Privacidad del informe`,
           icon: "pi pi-lock",
+          tooltip: this.tooltipPrivacy,
           visible: this.can('edit'),
           command: () => { const s = sidebar(); if (s) s.isVisibleModalVisible = true; hide(); }
         },
         {
           label: $localize`:@@addTag:Añadir etiqueta`,
           icon: "pi pi-tag",
+          tooltip: this.tooltipTag,
           visible: this.can('edit'),
           command: () => { const s = sidebar(); if (s) s.isTagModalVisible = true; hide(); }
         }
       ],
       [
         {
-          label: sb?.clickFiltersEnabled
-            ? $localize`:@@enableFilters:Click en filtros habilitado`
-            : $localize`:@@disableFilters:Click en filtros deshabilitado`,
-          icon: sb?.clickFiltersEnabled ? "pi pi-bolt" : "pi pi-ban",
-          visible: false,
-          command: () => { sidebar()?.toggleClickFilters(); this.buildMoreMenu(); }
-        },
-        {
           label: sb?.clickPanelLockButton
             ? $localize`:@@enablePanelLockButton:Bloquear los paneles`
             : $localize`:@@disablePanelLockButton:Desbloquear los paneles`,
           icon: sb?.clickPanelLockButton ? "pi pi-lock-open text-green-600" : "pi pi-lock text-red-600",
+          tooltip: this.tooltipPanelLock,
           visible: this.can('edit'),
-          command: () => { const s = sidebar(); if (s) { s.panelLockButton(); this.alertService.addSuccess(s.clickPanelLockButton ? 'Paneles bloqueados' : 'Paneles desbloqueados'); } this.buildMoreMenu(); }
+          command: () => { const s = sidebar(); if (s) { s.panelLockButton(); this.alertService.addSuccess(s.clickPanelLockButton ? 'Paneles bloqueados' : 'Paneles desbloqueados'); } this.buildMoreMenu(); hide(); }
         },
         {
           label: sb?.onlyIcanEdit
             ? $localize`:@@disablePrivateEdition:Deshabilitar edición privada`
             : $localize`:@@enablePrivateEdition:Habilitar edición privada`,
-          icon: sb?.onlyIcanEdit ? "pi pi-check" : "pi pi-ban",
+          icon: sb?.onlyIcanEdit ? "pi pi-check text-green-600" : "pi pi-ban text-gray-400",
+          tooltip: this.tooltipPrivateEdition,
           visible: this.can('edit'),
-          command: () => { const s = sidebar(); if (s) { s.toggleEdit(); this.alertService.addSuccess(s.onlyIcanEdit ? 'Edición privada habilitada' : 'Edición privada deshabilitada'); } this.buildMoreMenu(); }
+          command: () => { const s = sidebar(); if (s) { s.toggleEdit(); this.alertService.addSuccess(s.onlyIcanEdit ? 'Edición privada habilitada' : 'Edición privada deshabilitada'); } this.buildMoreMenu(); hide(); }
         }
       ],
       [
         {
           label: $localize`:@@dashboardSidebarDeleteDashboard:Eliminar informe`,
-          icon: "pi pi-trash",
+          icon: "pi pi-trash text-red-600",
+          styleClass: "text-red-600 font-medium",
           visible: this.can('edit'),
           command: () => sidebar()?.removeDashboard()
         }
