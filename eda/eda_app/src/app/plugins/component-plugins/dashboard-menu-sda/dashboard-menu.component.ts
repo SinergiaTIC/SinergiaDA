@@ -722,6 +722,7 @@ export class DashboardMenuSdaComponent implements OnInit, OnDestroy, DoCheck {
             ? $localize`:@@enableFilters:Click en filtros habilitado`
             : $localize`:@@disableFilters:Click en filtros deshabilitado`,
           icon: sb?.clickFiltersEnabled ? "pi pi-bolt" : "pi pi-ban",
+          visible: false,
           command: () => { sidebar()?.toggleClickFilters(); this.buildMoreMenu(); }
         },
         {
