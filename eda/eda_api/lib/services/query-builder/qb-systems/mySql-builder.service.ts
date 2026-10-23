@@ -2,8 +2,6 @@ import { EdaQueryParams, QueryBuilderService } from '../query-builder.service';
 import * as _ from 'lodash';
 const eda_api_config = require('../../../../config/eda_api_config');
 
-const eda_api_config = require('../../../../config/eda_api_config');
-
 
 
 export class MySqlBuilderService extends QueryBuilderService {
