@@ -7,7 +7,7 @@ import { Menu, MenuModule } from "primeng/menu";
 import { MenuItem } from "primeng/api";
 import { TooltipModule } from "primeng/tooltip";
 import { EdaPanel, EdaPanelType, EdaTitlePanel, EdaTabsPanel } from "@eda/models/model.index";
-import { FileUtiles, StyleProviderService, DashboardService } from "@eda/services/service.index";
+import { FileUtiles, StyleProviderService, DashboardService, AlertService } from "@eda/services/service.index";
 import { DashboardSidebarService } from "@eda/services/shared/dashboard-sidebar.service";
 import { IconService } from "@eda/services/utils/icons.service";
 // "Acción personalizada" hidden by design decision in SinergiaDA (see buildMoreMenu).
@@ -42,6 +42,7 @@ export class DashboardMenuSdaComponent implements OnInit, OnDestroy, DoCheck {
   private fileUtils = inject(FileUtiles);
   private stylesProviderService = inject(StyleProviderService);
   private dashboardService = inject(DashboardService);
+  private alertService = inject(AlertService);
   private sidebarService = inject(DashboardSidebarService);
   private iconService = inject(IconService);
   private host = inject(ElementRef);
@@ -729,17 +730,17 @@ export class DashboardMenuSdaComponent implements OnInit, OnDestroy, DoCheck {
           label: sb?.clickPanelLockButton
             ? $localize`:@@enablePanelLockButton:Bloquear los paneles`
             : $localize`:@@disablePanelLockButton:Desbloquear los paneles`,
-          icon: sb?.clickPanelLockButton ? "pi pi-lock-open" : "pi pi-lock",
+          icon: sb?.clickPanelLockButton ? "pi pi-lock-open text-green-600" : "pi pi-lock text-red-600",
           visible: this.can('edit'),
-          command: () => { sidebar()?.panelLockButton(); this.buildMoreMenu(); }
+          command: () => { const s = sidebar(); if (s) { s.panelLockButton(); this.alertService.addSuccess(s.clickPanelLockButton ? 'Paneles bloqueados' : 'Paneles desbloqueados'); } this.buildMoreMenu(); }
         },
         {
           label: sb?.onlyIcanEdit
-            ? $localize`:@@onlyIcanEditTagEnable:Edición privada habilitada`
-            : $localize`:@@onlyIcanEditTagDisable:Edición privada deshabilitada`,
+            ? $localize`:@@disablePrivateEdition:Deshabilitar edición privada`
+            : $localize`:@@enablePrivateEdition:Habilitar edición privada`,
           icon: sb?.onlyIcanEdit ? "pi pi-check" : "pi pi-ban",
           visible: this.can('edit'),
-          command: () => { sidebar()?.toggleEdit(); this.buildMoreMenu(); }
+          command: () => { const s = sidebar(); if (s) { s.toggleEdit(); this.alertService.addSuccess(s.onlyIcanEdit ? 'Edición privada habilitada' : 'Edición privada deshabilitada'); } this.buildMoreMenu(); }
         }
       ],
       [
