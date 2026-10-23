@@ -1,5 +1,6 @@
 import { EdaQueryParams, QueryBuilderService } from '../query-builder.service';
 import * as _ from 'lodash';
+const eda_api_config = require('../../../../config/eda_api_config');
 
 
 
@@ -298,6 +299,11 @@ export class MySqlBuilderService extends QueryBuilderService {
 
     //HAVING
     myQuery += this.getHavingFilters(havingFilters);
+
+    /** Always offer an empty/null row in the selector values */
+    if (forSelector === true && eda_api_config.custom_behaviour.SHOW_EMPTY_VALUE_IN_FILTERS) {
+      myQuery += `\nUNION\nSELECT ${columns.map(() => `''`).join(', ')} `;
+    }
 
     // OrderBy
     let orderColumns: string[];
@@ -926,6 +932,11 @@ export class MySqlBuilderService extends QueryBuilderService {
   public getMinFractionDigits(el:any): any{
     if (!el.hasOwnProperty('minimumFractionDigits')) {
       el.minimumFractionDigits = 0;
+    }
+    // AVG_DECIMALS only forces the decimals of the AVG aggregations when it is defined in the config.
+    // Otherwise, the decimals defined on the numeric column itself are respected (as in sum, max, min, ...)
+    if (el.aggregation_type === 'avg' && eda_api_config.custom_behaviour?.AVG_DECIMALS !== undefined) {
+      el.minimumFractionDigits = eda_api_config.custom_behaviour.AVG_DECIMALS;
     }
     return el;
   }

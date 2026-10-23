@@ -13,6 +13,7 @@ module.exports = {
     //     port: 9001,
     //     custom_behaviour: {
     //         ALLOW_NON_ADMIN_MANAGE_PUBLIC_REPORTS: true,
+    //         AVG_DECIMALS: 2,
     //     },
     // },
     // cache_config: {
