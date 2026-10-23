@@ -31,6 +31,20 @@ app-main-left-sidebar {
 app-main-left-sidebar > div {
   border-right-color: var(--left-sidebar-bg);
 }
+/* Keep the side menu (and the user badge pinned at its bottom) in view on long
+   pages: the bar is h-full, so on long reports it grew as tall as the page and
+   its bottom scrolled out of view. Sticky + 100vh keeps it in the viewport.
+   No overflow here: any overflow value (even overflow-y) also sets overflow-x,
+   and that clips the fly-out submenu; the bar's content (~350px) always fits
+   in 100vh. */
+app-main-left-sidebar {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  /* Sticky creates a stacking context, so the bar needs its own z-index to keep
+     its fly-out submenu above the page content (still below the dialogs). */
+  z-index: 100;
+}
 #sidebar-btn-toggle {
   width: 4rem;
   height: 4rem;
@@ -670,4 +684,67 @@ eda-blank-panel > div.flex.flex-col > div.drag-handler h2 {
   font-size: clamp(13px, 1.05vw, 20px) !important;
   font-weight: 600 !important;
   color: #37474f !important;
+}
+
+/* ─── Side menu: hide the "Perfil" entry ──────────────────────────────────
+   In the profile + languages submenu, "Perfil" is redundant: the current user
+   is already represented by the side-menu user badge (initials, links to the
+   profile). The whole entry is hidden so only the languages remain (hiding the
+   li avoids the leftover gap of the space-y). It is targeted through its href,
+   which contains "/profile". */
+app-main-left-sidebar ul > li:has(> .sidebar-submenu-link[href*="profile"]) {
+  display: none !important;
+}
+
+/* ─── Report filters: width and condensed text ────────────────────────────
+   The filter text (e.g. the date summary "Fuera de Este mes") usually exceeds
+   the available width and ends up ellipsised. Two changes, both scoped to the
+   report filters (the global-filter component and its date-picker):
+   - Every filter card is 15% wider than the original values (115px / 10.7vw /
+     165px), which is where the input takes its width from.
+   - The date filter texts use a synthetic condensed version: the project
+     typeface (Questrial) has no width axis, so font-stretch has no effect. The
+     negative margin returns the gap the scale leaves free, so the text fits more
+     characters before being ellipsised.
+   !important is needed because these elements are styled from their own
+   components, whose view encapsulation gives those rules more specificity. */
+.filter-card {
+  min-width: 132px !important;
+  width: 12.3vw !important;
+  max-width: 190px !important;
+}
+
+.filters-container .summary-overlay .summary-operator-badge,
+.filters-container .summary-overlay .summary-placeholder-text {
+  transform: scaleX(0.75) !important;
+  transform-origin: left center !important;
+  margin-right: -6% !important;
+}
+
+/* ─── Report filters: operator/value spacing and condensed value ──────────
+   Slightly tighter gap between the operator badge and the value, and a more
+   condensed value (scaleX 0.85). The negative margin returns the width the scale
+   leaves free, so the value also fits more characters before being ellipsised.
+   Scoped to the bar (.filters-container): the gap of the overlay comes from the
+   dashboard menu plugin (0.42rem). */
+.filters-container .filter-card .summary-overlay {
+  gap: 0.2rem !important;
+}
+
+.filters-container .filter-card .summary-overlay .summary-value-text {
+  transform: scaleX(0.85) !important;
+  transform-origin: left center !important;
+  margin-right: -15% !important;
+}
+
+/* ─── Report filters: same condensing for the other filter types ──────────
+   The date filter value is condensed above; the other filter types show their
+   value in the multiselect / dropdown label, so the same synthetic condensing
+   (with the negative margin that returns the freed width) applies there too.
+   Scoped to the report filter bar. */
+.filters-container .filter-card .p-multiselect-label,
+.filters-container .filter-card .p-dropdown-label {
+  transform: scaleX(0.85) !important;
+  transform-origin: left center !important;
+  margin-right: -15% !important;
 }

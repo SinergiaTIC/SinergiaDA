@@ -1044,8 +1044,10 @@ export class DashboardSidebarComponent implements AfterViewInit {
     // Toggle the state
     this.clickFiltersEnabled = !this.clickFiltersEnabled;
     this.dashboard.dashboard.config.clickFiltersEnabled = this.clickFiltersEnabled;    // Update label and icon based on state
-    clickItem.label = this.clickFiltersEnabled ? $localize`:@@enableFilters:Click en filtros habilitado` : $localize`:@@disableFilters:Click en filtros deshabilitado`;
-    clickItem.icon = this.clickFiltersEnabled ? "pi pi-bolt" : "pi pi-ban";
+    if (clickItem) {
+      clickItem.label = this.clickFiltersEnabled ? $localize`:@@enableFilters:Click en filtros habilitado` : $localize`:@@disableFilters:Click en filtros deshabilitado`;
+      clickItem.icon = this.clickFiltersEnabled ? "pi pi-bolt" : "pi pi-ban";
+    }
 
   }
 
@@ -1064,10 +1066,12 @@ export class DashboardSidebarComponent implements AfterViewInit {
     this.dashboard.dashboard.config.panelLockEnabled = this.clickPanelLockButton;
     this.dashboardService.setNotSaved(true);
 
-    lockItem.label = this.clickPanelLockButton
-      ? $localize`:@@enablePanelLockButton: Bloquear los paneles`
-      : $localize`:@@disablePanelLockButton:Desbloquear los paneles`;
-    lockItem.icon = this.clickPanelLockButton ? "pi pi-lock-open" : "pi pi-lock";
+    if (lockItem) {
+      lockItem.label = this.clickPanelLockButton
+        ? $localize`:@@enablePanelLockButton: Bloquear los paneles`
+        : $localize`:@@disablePanelLockButton:Desbloquear los paneles`;
+      lockItem.icon = this.clickPanelLockButton ? "pi pi-lock-open" : "pi pi-lock";
+    }
   }
   
   toggleEdit() {
@@ -1076,10 +1080,13 @@ export class DashboardSidebarComponent implements AfterViewInit {
 
     // Toggle the state
     this.onlyIcanEdit = !this.onlyIcanEdit;
+    this.dashboard.dashboard.config.onlyIcanEdit = this.onlyIcanEdit;
 
-    // Update label and icon based on state
-    clickItem.label = this.onlyIcanEdit ? $localize`:@@onlyIcanEditTagEnable:Edición privada habilitada` : $localize`:@@onlyIcanEditTagDisable:Edición privada deshabilitada`;
-    clickItem.icon = this.onlyIcanEdit ? "pi pi-check" : "pi pi-ban";
+    // Update label and icon based on state (only if the sidebar items are initialized)
+    if (clickItem) {
+      clickItem.label = this.onlyIcanEdit ? $localize`:@@onlyIcanEditTagEnable:Edición privada habilitada` : $localize`:@@onlyIcanEditTagDisable:Edición privada deshabilitada`;
+      clickItem.icon = this.onlyIcanEdit ? "pi pi-check" : "pi pi-ban";
+    }
   }
 
   toggleDownload() {
