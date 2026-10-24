@@ -13,7 +13,7 @@ import { Component, OnInit, Input, SimpleChanges, OnChanges, ViewChild, ViewCont
 import { EdadynamicTextComponent } from '../../../eda-dynamicText/eda-dynamicText.component';
 import { EdaTableComponent } from '../../../eda-table/eda-table.component';
 import { PanelChart } from './panel-chart';
-import { ChartUtilsService, StyleConfig, StyleProviderService } from '@eda/services/service.index';
+import { ChartUtilsService, DashboardService, StyleConfig, StyleProviderService } from '@eda/services/service.index';
 import { EdaKpiComponent } from '@eda/components/eda-kpi/eda-kpi.component';
 import { Column } from '@eda/models/model.index';
 import { EdaChartComponent } from '@eda/components/eda-chart/eda-chart.component';
@@ -96,6 +96,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         private chartUtils: ChartUtilsService,
         @Self() private ownRef: ElementRef,
         public styleProviderService: StyleProviderService,
+        private dashboardService: DashboardService,
         @Inject(LOCALE_ID) private locale: string) {
         
         this.fontColor = this.styleProviderService.panelFontColor.source['value'];
@@ -615,6 +616,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         this.componentRef = this.entry.createComponent(EdaKpiComponent);
         this.componentRef.instance.inject = inject;
         this.componentRef.instance.onNotify.subscribe(data => {
+            const previous = this.props.config.getConfig() as KpiConfig;
             const kpiConfig = new KpiConfig({
                 sufix: data.sufix,
                 alertLimits: inject.alertLimits,
@@ -625,7 +627,21 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
                 prefixImage: inject.prefixImage || '',
             });
             (<KpiConfig><unknown>this.props.config.setConfig(kpiConfig));
+            this.markKpiConfigChanged(previous, kpiConfig);
         })
+    }
+
+    /**
+     * The hover +/- buttons and the inline suffix edit of a KPI change its configuration without
+     * going through any dialog, so the report is marked as modified here. It is only marked when a
+     * value really changed (opening the suffix editor also emits the event).
+     */
+    private markKpiConfigChanged(previous: KpiConfig, next: KpiConfig): void {
+        const previousScale = previous?.fontScale ?? 1;
+        const previousSufix = previous?.sufix ?? '';
+        if (next.fontScale !== previousScale || next.sufix !== previousSufix) {
+            this.dashboardService.setNotSaved(true);
+        }
     }
 
     /**
@@ -957,6 +973,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         this.componentRef.instance.inject = inject;
 
         this.componentRef.instance.onNotify.subscribe(data => {
+            const previous = this.props.config.getConfig() as KpiConfig;
             const kpiConfig = new KpiConfig({
                 sufix: data.sufix,
                 alertLimits: inject.alertLimits || [],
@@ -968,6 +985,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
                 prefixImage: inject.prefixImage || '',
             });
             (<KpiConfig><unknown>this.props.config.setConfig(kpiConfig));
+            this.markKpiConfigChanged(previous, kpiConfig);
         })
         this.configUpdated.emit(this.currentConfig);
     }

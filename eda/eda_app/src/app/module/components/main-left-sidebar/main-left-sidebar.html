@@ -30,26 +30,18 @@
 
                   @for (subItem of item.items; track subItem.path) {
                     <li>
-                      @if (subItem.path && !subItem.command) {
-                            <a
-                              [routerLink]="subItem.path"
-                              (click)="ignoreNotSaved()"
-                              class="sidebar-submenu-link flex items-center gap-2 p-2 rounded-md bg-white transition-colors"
-                            >
-                              @if(subItem.icon) {
-                                <eda-icon [name]="subItem.icon" class="h-4 pb-6" />
-                              }
-                              {{ subItem.label }}
-                            </a>
-                      } @else {
-                        <button class="sidebar-submenu-link flex items-center gap-2 p-2 bg-white transition-colors focus:outline-none" (click)="menuCommand(subItem, $event)">
-                          @if(subItem.icon) {
-                            <eda-icon [name]="subItem.icon" class="h-4 pb-6" />
-                          }
-                          {{ subItem.label }}
-                        </button>
-                      }
-    
+                      <!-- Every entry goes through menuCommand so the unsaved-changes check runs
+                           before navigating (routerLink would navigate first and ask afterwards). -->
+                      <button
+                        class="sidebar-submenu-link flex items-center gap-2 p-2 rounded-md bg-white transition-colors focus:outline-none"
+                        [title]="subItem.label"
+                        (click)="menuCommand(subItem, $event)"
+                      >
+                        @if(subItem.icon) {
+                          <eda-icon [name]="subItem.icon" class="h-4 pb-6" />
+                        }
+                        {{ subItem.label }}
+                      </button>
                     </li>
                   }
               </ul>

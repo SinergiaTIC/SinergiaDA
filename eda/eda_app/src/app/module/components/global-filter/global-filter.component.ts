@@ -236,6 +236,9 @@ export class GlobalFilterComponent implements OnInit {
 
     public setGlobalFilterItems(filter: any) {
 
+        // Changing the selected values of a report filter changes the report
+        this.dashboardService.setNotSaved(true);
+
         // Apply dependent filters if a sort order is configured
         if(this.orderDependentFilters.length !==0) this.applyingDependentFilter(filter, this.globalFilters);
 
@@ -493,6 +496,8 @@ export class GlobalFilterComponent implements OnInit {
     validateFilter(){
         const mandatoryFilters: {value :boolean, items: any} = this.checkAllMandatoryFilters(); 
         if(mandatoryFilters.value){
+            // Applying the report filters changes the report (same as reloadOnGlobalFilter did)
+            this.dashboardService.setNotSaved(true);
             this.dashboard.refreshPanels()
         } else{
             this.alertService.addError($localize`:@@AddMandatoryFilters:Los siguientes filtros son obligatorios y no tienen valor asignado:` + mandatoryFilters.items);
@@ -523,6 +528,8 @@ export class GlobalFilterComponent implements OnInit {
 
 
         if (apply) {
+            // Adding, editing or removing a report filter changes the report
+            this.dashboardService.setNotSaved(true);
             this.dashboard.edaPanels.forEach(panel => {
                 if (!this.globalFilter.isdeleted) {
                     panel.globalFilters = panel.globalFilters.filter((f: any) => f.filter_id !== this.globalFilter.id);
