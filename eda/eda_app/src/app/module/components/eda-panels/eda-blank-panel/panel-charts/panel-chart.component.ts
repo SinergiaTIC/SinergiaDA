@@ -665,7 +665,11 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
             chartConfig.fontScale = kpiCfg?.fontScale || 1;
             chartConfig.edaChart = kpiCfg?.edaChart;
             chartConfig.backgroundColor = kpiCfg?.backgroundColor || '';
-            chartConfig.kpiColor = kpiCfg?.kpiColor || '';
+            // 2.x stored the KPI text colour in config.color; keep reading it (issue #651)
+            chartConfig.kpiColor = kpiCfg?.kpiColor || (kpiCfg as any)?.color || '';
+            if (!kpiCfg?.kpiColor && (kpiCfg as any)?.color) {
+                kpiCfg.kpiColor = (kpiCfg as any).color;
+            }
             chartConfig.prefixImage = kpiCfg?.prefixImage || '';
         } else {
             chartConfig.sufix = '';
@@ -794,24 +798,31 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
     chartConfig.edaChart.chartColors = []; // Initialize chartColors
     chartConfig.edaChart.chartLegend = false;
 
-    // Load assignedColors or use default colors
-    const existingColors = cfg['assignedColors'] || [];
+    // Load assignedColors or use default colors (legacy values are validated, issue #651)
+    const existingColors = (cfg['assignedColors'] || [])
+        .filter((ac: any) => this.isValidCssColor(ac?.color));
     let assignedColors = [];
 
     if (existingColors.length > 0) {
         // Use saved colors
         assignedColors = existingColors;
     } else {
-        // Create default colors from dataset
-        const paletteColor = this.styleProviderService?.ActualChartPalette?.['paleta']?.[0] || 
-                            this.styleProviderService?.DEFAULT_PALETTE_COLOR?.['paleta']?.[0];
-        
-        assignedColors = chartData[1].map((dataset, index) => ({
-            value: dataset.label || `Series ${index + 1}`,
-            color: this.paletaActual[index % this.paletaActual.length] || paletteColor
-        }));
+        // 2.x kept these series colours in the KPI's nested edaChart.colors
+        const seriesLabels = chartData[1].map((dataset: any, index: number) => dataset?.label || `Series ${index + 1}`);
+        assignedColors = this.assignedColorsFromLegacyColors({ colors: cfg?.edaChart?.colors }, seriesLabels, chartType);
 
-        // Save default assignedColors
+        if (assignedColors.length === 0) {
+            // Create default colors from dataset
+            const paletteColor = this.styleProviderService?.ActualChartPalette?.['paleta']?.[0] || 
+                                this.styleProviderService?.DEFAULT_PALETTE_COLOR?.['paleta']?.[0];
+            
+            assignedColors = chartData[1].map((dataset: any, index: number) => ({
+                value: dataset.label || `Series ${index + 1}`,
+                color: this.paletaActual[index % this.paletaActual.length] || paletteColor
+            }));
+        }
+
+        // Save assignedColors (recovered from 2.x or default)
         cfg['assignedColors'] = assignedColors;
     }
 
@@ -918,7 +929,11 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         chartConfig.modifiedFontPoints = kpiCfgChart?.modifiedFontPoints || 0;
         chartConfig.fontScale = kpiCfgChart?.fontScale || 1;
         chartConfig.backgroundColor = kpiCfgChart?.backgroundColor || '';
-        chartConfig.kpiColor = kpiCfgChart?.kpiColor || '';
+        // 2.x stored the KPI text colour in config.color; keep reading it (issue #651)
+        chartConfig.kpiColor = kpiCfgChart?.kpiColor || (kpiCfgChart as any)?.color || '';
+        if (!kpiCfgChart?.kpiColor && (kpiCfgChart as any)?.color) {
+            kpiCfgChart.kpiColor = (kpiCfgChart as any).color;
+        }
         chartConfig.prefixImage = kpiCfgChart?.prefixImage || '';
     } else {
         chartConfig.sufix = '';
