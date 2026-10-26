@@ -96,4 +96,111 @@ export class GetSdaInfoController {
 
     res.json({ info });
   }
+
+  /**
+   * Keys whose value must never leave the API: credentials, connection strings and
+   * host/database details (config.overwrite.js holds them, see sinergiacrm_config).
+   */
+  /**
+   * Keys whose value must never leave the API: credentials, connection strings and
+   * host/database details (config.overwrite.js holds them, see sinergiacrm_config).
+   * Matched per key name, so "port" must be a real key (REPORTS must not match it).
+   */
+  private static readonly HIDDEN_CONFIG_KEY: RegExp[] = [
+    /pass(word|wd)?/i,          // password, passwd
+    /secret/i,                  // SECRET, client_secret
+    /token/i,                   // token, accessToken
+    /(api|private)[_-]?key/i,   // api_key, privateKey
+    /client[_-]?id/i,           // CLIENT_ID
+    /conn/i,                    // sinergiaConn, connectionLimit
+    /dsn/i,                     // data source name
+    /url/i,                     // CRM_URL, server_apiURL
+    /(^|[_-])uri$/i,            // uri
+    /(^|[_-])host/i,            // host, bbdd_host
+    /database/i,                // database, databaseName
+    /(^|[_-])port$/i,           // port
+    /(^|[_-])user(name)?$/i,    // user, username, user_id
+    /login/i,                   // login, userLogin
+  ];
+
+  /** True when the key holds a credential or a connection detail. */
+  private static isHiddenConfigKey(key: string): boolean {
+    return GetSdaInfoController.HIDDEN_CONFIG_KEY.some(pattern => pattern.test(key));
+  }
+
+  /** Recursively copies an object dropping the keys matched by HIDDEN_CONFIG_KEY. */
+  private static sanitizeOverwriteConfig(value: any): any {
+    if (Array.isArray(value)) {
+      return value.map(item => GetSdaInfoController.sanitizeOverwriteConfig(item));
+    }
+    if (value && typeof value === 'object') {
+      const clean: Record<string, any> = {};
+      for (const [key, item] of Object.entries(value)) {
+        if (GetSdaInfoController.isHiddenConfigKey(key)) continue;
+        clean[key] = GetSdaInfoController.sanitizeOverwriteConfig(item);
+      }
+      return GetSdaInfoController.pruneEmptyConfig(clean);
+    }
+    return value;
+  }
+
+  /**
+   * Removes branches that became empty because every key they had was hidden, so the
+   * response does not show empty sections (e.g. sso_config with only SECRET/CRM_URL).
+   */
+  private static pruneEmptyConfig(value: any): any {
+    if (!value || typeof value !== 'object' || Array.isArray(value)) return value;
+    const pruned: Record<string, any> = {};
+    for (const [key, item] of Object.entries(value)) {
+      const child = GetSdaInfoController.pruneEmptyConfig(item);
+      const isEmptyObject = child && typeof child === 'object' && !Array.isArray(child)
+        && Object.keys(child).length === 0;
+      if (isEmptyObject) continue;
+      pruned[key] = child;
+    }
+    return pruned;
+  }
+
+  /**
+   * Returns the plugins registered in the API at boot time (lib/plugins/index.ts),
+   * so administrators can see which ones are loaded in this instance.
+   */
+  public static async getPlugins(req: Request, res: Response) {
+    try {
+      // The registry is populated when lib/plugins/index.ts runs at startup.
+      const { PluginRegistry } = require('../plugin-registry');
+      const plugins = PluginRegistry.getAll()
+        .map(plugin => ({
+          type: plugin.type,
+          kind: plugin.kind,
+          routerPath: plugin.routerPath ?? null,
+          sync: !!plugin.syncService,
+          schedule: plugin.scheduleExpression ?? null,
+        }))
+        .sort((a, b) => a.type.localeCompare(b.type));
+      return res.status(200).json({ ok: true, plugins });
+    } catch (error) {
+      console.error('[getSdaInfo] Error reading the plugin registry', error?.message || error);
+      return res.status(500).json({ ok: false, plugins: [] });
+    }
+  }
+
+  /**
+   * Returns the values currently set in eda_api/config/config.overwrite.js (only the keys
+   * that file overrides), so administrators can review the instance configuration. Keys
+   * that hold credentials or connection details are omitted.
+   */
+  public static async getOverwriteConfig(req: Request, res: Response) {
+    try {
+      const overwrite = require('../../../config/config.overwrite.js') || {};
+      const config = GetSdaInfoController.sanitizeOverwriteConfig(overwrite);
+      // Sections that only held credentials: report their name, never their content.
+      const hiddenSections = Object.keys(overwrite).filter(section => !(section in config));
+      return res.status(200).json({ ok: true, config, hiddenSections });
+    } catch (error) {
+      // The file is gitignored: a deployment may not have it, which is not an error.
+      console.warn('[getSdaInfo] config.overwrite.js not available', error?.message || error);
+      return res.status(200).json({ ok: true, config: {}, hiddenSections: [], available: false });
+    }
+  }
 }
