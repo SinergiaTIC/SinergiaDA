@@ -739,7 +739,7 @@ styleClass: "text-gray-500 italic",
           icon: sb?.clickPanelLockButton ? "pi pi-lock-open text-green-600" : "pi pi-lock text-red-600",
           tooltip: this.tooltipPanelLock,
           visible: this.can('edit'),
-          command: () => { const s = sidebar(); if (s) { s.panelLockButton(); this.alertService.addSuccess(s.clickPanelLockButton ? 'Paneles bloqueados' : 'Paneles desbloqueados'); } this.buildMoreMenu(); hide(); }
+          command: () => { const s = sidebar(); if (s) { this.togglePanelLock(); this.alertService.addSuccess(s.clickPanelLockButton ? 'Paneles bloqueados' : 'Paneles desbloqueados'); } this.buildMoreMenu(); hide(); }
         },
         {
           label: sb?.onlyIcanEdit
@@ -748,7 +748,7 @@ styleClass: "text-gray-500 italic",
           icon: sb?.onlyIcanEdit ? "pi pi-check text-green-600" : "pi pi-ban text-gray-400",
           tooltip: this.tooltipPrivateEdition,
           visible: this.can('edit'),
-          command: () => { const s = sidebar(); if (s) { s.toggleEdit(); this.alertService.addSuccess(s.onlyIcanEdit ? 'Edición privada habilitada' : 'Edición privada deshabilitada'); } this.buildMoreMenu(); hide(); }
+          command: () => { const s = sidebar(); if (s) { this.togglePrivateEdition(); this.alertService.addSuccess(s.onlyIcanEdit ? 'Edición privada habilitada' : 'Edición privada deshabilitada'); } this.buildMoreMenu(); hide(); }
         }
       ],
       [
@@ -763,6 +763,43 @@ styleClass: "text-gray-500 italic",
     ];
 
     this.moreMenuItems = this.joinSections(sections);
+  }
+
+  /**
+   * Locks / unlocks the panels, replicating what the classic sidebar does
+   * in its own toggle. The logic lives here on purpose: the classic sidebar's
+   * `panelLockButton()` also updates its menu items, which are only built when
+   * its popover is opened (`initSidebar()`), so calling it from this plugin
+   * fails with "items not initialized" and would force changes in core.
+   */
+  private togglePanelLock(): void {
+    const s = this.dashboard?.sidebar;
+    if (!s) return;
+
+    s.clickPanelLockButton = !s.clickPanelLockButton;
+    const locked = !s.clickPanelLockButton;
+
+    for (const panel of this.dashboard.panels || []) {
+      (panel as any).dragEnabled = !locked;
+      (panel as any).resizeEnabled = !locked;
+    }
+
+    this.dashboard.gridsterOptions?.api?.optionsChanged();
+    this.dashboard.dashboard.config.panelLockEnabled = s.clickPanelLockButton;
+    this.dashboardService.setNotSaved(true);
+  }
+
+  /**
+   * Toggles the private edition, replicating the classic sidebar's toggle for
+   * the same reason as `togglePanelLock()`: it updates menu items that this
+   * plugin never initializes.
+   */
+  private togglePrivateEdition(): void {
+    const s = this.dashboard?.sidebar;
+    if (!s) return;
+
+    s.onlyIcanEdit = !s.onlyIcanEdit;
+    this.dashboard.dashboard.config.onlyIcanEdit = s.onlyIcanEdit;
   }
 
   /**
