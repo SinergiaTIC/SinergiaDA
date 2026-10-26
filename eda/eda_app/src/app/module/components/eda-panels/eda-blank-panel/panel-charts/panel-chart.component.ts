@@ -340,9 +340,13 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         // Get current chart labels (after filters)
         const currentLabels = this.getLabelsForChartType(chartConfig);
         
-        // If there are no assignedColors, generate them from the palette
+        // If there are no assignedColors, recover the colours 2.x saved (config.colors)
+        // and only fall back to the palette when there is nothing to recover (issue #651)
         if (assignedColors.length === 0) {
-            assignedColors = this.chartUtils.resolveAssignedColors(currentLabels, [], this.paletaActual);
+            assignedColors = this.assignedColorsFromLegacyColors(this.props.config.getConfig(), currentLabels, this.props.chartType);
+            if (assignedColors.length === 0) {
+                assignedColors = this.chartUtils.resolveAssignedColors(currentLabels, [], this.paletaActual);
+            }
             this.props.config.getConfig()['assignedColors'] = assignedColors;
         } else {
             // Map assignedColors to current labels
@@ -458,6 +462,59 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
                 // Colors go by series (datasets)
                 return chartConfig.chartDataset?.map(d => d.label || '') || [];
         }
+    }
+
+    /**
+     * Recovers the colours that 2.x reports stored in `config.colors`, which 3.x no
+     * longer reads (issue #651). 2.x saved one entry per series for bar/line/area/
+     * radar/histogram (`{ backgroundColor: '#hex' }`) and a single entry holding one
+     * colour per category for doughnut/polarArea. The result uses the same shape as
+     * `assignedColors`: one colour per label returned by getLabelsForChartType().
+     */
+    private assignedColorsFromLegacyColors(cfg: any, labels: string[], chartType: string): Array<{ value: string; color: string }> {
+        const colors = cfg?.colors;
+        if (!Array.isArray(colors) || colors.length === 0 || !labels || labels.length === 0) return [];
+
+        const type = (chartType || '').replace('kpi', '');
+
+        if (type === 'doughnut' || type === 'polarArea') {
+            const perCategory = colors[0]?.backgroundColor;
+            if (!Array.isArray(perCategory)) return [];
+            return labels
+                .map((label, index) => {
+                    const color = perCategory[index] ?? perCategory[0];
+                    return color ? { value: label, color } : null;
+                })
+                .filter(c => !!c);
+        }
+
+        // One colour per series
+        return labels
+            .map((label, index) => {
+                const entry = colors[index];
+                const color = typeof entry === 'string' ? entry : entry?.backgroundColor;
+                return color && typeof color === 'string' ? { value: label, color } : null;
+            })
+            .filter(c => !!c);
+    }
+
+    /**
+     * 2.x saved the colours of the D3 charts (treeMap, parallelSets, bubblechart) as a
+     * plain array of colour strings in `config.colors`. Map them to the current
+     * categories so those reports keep their colours (issue #651). Returns [] when there
+     * is nothing usable, so the caller falls back to the palette.
+     */
+    private assignedColorsFromLegacyStringColors(cfg: any, categories: string[]): Array<{ value: string; color: string }> {
+        const colors = cfg?.colors;
+        if (!Array.isArray(colors) || colors.length === 0 || !categories || categories.length === 0) return [];
+
+        return categories
+            .map((category, index) => {
+                const entry = colors[index] ?? colors[index % colors.length];
+                const color = typeof entry === 'string' ? entry : entry?.backgroundColor;
+                return typeof color === 'string' && color ? { value: category, color } : null;
+            })
+            .filter(c => !!c);
     }
 
     /**
@@ -2010,6 +2067,12 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         props.config.getConfig()['assignedColors'] || 
         props.assignedColors || 
         [];
+
+    // 2.x saved these charts' colours (treeMap, parallelSets, bubblechart) as a plain
+    // array of colour strings in config.colors, which 3.x no longer reads (issue #651)
+    const legacyAssignedColors = savedAssignedColors.length === 0
+        ? this.assignedColorsFromLegacyStringColors(props.config.getConfig(), categories)
+        : [];
     
     let assignedColors: { value: string; color: string }[];
     
@@ -2043,12 +2106,14 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         }
     } 
     
-    // Final validation
+    // Final validation (recover 2.x colours before falling back to the palette)
     if (!assignedColors || assignedColors.length === 0) {
-        assignedColors = categories.map((cat, idx) => ({
-            value: cat,
-            color: paletaActual[idx % paletaActual.length]
-        }));
+        assignedColors = legacyAssignedColors.length > 0
+            ? legacyAssignedColors
+            : categories.map((cat, idx) => ({
+                value: cat,
+                color: paletaActual[idx % paletaActual.length]
+            }));
     }
     
     
