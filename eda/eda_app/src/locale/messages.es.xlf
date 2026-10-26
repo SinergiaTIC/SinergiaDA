@@ -2867,8 +2867,16 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
         <target>Importar</target>
       </trans-unit>
       <trans-unit id="NotSavedWarning">
-        <source>Hay cambios sin guardar. ¿Seguro que quieres salir?</source>
-        <target>Hay cambios sin guardar. ¿Seguro que deseas continuar de todos modos?</target>
+        <source>Hay cambios sin guardar. ¿Qué deseas hacer?</source>
+        <target>Hay cambios sin guardar. ¿Qué deseas hacer?</target>
+      </trans-unit>
+      <trans-unit id="SaveAndExitButton">
+        <source>Guardar y salir</source>
+        <target>Guardar y salir</target>
+      </trans-unit>
+      <trans-unit id="ExitWithoutSavingButton">
+        <source>Salir sin guardar</source>
+        <target>Salir sin guardar</target>
       </trans-unit>
       <trans-unit id="csvSep">
         <source>Separador Decimal</source>
