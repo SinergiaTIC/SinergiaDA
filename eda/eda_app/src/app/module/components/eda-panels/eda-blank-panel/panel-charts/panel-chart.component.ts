@@ -633,7 +633,15 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         chartConfig.data = this.chartUtils.transformData4Knob(this.props.data, dataTypes);
         
         chartConfig.dataDescription = this.chartUtils.describeData4Knob(this.props.query, this.chartUtils.transformData4Knob(this.props.data, dataTypes));
-        chartConfig.assignedColors = this.props.config['config']['assignedColors'] ? this.props.config['config']['assignedColors'] : null;
+        // 2.x stored the knob colour in config.color: map it to assignedColors (issue #651)
+        const knobCfg = this.props.config['config'] || {};
+        let knobColors = (knobCfg['assignedColors'] || [])
+            .filter((ac: any) => this.isValidCssColor(ac?.color));
+        if (knobColors.length === 0 && this.isValidCssColor(knobCfg['color'])) {
+            knobColors = [{ value: 'color', color: knobCfg['color'] }];
+            knobCfg['assignedColors'] = knobColors;
+        }
+        chartConfig.assignedColors = knobColors.length ? knobColors : null;
         chartConfig.limits = this.props.config['config']['limits'] ? this.props.config['config']['limits'] : null;
         chartConfig.semaphoreColor = !!this.props.config['config']['semaphoreColor'];
         this.createEdaKnobComponent(chartConfig)
@@ -1535,8 +1543,26 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         // Legend Position
         inject.legendPosition = config['legendPosition'] || 'bottomleft';
 
-        // Load assignedColors according to map type
-        let assignedColors = config['assignedColors'];
+        // Load assignedColors according to map type (legacy invalid values are ignored, issue #651)
+        let assignedColors = Array.isArray(config['assignedColors'])
+            ? config['assignedColors'].filter((ac: any) => this.isValidCssColor(ac?.color))
+            : config['assignedColors'];
+
+        // 2.x stored map colours in config.color (geoJsonMap) or config.initialColor/finalColor
+        // (coordinatesMap): keep supporting them (issue #651)
+        if (!assignedColors || assignedColors.length === 0) {
+            if (type === 'geoJsonMap' && this.isValidCssColor(config['color'])) {
+                assignedColors = [{ value: 'start', color: config['color'] }];
+                config['assignedColors'] = assignedColors;
+            } else if (type === 'coordinatesMap'
+                && this.isValidCssColor(config['initialColor']) && this.isValidCssColor(config['finalColor'])) {
+                assignedColors = [
+                    { value: 'start', color: config['initialColor'] },
+                    { value: 'end', color: config['finalColor'] }
+                ];
+                config['assignedColors'] = assignedColors;
+            }
+        }
 
         // Create default colors according to map type
         if (!assignedColors || !Array.isArray(assignedColors) || assignedColors.length === 0) {
@@ -2162,8 +2188,9 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
 }
 
     private resolveAndPersistGradientColors(props: any, paletaActual: string[]): { value: string; color: string }[] {
-        // Read from multiple sources
-        const savedAssignedColors = props.config.getConfig()['assignedColors'] || props.assignedColors || [];
+        // Read from multiple sources (legacy invalid values are ignored, issue #651)
+        const savedAssignedColors = (props.config.getConfig()['assignedColors'] || props.assignedColors || [])
+            .filter((ac: any) => this.isValidCssColor(ac?.color));
         let assignedColors: { value: string; color: string }[];
         
         if (savedAssignedColors.length >= 2) {
@@ -2175,10 +2202,20 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
                 endColor || { value: 'end', color: savedAssignedColors[1]?.color || paletaActual[paletaActual.length - 1] }
             ];
         } else {
-            assignedColors = [
-                { value: 'start', color: paletaActual[0] },
-                { value: 'end', color: paletaActual[paletaActual.length - 1] }
-            ];
+            // 2.x stored this gradient as a plain array of colours in config.colors (issue #651)
+            const legacyColors = (props.config.getConfig()?.['colors'] || [])
+                .map((c: any) => (typeof c === 'string' ? c : c?.backgroundColor))
+                .filter((c: any) => this.isValidCssColor(c));
+
+            assignedColors = legacyColors.length > 0
+                ? [
+                    { value: 'start', color: legacyColors[0] },
+                    { value: 'end', color: legacyColors[1] ?? legacyColors[0] }
+                  ]
+                : [
+                    { value: 'start', color: paletaActual[0] },
+                    { value: 'end', color: paletaActual[paletaActual.length - 1] }
+                  ];
         }
         
         // Persist in both places
