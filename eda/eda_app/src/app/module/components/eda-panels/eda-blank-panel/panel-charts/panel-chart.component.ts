@@ -334,8 +334,11 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         chartConfig.chartDataset = chartData[1];
         chartConfig.chartOptions = config.chartOptions;
         
-        // Read assignedColors from config (if any)
-        let assignedColors = this.props.config.getConfig()['assignedColors'] || [];
+        // Read assignedColors from config (if any). Legacy reports may hold invalid values
+        // (issue #651: e.g. "r"/"g" placeholders) which would be painted as-is, so they are
+        // dropped; that way config.colors (2.x) is used instead.
+        let assignedColors = (this.props.config.getConfig()['assignedColors'] || [])
+            .filter((ac: any) => this.isValidCssColor(ac?.color));
 
         // Get current chart labels (after filters)
         const currentLabels = this.getLabelsForChartType(chartConfig);
@@ -462,6 +465,19 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
                 // Colors go by series (datasets)
                 return chartConfig.chartDataset?.map(d => d.label || '') || [];
         }
+    }
+
+    /**
+     * Whether a value can be painted as a CSS colour. Legacy reports stored placeholders
+     * such as "r"/"g" in assignedColors (issue #651); those must not be used as colours.
+     */
+    private isValidCssColor(color: any): boolean {
+        if (typeof color !== 'string') return false;
+        const value = color.trim();
+        if (!value) return false;
+        return /^#([0-9a-f]{3,4}|[0-9a-f]{6}|[0-9a-f]{8})$/i.test(value)
+            || /^(rgb|hsl)a?\(/i.test(value)
+            || /^[a-z]{3,20}$/i.test(value); // CSS named colours (red, transparent…)
     }
 
     /**
@@ -2063,10 +2079,9 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         paletaActual = ['#10B4BD', '#1CEDB1', '#023E8A'];
     }
     
-    const savedAssignedColors = 
-        props.config.getConfig()['assignedColors'] || 
+    const savedAssignedColors = (props.config.getConfig()['assignedColors'] || 
         props.assignedColors || 
-        [];
+        []).filter((ac: any) => this.isValidCssColor(ac?.color));
 
     // 2.x saved these charts' colours (treeMap, parallelSets, bubblechart) as a plain
     // array of colour strings in config.colors, which 3.x no longer reads (issue #651)
