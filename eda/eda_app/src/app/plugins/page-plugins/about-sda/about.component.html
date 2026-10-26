@@ -1,5 +1,18 @@
 <div class="container mx-auto max-w-5xl px-4 py-10">
-  <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm p-10">
+  <div class="relative bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm p-10">
+
+    <!-- Instance configuration (admins only) -->
+    @if (isAdmin) {
+      <button
+        type="button"
+        class="absolute top-4 right-4 inline-flex h-10 w-10 items-center justify-center rounded-full text-gray-500 hover:text-gray-900 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2"
+        [attr.aria-label]="configModalTitle"
+        [title]="configModalTitle"
+        (click)="openConfigModal()"
+      >
+        <eda-icon name="settings" size="default"></eda-icon>
+      </button>
+    }
 
     <!-- Logo -->
     <div class="flex justify-center">
@@ -146,4 +159,152 @@
       }
     </div>
   </div>
+
+  <!-- Instance configuration modal (admins only) -->
+  <p-dialog
+    [(visible)]="configModalVisible"
+    [header]="configModalTitle"
+    [modal]="true"
+    [closable]="true"
+    [dismissableMask]="true"
+    [style]="{ width: '75vw', maxWidth: '1100px' }"
+  >
+    <!-- Search box: filters every section (name and value) -->
+    <div class="mb-4">
+      <input
+        type="search"
+        [(ngModel)]="configFilter"
+        class="w-full rounded border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 px-3 py-2 text-sm focus:outline-none focus:ring-2"
+        placeholder="Filtrar por variable o valor…"
+        i18n-placeholder="@@configViewerFilterPlaceholder"
+      />
+    </div>
+
+    <div class="space-y-3 text-sm">
+
+      <!-- API: config.overwrite.js -->
+      <details class="sda-config-section border border-gray-200 dark:border-gray-700 rounded">
+        <summary class="flex items-center justify-between gap-3 px-4 py-3 cursor-pointer select-none">
+          <span class="font-semibold" i18n="@@configViewerApiTitle">API · config.overwrite.js</span>
+          <span class="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400">
+            {{ filteredApiConfig.length }}
+            <svg class="sda-chevron h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
+            </svg>
+          </span>
+        </summary>
+
+        <div class="px-4 pb-4 space-y-3">
+          <p class="text-gray-500 dark:text-gray-400" i18n="@@configViewerApiHelp">
+            Solo se muestran las variables sobrescritas en el fichero; el resto de valores son los de por defecto.
+            Las claves con credenciales o datos de conexión (host, usuario, contraseña, URL, secretos…) se omiten.
+          </p>
+
+          @if (apiConfigLoading) {
+            <p class="text-gray-500 dark:text-gray-400" i18n="@@configViewerLoading">Cargando…</p>
+          } @else if (apiConfigError) {
+            <p class="text-red-600 dark:text-red-400" i18n="@@configViewerApiError">
+              No se ha podido obtener la configuración de la API ({{ apiConfigError }}).
+            </p>
+          } @else if (!apiConfigAvailable) {
+            <p class="text-gray-500 dark:text-gray-400" i18n="@@configViewerApiMissing">
+              Esta instalación no tiene fichero config.overwrite.js.
+            </p>
+          } @else if (apiConfigEntries.length === 0) {
+            <p class="text-gray-500 dark:text-gray-400" i18n="@@configViewerEmpty">No hay variables configuradas.</p>
+          } @else {
+            <config-table [entries]="filteredApiConfig"></config-table>
+          }
+
+          @if (apiHiddenSections.length > 0) {
+            <p class="text-xs text-gray-500 dark:text-gray-400" i18n="@@configViewerHiddenSections">
+              Secciones no mostradas por contener solo credenciales o datos de conexión:
+              {{ apiHiddenSections.join(', ') }}
+            </p>
+          }
+        </div>
+      </details>
+
+      <!-- Frontend: customizable_overwrites.ts -->
+      <details class="sda-config-section border border-gray-200 dark:border-gray-700 rounded">
+        <summary class="flex items-center justify-between gap-3 px-4 py-3 cursor-pointer select-none">
+          <span class="font-semibold" i18n="@@configViewerFrontTitle">Frontend · customizable_overwrites.ts</span>
+          <span class="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400">
+            {{ filteredFrontConfig.length }}
+            <svg class="sda-chevron h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
+            </svg>
+          </span>
+        </summary>
+
+        <div class="px-4 pb-4 space-y-3">
+          <p class="text-gray-500 dark:text-gray-400" i18n="@@configViewerFrontHelp">
+            Constantes exportadas en el fichero del frontend, con el valor que tienen en esta instalación.
+          </p>
+
+          @if (frontConfigEntries.length === 0) {
+            <p class="text-gray-500 dark:text-gray-400" i18n="@@configViewerEmpty">No hay variables configuradas.</p>
+          } @else {
+            <config-table [entries]="filteredFrontConfig"></config-table>
+          }
+        </div>
+      </details>
+
+      <!-- Plugins registered in the API -->
+      <details class="sda-config-section border border-gray-200 dark:border-gray-700 rounded">
+        <summary class="flex items-center justify-between gap-3 px-4 py-3 cursor-pointer select-none">
+          <span class="font-semibold" i18n="@@configViewerPluginsApiTitle">Plugins de la API</span>
+          <span class="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400">
+            {{ filteredPluginsApi.length }}
+            <svg class="sda-chevron h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
+            </svg>
+          </span>
+        </summary>
+
+        <div class="px-4 pb-4 space-y-3">
+          <p class="text-gray-500 dark:text-gray-400" i18n="@@configViewerPluginsApiHelp">
+            Plugins registrados al arrancar la API (carpetas de eda_api/lib/plugins), con su tipo y ruta.
+          </p>
+
+          @if (pluginsApiLoading) {
+            <p class="text-gray-500 dark:text-gray-400" i18n="@@configViewerLoading">Cargando…</p>
+          } @else if (pluginsApiError) {
+            <p class="text-red-600 dark:text-red-400" i18n="@@configViewerPluginsApiError">
+              No se ha podido obtener la lista de plugins de la API ({{ pluginsApiError }}).
+            </p>
+          } @else {
+            <config-table [entries]="filteredPluginsApi"></config-table>
+          }
+        </div>
+      </details>
+
+      <!-- Plugins registered in the frontend -->
+      <details class="sda-config-section border border-gray-200 dark:border-gray-700 rounded">
+        <summary class="flex items-center justify-between gap-3 px-4 py-3 cursor-pointer select-none">
+          <span class="font-semibold" i18n="@@configViewerPluginsFrontTitle">Plugins del frontend</span>
+          <span class="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400">
+            {{ filteredPluginsFront.length }}
+            <svg class="sda-chevron h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
+            </svg>
+          </span>
+        </summary>
+
+        <div class="px-4 pb-4 space-y-3">
+          <p class="text-gray-500 dark:text-gray-400" i18n="@@configViewerPluginsFrontHelp">
+            Page plugins, component plugins y datasource plugins cargados en el frontend.
+          </p>
+
+          @if (pluginsFrontError) {
+            <p class="text-red-600 dark:text-red-400" i18n="@@configViewerPluginsFrontError">
+              No se ha podido leer el registro de plugins del frontend.
+            </p>
+          } @else {
+            <config-table [entries]="filteredPluginsFront"></config-table>
+          }
+        </div>
+      </details>
+    </div>
+  </p-dialog>
 </div>

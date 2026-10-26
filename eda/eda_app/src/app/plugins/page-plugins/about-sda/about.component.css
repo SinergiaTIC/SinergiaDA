@@ -5,7 +5,7 @@
   padding: 0.35rem 0.85rem;
   font-size: 0.85rem;
   font-weight: 600;
-  color: white;
+  color: #000000;
   background-color: var(--corporate-primary);
   white-space: nowrap;
 }
@@ -19,4 +19,18 @@
 
 .about-license a:hover {
   color: var(--corporate-primary-gradient, var(--corporate-primary));
+}
+
+/* Instance configuration modal: native collapsible sections */
+.sda-config-section > summary {
+  list-style: none;
+}
+.sda-config-section > summary::-webkit-details-marker {
+  display: none;
+}
+.sda-config-section > summary .sda-chevron {
+  transition: transform 0.15s ease;
+}
+.sda-config-section[open] > summary .sda-chevron {
+  transform: rotate(180deg);
 }
