@@ -43,6 +43,14 @@ interface PluginsResponse {
   }[];
 }
 
+/** One read-only check returned by GET /getsdainfo/diagnostics. */
+interface DiagnosticCheck {
+  id: string;
+  label: string;
+  status: "ok" | "warn" | "error";
+  detail: string;
+}
+
 /** Constants of customizable_overwrites.ts that are not listed (too long to be useful). */
 const OMITTED_FRONT_KEYS = ["ChartsPalettes"];
 
@@ -90,6 +98,20 @@ export class AboutSdaComponent implements OnInit {
   public updateModelConfirm: boolean = false;
   public updateModelResult: "ok" | "error" | "" = "";
   public updateModelError: string = "";
+
+  // Maintenance: users/groups sync (only the users part of updateModel)
+  public syncUsersRunning: boolean = false;
+  public syncUsersConfirm: boolean = false;
+  public syncUsersResult: "ok" | "error" | "" = "";
+  public syncUsersError: string = "";
+  public syncUsersCounts: string = "";
+
+  // Maintenance: diagnostics (read-only checks)
+  public diagnostics: DiagnosticCheck[] = [];
+  public diagnosticsLoading: boolean = false;
+  public diagnosticsError: string = "";
+  public diagnosticsAt: string = "";
+  public diagnosticsCopied: boolean = false;
 
   constructor(
     private http: HttpClient,
@@ -315,6 +337,77 @@ export class AboutSdaComponent implements OnInit {
             : `HTTP ${error?.status ?? "?"}`;
       }
     });
+  }
+
+  /** Asks for confirmation before syncing users and groups. */
+  public askSyncUsers(): void {
+    if (this.syncUsersRunning) return;
+    this.syncUsersResult = "";
+    this.syncUsersError = "";
+    this.syncUsersCounts = "";
+    this.syncUsersConfirm = true;
+  }
+
+  /** Closes the confirmation without syncing anything. */
+  public cancelSyncUsers(): void {
+    this.syncUsersConfirm = false;
+  }
+
+  /** Runs only the users/groups synchronization of updateModel (no model rebuild). */
+  public runSyncUsers(): void {
+    if (this.syncUsersRunning) return;
+    this.syncUsersRunning = true;
+    this.syncUsersConfirm = false;
+    this.syncUsersResult = "";
+    this.syncUsersError = "";
+    this.syncUsersCounts = "";
+
+    this.http.post<{ ok?: boolean; users?: number; roles?: number }>(`/edapi/getsdainfo/sync-users?token=${this.userService.getToken()}`, {}).subscribe({
+      next: data => {
+        this.syncUsersRunning = false;
+        this.syncUsersResult = "ok";
+        this.syncUsersCounts = `${data?.users ?? 0} usuarios, ${data?.roles ?? 0} roles`;
+      },
+      error: error => {
+        console.error("Error syncing users and groups", error);
+        this.syncUsersRunning = false;
+        this.syncUsersResult = "error";
+        this.syncUsersError = error?.status === 403 ? "admin-required" : `HTTP ${error?.status ?? "?"}`;
+      }
+    });
+  }
+
+  /** Runs the read-only health checks shown in the maintenance section. */
+  public runDiagnostics(): void {
+    if (this.diagnosticsLoading) return;
+    this.diagnosticsLoading = true;
+    this.diagnosticsError = "";
+    this.diagnosticsCopied = false;
+
+    this.http.get<{ ok?: boolean; checks?: DiagnosticCheck[]; at?: string }>(`/edapi/getsdainfo/diagnostics?token=${this.userService.getToken()}`).subscribe({
+      next: data => {
+        this.diagnosticsLoading = false;
+        this.diagnostics = data?.checks ?? [];
+        this.diagnosticsAt = data?.at ?? "";
+      },
+      error: error => {
+        console.error("Error fetching diagnostics", error);
+        this.diagnosticsLoading = false;
+        this.diagnostics = [];
+        this.diagnosticsError = error?.status === 403 ? "admin-required" : `HTTP ${error?.status ?? "?"}`;
+      }
+    });
+  }
+
+  /** Copies the last diagnostics result as plain text (for support tickets). */
+  public copyDiagnostics(): void {
+    const text = this.diagnostics
+      .map(check => `[${check.status}] ${check.label}: ${check.detail}`)
+      .join("\n");
+    const payload = `${this.diagnosticsAt}\n${text}`;
+    navigator.clipboard?.writeText(payload)
+      .then(() => this.diagnosticsCopied = true)
+      .catch(() => this.diagnosticsCopied = false);
   }
 
   // ---------------------------------------------------------------------------

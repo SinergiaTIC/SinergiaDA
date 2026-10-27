@@ -185,9 +185,9 @@
       <!-- Maintenance: updateModel (same job as the scheduled sync) -->
       <details class="sda-config-section border border-gray-200 dark:border-gray-700 rounded">
         <summary class="flex items-center justify-between gap-3 px-4 py-3 cursor-pointer select-none">
-          <span class="font-semibold" i18n="@@updateModelSectionTitle">Mantenimiento · Update model</span>
+          <span class="font-semibold" i18n="@@updateModelSectionTitle">Mantenimiento</span>
           <span class="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400">
-            @if (updateModelRunning) {
+            @if (updateModelRunning || syncUsersRunning || diagnosticsLoading) {
               <i class="pi pi-spin pi-spinner"></i>
             }
             <svg class="sda-chevron h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
@@ -196,55 +196,165 @@
           </span>
         </summary>
 
-        <div class="px-4 pb-4 space-y-3">
-          <p class="text-gray-500 dark:text-gray-400" i18n="@@updateModelSectionHelp">
-            Regenera el modelo de datos de SinergiaCRM (tablas, columnas, permisos y usuarios/grupos),
-            igual que la sincronización programada. Puede tardar varios minutos: los informes pueden
-            quedarse sin datos hasta que termine.
-          </p>
+        <div class="px-4 pb-4 space-y-5">
 
-          <p class="text-gray-600 dark:text-gray-300">
-            <span i18n="@@updateModelLastRun">Última ejecución:</span>
-            <span class="font-bold">{{ lastUpdateModelRun }}</span>
-          </p>
+          <!-- Actualización: update model + users/groups sync -->
+          <section class="space-y-3">
+            <h4 class="font-semibold text-gray-700 dark:text-gray-200" i18n="@@maintenanceUpdateTitle">Actualización</h4>
 
-          @if (updateModelRunning) {
-            <p class="flex items-center gap-2 text-gray-600 dark:text-gray-300">
-              <i class="pi pi-spin pi-spinner"></i>
-              <span i18n="@@updateModelRunning">Actualizando el modelo de datos… no cierres esta ventana hasta que termine.</span>
+            <p class="text-gray-500 dark:text-gray-400" i18n="@@updateModelSectionHelp">
+              Regenera el modelo de datos de SinergiaCRM (tablas, columnas, permisos y usuarios/grupos),
+              igual que la sincronización programada. Puede tardar varios minutos: los informes pueden
+              quedarse sin datos hasta que termine.
             </p>
-          } @else if (updateModelConfirm) {
-            <div class="rounded border border-amber-300 bg-amber-50 dark:bg-amber-900/20 px-3 py-2 space-y-2">
-              <p class="text-amber-900 dark:text-amber-200" i18n="@@updateModelConfirmText">
-                ¿Ejecutar ahora la actualización del modelo? Se sobrescribirán las tablas, columnas y
-                permisos del modelo actual.
+
+            <p class="text-gray-600 dark:text-gray-300">
+              <span i18n="@@updateModelLastRun">Última ejecución:</span>
+              <span class="font-bold">{{ lastUpdateModelRun }}</span>
+            </p>
+
+            @if (updateModelRunning) {
+              <p class="flex items-center gap-2 text-gray-600 dark:text-gray-300">
+                <i class="pi pi-spin pi-spinner"></i>
+                <span i18n="@@updateModelRunning">Actualizando el modelo de datos… no cierres esta ventana hasta que termine.</span>
               </p>
-              <div class="flex flex-wrap gap-2">
-                <button type="button" class="sda-maintenance-btn" (click)="runUpdateModel()">
-                  <i class="pi pi-refresh"></i>
-                  <span i18n="@@updateModelConfirmYes">Sí, actualizar</span>
-                </button>
-                <button type="button" class="sda-cancel-btn" (click)="cancelRunUpdateModel()">
-                  <span i18n="@@updateModelCancel">Cancelar</span>
-                </button>
+            } @else if (updateModelConfirm) {
+              <div class="rounded border border-amber-300 bg-amber-50 dark:bg-amber-900/20 px-3 py-2 space-y-2">
+                <p class="text-amber-900 dark:text-amber-200" i18n="@@updateModelConfirmText">
+                  ¿Ejecutar ahora la actualización del modelo? Se sobrescribirán las tablas, columnas y
+                  permisos del modelo actual.
+                </p>
+                <div class="flex flex-wrap gap-2">
+                  <button type="button" class="sda-maintenance-btn" (click)="runUpdateModel()">
+                    <i class="pi pi-refresh"></i>
+                    <span i18n="@@updateModelConfirmYes">Sí, actualizar</span>
+                  </button>
+                  <button type="button" class="sda-cancel-btn" (click)="cancelRunUpdateModel()">
+                    <span i18n="@@updateModelCancel">Cancelar</span>
+                  </button>
+                </div>
               </div>
-            </div>
-          } @else {
-            <button type="button" class="sda-maintenance-btn" (click)="askRunUpdateModel()">
-              <i class="pi pi-refresh"></i>
-              <span i18n="@@updateModelRun">Ejecutar Update model</span>
-            </button>
-          }
+            } @else {
+              <button type="button" class="sda-maintenance-btn" (click)="askRunUpdateModel()">
+                <i class="pi pi-refresh"></i>
+                <span i18n="@@updateModelRun">Ejecutar Update model</span>
+              </button>
+            }
 
-          @if (updateModelResult === 'ok') {
-            <p class="text-green-700 dark:text-green-400" i18n="@@updateModelOk">
-              Modelo de datos actualizado correctamente.
+            @if (updateModelResult === 'ok') {
+              <p class="text-green-700 dark:text-green-400" i18n="@@updateModelOk">
+                Modelo de datos actualizado correctamente.
+              </p>
+            } @else if (updateModelResult === 'error') {
+              <p class="text-red-600 dark:text-red-400" i18n="@@updateModelError">
+                No se ha podido actualizar el modelo{{ updateModelError ? ' (' + updateModelError + ')' : '' }}.
+              </p>
+            }
+
+            <!-- Solo usuarios y grupos -->
+            <div class="border-t border-gray-200 dark:border-gray-700 pt-3 space-y-3">
+              <p class="text-gray-500 dark:text-gray-400" i18n="@@syncUsersHelp">
+                Sincroniza solo los usuarios, roles y grupos de SinergiaCRM, sin reconstruir el modelo de
+                datos. Útil cuando un usuario creado en SinergiaCRM todavía no aparece en SinergiaDA.
+              </p>
+
+              @if (syncUsersRunning) {
+                <p class="flex items-center gap-2 text-gray-600 dark:text-gray-300">
+                  <i class="pi pi-spin pi-spinner"></i>
+                  <span i18n="@@syncUsersRunning">Sincronizando usuarios y grupos…</span>
+                </p>
+              } @else if (syncUsersConfirm) {
+                <div class="rounded border border-amber-300 bg-amber-50 dark:bg-amber-900/20 px-3 py-2 space-y-2">
+                  <p class="text-amber-900 dark:text-amber-200" i18n="@@syncUsersConfirmText">
+                    ¿Sincronizar ahora usuarios, roles y grupos desde SinergiaCRM? Se actualizan los
+                    permisos de los usuarios de SinergiaDA.
+                  </p>
+                  <div class="flex flex-wrap gap-2">
+                    <button type="button" class="sda-maintenance-btn" (click)="runSyncUsers()">
+                      <i class="pi pi-users"></i>
+                      <span i18n="@@syncUsersConfirmYes">Sí, sincronizar</span>
+                    </button>
+                    <button type="button" class="sda-cancel-btn" (click)="cancelSyncUsers()">
+                      <span i18n="@@updateModelCancel">Cancelar</span>
+                    </button>
+                  </div>
+                </div>
+              } @else {
+                <button type="button" class="sda-maintenance-btn" (click)="askSyncUsers()">
+                  <i class="pi pi-users"></i>
+                  <span i18n="@@syncUsersRun">Sincronizar usuarios y grupos</span>
+                </button>
+              }
+
+              @if (syncUsersResult === 'ok') {
+                <p class="text-green-700 dark:text-green-400" i18n="@@syncUsersOk">
+                  Usuarios y grupos sincronizados{{ syncUsersCounts ? ' (' + syncUsersCounts + ')' : '' }}.
+                </p>
+              } @else if (syncUsersResult === 'error') {
+                <p class="text-red-600 dark:text-red-400" i18n="@@syncUsersError">
+                  No se han podido sincronizar los usuarios y grupos{{ syncUsersError ? ' (' + syncUsersError + ')' : '' }}.
+                </p>
+              }
+            </div>
+          </section>
+
+          <!-- Diagnóstico -->
+          <section class="space-y-3 border-t border-gray-200 dark:border-gray-700 pt-4">
+            <h4 class="font-semibold text-gray-700 dark:text-gray-200" i18n="@@maintenanceDiagnosticsTitle">Diagnóstico</h4>
+
+            <p class="text-gray-500 dark:text-gray-400" i18n="@@diagnosticsHelp">
+              Comprueba el estado de la instalación sin modificar nada: conexión con SinergiaCRM, modelo
+              de datos, base de datos, caché y errores del día.
             </p>
-          } @else if (updateModelResult === 'error') {
-            <p class="text-red-600 dark:text-red-400" i18n="@@updateModelError">
-              No se ha podido actualizar el modelo{{ updateModelError ? ' (' + updateModelError + ')' : '' }}.
-            </p>
-          }
+
+            @if (diagnosticsLoading) {
+              <p class="flex items-center gap-2 text-gray-600 dark:text-gray-300">
+                <i class="pi pi-spin pi-spinner"></i>
+                <span i18n="@@diagnosticsRunning">Comprobando el estado…</span>
+              </p>
+            } @else {
+              <button type="button" class="sda-maintenance-btn" (click)="runDiagnostics()">
+                <i class="pi pi-search"></i>
+                <span i18n="@@diagnosticsRun">Comprobar estado</span>
+              </button>
+            }
+
+            @if (diagnosticsError) {
+              <p class="text-red-600 dark:text-red-400" i18n="@@diagnosticsError">
+                No se ha podido obtener el diagnóstico{{ diagnosticsError ? ' (' + diagnosticsError + ')' : '' }}.
+              </p>
+            }
+
+            @if (diagnostics.length) {
+              <p class="text-xs text-gray-500 dark:text-gray-400">
+                <span i18n="@@diagnosticsAt">Comprobado a las</span> {{ diagnosticsAt }}
+              </p>
+
+              <ul class="space-y-1.5">
+                @for (check of diagnostics; track check.id) {
+                  <li class="flex items-start gap-2">
+                    <i class="mt-0.5"
+                      [class]="check.status === 'ok' ? 'pi pi-check-circle text-green-600'
+                        : check.status === 'warn' ? 'pi pi-exclamation-triangle text-amber-500'
+                        : 'pi pi-times-circle text-red-600'"
+                      [attr.aria-label]="check.status"></i>
+                    <span class="font-semibold">{{ check.label }}:</span>
+                    <span class="text-gray-600 dark:text-gray-300 break-words">{{ check.detail }}</span>
+                  </li>
+                }
+              </ul>
+
+              <div class="flex items-center gap-3">
+                <button type="button" class="sda-cancel-btn" (click)="copyDiagnostics()">
+                  <i class="pi pi-copy mr-1"></i>
+                  <span i18n="@@diagnosticsCopy">Copiar diagnóstico</span>
+                </button>
+                @if (diagnosticsCopied) {
+                  <span class="text-xs text-green-700 dark:text-green-400" i18n="@@diagnosticsCopied">Copiado</span>
+                }
+              </div>
+            }
+          </section>
         </div>
       </details>
 

@@ -81,4 +81,44 @@ router.get('/plugins', authGuard, roleGuard, GetSdaInfoController.getPlugins);
  */
 router.post('/update-model', authGuard, GetSdaInfoController.runUpdateModel);
 
+/**
+ * @openapi
+ * /getsdainfo/sync-users:
+ *   post:
+ *     description: Runs only the users/groups synchronization of updateModel (no model rebuild). Admin only.
+ *     parameters:
+ *     - in: query
+ *       name: token
+ *       required: true
+ *       description: authorization token
+ *     responses:
+ *       200:
+ *         description: Synchronization finished
+ *       403:
+ *         description: Administrator role required
+ *     tags:
+ *       - SDA Info Routes
+ */
+router.post('/sync-users', authGuard, GetSdaInfoController.syncUsersAndGroups);
+
+/**
+ * @openapi
+ * /getsdainfo/diagnostics:
+ *   get:
+ *     description: Read-only health checks (SinergiaCRM, metadata.json, MongoDB, cache, logs). Admin only.
+ *     parameters:
+ *     - in: query
+ *       name: token
+ *       required: true
+ *       description: authorization token
+ *     responses:
+ *       200:
+ *         description: Checks retrieved successfully
+ *       403:
+ *         description: Administrator role required
+ *     tags:
+ *       - SDA Info Routes
+ */
+router.get('/diagnostics', authGuard, GetSdaInfoController.getDiagnostics);
+
 export default router;
