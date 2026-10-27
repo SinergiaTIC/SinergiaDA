@@ -108,12 +108,17 @@ export class SsoSinergiaCrmAuthPlugin implements IAuthPlugin {
     ): Promise<AuthPluginResult> {
         this.stripTokenFromUrl();
         const previousEmail = this.currentEmail();
+        const previousRoles = this.currentRoles();
         try {
             const response: any = await lastValueFrom(ctx.http.post(`${URL_SERVICES}/sso/login`, { token }));
             ctx.userService.savingStorage(response.id, response.token, response.user);
             this.clearBounce();
 
-            if (previousEmail && previousEmail !== response?.user?.email) {
+            // A changed user or a changed permission (e.g. the CRM switching the
+            // user to read-only) needs a full reload: the side menu and the open
+            // pages compute their permissions on load.
+            if (previousEmail && (previousEmail !== response?.user?.email
+                || previousRoles !== this.rolesOf(response?.user))) {
                 window.location.replace(window.location.pathname + window.location.hash);
                 return 'authenticated';
             }
@@ -128,6 +133,16 @@ export class SsoSinergiaCrmAuthPlugin implements IAuthPlugin {
     private currentEmail(): string {
         const stored = localStorage.getItem('user');
         return stored ? JSON.parse(stored)?.email || '' : '';
+    }
+
+    /** Sorted group ids of the stored session user, to detect permission changes. */
+    private currentRoles(): string {
+        const stored = localStorage.getItem('user');
+        return stored ? this.rolesOf(JSON.parse(stored)) : '';
+    }
+
+    private rolesOf(user: any): string {
+        return (user?.role || []).map(String).sort().join(',');
     }
 
     private stripTokenFromUrl(): void {

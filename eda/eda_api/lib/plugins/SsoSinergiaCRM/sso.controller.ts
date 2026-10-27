@@ -4,6 +4,7 @@ import User from '../../module/admin/users/model/user.model';
 import { insertServerLog } from '../../services/server-log/server-log.service';
 import { consumeSsoToken } from './sso-consumed.store';
 import { revokeSsoSessions } from './sso-revocations.store';
+import { syncReadOnly } from './sso-readonly';
 
 const jwt = require('jsonwebtoken');
 const SEED = require('../../../config/seed').SEED;
@@ -100,6 +101,14 @@ export class SsoController {
             if (user?.info?.scrm_user !== true) {
                 insertServerLog(req, 'error', 'newLogin', payload.sub, 'sso-user-not-managed-by-crm');
                 return next(new HttpException(403, 'User is not managed by SinergiaCRM'));
+            }
+
+            // The `ro` claim (CRM sda_allowed_c = 2) is applied as EDA_RO membership,
+            // the same mechanism the model sync uses for read-only users.
+            try {
+                await syncReadOnly(user, payload.ro === true);
+            } catch (error) {
+                console.error('[SsoSinergiaCRM] Unable to apply the read-only claim', error);
             }
 
             const sessionUser: any = user.toObject ? user.toObject() : user;
