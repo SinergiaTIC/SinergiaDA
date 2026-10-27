@@ -13,8 +13,29 @@ export class DashboardService extends ApiService {
     private _notSaved = new BehaviorSubject<boolean>(false); // [{ display_name: { default: '' }, eda-columns: [] }] --> just in case
     public notSaved = this._notSaved.asObservable();
 
+    private saveHandler?: () => Promise<any>;
+
     setNotSaved(value: boolean): void {
         this._notSaved.next(value);
+    }
+
+    /**
+     * The report page registers here how to save itself, so other components (e.g. the side menu)
+     * can save the open report before leaving it.
+     */
+    registerSaveHandler(handler: () => Promise<any>): void {
+        this.saveHandler = handler;
+    }
+
+    clearSaveHandler(): void {
+        this.saveHandler = undefined;
+    }
+
+    /** Saves the open report, when there is a report page able to do it. */
+    async requestSave(): Promise<void> {
+        if (this.saveHandler) {
+            await this.saveHandler();
+        }
     }
 
     getDashboards(): Observable<any> {

@@ -7,7 +7,7 @@ import { EdaBlankPanelComponent } from "@eda/components/eda-panels/eda-blank-pan
 import { OverlayPanelModule } from "primeng/overlaypanel";
 import * as _ from 'lodash';
 import { DashboardPage } from "app/module/pages/dashboard/dashboard.page";
-import { GLOBAL_FILTER_BUTTON_POSITION } from '@eda/configs/customizable/customizable_merged';
+import { GLOBAL_FILTER_BUTTON_POSITION, SHOW_EMPTY_VALUE_IN_FILTERS } from '@eda/configs/customizable/customizable_merged';
 import { normalizeQueryMode } from '@eda/shared/utils/query-mode.util';
 import { MultiSelectModule } from "primeng/multiselect";
 import { FormsModule } from "@angular/forms";
@@ -235,6 +235,9 @@ export class GlobalFilterComponent implements OnInit {
     }
 
     public setGlobalFilterItems(filter: any) {
+
+        // Changing the selected values of a report filter changes the report
+        this.dashboardService.setNotSaved(true);
 
         // Apply dependent filters if a sort order is configured
         if(this.orderDependentFilters.length !==0) this.applyingDependentFilter(filter, this.globalFilters);
@@ -493,6 +496,8 @@ export class GlobalFilterComponent implements OnInit {
     validateFilter(){
         const mandatoryFilters: {value :boolean, items: any} = this.checkAllMandatoryFilters(); 
         if(mandatoryFilters.value){
+            // Applying the report filters changes the report (same as reloadOnGlobalFilter did)
+            this.dashboardService.setNotSaved(true);
             this.dashboard.refreshPanels()
         } else{
             this.alertService.addError($localize`:@@AddMandatoryFilters:Los siguientes filtros son obligatorios y no tienen valor asignado:` + mandatoryFilters.items);
@@ -501,8 +506,11 @@ export class GlobalFilterComponent implements OnInit {
 
     checkAllMandatoryFilters(): {value :boolean, items: any}{
         let nonEmptyFilters: {value :boolean, items: any} = {value: true,items: []};
+        // Date operators that filter on the field being (not) empty do not need a value
+        const noValueDateTypes = ['not_null', 'not_null_nor_empty', 'null_or_empty'];
         this.globalFilters.forEach(element => {
             if(element.isMandatory && element.isMandatory === true){
+                if (noValueDateTypes.includes(element.dateFilterType)) return;
                 if(element.selectedItems.length < 1){
                     nonEmptyFilters.value = false;
                     nonEmptyFilters.items.push(element.selectedColumn.display_name.default);
@@ -520,6 +528,8 @@ export class GlobalFilterComponent implements OnInit {
 
 
         if (apply) {
+            // Adding, editing or removing a report filter changes the report
+            this.dashboardService.setNotSaved(true);
             this.dashboard.edaPanels.forEach(panel => {
                 if (!this.globalFilter.isdeleted) {
                     panel.globalFilters = panel.globalFilters.filter((f: any) => f.filter_id !== this.globalFilter.id);
@@ -565,6 +575,7 @@ export class GlobalFilterComponent implements OnInit {
                     filter.isGlobal = this.globalFilter.isGlobal;
                     filter.visible = this.globalFilter.visible;
                     filter.isAutocompleted = this.globalFilter.isAutocompleted !== undefined ? this.globalFilter.isAutocompleted : false;
+                    filter.isMandatory = this.globalFilter.isMandatory ?? false;
                     filter.applyToAll = this.globalFilter.applyToAll;
                     filter.multipleSelection = this.globalFilter.multipleSelection ?? true;
 
@@ -672,6 +683,11 @@ export class GlobalFilterComponent implements OnInit {
         globalFilter.filter_column_type = type;
 
         return type;
+    }
+
+    /** Resolves a raw selectedItems entry (e.g. the 'emptyString' sentinel) back to its display label */
+    public getFilterItemLabel(filter: any, item: any): string {
+        return filter.data?.find((d: any) => d.value === item)?.label ?? item;
     }
 
     public getFilterLabel(globalFilter: any): string {
@@ -876,7 +892,13 @@ export class GlobalFilterComponent implements OnInit {
                 }
             }
             
-            const data = res[1].filter(item => !!item[0] || item[0] == '').map(item => ({ label: item[0], value: item[0] }));
+            const data = res[1].filter(item => !!item[0]).map(item => ({ label: item[0], value: item[0] }));
+
+            // If I have empty values I replace them with the empty string text — equivalent to IS NULL OR EMPTY
+            if (SHOW_EMPTY_VALUE_IN_FILTERS && res[1].filter(item => item[0]?.toString() == '').length > 0) {
+                data.unshift({ label: $localize`:@@emptyStringTxt:Vacío`, value: 'emptyString' });
+            }
+
             // Before assigning:
             const foundFilter = this.globalFilters.find((gf: any) => gf.id == globalFilter.id);
 

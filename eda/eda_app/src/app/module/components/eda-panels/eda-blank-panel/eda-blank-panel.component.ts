@@ -238,6 +238,7 @@ export class EdaBlankPanelComponent implements OnInit, AfterViewChecked {
     public ptooltipOrderByControl: string = $localize`:@@ptooltipOrderByControl:Arrastra aquí los atributos por los que quieres ordenar los resultados y colócalos en el orden que prefieras. En cada uno puedes elegir ascendente (ASC), descendente (DESC) o dejarlo sin indicar.`
     public aggregationText: string = $localize`:@@aggregationText:Agregación`;
     public textBetween: string = $localize`:@@textBetween:Entre`
+    public emptyStringString: string = $localize`:@@emptyStringTxt:Vacío`
     public yesText: string = $localize`:@@si:Si`;
     public noText: string = $localize`:@@no:No`;
     /** Query Variables */
@@ -973,6 +974,7 @@ public tableNodeExpand(event: any): void {
                 if(borrado.value){
                     try {
                         this.changeChartType(type, subType, config);
+                        this.dashboardService.setNotSaved(true);
                         if (hadChildNav) { QueryUtils.runQuery(this, false); }
                     } catch (err) {
                         this.alertService.addError(err);
@@ -984,6 +986,7 @@ public tableNodeExpand(event: any): void {
             this.closeEditarConsulta();
         } else {
             this.changeChartType(type, subType, config);
+            this.dashboardService.setNotSaved(true);
             if (hadChildNav) { QueryUtils.runQuery(this, false); }
         }
     }
@@ -1474,7 +1477,8 @@ public tableNodeExpand(event: any): void {
             }
 
             this.sortedFilters.push(newSortedFilter);
-            this.savePanel()
+            this.savePanel();
+            this.dashboardService.setNotSaved(true);
         }
     }    
 
@@ -1487,6 +1491,7 @@ public tableNodeExpand(event: any): void {
         if(this.sortedFilters.some((sortedFilter: any) => _filter.id === sortedFilter.filter_id)){
             this.sortedFilters = [];
             this.savePanel(); // Panel setting saved
+            this.dashboardService.setNotSaved(true);
         }
 
     }
@@ -2417,6 +2422,7 @@ public tableNodeExpand(event: any): void {
                     valueStr = `"${values[0]}"`;
                 }  else if (values.length > 1 || ['in', 'not_in'].includes(filter.filter_type)) {
                     valueStr = `[${values.map((v: string) => (`"${v}"`) ).join(', ')}]`;
+                    valueStr = valueStr.replace('emptyString', this.emptyStringString); // This is done in case nulls are filtered out from the dashboard that can be internationalised.
                 }
 
                 if (values2) {
@@ -2480,6 +2486,7 @@ public tableNodeExpand(event: any): void {
     public onCloseFilterMapperDialog(response?: any): void {
         if (response) {
             this.panel.globalFilterMap = response.connections || [];
+            this.dashboardService.setNotSaved(true);
         }
 
         this.display_v.filterMapperDialog = false;
@@ -2728,6 +2735,7 @@ public tableNodeExpand(event: any): void {
     public newSortedFiltersFunction(event: any[]): void {
         this.sortedFilters = event;
         this.display_v.btnSave = true;
+        this.dashboardService.setNotSaved(true);
     }
 
     public updateSortedFiltersColumnDialogFunction(e: any): void {
@@ -2747,12 +2755,14 @@ public tableNodeExpand(event: any): void {
                     value: 'and',
                 };
                 this.sortedFilters.push(newSortedFilter);
+                this.dashboardService.setNotSaved(true);
             }
         } else {
             if (this.sortedFilters.length !== 0) {
                 this.alertService.addWarning($localize`:@@filterSettingsReboot:La configuración de filtros se ha reiniciado`);
             }
             this.sortedFilters = [];
+            this.dashboardService.setNotSaved(true);
         }
     }
 
@@ -2773,12 +2783,14 @@ public tableNodeExpand(event: any): void {
                     value: 'and',
                 };
                 this.sortedFilters.push(newSortedFilter);
+                this.dashboardService.setNotSaved(true);
             }
         } else {
             if (this.sortedFilters.length !== 0) {
                 this.alertService.addWarning($localize`:@@filterSettingsReboot:La configuración de filtros se ha reiniciado`);
             }
             this.sortedFilters = [];
+            this.dashboardService.setNotSaved(true);
         }
     }
 
