@@ -31,6 +31,8 @@ const SSO_CONFIG = applyConfigOverwrite('sso_config', {
 const SSO_SECRET = process.env.SDA_SSO_SECRET || SSO_CONFIG.SECRET;
 const SSO_CRM_URL = process.env.SDA_SSO_CRM_URL || SSO_CONFIG.CRM_URL;
 
+export const isSsoEnabled = (): boolean => !!SSO_SECRET && !!SSO_CRM_URL;
+
 export class SsoController {
 
     /**

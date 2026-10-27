@@ -1,6 +1,7 @@
 import { IFeaturePlugin } from '../plugin.interface';
 import SsoRouter from './sso.router';
 import { isSessionRevoked } from './sso-revocations.store';
+import { isSsoEnabled } from './sso.controller';
 
 /**
  * Single sign-on for users coming from SinergiaCRM.
@@ -24,6 +25,9 @@ export const SsoSinergiaCRMPlugin: IFeaturePlugin = {
     router: SsoRouter,
     routerPath: '/sso',
     validateSession: async (payload: any) => {
+        if (!isSsoEnabled()) {
+            return true;
+        }
         if (!payload?.sso) {
             return true;
         }
