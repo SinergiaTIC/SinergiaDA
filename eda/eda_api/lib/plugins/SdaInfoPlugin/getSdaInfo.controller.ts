@@ -3,6 +3,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { createConnection } from 'mysql2/promise';
 import Group from '../../module/admin/groups/model/group.model';
+import { updateModel } from '../updateModel/updateModel.controller';
 
 const sinergiaDatabase = require('../../../config/sinergiacrm.config');
 
@@ -201,6 +202,43 @@ export class GetSdaInfoController {
       // The file is gitignored: a deployment may not have it, which is not an error.
       console.warn('[getSdaInfo] config.overwrite.js not available', error?.message || error);
       return res.status(200).json({ ok: true, config: {}, hiddenSections: [], available: false });
+    }
+  }
+
+  /** Prevents two updateModel runs started from this endpoint from overlapping. */
+  private static updateModelRunning = false;
+
+  /**
+   * Runs the SinergiaCRM data-model update (the same job the scheduled
+   * /updatemodel/update runs), so an administrator can launch it from the
+   * "Acerca de" page instead of waiting for the next schedule.
+   *
+   * It reuses the core implementation (it writes the response itself:
+   * {status:'ok'} / {status:'ko'} and logs the acting user) without modifying it.
+   * Only EDA_ADMIN_ROLE can launch it: it rewrites the whole data model.
+   */
+  public static async runUpdateModel(req: Request, res: Response) {
+    try {
+      const groups = await Group.find({ users: { $in: req.user._id } }).exec();
+      const isAdmin = groups.filter(g => g.role === 'EDA_ADMIN_ROLE').length > 0;
+      if (!isAdmin) {
+        return res.status(403).json({ ok: false, error: 'admin-required' });
+      }
+      if (GetSdaInfoController.updateModelRunning) {
+        return res.status(409).json({ ok: false, error: 'already-running' });
+      }
+
+      GetSdaInfoController.updateModelRunning = true;
+      try {
+        await updateModel.update(req, res);
+      } finally {
+        GetSdaInfoController.updateModelRunning = false;
+      }
+    } catch (error) {
+      console.error('[getSdaInfo] updateModel failed', error?.message || error);
+      if (!res.headersSent) {
+        return res.status(500).json({ ok: false, error: 'update-model-failed' });
+      }
     }
   }
 }

@@ -182,6 +182,72 @@
 
     <div class="space-y-3 text-sm">
 
+      <!-- Maintenance: updateModel (same job as the scheduled sync) -->
+      <details class="sda-config-section border border-gray-200 dark:border-gray-700 rounded">
+        <summary class="flex items-center justify-between gap-3 px-4 py-3 cursor-pointer select-none">
+          <span class="font-semibold" i18n="@@updateModelSectionTitle">Mantenimiento · Update model</span>
+          <span class="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400">
+            @if (updateModelRunning) {
+              <i class="pi pi-spin pi-spinner"></i>
+            }
+            <svg class="sda-chevron h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
+            </svg>
+          </span>
+        </summary>
+
+        <div class="px-4 pb-4 space-y-3">
+          <p class="text-gray-500 dark:text-gray-400" i18n="@@updateModelSectionHelp">
+            Regenera el modelo de datos de SinergiaCRM (tablas, columnas, permisos y usuarios/grupos),
+            igual que la sincronización programada. Puede tardar varios minutos: los informes pueden
+            quedarse sin datos hasta que termine.
+          </p>
+
+          <p class="text-gray-600 dark:text-gray-300">
+            <span i18n="@@updateModelLastRun">Última ejecución:</span>
+            <span class="font-bold">{{ lastUpdateModelRun }}</span>
+          </p>
+
+          @if (updateModelRunning) {
+            <p class="flex items-center gap-2 text-gray-600 dark:text-gray-300">
+              <i class="pi pi-spin pi-spinner"></i>
+              <span i18n="@@updateModelRunning">Actualizando el modelo de datos… no cierres esta ventana hasta que termine.</span>
+            </p>
+          } @else if (updateModelConfirm) {
+            <div class="rounded border border-amber-300 bg-amber-50 dark:bg-amber-900/20 px-3 py-2 space-y-2">
+              <p class="text-amber-900 dark:text-amber-200" i18n="@@updateModelConfirmText">
+                ¿Ejecutar ahora la actualización del modelo? Se sobrescribirán las tablas, columnas y
+                permisos del modelo actual.
+              </p>
+              <div class="flex flex-wrap gap-2">
+                <button type="button" class="sda-maintenance-btn" (click)="runUpdateModel()">
+                  <i class="pi pi-refresh"></i>
+                  <span i18n="@@updateModelConfirmYes">Sí, actualizar</span>
+                </button>
+                <button type="button" class="sda-cancel-btn" (click)="cancelRunUpdateModel()">
+                  <span i18n="@@updateModelCancel">Cancelar</span>
+                </button>
+              </div>
+            </div>
+          } @else {
+            <button type="button" class="sda-maintenance-btn" (click)="askRunUpdateModel()">
+              <i class="pi pi-refresh"></i>
+              <span i18n="@@updateModelRun">Ejecutar Update model</span>
+            </button>
+          }
+
+          @if (updateModelResult === 'ok') {
+            <p class="text-green-700 dark:text-green-400" i18n="@@updateModelOk">
+              Modelo de datos actualizado correctamente.
+            </p>
+          } @else if (updateModelResult === 'error') {
+            <p class="text-red-600 dark:text-red-400" i18n="@@updateModelError">
+              No se ha podido actualizar el modelo{{ updateModelError ? ' (' + updateModelError + ')' : '' }}.
+            </p>
+          }
+        </div>
+      </details>
+
       <!-- API: config.overwrite.js -->
       <details class="sda-config-section border border-gray-200 dark:border-gray-700 rounded">
         <summary class="flex items-center justify-between gap-3 px-4 py-3 cursor-pointer select-none">

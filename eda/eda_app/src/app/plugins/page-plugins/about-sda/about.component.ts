@@ -85,6 +85,12 @@ export class AboutSdaComponent implements OnInit {
   public pluginsApiError: string = "";
   public pluginsFrontError: string = "";
 
+  // Maintenance: updateModel (admins only, same modal)
+  public updateModelRunning: boolean = false;
+  public updateModelConfirm: boolean = false;
+  public updateModelResult: "ok" | "error" | "" = "";
+  public updateModelError: string = "";
+
   constructor(
     private http: HttpClient,
     public userService: UserService
@@ -108,7 +114,14 @@ export class AboutSdaComponent implements OnInit {
     // Variables overwritten in the front-end (customizable_overwrites.ts)
     this.frontConfigEntries = this.buildFrontConfigEntries();
 
-    // Fetches information from the backend and updates component properties accordingly.
+    this.loadInfo();
+  }
+
+  /**
+   * Fetches the installation information from the backend and updates the component
+   * properties (also used to refresh the dates after running updateModel).
+   */
+  private loadInfo(): void {
     this.http.get<InfoResponse>(`/edapi/getsdainfo/getinfo?token=${this.userService.getToken()}`).subscribe({
       next: data => {
         this.sinergiaDaVersion = data.info.sinergiaDaVersion;
@@ -251,6 +264,55 @@ export class AboutSdaComponent implements OnInit {
         this.pluginsApiError = `HTTP ${error?.status ?? "?"}`;
         this.pluginsApiEntries = [];
         this.pluginsApiLoading = false;
+      }
+    });
+  }
+
+  // ---------------------------------------------------------------------------
+  // Maintenance: updateModel
+  // ---------------------------------------------------------------------------
+
+  /** Asks for confirmation before running updateModel (it rewrites the data model). */
+  public askRunUpdateModel(): void {
+    if (this.updateModelRunning) return;
+    this.updateModelResult = "";
+    this.updateModelError = "";
+    this.updateModelConfirm = true;
+  }
+
+  /** Closes the confirmation without running anything. */
+  public cancelRunUpdateModel(): void {
+    this.updateModelConfirm = false;
+  }
+
+  /**
+   * Runs the SinergiaCRM data-model update through the API (the same job the
+   * scheduled updatemodel runs). It can take minutes, so the button stays
+   * disabled with a spinner until the API answers.
+   */
+  public runUpdateModel(): void {
+    if (this.updateModelRunning) return;
+    this.updateModelRunning = true;
+    this.updateModelConfirm = false;
+    this.updateModelResult = "";
+    this.updateModelError = "";
+
+    this.http.post<{ status?: string }>(`/edapi/getsdainfo/update-model?token=${this.userService.getToken()}`, {}).subscribe({
+      next: data => {
+        this.updateModelRunning = false;
+        this.updateModelResult = data?.status === "ko" ? "error" : "ok";
+        // The About page shows the last updateModel run: refresh it.
+        this.loadInfo();
+      },
+      error: error => {
+        console.error("Error running updateModel", error);
+        this.updateModelRunning = false;
+        this.updateModelResult = "error";
+        this.updateModelError = error?.status === 409
+          ? "already-running"
+          : error?.status === 403
+            ? "admin-required"
+            : `HTTP ${error?.status ?? "?"}`;
       }
     });
   }
