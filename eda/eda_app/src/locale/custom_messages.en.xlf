@@ -1057,7 +1057,7 @@
   </trans-unit>
   <trans-unit id="profileSubtitle" datatype="html">
     <source>Administra tu información personal y preferencias de cuenta</source>
-    <target>Manage your personal information and account preferences</target>
+    <target>Manage personal information and account preferences</target>
   </trans-unit>
   <trans-unit id="saveChanges" datatype="html">
     <source>Guardar cambios</source>
