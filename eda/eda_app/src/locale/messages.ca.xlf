@@ -578,8 +578,16 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
         <target>Importa</target>
       </trans-unit>
       <trans-unit id="NotSavedWarning">
-        <source>Hay cambios sin guardar. ¿Seguro que quieres salir?</source>
-        <target>Hi ha canvis sense desar, segur que voleu sortir?</target>
+        <source>Hay cambios sin guardar. ¿Qué deseas hacer?</source>
+        <target>Hi ha canvis sense desar. Què vols fer?</target>
+      </trans-unit>
+      <trans-unit id="SaveAndExitButton">
+        <source>Guardar y salir</source>
+        <target>Desa i surt</target>
+      </trans-unit>
+      <trans-unit id="ExitWithoutSavingButton">
+        <source>Salir sin guardar</source>
+        <target>Surt sense desar</target>
       </trans-unit>
       <trans-unit id="csvSep">
         <source>Separador Decimal</source>
@@ -699,6 +707,10 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       <trans-unit id="noFilterAllowed">
         <source>Este panel no está disponible por falta de permisos en un filtro</source>
         <target>Aquest panell no està disponible per manca de permisos en un filtre, l'informe s'obrirà en mode de només lectura.</target>
+      </trans-unit>
+      <trans-unit id="mandatoryFilterMissing">
+        <source>Este panel no está disponible: falta asignar un valor a un filtro obligatorio</source>
+        <target>Aquest panell no està disponible: falta assignar un valor a un filtre obligatori</target>
       </trans-unit>
       <trans-unit id="seeRepetitions">
         <source> ver/ocultar valores repetidos</source>
@@ -2864,8 +2876,16 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
         <target>Importa</target>
       </trans-unit>
       <trans-unit id="NotSavedWarning">
-        <source>Hay cambios sin guardar. ¿Seguro que quieres salir?</source>
-        <target>Hi ha canvis sense desar, segur que voleu sortir?</target>
+        <source>Hay cambios sin guardar. ¿Qué deseas hacer?</source>
+        <target>Hi ha canvis sense desar. Què vols fer?</target>
+      </trans-unit>
+      <trans-unit id="SaveAndExitButton">
+        <source>Guardar y salir</source>
+        <target>Desa i surt</target>
+      </trans-unit>
+      <trans-unit id="ExitWithoutSavingButton">
+        <source>Salir sin guardar</source>
+        <target>Surt sense desar</target>
       </trans-unit>
       <trans-unit id="csvSep">
         <source>Separador Decimal</source>

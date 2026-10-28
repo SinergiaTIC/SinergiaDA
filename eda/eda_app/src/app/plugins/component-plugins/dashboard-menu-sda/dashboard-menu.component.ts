@@ -4,10 +4,10 @@ import { FormsModule } from "@angular/forms";
 import { FocusOnShowDirective } from "@eda/shared/directives/autofocus.directive";
 import { Subscription } from "rxjs";
 import { Menu, MenuModule } from "primeng/menu";
-import { MenuItem } from "primeng/api";
+import { MenuItem, MessageService } from "primeng/api";
 import { TooltipModule } from "primeng/tooltip";
 import { EdaPanel, EdaPanelType, EdaTitlePanel, EdaTabsPanel } from "@eda/models/model.index";
-import { FileUtiles, StyleProviderService, DashboardService } from "@eda/services/service.index";
+import { FileUtiles, StyleProviderService, DashboardService, AlertService } from "@eda/services/service.index";
 import { DashboardSidebarService } from "@eda/services/shared/dashboard-sidebar.service";
 import { IconService } from "@eda/services/utils/icons.service";
 // "Acción personalizada" hidden by design decision in SinergiaDA (see buildMoreMenu).
@@ -42,8 +42,10 @@ export class DashboardMenuSdaComponent implements OnInit, OnDestroy, DoCheck {
   private fileUtils = inject(FileUtiles);
   private stylesProviderService = inject(StyleProviderService);
   private dashboardService = inject(DashboardService);
+  private alertService = inject(AlertService);
   private sidebarService = inject(DashboardSidebarService);
   private iconService = inject(IconService);
+  private messageService = inject(MessageService);
   private host = inject(ElementRef);
   private notSavedSub?: Subscription;
 
@@ -73,6 +75,13 @@ export class DashboardMenuSdaComponent implements OnInit, OnDestroy, DoCheck {
   public liveDashboardOpen: boolean = false;
   public refreshTime: number | null = null;
   public liveDashboardLabel = $localize`:@@dashboardSidebarLiveDashboard:Live Dashboard`;
+  public tooltipReportFilters = $localize`:@@tooltipReportFilters:Abrir la lista de filtros del informe`;
+  public tooltipLiveDashboard = $localize`:@@tooltipLiveDashboard:Configurar el refresco automático del informe`;
+  public tooltipEditStyles = $localize`:@@tooltipEditStyles:Cambiar los estilos visuales del informe`;
+  public tooltipPrivacy = $localize`:@@tooltipPrivacy:Configurar quién puede ver el informe`;
+  public tooltipTag = $localize`:@@tooltipTag:Añadir o editar etiquetas del informe`;
+  public tooltipPanelLock = $localize`:@@tooltipPanelLock:Bloquear o desbloquear el movimiento y redimensionado de los paneles`;
+  public tooltipPrivateEdition = $localize`:@@tooltipPrivateEdition:Permitir que solo el propietario edite el informe`;
   public secondsToRefreshPlaceholder = $localize`:@@secondsToRefresh:Segundos para refrescar`;
   public renameLabel = $localize`:@@renameReportTooltip:Editar nombre`;
   public panelTitlePlaceholder = $localize`:@@panelTitlePlaceholder:Título del panel`;
@@ -340,6 +349,7 @@ export class DashboardMenuSdaComponent implements OnInit, OnDestroy, DoCheck {
     this.refreshTime = value;
     this.dashboard.dashboard.config.refreshTime = value;
     this.dashboardService.setNotSaved(true);
+    this.alertService.addSuccess(value ? `Refresco automático: ${value}s` : 'Refresco automático desactivado');
     // The page owns the countdown; triggerTimer() restarts it from the config.
     this.dashboard?.triggerTimer?.();
     this.liveDashboardOpen = false;
@@ -636,7 +646,8 @@ export class DashboardMenuSdaComponent implements OnInit, OnDestroy, DoCheck {
         {
           id: 'dataSourceInfo',
           label: this.dashboard?.dataSource?.name,
-          icon: "pi pi-database",
+          icon: "pi pi-database text-gray-400",
+styleClass: "text-gray-500 italic",
           disabled: true,
           visible: !!this.dashboard?.dataSource?.name
         }
@@ -649,6 +660,7 @@ export class DashboardMenuSdaComponent implements OnInit, OnDestroy, DoCheck {
           id: 'reportFilters',
           label: $localize`:@@dashboardMenuReportFilters:Filtros de informe`,
           icon: "pi pi-filter",
+           tooltip: this.tooltipReportFilters,
           visible: this.hasReportFilters()
         },
         // Temporarily hidden in SinergiaDA until the feature is considered mature.
@@ -693,6 +705,7 @@ export class DashboardMenuSdaComponent implements OnInit, OnDestroy, DoCheck {
           id: 'liveDashboard',
           label: this.liveDashboardLabel,
           icon: "pi pi-desktop",
+          tooltip: this.tooltipLiveDashboard,
           visible: this.can('edit')
         }
       ],
@@ -700,51 +713,68 @@ export class DashboardMenuSdaComponent implements OnInit, OnDestroy, DoCheck {
         {
           label: $localize`:@@dashboardSidebarEditStyles:Editar estilos`,
           icon: "pi pi-palette",
+          tooltip: this.tooltipEditStyles,
           visible: this.can('edit'),
           command: () => { const s = sidebar(); if (s) s.isEditStyleDialogVisible = true; hide(); }
         },
         {
           label: $localize`:@@dashboardSidebarDashboardPrivacity:Privacidad del informe`,
           icon: "pi pi-lock",
+          tooltip: this.tooltipPrivacy,
           visible: this.can('edit'),
           command: () => { const s = sidebar(); if (s) s.isVisibleModalVisible = true; hide(); }
         },
         {
           label: $localize`:@@addTag:Añadir etiqueta`,
           icon: "pi pi-tag",
+          tooltip: this.tooltipTag,
           visible: this.can('edit'),
           command: () => { const s = sidebar(); if (s) s.isTagModalVisible = true; hide(); }
         }
       ],
       [
         {
-          label: sb?.clickFiltersEnabled
-            ? $localize`:@@enableFilters:Click en filtros habilitado`
-            : $localize`:@@disableFilters:Click en filtros deshabilitado`,
-          icon: sb?.clickFiltersEnabled ? "pi pi-bolt" : "pi pi-ban",
-          command: () => { sidebar()?.toggleClickFilters(); this.buildMoreMenu(); }
-        },
-        {
           label: sb?.clickPanelLockButton
             ? $localize`:@@enablePanelLockButton:Bloquear los paneles`
             : $localize`:@@disablePanelLockButton:Desbloquear los paneles`,
-          icon: sb?.clickPanelLockButton ? "pi pi-lock-open" : "pi pi-lock",
+          icon: sb?.clickPanelLockButton ? "pi pi-lock-open text-green-600" : "pi pi-lock text-red-600",
+          tooltip: this.tooltipPanelLock,
           visible: this.can('edit'),
-          command: () => { sidebar()?.panelLockButton(); this.buildMoreMenu(); }
+          command: () => {
+            const s = sidebar();
+            if (s) {
+              // `clickPanelLockButton` is the label/action of the core toggle, not
+              // the state (true means unlocked), so the message comes from the
+              // actual result of the change.
+              const locked = this.togglePanelLock();
+              // MessageService directly (not AlertService) so the message can carry
+              // an `icon`: the toast shows the PrimeIcons lock that matches the state.
+              this.messageService.add({
+                severity: 'success',
+                summary: '',
+                detail: locked ? 'Paneles bloqueados' : 'Paneles desbloqueados',
+                icon: locked ? 'pi-lock' : 'pi-lock-open'
+              });
+            }
+            this.buildMoreMenu();
+            hide();
+          }
         },
         {
           label: sb?.onlyIcanEdit
-            ? $localize`:@@onlyIcanEditTagEnable:Edición privada habilitada`
-            : $localize`:@@onlyIcanEditTagDisable:Edición privada deshabilitada`,
-          icon: sb?.onlyIcanEdit ? "pi pi-check" : "pi pi-ban",
+            ? $localize`:@@disablePrivateEdition:Deshabilitar edición privada`
+            : $localize`:@@enablePrivateEdition:Habilitar edición privada`,
+          icon: sb?.onlyIcanEdit ? "pi pi-check text-green-600" : "pi pi-ban text-gray-400",
+          tooltip: this.tooltipPrivateEdition,
           visible: this.can('edit'),
-          command: () => { sidebar()?.toggleEdit(); this.buildMoreMenu(); }
+          command: () => { const s = sidebar(); if (s) { this.togglePrivateEdition(); this.alertService.addSuccess(s.onlyIcanEdit ? 'Edición privada habilitada' : 'Edición privada deshabilitada'); } this.buildMoreMenu(); hide(); }
         }
       ],
       [
         {
           label: $localize`:@@dashboardSidebarDeleteDashboard:Eliminar informe`,
-          icon: "pi pi-trash",
+          icon: "pi pi-trash text-red-600",
+          styleClass: "text-red-600 font-medium",
           visible: this.can('edit'),
           command: () => sidebar()?.removeDashboard()
         }
@@ -752,6 +782,45 @@ export class DashboardMenuSdaComponent implements OnInit, OnDestroy, DoCheck {
     ];
 
     this.moreMenuItems = this.joinSections(sections);
+  }
+
+  /**
+   * Locks / unlocks the panels, replicating what the classic sidebar does
+   * in its own toggle. The logic lives here on purpose: the classic sidebar's
+   * `panelLockButton()` also updates its menu items, which are only built when
+   * its popover is opened (`initSidebar()`), so calling it from this plugin
+   * fails with "items not initialized" and would force changes in core.
+   */
+  private togglePanelLock(): boolean {
+    const s = this.dashboard?.sidebar;
+    if (!s) return false;
+
+    s.clickPanelLockButton = !s.clickPanelLockButton;
+    const locked = !s.clickPanelLockButton;
+
+    for (const panel of this.dashboard.panels || []) {
+      (panel as any).dragEnabled = !locked;
+      (panel as any).resizeEnabled = !locked;
+    }
+
+    this.dashboard.gridsterOptions?.api?.optionsChanged();
+    this.dashboard.dashboard.config.panelLockEnabled = s.clickPanelLockButton;
+    this.dashboardService.setNotSaved(true);
+
+    return locked;
+  }
+
+  /**
+   * Toggles the private edition, replicating the classic sidebar's toggle for
+   * the same reason as `togglePanelLock()`: it updates menu items that this
+   * plugin never initializes.
+   */
+  private togglePrivateEdition(): void {
+    const s = this.dashboard?.sidebar;
+    if (!s) return;
+
+    s.onlyIcanEdit = !s.onlyIcanEdit;
+    this.dashboard.dashboard.config.onlyIcanEdit = s.onlyIcanEdit;
   }
 
   /**

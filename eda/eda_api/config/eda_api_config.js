@@ -23,6 +23,8 @@ module.exports = applyConfigOverwrite('eda_api_config', {
       ALLOW_NON_ADMIN_MANAGE_PUBLIC_REPORTS: false, // true -> Non-admin users can manage "open" dashboards.
       USE_VALUE_LIST_CODE_FOR_FILTERS: false, // true -> For using the filters with code values.
       USE_RECURSIVE_PERMISSIONS: false, // true -> QueryBuilderService.builder() getRecursivePermissions (EDA). false -> with getFlatPermissions (SDA).
-      RESTRICT_TABLE_TO_GRANTED_COLUMN: false // true -> closed model: granting permission on one column hides the rest of the table's columns (EDA). false -> row-level permissions never hide sibling columns (SDA).
+      RESTRICT_TABLE_TO_GRANTED_COLUMN: false, // true -> closed model: granting permission on one column hides the rest of the table's columns (EDA). false -> row-level permissions never hide sibling columns (SDA).
+      SHOW_EMPTY_VALUE_IN_FILTERS: true // true -> selector queries for global filters always include an empty/null row (UNION SELECT '').
+      
     }
   });

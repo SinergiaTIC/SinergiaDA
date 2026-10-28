@@ -1139,6 +1139,38 @@
     <source>Las contraseñas no coinciden</source>
     <target>The passwords do not match</target>
   </trans-unit>
+    <trans-unit id="dashboardSidebarLiveDashboard" datatype="html">
+      <source>Live Dashboard</source>
+      <target>Automatic refresh</target>
+    </trans-unit>
+    <trans-unit id="tooltipReportFilters" datatype="html">
+      <source>Abrir la lista de filtros del informe</source>
+      <target>Open the report filters list</target>
+    </trans-unit>
+    <trans-unit id="tooltipLiveDashboard" datatype="html">
+      <source>Configurar el refresco automático del informe</source>
+      <target>Configure the report auto-refresh</target>
+    </trans-unit>
+    <trans-unit id="tooltipEditStyles" datatype="html">
+      <source>Cambiar los estilos visuales del informe</source>
+      <target>Change the report visual styles</target>
+    </trans-unit>
+    <trans-unit id="tooltipPrivacy" datatype="html">
+      <source>Configurar quién puede ver el informe</source>
+      <target>Configure who can view the report</target>
+    </trans-unit>
+    <trans-unit id="tooltipTag" datatype="html">
+      <source>Añadir o editar etiquetas del informe</source>
+      <target>Add or edit report tags</target>
+    </trans-unit>
+    <trans-unit id="tooltipPanelLock" datatype="html">
+      <source>Bloquear o desbloquear el movimiento y redimensionado de los paneles</source>
+      <target>Lock or unlock panel moving and resizing</target>
+    </trans-unit>
+    <trans-unit id="tooltipPrivateEdition" datatype="html">
+      <source>Permitir que solo el propietario edite el informe</source>
+      <target>Allow only the owner to edit the report</target>
+    </trans-unit>
 </body>
   </file>
 </xliff>

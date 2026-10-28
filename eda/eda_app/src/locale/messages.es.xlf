@@ -699,6 +699,10 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
         <source>Este panel no está disponible por falta de permisos en un filtro</source>
         <target>Este panel no está disponible por falta de permisos en un filtro, el informe se abre en modo de solo lectura.</target>
       </trans-unit>
+      <trans-unit id="mandatoryFilterMissing">
+        <source>Este panel no está disponible: falta asignar un valor a un filtro obligatorio</source>
+        <target>Este panel no está disponible: falta asignar un valor a un filtro obligatorio</target>
+      </trans-unit>
       <trans-unit id="seeRepetitions">
         <source> ver/ocultar valores repetidos</source>
         <target> ver/ocultar valores repetidos</target>
@@ -2863,8 +2867,16 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
         <target>Importar</target>
       </trans-unit>
       <trans-unit id="NotSavedWarning">
-        <source>Hay cambios sin guardar. ¿Seguro que quieres salir?</source>
-        <target>Hay cambios sin guardar. ¿Seguro que deseas continuar de todos modos?</target>
+        <source>Hay cambios sin guardar. ¿Qué deseas hacer?</source>
+        <target>Hay cambios sin guardar. ¿Qué deseas hacer?</target>
+      </trans-unit>
+      <trans-unit id="SaveAndExitButton">
+        <source>Guardar y salir</source>
+        <target>Guardar y salir</target>
+      </trans-unit>
+      <trans-unit id="ExitWithoutSavingButton">
+        <source>Salir sin guardar</source>
+        <target>Salir sin guardar</target>
       </trans-unit>
       <trans-unit id="csvSep">
         <source>Separador Decimal</source>

@@ -13,9 +13,11 @@ export const SHOW_ZOOM_IN_SIDEBAR: boolean = false;
 export const USE_EDA_KPI_SIZE_LOGIC: boolean = false;
 export const PRIVATE_EDITION_ACTIVATED: boolean =  false;
 export const ENABLED_LANGUAGES: string[] = ['es', 'ca', 'en'];
-export const MAP_BASEMAP_PROVIDER: 'esri' | 'osm' = 'osm'; // Basemap used by the map charts (MapUtilsService.getBaseLayer) | 'esri' → Esri World_Light_Gray_Base | 'osm' → OpenStreetMap standard tiles 
+export const MAP_BASEMAP_PROVIDER: 'esri' | 'osm' = 'osm'; // Basemap used by the map charts (MapUtilsService.getBaseLayer) | 'esri' → Esri World_Light_Gray_Base | 'osm' → OpenStreetMap standard tiles
+export const DEFAULT_TABLE_HEADER_COLOR: string = '#d2d7df'; // Default header background of table charts: chosen so that, applied with 0.4 opacity, it matches the "no colours" look (rgba(219,223,228,0.5) over the panel background)
+export const DEFAULT_TABLE_BANDING_COLOR: string = '#cbd5e1'; // Default colour of the even (banded) rows: slate-300, so rows stay distinguishable when the colour option is on (applied with 0.15 opacity, totals with 0.3)
 export const CUSTOMIZE_SIDE_MENU_ICONS: any = { // Icon name (IconService registry) per side-menu entry | 'none' or '' → entry hidden
-    create: 'plus',
+    create: '',
     management: 'settings',
     settings: 'language', // the entry opens the profile + languages submenu
     information: 'information-circle',
@@ -40,6 +42,7 @@ export const PROTECTED_MODEL_ADD_PERMISSION_BUTTON_ENABLED: boolean = false; // 
 /** Data model - Protected data sources*/
 export const PROTECTED_MODEL_DATA_SOURCES_ARRAY: string[] = ['111111111111111111111111']; // Array of all the protected data sources
 export const AI_ASSISTANT_MANAGEMENT_AVAILABLE: boolean = false;// true → AI assistant available | false → AI assistant disabled
+export const SHOW_EMPTY_VALUE_IN_FILTERS: boolean = true; // true → "Vacío" option shown in global filter dropdown/dialog for null-or-empty values | false → hidden
 export const HOME_SCREEN_PARTICLE_COLOR: string = '#97B73E'; // any CSS color (e.g. '#00BFB3') for the particles and the lines between them | '' → default blue
 export const HOME_SCREEN_BACKGROUND_COLOR: string = '#353535'; // any CSS color/background (e.g. '#F5F5F5') for the login background | '' → default light gradient
 /** SinergiaDA logos (new assets, originals untouched) */
