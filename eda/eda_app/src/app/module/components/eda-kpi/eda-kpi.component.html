@@ -21,10 +21,12 @@
       @if (shouldShowControls()) {
         <div class="absolute top-1 right-1 flex items-center gap-1.5 z-10">
           <button type="button" i18n-title="@@kpiDecreaseFontSize" title="Reducir tamaño" (click)="decreaseFont()"
-                  class="w-6 h-6 flex items-center justify-center rounded border border-gray-300 bg-white hover:bg-gray-100 text-gray-700 text-sm leading-none">-</button>
+                  [disabled]="!canDecreaseFont()"
+                  class="w-6 h-6 flex items-center justify-center rounded border border-gray-300 bg-white hover:bg-gray-100 text-gray-700 text-sm leading-none disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-white">-</button>
           <button type="button" i18n-title="@@kpiIncreaseFontSize" title="Aumentar tamaño" (click)="increaseFont()"
-                  class="w-6 h-6 flex items-center justify-center rounded border border-gray-300 bg-white hover:bg-gray-100 text-gray-700 text-sm leading-none">+</button>
-          <span class="text-xs text-gray-500" style="min-width: 2.75rem; text-align: right;">{{getFontSize()}}</span>
+                  [disabled]="!canIncreaseFont()"
+                  class="w-6 h-6 flex items-center justify-center rounded border border-gray-300 bg-white hover:bg-gray-100 text-gray-700 text-sm leading-none disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-white">+</button>
+          <span class="text-xs text-gray-500" style="min-width: 2.75rem; text-align: right;">{{getScalePercent()}}%</span>
         </div>
       }
       <ng-container *ngTemplateOutlet="kpiValueContent;"></ng-container>
@@ -38,10 +40,10 @@
     <div #sufixContainer class="pointer" title="Añadir unidades"
          style="max-width: 100%; overflow: hidden;">
         <span [ngStyle]="getStyle()" (click)="setSufix()"
-              style="display: block; text-align: center; overflow-wrap: break-word; word-break: break-word;">
+              style="display: block; max-width: 100%; text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
             @if (inject.prefixImage) {
               <img [src]="inject.prefixImage" alt=""
-                   style="height: 1em; width: auto; vertical-align: middle; object-fit: contain; display: inline;" />
+                   style="height: 1em; width: auto; max-width: 1.5em; vertical-align: middle; object-fit: contain; display: inline;" />
             }
             {{inject.value | number:'1.0-10':'es' }} {{inject.sufix}}
         </span>
