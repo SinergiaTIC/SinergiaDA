@@ -1057,15 +1057,15 @@
   </trans-unit>
   <trans-unit id="profileSubtitle" datatype="html">
     <source>Administra tu información personal y preferencias de cuenta</source>
-    <target>Administra la teva informació personal i preferències del compte</target>
+    <target>Administreu la informació personal i les preferències del compte</target>
   </trans-unit>
   <trans-unit id="saveChanges" datatype="html">
     <source>Guardar cambios</source>
-    <target>Desar canvis</target>
+    <target>Desa els canvis</target>
   </trans-unit>
   <trans-unit id="profileScrmLocked" datatype="html">
     <source>Tu usuario está gestionado por SinergiaCRM y no se puede modificar desde SinergiaDA. Para cambiar tus datos, contacta con tu administrador.</source>
-    <target>El teu usuari està gestionat per SinergiaCRM i no es pot modificar des de SinergiaDA. Per canviar les teves dades, contacta amb l'administrador.</target>
+    <target>L'usuari està gestionat per SinergiaCRM i no es pot modificar a SinergiaDA. Per canviar-ne les dades, contacteu amb un administrador.</target>
   </trans-unit>
   <trans-unit id="profileInfoTitle" datatype="html">
     <source>Información Personal</source>
@@ -1093,19 +1093,19 @@
   </trans-unit>
   <trans-unit id="profileGroupsReadOnlySubtitle" datatype="html">
     <source>Grupos a los que pertenece tu usuario</source>
-    <target>Grups als quals pertany el teu usuari</target>
+    <target>Grups als quals pertany l'usuari</target>
   </trans-unit>
   <trans-unit id="profileGroupsEmpty" datatype="html">
     <source>No perteneces a ningún grupo.</source>
-    <target>No pertanys a cap grup.</target>
+    <target>No pertanyeu a cap grup.</target>
   </trans-unit>
   <trans-unit id="profileInfoSubtitle" datatype="html">
     <source>Actualiza tu información básica de perfil</source>
-    <target>Actualitza la teva informació bàsica de perfil</target>
+    <target>Actualitzeu la informació bàsica del perfil</target>
   </trans-unit>
   <trans-unit id="usernamePlaceholder" datatype="html">
     <source>Tu nombre</source>
-    <target>El teu nom</target>
+    <target>El vostre nom</target>
   </trans-unit>
   <trans-unit id="usernameLengthValidation" datatype="html">
     <source>El nombre de usuario debe tener al menos 2 caracteres.</source>
@@ -1117,15 +1117,15 @@
   </trans-unit>
   <trans-unit id="emailValidation" datatype="html">
     <source>Por favor ingresa un email válido.</source>
-    <target>Si us plau, introdueix un correu electrònic vàlid.</target>
+    <target>Introduïu un correu electrònic vàlid.</target>
   </trans-unit>
   <trans-unit id="changePassword" datatype="html">
     <source>Cambiar contraseña</source>
-    <target>Canviar contrasenya</target>
+    <target>Canvia la contrasenya</target>
   </trans-unit>
   <trans-unit id="changePasswordSubtitle" datatype="html">
     <source>Deja los campos vacíos si no quieres cambiarla</source>
-    <target>Deixa els camps buits si no vols canviar-la</target>
+    <target>Deixeu els camps buits si no voleu canviar-la</target>
   </trans-unit>
   <trans-unit id="newPassword" datatype="html">
     <source>Nueva contraseña</source>
@@ -1133,7 +1133,7 @@
   </trans-unit>
   <trans-unit id="confirmNewPassword" datatype="html">
     <source>Confirmar nueva contraseña</source>
-    <target>Confirmar nova contrasenya</target>
+    <target>Confirmeu la nova contrasenya</target>
   </trans-unit>
   <trans-unit id="passwordValidation" datatype="html">
     <source>Las contraseñas no coinciden</source>
@@ -1145,31 +1145,31 @@
     </trans-unit>
     <trans-unit id="tooltipReportFilters" datatype="html">
       <source>Abrir la lista de filtros del informe</source>
-      <target>Obrir la llista de filtres de l'informe</target>
+      <target>Obre la llista de filtres de l'informe</target>
     </trans-unit>
     <trans-unit id="tooltipLiveDashboard" datatype="html">
       <source>Configurar el refresco automático del informe</source>
-      <target>Configurar el refresc automàtic de l'informe</target>
+      <target>Configura el refresc automàtic de l'informe</target>
     </trans-unit>
     <trans-unit id="tooltipEditStyles" datatype="html">
       <source>Cambiar los estilos visuales del informe</source>
-      <target>Canviar els estils visuals de l'informe</target>
+      <target>Canvia els estils visuals de l'informe</target>
     </trans-unit>
     <trans-unit id="tooltipPrivacy" datatype="html">
       <source>Configurar quién puede ver el informe</source>
-      <target>Configurar qui pot veure l'informe</target>
+      <target>Configura qui pot veure l'informe</target>
     </trans-unit>
     <trans-unit id="tooltipTag" datatype="html">
       <source>Añadir o editar etiquetas del informe</source>
-      <target>Afegir o editar etiquetes de l'informe</target>
+      <target>Afegeix o edita les etiquetes de l'informe</target>
     </trans-unit>
     <trans-unit id="tooltipPanelLock" datatype="html">
       <source>Bloquear o desbloquear el movimiento y redimensionado de los paneles</source>
-      <target>Bloquejar o desbloquejar el moviment i redimensionat dels panells</target>
+      <target>Permet moure els panells o canviar-ne les mides</target>
     </trans-unit>
     <trans-unit id="tooltipPrivateEdition" datatype="html">
       <source>Permitir que solo el propietario edite el informe</source>
-      <target>Permetre que només el propietari editi l'informe</target>
+      <target>Permet que només el propietari editi l'informe</target>
     </trans-unit>
 </body>
   </file>
