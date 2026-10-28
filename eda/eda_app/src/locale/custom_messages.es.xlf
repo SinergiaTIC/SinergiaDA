@@ -1045,7 +1045,7 @@
   </trans-unit>
   <trans-unit id="emailAlreadyExistsTitle" datatype="html">
     <source>Email en uso</source>
-    <target>Email en uso</target>
+    <target>Correo en uso</target>
   </trans-unit>
   <trans-unit id="emailAlreadyExistsMsg" datatype="html">
     <source>Ya existe un usuario con este correo electrónico.</source>
@@ -1057,7 +1057,7 @@
   </trans-unit>
   <trans-unit id="profileSubtitle" datatype="html">
     <source>Administra tu información personal y preferencias de cuenta</source>
-    <target>Administra tu información personal y preferencias de cuenta</target>
+    <target>Administración de la información personal y de las preferencias de la cuenta</target>
   </trans-unit>
   <trans-unit id="saveChanges" datatype="html">
     <source>Guardar cambios</source>
@@ -1065,15 +1065,15 @@
   </trans-unit>
   <trans-unit id="profileScrmLocked" datatype="html">
     <source>Tu usuario está gestionado por SinergiaCRM y no se puede modificar desde SinergiaDA. Para cambiar tus datos, contacta con tu administrador.</source>
-    <target>Tu usuario está gestionado por SinergiaCRM y no se puede modificar desde SinergiaDA. Para cambiar tus datos, contacta con tu administrador.</target>
+    <target>El usuario está gestionado por SinergiaCRM y no se puede modificar en SinergiaDA. Para cambiar sus datos, contacte con un administrador.</target>
   </trans-unit>
   <trans-unit id="profileInfoTitle" datatype="html">
     <source>Información Personal</source>
-    <target>Información Personal</target>
+    <target>Información personal</target>
   </trans-unit>
   <trans-unit id="profileReadOnlySubtitle" datatype="html">
     <source>Datos de solo lectura sincronizados desde SinergiaCRM</source>
-    <target>Datos de solo lectura sincronizados desde SinergiaCRM</target>
+    <target>Los datos se reciben de SinergiaCRM y no es posible editarlos</target>
   </trans-unit>
   <trans-unit id="labelUsuarioLogin" datatype="html">
     <source>Usuario de acceso</source>
@@ -1081,7 +1081,7 @@
   </trans-unit>
   <trans-unit id="profileAccountTitle" datatype="html">
     <source>Mi cuenta</source>
-    <target>Mi cuenta</target>
+    <target>Datos de la cuenta</target>
   </trans-unit>
   <trans-unit id="profileAccountType" datatype="html">
     <source>Tipo de usuario</source>
@@ -1093,7 +1093,7 @@
   </trans-unit>
   <trans-unit id="profileGroupsReadOnlySubtitle" datatype="html">
     <source>Grupos a los que pertenece tu usuario</source>
-    <target>Grupos a los que pertenece tu usuario</target>
+    <target>Grupos a los que pertenece el usuario</target>
   </trans-unit>
   <trans-unit id="profileGroupsEmpty" datatype="html">
     <source>No perteneces a ningún grupo.</source>
@@ -1101,11 +1101,11 @@
   </trans-unit>
   <trans-unit id="profileInfoSubtitle" datatype="html">
     <source>Actualiza tu información básica de perfil</source>
-    <target>Actualiza tu información básica de perfil</target>
+    <target>Actualiza la información básica del perfil</target>
   </trans-unit>
   <trans-unit id="usernamePlaceholder" datatype="html">
     <source>Tu nombre</source>
-    <target>Tu nombre</target>
+    <target>Su nombre</target>
   </trans-unit>
   <trans-unit id="usernameLengthValidation" datatype="html">
     <source>El nombre de usuario debe tener al menos 2 caracteres.</source>
@@ -1117,7 +1117,7 @@
   </trans-unit>
   <trans-unit id="emailValidation" datatype="html">
     <source>Por favor ingresa un email válido.</source>
-    <target>Por favor ingresa un email válido.</target>
+    <target>Introduzca un correo electrónico válido.</target>
   </trans-unit>
   <trans-unit id="changePassword" datatype="html">
     <source>Cambiar contraseña</source>
@@ -1125,7 +1125,7 @@
   </trans-unit>
   <trans-unit id="changePasswordSubtitle" datatype="html">
     <source>Deja los campos vacíos si no quieres cambiarla</source>
-    <target>Deja los campos vacíos si no quieres cambiarla</target>
+    <target>Deje los campos vacíos si no desea cambiarla</target>
   </trans-unit>
   <trans-unit id="newPassword" datatype="html">
     <source>Nueva contraseña</source>
@@ -1161,11 +1161,11 @@
     </trans-unit>
     <trans-unit id="tooltipTag" datatype="html">
       <source>Añadir o editar etiquetas del informe</source>
-      <target>Añadir o editar etiquetas del informe</target>
+      <target>Añadir o editar las etiquetas del informe</target>
     </trans-unit>
     <trans-unit id="tooltipPanelLock" datatype="html">
       <source>Bloquear o desbloquear el movimiento y redimensionado de los paneles</source>
-      <target>Bloquear o desbloquear el movimiento y redimensionado de los paneles</target>
+      <target>Permitir mover o redimensionar los paneles</target>
     </trans-unit>
     <trans-unit id="tooltipPrivateEdition" datatype="html">
       <source>Permitir que solo el propietario edite el informe</source>
