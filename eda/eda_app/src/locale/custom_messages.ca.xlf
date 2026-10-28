@@ -1057,7 +1057,7 @@
   </trans-unit>
   <trans-unit id="profileSubtitle" datatype="html">
     <source>Administra tu información personal y preferencias de cuenta</source>
-    <target>Administreu la informació personal i les preferències del compte</target>
+    <target>Administració de la informació personal i de les preferències del compte</target>
   </trans-unit>
   <trans-unit id="saveChanges" datatype="html">
     <source>Guardar cambios</source>
@@ -1073,7 +1073,7 @@
   </trans-unit>
   <trans-unit id="profileReadOnlySubtitle" datatype="html">
     <source>Datos de solo lectura sincronizados desde SinergiaCRM</source>
-    <target>Dades de només lectura sincronitzades des de SinergiaCRM</target>
+    <target>Les dades es reben de SinergiaCRM i no es poden editar</target>
   </trans-unit>
   <trans-unit id="labelUsuarioLogin" datatype="html">
     <source>Usuario de acceso</source>
@@ -1081,7 +1081,7 @@
   </trans-unit>
   <trans-unit id="profileAccountTitle" datatype="html">
     <source>Mi cuenta</source>
-    <target>El meu compte</target>
+    <target>Dades del compte</target>
   </trans-unit>
   <trans-unit id="profileAccountType" datatype="html">
     <source>Tipo de usuario</source>
