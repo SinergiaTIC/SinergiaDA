@@ -1065,11 +1065,11 @@
   </trans-unit>
   <trans-unit id="profileScrmLocked" datatype="html">
     <source>Tu usuario está gestionado por SinergiaCRM y no se puede modificar desde SinergiaDA. Para cambiar tus datos, contacta con tu administrador.</source>
-    <target>Your user is managed by SinergiaCRM and cannot be modified from SinergiaDA. To change your data, contact your administrator.</target>
+    <target>The user is managed by SinergiaCRM and cannot be modified from SinergiaDA. To change the settings, contact an administrator.</target>
   </trans-unit>
   <trans-unit id="profileInfoTitle" datatype="html">
     <source>Información Personal</source>
-    <target>Personal Information</target>
+    <target>Personal information</target>
   </trans-unit>
   <trans-unit id="profileReadOnlySubtitle" datatype="html">
     <source>Datos de solo lectura sincronizados desde SinergiaCRM</source>
@@ -1093,7 +1093,7 @@
   </trans-unit>
   <trans-unit id="profileGroupsReadOnlySubtitle" datatype="html">
     <source>Grupos a los que pertenece tu usuario</source>
-    <target>Groups your user belongs to</target>
+    <target>Groups the user belongs to</target>
   </trans-unit>
   <trans-unit id="profileGroupsEmpty" datatype="html">
     <source>No perteneces a ningún grupo.</source>
@@ -1109,7 +1109,7 @@
   </trans-unit>
   <trans-unit id="usernameLengthValidation" datatype="html">
     <source>El nombre de usuario debe tener al menos 2 caracteres.</source>
-    <target>The username must be at least 2 characters.</target>
+    <target>The username must be at least 2 characters long.</target>
   </trans-unit>
   <trans-unit id="emailPlaceholder" datatype="html">
     <source>tu@ejemplo.com</source>
@@ -1149,7 +1149,7 @@
     </trans-unit>
     <trans-unit id="tooltipLiveDashboard" datatype="html">
       <source>Configurar el refresco automático del informe</source>
-      <target>Configure the report auto-refresh</target>
+      <target>Configure the report automatic refresh</target>
     </trans-unit>
     <trans-unit id="tooltipEditStyles" datatype="html">
       <source>Cambiar los estilos visuales del informe</source>
@@ -1165,7 +1165,7 @@
     </trans-unit>
     <trans-unit id="tooltipPanelLock" datatype="html">
       <source>Bloquear o desbloquear el movimiento y redimensionado de los paneles</source>
-      <target>Lock or unlock panel moving and resizing</target>
+      <target>Allow panel moving and resizing</target>
     </trans-unit>
     <trans-unit id="tooltipPrivateEdition" datatype="html">
       <source>Permitir que solo el propietario edite el informe</source>
