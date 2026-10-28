@@ -4,6 +4,7 @@
 // `npm start` / `npm run build:prod`.
 import { IComponentPlugin } from './component-plugin.interface';
 import { DashboardMenuSdaComponent } from './dashboard-menu-sda/dashboard-menu.component';
+import { SidebarUserSdaComponent } from './sidebar-user-sda/sidebar-user.component';
 
 export const COMPONENT_PLUGINS: IComponentPlugin[] = [
     {
@@ -13,5 +14,13 @@ export const COMPONENT_PLUGINS: IComponentPlugin[] = [
         menuIcon: 'pi-bars',
         permissions: ['edit'],
         component: DashboardMenuSdaComponent,
+    },
+    {
+        type: 'sidebar-user',
+        label: 'Usuario en el menú lateral',
+        i18n: '',
+        menuIcon: '',
+        permissions: [],
+        component: SidebarUserSdaComponent,
     },
 ];

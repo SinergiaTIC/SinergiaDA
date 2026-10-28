@@ -1,6 +1,6 @@
 import { Component, inject, LOCALE_ID, ViewEncapsulation } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { NgClass } from '@angular/common';
+import { NgClass, NgComponentOutlet } from '@angular/common';
 import Swal from 'sweetalert2';
 import { IconComponent } from '@eda/shared/components/icon/icon.component';
 import { UserService } from '@eda/services/service.index';
@@ -10,6 +10,7 @@ import { GroupService } from '@eda/services/api/group.service';
 import { DashboardService } from '@eda/services/api/dashboard.service';
 import { IconService } from '@eda/services/utils/icons.service';
 import { CUSTOMIZE_SIDE_MENU_ICONS, ENABLED_LANGUAGES } from '@eda/configs/customizable/customizable_merged';
+import { COMPONENT_PLUGINS } from '../../../plugins/component-plugins/component-plugin-registry';
 
 interface NavItem {
   path?: string;
@@ -24,7 +25,7 @@ interface NavItem {
 @Component({
   selector: 'app-main-left-sidebar',
   standalone: true,
-  imports: [RouterLink, NgClass, IconComponent],
+  imports: [RouterLink, NgClass, IconComponent, NgComponentOutlet],
   templateUrl: './main-left-sidebar.html',
   styleUrls: ['./main-left-sidebar.component.css'],
   encapsulation: ViewEncapsulation.None
@@ -43,6 +44,13 @@ export class MainLeftSidebarComponent {
   public panelMode: boolean = false;
   private route = inject(ActivatedRoute);
   navItems: NavItem[] = [];
+
+  /**
+   * Optional component plugin pinned to the bottom of the side menu (the user
+   * badge). A fork only has to register a plugin of type 'sidebar-user' in
+   * plugins/component-plugins; without one nothing is rendered here.
+   */
+  public userPlugin = COMPONENT_PLUGINS.find(p => p.type === 'sidebar-user');
 
   // Anonymous and eda_RO control
   public isAnonim: boolean;

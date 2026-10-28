@@ -4,7 +4,7 @@ import { FormsModule } from "@angular/forms";
 import { FocusOnShowDirective } from "@eda/shared/directives/autofocus.directive";
 import { Subscription } from "rxjs";
 import { Menu, MenuModule } from "primeng/menu";
-import { MenuItem } from "primeng/api";
+import { MenuItem, MessageService } from "primeng/api";
 import { TooltipModule } from "primeng/tooltip";
 import { EdaPanel, EdaPanelType, EdaTitlePanel, EdaTabsPanel } from "@eda/models/model.index";
 import { FileUtiles, StyleProviderService, DashboardService, AlertService } from "@eda/services/service.index";
@@ -45,6 +45,7 @@ export class DashboardMenuSdaComponent implements OnInit, OnDestroy, DoCheck {
   private alertService = inject(AlertService);
   private sidebarService = inject(DashboardSidebarService);
   private iconService = inject(IconService);
+  private messageService = inject(MessageService);
   private host = inject(ElementRef);
   private notSavedSub?: Subscription;
 
@@ -739,7 +740,25 @@ styleClass: "text-gray-500 italic",
           icon: sb?.clickPanelLockButton ? "pi pi-lock-open text-green-600" : "pi pi-lock text-red-600",
           tooltip: this.tooltipPanelLock,
           visible: this.can('edit'),
-          command: () => { const s = sidebar(); if (s) { this.togglePanelLock(); this.alertService.addSuccess(s.clickPanelLockButton ? 'Paneles bloqueados' : 'Paneles desbloqueados'); } this.buildMoreMenu(); hide(); }
+          command: () => {
+            const s = sidebar();
+            if (s) {
+              // `clickPanelLockButton` is the label/action of the core toggle, not
+              // the state (true means unlocked), so the message comes from the
+              // actual result of the change.
+              const locked = this.togglePanelLock();
+              // MessageService directly (not AlertService) so the message can carry
+              // an `icon`: the toast shows the PrimeIcons lock that matches the state.
+              this.messageService.add({
+                severity: 'success',
+                summary: '',
+                detail: locked ? 'Paneles bloqueados' : 'Paneles desbloqueados',
+                icon: locked ? 'pi-lock' : 'pi-lock-open'
+              });
+            }
+            this.buildMoreMenu();
+            hide();
+          }
         },
         {
           label: sb?.onlyIcanEdit
@@ -772,9 +791,9 @@ styleClass: "text-gray-500 italic",
    * its popover is opened (`initSidebar()`), so calling it from this plugin
    * fails with "items not initialized" and would force changes in core.
    */
-  private togglePanelLock(): void {
+  private togglePanelLock(): boolean {
     const s = this.dashboard?.sidebar;
-    if (!s) return;
+    if (!s) return false;
 
     s.clickPanelLockButton = !s.clickPanelLockButton;
     const locked = !s.clickPanelLockButton;
@@ -787,6 +806,8 @@ styleClass: "text-gray-500 italic",
     this.dashboard.gridsterOptions?.api?.optionsChanged();
     this.dashboard.dashboard.config.panelLockEnabled = s.clickPanelLockButton;
     this.dashboardService.setNotSaved(true);
+
+    return locked;
   }
 
   /**
