@@ -17,7 +17,7 @@
 
 <ng-template #kpiValueContainer>
   @if (useHoverResize) {
-    <div class="relative w-full h-full" (mouseenter)="onMouseEnter()" (mouseleave)="onMouseLeave()">
+    <div class="relative w-full h-full flex items-center justify-center" (mouseenter)="onMouseEnter()" (mouseleave)="onMouseLeave()">
       @if (shouldShowControls()) {
         <div class="absolute top-1 right-1 flex items-center gap-1.5 z-10">
           <button type="button" i18n-title="@@kpiDecreaseFontSize" title="Reducir tamaño" (click)="decreaseFont()"

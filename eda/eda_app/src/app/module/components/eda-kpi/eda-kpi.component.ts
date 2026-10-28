@@ -50,8 +50,12 @@ export class EdaKpiComponent implements OnInit, AfterViewInit, OnDestroy {
 
     /** Reusable canvas context used to measure the rendered text (no layout thrashing). */
     private measureCanvas?: HTMLCanvasElement;
-    /** Cache of the last fit calculation: getFontSize() runs several times per change detection. */
-    private fitCache = { key: '', size: 0 };
+    /** Formatted value + suffix: formatNumber (Intl) is expensive and this runs on every CD. */
+    private textCache = { value: undefined as any, sufix: '', text: '' };
+    /** Fit for the current box size and text: getFontSize() is evaluated several times per CD. */
+    private fitCache = { width: -1, height: -1, text: '', prefixImage: false, size: 0 };
+    /** Percentage and +/- availability, cached per (fit, scale). */
+    private controlsCache = { fit: -1, scale: -1, percent: 100, canUp: false, canDown: false };
     private resizeObserver?: ResizeObserver;
 
     constructor(private styleProviderService : StyleProviderService, private cdr: ChangeDetectorRef) { }
@@ -216,20 +220,24 @@ export class EdaKpiComponent implements OnInit, AfterViewInit, OnDestroy {
         return Math.max(this.minFontSize, Math.round(this.getFitSize() * clamped));
     }
 
-    /** Text exactly as the template renders it (number pipe + suffix). */
+    /** Text exactly as the template renders it (number pipe + suffix), cached per value. */
     private getDisplayText(): string {
         const raw: any = this.inject?.value;
         const sufix = (this.inject?.sufix ?? '').toString().trim();
-        if (raw === null || raw === undefined || raw === '') return sufix;
+        if (this.textCache.value === raw && this.textCache.sufix === sufix) return this.textCache.text;
 
-        const numeric = Array.isArray(raw) ? Number(raw[0]) : Number(raw);
-        let text: string;
-        try {
-            text = Number.isFinite(numeric) ? formatNumber(numeric, 'es', '1.0-10') : String(raw);
-        } catch {
-            text = String(raw);
+        let text = '';
+        if (raw !== null && raw !== undefined && raw !== '') {
+            const numeric = Array.isArray(raw) ? Number(raw[0]) : Number(raw);
+            try {
+                text = Number.isFinite(numeric) ? formatNumber(numeric, 'es', '1.0-10') : String(raw);
+            } catch {
+                text = String(raw);
+            }
         }
-        return sufix ? `${text} ${sufix}` : text;
+        const result = text && sufix ? `${text} ${sufix}` : (text || sufix);
+        this.textCache = { value: raw, sufix, text: result };
+        return result;
     }
 
     /** Width in px of the text at the given font size (canvas metrics, no layout impact). */
@@ -247,15 +255,11 @@ export class EdaKpiComponent implements OnInit, AfterViewInit, OnDestroy {
      *   sizeByWidth = availableWidth / widthAtReference * reference
      *   sizeByHeight = availableHeight / lineHeight   (line-height is 1 in getStyle())
      */
-    private computeFitSize(): number {
-        const el: HTMLElement | undefined = this.kpiContainer?.nativeElement;
-        const width = el?.clientWidth ?? this.containerWidth;
-        const height = el?.clientHeight ?? this.containerHeight;
-        const text = this.getDisplayText();
+    private computeFitSize(width: number, height: number, text: string, prefixImage: boolean): number {
         if (!text || width <= 0 || height <= 0) return this.minFontSize;
 
         // The optional inline image takes part of the line.
-        const availableWidth = this.inject?.prefixImage ? width * 0.8 : width;
+        const availableWidth = prefixImage ? width * 0.8 : width;
 
         const reference = 100;
         const widthAtReference = this.measureTextWidth(text, reference) || 1;
@@ -265,16 +269,21 @@ export class EdaKpiComponent implements OnInit, AfterViewInit, OnDestroy {
         return Math.max(this.minFontSize, Math.floor(Math.min(sizeByWidth, sizeByHeight) * this.fitSafety));
     }
 
-    /** computeFitSize() with a cache: getFontSize() is evaluated several times per CD cycle. */
+    /** computeFitSize() memoised by box size and text (no formatting in the hot path). */
     private getFitSize(): number {
         const el: HTMLElement | undefined = this.kpiContainer?.nativeElement;
         const width = el?.clientWidth ?? this.containerWidth;
         const height = el?.clientHeight ?? this.containerHeight;
-        const key = `${this.getDisplayText()}|${width}|${height}|${this.inject?.prefixImage ? 1 : 0}|${this.family}`;
-        if (this.fitCache.key !== key) {
-            this.fitCache = { key, size: this.computeFitSize() };
+        const text = this.getDisplayText();
+        const prefixImage = !!this.inject?.prefixImage;
+
+        const cache = this.fitCache;
+        if (cache.width === width && cache.height === height && cache.text === text && cache.prefixImage === prefixImage) {
+            return cache.size;
         }
-        return this.fitCache.size;
+        const size = this.computeFitSize(width, height, text, prefixImage);
+        this.fitCache = { width, height, text, prefixImage, size };
+        return size;
     }
 
     increaseFont(): void {
@@ -294,19 +303,39 @@ export class EdaKpiComponent implements OnInit, AfterViewInit, OnDestroy {
      * not being applied.
      */
     getScalePercent(): number {
-        const fit = this.getFitSize();
-        if (fit <= 0) return 100;
-        return Math.min(100, Math.round((this.getEffectiveSize() / fit) * 100));
+        return this.getControls().percent;
     }
 
     /** False when no bigger size is reachable (already at the fit). */
     canIncreaseFont(): boolean {
-        return this.useHoverResize && this.nextScaleWithSize(1) !== null;
+        return this.getControls().canUp;
     }
 
     /** False when no smaller size is reachable (minimum scale or 10 px floor). */
     canDecreaseFont(): boolean {
-        return this.useHoverResize && this.nextScaleWithSize(-1) !== null;
+        return this.getControls().canDown;
+    }
+
+    /**
+     * Percentage and +/- availability for the current fit and scale. It is computed
+     * once per (fit, scale) because the three template bindings would otherwise
+     * repeat the whole calculation several times per change detection cycle.
+     */
+    private getControls(): { percent: number; canUp: boolean; canDown: boolean } {
+        const fit = this.getFitSize();
+        const scale = this.currentScale();
+        if (this.controlsCache.fit === fit && this.controlsCache.scale === scale) {
+            return this.controlsCache;
+        }
+        const size = this.sizeForScale(scale);
+        this.controlsCache = {
+            fit,
+            scale,
+            percent: fit > 0 ? Math.min(100, Math.round((size / fit) * 100)) : 100,
+            canUp: this.useHoverResize && this.nextScaleWithSize(1) !== null,
+            canDown: this.useHoverResize && this.nextScaleWithSize(-1) !== null,
+        };
+        return this.controlsCache;
     }
 
     /**
