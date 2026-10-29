@@ -90,6 +90,7 @@ export class GlobalFilterComponent implements OnInit {
     // Flag to view last panel
     private lastPanel: any;
     private isDropdownOpen: boolean = false;
+    private acFocusedFilterId: string | null = null;
 
     public autoCompleteValues: string[];
     public filterTimeout: any;
@@ -1144,6 +1145,28 @@ export class GlobalFilterComponent implements OnInit {
 
     public setDropdownOpen(value: boolean): void {
         this.isDropdownOpen = value;
+    }
+
+    public onAutocompleteFocus(filter: any): void {
+        this.acFocusedFilterId = filter.id;
+    }
+
+    public onAutocompleteBlur(): void {
+        this.acFocusedFilterId = null;
+    }
+
+    /** Resting state of an autocomplete filter with values: chips hidden, summary shown */
+    public isAutocompleteCollapsed(filter: any): boolean {
+        return filter.selectedItems?.length > 0 && this.acFocusedFilterId !== filter.id;
+    }
+
+    /** Same rule as the multiselect: up to 3 labels joined, otherwise a count */
+    public getAutocompleteSummary(filter: any): string {
+        const items: any[] = filter.selectedItems ?? [];
+        if (items.length > 3) {
+            return `${items.length} ${this.selectedItemsLabel}`;
+        }
+        return items.map((item: any) => this.getFilterItemLabel(filter, item)).join(', ');
     }
 
     // Method to show the filter tooltip
