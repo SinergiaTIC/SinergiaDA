@@ -3,7 +3,6 @@ import { HttpException } from '../../module/global/model/index';
 import User from '../../module/admin/users/model/user.model';
 import { insertServerLog } from '../../services/server-log/server-log.service';
 import { consumeSsoToken } from './sso-consumed.store';
-import { revokeSsoSessions } from './sso-revocations.store';
 import { syncReadOnly } from './sso-readonly';
 
 const jwt = require('jsonwebtoken');
@@ -127,45 +126,6 @@ export class SsoController {
             insertServerLog(req, 'info', 'newLogin', sessionUser.name?.toString() || payload.sub, 'sso');
 
             return res.status(200).json({ user: sessionUser, token: sessionToken, id: user._id });
-        } catch (error) {
-            next(error);
-        }
-    }
-
-    /**
-     * Invalidates every SinergiaDA session opened for a SinergiaCRM user.
-     */
-    static async logout(req: Request, res: Response, next: NextFunction) {
-        try {
-            if (!SSO_SECRET) {
-                return next(new HttpException(503, 'SinergiaCRM SSO is not configured'));
-            }
-
-            const token = req.body?.token;
-            if (!token || typeof token !== 'string') {
-                return next(new HttpException(400, 'Token required'));
-            }
-
-            let payload: any;
-            try {
-                payload = jwt.verify(token, SSO_SECRET, {
-                    algorithms: ['HS256'],
-                    issuer: SSO_ISSUER,
-                    audience: SSO_AUDIENCE,
-                });
-            } catch (err) {
-                insertServerLog(req, 'error', 'newLogout', '', 'sso-invalid-token');
-                return next(new HttpException(401, 'Invalid SSO token'));
-            }
-
-            if (!payload?.sub) {
-                return next(new HttpException(401, 'Invalid SSO token'));
-            }
-
-            await revokeSsoSessions(String(payload.sub));
-            insertServerLog(req, 'info', 'newLogout', String(payload.sub), 'sso');
-
-            return res.status(200).json({ ok: true });
         } catch (error) {
             next(error);
         }

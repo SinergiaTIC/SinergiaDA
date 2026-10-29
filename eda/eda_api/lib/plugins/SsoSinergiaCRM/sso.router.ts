@@ -47,33 +47,6 @@ router.post('/login', SsoController.login);
 
 /**
  * @openapi
- * /auth/sso/logout:
- *   post:
- *     description: Invalidates every SinergiaDA session issued for the user of a token signed by SinergiaCRM.
- *     parameters:
- *       - name: body
- *         in: body
- *         required: true
- *         schema:
- *           type: object
- *           properties:
- *             token:
- *               type: string
- *               description: Signed token issued by SinergiaCRM
- *     responses:
- *       200:
- *         description: SinergiaDA sessions invalidated.
- *       401:
- *         description: Invalid or expired token.
- *       503:
- *         description: SSO is not configured in this instance.
- *     tags:
- *       - Authentication Routes
- */
-router.post('/logout', SsoController.logout);
-
-/**
- * @openapi
  * /auth/sso/redirect:
  *   get:
  *     description: Redirects the browser to SinergiaCRM so it can start the single sign-on flow for the current session.
