@@ -293,7 +293,8 @@ menuCommand(item: any, event: MouseEvent) {
     }
 
     url.pathname = '/' + segments.join('/') + '/';
-    url.hash = '#/home';
+    // The hash (current route, filters, etc.) is kept as it is, so the user stays on the
+    // same page after switching language.
     window.location.href = url.toString();
   }
   private getUrlParams(): void {
