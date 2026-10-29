@@ -171,7 +171,26 @@ export class EdaKpiComponent implements OnInit, AfterViewInit, OnDestroy {
             'line-height': '1',
             color: this.color,
             'font-family': this.family,
+            ...this.getTextStyle(),
         };
+    }
+
+    /** Text layout: one clipped line up to 100%, automatic wrapping above it. */
+    public getTextStyle(): any {
+        const wrap = this.shouldWrap();
+        return {
+            'white-space': wrap ? 'normal' : 'nowrap',
+            'overflow-wrap': wrap ? 'anywhere' : 'normal',
+            'word-break': wrap ? 'break-word' : 'normal',
+            'text-overflow': wrap ? 'clip' : 'ellipsis',
+            'width': wrap ? '100%' : null,
+        };
+    }
+
+    /** True when the requested size exceeds the single-line fit and the text wraps. */
+    public shouldWrap(): boolean {
+        const fit = this.getFitSize();
+        return fit > 0 && this.getEffectiveSize() > fit + 0.5;
     }
 
     getImageStyle(): any {
@@ -190,8 +209,8 @@ export class EdaKpiComponent implements OnInit, AfterViewInit, OnDestroy {
 
     /**
      * Font size of the KPI value: the largest size at which the rendered text fits the
-     * value box both horizontally and vertically, so it always fills the container and
-     * never overflows nor wraps. The manual scale (hover +/- buttons) can only shrink it.
+     * value box both horizontally and vertically. Up to 100% it stays on one line; above
+     * that it wraps and the panel clips it if there is not enough room.
      * @returns {string} font size in px
      */
     getFontSize(): string {
@@ -206,8 +225,8 @@ export class EdaKpiComponent implements OnInit, AfterViewInit, OnDestroy {
         // EDA mode: default scale + additive offset (from the KPI dialog), never above the configured maximum
         const base = fit * this.defaultFontScale;
         const points = this.inject?.modifiedFontPoints;
-        const size = points ? Math.min(fit * this.maxFontScale, base + points) : base;
-        return Math.max(this.minFontSize, Math.round(size));
+        const target = points ? Math.min(fit * this.maxFontScale, base + points) : base;
+        return Math.max(this.minFontSize, Math.round(target));
     }
 
     /** Current manual scale, normalised to the allowed range (100% = the fit). */
@@ -216,10 +235,11 @@ export class EdaKpiComponent implements OnInit, AfterViewInit, OnDestroy {
         return Math.min(this.maxFontScale, Math.max(this.minFontScale, scale));
     }
 
-    /** Size in px for a given scale, applying the readability floor. */
+    /** Size in px for a given scale, applying the readability floor. Above 100% the text wraps. */
     private sizeForScale(scale: number): number {
+        const fit = this.getFitSize();
         const clamped = Math.min(this.maxFontScale, Math.max(this.minFontScale, scale));
-        return Math.max(this.minFontSize, Math.round(this.getFitSize() * clamped));
+        return Math.max(this.minFontSize, Math.round(fit * clamped));
     }
 
     /** Text exactly as the template renders it (number pipe + suffix), cached per value. */
@@ -354,7 +374,7 @@ export class EdaKpiComponent implements OnInit, AfterViewInit, OnDestroy {
             scale = +(scale + direction * this.fontScaleStep).toFixed(2);
             if (scale > this.maxFontScale + 1e-9 || scale < this.minFontScale - 1e-9) return null;
             scale = Math.min(this.maxFontScale, Math.max(this.minFontScale, scale));
-            const size = Math.max(this.minFontSize, Math.round(fit * scale));
+            const size = this.sizeForScale(scale);
             if (direction > 0 ? size > currentSize : size < currentSize) return scale;
         }
         return null;
