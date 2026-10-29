@@ -8,6 +8,8 @@ interface IBasePlugin {
     routerPath?: string;
     syncService?: { syncAll: () => Promise<void> };
     scheduleExpression?: string;
+    /** Optional check run on every authenticated request; false rejects a session the plugin no longer considers valid */
+    validateSession?: (payload: any) => Promise<boolean> | boolean;
 }
 
 /*************** Interfaces Start ***************/
