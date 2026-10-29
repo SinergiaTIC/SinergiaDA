@@ -1,4 +1,4 @@
-import { Component, inject, LOCALE_ID, ViewEncapsulation } from '@angular/core';
+import { Component, inject, ViewEncapsulation } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { NgClass, NgComponentOutlet } from '@angular/common';
 import Swal from 'sweetalert2';
@@ -38,7 +38,6 @@ export class MainLeftSidebarComponent {
   private groupService = inject(GroupService);
   private dashboardService = inject(DashboardService);
   private iconService = inject(IconService);
-  private currentLocale = inject(LOCALE_ID);
   public queryParams: any = {};
   public hideWheel: boolean = false;
   public panelMode: boolean = false;
@@ -280,13 +279,22 @@ menuCommand(item: any, event: MouseEvent) {
   }
 
   public redirectLocale(lan: string) {
-    let baseUrl = window.location.href.split('#')[0];
+    const url = new URL(window.location.href);
 
-    // Drop the current locale folder (/es/, /ca/...) to get the app root
-    if (baseUrl.endsWith(`/${this.currentLocale}/`)) {
-        baseUrl = baseUrl.slice(0, baseUrl.length - this.currentLocale.length - 1);
+    // Replace the current locale folder (/es/, /ca/...) by the new one. It is detected
+    // from the path (like fixLocaleInUrl does in the chatbot) instead of relying on
+    // LOCALE_ID, which doesn't always match the folder the app is served from.
+    const segments = url.pathname.split('/').filter(Boolean);
+    const localeIndex = segments.findIndex(segment => /^[a-z]{2}(-[a-zA-Z]{2,4})?$/.test(segment));
+    if (localeIndex >= 0) {
+      segments[localeIndex] = lan;
+    } else {
+      segments.push(lan);
     }
-    window.location.href = baseUrl + lan + '/#/home';
+
+    url.pathname = '/' + segments.join('/') + '/';
+    url.hash = '#/home';
+    window.location.href = url.toString();
   }
   private getUrlParams(): void {
         this.route.queryParams.subscribe(params => {
