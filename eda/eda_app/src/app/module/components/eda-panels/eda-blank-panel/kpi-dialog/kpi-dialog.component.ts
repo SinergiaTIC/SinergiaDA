@@ -12,7 +12,7 @@ import { ColorPickerModule } from 'primeng/colorpicker';
 import { DropdownModule } from 'primeng/dropdown';
 import { InputSwitchModule } from 'primeng/inputswitch';
 import { InputTextModule } from 'primeng/inputtext';
-import { USE_EDA_KPI_SIZE_LOGIC } from '@eda/configs/customizable/customizable_merged';
+import { USE_EDA_KPI_SIZE_LOGIC, KPI_DEFAULT_FONT_SCALE } from '@eda/configs/customizable/customizable_merged';
 
 @Component({
     standalone: true,
@@ -279,7 +279,7 @@ export class KpiEditDialogComponent implements OnInit, AfterViewInit, AfterViewC
 
         const kpiInject = this.panelChartComponent?.componentRef?.instance?.inject;
         const savedConfig: any = this.panelChartConfig?.config?.getConfig?.() || {};
-        const fontScale = kpiInject?.fontScale ?? savedConfig.fontScale ?? 1;
+        const fontScale = kpiInject?.fontScale ?? savedConfig.fontScale ?? KPI_DEFAULT_FONT_SCALE;
 
         this.onClose(EdaDialogCloseEvent.UPDATE, {
             alerts: this.alerts,

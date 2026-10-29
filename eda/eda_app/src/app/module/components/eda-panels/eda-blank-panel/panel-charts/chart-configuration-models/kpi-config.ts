@@ -1,4 +1,5 @@
 import { ChartJsConfig } from "./chart-js-config";
+import { KPI_DEFAULT_FONT_SCALE } from '@eda/configs/customizable/customizable_merged';
 
 export class KpiConfig {
     sufix: string = '';
@@ -7,7 +8,7 @@ export class KpiConfig {
     edaChart: ChartJsConfig;
     modifiedFontPoints: number = 0;
     /** Multiplicative font-size factor used in SDA mode (hover +/- buttons). Only applies when USE_EDA_KPI_SIZE_LOGIC is false. */
-    fontScale: number = 1;
+    fontScale: number = KPI_DEFAULT_FONT_SCALE;
     backgroundColor: string = '';
     kpiColor: string = '';
     prefixImage: string = '';

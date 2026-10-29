@@ -4,7 +4,7 @@ import { formatNumber, registerLocaleData } from '@angular/common';
 import { EdaKpi } from './eda-kpi';
 import es from '@angular/common/locales/es';
 import { EdaChartComponent } from '../eda-chart/eda-chart.component';
-import { USE_EDA_KPI_SIZE_LOGIC } from '@eda/configs/customizable/customizable_merged';
+import { USE_EDA_KPI_SIZE_LOGIC, KPI_MIN_FONT_SCALE, KPI_MAX_FONT_SCALE, KPI_DEFAULT_FONT_SCALE } from '@eda/configs/customizable/customizable_merged';
 
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
@@ -40,9 +40,10 @@ export class EdaKpiComponent implements OnInit, AfterViewInit, OnDestroy {
     public readonly useHoverResize: boolean = !USE_EDA_KPI_SIZE_LOGIC;
     /** Smallest size we are willing to render (below it the text is clipped with an ellipsis). */
     private readonly minFontSize = 10;
-    /** The fit is already the maximum: the manual scale can only make the value smaller. */
-    private readonly minFontScale = 0.3;
-    private readonly maxFontScale = 1.0;
+    /** Scale limits and default, configurable per product via feature flags. */
+    private readonly minFontScale = KPI_MIN_FONT_SCALE;
+    private readonly maxFontScale = KPI_MAX_FONT_SCALE;
+    private readonly defaultFontScale = KPI_DEFAULT_FONT_SCALE;
     private readonly fontScaleStep = 0.1;
     /** Safety margin so sub-pixel rounding never makes the text overflow. */
     private readonly fitSafety = 0.98;
@@ -55,7 +56,7 @@ export class EdaKpiComponent implements OnInit, AfterViewInit, OnDestroy {
     /** Fit for the current box size and text: getFontSize() is evaluated several times per CD. */
     private fitCache = { width: -1, height: -1, text: '', prefixImage: false, size: 0 };
     /** Percentage and +/- availability, cached per (fit, scale). */
-    private controlsCache = { fit: -1, scale: -1, percent: 100, canUp: false, canDown: false };
+    private controlsCache = { fit: -1, scale: -1, percent: KPI_DEFAULT_FONT_SCALE * 100, canUp: false, canDown: false };
     private resizeObserver?: ResizeObserver;
 
     constructor(private styleProviderService : StyleProviderService, private cdr: ChangeDetectorRef) { }
@@ -96,7 +97,7 @@ export class EdaKpiComponent implements OnInit, AfterViewInit, OnDestroy {
             }
 
             if (this.useHoverResize && typeof this.inject.fontScale !== 'number') {
-                this.inject.fontScale = 1;
+                this.inject.fontScale = this.defaultFontScale;
             }
 
             if (this.inject.alertLimits?.length > 0) {
@@ -202,21 +203,22 @@ export class EdaKpiComponent implements OnInit, AfterViewInit, OnDestroy {
         const fit = this.getFitSize();
         if (this.useHoverResize) return this.sizeForScale(this.currentScale());
 
-        // EDA mode: additive offset (from the KPI dialog), but never above the size that fits
+        // EDA mode: default scale + additive offset (from the KPI dialog), never above the configured maximum
+        const base = fit * this.defaultFontScale;
         const points = this.inject?.modifiedFontPoints;
-        const size = points ? Math.min(fit, fit + points) : fit;
+        const size = points ? Math.min(fit * this.maxFontScale, base + points) : base;
         return Math.max(this.minFontSize, Math.round(size));
     }
 
-    /** Current manual scale, normalised to the allowed range (the fit itself is 100%). */
+    /** Current manual scale, normalised to the allowed range (100% = the fit). */
     private currentScale(): number {
-        const scale = typeof this.inject?.fontScale === 'number' ? this.inject.fontScale : 1;
-        return Math.min(1, Math.max(this.minFontScale, scale));
+        const scale = typeof this.inject?.fontScale === 'number' ? this.inject.fontScale : this.defaultFontScale;
+        return Math.min(this.maxFontScale, Math.max(this.minFontScale, scale));
     }
 
     /** Size in px for a given scale, applying the readability floor. */
     private sizeForScale(scale: number): number {
-        const clamped = Math.min(1, Math.max(this.minFontScale, scale));
+        const clamped = Math.min(this.maxFontScale, Math.max(this.minFontScale, scale));
         return Math.max(this.minFontSize, Math.round(this.getFitSize() * clamped));
     }
 
@@ -331,7 +333,7 @@ export class EdaKpiComponent implements OnInit, AfterViewInit, OnDestroy {
         this.controlsCache = {
             fit,
             scale,
-            percent: fit > 0 ? Math.min(100, Math.round((size / fit) * 100)) : 100,
+            percent: fit > 0 ? Math.min(this.maxFontScale * 100, Math.round((size / fit) * 100)) : Math.round(this.defaultFontScale * 100),
             canUp: this.useHoverResize && this.nextScaleWithSize(1) !== null,
             canDown: this.useHoverResize && this.nextScaleWithSize(-1) !== null,
         };
@@ -350,8 +352,8 @@ export class EdaKpiComponent implements OnInit, AfterViewInit, OnDestroy {
         let scale = this.currentScale();
         for (let i = 0; i < 50; i++) {
             scale = +(scale + direction * this.fontScaleStep).toFixed(2);
-            if (scale > 1 + 1e-9 || scale < this.minFontScale - 1e-9) return null;
-            scale = Math.min(1, Math.max(this.minFontScale, scale));
+            if (scale > this.maxFontScale + 1e-9 || scale < this.minFontScale - 1e-9) return null;
+            scale = Math.min(this.maxFontScale, Math.max(this.minFontScale, scale));
             const size = Math.max(this.minFontSize, Math.round(fit * scale));
             if (direction > 0 ? size > currentSize : size < currentSize) return scale;
         }

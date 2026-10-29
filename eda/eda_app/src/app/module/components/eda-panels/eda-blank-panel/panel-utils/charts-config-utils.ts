@@ -16,6 +16,7 @@ import { ScatterConfig } from '../panel-charts/chart-configuration-models/scatte
 import { SunburstConfig } from '../panel-charts/chart-configuration-models/sunburst-config';
 import { BubblechartConfig } from '../panel-charts/chart-configuration-models/bubblechart.config';
 import { TreeTableConfig } from '../panel-charts/chart-configuration-models/treeTable-config';
+import { KPI_DEFAULT_FONT_SCALE } from '@eda/configs/customizable/customizable_merged';
 
 export const ChartsConfigUtils = {
 
@@ -69,7 +70,7 @@ export const ChartsConfigUtils = {
         alertLimits: ebp.panelChart.componentRef.instance.inject.alertLimits,
         assignedColors: ebp.panelChart.props.config?.getConfig()?.['assignedColors'] || null,
         modifiedFontPoints: ebp.panelChart.componentRef.instance.inject.modifiedFontPoints || 0,
-        fontScale: ebp.panelChart.componentRef.instance.inject.fontScale || 1,
+        fontScale: ebp.panelChart.componentRef.instance.inject.fontScale ?? KPI_DEFAULT_FONT_SCALE,
         backgroundColor: ebp.panelChart.componentRef.instance.inject.backgroundColor || '',
         kpiColor: ebp.panelChart.componentRef.instance.inject.kpiColor || '',
         prefixImage: ebp.panelChart.componentRef.instance.inject.prefixImage || '',

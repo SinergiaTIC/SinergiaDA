@@ -226,6 +226,11 @@ export const ALLOWED_JOIN_TYPES: string[] = ['left', 'inner', 'right']; // subse
 export const SHOW_CUSTOM_ACTION: boolean = true; // true → "Acción personalizada" visible en el menú del informe | false → oculta
 export const SHOW_ZOOM_IN_SIDEBAR: boolean = true; // true → zoom control lives inside the dashboard sidebar | false → zoom control lives in the filters bar
 export const USE_EDA_KPI_SIZE_LOGIC: boolean = true; // true → EDA mode: numeric input in the KPI dialog (modifiedFontPoints, additive) | false → SDA mode: +/- buttons on hover over the KPI (fontScale, multiplicative)
+// KPI font-size limits. Expressed as a fraction of the size that fits the panel (1 = 100%).
+// TODO: raise KPI_MAX_FONT_SCALE to 2 once wrapping/multiline measurement is implemented.
+export const KPI_MIN_FONT_SCALE: number = 0.2; // 20% minimum
+export const KPI_MAX_FONT_SCALE: number = 1.0; // 100% maximum (200% for EDA pending)
+export const KPI_DEFAULT_FONT_SCALE: number = 0.8; // default scale (EDA 80%; forks may override, e.g. SDA)
 export const PRIVATE_EDITION_ACTIVATED: boolean =  true;
 export const ENABLED_LANGUAGES: string[] = ['es', 'en', 'ca', 'fr', 'pl', 'gl', 'eu']; // Locale codes shown in the language selector. Each one must have a matching build in angular.json's i18n.locales (or be the sourceLocale) — this flag only controls what's offered in the UI, it doesn't build/remove locales.
 export const MAP_BASEMAP_PROVIDER: 'esri' | 'osm' = 'esri'; // Basemap used by the map charts (MapUtilsService.getBaseLayer) | 'esri' → Esri World_Light_Gray_Base | 'osm' → OpenStreetMap standard tiles 
