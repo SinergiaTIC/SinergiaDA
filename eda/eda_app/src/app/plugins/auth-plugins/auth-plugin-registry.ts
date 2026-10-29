@@ -3,8 +3,8 @@
 // auth-plugins with its plugin.meta.ts and class, then re-run
 // `npm start` / `npm run build:prod`.
 import { IAuthPluginCtor } from './auth-plugin.interface';
-
+import { SsoSinergiaCrmAuthPlugin } from './sso-sinergiacrm/sso-sinergiacrm.auth-plugin';
 
 export const AUTH_PLUGINS: IAuthPluginCtor[] = [
-
+    SsoSinergiaCrmAuthPlugin,
 ];
