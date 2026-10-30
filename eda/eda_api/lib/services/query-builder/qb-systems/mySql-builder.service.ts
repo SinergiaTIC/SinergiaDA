@@ -1075,8 +1075,13 @@ export class MySqlBuilderService extends QueryBuilderService {
       column.filter_codes = filterObject.filter_codes;
       const colname=this.getFilterColname(column);
       const valueListSource = filterObject.valueListSource;
-      // false (EDA) -> compare against the raw selected values | true (SinergiaDA) -> compare against the internal codes
-      const filterValues = this.useValueListCodeForFilters() ? filterObject.filter_codes : filterObject.filter_elements;
+      // false (EDA) -> compare against the raw selected values | true (SinergiaDA) -> compare against the internal codes.
+      // Some queries (e.g. autocomplete suggestions) only send display values in filter_elements, so fall back to them
+      // when filter_codes is missing/empty instead of crashing on filterValues[0].
+      const hasFilterCodes = Array.isArray(filterObject.filter_codes) && filterObject.filter_codes.length > 0;
+      const filterValues = (this.useValueListCodeForFilters() && hasFilterCodes)
+        ? filterObject.filter_codes
+        : filterObject.filter_elements;
 
       switch (this.setFilterType(filterObject.filter_type)) {
         case 0:
@@ -1139,7 +1144,7 @@ export class MySqlBuilderService extends QueryBuilderService {
 
       if (column.autorelation && !column.valueListSource) {
         colname = `\`${column.joins[column.joins.length-1][0]}\`.\`${column.column_name}\``;
-      } else if (this.useValueListCodeForFilters() && column.valueListSource?.target_id_column && column.filter_codes?.length !== undefined) {
+      } else if (this.useValueListCodeForFilters() && column.valueListSource?.target_id_column && column.filter_codes?.length > 0) {
         // SDA CUSTOM - Keep value-list filters on the internal code column when we have codes to compare against
         colname = `\`${column.valueListSource.target_table}\`.\`${column.valueListSource.target_id_column}\``;
       } else {
