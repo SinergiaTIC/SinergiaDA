@@ -128,7 +128,7 @@ export class DashboardMenuSdaComponent implements OnInit, OnDestroy, DoCheck {
     this.notSavedSub?.unsubscribe();
     this.teardownTitleAffordance();
     this.teardownFilterAffordances();
-    if (this.viewMode) this.restoreEditMode();
+    if (this.isLayoutLocked) this.restoreEditMode();
   }
 
   /**
@@ -165,9 +165,18 @@ export class DashboardMenuSdaComponent implements OnInit, OnDestroy, DoCheck {
     if (!this.viewModeInit) return; // never touch panels before knowing the report mode
     this.syncTitleAffordance();
     this.syncFilterEditAffordances();
-    if (!this.viewMode) return;
+    if (!this.isLayoutLocked) return;
     this.ensureViewFlags();
-    this.syncViewModeClass();
+    this.syncLayoutClasses();
+  }
+
+  /**
+   * The layout has to stay locked in view mode AND for read-only users (EDA_RO):
+   * core already renders their panels read-only, but until now they could still
+   * be dragged and resized. Their toolbar is reduced to the "More" menu.
+   */
+  private get isLayoutLocked(): boolean {
+    return this.viewMode || !this.isEditable;
   }
 
   /** View/edit switch (edit permission only). */
@@ -181,7 +190,7 @@ export class DashboardMenuSdaComponent implements OnInit, OnDestroy, DoCheck {
     this.viewMode = enabled;
     this.viewModeTouched = true;
     this.storeViewMode(enabled);
-    this.syncViewModeClass();
+    this.syncLayoutClasses();
     if (enabled) {
       this.ensureViewFlags();
     } else {
@@ -254,8 +263,19 @@ export class DashboardMenuSdaComponent implements OnInit, OnDestroy, DoCheck {
     } catch { /* private mode etc.: preference simply not persisted */ }
   }
 
-  private syncViewModeClass(): void {
-    document.getElementById('myDashboard')?.classList.toggle('dsm-view-mode', this.viewMode);
+  /**
+   * Chrome classes on #myDashboard:
+   * - `dsm-view-mode` only for view mode: it hides the panels' menus, which
+   *   stays available to read-only users (core leaves them "Exportar a
+   *   Excel/CSV").
+   * - `dsm-readonly` only for read-only users: just removes the drag/resize
+   *   affordances (the behaviour is off via gridsterOptions).
+   */
+  private syncLayoutClasses(): void {
+    const root = document.getElementById('myDashboard');
+    if (!root) return;
+    root.classList.toggle('dsm-view-mode', this.viewMode);
+    root.classList.toggle('dsm-readonly', !this.isEditable && !this.viewMode);
   }
 
   /** Applies readonly + gridster off, stashing the previous values on first touch. */
@@ -661,7 +681,9 @@ styleClass: "text-gray-500 italic",
           label: $localize`:@@dashboardMenuReportFilters:Filtros de informe`,
           icon: "pi pi-filter",
            tooltip: this.tooltipReportFilters,
-          visible: this.hasReportFilters()
+          // Editing a filter definition modifies the report: read-only users
+          // only change filter *values*, from the filter cards in the header.
+          visible: this.hasReportFilters() && this.can('edit')
         },
         // Temporarily hidden in SinergiaDA until the feature is considered mature.
         // See https://github.com/SinergiaTIC/SinergiaDA/issues/626
@@ -959,6 +981,11 @@ styleClass: "text-gray-500 italic",
   }
 
   public canIedit(): boolean {
+    // EDA_RO (observer) never edits, not even when the report is theirs or when
+    // the report is editable by everyone: core already renders their panels
+    // read-only (EdaBlankPanel.isEditable checks inject.isObserver), so letting
+    // the toolbar edit would be inconsistent (and would fail on save anyway).
+    if (this.isObserver()) return false;
     return this.dashboard?.canIedit() ?? false;
   }
 
