@@ -11,7 +11,7 @@ import { LoginGuardGuard } from '../../services/guards/login-guard.guard'
 import { pagesV3Routes } from 'app/module/pages/pages-v3.routes';
 
 export const coreRoutes: Routes = [
-    { path: '', loadComponent: () => import('./login/login').then(c => c.LoginV2Component) },
+    { path: '', canActivate: [LoginGuardGuard], loadComponent: () => import('./login/login').then(c => c.LoginV2Component) },
     // { path: 'login', component: LoginComponent },
     { path: 'old/login', loadComponent: () => import('./login/login').then(c => c.LoginV2Component) },
     { path: 'login', loadComponent: () => import('./login/login').then(c => c.LoginV2Component) },
