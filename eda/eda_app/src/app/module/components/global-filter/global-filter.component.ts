@@ -1079,7 +1079,8 @@ export class GlobalFilterComponent implements OnInit {
         const data = res[1].filter(item => !!item[0] || item[0] == '').map(item => ({ label: item[0], value: item[0] }));
         this.globalFilters.find((gf: any) => gf.id == filtro.id).data = data;
 
-        this.autoCompleteValues = data;
+        const selected = filtro.selectedItems || [];
+        this.autoCompleteValues = data.filter(item => !selected.includes(item.value));
 
         }, delay);
 
@@ -1094,6 +1095,7 @@ export class GlobalFilterComponent implements OnInit {
             }
             return item;
         });
+        filtro.selectedItems = _.uniq(filtro.selectedItems);
         // Update Global filter
         this.setGlobalFilterItems(filtro)
     }
@@ -1108,14 +1110,14 @@ export class GlobalFilterComponent implements OnInit {
         event.preventDefault(); 
 
         if (this.autoCompleteValues && this.autoCompleteValues.length > 0) {
-            const firstItem = this.autoCompleteValues[0];
+            const selected = filter.selectedItems || [];
+            const firstItem: any = this.autoCompleteValues.find((item: any) => !selected.includes(item.value));
 
-            filter.selectedItems = [
-            ...(filter.selectedItems || []), firstItem
-            ];
-
-            (event.target as HTMLInputElement).value = '';
-            this.autoCompleteValues = [];
+            if (firstItem) {
+                filter.selectedItems = [...selected, firstItem];
+                (event.target as HTMLInputElement).value = '';
+                this.autoCompleteValues = [];
+            }
         }
 
         this.onItemSelected(filter);
