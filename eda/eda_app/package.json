@@ -20,6 +20,7 @@
     "start:gl": "ng serve -o --configuration=gl",
     "copy-index": "node scripts/copy-index.js",
     "build:prod": "node scripts/apply-overwrites.js && node scripts/generate-plugins.js && node scripts/i18n-merge.js && ng build --configuration production --localize --build-optimizer --vendor-chunk && npm run copy-index",
+    "serve:prod": "node scripts/serve-prod.js",
     "test": "ng test",
     "lint": "ng lint",
     "e2e": "ng e2e"
