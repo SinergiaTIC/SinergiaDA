@@ -10,7 +10,7 @@ import { DropdownModule } from 'primeng/dropdown';
 import { MenuModule } from 'primeng/menu';
 import { MessageModule } from 'primeng/message';
 import { CompactType, DisplayGrid, GridsterComponent, GridsterConfig, GridsterItem, GridsterItemComponent, GridType } from 'angular-gridster2';
-import { AlertService, DashboardService, FileUtiles, GlobalFiltersService, StyleProviderService, IGroup, DashboardStyles, ChartUtilsService, UserService } from '@eda/services/service.index';
+import { AlertService, DashboardService, FileUtiles, GlobalFiltersService, StyleProviderService, IGroup, DashboardStyles, ChartUtilsService, UserService, GroupService } from '@eda/services/service.index';
 import { EdaPanel, EdaPanelType, InjectEdaPanel } from '@eda/models/model.index';
 import { DashboardSidebarComponent } from './dashboard-sidebar/dashboard-sidebar.component';
 import { GlobalFilterComponent } from '@eda/components/global-filter/global-filter.component';
@@ -107,6 +107,7 @@ export class DashboardPage implements OnInit {
   private dateUtilsService = inject(DateUtils);
   private userService = inject(UserService);
   private zoomState = inject(ZoomStateService);
+  private groupService = inject(GroupService);
 
   public title: string = $localize`:@@loading:Cargando informe...`;
   public styles: DashboardStyles;
@@ -196,6 +197,17 @@ export class DashboardPage implements OnInit {
     this.initializeResponsiveSizes();
     this.initializeGridsterOptions();
     this.loadDashboard();
+
+    // Read-only users are modelled as members of the EDA_RO group (the model sync
+    // maps the CRM `readonly` flag and the SSO `ro` claim to it). The panels are
+    // built before this resolves, so the flag is refreshed when the groups arrive.
+    this.groupService.getGroupsByUser().subscribe(groups => {
+      this.grups = groups;
+      if (this.injectEdaPanel) {
+        this.injectEdaPanel.isObserver = this.isObserverUser();
+      }
+    });
+
     this.dashboardService.notSaved.subscribe(
       (data) => this.notSaved = data
     );
@@ -305,7 +317,12 @@ export class DashboardPage implements OnInit {
     this.stylesProviderService.setDefaultBackgroundColor();
     this.stylesProviderService.loadingFromPalette = false;
     this.stopRefresh = true;
-    this.dashboard.config.stopRefresh = true;
+    // The report may have not been loaded (e.g. a 401 closing the session), so
+    // there is nothing to stop. Throwing here used to cancel the navigation and
+    // leave the user stuck in the report view.
+    if (this.dashboard) {
+      this.dashboard.config.stopRefresh = true;
+    }
     clearInterval(this.countdownInterval);
     this.mobileResizeObserver?.disconnect();
     if (this.edaPanelsSubscription) {
@@ -634,17 +651,28 @@ export class DashboardPage implements OnInit {
       panel.rows = panel.rows || panel.h;
     }
 
-    const user = localStorage.getItem('user');
-    const userID = JSON.parse(user)._id;
-
     this.injectEdaPanel = {
       dataSource: this.dataSource,
       dashboard_id: this.dashboardId,
       applyToAllfilter: this.applyToAllfilter,
-      isObserver: this.grups.filter(group => group.name === 'EDA_RO' && group.users.includes(userID)).length !== 0,
+      isObserver: this.isObserverUser(),
       gridsterOptions: this.gridsterOptions
     }
     this.stylesProviderService.loadedPanels = dashboard.config?.panel?.length || -1;
+  }
+
+  /**
+   * Whether the session user is read-only (member of the EDA_RO group). The group
+   * is filled by the model sync (`readonly` in the CRM) and by the SSO login
+   * (`ro` claim, `sda_allowed_c = 2`).
+   */
+  private isObserverUser(): boolean {
+    const userId = this.userService.user?._id;
+    if (!userId) {
+      return false;
+    }
+    return (this.grups || []).some(group => group.name === 'EDA_RO'
+      && (group.users || []).map(String).includes(String(userId)));
   }
 
   // Init functions
