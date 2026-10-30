@@ -19,6 +19,8 @@ export interface IAuthPluginContext {
     userService: UserService;
     http: HttpClient;
     router: Router;
+    /** Logger for plugin messages (the guard passes `console`). */
+    logger: Console;
 }
 
 /**
@@ -29,6 +31,10 @@ export interface IAuthPluginContext {
  */
 export interface IAuthPlugin {
     type: string;
+    /** When it returns false the guard skips this plugin. Enabled by default. */
+    enabled?: () => boolean;
+    /** Higher values run first (default 0). */
+    priority?: number;
     tryAuthenticate(
         route: ActivatedRouteSnapshot,
         state: RouterStateSnapshot,
