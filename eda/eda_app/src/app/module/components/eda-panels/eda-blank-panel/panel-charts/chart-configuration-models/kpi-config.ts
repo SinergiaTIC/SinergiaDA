@@ -1,5 +1,5 @@
 import { ChartJsConfig } from "./chart-js-config";
-import { KPI_DEFAULT_FONT_SCALE } from '@eda/configs/customizable/customizable_merged';
+import { KPI_DEFAULT_FONT_SCALE, KPI_IMAGE_DEFAULT_SCALE } from '@eda/configs/customizable/customizable_merged';
 
 export class KpiConfig {
     sufix: string = '';
@@ -12,6 +12,10 @@ export class KpiConfig {
     backgroundColor: string = '';
     kpiColor: string = '';
     prefixImage: string = '';
+    /** Edalitics mode only (USE_EDA_KPI_SIZE_LOGIC true) */
+    imageScale: number = KPI_IMAGE_DEFAULT_SCALE;
+    valueFontScale: number = KPI_DEFAULT_FONT_SCALE;
+    sufixFontScale: number = KPI_DEFAULT_FONT_SCALE;
     constructor(init?: Partial<KpiConfig>) {
         this.edaChart = new ChartJsConfig(
             init?.edaChart?.colors || [],

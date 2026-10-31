@@ -229,8 +229,12 @@ export const USE_EDA_KPI_SIZE_LOGIC: boolean = true; // true → EDA mode: numer
 // KPI font-size limits. Expressed as a fraction of the size that fits the panel (1 = 100%).
 // Above 100% the value wraps into multiple lines; the panel clips it if there is not enough room.
 export const KPI_MIN_FONT_SCALE: number = 0.2; // 20% minimum
-export const KPI_MAX_FONT_SCALE: number = 1.5; // maximum scale (EDA 150%)
+export const KPI_MAX_FONT_SCALE: number = 2.5; // maximum scale (EDA 150%)
 export const KPI_DEFAULT_FONT_SCALE: number = 0.8; // default scale (EDA 80%; forks may override, e.g. SDA)
+// Edalitics mode only: width share given to the prefix image vs the value/suffix text block.
+export const KPI_IMAGE_MIN_SCALE: number = 0.1; // 10% minimum width share for the image
+export const KPI_IMAGE_MAX_SCALE: number = 0.7; // 60% maximum width share for the image
+export const KPI_IMAGE_DEFAULT_SCALE: number = 0.2; // 20% default width share for the image
 export const PRIVATE_EDITION_ACTIVATED: boolean =  true;
 export const ENABLED_LANGUAGES: string[] = ['es', 'en', 'ca', 'fr', 'pl', 'gl', 'eu']; // Locale codes shown in the language selector. Each one must have a matching build in angular.json's i18n.locales (or be the sourceLocale) — this flag only controls what's offered in the UI, it doesn't build/remove locales.
 export const MAP_BASEMAP_PROVIDER: 'esri' | 'osm' = 'esri'; // Basemap used by the map charts (MapUtilsService.getBaseLayer) | 'esri' → Esri World_Light_Gray_Base | 'osm' → OpenStreetMap standard tiles

@@ -4,7 +4,7 @@ import { formatNumber, registerLocaleData } from '@angular/common';
 import { EdaKpi } from './eda-kpi';
 import es from '@angular/common/locales/es';
 import { EdaChartComponent } from '../eda-chart/eda-chart.component';
-import { USE_EDA_KPI_SIZE_LOGIC, KPI_MIN_FONT_SCALE, KPI_MAX_FONT_SCALE, KPI_DEFAULT_FONT_SCALE } from '@eda/configs/customizable/customizable_merged';
+import { USE_EDA_KPI_SIZE_LOGIC, KPI_MIN_FONT_SCALE, KPI_MAX_FONT_SCALE, KPI_DEFAULT_FONT_SCALE, KPI_IMAGE_MIN_SCALE, KPI_IMAGE_MAX_SCALE, KPI_IMAGE_DEFAULT_SCALE } from '@eda/configs/customizable/customizable_merged';
 
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
@@ -45,6 +45,14 @@ export class EdaKpiComponent implements OnInit, AfterViewInit, OnDestroy {
     private readonly maxFontScale = KPI_MAX_FONT_SCALE;
     private readonly defaultFontScale = KPI_DEFAULT_FONT_SCALE;
     private readonly fontScaleStep = 0.1;
+    /** Edalitics mode only: width-share bounds for the prefix image (rest of the width goes to value/suffix). */
+    private readonly minImageScale = KPI_IMAGE_MIN_SCALE;
+    private readonly maxImageScale = KPI_IMAGE_MAX_SCALE;
+    private readonly defaultImageScale = KPI_IMAGE_DEFAULT_SCALE;
+    /** Edalitics mode only: fixed headroom so the up-front (pre-render) size estimate never overflows once actually rendered. */
+    private readonly edaSafetyMargin = 0.9;
+    /** Edalitics mode only: panel width/height ratio above which the value+suffix stay on one line (16:9, a "widescreen" shape). */
+    private readonly edaStackRatio = 16 / 9;
     /** Safety margin so sub-pixel rounding never makes the text overflow. */
     private readonly fitSafety = 0.98;
     public isHovered = false;
@@ -242,21 +250,24 @@ export class EdaKpiComponent implements OnInit, AfterViewInit, OnDestroy {
         return Math.max(this.minFontSize, Math.round(fit * clamped));
     }
 
+    /** Formats a raw KPI value the same way the template's `number` pipe would, for width measurement. */
+    private formatValue(raw: any): string {
+        if (raw === null || raw === undefined || raw === '') return '';
+        const numeric = Array.isArray(raw) ? Number(raw[0]) : Number(raw);
+        try {
+            return Number.isFinite(numeric) ? formatNumber(numeric, 'es', '1.0-10') : String(raw);
+        } catch {
+            return String(raw);
+        }
+    }
+
     /** Text exactly as the template renders it (number pipe + suffix), cached per value. */
     private getDisplayText(): string {
         const raw: any = this.inject?.value;
         const sufix = (this.inject?.sufix ?? '').toString().trim();
         if (this.textCache.value === raw && this.textCache.sufix === sufix) return this.textCache.text;
 
-        let text = '';
-        if (raw !== null && raw !== undefined && raw !== '') {
-            const numeric = Array.isArray(raw) ? Number(raw[0]) : Number(raw);
-            try {
-                text = Number.isFinite(numeric) ? formatNumber(numeric, 'es', '1.0-10') : String(raw);
-            } catch {
-                text = String(raw);
-            }
-        }
+        const text = this.formatValue(raw);
         const result = text && sufix ? `${text} ${sufix}` : (text || sufix);
         this.textCache = { value: raw, sufix, text: result };
         return result;
@@ -307,6 +318,266 @@ export class EdaKpiComponent implements OnInit, AfterViewInit, OnDestroy {
         this.fitCache = { width, height, text, prefixImage, size };
         return size;
     }
+
+    // --- Edalitics mode only (!useHoverResize): image/value/suffix independently sized via the KPI dialog. ---
+
+    public edaHasImage(): boolean {
+        return !this.useHoverResize && !!this.inject?.prefixImage;
+    }
+
+    private edaImageScale(): number {
+        const raw = this.inject?.imageScale;
+        const value = typeof raw === 'number' ? raw : this.defaultImageScale;
+        return Math.min(this.maxImageScale, Math.max(this.minImageScale, value));
+    }
+
+    private edaScale(raw: any): number {
+        const value = typeof raw === 'number' ? raw : this.defaultFontScale;
+        return Math.min(this.maxFontScale, Math.max(this.minFontScale, value));
+    }
+
+    private edaSizeForScale(fit: number, scale: number): number {
+        return Math.max(this.minFontSize, Math.round(fit * scale));
+    }
+
+    /**
+     * Box (px) available to the value/suffix block: the container, minus the image's width share
+     * and its gap, shrunk by a fixed safety margin. The margin exists because every size below
+     * is computed from a canvas text measurement *before* the DOM renders — it can't be perfectly
+     * exact (web font not loaded yet, synthetic bold, sub-pixel rounding), so every fit is solved
+     * for a slightly smaller box than the real one. That is the one and only place slack is added;
+     * nothing downstream needs to re-check or correct anything.
+     */
+    private edaTextBoxSize(): { width: number; height: number } {
+        const el: HTMLElement | undefined = this.kpiContainer?.nativeElement;
+        const width = el?.clientWidth ?? this.containerWidth;
+        const height = el?.clientHeight ?? this.containerHeight;
+        const imageFraction = this.edaHasImage() ? this.edaImageScale() : 0;
+        const imageGap = this.edaHasImage() ? 12 : 0; // matches the row's 0.75rem gap
+        return {
+            width: Math.max(0, (width - imageGap) * (1 - imageFraction)) * this.edaSafetyMargin,
+            height: height * this.edaSafetyMargin,
+        };
+    }
+
+    private edaValueText(): string {
+        return this.formatValue(this.inject?.value);
+    }
+
+    public edaSufixText(): string {
+        return (this.inject?.sufix ?? '').toString().trim();
+    }
+
+    /** Width-only fit (no height cap): used where the element may grow/wrap vertically instead of being capped by the box height. */
+    private fitByWidth(text: string, width: number): number {
+        if (!text || width <= 0) return this.minFontSize;
+        const reference = 100;
+        const widthAtReference = this.measureTextWidth(text, reference) || 1;
+        return Math.max(this.minFontSize, Math.floor(((width * reference) / widthAtReference) * this.fitSafety));
+    }
+
+    /**
+     * Stacked mode: value and suffix sit on top of each other, so they share the box height
+     * instead of each independently claiming all of it. Each is sized by its own width-driven
+     * fit, then — only if their natural sizes together would exceed the box height — both are
+     * scaled down by the same factor so the pair always fits vertically.
+     */
+    private edaStackedFits(): { value: number; sufix: number } {
+        const { width, height } = this.edaTextBoxSize();
+        const valueByWidth = this.fitByWidth(this.edaValueText(), width);
+        const sufixByWidth = this.fitByWidth(this.edaSufixText(), width);
+        const naturalTotal = valueByWidth + sufixByWidth;
+        const factor = naturalTotal > 0 ? Math.min(1, height / naturalTotal) : 1;
+        return {
+            value: Math.max(this.minFontSize, Math.floor(valueByWidth * factor)),
+            sufix: Math.max(this.minFontSize, Math.floor(sufixByWidth * factor)),
+        };
+    }
+
+    /** Inline mode: value and suffix share one line, sized together (both width and height capped). */
+    private edaInlineFit(): number {
+        const { width, height } = this.edaTextBoxSize();
+        const value = this.edaValueText();
+        const sufix = this.edaSufixText();
+        const text = sufix ? `${value} ${sufix}` : value;
+        return this.computeFitSize(width, height, text, false);
+    }
+
+    /**
+     * Stacked (number above, suffix below) only when the suffix is long enough to read as a unit
+     * (3+ chars) and the panel's shape is "square-ish" rather than elongated: a wide panel (16:9
+     * or wider) keeps both on one line; a squarer one stacks them.
+     */
+    public edaShouldStack(): boolean {
+        const sufix = this.edaSufixText();
+        if (sufix.length < 3) return false;
+        const el = this.edaRatioElement();
+        const width = el?.clientWidth ?? this.containerWidth;
+        const height = el?.clientHeight ?? this.containerHeight;
+        if (width <= 0 || height <= 0) return false;
+        return (width / height) < this.edaStackRatio;
+    }
+
+    /**
+     * Element whose box best represents the panel's settled shape. While the panel is actively
+     * being resized, gridster keeps the item itself following the cursor at raw pixel size (not
+     * snapped) and instead shows a separate `<gridster-preview>` overlay snapped to the target
+     * grid cell — that overlay is what we want, since it already is the shape the panel will have
+     * once released, with no pixel-by-pixel flicker before it settles. Otherwise, the panel card
+     * itself (data-eda-panel-root) is just as good, and avoids the header/padding skewing the
+     * KPI's own (smaller) content box.
+     */
+    private edaRatioElement(): HTMLElement | null {
+        const root: HTMLElement | undefined = this.kpiContainer?.nativeElement;
+        if (!root) return null;
+        const item = root.closest('gridster-item');
+        if (item?.classList.contains('gridster-item-resizing')) {
+            const preview = item.closest('gridster')?.querySelector('gridster-preview') as HTMLElement | null;
+            if (preview) return preview;
+        }
+        return root.closest('[data-eda-panel-root]');
+    }
+
+    /**
+     * Final rendered sizes, guaranteed to actually fit the box no matter how high the admin
+     * pushes the value/suffix % controls: starts from the requested (fit × scale) sizes, then
+     * measures what they would really need (accounting for the suffix wrapping onto extra lines
+     * when stacked) and — only if that would overflow — scales both down together by the same
+     * factor until the whole thing fits. Everything stays visible; nothing is ever clipped.
+     */
+    private edaFinalSizes(): { value: number; sufix: number } {
+        const stacked = this.edaShouldStack();
+        const baseFit = stacked ? this.edaStackedFits() : { value: this.edaInlineFit(), sufix: this.edaInlineFit() };
+        let valueSize = this.edaSizeForScale(baseFit.value, this.edaScale(this.inject?.valueFontScale));
+        let sufixSize = this.edaSizeForScale(baseFit.sufix, this.edaScale(this.inject?.sufixFontScale));
+
+        const { width, height } = this.edaTextBoxSize();
+        if (width <= 0 || height <= 0) return { value: valueSize, sufix: sufixSize };
+
+        const valueText = this.edaValueText();
+        const sufixText = this.edaSufixText();
+
+        for (let i = 0; i < 4; i++) {
+            const valueWidth = this.measureTextWidth(valueText, valueSize);
+            let neededWidth: number;
+            let neededHeight: number;
+            if (stacked) {
+                const sufixWidth = sufixText ? this.measureTextWidth(sufixText, sufixSize) : 0;
+                const lines = sufixText ? Math.max(1, Math.ceil(sufixWidth / width)) : 0;
+                neededWidth = valueWidth; // the value itself never wraps
+                neededHeight = valueSize + (sufixText ? sufixSize * 1.15 * lines : 0);
+            } else {
+                const gap = sufixText ? sufixSize * 0.3 : 0;
+                const sufixWidth = sufixText ? this.measureTextWidth(sufixText, sufixSize) : 0;
+                neededWidth = valueWidth + gap + sufixWidth;
+                neededHeight = Math.max(valueSize, sufixSize);
+            }
+            const factor = Math.min(1, width / Math.max(neededWidth, 1), height / Math.max(neededHeight, 1));
+            if (factor >= 0.999) break;
+            valueSize = Math.max(this.minFontSize, Math.floor(valueSize * factor));
+            sufixSize = Math.max(this.minFontSize, Math.floor(sufixSize * factor));
+        }
+        return { value: valueSize, sufix: sufixSize };
+    }
+
+    private edaValueSize(): number {
+        return this.edaFinalSizes().value;
+    }
+
+    private edaSufixSize(): number {
+        return this.edaFinalSizes().sufix;
+    }
+
+    public edaImageWrapStyle(): any {
+        const pct = this.edaImageScale() * 100;
+        return {
+            flex: `0 0 ${pct}%`,
+            width: `${pct}%`,
+            'max-width': `${pct}%`,
+            height: '100%',
+            display: 'flex',
+            'align-items': 'center',
+            'justify-content': 'center',
+            'text-align': 'center',
+            overflow: 'hidden',
+        };
+    }
+
+    public edaImageTagStyle(): any {
+        return {
+            height: '100%',
+            width: 'auto',
+            'max-width': '100%',
+            'object-fit': 'contain',
+            'object-position': 'center',
+            display: 'block',
+            margin: 'auto',
+        };
+    }
+
+    public edaTextWrapStyle(): any {
+        const stacked = this.edaShouldStack();
+        return {
+            flex: '1 1 0%',
+            'min-width': '0',
+            height: '100%',
+            display: 'flex',
+            'flex-direction': stacked ? 'column' : 'row',
+            'align-items': 'center',
+            'justify-content': 'center',
+            overflow: 'hidden',
+        };
+    }
+
+    /**
+     * The value never wraps: edaFinalSizes() already guarantees its font size fits the box on
+     * one line, so nowrap + a (practically unreachable) ellipsis is the right pairing here —
+     * letting it wrap would risk breaking a number mid-digit instead.
+     */
+    public edaValueStyle(): any {
+        const stacked = this.edaShouldStack();
+        const size = this.edaValueSize();
+        return {
+            'font-weight': 'bold',
+            'font-size': `${size}px`,
+            'line-height': '1',
+            color: this.color,
+            'font-family': this.family,
+            'white-space': 'nowrap',
+            'text-overflow': 'ellipsis',
+            overflow: 'hidden',
+            'max-width': '100%',
+            'min-width': '0',
+            'flex-shrink': stacked ? '1' : '0',
+            'text-align': 'center',
+            cursor: 'pointer',
+        };
+    }
+
+    public edaSufixStyle(): any {
+        const stacked = this.edaShouldStack();
+        const size = this.edaSufixSize();
+        return {
+            'font-weight': 'bold',
+            'font-size': `${size}px`,
+            'line-height': '1.15',
+            color: this.color,
+            'font-family': this.family,
+            'white-space': stacked ? 'normal' : 'nowrap',
+            'overflow-wrap': stacked ? 'break-word' : 'normal',
+            'word-break': 'normal',
+            overflow: 'hidden',
+            'max-width': '100%',
+            'min-width': '0',
+            'flex-shrink': '0',
+            'text-align': 'center',
+            'margin-top': stacked ? '0.1em' : '0',
+            'margin-left': stacked ? '0' : '0.3em',
+            cursor: 'pointer',
+        };
+    }
+
+    // --- END Edalitics mode only ---
 
     increaseFont(): void {
         const next = this.nextScaleWithSize(1);

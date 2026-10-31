@@ -266,6 +266,41 @@
   margin-left: -7px;
 }
 
+.kpi-size-controls {
+  gap: 6px;
+}
+
+.kpi-size-btn {
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #d1d5db;
+  border-radius: 4px;
+  background: #ffffff;
+  color: #374151;
+  font-size: 13px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.kpi-size-btn:hover:not(:disabled) {
+  background: #f3f4f6;
+}
+
+.kpi-size-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.kpi-size-percent {
+  min-width: 2.75rem;
+  text-align: right;
+  font-size: 12px;
+  color: #6b7280;
+}
+
 .kpi-prefix-preview {
   width: 44px;
   height: 26px;

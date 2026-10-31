@@ -17,4 +17,8 @@ export class EdaKpi {
     backgroundColor: string;
     kpiColor: string;
     prefixImage: string;
+    /** Edalitics mode only (USE_EDA_KPI_SIZE_LOGIC true) **/
+    imageScale?: number;
+    valueFontScale?: number;
+    sufixFontScale?: number;
 }

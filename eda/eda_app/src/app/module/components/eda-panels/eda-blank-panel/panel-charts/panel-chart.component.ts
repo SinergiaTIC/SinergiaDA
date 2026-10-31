@@ -14,7 +14,7 @@ import { EdadynamicTextComponent } from '../../../eda-dynamicText/eda-dynamicTex
 import { EdaTableComponent } from '../../../eda-table/eda-table.component';
 import { PanelChart } from './panel-chart';
 import { ChartUtilsService, DashboardService, StyleConfig, StyleProviderService } from '@eda/services/service.index';
-import { KPI_DEFAULT_FONT_SCALE } from '@eda/configs/customizable/customizable_merged';
+import { KPI_DEFAULT_FONT_SCALE, KPI_IMAGE_DEFAULT_SCALE } from '@eda/configs/customizable/customizable_merged';
 import { EdaKpiComponent } from '@eda/components/eda-kpi/eda-kpi.component';
 import { Column } from '@eda/models/model.index';
 import { EdaChartComponent } from '@eda/components/eda-chart/eda-chart.component';
@@ -591,6 +591,9 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
             chartConfig.alertLimits = alertLimits;
             chartConfig.modifiedFontPoints = kpiCfg?.modifiedFontPoints || 0;
             chartConfig.fontScale = kpiCfg?.fontScale ?? KPI_DEFAULT_FONT_SCALE;
+            chartConfig.imageScale = kpiCfg?.imageScale ?? KPI_IMAGE_DEFAULT_SCALE;
+            chartConfig.valueFontScale = kpiCfg?.valueFontScale ?? KPI_DEFAULT_FONT_SCALE;
+            chartConfig.sufixFontScale = kpiCfg?.sufixFontScale ?? KPI_DEFAULT_FONT_SCALE;
             chartConfig.edaChart = kpiCfg?.edaChart;
             chartConfig.backgroundColor = kpiCfg?.backgroundColor || '';
             chartConfig.kpiColor = kpiCfg?.kpiColor || '';
@@ -600,6 +603,9 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
             chartConfig.alertLimits = [];
             chartConfig.modifiedFontPoints = 0;
             chartConfig.fontScale = KPI_DEFAULT_FONT_SCALE;
+            chartConfig.imageScale = KPI_IMAGE_DEFAULT_SCALE;
+            chartConfig.valueFontScale = KPI_DEFAULT_FONT_SCALE;
+            chartConfig.sufixFontScale = KPI_DEFAULT_FONT_SCALE;
             chartConfig.backgroundColor = '';
             chartConfig.kpiColor = '';
             chartConfig.prefixImage = '';
@@ -623,6 +629,9 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
                 alertLimits: inject.alertLimits,
                 modifiedFontPoints: inject.modifiedFontPoints || 0,
                 fontScale: data.fontScale ?? inject.fontScale ?? KPI_DEFAULT_FONT_SCALE,
+                imageScale: inject.imageScale ?? KPI_IMAGE_DEFAULT_SCALE,
+                valueFontScale: inject.valueFontScale ?? KPI_DEFAULT_FONT_SCALE,
+                sufixFontScale: inject.sufixFontScale ?? KPI_DEFAULT_FONT_SCALE,
                 backgroundColor: inject.backgroundColor || '',
                 kpiColor: inject.kpiColor || '',
                 prefixImage: inject.prefixImage || '',
@@ -845,6 +854,9 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         chartConfig.alertLimits = alertLimits;
         chartConfig.modifiedFontPoints = kpiCfgChart?.modifiedFontPoints || 0;
         chartConfig.fontScale = kpiCfgChart?.fontScale ?? KPI_DEFAULT_FONT_SCALE;
+        chartConfig.imageScale = kpiCfgChart?.imageScale ?? KPI_IMAGE_DEFAULT_SCALE;
+        chartConfig.valueFontScale = kpiCfgChart?.valueFontScale ?? KPI_DEFAULT_FONT_SCALE;
+        chartConfig.sufixFontScale = kpiCfgChart?.sufixFontScale ?? KPI_DEFAULT_FONT_SCALE;
         chartConfig.backgroundColor = kpiCfgChart?.backgroundColor || '';
         chartConfig.kpiColor = kpiCfgChart?.kpiColor || '';
         chartConfig.prefixImage = kpiCfgChart?.prefixImage || '';
@@ -853,6 +865,9 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         chartConfig.alertLimits = [];
         chartConfig.modifiedFontPoints = 0;
         chartConfig.fontScale = KPI_DEFAULT_FONT_SCALE;
+        chartConfig.imageScale = KPI_IMAGE_DEFAULT_SCALE;
+        chartConfig.valueFontScale = KPI_DEFAULT_FONT_SCALE;
+        chartConfig.sufixFontScale = KPI_DEFAULT_FONT_SCALE;
         chartConfig.backgroundColor = '';
         chartConfig.kpiColor = '';
         chartConfig.prefixImage = '';
@@ -981,6 +996,9 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
                 edaChart: inject.edaChart,
                 modifiedFontPoints: inject.modifiedFontPoints || 0,
                 fontScale: data.fontScale ?? inject.fontScale ?? KPI_DEFAULT_FONT_SCALE,
+                imageScale: inject.imageScale ?? KPI_IMAGE_DEFAULT_SCALE,
+                valueFontScale: inject.valueFontScale ?? KPI_DEFAULT_FONT_SCALE,
+                sufixFontScale: inject.sufixFontScale ?? KPI_DEFAULT_FONT_SCALE,
                 backgroundColor: inject.backgroundColor || '',
                 kpiColor: inject.kpiColor || '',
                 prefixImage: inject.prefixImage || '',

@@ -16,7 +16,7 @@ import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { TreeModule } from 'primeng/tree';
 // Eda config
 import { resolveQueryMode } from '@eda/shared/utils/query-mode.util';
-import { AGG_TYPES, NULL_VALUE, EMPTY_VALUE, SHOW_LOCK_IN_PANEL_HEADER, ALLOWED_QUERY_MODES, SHOW_HIDDEN_FIELDS, SHOW_WHAT_IF, ALLOWED_JOIN_TYPES, USE_EDA_KPI_SIZE_LOGIC, KPI_DEFAULT_FONT_SCALE } from '@eda/configs/customizable/customizable_merged';
+import { AGG_TYPES, NULL_VALUE, EMPTY_VALUE, SHOW_LOCK_IN_PANEL_HEADER, ALLOWED_QUERY_MODES, SHOW_HIDDEN_FIELDS, SHOW_WHAT_IF, ALLOWED_JOIN_TYPES, USE_EDA_KPI_SIZE_LOGIC, KPI_DEFAULT_FONT_SCALE, KPI_IMAGE_DEFAULT_SCALE } from '@eda/configs/customizable/customizable_merged';
 import {Column, EdaPanel, InjectEdaPanel } from '@eda/models/model.index';
 import { PanelChart } from './panel-charts/panel-chart';
 import { PanelOptions } from './panel-utils/panel-menu-options';
@@ -1930,6 +1930,9 @@ public tableNodeExpand(event: any): void {
             sufix: response.sufix,
             modifiedFontPoints: response.modifiedFontPoints || 0,
             fontScale: response.fontScale ?? KPI_DEFAULT_FONT_SCALE,
+            imageScale: response.imageScale ?? KPI_IMAGE_DEFAULT_SCALE,
+            valueFontScale: response.valueFontScale ?? KPI_DEFAULT_FONT_SCALE,
+            sufixFontScale: response.sufixFontScale ?? KPI_DEFAULT_FONT_SCALE,
             backgroundColor: response.backgroundColor || '',
             kpiColor: response.kpiColor || '',
             prefixImage: response.prefixImage || '',
@@ -1975,6 +1978,9 @@ public tableNodeExpand(event: any): void {
                 assignedColors: response.assignedColors,
                 modifiedFontPoints: response.modifiedFontPoints || 0,
                 fontScale: response.fontScale ?? KPI_DEFAULT_FONT_SCALE,
+                imageScale: response.imageScale ?? KPI_IMAGE_DEFAULT_SCALE,
+                valueFontScale: response.valueFontScale ?? KPI_DEFAULT_FONT_SCALE,
+                sufixFontScale: response.sufixFontScale ?? KPI_DEFAULT_FONT_SCALE,
                 backgroundColor: response.backgroundColor || '',
                 kpiColor: response.kpiColor || '',
                 prefixImage: response.prefixImage || '',
@@ -2245,6 +2251,11 @@ public tableNodeExpand(event: any): void {
     /** It duplicates a dashboard panel and positions it one step below the original.*/
     public duplicatePanel(): void {
         const sourcePanelId = this.panel.id;
+        // Sync panel.content with the live rendered state first (same thing saveDashboard() does
+        // before persisting) — otherwise an unsaved live edit (e.g. a KPI suffix typed in but not
+        // saved yet) is missing from panel.content and the clone silently reverts to the last
+        // saved value.
+        this.savePanel();
         let duplicatedPanel = _.cloneDeep(this.panel, true);
         duplicatedPanel.id = this.fileUtiles.generateUUID();
         duplicatedPanel.y = duplicatedPanel.y + 1;
