@@ -466,6 +466,17 @@
   display: none; /* zoom control: viewing aid, out in view mode */
 }
 
+/* READ-ONLY (EDA_RO): the layout is locked like in view mode, but here the
+ * panels' menus are NOT hidden (core keeps only "Exportar a Excel/CSV" for
+ * them, which is a legitimate read-only action). Only the drag/resize
+ * affordances are removed; the behaviour itself is off via gridsterOptions. */
+#myDashboard.dsm-readonly .drag-handler {
+  cursor: default;
+}
+#myDashboard.dsm-readonly .gridster-item-resizable-handler {
+  display: none;
+}
+
 /* "Unsaved changes" notice: lives in dashboard.page.html with
  * `absolute -top-12 right-16` classes. Centered on top like the toasts,
  * without touching the core. Fragile by design: if the core changes those
