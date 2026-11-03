@@ -44,7 +44,7 @@
           <div class="kpi-config-panel-wrapper">
             <div class="kpi-config-panel">
 
-              <!-- Tamaño: kpitrend/kpideviation mantienen el input numérico (Edalitics, sin cambios) -->
+              <!-- Size: kpitrend/kpideviation keep the numeric input (Edalitics mode, unchanged) -->
               @if (showLegacySizeControl) {
                 <div class="kpi-config-section" [class.is-expanded]="isSizeExpanded">
                   <div class="kpi-section-head" role="button" tabindex="0"
@@ -70,7 +70,7 @@
                 </div>
               }
 
-              <!-- Tamaño: kpi plano y kpi+gráfico — imagen y sufijo siempre desde aquí (ambos modos); el número solo en modo Edalitics (en forks se ajusta con el +/- al pasar el ratón sobre el propio KPI) -->
+              <!-- Size: plain kpi and kpi+chart — image and suffix are always adjusted here (both modes); the number only in Edalitics mode (in forks it is adjusted via the hover +/- on the KPI itself) -->
               @if (showImageSufixSizeControls) {
                 <div class="kpi-config-section" [class.is-expanded]="isSizeExpanded">
                   <div class="kpi-section-head" role="button" tabindex="0"
