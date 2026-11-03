@@ -1251,8 +1251,6 @@ public tableNodeExpand(event: any): void {
 
     public dropToResultSorting(event: CdkDragDrop<any[]>) {
 
-        console.log('event ==> ', event);
-
         if (event.previousContainer === event.container) {
             moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
         } else {
@@ -1260,6 +1258,15 @@ public tableNodeExpand(event: any): void {
 
             // Si no tenemos ordenation_type, añadimos 
             draggedColumn.ordenation_type ??= 'No';
+
+            // A column of a related table keeps its join path (same as moveItem does).
+            // Without it the API cannot join that table to sort by it, and the ORDER BY
+            // would reference a table that is not part of the query.
+            if (draggedColumn.table_id !== this.rootTable?.table_name
+                && (!draggedColumn.joins || draggedColumn.joins.length === 0)
+                && this.nodeJoins?.length) {
+                draggedColumn.joins = this.nodeJoins[this.nodeJoins.length - 1];
+            }
 
             const alreadyAdded = this.resultSortingColumns
                 .some(col => col.column_name === draggedColumn.column_name);
@@ -1272,8 +1279,6 @@ public tableNodeExpand(event: any): void {
                 );
             }
         }
-
-        console.log('resultSortingColumns: ', this.resultSortingColumns);
 
     }
 
