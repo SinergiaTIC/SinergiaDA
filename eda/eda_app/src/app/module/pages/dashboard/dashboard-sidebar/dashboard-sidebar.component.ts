@@ -702,10 +702,10 @@ export class DashboardSidebarComponent implements AfterViewInit {
 
   public closeTagModal(tags: any[]) {
     this.isTagModalVisible = false;
-    // Normalize tags to array of strings, dropping empty/null selections
-    const normalizedTags = tags ? tags
-      .map(tag => (typeof tag === 'string' ? tag : (tag?.value ?? tag?.label)))
-      .filter(tag => tag !== null && tag !== undefined && tag !== '') : [];
+    // Normalize tags to array of strings
+    const normalizedTags = tags ? tags.map(tag =>
+      typeof tag === 'string' ? tag : tag.value || tag.label
+    ) : [];
     this.dashboard.selectedTags = normalizedTags;
     this.dashboard.dashboard.config.tag = normalizedTags;
     this.dashboardService.setNotSaved(true);
