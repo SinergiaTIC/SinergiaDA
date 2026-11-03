@@ -11,7 +11,7 @@ export const ALLOWED_JOIN_TYPES: string[] = ['left', 'inner'];
 export const SHOW_CUSTOM_ACTION: boolean = false;
 export const SHOW_ZOOM_IN_SIDEBAR: boolean = false;
 export const KPI_CONFIG = { // KPI sizing/layout feature flags, grouped since there are many related settings.
-    USE_EDALITICS_SIZE_LOGIC: true, // moves where the value's +/- control lives — true → Edalitics false -> forks
+    USE_EDALITICS_SIZE_LOGIC: false, // moves where the value's +/- control lives — true → Edalitics false -> forks
     MIN_FONT_SCALE: 0.2,      // 20% minimum
     MAX_FONT_SCALE: 1.0,      // 100% maximum for forks
     DEFAULT_FONT_SCALE: 1.0,  // 100% forks default
