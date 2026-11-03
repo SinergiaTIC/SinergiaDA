@@ -1,7 +1,7 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="744" height="744" viewBox="0 0 16 16">
   <circle cx="8" cy="8" r="7.6" fill="#b4bc32"/>
   <g transform="translate(0.5,-0.5)">
-    <path d="M8 0.5 A7.0 7.0 0 0 1 15.0 8 L8 8 Z" fill="#8d72d8" stroke="#ffffff" stroke-width="1.0" stroke-linejoin="round"/>
+    <path d="M8 0.5 A7.0 7.0 0 0 1 15.0 8 L8 8 Z" fill="#95B5DF" stroke="#ffffff" stroke-width="1.0" stroke-linejoin="round"/>
   </g>
   <g transform="translate(-0.432543,-2.773631) scale(0.09756755)">
     <g transform="matrix(0.73014163,0,0,0.66198387,181.27997,3.7813448)">
