@@ -353,7 +353,7 @@ export class EdaKpiComponent implements OnInit, AfterViewInit, OnDestroy {
         this.controlsCache = {
             fit,
             scale,
-            percent: fit > 0 ? Math.min(this.maxFontScale * 100, Math.round((size / fit) * 100)) : Math.round(this.defaultFontScale * 100),
+            percent: fit > 0 ? Math.min(this.maxFontScale * 100, size <= this.minFontSize + 0.5 ? Math.round((size / fit) * 100) : scale * 100) : Math.round(this.defaultFontScale * 100),
             canUp: this.useHoverResize && this.nextScaleWithSize(1) !== null,
             canDown: this.useHoverResize && this.nextScaleWithSize(-1) !== null,
         };
