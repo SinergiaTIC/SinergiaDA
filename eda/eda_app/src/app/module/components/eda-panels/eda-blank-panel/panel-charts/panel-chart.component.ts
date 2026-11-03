@@ -14,6 +14,7 @@ import { EdadynamicTextComponent } from '../../../eda-dynamicText/eda-dynamicTex
 import { EdaTableComponent } from '../../../eda-table/eda-table.component';
 import { PanelChart } from './panel-chart';
 import { ChartUtilsService, DashboardService, StyleConfig, StyleProviderService } from '@eda/services/service.index';
+import { KPI_CONFIG } from '@eda/configs/customizable/customizable_merged';
 import { EdaKpiComponent } from '@eda/components/eda-kpi/eda-kpi.component';
 import { Column } from '@eda/models/model.index';
 import { EdaChartComponent } from '@eda/components/eda-chart/eda-chart.component';
@@ -602,7 +603,10 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
             chartConfig.sufix = kpiCfg?.sufix || '';
             chartConfig.alertLimits = alertLimits;
             chartConfig.modifiedFontPoints = kpiCfg?.modifiedFontPoints || 0;
-            chartConfig.fontScale = kpiCfg?.fontScale || 1;
+            chartConfig.fontScale = kpiCfg?.fontScale ?? KPI_CONFIG.DEFAULT_FONT_SCALE;
+            chartConfig.imageScale = kpiCfg?.imageScale ?? KPI_CONFIG.IMAGE_DEFAULT_SCALE;
+            chartConfig.valueFontScale = kpiCfg?.valueFontScale ?? KPI_CONFIG.DEFAULT_FONT_SCALE;
+            chartConfig.sufixFontScale = kpiCfg?.sufixFontScale ?? KPI_CONFIG.DEFAULT_FONT_SCALE;
             chartConfig.edaChart = kpiCfg?.edaChart;
             chartConfig.backgroundColor = kpiCfg?.backgroundColor || '';
             // 2.x stored the KPI text colour in config.color; keep reading it (issue #651)
@@ -615,7 +619,10 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
             chartConfig.sufix = '';
             chartConfig.alertLimits = [];
             chartConfig.modifiedFontPoints = 0;
-            chartConfig.fontScale = 1;
+            chartConfig.fontScale = KPI_CONFIG.DEFAULT_FONT_SCALE;
+            chartConfig.imageScale = KPI_CONFIG.IMAGE_DEFAULT_SCALE;
+            chartConfig.valueFontScale = KPI_CONFIG.DEFAULT_FONT_SCALE;
+            chartConfig.sufixFontScale = KPI_CONFIG.DEFAULT_FONT_SCALE;
             chartConfig.backgroundColor = '';
             chartConfig.kpiColor = '';
             chartConfig.prefixImage = '';
@@ -638,7 +645,10 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
                 sufix: data.sufix,
                 alertLimits: inject.alertLimits,
                 modifiedFontPoints: inject.modifiedFontPoints || 0,
-                fontScale: data.fontScale ?? inject.fontScale ?? 1,
+                fontScale: data.fontScale ?? inject.fontScale ?? KPI_CONFIG.DEFAULT_FONT_SCALE,
+                imageScale: inject.imageScale ?? KPI_CONFIG.IMAGE_DEFAULT_SCALE,
+                valueFontScale: inject.valueFontScale ?? KPI_CONFIG.DEFAULT_FONT_SCALE,
+                sufixFontScale: inject.sufixFontScale ?? KPI_CONFIG.DEFAULT_FONT_SCALE,
                 backgroundColor: inject.backgroundColor || '',
                 kpiColor: inject.kpiColor || '',
                 prefixImage: inject.prefixImage || '',
@@ -654,9 +664,9 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
      * value really changed (opening the suffix editor also emits the event).
      */
     private markKpiConfigChanged(previous: KpiConfig, next: KpiConfig): void {
-        const previousScale = previous?.fontScale ?? 1;
+        const previousScale = previous?.valueFontScale ?? KPI_CONFIG.DEFAULT_FONT_SCALE;
         const previousSufix = previous?.sufix ?? '';
-        if (next.fontScale !== previousScale || next.sufix !== previousSufix) {
+        if (next.valueFontScale !== previousScale || next.sufix !== previousSufix) {
             this.dashboardService.setNotSaved(true);
         }
     }
@@ -866,7 +876,10 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         chartConfig.sufix = kpiCfgChart?.sufix || '';
         chartConfig.alertLimits = alertLimits;
         chartConfig.modifiedFontPoints = kpiCfgChart?.modifiedFontPoints || 0;
-        chartConfig.fontScale = kpiCfgChart?.fontScale || 1;
+        chartConfig.fontScale = kpiCfgChart?.fontScale ?? KPI_CONFIG.DEFAULT_FONT_SCALE;
+        chartConfig.imageScale = kpiCfgChart?.imageScale ?? KPI_CONFIG.IMAGE_DEFAULT_SCALE;
+        chartConfig.valueFontScale = kpiCfgChart?.valueFontScale ?? KPI_CONFIG.DEFAULT_FONT_SCALE;
+        chartConfig.sufixFontScale = kpiCfgChart?.sufixFontScale ?? KPI_CONFIG.DEFAULT_FONT_SCALE;
         chartConfig.backgroundColor = kpiCfgChart?.backgroundColor || '';
         // 2.x stored the KPI text colour in config.color; keep reading it (issue #651)
         chartConfig.kpiColor = kpiCfgChart?.kpiColor || (kpiCfgChart as any)?.color || '';
@@ -878,7 +891,10 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         chartConfig.sufix = '';
         chartConfig.alertLimits = [];
         chartConfig.modifiedFontPoints = 0;
-        chartConfig.fontScale = 1;
+        chartConfig.fontScale = KPI_CONFIG.DEFAULT_FONT_SCALE;
+        chartConfig.imageScale = KPI_CONFIG.IMAGE_DEFAULT_SCALE;
+        chartConfig.valueFontScale = KPI_CONFIG.DEFAULT_FONT_SCALE;
+        chartConfig.sufixFontScale = KPI_CONFIG.DEFAULT_FONT_SCALE;
         chartConfig.backgroundColor = '';
         chartConfig.kpiColor = '';
         chartConfig.prefixImage = '';
@@ -1006,7 +1022,10 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
                 alertLimits: inject.alertLimits || [],
                 edaChart: inject.edaChart,
                 modifiedFontPoints: inject.modifiedFontPoints || 0,
-                fontScale: data.fontScale ?? inject.fontScale ?? 1,
+                fontScale: data.fontScale ?? inject.fontScale ?? KPI_CONFIG.DEFAULT_FONT_SCALE,
+                imageScale: inject.imageScale ?? KPI_CONFIG.IMAGE_DEFAULT_SCALE,
+                valueFontScale: inject.valueFontScale ?? KPI_CONFIG.DEFAULT_FONT_SCALE,
+                sufixFontScale: inject.sufixFontScale ?? KPI_CONFIG.DEFAULT_FONT_SCALE,
                 backgroundColor: inject.backgroundColor || '',
                 kpiColor: inject.kpiColor || '',
                 prefixImage: inject.prefixImage || '',

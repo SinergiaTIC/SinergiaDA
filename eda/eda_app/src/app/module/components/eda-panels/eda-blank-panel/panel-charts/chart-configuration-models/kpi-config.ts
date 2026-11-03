@@ -1,4 +1,5 @@
 import { ChartJsConfig } from "./chart-js-config";
+import { KPI_CONFIG } from '@eda/configs/customizable/customizable_merged';
 
 export class KpiConfig {
     sufix: string = '';
@@ -6,11 +7,15 @@ export class KpiConfig {
     alertLimits: any[] = [];
     edaChart: ChartJsConfig;
     modifiedFontPoints: number = 0;
-    /** Multiplicative font-size factor used in SDA mode (hover +/- buttons). Only applies when USE_EDA_KPI_SIZE_LOGIC is false. */
-    fontScale: number = 1;
+    /** Multiplicative font-size factor used in forks mode (hover +/- buttons). Only applies when KPI_CONFIG.USE_EDALITICS_SIZE_LOGIC is false. */
+    fontScale: number = KPI_CONFIG.DEFAULT_FONT_SCALE;
     backgroundColor: string = '';
     kpiColor: string = '';
     prefixImage: string = '';
+    /** Edalitics mode only (KPI_CONFIG.USE_EDALITICS_SIZE_LOGIC true) */
+    imageScale: number = KPI_CONFIG.IMAGE_DEFAULT_SCALE;
+    valueFontScale: number = KPI_CONFIG.DEFAULT_FONT_SCALE;
+    sufixFontScale: number = KPI_CONFIG.DEFAULT_FONT_SCALE;
     constructor(init?: Partial<KpiConfig>) {
         this.edaChart = new ChartJsConfig(
             init?.edaChart?.colors || [],

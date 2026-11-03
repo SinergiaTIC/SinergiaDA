@@ -12,7 +12,7 @@ import { ColorPickerModule } from 'primeng/colorpicker';
 import { DropdownModule } from 'primeng/dropdown';
 import { InputSwitchModule } from 'primeng/inputswitch';
 import { InputTextModule } from 'primeng/inputtext';
-import { USE_EDA_KPI_SIZE_LOGIC } from '@eda/configs/customizable/customizable_merged';
+import { KPI_CONFIG } from '@eda/configs/customizable/customizable_merged';
 
 @Component({
     standalone: true,
@@ -43,8 +43,17 @@ export class KpiEditDialogComponent implements OnInit, AfterViewInit, AfterViewC
     public ptooltipViewAlerts: string = $localize`:@@ptooltipViewAlerts:Configurar alertas`;
 
     public modifiedFontPoints: number = 0;
-    /** true → EDA mode (numeric input below) | false → SDA mode (hover +/- buttons on the KPI itself) */
-    public readonly useHoverResize: boolean = !USE_EDA_KPI_SIZE_LOGIC;
+    /** true → Edalitics mode (numeric input below) | false → forks mode (hover +/- buttons on the KPI itself) */
+    public readonly useHoverResize: boolean = !KPI_CONFIG.USE_EDALITICS_SIZE_LOGIC;
+    /** Edalitics mode only (plain kpi / kpi+chart, not kpitrend/kpideviation): image-vs-text and independent value/suffix scales. */
+    public imageScale: number = KPI_CONFIG.IMAGE_DEFAULT_SCALE;
+    public valueFontScale: number = KPI_CONFIG.DEFAULT_FONT_SCALE;
+    public sufixFontScale: number = KPI_CONFIG.DEFAULT_FONT_SCALE;
+    private readonly imageScaleMin = KPI_CONFIG.IMAGE_MIN_SCALE;
+    private readonly imageScaleMax = KPI_CONFIG.IMAGE_MAX_SCALE;
+    private readonly fontScaleMin = KPI_CONFIG.MIN_FONT_SCALE;
+    private readonly fontScaleMax = KPI_CONFIG.MAX_FONT_SCALE;
+    private readonly scaleStep = 0.1;
     public panelBaseResultSize: number = 0;
     public previewAspectRatio: string = '4/3';
     public previewBoxStyle: any = {};
@@ -112,6 +121,21 @@ export class KpiEditDialogComponent implements OnInit, AfterViewInit, AfterViewC
         return this.assignedColors;
     }
 
+    /** Image + suffix size: plain kpi / kpi+chart, both modes — always adjusted from the dialog. */
+    get showImageSufixSizeControls(): boolean {
+        return !this.isKpiTrend && !this.isKpiDeviation;
+    }
+
+    /** Value size: plain kpi / kpi+chart, Edalitics mode only — forks adjusts it via the hover +/- on the KPI itself instead. */
+    get showValueSizeControl(): boolean {
+        return !this.useHoverResize && !this.isKpiTrend && !this.isKpiDeviation;
+    }
+
+    /** Old single numeric "Tamaño" input: kpitrend/kpideviation only, Edalitics mode only (unchanged). */
+    get showLegacySizeControl(): boolean {
+        return !this.useHoverResize && (this.isKpiTrend || this.isKpiDeviation);
+    }
+
     constructor(
         private userService: UserService,
         private stylesProviderService: StyleProviderService,
@@ -171,6 +195,9 @@ export class KpiEditDialogComponent implements OnInit, AfterViewInit, AfterViewC
         this.originalAlerts = [...(config.alertLimits || [])];
         this.alerts = [...this.originalAlerts];
         this.modifiedFontPoints = config.modifiedFontPoints || 0;
+        this.imageScale = typeof config.imageScale === 'number' ? config.imageScale : KPI_CONFIG.IMAGE_DEFAULT_SCALE;
+        this.valueFontScale = typeof config.valueFontScale === 'number' ? config.valueFontScale : KPI_CONFIG.DEFAULT_FONT_SCALE;
+        this.sufixFontScale = typeof config.sufixFontScale === 'number' ? config.sufixFontScale : KPI_CONFIG.DEFAULT_FONT_SCALE;
         // Pre-fill with the KPI's current color, falling back to the panel style defaults.
         this.kpiBackgroundColor = config.backgroundColor
             || this.normalizeHexColor(this.getStyleProviderValue('panelColor'), '#ffffff');
@@ -279,7 +306,7 @@ export class KpiEditDialogComponent implements OnInit, AfterViewInit, AfterViewC
 
         const kpiInject = this.panelChartComponent?.componentRef?.instance?.inject;
         const savedConfig: any = this.panelChartConfig?.config?.getConfig?.() || {};
-        const fontScale = kpiInject?.fontScale ?? savedConfig.fontScale ?? 1;
+        const fontScale = kpiInject?.fontScale ?? savedConfig.fontScale ?? KPI_CONFIG.DEFAULT_FONT_SCALE;
 
         this.onClose(EdaDialogCloseEvent.UPDATE, {
             alerts: this.alerts,
@@ -293,6 +320,9 @@ export class KpiEditDialogComponent implements OnInit, AfterViewInit, AfterViewC
             assignedColors: [...this.assignedColors],
             modifiedFontPoints: this.modifiedFontPoints,
             fontScale,
+            imageScale: this.imageScale,
+            valueFontScale: this.valueFontScale,
+            sufixFontScale: this.sufixFontScale,
             backgroundColor: this.kpiBackgroundColor,
             kpiColor: this.kpiTextColor,
             prefixImage: this.prefixImage,
@@ -837,4 +867,99 @@ export class KpiEditDialogComponent implements OnInit, AfterViewInit, AfterViewC
         instance.inject.modifiedFontPoints = this.modifiedFontPoints;
         this.panelChartComponent.componentRef.changeDetectorRef.detectChanges();
     }
+
+    // --- Edalitics size controls: image/value/suffix independent scales (plain kpi / kpi+chart only) ---
+
+    /**
+     * Displayed as a percentage of each control's real default (not of the raw stored fraction):
+     * 100% always means "as it is by default" — image at its default width share, value/suffix at
+     * their default fit scale — and e.g. 200% means twice that real value, whatever it numerically
+     * is. The stored value (inject.imageScale/valueFontScale/sufixFontScale) stays the actual
+     * fraction the renderer uses; only this display/edit layer is relative.
+     */
+    get imageScalePercent(): number {
+        return Math.round((this.imageScale / KPI_CONFIG.IMAGE_DEFAULT_SCALE) * 100);
+    }
+
+    get valueFontScalePercent(): number {
+        return Math.round((this.valueFontScale / KPI_CONFIG.DEFAULT_FONT_SCALE) * 100);
+    }
+
+    get sufixFontScalePercent(): number {
+        return Math.round((this.sufixFontScale / KPI_CONFIG.DEFAULT_FONT_SCALE) * 100);
+    }
+
+    canDecreaseImageScale(): boolean {
+        return this.imageScale > this.imageScaleMin + 1e-9;
+    }
+
+    canIncreaseImageScale(): boolean {
+        return this.imageScale < this.imageScaleMax - 1e-9;
+    }
+
+    canDecreaseValueScale(): boolean {
+        return this.valueFontScale > this.fontScaleMin + 1e-9;
+    }
+
+    canIncreaseValueScale(): boolean {
+        return this.valueFontScale < this.fontScaleMax - 1e-9;
+    }
+
+    canDecreaseSufixScale(): boolean {
+        return this.sufixFontScale > this.fontScaleMin + 1e-9;
+    }
+
+    canIncreaseSufixScale(): boolean {
+        return this.sufixFontScale < this.fontScaleMax - 1e-9;
+    }
+
+    increaseImageScale(): void {
+        this.setImageScale(this.imageScale + KPI_CONFIG.IMAGE_DEFAULT_SCALE * this.scaleStep);
+    }
+
+    decreaseImageScale(): void {
+        this.setImageScale(this.imageScale - KPI_CONFIG.IMAGE_DEFAULT_SCALE * this.scaleStep);
+    }
+
+    increaseValueScale(): void {
+        this.setValueScale(this.valueFontScale + KPI_CONFIG.DEFAULT_FONT_SCALE * this.scaleStep);
+    }
+
+    decreaseValueScale(): void {
+        this.setValueScale(this.valueFontScale - KPI_CONFIG.DEFAULT_FONT_SCALE * this.scaleStep);
+    }
+
+    increaseSufixScale(): void {
+        this.setSufixScale(this.sufixFontScale + KPI_CONFIG.DEFAULT_FONT_SCALE * this.scaleStep);
+    }
+
+    decreaseSufixScale(): void {
+        this.setSufixScale(this.sufixFontScale - KPI_CONFIG.DEFAULT_FONT_SCALE * this.scaleStep);
+    }
+
+    private setImageScale(value: number): void {
+        this.imageScale = +Math.min(this.imageScaleMax, Math.max(this.imageScaleMin, value)).toFixed(2);
+        this.applyEdaSizeToInstance();
+    }
+
+    private setValueScale(value: number): void {
+        this.valueFontScale = +Math.min(this.fontScaleMax, Math.max(this.fontScaleMin, value)).toFixed(2);
+        this.applyEdaSizeToInstance();
+    }
+
+    private setSufixScale(value: number): void {
+        this.sufixFontScale = +Math.min(this.fontScaleMax, Math.max(this.fontScaleMin, value)).toFixed(2);
+        this.applyEdaSizeToInstance();
+    }
+
+    private applyEdaSizeToInstance(): void {
+        const instance = this.panelChartComponent?.componentRef?.instance;
+        if (!instance?.inject) return;
+        instance.inject.imageScale = this.imageScale;
+        instance.inject.valueFontScale = this.valueFontScale;
+        instance.inject.sufixFontScale = this.sufixFontScale;
+        this.panelChartComponent.componentRef.changeDetectorRef.detectChanges();
+    }
+
+    // --- END Edalitics size controls ---
 }
