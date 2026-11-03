@@ -37,12 +37,18 @@ export class DashboardTagModal implements OnInit {
   ngOnInit(): void {
     const tags = this.dashboard.selectedTags;
     this.selectedTags = tags == null ? [] : (Array.isArray(tags) ? tags : [tags]);
+    this.tags = this.localTags(); // Avoids showing "null" before the full catalog loads.
 
     this.loadExistingTags();
   }
 
-  // Tags aren't in a shared catalog, so build the full list from every visible dashboard
-  // instead of a local cache that can go stale.
+  private localTags(): any[] {
+    return this.selectedTags
+      .filter((tag): tag is string => typeof tag === 'string')
+      .map(tag => ({ label: tag, value: tag }));
+  }
+
+  // No shared tag catalog exists, so build it from every visible dashboard.
   private loadExistingTags(): void {
     this.dashboardService.getDashboards().subscribe((resp: any) => {
       const allDashboards = [
@@ -58,12 +64,7 @@ export class DashboardTagModal implements OnInit {
         .flatMap(tag => Array.isArray(tag) ? tag : [tag])
         .map(tag => typeof tag === 'string' ? { label: tag, value: tag } : tag);
 
-      // Keep tags added this session but not saved yet.
-      const localTags = this.selectedTags
-        .filter((tag): tag is string => typeof tag === 'string')
-        .map(tag => ({ label: tag, value: tag }));
-
-      this.tags = Array.from(new Map([...remoteTags, ...localTags, ...this.tags].map(item => [item.label, item])).values())
+      this.tags = Array.from(new Map([...remoteTags, ...this.localTags(), ...this.tags].map(item => [item.label, item])).values())
         .filter(tag => !this.nonAssignableTagLabels.includes(tag.label));
     });
   }
