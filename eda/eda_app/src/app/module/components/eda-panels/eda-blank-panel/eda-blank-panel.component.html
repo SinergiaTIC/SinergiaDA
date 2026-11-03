@@ -123,7 +123,9 @@
           [ngStyle]="panelContent"
           [ngClass]="isSpecialChart(panelChartConfig.chartType)
             ? 'h-full w-full flex justify-center content-center overflow-hidden flex-wrap'
-            : 'h-full w-full block overflow-hidden content-center pb-2'"
+            : (['table','crosstable','treetable'].includes(panelChartConfig.chartType)
+              ? 'h-full w-full block overflow-x-auto overflow-y-hidden content-center pb-2'
+              : 'h-full w-full block overflow-hidden content-center pb-2')"
           style="flex-wrap:wrap!important;"></panel-chart>
       </div>
     }
