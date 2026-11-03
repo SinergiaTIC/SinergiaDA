@@ -439,7 +439,9 @@ export class DashboardPage implements OnInit {
         dashboard.config.stopRefresh = false;
         this.startCountdown(dashboard.config.refreshTime);
       }
-      this.selectedTags = this.dashboard.config.tag;
+      this.selectedTags = Array.isArray(this.dashboard.config.tag)
+        ? this.dashboard.config.tag.filter(tag => tag !== null && tag !== undefined && tag !== '')
+        : (this.dashboard.config.tag ? [this.dashboard.config.tag] : []);
     }
 
     // A dashboard that has just been loaded has no unsaved changes yet.

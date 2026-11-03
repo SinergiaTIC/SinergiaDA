@@ -39,10 +39,11 @@ export class DashboardTagModal implements OnInit {
       this.tags = [this.tags];
     }
     
-    // We add the tags present in this document in case they are not stored locally
-    if(!Array.isArray(this.selectedTags)){
-      this.selectedTags = [this.selectedTags];
-    } 
+    // Normalize selectedTags: start with no tag selected unless there are real tags.
+    if (!Array.isArray(this.selectedTags)) {
+      this.selectedTags = this.selectedTags ? [this.selectedTags] : [];
+    }
+    this.selectedTags = this.selectedTags.filter(tag => tag !== null && tag !== undefined && tag !== '');
   
     // Add tag values that come from imports
     this.tags.push(...this.selectedTags.filter(  (tag): tag is string => typeof tag === "string").map(tag => ({label: tag,value: tag})));
@@ -72,10 +73,10 @@ export class DashboardTagModal implements OnInit {
 
   public onApply() {
     this.display = false;
-    // Normalize selectedTags: convert objects to strings
-    const normalizedTags = this.selectedTags.map(tag =>
-      typeof tag === 'string' ? tag : tag.value || tag.label
-    );
+    // Normalize selectedTags: convert objects to strings, dropping empty/null selections
+    const normalizedTags = this.selectedTags
+      .map(tag => (typeof tag === 'string' ? tag : (tag?.value ?? tag?.label)))
+      .filter(tag => tag !== null && tag !== undefined && tag !== '');
     this.close.emit(normalizedTags);
     this.alertService.addSuccess($localize`:@@tagAssigned:Etiqueta asignada correctamente`);
   }
