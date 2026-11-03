@@ -225,16 +225,17 @@ export const SHOW_WHAT_IF: boolean = true; // true → "What If?" scenarios butt
 export const ALLOWED_JOIN_TYPES: string[] = ['left', 'inner', 'right']; // subset of 'left' | 'inner' | 'right' shown as join type options
 export const SHOW_CUSTOM_ACTION: boolean = true; // true → "Acción personalizada" visible en el menú del informe | false → oculta
 export const SHOW_ZOOM_IN_SIDEBAR: boolean = true; // true → zoom control lives inside the dashboard sidebar | false → zoom control lives in the filters bar
-export const USE_EDA_KPI_SIZE_LOGIC: boolean = true; // true → EDA mode: numeric input in the KPI dialog (modifiedFontPoints, additive) | false → SDA mode: +/- buttons on hover over the KPI (fontScale, multiplicative)
-// KPI font-size limits. Expressed as a fraction of the size that fits the panel (1 = 100%).
-// Above 100% the value wraps into multiple lines; the panel clips it if there is not enough room.
-export const KPI_MIN_FONT_SCALE: number = 0.2; // 20% minimum
-export const KPI_MAX_FONT_SCALE: number = 2.5; // maximum scale (EDA 150%)
-export const KPI_DEFAULT_FONT_SCALE: number = 0.8; // default scale (EDA 80%; forks may override, e.g. SDA)
-// Edalitics mode only: width share given to the prefix image vs the value/suffix text block.
-export const KPI_IMAGE_MIN_SCALE: number = 0.1; // 10% minimum width share for the image
-export const KPI_IMAGE_MAX_SCALE: number = 0.7; // 60% maximum width share for the image
-export const KPI_IMAGE_DEFAULT_SCALE: number = 0.2; // 20% default width share for the image
+export const KPI_CONFIG = { // KPI sizing/layout feature flags, grouped since there are many related settings.
+    USE_EDALITICS_SIZE_LOGIC: true, // moves where the value's +/- control lives — true → Edalitics false -> forks
+    MIN_FONT_SCALE: 0.2,      // 20% minimum
+    MAX_FONT_SCALE: 2.5,      // maximum scale (150%)
+    DEFAULT_FONT_SCALE: 0.8,  // default scale (80%; forks may override)
+    IMAGE_MIN_SCALE: 0.1,     // 10% minimum width share for the image
+    IMAGE_MAX_SCALE: 0.7,     // 70% maximum width share for the image
+    IMAGE_DEFAULT_SCALE: 0.2, // 20% default width share for the image
+    STACK_RATIO: 16 / 9,      // plain kpi (a "widescreen" shape)
+    CHART_STACK_RATIO: 5 / 4, // kpi+chart — the chart eats most of the panel's height, leaving a squarer strip for the value
+};
 export const PRIVATE_EDITION_ACTIVATED: boolean =  true;
 export const ENABLED_LANGUAGES: string[] = ['es', 'en', 'ca', 'fr', 'pl', 'gl', 'eu']; // Locale codes shown in the language selector. Each one must have a matching build in angular.json's i18n.locales (or be the sourceLocale) — this flag only controls what's offered in the UI, it doesn't build/remove locales.
 export const MAP_BASEMAP_PROVIDER: 'esri' | 'osm' = 'esri'; // Basemap used by the map charts (MapUtilsService.getBaseLayer) | 'esri' → Esri World_Light_Gray_Base | 'osm' → OpenStreetMap standard tiles

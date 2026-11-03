@@ -16,7 +16,7 @@ import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { TreeModule } from 'primeng/tree';
 // Eda config
 import { resolveQueryMode } from '@eda/shared/utils/query-mode.util';
-import { AGG_TYPES, NULL_VALUE, EMPTY_VALUE, SHOW_LOCK_IN_PANEL_HEADER, ALLOWED_QUERY_MODES, SHOW_HIDDEN_FIELDS, SHOW_WHAT_IF, ALLOWED_JOIN_TYPES, USE_EDA_KPI_SIZE_LOGIC, KPI_DEFAULT_FONT_SCALE, KPI_IMAGE_DEFAULT_SCALE } from '@eda/configs/customizable/customizable_merged';
+import { AGG_TYPES, NULL_VALUE, EMPTY_VALUE, SHOW_LOCK_IN_PANEL_HEADER, ALLOWED_QUERY_MODES, SHOW_HIDDEN_FIELDS, SHOW_WHAT_IF, ALLOWED_JOIN_TYPES, KPI_CONFIG } from '@eda/configs/customizable/customizable_merged';
 import {Column, EdaPanel, InjectEdaPanel } from '@eda/models/model.index';
 import { PanelChart } from './panel-charts/panel-chart';
 import { PanelOptions } from './panel-utils/panel-menu-options';
@@ -592,12 +592,12 @@ public tableNodeExpand(event: any): void {
     }
 
     /**
-     * SDA mode only (USE_EDA_KPI_SIZE_LOGIC === false): keeps the KPI's hover +/- resize
+     * forks mode only (KPI_CONFIG.USE_EDALITICS_SIZE_LOGIC === false): keeps the KPI's hover +/- resize
      * buttons visible only while the panel is editable and unlocked, mirroring the
      * canEdit/canSave/!locked gating used for the same purpose in develop.
      */
     private refreshKpiResizeControls(): void {
-        if (USE_EDA_KPI_SIZE_LOGIC) return;
+        if (KPI_CONFIG.USE_EDALITICS_SIZE_LOGIC) return;
         const chartType = this.panelChartConfig?.chartType;
         if (!chartType?.startsWith('kpi') || chartType === 'kpideviation') return;
         const instance = this.panelChart?.componentRef?.instance;
@@ -1929,10 +1929,10 @@ public tableNodeExpand(event: any): void {
             alertLimits: response.alerts,
             sufix: response.sufix,
             modifiedFontPoints: response.modifiedFontPoints || 0,
-            fontScale: response.fontScale ?? KPI_DEFAULT_FONT_SCALE,
-            imageScale: response.imageScale ?? KPI_IMAGE_DEFAULT_SCALE,
-            valueFontScale: response.valueFontScale ?? KPI_DEFAULT_FONT_SCALE,
-            sufixFontScale: response.sufixFontScale ?? KPI_DEFAULT_FONT_SCALE,
+            fontScale: response.fontScale ?? KPI_CONFIG.DEFAULT_FONT_SCALE,
+            imageScale: response.imageScale ?? KPI_CONFIG.IMAGE_DEFAULT_SCALE,
+            valueFontScale: response.valueFontScale ?? KPI_CONFIG.DEFAULT_FONT_SCALE,
+            sufixFontScale: response.sufixFontScale ?? KPI_CONFIG.DEFAULT_FONT_SCALE,
             backgroundColor: response.backgroundColor || '',
             kpiColor: response.kpiColor || '',
             prefixImage: response.prefixImage || '',
@@ -1977,10 +1977,10 @@ public tableNodeExpand(event: any): void {
                 edaChart: layout,
                 assignedColors: response.assignedColors,
                 modifiedFontPoints: response.modifiedFontPoints || 0,
-                fontScale: response.fontScale ?? KPI_DEFAULT_FONT_SCALE,
-                imageScale: response.imageScale ?? KPI_IMAGE_DEFAULT_SCALE,
-                valueFontScale: response.valueFontScale ?? KPI_DEFAULT_FONT_SCALE,
-                sufixFontScale: response.sufixFontScale ?? KPI_DEFAULT_FONT_SCALE,
+                fontScale: response.fontScale ?? KPI_CONFIG.DEFAULT_FONT_SCALE,
+                imageScale: response.imageScale ?? KPI_CONFIG.IMAGE_DEFAULT_SCALE,
+                valueFontScale: response.valueFontScale ?? KPI_CONFIG.DEFAULT_FONT_SCALE,
+                sufixFontScale: response.sufixFontScale ?? KPI_CONFIG.DEFAULT_FONT_SCALE,
                 backgroundColor: response.backgroundColor || '',
                 kpiColor: response.kpiColor || '',
                 prefixImage: response.prefixImage || '',

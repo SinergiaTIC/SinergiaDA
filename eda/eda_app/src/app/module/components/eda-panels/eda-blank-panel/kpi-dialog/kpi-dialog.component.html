@@ -70,8 +70,8 @@
                 </div>
               }
 
-              <!-- Tamaño: kpi plano y kpi+gráfico (Edalitics) — imagen/texto, número y sufijo independientes -->
-              @if (showEdaSizeControls) {
+              <!-- Tamaño: kpi plano y kpi+gráfico — imagen y sufijo siempre desde aquí (ambos modos); el número solo en modo Edalitics (en forks se ajusta con el +/- al pasar el ratón sobre el propio KPI) -->
+              @if (showImageSufixSizeControls) {
                 <div class="kpi-config-section" [class.is-expanded]="isSizeExpanded">
                   <div class="kpi-section-head" role="button" tabindex="0"
                     (click)="toggleSection('size')"
@@ -94,14 +94,16 @@
                           </span>
                         </div>
                       }
-                      <div class="chart-color-row chart-color-row--spaced">
-                        <span class="chart-color-label" i18n="@@kpiValueSize">Tamaño del número</span>
-                        <span class="chart-color-controls kpi-size-controls">
-                          <button type="button" class="kpi-size-btn" (click)="decreaseValueScale()" [disabled]="!canDecreaseValueScale()">-</button>
-                          <button type="button" class="kpi-size-btn" (click)="increaseValueScale()" [disabled]="!canIncreaseValueScale()">+</button>
-                          <span class="kpi-size-percent">{{ valueFontScalePercent }}%</span>
-                        </span>
-                      </div>
+                      @if (showValueSizeControl) {
+                        <div class="chart-color-row chart-color-row--spaced">
+                          <span class="chart-color-label" i18n="@@kpiValueSize">Tamaño del número</span>
+                          <span class="chart-color-controls kpi-size-controls">
+                            <button type="button" class="kpi-size-btn" (click)="decreaseValueScale()" [disabled]="!canDecreaseValueScale()">-</button>
+                            <button type="button" class="kpi-size-btn" (click)="increaseValueScale()" [disabled]="!canIncreaseValueScale()">+</button>
+                            <span class="kpi-size-percent">{{ valueFontScalePercent }}%</span>
+                          </span>
+                        </div>
+                      }
                       <div class="chart-color-row chart-color-row--spaced">
                         <span class="chart-color-label" i18n="@@kpiSufixSize">Tamaño del sufijo</span>
                         <span class="chart-color-controls kpi-size-controls">

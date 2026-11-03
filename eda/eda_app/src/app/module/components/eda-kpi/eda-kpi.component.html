@@ -39,34 +39,23 @@
 <ng-template #kpiValueContent>
     <div #sufixContainer class="pointer" title="Añadir unidades"
          style="max-width: 100%; overflow: hidden;"
-         [style.width]="useHoverResize ? (shouldWrap() ? '100%' : null) : '100%'"
-         [style.height]="useHoverResize || sufixClick ? null : '100%'">
-        @if (useHoverResize) {
-          <span [ngStyle]="getStyle()" (click)="setSufix()"
-                style="display: block; max-width: 100%; text-align: center; overflow: hidden;">
-              @if (inject.prefixImage) {
-                <img [src]="inject.prefixImage" alt=""
-                     style="height: 1em; width: auto; max-width: 1.5em; vertical-align: middle; object-fit: contain; display: inline;" />
-              }
-              {{inject.value | number:'1.0-10':'es' }} {{inject.sufix}}
-          </span>
-        } @else {
-          <div class="w-full h-full flex items-center justify-center"
-               [style.gap]="edaHasImage() ? '0.75rem' : '0'"
-               (click)="setSufix()">
-            @if (edaHasImage()) {
-              <div [ngStyle]="edaImageWrapStyle()">
-                <img [src]="inject.prefixImage" alt="" [ngStyle]="edaImageTagStyle()" />
-              </div>
-            }
-            <div [ngStyle]="edaTextWrapStyle()">
-              <div [ngStyle]="edaValueStyle()" (click)="setSufix(); $event.stopPropagation()">{{ inject.value | number:'1.0-10':'es' }}</div>
-              @if (edaSufixText()) {
-                <div [ngStyle]="edaSufixStyle()" (click)="setSufix(); $event.stopPropagation()">{{ inject.sufix }}</div>
-              }
+         [style.width]="'100%'"
+         [style.height]="sufixClick ? null : '100%'">
+        <div class="w-full h-full flex items-center justify-center"
+             [style.gap]="edaHasImage() ? '0.75rem' : '0'"
+             (click)="setSufix()">
+          @if (edaHasImage()) {
+            <div [ngStyle]="edaImageWrapStyle()">
+              <img [src]="inject.prefixImage" alt="" [ngStyle]="edaImageTagStyle()" />
             </div>
+          }
+          <div [ngStyle]="edaTextWrapStyle()">
+            <div [ngStyle]="edaValueStyle()" (click)="setSufix(); $event.stopPropagation()">{{ inject.value | number:'1.0-10':'es' }}</div>
+            @if (edaSufixText()) {
+              <div [ngStyle]="edaSufixStyle()" (click)="setSufix(); $event.stopPropagation()">{{ inject.sufix }}</div>
+            }
           </div>
-        }
+        </div>
 
         @if(!!sufixClick){
           <div class="ui-inputgroup w-100" style="margin-top: 0.25em;">

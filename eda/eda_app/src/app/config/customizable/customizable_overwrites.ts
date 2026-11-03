@@ -10,11 +10,17 @@ export const SHOW_WHAT_IF: boolean = false; // SDA: sin escenarios "What If"
 export const ALLOWED_JOIN_TYPES: string[] = ['left', 'inner'];
 export const SHOW_CUSTOM_ACTION: boolean = false;
 export const SHOW_ZOOM_IN_SIDEBAR: boolean = false;
-export const USE_EDA_KPI_SIZE_LOGIC: boolean = false;
-// KPI font-size limits. Expressed as a fraction of the size that fits the panel (1 = 100%).
-export const KPI_MIN_FONT_SCALE: number = 0.2; // 20% minimum
-export const KPI_MAX_FONT_SCALE: number = 1.0; // 100% maximum for SDA
-export const KPI_DEFAULT_FONT_SCALE: number = 1.0; // 100% SDA default
+export const KPI_CONFIG = { // KPI sizing/layout feature flags, grouped since there are many related settings.
+    USE_EDALITICS_SIZE_LOGIC: true, // moves where the value's +/- control lives — true → Edalitics false -> forks
+    MIN_FONT_SCALE: 0.2,      // 20% minimum
+    MAX_FONT_SCALE: 1.0,      // 100% maximum for forks
+    DEFAULT_FONT_SCALE: 1.0,  // 100% forks default
+    IMAGE_MIN_SCALE: 0.1,     // 10% minimum width share for the image
+    IMAGE_MAX_SCALE: 0.7,     // 70% maximum width share for the image
+    IMAGE_DEFAULT_SCALE: 0.2, // 20% default width share for the image
+    STACK_RATIO: 16 / 9,      // plain kpi (a "widescreen" shape)
+    CHART_STACK_RATIO: 5 / 4, // kpi+chart — the chart eats most of the panel's height, leaving a squarer strip for the value
+};
 export const PRIVATE_EDITION_ACTIVATED: boolean =  false;
 export const ENABLED_LANGUAGES: string[] = ['es', 'ca', 'en'];
 export const MAP_BASEMAP_PROVIDER: 'esri' | 'osm' = 'osm'; // Basemap used by the map charts (MapUtilsService.getBaseLayer) | 'esri' → Esri World_Light_Gray_Base | 'osm' → OpenStreetMap standard tiles
