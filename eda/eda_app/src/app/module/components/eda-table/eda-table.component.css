@@ -74,10 +74,21 @@ th{
      background: transparent !important;
 }
 
-/* Remove horizontal scroll in all cases (with and without autoLayout) */
+/* Allow horizontal scroll when the table is wider than its container (mobile / many columns) */
 .eda-table:not(.eda-table--pivot) ::ng-deep .p-datatable .p-datatable-wrapper,
-.p-datatable-auto-layout>.p-datatable-wrapper {
-  overflow-x: hidden;
+.p-datatable-auto-layout > .p-datatable-wrapper {
+  overflow-x: auto !important;
+  -webkit-overflow-scrolling: touch;
+  max-width: 100%;
+}
+
+/* Keep a thin, visible scrollbar on mobile / touch devices */
+.eda-table:not(.eda-table--pivot) ::ng-deep .p-datatable .p-datatable-wrapper::-webkit-scrollbar {
+  height: 8px;
+}
+.eda-table:not(.eda-table--pivot) ::ng-deep .p-datatable .p-datatable-wrapper::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.25);
+  border-radius: 4px;
 }
 
 /* Allow text in cells to wrap instead of overflow */
