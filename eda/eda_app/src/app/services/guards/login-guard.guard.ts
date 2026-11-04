@@ -51,17 +51,22 @@ export class LoginGuardGuard implements CanActivate {
             userService: this.userService,
             http: this.http,
             router: this.router,
+            logger: console,
         };
 
-        for (const Plugin of AUTH_PLUGINS) {
-            const plugin = new Plugin();
+        const plugins = AUTH_PLUGINS
+            .map((Plugin) => new Plugin())
+            .filter((plugin) => !plugin.enabled || plugin.enabled())
+            .sort((a, b) => (b.priority ?? 0) - (a.priority ?? 0));
+
+        for (const plugin of plugins) {
             try {
                 const result = await plugin.tryAuthenticate(route, state, ctx);
                 if (result !== 'not-handled') {
                     return result;
                 }
             } catch (error) {
-                console.warn(`[auth-plugins] ${plugin.type} could not authenticate the user`, error);
+                ctx.logger.warn(`[auth-plugins] ${plugin.type} could not authenticate the user`, error);
             }
         }
 

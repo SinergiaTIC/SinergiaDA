@@ -1,6 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
 import { HttpException } from '../module/global/model/index';
-import { PluginRegistry } from '../plugins';
 
 import _ = require('lodash');
 const SEED = require('../../config/seed').SEED;
@@ -14,17 +13,13 @@ export const authGuard = async function (req: Request, res: Response, next: Next
     let token = req.qs.token;
     // return next(new HttpException(401, 'Invalid Token'));
     if ( !_.isNil(token) ) {
-        jwt.verify(token, SEED, async (err, decoded) => {
+        jwt.verify(token, SEED, (err, decoded) => {
 
             if (err) {
                 return next(new HttpException(401, 'Invalid Token'));
             }
 
             req.user = decoded.user;
-
-            if (await PluginRegistry.rejectsSession(decoded)) {
-                return next(new HttpException(401, 'Invalid Token'));
-            }
 
             let url = req.baseUrl + req.path;
             _.forEach(req.params, (v, k) => {
