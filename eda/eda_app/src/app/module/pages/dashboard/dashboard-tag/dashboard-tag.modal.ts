@@ -44,7 +44,7 @@ export class DashboardTagModal implements OnInit {
 
   private localTags(): any[] {
     return this.selectedTags
-      .filter((tag): tag is string => typeof tag === 'string')
+      .filter((tag): tag is string => typeof tag === 'string' && tag.trim() !== '')
       .map(tag => ({ label: tag, value: tag }));
   }
 
@@ -62,6 +62,7 @@ export class DashboardTagModal implements OnInit {
         .flatMap(db => db?.config?.tag)
         .filter(tag => tag !== null && tag !== undefined)
         .flatMap(tag => Array.isArray(tag) ? tag : [tag])
+        .filter(tag => typeof tag !== 'string' || tag.trim() !== '')
         .map(tag => typeof tag === 'string' ? { label: tag, value: tag } : tag);
 
       this.tags = Array.from(new Map([...remoteTags, ...this.localTags(), ...this.tags].map(item => [item.label, item])).values())
@@ -70,20 +71,21 @@ export class DashboardTagModal implements OnInit {
   }
 
   public setNewTag() {
-    const repeated = this.tags.some(tag => (this.newTag.toUpperCase() === String(tag.value).toUpperCase()));
+    const trimmed = (this.newTag || '').trim();
+    const repeated = this.tags.some(tag => (trimmed.toUpperCase() === String(tag.value).toUpperCase()));
 
-    if (this.newTag.length === 0) {
-      this.newTag = !this.newTag;
+    if (trimmed.length === 0) {
+      this.newTag = '';
       this.alertService.addError($localize`:@@emptyTag:Este tag esta vacío`);
     } else if (repeated) {
       this.newTag = '';
       this.alertService.addError($localize`:@@existentTag:Este tag ya existe`);
     } else {
-      const tag = JSON.parse(JSON.stringify({ label: this.newTag, value: this.newTag }));
-      this.tags.push(tag);
+      const tag = { label: trimmed, value: trimmed };
+      this.tags = [...this.tags, tag];
       this.newTag = '';
       this.alertService.addSuccess($localize`:@@tagCreated:Etiqueta creada correctamente`);
-      (this.selectedTags ??= []).push(tag.label);
+      this.selectedTags = [...(this.selectedTags || []), tag.label];
     }
   }
 
@@ -92,6 +94,7 @@ export class DashboardTagModal implements OnInit {
     // Convert tag objects to strings, dropping empty/null selections
     const normalizedTags = this.selectedTags
       .map(tag => (typeof tag === 'string' ? tag : (tag?.value ?? tag?.label)))
+      .map(tag => typeof tag === 'string' ? tag.trim() : tag)
       .filter(tag => tag !== null && tag !== undefined && tag !== '');
     this.close.emit(normalizedTags);
     this.alertService.addSuccess($localize`:@@tagAssigned:Etiqueta asignada correctamente`);
