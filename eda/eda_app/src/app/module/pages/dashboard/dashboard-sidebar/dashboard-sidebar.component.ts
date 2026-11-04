@@ -91,7 +91,7 @@ const ANGULAR_MODULES = [
     ::ng-deep .p-overlaypanel {
         z-index: 1000 !important; /* A higher z-index than the overlay-backdrop */
     }
-
+ 
     ::ng-deep .p-overlaypanel-content {
         background-color: white;
         border-radius: 1em;
@@ -702,10 +702,10 @@ export class DashboardSidebarComponent implements AfterViewInit {
 
   public closeTagModal(tags: any[]) {
     this.isTagModalVisible = false;
-    // Normalize tags to array of strings
-    const normalizedTags = tags ? tags.map(tag =>
-      typeof tag === 'string' ? tag : tag.value || tag.label
-    ) : [];
+    // Normalize tags to array of strings, dropping empty/null selections
+    const normalizedTags = tags ? tags
+      .map(tag => (typeof tag === 'string' ? tag : (tag?.value ?? tag?.label)))
+      .filter(tag => tag !== null && tag !== undefined && tag !== '') : [];
     this.dashboard.selectedTags = normalizedTags;
     this.dashboard.dashboard.config.tag = normalizedTags;
     this.dashboardService.setNotSaved(true);
