@@ -16,7 +16,7 @@ import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { TreeModule } from 'primeng/tree';
 // Eda config
 import { resolveQueryMode } from '@eda/shared/utils/query-mode.util';
-import { AGG_TYPES, NULL_VALUE, EMPTY_VALUE, SHOW_LOCK_IN_PANEL_HEADER, ALLOWED_QUERY_MODES, SHOW_HIDDEN_FIELDS, SHOW_WHAT_IF, ALLOWED_JOIN_TYPES, USE_EDA_KPI_SIZE_LOGIC } from '@eda/configs/customizable/customizable_merged';
+import { AGG_TYPES, NULL_VALUE, EMPTY_VALUE, SHOW_LOCK_IN_PANEL_HEADER, ALLOWED_QUERY_MODES, SHOW_HIDDEN_FIELDS, SHOW_WHAT_IF, ALLOWED_JOIN_TYPES, KPI_CONFIG } from '@eda/configs/customizable/customizable_merged';
 import {Column, EdaPanel, InjectEdaPanel } from '@eda/models/model.index';
 import { PanelChart } from './panel-charts/panel-chart';
 import { PanelOptions } from './panel-utils/panel-menu-options';
@@ -592,12 +592,12 @@ public tableNodeExpand(event: any): void {
     }
 
     /**
-     * SDA mode only (USE_EDA_KPI_SIZE_LOGIC === false): keeps the KPI's hover +/- resize
+     * forks mode only (KPI_CONFIG.USE_EDALITICS_SIZE_LOGIC === false): keeps the KPI's hover +/- resize
      * buttons visible only while the panel is editable and unlocked, mirroring the
      * canEdit/canSave/!locked gating used for the same purpose in develop.
      */
     private refreshKpiResizeControls(): void {
-        if (USE_EDA_KPI_SIZE_LOGIC) return;
+        if (KPI_CONFIG.USE_EDALITICS_SIZE_LOGIC) return;
         const chartType = this.panelChartConfig?.chartType;
         if (!chartType?.startsWith('kpi') || chartType === 'kpideviation') return;
         const instance = this.panelChart?.componentRef?.instance;
@@ -1251,8 +1251,6 @@ public tableNodeExpand(event: any): void {
 
     public dropToResultSorting(event: CdkDragDrop<any[]>) {
 
-        console.log('event ==> ', event);
-
         if (event.previousContainer === event.container) {
             moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
         } else {
@@ -1260,6 +1258,15 @@ public tableNodeExpand(event: any): void {
 
             // Si no tenemos ordenation_type, añadimos 
             draggedColumn.ordenation_type ??= 'No';
+
+            // A column of a related table keeps its join path (same as moveItem does).
+            // Without it the API cannot join that table to sort by it, and the ORDER BY
+            // would reference a table that is not part of the query.
+            if (draggedColumn.table_id !== this.rootTable?.table_name
+                && (!draggedColumn.joins || draggedColumn.joins.length === 0)
+                && this.nodeJoins?.length) {
+                draggedColumn.joins = this.nodeJoins[this.nodeJoins.length - 1];
+            }
 
             const alreadyAdded = this.resultSortingColumns
                 .some(col => col.column_name === draggedColumn.column_name);
@@ -1272,8 +1279,6 @@ public tableNodeExpand(event: any): void {
                 );
             }
         }
-
-        console.log('resultSortingColumns: ', this.resultSortingColumns);
 
     }
 
@@ -1929,7 +1934,10 @@ public tableNodeExpand(event: any): void {
             alertLimits: response.alerts,
             sufix: response.sufix,
             modifiedFontPoints: response.modifiedFontPoints || 0,
-            fontScale: response.fontScale || 1,
+            fontScale: response.fontScale ?? KPI_CONFIG.DEFAULT_FONT_SCALE,
+            imageScale: response.imageScale ?? KPI_CONFIG.IMAGE_DEFAULT_SCALE,
+            valueFontScale: response.valueFontScale ?? KPI_CONFIG.DEFAULT_FONT_SCALE,
+            sufixFontScale: response.sufixFontScale ?? KPI_CONFIG.DEFAULT_FONT_SCALE,
             backgroundColor: response.backgroundColor || '',
             kpiColor: response.kpiColor || '',
             prefixImage: response.prefixImage || '',
@@ -1974,7 +1982,10 @@ public tableNodeExpand(event: any): void {
                 edaChart: layout,
                 assignedColors: response.assignedColors,
                 modifiedFontPoints: response.modifiedFontPoints || 0,
-                fontScale: response.fontScale || 1,
+                fontScale: response.fontScale ?? KPI_CONFIG.DEFAULT_FONT_SCALE,
+                imageScale: response.imageScale ?? KPI_CONFIG.IMAGE_DEFAULT_SCALE,
+                valueFontScale: response.valueFontScale ?? KPI_CONFIG.DEFAULT_FONT_SCALE,
+                sufixFontScale: response.sufixFontScale ?? KPI_CONFIG.DEFAULT_FONT_SCALE,
                 backgroundColor: response.backgroundColor || '',
                 kpiColor: response.kpiColor || '',
                 prefixImage: response.prefixImage || '',
@@ -2245,6 +2256,11 @@ public tableNodeExpand(event: any): void {
     /** It duplicates a dashboard panel and positions it one step below the original.*/
     public duplicatePanel(): void {
         const sourcePanelId = this.panel.id;
+        // Sync panel.content with the live rendered state first (same thing saveDashboard() does
+        // before persisting) — otherwise an unsaved live edit (e.g. a KPI suffix typed in but not
+        // saved yet) is missing from panel.content and the clone silently reverts to the last
+        // saved value.
+        this.savePanel();
         let duplicatedPanel = _.cloneDeep(this.panel, true);
         duplicatedPanel.id = this.fileUtiles.generateUUID();
         duplicatedPanel.y = duplicatedPanel.y + 1;

@@ -34,3 +34,54 @@
 .sda-config-section[open] > summary .sda-chevron {
   transform: rotate(180deg);
 }
+
+/* Maintenance section (Update model): same button family as the app */
+.sda-maintenance-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  height: 2.25rem;
+  padding: 0 1.1rem;
+  border: 1px solid transparent;
+  border-radius: 10px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  line-height: 1;
+  color: #ffffff;
+  background: linear-gradient(to right, var(--corporate-primary), var(--corporate-primary-gradient, var(--corporate-primary)));
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  cursor: pointer;
+  transition: opacity 0.15s ease, box-shadow 0.15s ease;
+}
+
+.sda-maintenance-btn:hover:not(:disabled) {
+  opacity: 0.9;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.12);
+}
+
+.sda-maintenance-btn:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.sda-cancel-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 2.25rem;
+  padding: 0 1rem;
+  border: 1px solid #d1d5db;
+  border-radius: 10px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  line-height: 1;
+  color: #374151;
+  background: #ffffff;
+  cursor: pointer;
+}
+
+.sda-cancel-btn:hover {
+  background: #f8fafc;
+  border-color: #cbd5e1;
+}

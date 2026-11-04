@@ -3110,6 +3110,18 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
         <source>Incrementar el tamaño del KPI</source>
         <target>Incrementar la mida del KPI</target>
       </trans-unit>
+      <trans-unit id="kpiImageSize">
+        <source>Tamaño de la imagen</source>
+        <target>Mida de la imatge</target>
+      </trans-unit>
+      <trans-unit id="kpiValueSize">
+        <source>Tamaño del número</source>
+        <target>Mida del número</target>
+      </trans-unit>
+      <trans-unit id="kpiSufixSize">
+        <source>Tamaño del sufijo</source>
+        <target>Mida del sufix</target>
+      </trans-unit>
       <trans-unit id="AllTagsFlat">
         <source>Todo</source>
         <target>Tot</target>
