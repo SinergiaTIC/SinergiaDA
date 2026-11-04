@@ -91,7 +91,7 @@ const ANGULAR_MODULES = [
     ::ng-deep .p-overlaypanel {
         z-index: 1000 !important; /* A higher z-index than the overlay-backdrop */
     }
-
+ 
     ::ng-deep .p-overlaypanel-content {
         background-color: white;
         border-radius: 1em;
