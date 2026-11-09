@@ -4,7 +4,7 @@
 
     <!-- Preview -->
     <div #previewContainer class="flex-1 flex items-center h-[77vh] justify-center border-b md:border-b-0 md:border-r bg-slate-100 min-h-0 min-w-0 overflow-hidden" style="padding: 1.5rem;">
-      <div data-eda-panel-root class="relative border border-slate-300 shadow-md overflow-hidden flex flex-col" [style]="previewBoxStyle">
+      <div class="relative border border-slate-300 shadow-md overflow-hidden flex flex-col" [style]="previewBoxStyle">
         <div class="flex-1 min-h-0 relative">
           <panel-chart #PanelChartComponent [props]="panelChartConfig" class="absolute inset-0 h-full w-full"></panel-chart>
         </div>
@@ -44,8 +44,8 @@
           <div class="kpi-config-panel-wrapper">
             <div class="kpi-config-panel">
 
-              <!-- Size: kpitrend/kpideviation keep the numeric input (Edalitics mode, unchanged) -->
-              @if (showLegacySizeControl) {
+              <!-- Tamaño (solo modo EDA; en modo sinergia el tamaño se ajusta pasando el ratón sobre el propio KPI) -->
+              @if (!useHoverResize) {
                 <div class="kpi-config-section" [class.is-expanded]="isSizeExpanded">
                   <div class="kpi-section-head" role="button" tabindex="0"
                     (click)="toggleSection('size')"
@@ -63,53 +63,6 @@
                         <span class="chart-color-controls">
                           <input type="number" [ngModel]="modifiedFontPoints" min="-90" max="300"
                             (ngModelChange)="modifyKpiSize($event)" class="chart-color-input" />
-                        </span>
-                      </div>
-                    </div>
-                  }
-                </div>
-              }
-
-              <!-- Size: plain kpi and kpi+chart — image and suffix are always adjusted here (both modes); the number only in Edalitics mode (in forks it is adjusted via the hover +/- on the KPI itself) -->
-              @if (showImageSufixSizeControls) {
-                <div class="kpi-config-section" [class.is-expanded]="isSizeExpanded">
-                  <div class="kpi-section-head" role="button" tabindex="0"
-                    (click)="toggleSection('size')"
-                    (keydown.enter)="toggleSection('size')"
-                    (keydown.space)="toggleSection('size')">
-                    <h6 class="custom-border-b1" i18n="@@kpiSize">Modificar el tamaño del KPI</h6>
-                    <div class="kpi-section-actions">
-                      <i class="pi" [ngClass]="isSizeExpanded ? 'pi-chevron-up' : 'pi-chevron-down'"></i>
-                    </div>
-                  </div>
-                  @if (isSizeExpanded) {
-                    <div class="chart-color-selection">
-                      @if (prefixImage) {
-                        <div class="chart-color-row">
-                          <span class="chart-color-label" i18n="@@kpiImageSize">Tamaño de la imagen</span>
-                          <span class="chart-color-controls kpi-size-controls">
-                            <button type="button" class="kpi-size-btn" (click)="decreaseImageScale()" [disabled]="!canDecreaseImageScale()">-</button>
-                            <button type="button" class="kpi-size-btn" (click)="increaseImageScale()" [disabled]="!canIncreaseImageScale()">+</button>
-                            <span class="kpi-size-percent">{{ imageScalePercent }}%</span>
-                          </span>
-                        </div>
-                      }
-                      @if (showValueSizeControl) {
-                        <div class="chart-color-row chart-color-row--spaced">
-                          <span class="chart-color-label" i18n="@@kpiValueSize">Tamaño del número</span>
-                          <span class="chart-color-controls kpi-size-controls">
-                            <button type="button" class="kpi-size-btn" (click)="decreaseValueScale()" [disabled]="!canDecreaseValueScale()">-</button>
-                            <button type="button" class="kpi-size-btn" (click)="increaseValueScale()" [disabled]="!canIncreaseValueScale()">+</button>
-                            <span class="kpi-size-percent">{{ valueFontScalePercent }}%</span>
-                          </span>
-                        </div>
-                      }
-                      <div class="chart-color-row chart-color-row--spaced">
-                        <span class="chart-color-label" i18n="@@kpiSufixSize">Tamaño del sufijo</span>
-                        <span class="chart-color-controls kpi-size-controls">
-                          <button type="button" class="kpi-size-btn" (click)="decreaseSufixScale()" [disabled]="!canDecreaseSufixScale()">-</button>
-                          <button type="button" class="kpi-size-btn" (click)="increaseSufixScale()" [disabled]="!canIncreaseSufixScale()">+</button>
-                          <span class="kpi-size-percent">{{ sufixFontScalePercent }}%</span>
                         </span>
                       </div>
                     </div>

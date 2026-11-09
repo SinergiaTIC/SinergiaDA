@@ -1,4 +1,4 @@
-<div data-eda-panel-root class="flex flex-col h-full rounded-lg pb-6 pr-6 pl-6 shadow-sm bg-white" [ngStyle]="panelContent">
+<div class="flex flex-col h-full rounded-lg pb-6 pr-6 pl-6 shadow-sm bg-white" [ngStyle]="panelContent">
   <!-- Header -->
   <div class="flex items-center justify-between mb-2 w-full drag-handler min-h-12">
     <!-- Container with dynamic alignment for the title -->
@@ -123,9 +123,7 @@
           [ngStyle]="panelContent"
           [ngClass]="isSpecialChart(panelChartConfig.chartType)
             ? 'h-full w-full flex justify-center content-center overflow-hidden flex-wrap'
-            : (['table','crosstable','treetable'].includes(panelChartConfig.chartType)
-              ? 'h-full w-full block overflow-x-auto overflow-y-hidden content-center pb-2'
-              : 'h-full w-full block overflow-hidden content-center pb-2')"
+            : 'h-full w-full block overflow-hidden content-center pb-2'"
           style="flex-wrap:wrap!important;"></panel-chart>
       </div>
     }
