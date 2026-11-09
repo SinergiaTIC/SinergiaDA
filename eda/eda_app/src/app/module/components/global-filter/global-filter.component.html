@@ -1,0 +1,263 @@
+<div class="flex items-start gap-2 mb-1 2xl:mb-2 ml-0 2xl:ml-1"
+  [class.flex-row-reverse]="filterButtonPosition === 'right'"
+  [style.height]="globalFilters.length === 0 ? '1' : null"
+  [style.overflow]="globalFilters.length === 0 ? 'hidden' : null"
+  [style.margin]="globalFilters.length === 0 ? '0' : null">
+
+  <!-- Filter button -->
+  @if (globalFilters.length > 0 && (isAdmin || isDashboardCreator || filterButtonVisibility.public)) {
+  <button class="flex-shrink-0 flex items-center gap-2 px-2 py-2 bg-gray-200 text-gray-700 rounded-md border hover:bg-gray-300 filter-btn-responsive"
+    [style]="styleButton" (click)="validateFilter()">
+    <i class="pi pi-filter"></i>
+    <span i18n="@@filtrarH4">Filtrar</span>
+  </button>
+  }
+
+    <!-- Main container with scroll -->
+    <div class="filters-container flex-1 rounded-lg bg-transparent">
+
+      @for (filter of globalFilters; track filter.filter_id) {
+        @if (isAdmin || isDashboardCreator || (['public', 'readOnly'].includes(filter.visible) && (filter.selectedColumn?.visible || filter.column?.value?.visible))) {
+
+          <!-- If it does NOT have autocomplete → legacy style -->
+          @if(!filter.isAutocompleted || filter.isAutocompleted === false) {
+            <div class="filter-card flex flex-col gap-1 rounded-lg p-1" [style]="getPanelWidthVar(filter)"
+              [class.filter-hover-active]="filterHoverActiveId === filter.id"
+              (mouseenter)="onFilterHover(filter)" (mouseleave)="onFilterLeave()">
+              <span [ngClass]="{'italic': !filter.applyToAll}" class="filter-label-top"
+                [style.color]="styleButton.color"
+                [style.font-family]="styleButton.fontFamily">
+                {{ getFilterLabel(filter) }}:
+              </span>
+              @if (filterHoverActiveId === filter.id) {
+                <span class="filter-hover-tooltip" [innerHTML]="filterHoverTooltipHtml"></span>
+              }
+
+              @if (getFilterType(filter) == 'date') {
+
+              <date-picker #dp [autoClear]="true" [inject]="datePickerConfigs[filter.id]" [summaryLabel]="getDateFilterValueText(filter)"
+                [summaryOperator]="getDateFilterOperatorText(filter)" [showNativeTooltip]="false"
+                (onRemove)="removeGlobalFilter(filter, true)" (onDatesChanges)="processPickerEvent($event, filter)"
+                (mouseenter)="showFilterTooltip($event, opDate, filter)" (mouseleave)="hideFilterTooltip(opDate)"
+                (click)="opDate.hide()">
+              </date-picker>
+              <p-overlayPanel #opDate appendTo="body">
+                <ng-template pTemplate>
+                  <div (mouseenter)="showFilterTooltip($event, opDate, filter)" (mouseleave)="hideFilterTooltip(opDate)"
+                       class="max-h-[30vh] overflow-auto min-w-[20vw] max-w-[30vw]">
+                    <div class="flex items-center justify-between mb-1 pl-1 pr-4 py-2">
+                      <span>{{ resumenSingular }}</span>
+                      @if(filter.visible !== "readOnly" || isAdmin) {
+                        <button type="button" class="pi pi-trash filter-tooltip-button ml-2"
+                            (click)="dp.clean()">
+                        </button>
+                      }
+                    </div>
+                    @if (filter.dateFilterType) {
+                      <div class="filter-tooltip-container filter-tooltip-container--static px-4 py-2 rounded flex items-center mr-1">
+                        <span class="flex justify-between gap-3 w-full customMultiselect filters-size filter-tooltip-text">
+                          <span>{{ getDateFilterOperatorText(filter) }}</span>
+                          <span class="filter-tooltip-value">{{ getDateFilterValueText(filter) }}</span>
+                        </span>
+                      </div>
+                    }
+                  </div>
+                </ng-template>
+              </p-overlayPanel>
+
+              } @else if (filter.multipleSelection === false) {
+              <p-multiSelect
+                [style]="styleButton"
+                [options]="filter.data"
+                [(ngModel)]="filter.selectedItems"
+                [virtualScroll]="true"
+                [selectedItemsLabel]="'{0} ' + selectedItemsLabel"
+                [defaultLabel]="getFilterLabel(filter)"
+                [disabled]="disableGlobalFilter(filter)"
+                [virtualScrollItemSize]="30"
+                [loading]="loading"
+                i18n-placeholder="@@Cargando"
+                [placeholder]="placeholderText"
+                panelStyleClass="multiselect-auto-width"
+                (onChange)="onSingleSelectChange(filter)"
+                (mouseenter)="showFilterTooltip($event, opSingle, filter)"
+                (mouseleave)="hideFilterTooltip(opSingle)"
+                (onClick)="hideFilterTooltip(opSingle)"
+                (onPanelShow)="setDropdownOpen(true)"
+                (onPanelHide)="setDropdownOpen(false)">
+              </p-multiSelect>
+              <p-overlayPanel #opSingle appendTo="body">
+                <ng-template pTemplate>
+                  <div (mouseenter)="showFilterTooltip($event, opSingle, filter)" (mouseleave)="hideFilterTooltip(opSingle)"
+                       class="max-h-[30vh] overflow-auto min-w-[20vw] max-w-[30vw]">
+                    <div class="flex items-center justify-between mb-1 pl-1 pr-4 py-2">
+                      <span>{{ resumen }}</span>
+                      @if(filter.visible !== "readOnly" || isAdmin) {
+                        <button type="button" class="pi pi-trash filter-tooltip-button ml-2"
+                            (click)="removeAllFilterItems(filter)">
+                        </button>
+                      }
+                    </div>
+                    @for (item of filter.selectedItems; track item) {
+                      <div class="filter-tooltip-container bg-[white] px-4 py-2 rounded flex items-center mr-1">
+                        <span class="customMultiselect filters-size filter-tooltip-text">
+                          {{ getFilterItemLabel(filter, item) }}
+                          @if(filter.visible !== "readOnly" || isAdmin) {
+                            <button type="button" class="pi pi-times-circle filter-tooltip-button"
+                                (click)="removeFilterItem(filter, item)">
+                            </button>
+                          }
+                        </span>
+                      </div>
+                    }
+                  </div>
+                </ng-template>
+              </p-overlayPanel>
+              } @else {
+              <p-multiSelect
+                [style]="styleButton"
+                [options]="filter.data"
+                [(ngModel)]="filter.selectedItems"
+                [virtualScroll]="true"
+                [selectedItemsLabel]="'{0} ' + selectedItemsLabel"
+                [defaultLabel]="getFilterLabel(filter)"
+                [disabled]="disableGlobalFilter(filter)"
+                [virtualScrollItemSize]="30"
+                [loading]="loading"
+                i18n-placeholder="@@Cargando"
+                [placeholder]="placeholderText"
+                panelStyleClass="multiselect-auto-width"
+                (onChange)="onFilterChange(filter)"
+                (mouseenter)="showFilterTooltip($event, op, filter)"
+                (mouseleave)="hideFilterTooltip(op)"
+                (onClick)="hideFilterTooltip(op)"
+                (onPanelShow)="setDropdownOpen(true)"
+                (onPanelHide)="setDropdownOpen(false)">
+              </p-multiSelect>
+              <p-overlayPanel #op appendTo="body" >
+                  <ng-template pTemplate>
+                    <div (mouseenter)="showFilterTooltip($event, op, filter)" (mouseleave)="hideFilterTooltip(op)"
+                         class="max-h-[30vh] overflow-auto min-w-[20vw] max-w-[30vw]">
+                        <div class="flex items-center justify-between mb-1 pl-1 pr-4 py-2">
+                            <span>{{ resumen }}</span>
+                            @if(filter.visible !== "readOnly" || isAdmin) {
+                              <button type="button" class="pi pi-trash filter-tooltip-button ml-2"
+                                  (click)="removeAllFilterItems(filter)">
+                              </button>
+                            }
+                        </div>
+                          @for (item of filter.selectedItems; track item) {
+                            <div class="filter-tooltip-container bg-[white]  px-4 py-2 rounded flex items-center mr-1">
+                                <span class="customMultiselect filters-size filter-tooltip-text">
+                                    {{ getFilterItemLabel(filter, item) }}
+                                        @if(filter.visible !== "readOnly" || isAdmin) {
+                                          <button type="button" class=" pi pi-times-circle filter-tooltip-button"
+                                              (click)="removeFilterItem(filter, item)">
+                                          </button>
+                                        }
+                                </span>
+                            </div>
+                          }
+                    </div>
+                  </ng-template>
+              </p-overlayPanel>
+            }
+            </div>
+          }@else{
+            <!-- If it has autocomplete → modern style -->
+            <div class="filter-card flex flex-col gap-1 rounded-lg p-1" [style]="getPanelWidthVar(filter)"
+              [class.filter-hover-active]="filterHoverActiveId === filter.id"
+              (mouseenter)="onFilterHover(filter)" (mouseleave)="onFilterLeave()">
+              <span [ngClass]="{'italic': !filter.applyToAll}" class="filter-label-top"
+                [style.color]="styleButton.color"
+                [style.font-family]="styleButton.fontFamily">
+                {{ getFilterLabel(filter) }}:
+              </span>
+              @if (filterHoverActiveId === filter.id) {
+                <span class="filter-hover-tooltip" [innerHTML]="filterHoverTooltipHtml"></span>
+              }
+              @if (getFilterType(filter) == 'date') {
+              <date-picker #dp [autoClear]="true" [inject]="datePickerConfigs[filter.id]" [summaryLabel]="getDateFilterValueText(filter)"
+                [summaryOperator]="getDateFilterOperatorText(filter)" [showNativeTooltip]="false"
+                (onRemove)="removeGlobalFilter(filter, true)" (onDatesChanges)="processPickerEvent($event, filter)"
+                (mouseenter)="showFilterTooltip($event, opDate, filter)" (mouseleave)="hideFilterTooltip(opDate)"
+                (click)="opDate.hide()">
+              </date-picker>
+              <p-overlayPanel #opDate appendTo="body">
+                <ng-template pTemplate>
+                  <div (mouseenter)="showFilterTooltip($event, opDate, filter)" (mouseleave)="hideFilterTooltip(opDate)"
+                       class="max-h-[30vh] overflow-auto min-w-[20vw] max-w-[30vw]">
+                    <div class="flex items-center justify-between mb-1 pl-1 pr-4 py-2">
+                      <span>{{ resumenSingular }}</span>
+                      @if(filter.visible !== "readOnly" || isAdmin) {
+                        <button type="button" class="pi pi-trash filter-tooltip-button ml-2"
+                            (click)="dp.clean()">
+                        </button>
+                      }
+                    </div>
+                    @if (filter.dateFilterType) {
+                      <div class="filter-tooltip-container filter-tooltip-container--static px-4 py-2 rounded flex items-center mr-1">
+                        <span class="flex justify-between gap-3 w-full customMultiselect filters-size filter-tooltip-text">
+                          <span>{{ getDateFilterOperatorText(filter) }}</span>
+                          <span class="filter-tooltip-value">{{ getDateFilterValueText(filter) }}</span>
+                        </span>
+                      </div>
+                    }
+                  </div>
+                </ng-template>
+              </p-overlayPanel>
+              } @else {
+              <div class="ac-wrapper">
+                <p-autoComplete [(ngModel)]="filter.selectedItems" (keydown.enter)="onAddValue($event, filter)" [suggestions]="autoCompleteValues"
+                  (completeMethod)="loadFilterAutoComplete($event, filter)" placeholder="abc..." [forceSelection]="false"
+                  [multiple]="true" (onSelect)="onItemSelected(filter)" (onUnselect)="onItemSelected(filter)"
+                  (onFocus)="onAutocompleteFocus(filter)" (onBlur)="onAutocompleteBlur()"
+                  [class.ac-collapsed]="isAutocompleteCollapsed(filter)" class="modern-autocomplete w-full"
+                  (mouseenter)="showFilterTooltip($event, op, filter)" (mouseleave)="hideFilterTooltip(op)" (onClick)="hideFilterTooltip(op)">
+                </p-autoComplete>
+                @if (isAutocompleteCollapsed(filter)) {
+                  <span class="ac-summary">{{ getAutocompleteSummary(filter) }}</span>
+                }
+              </div>
+              <p-overlayPanel #op appendTo="body">
+                <ng-template pTemplate>
+                     <div class="max-h-[30vh] overflow-auto min-w-[20vw] max-w-[30vw]"
+                          (mouseenter)="showFilterTooltip($event, op, filter)" (mouseleave)="hideFilterTooltip(op)">
+                         <div class="flex items-center justify-between mb-1 pl-1 pr-4 py-2">
+                             <span>{{ resumen }}</span>
+                             <button type="button" class="pi pi-trash filter-tooltip-button ml-2"
+                                 (click)="removeAllFilterItems(filter)">
+                             </button>
+                         </div>
+                            @for (item of filter.selectedItems; track item) {
+                              <div class="filter-tooltip-container bg-[white] px-4 py-2 rounded flex items-center mr-1">
+                                  <span class="customMultiselect filters-size filter-tooltip-text">
+                                      {{ getFilterItemLabel(filter, item) }}
+                                          <button type="button" class="pi pi-times-circle filter-tooltip-button"
+                                              (click)="removeFilterItem(filter, item)">
+                                          </button>
+                                  </span>
+                              </div>
+                            }
+                     </div>
+                </ng-template>
+              </p-overlayPanel>
+              }
+            </div>
+          }
+
+        }
+      }
+    </div>
+
+@if (globalFilter) {
+  <app-global-filter-dialog
+    [dashboard] = "dashboard"
+    [(globalFilter)]="globalFilter"
+    [globalFilterList]="globalFilters"
+    [panels]="dashboard.panels"
+    [dataSource]="dashboard.dataSource"
+    (close)="onGlobalFilter($event)"
+    (deleteFilterEvent)="deleteFilterEvent($event)"
+  ></app-global-filter-dialog>
+}

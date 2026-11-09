@@ -9,6 +9,9 @@ import { EnCrypterService } from '../encrypter/encrypter.service';
 import { SQLserverConnection } from './db-systems/slqserver-connection';
 import { JSONWebServiceConnection } from './db-systems/json-webservice-connection';
 import { MongoDBConnection } from './db-systems/mongodb-connection';
+import { ClickHouseConnection } from './db-systems/clickhouse-connection';
+import { DuckDBConnection } from './db-systems/duckdb-connection';
+import { PluginRegistry } from '../../plugins';
 import DataSource from '../../module/datasource/model/datasource.model';
 
 export const
@@ -21,7 +24,9 @@ export const
     BIGQUERY_CONNECTION = 'bigquery',
     SNOWFLAKE_CONNECTION = 'snowflake',
     WEB_SERVICE = 'jsonwebservice',
-    MONGODB_CONNECTION = 'mongodb'
+    MONGODB_CONNECTION = 'mongodb',
+    CLICKHOUSE_CONNECTION = 'clickhouse',
+    DUCKDB_CONNECTION = 'duckdb'
 
 
 
@@ -63,8 +68,12 @@ export class ManagerConnectionService {
                 return new JSONWebServiceConnection(config);
             case MONGODB_CONNECTION:
                 return new MongoDBConnection(config);
+            case CLICKHOUSE_CONNECTION:
+                return new ClickHouseConnection(config);
+            case DUCKDB_CONNECTION:
+                return new DuckDBConnection(config);
             default:
-                return null;
+                return PluginRegistry.getConnection(config.type, config);
         }
     }
 
@@ -89,9 +98,13 @@ export class ManagerConnectionService {
             case WEB_SERVICE:
                 return new JSONWebServiceConnection(config);
             case MONGODB_CONNECTION:
-                    return new MongoDBConnection(config);
+                return new MongoDBConnection(config);
+            case CLICKHOUSE_CONNECTION:
+                return new ClickHouseConnection(config);
+            case DUCKDB_CONNECTION:
+                return new DuckDBConnection(config);
             default:
-                return null;
+                return PluginRegistry.getConnection(config.type, config);
         }
     }
 
@@ -100,16 +113,19 @@ export class ManagerConnectionService {
     }
 
     private static async getDataSource(id: string): Promise<any> {
-        try {
-            return await DataSource.findOne({ _id: id }, (err, datasource) => {
-                if (err) {
-                    throw Error(err);
-                }
-                return datasource;
-            });
-        } catch (err) {
-            throw err;
-        }
+try {
+  const datasource = await DataSource.findOne({ _id: id });
+
+  if (!datasource) {
+    throw new Error(`Datasource not found with id ${id}`);
+  }
+
+  return datasource;
+
+} catch (err) {
+  throw err;
+}
+
     }
 }
 

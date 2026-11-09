@@ -1,6 +1,6 @@
 import { Injectable } from "@angular/core";
 import { BehaviorSubject, Observable } from "rxjs";
-import {DEFAULT_BACKGROUND_COLOR, DEFAULT_PANEL_COLOR, DEFAULT_FONT_COLOR, DEFAULT_FONT_FAMILY,DEFAULT_FONT_SIZE, DEFAULT_TITLE_ALIGN,DEFAULT_PANEL_TITLE_ALIGN  } from  "../../config/personalitzacio/customizables";
+import {DEFAULT_HOME_BACKGROUND_COLOR, DEFAULT_BACKGROUND_COLOR, DEFAULT_PANEL_COLOR, DEFAULT_FONT_COLOR, DEFAULT_FONT_FAMILY,DEFAULT_FONT_SIZE, DEFAULT_TITLE_ALIGN,DEFAULT_PANEL_TITLE_ALIGN, DEFAULT_PALETTE_COLOR, ChartsPalettes  } from  "../../config/customizable/customizable_merged";
 
 
 export interface StyleConfig {
@@ -10,15 +10,19 @@ export interface StyleConfig {
 }
 
 export interface DashboardStyles {
+	stylesApplied: boolean;
 	backgroundColor: string;
+	backgroundImage?: string;   // base64 data URI, optional
 	panelColor: string;
 	titleAlign: string;
 	panelTitleAlign: string;
 	customCss: string;
+	palette: string;
 	title: StyleConfig;
 	filters: StyleConfig;
 	panelTitle: StyleConfig;
 	panelContent: StyleConfig;
+	filterButtonPosition?: string;
 }
 
 
@@ -33,17 +37,37 @@ export class StyleProviderService {
 	public DEFAULT_FONT_SIZE: number = DEFAULT_FONT_SIZE;
 	public DEFAULT_TITLE_ALIGN: string = DEFAULT_TITLE_ALIGN;
 	public DEFAULT_PANEL_TITLE_ALIGN: string = DEFAULT_PANEL_TITLE_ALIGN;
+	public DEFAULT_PALETTE_COLOR: string = DEFAULT_PALETTE_COLOR;
+	public ChartsPalettes: any = ChartsPalettes;
+	public ActualChartPalette: string = DEFAULT_PALETTE_COLOR;
+	public loadingFromPalette: boolean;
+	public loadedPanels: number = -1;
+	public palKnob: boolean = false;
 
+	
 	public DEFAULT_CUSTOM_CSS: string = '';
 	
+	/**Page palette */
+	private _pagePalette = new BehaviorSubject<string>(this.DEFAULT_PALETTE_COLOR);
+	public pagePalette = this._pagePalette.asObservable();
+
+
+	/**Style applied */
+	private _pageStylesApplied = new BehaviorSubject<boolean>(false);
+	public pageStylesApplied = this._pageStylesApplied.asObservable();
+
+	public DEFAULT_HOME_BACKGROUND_COLOR: string = DEFAULT_HOME_BACKGROUND_COLOR;
 
 	/**Page background */
-	private _pageBackground = new BehaviorSubject<string>(this.DEFAULT_BACKGROUND_COLOR);
+	private _pageBackground = new BehaviorSubject<string>(DEFAULT_HOME_BACKGROUND_COLOR);
 	public pageBackground = this._pageBackground.asObservable();
 
 	/**Panel background */
 	private _panelColor = new BehaviorSubject<string>(this.DEFAULT_PANEL_COLOR);
 	public panelColor = this._panelColor.asObservable();
+
+	/** Background image data URI (set when a dashboard has a background image) */
+	public backgroundImage: string | null = null;
 
 	/**Title align */
 	private _titleAlign = new BehaviorSubject<string>(this.DEFAULT_TITLE_ALIGN);
@@ -100,11 +124,17 @@ export class StyleProviderService {
 	}
 
 	public setDefaultBackgroundColor() {
-		this._pageBackground.next(this.DEFAULT_BACKGROUND_COLOR);
+		this._pageBackground.next(DEFAULT_HOME_BACKGROUND_COLOR);
 	}
 
-	public setStyles(styles: DashboardStyles) {
-
+	public setStyles(styles: DashboardStyles, initial?: boolean) {
+		if (!initial) {
+			this._pagePalette.next(styles.palette);
+			this.ActualChartPalette = styles.palette;
+			this.loadingFromPalette = true;
+		}
+		this.backgroundImage = styles.backgroundImage || null;
+		this._pageStylesApplied.next(true)
 		this._pageBackground.next(styles.backgroundColor);
 		this._panelColor.next(styles.panelColor);
 
@@ -131,6 +161,7 @@ export class StyleProviderService {
 		this._panelFontSize.next(styles.panelContent.fontSize);
 
 		this._customCss.next(styles.customCss);
+		this.setCustomCss(styles.customCss)
 		// this._fontSize.next(styles.fontSize);
 	}
 
@@ -172,6 +203,7 @@ export class StyleProviderService {
 	public generateDefaultStyles(): DashboardStyles {
 
 		const styles: DashboardStyles = {
+			stylesApplied: false,
 			backgroundColor: this.DEFAULT_BACKGROUND_COLOR,
 			panelColor: this.DEFAULT_PANEL_COLOR,
 			titleAlign: this.DEFAULT_TITLE_ALIGN,
@@ -197,9 +229,16 @@ export class StyleProviderService {
 				fontSize: this.DEFAULT_FONT_SIZE,
 				fontColor: this.DEFAULT_FONT_COLOR
 			},
+			palette: this.DEFAULT_PALETTE_COLOR,
 		}
 
 		return styles
 	}
 
+	checkLoadPan() {
+		this.loadedPanels--;
+		if (this.loadedPanels === -1) {
+			this.loadingFromPalette = false;
+		}
+	}
 }

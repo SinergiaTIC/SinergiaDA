@@ -1,21 +1,26 @@
-import { EdaDialogAbstract, EdaDialogCloseEvent, EdaDialog } from '@eda/shared/components/shared-components.index';
-import { Component, EventEmitter, Output, ViewChild } from '@angular/core';
+import { EdaDialogCloseEvent, EdaDialog } from '@eda/shared/components/shared-components.index';
+import { Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
 import { PanelChartComponent } from '../panel-charts/panel-chart.component';
 import { PanelChart } from '../panel-charts/panel-chart';
 import { UserService } from '@eda/services/service.index';
 import { EdaChart } from '@eda/components/eda-chart/eda-chart';
-
-
-
+import { StyleProviderService } from '@eda/services/service.index';
+import { DynamicTextConfig } from '../panel-charts/chart-configuration-models/dynamicText-config';
+import { FormsModule } from '@angular/forms';
+import { CommonModule } from '@angular/common';
+import { EdaDialog2Component } from '@eda/shared/components/shared-components.index';
+import { ColorPickerModule } from 'primeng/colorpicker';
 
 @Component({
+  standalone: true,
   selector: 'app-dynamicText-dialog',
   templateUrl: './dynamicText-dialog.component.html',
-  styleUrls: ['./dynamicText-dialog.component.css']
+  styleUrls: ['./dynamicText-dialog.component.css'],
+  imports: [FormsModule, CommonModule, EdaDialog2Component, PanelChartComponent, ColorPickerModule],
 })
 
-export class dynamicTextDialogComponent extends EdaDialogAbstract {
-
+export class dynamicTextDialogComponent implements OnInit {
+  @Input() controller: any;
   @ViewChild('PanelChartComponent', { static: false }) PanelChartComponent: PanelChartComponent;
 
   public dialog: EdaDialog;
@@ -23,24 +28,15 @@ export class dynamicTextDialogComponent extends EdaDialogAbstract {
   public chart: EdaChart;
   public value: number;
   public operand: string;
-  @Output() color: any = '#000000';
+  @Output() color;
+  public originalColors: string;
+  public modifiedFontPoints: number = 0;
   @Output() messageEvent = new EventEmitter<any>();
   public disabled:boolean;
   public display:boolean=false;
+  public title:string=$localize`:@@ChartProps:PROPIEDADES DEL GRAFICO`;
 
-  constructor( private userService: UserService,) {
-
-    super();
-
-    this.dialog = new EdaDialog({
-      show: () => this.onShow(),
-      hide: () => this.onClose(EdaDialogCloseEvent.NONE),
-      title: $localize`:@@ChartProps:PROPIEDADES DEL GRAFICO`
-    });
-    this.dialog.style = { width: '80%', height: '70%', top:"-4em", left:'1em'};
-
-    
-  }
+  constructor( private userService: UserService,private styleProviderService : StyleProviderService) {}
   
   saveChartConfig() {
     this.PanelChartComponent.fontColor=this.color;
@@ -48,24 +44,50 @@ export class dynamicTextDialogComponent extends EdaDialogAbstract {
     this.PanelChartComponent.props.config.getConfig["color"]=this.color
     this.onClose(EdaDialogCloseEvent.UPDATE,
       {
-        color : this.color,
+        color: this.color,
+        modifiedFontPoints: this.modifiedFontPoints,
       });
   }
-  closeChartConfig() {
-    this.onClose(EdaDialogCloseEvent.NONE);
-  }
 
-  onShow(): void {
-    this.panelChartConfig = this.controller.params.panelChart;
-    if(this.controller.params.panelChart.config.config.color!==undefined){
-      this.color= this.controller.params.panelChart.config.config.color;
-    }else {
-      this.color= this.controller.params.panelChart.config.config;
+  modifySize(newValue?: number) {
+    const min = -90;
+    const max = 300;
+    if (newValue !== undefined) {
+        this.modifiedFontPoints = Math.min(max, Math.max(min, newValue || 0));
+    } else {
+        this.modifiedFontPoints = Math.min(max, Math.max(min, this.modifiedFontPoints));
     }
-    
-    this.display = true;
+    const instance = this.PanelChartComponent.componentRef.instance;
+    instance.inject.modifiedFontPoints = this.modifiedFontPoints;
+    this.PanelChartComponent.componentRef.changeDetectorRef.detectChanges();
   }
-  onClose(event: EdaDialogCloseEvent, response?: any): void {
+  
+  ngOnInit(): void {
+    const panelChart = this.controller.params.panelChart;
+    this.panelChartConfig = panelChart;
+    const colorConfig = panelChart?.config?.config;
+    // Function to find the actual color regardless of depth
+    function getDeepColor(obj: any): string | null {
+    while (obj && typeof obj === 'object' && 'color' in obj) {
+      obj = obj.color;
+    }
+    return typeof obj === 'string' ? obj : null;
+  }
+  const extractedColor = getDeepColor(colorConfig);
+
+  // Use extractedColor if the text color was just changed manually; otherwise, use the style color
+  this.color = !this.styleProviderService.loadingFromPalette ? extractedColor : this.styleProviderService.panelFontColor.source['_value'];
+  this.originalColors = this.color;
+  this.modifiedFontPoints = panelChart?.config?.getConfig()?.modifiedFontPoints || 0;
+
+  this.display = true;
+}
+
+closeChartConfig() {
+  this.panelChartConfig.config.setConfig(new DynamicTextConfig(this.originalColors));
+  this.onClose(EdaDialogCloseEvent.NONE);
+}
+onClose(event: EdaDialogCloseEvent, response?: any): void {
     return this.controller.close(event, response);
   }
 

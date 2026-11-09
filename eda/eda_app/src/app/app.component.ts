@@ -1,16 +1,21 @@
 import { Component, OnInit } from '@angular/core';
 import { MessageService } from 'primeng/api';
 import { AlertService, UserService, SpinnerService } from './services/service.index';
-import { Router } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
+import { Title } from '@angular/platform-browser';
+import { APPLICATION_NAME, CORPORATE_COLORS, DEFAULT_HOME_BACKGROUND_COLOR } from './config/customizable/customizable_merged';
 
 import { PrimeNGConfig } from 'primeng/api';
 
 import * as _ from 'lodash';
+import { PrimengModule } from './core/primeng.module';
+import { CommonModule } from '@angular/common';
 
 @Component({
     selector: 'app-root',
     templateUrl: './app.component.html',
-    styles: [],
+    standalone: true,
+    imports: [RouterModule, PrimengModule],
     providers: [MessageService]
 })
 export class AppComponent implements OnInit {
@@ -22,16 +27,20 @@ export class AppComponent implements OnInit {
         private router: Router,
         public alertService: AlertService,
         public messageService: MessageService,
-        private config: PrimeNGConfig
+        private config: PrimeNGConfig,
+        private title: Title
     ) { }
 
 
 
     ngOnInit(): void {
+        this.title.setTitle(APPLICATION_NAME);
+        this.initializeCorporateColors();
         this.initializeAlertService();
         this.initializeSpinnerService();
         this.setTranslations();
     }
+
 
     private initializeSpinnerService(): void {
         // Spinner Service
@@ -68,7 +77,6 @@ export class AppComponent implements OnInit {
         let lan_ca = new RegExp('\/ca\/', 'i');
         let lan_es = new RegExp('\/es\/', 'i');
         let lan_pl = new RegExp('\/pl\/', 'i');
-        /* SDA CUSTOM */ let lan_gl = new RegExp('\/gl\/', 'i');
 
         if (lan_ca.test(url)) {
             this.config.setTranslation(
@@ -116,20 +124,6 @@ export class AppComponent implements OnInit {
                 }
             )
         }
-        /* SDA CUSTOM */ else if (lan_gl.test(url)) {
-        /* SDA CUSTOM */     this.config.setTranslation(
-        /* SDA CUSTOM */         {
-        /* SDA CUSTOM */             dayNames: ["Luns", "Martes", "Mércores", "Xoves", "Venres", "Sábado", "Domingo"],
-        /* SDA CUSTOM */             dayNamesShort: ["Dom", "Lun", "Mar", "Mér", "Xov", "Ven", "Sáb"],
-        /* SDA CUSTOM */             dayNamesMin: ["Do", "Lu", "Ma", "Me", "Xo", "Ve", "Sá"],
-        /* SDA CUSTOM */             monthNames: ["Xaneiro", "Febreiro", "Marzo", "Abril", "Maio", "Xuño", "Xullo", "Agosto", "Setembro", "Outubro", "Novembro", "Decembro"],
-        /* SDA CUSTOM */             monthNamesShort: ["Xan", "Feb", "Mar", "Abr", "Mai", "Xuñ", "Xul", "Ago", "Set", "Out", "Nov", "Dec"],
-        /* SDA CUSTOM */             today: 'Hoxe',
-        /* SDA CUSTOM */             clear: 'Limpar',
-        /* SDA CUSTOM */             weekHeader: 'Semana'
-        /* SDA CUSTOM */         }
-        /* SDA CUSTOM */     )
-        /* SDA CUSTOM */ }
         else {
 
             this.config.setTranslation(
@@ -148,6 +142,45 @@ export class AppComponent implements OnInit {
         }
 
     }
-
-
+    
+    private initializeCorporateColors(): void {
+        const root = document.documentElement;
+        // Base
+        root.style.setProperty('--corporate-primary',          CORPORATE_COLORS.primary);
+        root.style.setProperty('--corporate-primary-gradient', CORPORATE_COLORS.primaryGradient);
+        root.style.setProperty('--corporate-primary-rgb',      CORPORATE_COLORS.primaryRgb);
+        root.style.setProperty('--ring',                       CORPORATE_COLORS.primaryHsl);
+        // Chat
+        root.style.setProperty('--corporate-primary-light',     CORPORATE_COLORS.chat.avatarBg);
+        root.style.setProperty('--corporate-primary-light-alt', CORPORATE_COLORS.chat.avatarBgAlt);
+        root.style.setProperty('--corporate-primary-border',    CORPORATE_COLORS.chat.avatarBorder);
+        root.style.setProperty('--corporate-primary-surface',   CORPORATE_COLORS.chat.surfaceHover);
+        root.style.setProperty('--corporate-primary-dark',      CORPORATE_COLORS.chat.tableHeader);
+        root.style.setProperty('--corporate-primary-darker',    CORPORATE_COLORS.chat.linkColor);
+        root.style.setProperty('--corporate-primary-darkest',   CORPORATE_COLORS.chat.linkHoverColor);
+        // Sidebar
+        // Folder
+        root.style.setProperty('--folder-border-hover',     CORPORATE_COLORS.folder.borderHover);
+        root.style.setProperty('--folder-icon-bg',          CORPORATE_COLORS.folder.iconBg);
+        root.style.setProperty('--folder-icon-bg-hover',    CORPORATE_COLORS.folder.iconBgHover);
+        root.style.setProperty('--folder-icon-color',       CORPORATE_COLORS.folder.iconColor);
+        root.style.setProperty('--folder-icon-color-hover', CORPORATE_COLORS.folder.iconColorHover);
+        root.style.setProperty('--folder-card-bg-open',     CORPORATE_COLORS.folder.cardBgOpen);
+        root.style.setProperty('--folder-label-open',       CORPORATE_COLORS.folder.labelColorOpen);
+        // Buttons
+        root.style.setProperty('--btn-confirm-bg',           CORPORATE_COLORS.buttons.confirmBg);
+        root.style.setProperty('--btn-confirm-bg-end',       CORPORATE_COLORS.buttons.confirmBgEnd);
+        root.style.setProperty('--btn-confirm-hover-bg',     CORPORATE_COLORS.buttons.confirmHoverBg);
+        root.style.setProperty('--btn-confirm-hover-bg-end', CORPORATE_COLORS.buttons.confirmHoverBgEnd);
+        root.style.setProperty('--btn-aux-bg',               CORPORATE_COLORS.buttons.auxBg);
+        root.style.setProperty('--btn-aux-bg-end',           CORPORATE_COLORS.buttons.auxBgEnd);
+        root.style.setProperty('--btn-aux-hover-bg',         CORPORATE_COLORS.buttons.auxHoverBg);
+        root.style.setProperty('--btn-aux-hover-bg-end',     CORPORATE_COLORS.buttons.auxHoverBgEnd);
+        root.style.setProperty('--btn-cancel-bg',            CORPORATE_COLORS.buttons.cancelBg);
+        root.style.setProperty('--btn-cancel-bg-end',        CORPORATE_COLORS.buttons.cancelBgEnd);
+        root.style.setProperty('--btn-cancel-hover-bg',      CORPORATE_COLORS.buttons.cancelHoverBg);
+        root.style.setProperty('--btn-cancel-hover-bg-end',  CORPORATE_COLORS.buttons.cancelHoverBgEnd);
+        // Shell background
+        root.style.setProperty('--home-background', DEFAULT_HOME_BACKGROUND_COLOR);
+    }
 }

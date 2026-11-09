@@ -1,0 +1,19 @@
+.add-tag-input:focus {
+  outline: none;
+  border-color: var(--corporate-primary);
+  box-shadow: 0 0 0 1px var(--corporate-primary);
+}
+
+.add-tag-btn:hover {
+  background-color: rgba(var(--corporate-primary-rgb), 0.12);
+  color: var(--corporate-primary);
+}
+
+.box {
+  /* border: 1px solid #808080; */
+  /* border-radius: 5px; */
+  padding: 15px;
+  min-height: 53vh;
+  margin-right: 5px;
+}
+

@@ -1,0 +1,60 @@
+@if(!panelMode){
+  <div class="flex min-w-[3.5rem] w-[4vw] h-full flex-col items-center border-r bg-background p-2">
+    <div class="flex flex-col items-center gap-2">
+      <img id="sidebar-btn-toggle" [src]="logoSidebar" (click)="menuCommand({ path: '/home'}, $event)" alt="logo icono" class="dark-logo mb-2 w-12 h-9 cursor-pointer" />
+      @if(!isAnonim){
+      @for (item of navItems; track item.path) {
+        <div
+          class="relative group"
+          (mouseenter)="showOverlay(item)"
+          (mouseleave)="hideOverlay(item)"
+        >
+          <button
+            class="sidebar-btn w-12 h-12 rounded-lg transition-colors flex items-center justify-center"
+            [ngClass]="{
+              'sidebar-btn-active': item.isActive || item.showOverlay,
+              'bg-muted': !item.isActive && !item.showOverlay
+            }"
+            [title]="item.label || ''" (mousedown)="menuCommand(item, $event)" >
+            <eda-icon style="pointer-events: none;" [name]="item.icon" class="h-5" />
+          </button>
+  
+          <!-- Submenu Overlay -->
+          @if (item.showOverlay && item.items?.length) {
+            <!-- bg-white rounded-lg shadow-lg py-2 w-56 transform translate-x-4 -->
+            <div class="absolute left-full top-0 ml-2 py-2 w-[18vw] min-w-[200px] bg-white rounded-lg shadow-lg z-50 text-base font-medium"
+              (mouseenter)="showOverlay(item)"
+              (mouseleave)="hideOverlay(item)"
+            >
+              <ul class="space-y-1">
+
+                  @for (subItem of item.items; track subItem.path) {
+                    <li>
+                      <!-- Every entry goes through menuCommand so the unsaved-changes check runs
+                           before navigating (routerLink would navigate first and ask afterwards). -->
+                      <button
+                        class="sidebar-submenu-link flex items-center gap-2 p-2 rounded-md bg-white transition-colors focus:outline-none"
+                        [title]="subItem.label"
+                        (click)="menuCommand(subItem, $event)"
+                      >
+                        @if(subItem.icon) {
+                          <eda-icon [name]="subItem.icon" class="h-4 pb-6" />
+                        }
+                        {{ subItem.label }}
+                      </button>
+                    </li>
+                  }
+              </ul>
+            </div>
+          }
+        </div>
+      }
+      }
+    </div>
+    @if (!isAnonim && userPlugin) {
+      <!-- Component plugin: current user badge, pinned to the bottom -->
+      <ng-container *ngComponentOutlet="userPlugin.component"></ng-container>
+    }
+  </div>
+}
+ 

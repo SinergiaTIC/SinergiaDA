@@ -7,65 +7,72 @@ import User from '../admin/users/model/user.model'
 import Group from '../admin/groups/model/group.model'
 import formatDate from '../../services/date-format/date-format.service'
 import { CachedQueryService } from '../../services/cache-service/cached-query.service'
+import { ArimaService } from '../../services/prediction/arima.service'
+import { TensorflowService } from '../../services/prediction/tensorflow.service'
+import { TimeFormatService } from '../../services/time-format/time-format.service'
 import { QueryOptions } from 'mongoose'
-// SDA CUSTOM - Use SDA daily log service instead of winston-based service
-import ServerLogService from '../../services/server-log/server-log-sda.service'
-// END SDA CUSTOM
+import { insertServerLog } from '../../services/server-log/server-log.service'
+import { DateUtil } from '../../utils/date.util'
+import { QueryModeUtil } from '../../utils/query-mode.util'
 import _ from 'lodash'
-/*SDA CUSTOM*/ import { getSdaDbErrorMessage, resolveSdaDbLang } from './SdaDbErrorMessages'
+import { getDbErrorMessage, resolveDbLang } from './DbErrorMessages'
 const cache_config = require('../../../config/cache.config')
 const eda_api_config = require('../../../config/eda_api_config');
 export class DashboardController {
 
-/* SDA CUSTOM */  static async isReadOnlyUser(req: Request): Promise<boolean> {
-/* SDA CUSTOM */    try {
-/* SDA CUSTOM */      const groups = await Group.find({ users: { $in: req.user._id } }).exec();
-/* SDA CUSTOM */      return groups.some(g => g.name === 'EDA_RO');
-/* SDA CUSTOM */    } catch (err) {
-/* SDA CUSTOM */      return false;
-/* SDA CUSTOM */    }
-/* SDA CUSTOM */  }
 
+  /**
+   * Retrieves all dashboards available to the current user, classifying them as private, group, open, and common.
+   * Nomenclatura unificada: los 4 valores válidos de config.visible y de esta respuesta son
+   * siempre 'open' | 'common' | 'group' | 'private'. Nada de 'public'/'shared'/'dashboards' aquí.
+   * @param req Express Request with user information
+   * @param res Express Response to send the result
+   * @param next NextFunction for error handling
+   */
   static async getDashboards(req: Request, res: Response, next: NextFunction) {
     try {
-      let admin, privates, group, publics, shared = [];
+      const dataSources = await DataSource.find(  {},  'ds.metadata ds.connection.type' ).exec();
+      let privateDashboards, group, openDashboards, commonDashboards = [];
       const groups = await Group.find({ users: { $in: req.user._id } }).exec();
       const isAdmin = groups.filter(g => g.role === 'EDA_ADMIN_ROLE').length > 0;
       const isDataSourceCreator = groups.filter(g => g.name === 'EDA_DATASOURCE_CREATOR').length > 0;
-      const dataSources = await DataSource.find(
-        {},
-        'ds.metadata'
-      )
 
 
       if (isAdmin) {
-        [publics, privates, group, shared] =  await DashboardController.getAllDashboardToAdmin(req)
+        [openDashboards, privateDashboards, group, commonDashboards] = await DashboardController.getAllDashboardToAdmin(req, dataSources)
       } else {
-        privates = await DashboardController.getPrivateDashboards(req)
-        group = await DashboardController.getGroupsDashboards(req)
-        publics = await DashboardController.getPublicsDashboards(req , dataSources)
-        /*SDA CUSTOM*/ // Hide public (shared) reports to normal users
-        /*SDA CUSTOM*/ // shared = await DashboardController.getSharedDashboards();
+        privateDashboards = await DashboardController.getPrivateDashboards(req, dataSources)
+        group = await DashboardController.getGroupsDashboards(req, dataSources)
+        commonDashboards = await DashboardController.getCommonDashboards(req, dataSources)
+        openDashboards = await DashboardController.getOpenDashboards(req, dataSources, isAdmin)
       }
+
+      // Modificación de fecha y adición de autor si no lo tiene (informes viejos)
+      await setDasboardsAuthorDate([openDashboards, commonDashboards, group, privateDashboards]);
+
 
       // Asegurarse de que la información del grupo esté incluida para dashboards de tipo "group"
       group = await DashboardController.addGroupInfo(group);
 
       return res.status(200).json({
         ok: true,
-        dashboards: privates,
+        private: privateDashboards,
         group,
-        publics,
-        shared,
+        open: openDashboards,
+        common: commonDashboards,
         isAdmin,
-        isDataSourceCreator
+        isDataSourceCreator,
       });
     } catch (err) {
       console.log(err);
       next(new HttpException(400, 'Some error occurred loading dashboards'));
     }
   }
-
+  /**
+   * Adds group information to dashboards of type group.
+   * @param dashboards List of dashboards to process
+   * @returns Dashboards with group information added
+   */
   static async addGroupInfo(dashboards) {
     for (const dashboard of dashboards) {
       if (dashboard.group && Array.isArray(dashboard.group)) {
@@ -74,71 +81,103 @@ export class DashboardController {
     }
     return dashboards;
   }
-
-  static async getPrivateDashboards(req: Request) {
+  /**
+   * Retrieves the private dashboards of the current user, filtering by tags if specified.
+   * @param req Express Request with user information and possible tags
+   * @returns List of private dashboards
+   */
+  static async getPrivateDashboards(req: Request, dss:any) {
     try {
-      const dashboards = await Dashboard.find(
-        /* SDA CUSTOM - Only active dashboards for non-admins */
-        /* SDA CUSTOM */{ user: req.user._id, "config.active": true },
-        /* SDA CUSTOM */ 'config.title config.visible config.tag config.onlyIcanEdit config.description config.createdAt config.modifiedAt config.ds config.active user'
-      ).populate('user','name').exec()
-      const privates = []
+      // Sin 'visible' (undefined/null/'') es el valor legacy que normalizeVisibility trata como
+      // 'private' por defecto — se incluye en la query para no perder dashboards antiguos sin ese campo.
+      const dashboards = await DashboardController.findAllDashboardsWithMeta({
+        user: req.user._id,
+        $or: [{ 'config.visible': 'private' }, { 'config.visible': null }, { 'config.visible': '' }]
+      })
+      const privateDashboards = []
       for (const dashboard of dashboards) {
-        if (dashboard.config.visible === 'private') {
-          // Obtain the name of the data source
-          dashboard.config.ds.name = (await DataSource.findById(dashboard.config.ds._id, 'ds.metadata.model_name').exec())?.ds?.metadata?.model_name ?? 'N/A';
+        // Normalize legacy visibility values
+        DashboardController.normalizeVisibility(dashboard);
 
-          privates.push(dashboard)
-        }
+        const ds = dss.find( e=> e._id.toString() == dashboard.config.ds._id.toString() );
+         if( ds ){
+              // Obtain the name of the data source
+               dashboard.config.ds.name = ds.ds?.metadata?.model_name ?? 'N/A';
+              dashboard.config.ds.type = ds.ds?.connection?.type ?? 'N/A';
+              if (this.iCanSeeTheDashboard(req, ds) == true) {
+                privateDashboards.push(dashboard);
+              }
+          }else{
+           // console.log('Unable to show the dashboard because i cant find the dataource' + dashboard )
+          }
       }
 
-      let tags: Array<any> = req.qs.tags
-      
+      let tags: Array<any> = req.qs.tags;
+
       if (_.isEmpty(tags)) {
-        return privates;
+        return privateDashboards;
 
       } else {
         tags = req.qs.tags.split(',');
-        const privatesTags = []
+        const privateDashboardsTags = []
         tags.forEach(tag => {
-          privates.forEach(dbs => {
+          privateDashboards.forEach(dbs => {
             if (dbs.config.tag != undefined && Array.isArray(dbs.config.tag) && dbs.config.tag.includes(tag)) {
               dbs.config.tag.forEach(t => {
                 if (t === tag) {
-                  privatesTags.push(dbs)
+                  privateDashboardsTags.push(dbs)
                 }
               })
             }
           }
           )
         })
-        return privatesTags;
+        return privateDashboardsTags;
       }
 
 
     } catch (err) {
-      throw new HttpException(400, 'Error loading privates dashboards')
+      console.log(err);
+      throw new HttpException(400, 'Error loading private dashboards')
     }
   }
-
-  static async getGroupsDashboards(req: Request) {
+  /**
+   * Retrieves the dashboards of the groups the user belongs to, filtering by tags if specified.
+   * @param req Express Request with user information and possible tags
+   * @returns List of group dashboards
+   */
+  static async getGroupsDashboards(req: Request, dss:any) {
     try {
       const userGroups = await Group.find({
         users: { $in: req.user._id }
       }).exec();
-      const dashboards = await Dashboard.find(
-        /* SDA CUSTOM - Only active dashboards for non-admins */
-        /* SDA CUSTOM */ { group: { $in: userGroups.map(g => g._id) }, "config.active": true },
-        /* SDA CUSTOM */'config.title config.visible group config.tag config.onlyIcanEdit config.description config.createdAt config.ds config.active user'
-      ).populate('user','name').exec()
+
+
+      const dashboards = await DashboardController.findAllDashboardsWithMeta({ group: { $in: userGroups.map(g => g._id) } });
       const groupDashboards = []
       for (let i = 0, n = dashboards.length; i < n; i += 1) {
         const dashboard = dashboards[i]
-        for (const dashboardGroup of dashboard.group) {
-          //dashboard.group = groups.filter(g => JSON.stringify(g._id) === JSON.stringify(group));
-          for (const userGroup of userGroups) {
-            if ( JSON.stringify(userGroup._id) === JSON.stringify(dashboardGroup) ) {
-              if( !groupDashboards.some((db) => db._id===dashboard._id) ) groupDashboards.push(dashboard)
+        // Normalize legacy visibility values
+        DashboardController.normalizeVisibility(dashboard);
+        if( dashboard.group ){
+          for (const dashboardGroup of dashboard.group) {
+            for (const userGroup of userGroups) {
+              if ( userGroup._id.equals(dashboardGroup) ) {
+                  const ds = dss.find( e=> e._id.toString() == dashboard.config.ds._id.toString() );
+                  if( ds ){
+                        dashboard.config.ds.name = ds.ds?.metadata?.model_name ?? 'N/A';
+                        dashboard.config.ds.type = ds.ds?.connection?.type ?? 'N/A';
+                        if (this.iCanSeeTheDashboard(req, ds) == true) {
+                          groupDashboards.push(dashboard)
+                        }else{
+                         //console.log('No pudo ver el informe ' +  dashboard);
+                        }
+                    }else{
+                      console.log('Unable to show the dashboard because i cant find the dataource' + dashboard )
+                    }
+
+                
+              }
             }
           }
         }
@@ -164,7 +203,7 @@ export class DashboardController {
           }
           )
         })
-        return  DashboardController.addGroupInfo(groupDashboardsTags);
+        return groupDashboardsTags;
       }
 
 
@@ -174,152 +213,206 @@ export class DashboardController {
     }
   }
 
-/**
- * 
- * @param req  request
- * @param ds  datasource 
- * This function returns true or false depending on if the user can see the datasource. It is used to determine if the dashboard should be added to the available dashobards list.
- */
-    static iCanSeeTheDashboard(req: Request, ds: any ) :boolean{
-      let result = false;
-      if( ds.ds.metadata.model_granted_roles.length == 0){ // si no hay permisos puedo verlo.
-        result  =  true;
-      }
-      if( result == false ){
-                const user = req.user;
-
-                ds.ds.metadata.model_granted_roles.forEach(e => {
-                if(e.table == 'fullModel' ){
-                    if(e.users?.indexOf( user._id ) >= 0  ){ // el usuario puede ver el modelo
-                      result  = true;
-                    }
-                    if(e.type ==  'anyoneCanSee' ){ // Todos pueden ver el modelo.
-                      result  = true;
-                    }
-                    if(  e.role?.length > 0 ) { // si el rol puede verlo lo ve
-                      user.role.forEach( r=> {
-                        if (  e.role.indexOf( r ) >= 0 ){
-                            result  = true;
-                        }
-                      })
-                    } 
-                    
-                } else{  // si  veo algo.
-                    if(e.permission == true ){
-
-                        if( e.users?.some( element => JSON.stringify(element) === JSON.stringify(user._id) )   ){ // el usuario puede ver el algo de alguna tabla
-                            result  = true;
-                        }
-                        if(  e.role?.length > 0 ) { // si el rol puede ver algo de alguna tabla 
-                            user.role.forEach( r=> {
-                              if (  e.role.indexOf( r ) >= 0 ){
-                                 result  = true;
-                              }
-                            })
-                        } 
-                      }     
-                }
-            });
-      }
-      return result;
-    }
 
 
-  static async getPublicsDashboards(req: Request, dss: any[]) {
+
+
+  /**
+   * Retrieves the "open" (público) dashboards the user has access to, filtering by tags if specified.
+   * @param req Express Request with user information and possible tags
+   * @param dss List of available datasources
+   * @returns List of open dashboards
+   */
+  static async getOpenDashboards(req: Request, dss: any[], isAdmin: boolean = false) {
     try {
-      const dashboards = await Dashboard.find(
-        /* SDA CUSTOM - Only active dashboards for non-admins */
-        /* SDA CUSTOM */{ "config.active": true },
-        /* SDA CUSTOM */'config.title config.visible config.tag config.onlyIcanEdit config.description config.createdAt config.modifiedAt config.ds config.active user'
-      ).populate('user','name').exec()
-      const publics = []
-
-     
-
+      if (!isAdmin && !eda_api_config.custom_behaviour.ALLOW_NON_ADMIN_MANAGE_PUBLIC_REPORTS) {
+        return [];
+      }
+      // 'shared' es el valor legacy que normalizeVisibility traduce a 'open' — se incluye en la
+      // query para no perder dashboards antiguos aún no migrados.
+      const dashboards = await DashboardController.findAllDashboardsWithMeta({ 'config.visible': { $in: ['open', 'shared'] } });
+      const openDashboards = []
       for (const dashboard of dashboards) {
-        if (dashboard.config.visible === 'public') {
-          const ds = dss.find( e=> e._id == dashboard.config.ds._id );
-          dashboard.config.ds.name =  ds.ds?.metadata?.model_name ?? 'N/A';
-          if(  this.iCanSeeTheDashboard(req, ds) == true ){
-             publics.push(dashboard);
-          }
-
+        // Normalize legacy visibility values
+        DashboardController.normalizeVisibility(dashboard);
+        const ds = dss.find(e => e._id == dashboard.config.ds._id);
+        if( ds ){
+            dashboard.config.ds.name = ds.ds?.metadata?.model_name ?? 'N/A';
+            dashboard.config.ds.type = ds.ds?.connection?.type ?? 'N/A';
+            if (this.iCanSeeTheDashboard(req, ds) == true) {
+               openDashboards.push(dashboard);
+            }else{
+               //console.log('No puedo ver el informe ' + dashboard            )
+            }
+        }else{
+          console.log('Unable to show the dashboard because i cant find the dataource' + dashboard )
         }
       }
 
       let tags: Array<any> = req.qs.tags;
 
       if (_.isEmpty(tags)) {
-        return publics;
+        return openDashboards;
 
       } else {
         tags = req.qs.tags.split(',');
-        const publicsTags = []
+        const openDashboardsTags = []
         tags.forEach(tag => {
-          publics.forEach(dbs => {
+          openDashboards.forEach(dbs => {
             if (dbs.config.tag != undefined && Array.isArray(dbs.config.tag) && dbs.config.tag.includes(tag)) {
               dbs.config.tag.forEach(t => {
                 if (t === tag) {
-                  publicsTags.push(dbs)
+                  openDashboardsTags.push(dbs)
                 }
               })
             }
           }
           )
         })
-        return publicsTags;
+        return openDashboardsTags;
       }
 
     } catch (err) {
-      throw new HttpException(400, 'Error loading public dashboards')
+      console.log(err);
+      throw new HttpException(400, 'Error loading open dashboards')
     }
   }
-
-  static async getSharedDashboards(req: Request) {
+  /**
+   * Retrieves the "common" (común) dashboards, filtering by tags if specified.
+   * @param req Express Request with possible tags
+   * @returns List of common dashboards
+   */
+  static async getCommonDashboards(req: Request, dss:any) {
     try {
-      const dashboards = await Dashboard.find(
-        /* SDA CUSTOM - Only active dashboards for non-admins */
-        /* SDA CUSTOM */ { "config.active": true },
-        /* SDA CUSTOM */ 'config.title config.visible config.tag config.onlyIcanEdit config.description config.createdAt config.modifiedAt config.ds config.active user'
-      ).populate('user','name').exec()
-      const shared = []
+      // 'public' es el valor legacy que normalizeVisibility traduce a 'common' — se incluye en la
+      // query para no perder dashboards antiguos aún no migrados.
+      const dashboards = await DashboardController.findAllDashboardsWithMeta({ 'config.visible': { $in: ['common', 'public'] } })
+      const commonDashboards = []
       for (const dashboard of dashboards) {
-        if (dashboard.config.visible === 'shared') {
-          // Obtain the name of the data source
-          dashboard.config.ds.name = (await DataSource.findById(dashboard.config.ds._id, 'ds.metadata.model_name').exec())?.ds?.metadata?.model_name ?? 'N/A';
-          
-          shared.push(dashboard)
+        // Normalize legacy visibility values
+        DashboardController.normalizeVisibility(dashboard);
+        const ds = dss.find( e=> e._id.toString() == dashboard.config.ds?._id?.toString() );
+        if( ds ){
+            // Obtain the name of the data source
+            dashboard.config.ds.name = ds.ds?.metadata?.model_name ?? 'N/A';
+            dashboard.config.ds.type = ds.ds?.connection?.type ?? 'N/A';
+            if (this.iCanSeeTheDashboard(req, ds) == true) {
+              commonDashboards.push(dashboard);
+            }
+        }else{
+          console.log('Unable to show the dashboard because i cant find the dataource' + dashboard )
         }
       }
 
       let tags: Array<any> = req.qs.tags;
 
       if (_.isEmpty(tags)) {
-        return shared;
+        return commonDashboards;
 
       } else {
         tags = req.qs.tags.split(',');
-        const sharedTags = []
+        const commonDashboardsTags = []
         tags.forEach(tag => {
-          shared.forEach(dbs => {
+          commonDashboards.forEach(dbs => {
             if (dbs.config.tag != undefined && Array.isArray(dbs.config.tag) && dbs.config.tag.includes(tag)) {
               dbs.config.tag.forEach(t => {
                 if (t === tag) {
-                  sharedTags.push(dbs)
+                  commonDashboardsTags.push(dbs)
                 }
               })
             }
           }
           )
         })
-        return sharedTags;
+        return commonDashboardsTags;
       }
     } catch (err) {
-      throw new HttpException(400, 'Error loading shared dashboards')
+      console.log(err);
+      throw new HttpException(400, 'Error loading common dashboards')
     }
   }
 
-  static async getAllDashboardToAdmin(req: Request) {
+  
+  /**
+   * Get dashboards metadata.
+   * By default, dashboards with config.active === false are excluded.
+   * Pass includeInactive: true to include them (used by admin listing).
+   * @param filter filter to apply
+   * @param options.includeInactive include inactive dashboards (default false)
+   */
+  private static async findAllDashboardsWithMeta(
+    filter: Record<string, any> = {},
+    options: { includeInactive?: boolean } = {}
+  ) {
+    if (!options.includeInactive) {
+      filter['config.active'] = { $ne: false };
+    }
+    return Dashboard.find(
+      filter,
+      'config.title config.visible config.tag config.onlyIcanEdit config.author config.createdAt config.modifiedAt config.description config.createdAt config.modifiedAt config.active config.ds user group config.external'
+    ).populate('user', 'name').exec();
+  }
+
+
+
+  /**
+   * Determines if the user can view the dashboard according to the datasource permissions.
+   * @param req Express Request with user information
+   * @param ds Datasource object to check
+   * @returns true if the user can view the dashboard, false otherwise
+   */
+  static iCanSeeTheDashboard(req: Request, ds: any): boolean {
+
+    let result = false;
+    if (ds.ds.metadata.model_granted_roles.length == 0) { // si no hay permisos puedo verlo.
+      result = true;
+    }
+    if (result == false) {
+      const user = req.user;
+      ds.ds.metadata.model_granted_roles.forEach(e => {
+      
+        if (e.table == 'fullModel') {
+          if (e.users?.indexOf(user._id) >= 0) { // el usuario puede ver el modelo
+            result = true;
+          }
+          if (e.type == 'anyoneCanSee') { // Todos pueden ver el modelo.
+            result = true;
+          }
+          if (e.groups?.length > 0) { // si el rol puede verlo lo ve
+            user.role.forEach(r => {
+              if (e.groups.indexOf(r) >= 0) {
+                result = true;
+              }
+            })
+          }
+
+        } else {  // si  veo algo.
+          if (e.permission == true) {
+            if (e.users?.indexOf(user._id) >= 0) { // el usuario puede ver el algo de alguna tabla
+              result = true;
+            }
+            if (e.groups?.length > 0) { // si el rol puede ver algo de alguna tabla 
+              user.role.forEach(r => {
+                if (e.groups.indexOf(r) >= 0) {
+                  result = true;
+                }
+              })
+            }
+
+          }
+        }
+      });
+    }
+    return result;
+  }
+
+
+  /**
+   * Retrieves all dashboards for the administrator, allowing filtering by external properties and tags.
+   * @param req Express Request with possible filters
+   * @returns Lists of dashboards classified by visibility
+   */
+  static async getAllDashboardToAdmin(req: Request, dss: any[]) {
     let external;
     if (req.qs.external) {
       external = JSON.parse(req.qs.external);
@@ -327,145 +420,110 @@ export class DashboardController {
     // Creamos un objeto de filtro dinámico
     let filter = {};
     // Recorremos las claves del objeto externalObject y las añadimos al filtro
-      for (let key in external) { 
-        filter[`config.external.${key}`] = external[key];
-      }
-      filter = Object.entries(filter).reduce((acc, [clave, valor]) => {
-        acc[clave] = valor;
-        return acc;
-      }, {});
-    try { 
-    
-          // Define the default date to be used for both createdAt and modifiedAt fields
-      const defaultDate = new Date('2024-01-01T00:00:00.000Z');
-
-      // First, update all documents that don't have a createdAt field
-      // This operation sets a default createdAt date for all dashboards missing this field
-      const createdAtUpdateResult = await Dashboard.updateMany(
-        { 'config.createdAt': { $exists: false } },
-        { $set: { 'config.createdAt': defaultDate } }
-      );
-
-      // Then, update all documents that don't have a modifiedAt field
-      // If createdAt exists, use its value; otherwise, use the default date
-      const modifiedAtUpdateResult = await Dashboard.updateMany(
-        { 'config.modifiedAt': { $exists: false } },
-        [
-          { 
-            $set: { 
-              'config.modifiedAt': { 
-                $ifNull: ['$config.createdAt', defaultDate] 
-              } 
-            } 
-          }
-        ]
-      );
-
-      /* SDA CUSTOM */ // Initialize config.active to true if it doesn't exist
-      /* SDA CUSTOM */const activeUpdateResult = await Dashboard.updateMany(
-      /* SDA CUSTOM */  { 'config.active': { $exists: false } },
-      /* SDA CUSTOM */  { $set: { 'config.active': true } }
-      /* SDA CUSTOM */);
-
-
+    for (let key in external) {
+      filter[`config.external.${key}`] = external[key];
+    }
+    filter = Object.entries(filter).reduce((acc, [clave, valor]) => {
+      acc[clave] = valor;
+      return acc;
+    }, {});
+    try {
       //si no lleva filtro, pasamos directamente a recuperarlos todos
-      const dashboards =  JSON.stringify(filter) !== '{}'  ? 
-      /* SDA CUSTOM */ await Dashboard.find({ $or : Object.entries(filter).map(([clave, valor]) => ({ [clave]: valor }))},  'user config.title config.visible group config.tag config.onlyIcanEdit config.description config.createdAt config.modifiedAt config.ds config.external config.active').exec() : 
-      /* SDA CUSTOM */ await Dashboard.find({}, 'user config.title config.visible group config.tag config.onlyIcanEdit config.description config.createdAt config.modifiedAt config.ds config.external config.active').exec();
-      
-      const publics = []
-      const privates = []
-      const groups = []
-      const shared = []
-  
+      const dashboards = JSON.stringify(filter) !== '{}' ?
+        await DashboardController.findAllDashboardsWithMeta({ $or: Object.entries(filter).map(([clave, valor]) => ({ [clave]: valor })) }, { includeInactive: true }) :
+        await DashboardController.findAllDashboardsWithMeta({}, { includeInactive: true });
+      const openDashboards = [];
+      const privateDashboards = [];
+      const groupDashboards = [];
+      const commonDashboards = [];
+
+
+
+
+
       for (const dashboard of dashboards) {
-        // Search user information for all dashboards
-        dashboard.user = await User.findById(
-          { _id: dashboard.user },
-          'name'
-        ).exec()
-        if (dashboard.user == null) {
-          dashboard.user = new User({
-            name: 'N/A',
-            email: '',
-            password: '',
-            img: '',
-            role: '',
-            active: ''
-          })
-        }
-        
-        // Obtain the name of the data source
-        dashboard.config.ds.name = (await DataSource.findById(dashboard.config.ds._id, 'ds.metadata.model_name').exec())?.ds?.metadata?.model_name ?? 'N/A';
+        // Normalize legacy visibility values
+        DashboardController.normalizeVisibility(dashboard);
+        const ds = dss.find( e=> e._id.toString() == dashboard.config.ds._id.toString() ); 
+        if( ds ){
+            // Obtain the name of the data source
+            dashboard.config.ds.name = ds.ds?.metadata?.model_name ?? 'N/A';
+              dashboard.config.ds.type = ds.ds?.connection?.type ?? 'N/A';
+         }else{
+            dashboard.config.ds.name = ds?.ds?.metadata?.model_name ?? 'N/A';
+              dashboard.config.ds.type = ds?.ds?.connection?.type ?? 'N/A';
+          }
+
+
         switch (dashboard.config.visible) {
-          case 'public':
-            publics.push(dashboard)
+          case 'open':
+            openDashboards.push(dashboard)
             break
           case 'private':
-            privates.push(dashboard)
+            privateDashboards.push(dashboard)
             break
           case 'group':
             dashboard.group = await Group.find({ _id: dashboard.group }).exec()
-            groups.push(dashboard)
+            groupDashboards.push(dashboard)
             break
-          case 'shared':
-            shared.push(dashboard)
+          case 'common':
+            commonDashboards.push(dashboard)
             break
         }
       }
-      
+
       //apliquem filtrat per tags desde URL
-      let tags : Array<any> = req.qs.tags;
-      
+      let tags: Array<any> = req.qs.tags;
+
       if (_.isEmpty(tags)) {
-        return [publics, privates, groups, shared];
+        return [openDashboards, privateDashboards, groupDashboards, commonDashboards];
       } else {
         tags = req.qs.tags.split(',');
-        const publicsTags = []
-        const privatesTags = []
-        const groupsTags = []
-        const sharedTags = []
+        const openDashboardsTags = []
+        const privateDashboardsTags = []
+        const groupDashboardsTags = []
+        const commonDashboardsTags = []
 
         tags.forEach(tag => {
-          publics.forEach(dbs => {
+          openDashboards.forEach(dbs => {
             if (dbs.config.tag != undefined && Array.isArray(dbs.config.tag) && dbs.config.tag.includes(tag)) {
               dbs.config.tag.forEach(t => {
                 if (t === tag) {
-                  publicsTags.push(dbs)
+                  openDashboardsTags.push(dbs)
                 }
               })
             }
           })
-          privates.forEach(dbs => {
+          privateDashboards.forEach(dbs => {
             if (dbs.config.tag != undefined && Array.isArray(dbs.config.tag) && dbs.config.tag.includes(tag)) {
               dbs.config.tag.forEach(t => {
                 if (t === tag) {
-                  privatesTags.push(dbs)
+                  privateDashboardsTags.push(dbs)
                 }
               })
             }
           })
-          groups.forEach(dbs => {
+          groupDashboards.forEach(dbs => {
             if (dbs.config.tag != undefined && Array.isArray(dbs.config.tag) && dbs.config.tag.includes(tag)) {
               dbs.config.tag.forEach(t => {
                 if (t === tag) {
-                  groupsTags.push(dbs)
+                  groupDashboardsTags.push(dbs)
                 }
               })
             }
           })
-          shared.forEach(dbs => {
+          commonDashboards.forEach(dbs => {
             if (dbs.config.tag != undefined && Array.isArray(dbs.config.tag) && dbs.config.tag.includes(tag)) {
               dbs.config.tag.forEach(t => {
                 if (t === tag) {
-                  sharedTags.push(dbs)
+                  commonDashboardsTags.push(dbs)
                 }
               })
             }
           })
         })
 
-        return [publicsTags, privatesTags, groupsTags, sharedTags];
+        return [openDashboardsTags, privateDashboardsTags, groupDashboardsTags, commonDashboardsTags];
       }
 
 
@@ -475,7 +533,12 @@ export class DashboardController {
       throw new HttpException(400, 'Error loading dashboards for admin')
     }
   }
-
+  /**
+   * Retrieves a specific dashboard by ID and user permissions.
+   * @param req Express Request with dashboard ID and user
+   * @param res Express Response to send the result
+   * @param next NextFunction for error handling
+   */
   static async getDashboard(req: Request, res: Response, next: NextFunction) {
     try {
       const user = req['user']._id
@@ -492,196 +555,182 @@ export class DashboardController {
         .map(dashboard => dashboard._id)
         .filter(id => id.toString() === req.params.id)
 
-      Dashboard.findOne({ _id: req.params.id }, (err, dashboard) => {
-        if (err) {
-          console.log('Dashboard not found with this id:' + req.params.id)
-          return next(
-            new HttpException(500, 'Dashboard not found with this id')
-          )
+      try {
+        // Obtener el dashboard
+        const dashboard = await Dashboard.findById(req.params.id);
+        if (!dashboard) {
+          return next(new HttpException(500, 'Dashboard not found with this id'));
         }
 
-        const visibilityCheck = !['shared', 'public'].includes(
-          dashboard.config.visible
-        )
+        // Normalize legacy visibility values
+        DashboardController.normalizeVisibility(dashboard);
+
+        // El usuario anónimo es quien abre los enlaces públicos (#/public/:id): siempre puede verlos
+        const isAnonymous = DashboardController.isAnonymousUser(req.user);
+        if (DashboardController.isPublicVisibility(dashboard.config.visible) && !isAnonymous && !DashboardController.canManagePublicDashboards(req)) {
+          return next(new HttpException(403, 'Only an administrator can view public dashboards'));
+        }
+
+        await DashboardController.initDashboardPanels(dashboard);
+
+        const visibilityCheck = !['open', 'common'].includes(dashboard.config.visible);
         const roleCheck =
           !userRoles.includes('EDA_ADMIN') &&
           userGroupDashboards.length === 0 &&
-          dashboard.user.toString() !== user
+          dashboard.user.toString() !== user;
 
-        /* SDA CUSTOM*/// Check if dashboard is active. 
-        /* SDA CUSTOM*/// If inactive, only admins can access it.
-        /* SDA CUSTOM*/const isActive = dashboard.config.active !== false;
-        /* SDA CUSTOM*/const isAdmin = userRoles.includes('EDA_ADMIN') || req.user.role.includes("135792467811111111111110");
-        /* SDA CUSTOM*/if (!isActive && !isAdmin) {
-        /* SDA CUSTOM*/  console.log(`Dashboard ${req.params.id} is inactive and user is not admin`);
-        /* SDA CUSTOM*/  return next(new HttpException(403, "DashboardInactive"));
-        /* SDA CUSTOM*/}
         if (visibilityCheck && roleCheck) {
-          console.log(
-            "You don't have permission " +
-            user +
-            ' for dashboard ' +
-            req.params.id
-          )
-          return next(new HttpException(500, "You don't have permission"))
+          return next(new HttpException(500, "You don't have permission"));
         }
 
-        DataSource.findById(
-          { _id: dashboard.config.ds._id },
-          (err, datasource) => {
-            if (err) {
-              return next(
-                new HttpException(500, 'Error searching the DataSource')
-              )
-            }
+        if (dashboard.config.active === false && !userRoles.includes('EDA_ADMIN')) {
+          return next(new HttpException(403, 'This dashboard is currently inactive'));
+        }
 
-            if (!datasource) {
-              return next(new HttpException(400, 'Datasouce not found with id'))
-            }
-            let toJson = JSON.parse(JSON.stringify(datasource))
+        // Obtener el datasource asociado
+        const datasource = await DataSource.findById(dashboard.config.ds._id);
+        if (!datasource) {
+          return next(new HttpException(400, 'Datasource not found with id'));
+        }
 
-            // Security filter for the tables. If you do not have permission on a table it is set as hidden.
-            // In case it is used in a relation.
-            let uniquesForbiddenTables = DashboardController.getForbiddenTables(
-              toJson,
-              userGroups,
-              req.user._id
-            )
+        // Convertir a objeto JSON
+        const toJson = JSON.parse(JSON.stringify(datasource));
 
-            // This is done in order to bypass security in case the user is anonymous and therefore
-              // a public report
-            /* SDA CUSTOM */ if(req.user._id == '135792467811111111111112'){
-            /* SDA CUSTOM */   console.log('ANONYMOUS USER QUERY....NO PERMISSIONS APPLY HERE.....');
-            /* SDA CUSTOM */   uniquesForbiddenTables = [];
-            /* SDA CUSTOM */ }
-			
-            const includesAdmin = req.user.role.includes("135792467811111111111110")
+        // Filtrar tablas y columnas prohibidas
+        // Informe público: el usuario anónimo no tiene tablas ni columnas prohibidas
+        const uniquesForbiddenTables = isAnonymous ? [] : DashboardController.getForbiddenTables(toJson, userGroups, req.user._id);
+        const uniquesForbiddenColumns = isAnonymous ? [] : DashboardController.getForbiddenColumns(toJson, userGroups, req.user._id);
 
-            let is_filtered = false;
+        const includesAdmin = req.user.role.includes("135792467811111111111110");
 
-            if (!includesAdmin) {
-
-              try {
-                // Set prohibited tables to false
-                if (uniquesForbiddenTables.length > 0) {
-                  //  Set prohibited tables to false
-                  for (let x = 0; x < toJson.ds.model.tables.length; x++) {
-                    try {
-                      if ( uniquesForbiddenTables.includes( toJson.ds.model.tables[x].table_name ) ) {
-                        toJson.ds.model.tables[x].visible = false;
-                      }
-                    } catch (e) {
-                      console.log('Error evaluating role permission')
-                      console.log(e)
-                    }
-                  }
-                  // Hidden columns in panels
-                  for (let i = 0; i < dashboard.config.panel.length; i++) {
-                    if (dashboard.config.panel[i].content != undefined) {
-                      let MyFields = [];
-                      let notAllowedColumns = [];
-
-                      for ( let c = 0; c < dashboard.config.panel[i].content.query.query.fields.length; c++ ) {
-                        if ( uniquesForbiddenTables.includes( dashboard.config.panel[i].content.query.query.fields[ c ].table_id.split('.')[0]  ) ) { // split('.')[0]  This is done for the filter in tree mode
-                          notAllowedColumns.push(
-                            dashboard.config.panel[i].content.query.query.fields[ c ]
-                          )
-                        } else {
-                          MyFields.push(
-                            dashboard.config.panel[i].content.query.query.fields[ c ]
-                          )
-                        }
-                      }
-                      if (notAllowedColumns.length > 0) {
-                        dashboard.config.panel[ i ].content.query.query.fields = MyFields;
-                        is_filtered= true;
-                      }
-                      // IF I DON'T HAVE PERMISSIONS ON THE MAIN TREE TABLE I DON'T SEE ANYTHING
-                      if( dashboard.config.panel[i].content.query.query.queryMode == 'EDA2'  &&  uniquesForbiddenTables.includes( dashboard.config.panel[i].content.query.query.rootTable ) ) {
-                        dashboard.config.panel[ i ].content.query.query.fields = [];
-                        is_filtered= true;
-                      }
-
-                      // if I don't have permission on the filters.
-                      for ( let c = 0; c < dashboard.config.panel[i].content.query.query.filters.length; c++ ) {
-                        if ( uniquesForbiddenTables.includes( dashboard.config.panel[i].content.query.query.filters[c].filter_table.split('.')[0]   ) ) { // split('.')[0]  This is done for the filter in tree mode 
-                          is_filtered= true;
-                        } 
-                      }
-                      if(dashboard.config.panel[i].content.query.query.queryMode == 'SQL'){
-                        for(let j=0; j<uniquesForbiddenTables.length; j++ ){
-                          if ( dashboard.config.panel[i].content.query.query.SQLexpression.toUpperCase().indexOf( uniquesForbiddenTables[j].toUpperCase()   ) > 0  ) {  
-                            is_filtered= true;
-                          } 
-                        }
-                      }
-                    }
-                  }
-                }
-              } catch (error) {
-                console.log('no pannels in dashboard')
-              }
-            }
-
-            // Se agrega false a autorelation y bridge
+        if (!includesAdmin) {
+          // Ocultar tablas prohibidas
+          if (uniquesForbiddenTables.length > 0 && toJson.ds.model.tables) {
             toJson.ds.model.tables.forEach(table => {
-              table.relations.forEach(r => {
-                if(r.autorelation == undefined){
-                  r.autorelation = false;
-                }
-                if(r.bridge == undefined){
-                  r.bridge = false;
-                }
-              });
+              if (uniquesForbiddenTables.includes(table.table_name)) {
+                table.visible = false;
+              }
             });
 
-            const ds = {
-              _id: datasource._id,
-              model: toJson.ds.model,
-              name: toJson.ds.metadata.model_name,
-              is_filtered: is_filtered
-            }
-
-            insertServerLog(
-              req,
-              'info',
-              'DashboardAccessed',
-              req.user.name,
-              dashboard._id + '--' + dashboard.config.title
-            )
-            return res.status(200).json({ ok: true, dashboard, datasource: ds })
+            // Ocultar columnas prohibidas en paneles
+            dashboard.config.panel?.forEach(panel => {
+              if (panel.content?.query?.query?.fields) {
+                panel.content.query.query.fields = panel.content.query.query.fields.filter(
+                  field => !uniquesForbiddenTables.includes(field.table_id)
+                );
+              }
+            });
           }
-        )
-      })
+        }
+
+        // Inicializar relaciones de tablas
+        toJson.ds.model.tables.forEach(table => {
+          table.relations.forEach(r => {
+            r.autorelation ??= false;
+            r.bridge ??= false;
+          });
+        });
+
+        // Ocultar columnas prohibidas en modelo
+
+        uniquesForbiddenColumns.forEach(fc => {
+          const table = toJson.ds.model.tables.find(t => t.table_name === fc.table);
+          const column = table?.columns.find(c => c.column_name === fc.column);
+          if (column) column.visible = false;
+        });
+
+        const ds = {
+          _id: datasource._id,
+          model: toJson.ds.model,
+          name: toJson.ds.metadata.model_name
+        };
+
+        insertServerLog(req, 'info', 'DashboardAccessed', req.user.name, dashboard._id + '--' + dashboard.config.title);
+
+        return res.status(200).json({ ok: true, dashboard, datasource: ds });
+
+      } catch (err) {
+        console.log(err);
+        return next(new HttpException(500, 'Error processing dashboard'));
+      }
+
     } catch (err) {
+      console.log(err);
       next(err)
     }
   }
 
-/*SDA CUSTOM   This function is used to check if a dashboard is public (shared) or not. 
-               It is used in the login guard to allow anonymous users to access public dashboards without needing to log in.
-               It returns a boolean value indicating if the dashboard is public (shared) or not.*/
-/*SDA CUSTOM*/ static async getIsPublic(req: Request, res: Response, next: NextFunction) {
-/*SDA CUSTOM*/   try {
-/*SDA CUSTOM*/     const dashboard = await Dashboard.findById(req.params.id, 'config.visible').exec();
-/*SDA CUSTOM*/     if (!dashboard) return next(new HttpException(404, 'Dashboard not found'));
-/*SDA CUSTOM*/     const isAccessible = dashboard.config.visible ===  'shared';
-/*SDA CUSTOM*/     return res.status(200).json({ isAccessible });
-/*SDA CUSTOM*/   } catch (err) {
-/*SDA CUSTOM*/     return next(new HttpException(500, 'Error checking dashboard visibility'));
-/*SDA CUSTOM*/   }
-/*SDA CUSTOM*/ }
+  static async getDataSourceModel(req: Request, res: Response, next: NextFunction) {
+    const model_id = req.params.id;
+    const user = req['user']._id;
+    const userGroups = req['user'].role;
+
+    try {
+      const datasource = await DataSource.findById(req.params.id);
+
+      if (!datasource) {
+        return next(new HttpException(404, "Datasource not found with id"));
+      }
+
+      let toJson = JSON.parse(JSON.stringify(datasource));
+
+      // Filtre de seguretat per les taules
+      const uniquesForbiddenTables = DashboardController.getForbiddenTables(
+        toJson,
+        req.user.groups,
+        req.user._id
+      );
+
+      // Comprobar admin
+      const includesAdmin = req.user.role.includes("135792467811111111111110");
+
+      // Añadir valores por defecto a relaciones
+      toJson.ds.model.tables.forEach(table => {
+        table.relations.forEach(r => {
+          r.autorelation = r.autorelation ?? false;
+          r.bridge = r.bridge ?? false;
+        });
+      });
+
+      const ds = {
+        _id: datasource._id,
+        model: toJson.ds.model,
+        name: toJson.ds.metadata.model_name
+      };
+
+      return res.status(200).json(ds);
+
+    } catch (err) {
+      console.error(err);
+      next(new HttpException(500, "Error searching the DataSource"));
+    }
+  }
+
+  static async getIsPublic(req: Request, res: Response, next: NextFunction) {
+    try {
+      const dashboard = await Dashboard.findById(req.params.id, 'config.visible').exec();
+      if (!dashboard) return next(new HttpException(404, 'Dashboard not found'));
+      // Normalize legacy visibility values before comparing (raw legacy 'shared' means today's 'open')
+      DashboardController.normalizeVisibility(dashboard);
+      const isAccessible = dashboard.config.visible === 'open';
+      return res.status(200).json({ isAccessible });
+    } catch (err) {
+      console.log(err);
+      return next(new HttpException(500, 'Error checking dashboard visibility'));
+    }
+  }
 
   static async create(req: Request, res: Response, next: NextFunction) {
     try {
-      /* SDA CUSTOM */ const isReadOnly = await DashboardController.isReadOnlyUser(req);
-      /* SDA CUSTOM */ if (isReadOnly) {
-      /* SDA CUSTOM */   return next(new HttpException(403, 'Read-only users cannot create dashboards'));
-      /* SDA CUSTOM */ }
-      /* SDA CUSTOM */
-
       const body = req.body
 
+      if (DashboardController.isPublicVisibility(body.config?.visible) && !DashboardController.canManagePublicDashboards(req)) {
+        return next(new HttpException(403, 'Only an administrator can create public dashboards'));
+      }
+
+      body.config.author = req.user.name;
+      body.config.createdAt = new Date().toISOString();
+      body.config.modifiedAt = new Date().toISOString();
       const dashboard: IDashboard = new Dashboard({
         config: body.config,
         user: req.user._id
@@ -691,204 +740,246 @@ export class DashboardController {
         dashboard.group = body.group
       }
 
-      //avoid dashboards without name 
+      /**avoid dashboards without name */
       if (dashboard.config.title === null) { dashboard.config.title = '-' };
       //Save dashboard in db
-      dashboard.save((err, dashboard) => {
-        if (err) {
-          return next(
-            new HttpException(
-              400,
-              'Some error ocurred while creating the dashboard'
-            )
-          )
-        }
+      const dashboardCreated = await dashboard.save();
 
-        /* SDA CUSTOM */ // SDA CUSTOM - Audit log for dashboard creation with report name
-        /* SDA CUSTOM */ insertServerLog(req, 'info', 'DashboardCreated', req.user.name, buildDashboardLogType(dashboard?._id, dashboard?.config?.title, 'created'))
-        /* SDA CUSTOM */ // END SDA CUSTOM
+      insertServerLog(req, 'info', 'DashboardCreated', req.user.name, buildDashboardLogType(dashboard?._id, dashboard?.config?.title, 'created'))
 
-        return res.status(201).json({ ok: true, dashboard })
-      })
+      return res.status(201).json({ ok: true, dashboard })
     } catch (err) {
-      next(err)
+      console.log(err);
+      return new HttpException(400, 'Some error ocurred while creating the dashboard')
     }
   }
 
   static async update(req: Request, res: Response, next: NextFunction) {
     try {
-      /* SDA CUSTOM */ const isReadOnly = await DashboardController.isReadOnlyUser(req);
-      /* SDA CUSTOM */ if (isReadOnly) {
-      /* SDA CUSTOM */   return next(new HttpException(403, 'Read-only users cannot update dashboards'));
-      /* SDA CUSTOM */ }
-      /* SDA CUSTOM */
-
       const body = req.body;
 
-      Dashboard.findById(req.params.id, (err, dashboard: IDashboard) => {
-        if (err) {
-          return next(new HttpException(500, 'Error searching the dashboard'))
-        }
-
+      try {
+        const dashboard = await Dashboard.findById(req.params.id)
         if (!dashboard) {
           return next(
             new HttpException(400, 'Dashboard not exist with this id')
           )
         }
-        /* SDA CUSTOM */ // SDA CUSTOM - Capture previous dashboard values to audit update/rename/visibility
-        /* SDA CUSTOM */ const previousTitle = dashboard.config?.title || '-'
-        /* SDA CUSTOM */ const previousVisibility = dashboard.config?.visible || '-'
-        /* SDA CUSTOM */ // END SDA CUSTOM
-        const createdAt=dashboard.config.createdAt
-        dashboard.config = body.config
-        dashboard.config.createdAt = createdAt
-        dashboard.user = req.user._id
-        dashboard.group = body.group
-        // avoid dashboards without name 
-        if (dashboard.config.title === null) { dashboard.config.title = '-' };
-        
-        // Update modifiedAt with current date and time
-        dashboard.config.modifiedAt = new Date();
-        
-        
-        dashboard.save((err, dashboard) => {
-          if (err) {
-            return next(new HttpException(500, 'Error updating dashboard'))
+
+        if (!DashboardController.canManagePublicDashboards(req)) {
+          if (DashboardController.isPublicVisibility(body.config?.visible)) {
+            return next(new HttpException(403, 'Only an administrator can make a dashboard public'));
           }
-
-          /* SDA CUSTOM */ // SDA CUSTOM - Audit log for dashboard update with report name
-          /* SDA CUSTOM */ const updatedTitle = dashboard?.config?.title || '-'
-          /* SDA CUSTOM */ const updatedVisibility = dashboard?.config?.visible || '-'
-          /* SDA CUSTOM */ insertServerLog(req, 'info', 'DashboardUpdated', req.user.name, buildDashboardLogType(dashboard?._id, updatedTitle, 'updated'))
-          /* SDA CUSTOM */ if (previousTitle !== updatedTitle) {
-          /* SDA CUSTOM */   insertServerLog(req, 'info', 'DashboardRenamed', req.user.name, buildDashboardLogType(dashboard?._id, updatedTitle, `renamed_from:${previousTitle}`))
-          /* SDA CUSTOM */ }
-          /* SDA CUSTOM */ if (previousVisibility !== updatedVisibility) {
-          /* SDA CUSTOM */   insertServerLog(req, 'info', 'DashboardVisibilityChanged', req.user.name, buildDashboardLogType(dashboard?._id, updatedTitle, `visibility:${previousVisibility}->${updatedVisibility}`))
-          /* SDA CUSTOM */ }
-          /* SDA CUSTOM */ // END SDA CUSTOM
-
-          return res.status(200).json({ ok: true, dashboard })
-        })
-      })
-    } catch (err) {
-      next(err)
-    }
-  }
-  
-    /**
-     * Updates a specific field of a dashboard.
-     * 
-     * @param {Request} req - Express request object
-     * @param {Response} res - Express response object
-     * @param {NextFunction} next - Express next middleware function
-     * 
-     * @description
-     * Expects 'id' in req.params and 'data' (containing 'key' and 'newValue') in req.body.
-     * If 'config.visible' is updated to a value other than 'group', 'group' is set to an empty array.
-     * 
-     * @throws {HttpException} 400 for update errors, 404 if dashboard not found
-     */
-    static async updateSpecific(req: Request, res: Response, next: NextFunction) {
-      try {
-        /* SDA CUSTOM */ const isReadOnly = await DashboardController.isReadOnlyUser(req);
-        /* SDA CUSTOM */ if (isReadOnly) {
-        /* SDA CUSTOM */   return next(new HttpException(403, 'Read-only users cannot update dashboards'));
-        /* SDA CUSTOM */ }
-        /* SDA CUSTOM */
-
-        const { id } = req.params;
-        const { data } = req.body;
-        const { key, newValue } = data;
-
-        /* SDA CUSTOM */ // SDA CUSTOM - Retrieve previous dashboard values for specific update audit
-        /* SDA CUSTOM */ const previousDashboard = await Dashboard.findById(id).exec();
-        /* SDA CUSTOM */ const previousTitle = previousDashboard?.config?.title || '-';
-        /* SDA CUSTOM */ const previousVisibility = previousDashboard?.config?.visible || '-';
-        /* SDA CUSTOM */ // END SDA CUSTOM
-
-        let updateObj: any = { [key]: newValue };
-
-        if (key === 'config.visible' && newValue !== 'group') {
-          updateObj = {
-            ...updateObj,
-            group: []
-          };
+          if (DashboardController.isPublicVisibility(dashboard.config.visible)) {
+            return next(new HttpException(403, 'You do not have permission to modify a public dashboard'));
+          }
         }
 
-        Dashboard.findByIdAndUpdate(
-          id,
-          { $set: updateObj },
-          { new: true, runValidators: true },
-          (err, dashboard) => {
-            if (err) {
-              return next(
-                new HttpException(
-                  400,
-                  'Some error occurred while updating the dashboard'
-                )
-              );
-            }
+        const previousTitle = dashboard.config?.title || '-'
+        const previousVisibility = dashboard.config?.visible || '-'
 
-            if (!dashboard) {
-              return next(
-                new HttpException(404, 'Dashboard not found with this id')
-              );
-            }
+        dashboard.config = body.config
+        dashboard.group = body.group
+        /**avoid dashboards without name */
+        if (dashboard.config.title === null) { dashboard.config.title = '-' };
 
-            /* SDA CUSTOM */ // SDA CUSTOM - Audit log for specific dashboard updates with report name
-            /* SDA CUSTOM */ const updatedTitle = dashboard?.config?.title || '-';
-            /* SDA CUSTOM */ const updatedVisibility = dashboard?.config?.visible || '-';
-            /* SDA CUSTOM */ if (key === 'config.title' && previousTitle !== updatedTitle) {
-            /* SDA CUSTOM */   insertServerLog(req, 'info', 'DashboardRenamed', req.user.name, buildDashboardLogType(dashboard?._id, updatedTitle, `renamed_from:${previousTitle}`));
-            /* SDA CUSTOM */ }
-            /* SDA CUSTOM */ if (key === 'config.visible' && previousVisibility !== updatedVisibility) {
-            /* SDA CUSTOM */   insertServerLog(req, 'info', 'DashboardVisibilityChanged', req.user.name, buildDashboardLogType(dashboard?._id, updatedTitle, `visibility:${previousVisibility}->${updatedVisibility}`));
-            /* SDA CUSTOM */ }
-            /* SDA CUSTOM */ // END SDA CUSTOM
-
-            return res.status(200).json({ ok: true, dashboard });
+        // Normalize tags to always be an array of strings
+        if (dashboard.config.tag) {
+          const rawTags: any = dashboard.config.tag;
+          if (!Array.isArray(rawTags)) {
+            // If it's not an array, convert it to an array
+            dashboard.config.tag = [typeof rawTags === 'string' ? rawTags : (rawTags.value || rawTags.label || String(rawTags))];
+          } else {
+            // Ensure all elements are strings
+            dashboard.config.tag = rawTags.map((tag: any) =>
+              typeof tag === 'string' ? tag : (tag.value || tag.label || String(tag))
+            );
           }
-        );
-      } catch (err) {
-        next(err);
+        }
+
+        try {
+          const dashboardToUpdate = await dashboard.save();
+
+          const updatedTitle = dashboard?.config?.title || '-'
+          const updatedVisibility = dashboard?.config?.visible || '-'
+          insertServerLog(req, 'info', 'DashboardUpdated', req.user.name, buildDashboardLogType(dashboard?._id, updatedTitle, 'updated'))
+          if (previousTitle !== updatedTitle) {
+            insertServerLog(req, 'info', 'DashboardRenamed', req.user.name, buildDashboardLogType(dashboard?._id, updatedTitle, `renamed_from:${previousTitle}`))
+          }
+          if (previousVisibility !== updatedVisibility) {
+            insertServerLog(req, 'info', 'DashboardVisibilityChanged', req.user.name, buildDashboardLogType(dashboard?._id, updatedTitle, `visibility:${previousVisibility}->${updatedVisibility}`))
+          }
+
+          return res.status(200).json({ ok: true, dashboard })
+        } catch (err) {
+          return next(new HttpException(500, 'Error updating dashboard'))
+        }
+      } catch (error) {
+        console.log(error);
+        return next(new HttpException(500, 'Error searching the dashboard'))
       }
+
+    } catch (error) {
+      console.log(error);
+      return next(new HttpException(500, 'Error updating dashboard'))
+    }
+  }
+
+  /**
+   * Updates a specific field of a dashboard.
+   * 
+   * @param {Request} req - Express request object
+   * @param {Response} res - Express response object
+   * @param {NextFunction} next - Express next middleware function
+   * 
+   * @description
+   * Expects 'id' in req.params and 'data' (containing 'key' and 'newValue') in req.body.
+   * If 'config.visible' is updated to a value other than 'group', 'group' is set to an empty array.
+   * 
+   * @throws {HttpException} 400 for update errors, 404 if dashboard not found
+   */
+  static async updateSpecific(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { id } = req.params;
+      const { data } = req.body;
+      const { key, newValue } = data;
+
+      const previousDashboard = await Dashboard.findById(id).exec();
+      const previousTitle = previousDashboard?.config?.title || '-';
+      const previousVisibility = previousDashboard?.config?.visible || '-';
+
+      let updateObj: any = { [key]: newValue };
+
+      if (key === 'config.visible' && newValue !== 'group') {
+        updateObj = {
+          ...updateObj,
+          group: []
+        };
+      }
+
+      if (!DashboardController.canManagePublicDashboards(req)) {
+        if (key === 'config.visible' && DashboardController.isPublicVisibility(newValue)) {
+          return next(new HttpException(403, 'Only an administrator can make a dashboard public'));
+        }
+        const current = await Dashboard.findById(id, 'config.visible').exec();
+        if (DashboardController.isPublicVisibility(current?.config?.visible)) {
+          return next(new HttpException(403, 'You do not have permission to modify a public dashboard'));
+        }
+      }
+
+      const dashboard = await Dashboard.findByIdAndUpdate(
+        id,
+        { $set: updateObj },
+        { new: true, runValidators: true }
+      );
+
+      if (!dashboard) {
+        return next(
+          new HttpException(404, 'Dashboard not found with this id')
+        );
+      }
+
+      const updatedTitle = dashboard?.config?.title || '-';
+      const updatedVisibility = dashboard?.config?.visible || '-';
+      if (key === 'config.title' && previousTitle !== updatedTitle) {
+        insertServerLog(req, 'info', 'DashboardRenamed', req.user.name, buildDashboardLogType(dashboard?._id, updatedTitle, `renamed_from:${previousTitle}`));
+      }
+      if (key === 'config.visible' && previousVisibility !== updatedVisibility) {
+        insertServerLog(req, 'info', 'DashboardVisibilityChanged', req.user.name, buildDashboardLogType(dashboard?._id, updatedTitle, `visibility:${previousVisibility}->${updatedVisibility}`));
+      }
+
+      return res.status(200).json({ ok: true, dashboard });
+
+    } catch (err) {
+      console.log(err);
+      return next(
+        new HttpException(
+          400,
+          'Some error occurred while updating the dashboard'
+        )
+      );
+    }
+
   }
 
   static async delete(req: Request, res: Response, next: NextFunction) {
-    let options: QueryOptions = {}
     try {
-      /* SDA CUSTOM */ const isReadOnly = await DashboardController.isReadOnlyUser(req);
-      /* SDA CUSTOM */ if (isReadOnly) {
-      /* SDA CUSTOM */   return next(new HttpException(403, 'Read-only users cannot delete dashboards'));
-      /* SDA CUSTOM */ }
-      /* SDA CUSTOM */
-
-      Dashboard.findByIdAndDelete(req.params.id, options, (err, dashboard) => {
-        if (err) {
-          return next(new HttpException(500, 'Error removing dashboard'))
+      if (!DashboardController.canManagePublicDashboards(req)) {
+        const current = await Dashboard.findById(req.params.id, 'config.visible').exec();
+        if (DashboardController.isPublicVisibility(current?.config?.visible)) {
+          return next(new HttpException(403, 'You do not have permission to delete a public dashboard'));
         }
+      }
 
-        if (!dashboard) {
-          return next(
-            new HttpException(400, 'Not exists dahsboard with this id')
-          )
-        }
+      const dashboard = await Dashboard.findByIdAndDelete(req.params.id);
 
-        /* SDA CUSTOM */ // SDA CUSTOM - Audit log for dashboard deletion with report name and recoverable ID
-        /* SDA CUSTOM */ insertServerLog(req, 'info', 'DashboardDeleted', req.user.name, buildDashboardLogType(dashboard?._id, dashboard?.config?.title, `deleted--id:${dashboard?._id}`))
-        /* SDA CUSTOM */ // END SDA CUSTOM
+      if (!dashboard) {
+        return next(
+          new HttpException(400, 'Dashboard with this id does not exist')
+        );
+      }
 
-        return res.status(200).json({ ok: true, dashboard })
-      })
+      insertServerLog(req, 'info', 'DashboardDeleted', req.user.name, buildDashboardLogType(dashboard?._id, dashboard?.config?.title, `deleted--id:${dashboard?._id}`))
+
+      return res.status(200).json({ ok: true, dashboard });
+
     } catch (err) {
-      next(err)
+      console.log(err);
+      return next(new HttpException(500, 'Error removing dashboard'));
+    }
+  }
+
+
+  static async initDashboardPanels(dashboard: any) {
+    const panels = dashboard.config.panel || [];
+
+    if (!panels.length) return;
+
+    // Map panel.id -> referenced dashboard ID
+    const importedPanelMap: Record<string, string> = {};
+
+    for (const panel of panels) {
+      const panelDashboardId = panel.dashboard?._id;
+      if (panelDashboardId && panelDashboardId !== dashboard._id) {
+        importedPanelMap[panel.id] = panelDashboardId;
+      }
+    }
+
+    const referencedDashboardIds = [...new Set(Object.values(importedPanelMap))];
+
+    if (!referencedDashboardIds.length) return;
+
+    // Fetch all referenced dashboards in a single query
+    const dashboards = await Dashboard.find({
+      _id: { $in: referencedDashboardIds }
+    });
+
+    const dashboardsById = dashboards.reduce((acc, dash) => {
+      acc[dash._id.toString()] = dash;
+      return acc;
+    }, {} as Record<string, any>);
+
+    for (const panel of panels) {
+      const referencedDashboardId = importedPanelMap[panel.id];
+      if (!referencedDashboardId) continue;
+
+      const referencedDashboard = dashboardsById[referencedDashboardId];
+      if (!referencedDashboard) continue;
+
+      // Buscar el panel que tenga el mismo ID que este dentro del dashboard importado
+      const matchedPanel = referencedDashboard.config?.panel?.find(
+        (p: any) => p.id === panel.id
+      );
+
+      if (matchedPanel?.content) {
+        panel.content = matchedPanel.content;
+      }
     }
   }
 
 
   /**
-   *  Filter prohibited tables in a data model. Returns a list of prohibited tables for an user.
+   *  Filtra tablas prohibidas en un modelo de datos. Devuelve el listado de tablas prohibidas para un usuario.
    */
   static getForbiddenTables(
     dataModelObject: any,
@@ -896,25 +987,109 @@ export class DashboardController {
     user: string
   ) {
     let forbiddenTables = [];
-    if(dataModelObject.ds.metadata.model_granted_roles.length > 0 ){ /** IN CASE I HAVE SECURITY DEFINED... */
-      if( dataModelObject.ds.metadata.model_granted_roles.filter( r=>r.type == "anyoneCanSee" && r.permission == true ).length > 0 ){
-        // In case where any user can visualize the model and we have a benevolent scheme
-        forbiddenTables = this.getForbiddenTablesOpen( dataModelObject, userGroups, user ); 
-      }else{
-         // In case I can only see the tables for which I have explicit permissions
-        forbiddenTables = this.getForbiddenTablesClose( dataModelObject, userGroups, user ); 
+    if (dataModelObject.ds.metadata.model_granted_roles.length > 0) { /** SI HAY PERMISOS DEFINIDOS. SI NO, NO HAY SEGURIDAD */
+      if (dataModelObject.ds.metadata.model_granted_roles.filter(r => r.type == "anyoneCanSee" && r.permission == true).length > 0) {
+        // En el caso de que cualquier usuario pueda ver el modelo y tengamos un esquema benevolente
+        forbiddenTables = this.getForbiddenTablesOpen(dataModelObject, userGroups, user);
+      } else {
+        // En el caso de que tan sólo pueda ver las tablas para las que tengo permiso explicito
+        forbiddenTables = this.getForbiddenTablesClose(dataModelObject, userGroups, user);
       }
-  }
+    }
     return forbiddenTables;
   }
 
 
-
-  
   /**
-  * Filters prohibited tables in a data model. Returns the list of prohibited tables for a user.
-  * ASSUMES THEY CAN SEE ALL UNSECURED TABLES AND THEIR OWN FILTERED TABLES.
-  * THEY ONLY STOP SEEING THOSE TO WHICH THEY HAVE BEEN DENIED ACCESS.
+   *  Filtra columnas  prohibidas en un modelo de datos. Devuelve el listado de columnas prohibidas para un usuario.
+   */
+  static getForbiddenColumns(
+    dataModelObject: any,
+    userGroups: Array<String>,
+    user: string
+  ) {
+    let forbiddenColumns = [];
+    // Check if model have open or closed security
+    let open =  (dataModelObject.ds.metadata.model_granted_roles.filter(r => r.type == "anyoneCanSee" && r.permission == true).length > 0)  
+
+
+    if (dataModelObject.ds.metadata.model_granted_roles.length > 0) { /** SI HAY PERMISOS DEFINIDOS. SI NO, NO HAY SEGURIDAD */
+      
+      /** SI TENGO LA COLUMNA PROHIVIDA.... */
+      if (dataModelObject.ds.metadata.model_granted_roles.filter(r => r.none == true).length > 0) {
+        dataModelObject.ds.metadata.model_granted_roles.filter(r => r.none == true).forEach(c => {
+          if (c.users?.includes(user)) {
+            forbiddenColumns.push(c);
+          }
+          userGroups.forEach(g => {
+            if (c.groups?.includes(g)) {
+              forbiddenColumns.push(c);
+            }
+          });
+        });
+      }
+    }
+
+    let allowedColumns = [];
+    // puede ser que me den permiso sobre una columna.
+    // entonces tengo prohivida toda la tabla excepto esa columna en el caso de un modelo cerrado.
+    if (eda_api_config.custom_behaviour.RESTRICT_TABLE_TO_GRANTED_COLUMN &&
+      dataModelObject.ds.metadata.model_granted_roles.length > 0) { /** SI HAY PERMISOS DEFINIDOS. SI NO, NO HAY SEGURIDAD */
+      if ( open != true &&  // si el modelo es cerrado.
+        dataModelObject.ds.metadata.model_granted_roles.filter(r => r.global == false && r.none == false).length > 0) {
+        dataModelObject.ds.metadata.model_granted_roles.filter(r => r.global == false && r.none == false  ).forEach(c => {
+         // para dada columna que digo que puedes ver.  
+         // dejas de poder ver el resto de la tabla.
+         // todo o algun valor
+         
+          if (c.users?.includes(user)) {
+            allowedColumns.push(c);
+          }
+          userGroups.forEach(g => {
+            if (c.groups?.includes(g)) {
+              allowedColumns.push(c);
+            }
+          });
+        });
+      }
+    }
+    // para todas las columnas permitidas de una tabla. El resto estan prohividas.
+    allowedColumns.forEach(c => {
+      let table = dataModelObject.ds.model.tables.filter(t => t.table_name == c.table)[0] // me da un array de un elemento
+      let columns = table.columns.filter(col => col.column_name != c.column);
+      columns = this.convertColumnToForbiddenColumn(columns, c);
+      forbiddenColumns = forbiddenColumns.concat(columns);
+    });
+
+    // si tengo permiso de mas de una columna de una tabla debo quitarla de forbiden columns.
+    allowedColumns.forEach(a => {
+      forbiddenColumns = forbiddenColumns.filter( c=> !( c.table == a.table  && c.column == a.column ) )
+    });
+
+    const unique = (value, index, self) => {
+      return self.indexOf(value) === index
+    }
+    let uniquesForbiddenColumns= forbiddenColumns.filter(unique);
+
+
+    return uniquesForbiddenColumns;
+  }
+
+
+/**
+ * En los filtros. Si dejo visibilidad sobre una columna. El resto de columnas de la tabla
+ * se convierten en prohividas. Pero tengo columnas normales y no columnas de filtros
+ * Por eso hay que convertirlas al formato de columna de filtro.
+ */
+static  convertColumnToForbiddenColumn(columns: any[], sample: any): any[] {
+  return columns.map(col => ({ ...sample, column: col.column_name , none: true, value: ['(x => None)'] }));
+}
+
+
+  /**
+   *  Filtra tablas prohividas en un modelo de datos. Devuelve el listado de tablas prohividas para un usuario. 
+   *  SUPONIENDO QUE PUEDE VER TODAS EN LAS QUE NO HAY SEGURIDAD Y LAS SUYAS FILTRADAS. 
+   *  TAN SÓLO NO VE AQUELLAS EN LAS QUE SE LE HA NEGADO EL ACCESO.
    */
   static getForbiddenTablesOpen(
     dataModelObject: any,
@@ -923,25 +1098,25 @@ export class DashboardController {
   ) {
     let forbiddenTables = [];
     const allTables = [];
-    let allowedTablesBySecurityForOthers = []; // If others see it, I can't see it (on exclusive models)
+    let allowedTablesBySecurityForOthers = []; // Si otros lo ven. Yo no lo puedo ver (en modelos exclusivos)
     let allowedTablesBySecurityForMe = [];
     dataModelObject.ds.model.tables.forEach(e => {
       allTables.push(e.table_name)
     })
     if (dataModelObject.ds.metadata.model_granted_roles !== undefined) {
       for (
-        var i = 0; i < dataModelObject.ds.metadata.model_granted_roles.length;  i++  ) {
+        var i = 0; i < dataModelObject.ds.metadata.model_granted_roles.length; i++) {
         if (
-          // If I can't see the table
+          /** Si NO puedo ver la tabla */
           dataModelObject.ds.metadata.model_granted_roles[i].column === 'fullTable' &&
           dataModelObject.ds.metadata.model_granted_roles[i].permission === false
         ) {
-          if ( dataModelObject.ds.metadata.model_granted_roles[i].users !== undefined  ) {
-            for ( var j = 0; j<dataModelObject.ds.metadata.model_granted_roles[i].users.length; j++ ) {
+          if (dataModelObject.ds.metadata.model_granted_roles[i].users !== undefined) {
+            for (var j = 0; j < dataModelObject.ds.metadata.model_granted_roles[i].users.length; j++) {
               if (
                 dataModelObject.ds.metadata.model_granted_roles[i].users[j] == user
               ) {
-                forbiddenTables.push( dataModelObject.ds.metadata.model_granted_roles[i].table );
+                forbiddenTables.push(dataModelObject.ds.metadata.model_granted_roles[i].table);
               }
             }
           }
@@ -949,7 +1124,7 @@ export class DashboardController {
       }
     }
 
-    //HIDDEN TABLES FOR THE GROUP 
+    /** TAULES OCULTES PER EL GRUP */
     if (dataModelObject.ds.metadata.model_granted_roles !== undefined) {
       for (
         var i = 0;
@@ -964,31 +1139,33 @@ export class DashboardController {
             dataModelObject.ds.metadata.model_granted_roles[i].groups !==
             undefined
           ) {
-            for ( var j = 0; j < dataModelObject.ds.metadata.model_granted_roles[i].groups.length; j++ ) {
-              if ( userGroups.includes( dataModelObject.ds.metadata.model_granted_roles[i].groups[j] ) ) {
-                forbiddenTables.push( dataModelObject.ds.metadata.model_granted_roles[i].table );
+            for (var j = 0; j < dataModelObject.ds.metadata.model_granted_roles[i].groups.length; j++) {
+              if (userGroups.includes(dataModelObject.ds.metadata.model_granted_roles[i].groups[j])) {
+                forbiddenTables.push(dataModelObject.ds.metadata.model_granted_roles[i].table);
               }
             }
           }
         }
       }
     }
+    //console.log('Tablas prohividas para el grupo');
+    //console.log(forbiddenTables);
 
 
-    // allowed tables by security 
+    /** allowed tables by security */
     if (dataModelObject.ds.metadata.model_granted_roles !== undefined) {
-      for (var i = 0; i < dataModelObject.ds.metadata.model_granted_roles.length; i++ ) {
+      for (var i = 0; i < dataModelObject.ds.metadata.model_granted_roles.length; i++) {
         if (
           dataModelObject.ds.metadata.model_granted_roles[i].column === 'fullTable' &&
           dataModelObject.ds.metadata.model_granted_roles[i].permission === true
         ) {
           if (
-            dataModelObject.ds.metadata.model_granted_roles[i].users !== undefined ) {
-            for (var j = 0; j < dataModelObject.ds.metadata.model_granted_roles[i].users.length; j++ ) {
-              if ( dataModelObject.ds.metadata.model_granted_roles[i].users[j] != user  ) {
-                allowedTablesBySecurityForOthers.push(  dataModelObject.ds.metadata.model_granted_roles[i].table );
+            dataModelObject.ds.metadata.model_granted_roles[i].users !== undefined) {
+            for (var j = 0; j < dataModelObject.ds.metadata.model_granted_roles[i].users.length; j++) {
+              if (dataModelObject.ds.metadata.model_granted_roles[i].users[j] != user) {
+                allowedTablesBySecurityForOthers.push(dataModelObject.ds.metadata.model_granted_roles[i].table);
               } else {
-                allowedTablesBySecurityForMe.push( dataModelObject.ds.metadata.model_granted_roles[i].table );
+                allowedTablesBySecurityForMe.push(dataModelObject.ds.metadata.model_granted_roles[i].table);
               }
             }
           }
@@ -996,22 +1173,26 @@ export class DashboardController {
       }
     }
 
+    //console.log('Tablas permitidas para otros');
+    //console.log(allowedTablesBySecurityForOthers);
+    //console.log('Tablas permitidas para mi');
+    //console.log(allowedTablesBySecurityForMe);
 
-    // I can see the table because I can see data from a column
+    /** puedo ver la tabla porque puedo ver datos de una columna */
     if (dataModelObject.ds.metadata.model_granted_roles !== undefined) {
-      for (var i = 0; i < dataModelObject.ds.metadata.model_granted_roles.length; i++ ) {
-        if ( // I can see values ​​from a column in the table
+      for (var i = 0; i < dataModelObject.ds.metadata.model_granted_roles.length; i++) {
+        if ( /** puedo ver valores de una columna de la tabla */
           dataModelObject.ds.metadata.model_granted_roles[i].global === false &&
           dataModelObject.ds.metadata.model_granted_roles[i].none === false &&
           dataModelObject.ds.metadata.model_granted_roles[i].value.length > 0
         ) {
           if (
-            dataModelObject.ds.metadata.model_granted_roles[i].users !== undefined ) {
-            for (var j = 0; j < dataModelObject.ds.metadata.model_granted_roles[i].users.length; j++ ) {
-              if ( dataModelObject.ds.metadata.model_granted_roles[i].users[j] != user  ) {
-                allowedTablesBySecurityForOthers.push(  dataModelObject.ds.metadata.model_granted_roles[i].table );
+            dataModelObject.ds.metadata.model_granted_roles[i].users !== undefined) {
+            for (var j = 0; j < dataModelObject.ds.metadata.model_granted_roles[i].users.length; j++) {
+              if (dataModelObject.ds.metadata.model_granted_roles[i].users[j] != user) {
+                allowedTablesBySecurityForOthers.push(dataModelObject.ds.metadata.model_granted_roles[i].table);
               } else {
-                allowedTablesBySecurityForMe.push( dataModelObject.ds.metadata.model_granted_roles[i].table );
+                allowedTablesBySecurityForMe.push(dataModelObject.ds.metadata.model_granted_roles[i].table);
               }
             }
           }
@@ -1019,18 +1200,22 @@ export class DashboardController {
       }
     }
 
+    //console.log('Tablas permitidas para otros');
+    //console.log(allowedTablesBySecurityForOthers);
+    //console.log('Tablas permitidas para mi');
+    //console.log(allowedTablesBySecurityForMe);
 
-    // TABLES PERMITTED BY THE GROUP
+    /** TAULES PERMESES PER EL GRUP */
     if (dataModelObject.ds.metadata.model_granted_roles !== undefined) {
-      for ( var i = 0; i < dataModelObject.ds.metadata.model_granted_roles.length;  i++ ) {
-        if ( dataModelObject.ds.metadata.model_granted_roles[i].column === 'fullTable' &&
-          dataModelObject.ds.metadata.model_granted_roles[i].permission === true ) {
-          if (  dataModelObject.ds.metadata.model_granted_roles[i].groups !==  undefined ) {
-            for ( var j = 0; j < dataModelObject.ds.metadata.model_granted_roles[i].groups.length;  j++ ) {
-              if ( !userGroups.includes( dataModelObject.ds.metadata.model_granted_roles[i].groups[j] ) ) {
-                allowedTablesBySecurityForOthers.push( dataModelObject.ds.metadata.model_granted_roles[i].table );
+      for (var i = 0; i < dataModelObject.ds.metadata.model_granted_roles.length; i++) {
+        if (dataModelObject.ds.metadata.model_granted_roles[i].column === 'fullTable' &&
+          dataModelObject.ds.metadata.model_granted_roles[i].permission === true) {
+          if (dataModelObject.ds.metadata.model_granted_roles[i].groups !== undefined) {
+            for (var j = 0; j < dataModelObject.ds.metadata.model_granted_roles[i].groups.length; j++) {
+              if (!userGroups.includes(dataModelObject.ds.metadata.model_granted_roles[i].groups[j])) {
+                allowedTablesBySecurityForOthers.push(dataModelObject.ds.metadata.model_granted_roles[i].table);
               } else {
-                allowedTablesBySecurityForMe.push(  dataModelObject.ds.metadata.model_granted_roles[i].table )
+                allowedTablesBySecurityForMe.push(dataModelObject.ds.metadata.model_granted_roles[i].table)
               }
             }
           }
@@ -1045,16 +1230,20 @@ export class DashboardController {
     let uniquesForbiddenTables = forbiddenTables.filter(unique);
 
 
-    allowedTablesBySecurityForOthers = allowedTablesBySecurityForOthers.filter(  unique   )
-    allowedTablesBySecurityForMe = allowedTablesBySecurityForMe.filter( unique )
+    allowedTablesBySecurityForOthers = allowedTablesBySecurityForOthers.filter(unique)
+    allowedTablesBySecurityForMe = allowedTablesBySecurityForMe.filter(unique)
 
+    //console.log('Tablas permitidas para otros por grupo');
+    //console.log(allowedTablesBySecurityForOthers);
+    //console.log('Tablas permitidas para mi');
+    //console.log(allowedTablesBySecurityForMe);
 
     allowedTablesBySecurityForMe.forEach(e => {
       allowedTablesBySecurityForOthers = allowedTablesBySecurityForOthers.filter(
         item => item != e
       )
     })
-    uniquesForbiddenTables = uniquesForbiddenTables.concat(  allowedTablesBySecurityForOthers    );
+    uniquesForbiddenTables = uniquesForbiddenTables.concat(allowedTablesBySecurityForOthers);
     uniquesForbiddenTables = uniquesForbiddenTables.filter(unique);
 
     return uniquesForbiddenTables;
@@ -1062,16 +1251,26 @@ export class DashboardController {
 
 
 
-
   /**
-  * Filter prohibited tables in a data model. Returns the list of prohibited tables for a user.
-  *  ASSUMES YOU CAN SEE ONLY THOSE TABLES FOR WHICH YOU HAVE EXPLICIT PERMISSION.
+   *  Filtra tablas prohividas en un modelo de datos. Devuelve el listado de tablas prohividas para un usuario. 
+   *  SUPONIENDO QUE PUEDE VER SOLO AQUELLAS TABLAS PARA LAS QUE TIENE PERMISO EXPLICITO.
    */
   static getForbiddenTablesClose(
     dataModelObject: any,
     userGroups: Array<String>,
     user: string
   ) {
+
+    /**
+     * Lógica del proceso: cojo todas las tablas .
+     * Recupero las tablas que puedo ver explicitamente y quto las que por algún motivo no  puedo ver.
+     * Las tablas prohividas son las que están en el listado todas las tablas y no están permitidas explicitamente 
+     * 
+     * puedo ver todas las tablas menos las que tengo explicitamente prohibida
+     * 
+     * 
+     */
+
     const allTables = [];
     let allowedTablesBySecurityForMe = [];
     let forbiddenTables = [];
@@ -1079,91 +1278,114 @@ export class DashboardController {
       allTables.push(e.table_name)
     })
 
-    // Here I've marked the tables I can see. The rest are prohibited.
-
-    // allowed tables by security 
+    // Aqui marco las tablas que si que puedo ver. El resto están prohividas
+    /** allowed tables by security */
     if (dataModelObject.ds.metadata.model_granted_roles !== undefined) {
       // Si el usuario puede ver todo el modelo.
-      if (dataModelObject.ds.metadata.model_granted_roles.filter(r=> r.table == 'fullModel' 
-                                                                    && r.permission == true 
-                                                                    && r.users?.includes(user) 
-                                                                ).length > 0 ){
+      if (dataModelObject.ds.metadata.model_granted_roles.filter(r => r.table == 'fullModel'
+        && r.column == 'fullModel'
+        && r.permission == true
+        && r.users?.includes(user)
+      ).length > 0) {
         // El usuairo puede ver todo.
-        forbiddenTables = [];
-        return forbiddenTables;
+        allowedTablesBySecurityForMe = _.cloneDeep(allTables);
       }
+      // Excepto lo que le prohibo  explicitamente.                                                         
+      dataModelObject.ds.metadata.model_granted_roles.forEach(r => {
+        if (r.column == 'fullTable' && r.users?.includes(user) && r.permission == false) {
+          forbiddenTables.push(r.table);
+        }
+      });;
+
       // Si el grupo puede ver todo el modelo.
-      let groupCan =  0;
-      userGroups.forEach(
-        group=>{
-          if (dataModelObject.ds.metadata.model_granted_roles.filter(r=> r.table == 'fullModel' 
-            && r.permission == true 
-            && r.groups?.includes(group) 
-          ).length > 0 ){
-              // El grupo  puede ver todo.
-              groupCan = 1;
-            }
+      let groupCan = 0;
+      userGroups?.forEach(
+        group => {
+          if (dataModelObject.ds.metadata.model_granted_roles.filter(r => r.table == 'fullModel'
+            && r.permission == true
+            && r.groups?.includes(group)
+          ).length > 0) {
+            // El grupo  puede ver todo.
+            groupCan = 1;
+          }
         }
       );
-      if(groupCan==1) {
-        forbiddenTables = [];
-        return forbiddenTables;
+      if (groupCan == 1) {
+        allowedTablesBySecurityForMe = _.cloneDeep(allTables);
       }
-   
-      for (var i = 0; i < dataModelObject.ds.metadata.model_granted_roles.length; i++ ) {
+
+
+      // Excepto lo que le prohibo  explicitamente al grupo
+      userGroups?.forEach(
+        group => {
+          const forbidden = dataModelObject.ds.metadata.model_granted_roles.filter(r => r.column == 'fullTable'
+            && r.permission == false
+            && r.groups?.includes(group)
+          )
+          if (forbidden.length > 0) {
+            forbidden.forEach(r => forbiddenTables.push(r.table));
+          }
+        }
+      );
+
+
+
+      // esto es para los usuarios.
+      for (var i = 0; i < dataModelObject.ds.metadata.model_granted_roles.length; i++) {
         if (
           dataModelObject.ds.metadata.model_granted_roles[i].column === 'fullTable' &&
           dataModelObject.ds.metadata.model_granted_roles[i].permission === true
         ) {
           if (
-            dataModelObject.ds.metadata.model_granted_roles[i].users !== undefined ) {
-            for (var j = 0; j < dataModelObject.ds.metadata.model_granted_roles[i].users.length; j++ ) {
-              if ( dataModelObject.ds.metadata.model_granted_roles[i].users[j] == user  ) {
-                allowedTablesBySecurityForMe.push(  dataModelObject.ds.metadata.model_granted_roles[i].table );
-              } 
+            dataModelObject.ds.metadata.model_granted_roles[i].users !== undefined) {
+            for (var j = 0; j < dataModelObject.ds.metadata.model_granted_roles[i].users.length; j++) {
+              if (dataModelObject.ds.metadata.model_granted_roles[i].users[j] == user) {
+                allowedTablesBySecurityForMe.push(dataModelObject.ds.metadata.model_granted_roles[i].table);
+              }
             }
           }
         }
       }
     }
+    //console.log('Tablas que el usuario puede ver', allowedTablesBySecurityForMe );
 
-
-    // I can see the table because I can see data from a column 
+    /** puedo ver la tabla porque puedo ver datos de una columna */
     if (dataModelObject.ds.metadata.model_granted_roles !== undefined) {
-      for (var i = 0; i < dataModelObject.ds.metadata.model_granted_roles.length; i++ ) {
-        if ( // I can see values ​​from a column in the table 
+      for (var i = 0; i < dataModelObject.ds.metadata.model_granted_roles.length; i++) {
+        if ( /** puedo ver valores de una columna de la tabla */
           dataModelObject.ds.metadata.model_granted_roles[i].global === false &&
           dataModelObject.ds.metadata.model_granted_roles[i].none === false &&
           dataModelObject.ds.metadata.model_granted_roles[i].value.length > 0
         ) {
-          if (dataModelObject.ds.metadata.model_granted_roles[i].users !== undefined ) {
-            for (var j = 0; j < dataModelObject.ds.metadata.model_granted_roles[i].users.length; j++ ) {
-              if ( dataModelObject.ds.metadata.model_granted_roles[i].users[j] == user  ) {
-                allowedTablesBySecurityForMe.push(  dataModelObject.ds.metadata.model_granted_roles[i].table );
-              }  
+          if (dataModelObject.ds.metadata.model_granted_roles[i].users !== undefined) {
+            for (var j = 0; j < dataModelObject.ds.metadata.model_granted_roles[i].users.length; j++) {
+              if (dataModelObject.ds.metadata.model_granted_roles[i].users[j] == user) {
+                allowedTablesBySecurityForMe.push(dataModelObject.ds.metadata.model_granted_roles[i].table);
+              }
             }
           }
         }
       }
     }
+    //console.log('Tablas PERMITIDAS   para el usuario porque pueden ver una columna',allowedTablesBySecurityForMe );
 
 
-    // TABLES PERMITTED BY THE GROUP
+    /** TAULES PERMESES PER EL GRUP */
     if (dataModelObject.ds.metadata.model_granted_roles !== undefined) {
-      for ( var i = 0; i < dataModelObject.ds.metadata.model_granted_roles.length;  i++ ) {
-        if ( dataModelObject.ds.metadata.model_granted_roles[i].column === 'fullTable' &&
-          dataModelObject.ds.metadata.model_granted_roles[i].permission === true ) {
-          if (  dataModelObject.ds.metadata.model_granted_roles[i].groups !==  undefined ) {
-            for ( var j = 0; j < dataModelObject.ds.metadata.model_granted_roles[i].groups.length;  j++ ) {
-              if ( userGroups.includes( dataModelObject.ds.metadata.model_granted_roles[i].groups[j] ) ) {
-                allowedTablesBySecurityForMe.push( dataModelObject.ds.metadata.model_granted_roles[i].table );
-              } 
+      for (var i = 0; i < dataModelObject.ds.metadata.model_granted_roles.length; i++) {
+        if (dataModelObject.ds.metadata.model_granted_roles[i].column === 'fullTable' &&
+          dataModelObject.ds.metadata.model_granted_roles[i].permission === true) {
+          if (dataModelObject.ds.metadata.model_granted_roles[i].groups !== undefined) {
+            for (var j = 0; j < dataModelObject.ds.metadata.model_granted_roles[i].groups.length; j++) {
+              if (userGroups.includes(dataModelObject.ds.metadata.model_granted_roles[i].groups[j])) {
+                allowedTablesBySecurityForMe.push(dataModelObject.ds.metadata.model_granted_roles[i].table);
+              }
             }
           }
         }
       }
     }
-    
+
     // Check if the user has permission to view the table based on column visibility
     if (dataModelObject.ds.metadata.model_granted_roles !== undefined) {
       for (var i = 0; i < dataModelObject.ds.metadata.model_granted_roles.length; i++) {
@@ -1177,40 +1399,29 @@ export class DashboardController {
             for (var j = 0; j < dataModelObject.ds.metadata.model_granted_roles[i].groups.length; j++) {
               if (userGroups.includes(dataModelObject.ds.metadata.model_granted_roles[i].groups[j])) {
                 allowedTablesBySecurityForMe.push(dataModelObject.ds.metadata.model_granted_roles[i].table);
-              }  
+              }
             }
           }
         }
       }
     }
-
-    forbiddenTables = allTables.filter( t => !allowedTablesBySecurityForMe.includes( t )  );
-
-  // Filters values ​​starting with: 'sda_l_' in tables & values ​​containing '__' in tables.
-  /* SDA CUSTOM*/   let newForbiddenTables = forbiddenTables.filter( table => {
-  /* SDA CUSTOM*/     return ((!table.startsWith('sda_l_') && !table.includes('__')))
-  /* SDA CUSTOM*/   })
-
-    return newForbiddenTables;
+    // puedo ver todas las tablas menos las que tengo explicitamente prohibidas
+    allowedTablesBySecurityForMe = allowedTablesBySecurityForMe.filter(t => !forbiddenTables.includes(t));
+    forbiddenTables = allTables.filter(t => !allowedTablesBySecurityForMe.includes(t));
+    return forbiddenTables;
   }
 
 
-
-
-
-
   /**
-   * Execute an EDA query for a dashboard
+   * Executa una consulta EDA per un dashboard
    */
   static async execQuery(req: Request, res: Response, next: NextFunction) {
-    /* SDA CUSTOM */ let builtQuery = ''
+    let builtQuery = ''
 
     try {
       let connectionProps: any;
       if (req.body.dashboard?.connectionProperties !== undefined) connectionProps = req.body.dashboard.connectionProperties;
-
       const connection = await ManagerConnectionService.getConnection(req.body.model_id, connectionProps);
-      
       const dataModel = await connection.getDataSource(req.body.model_id, req.qs.properties)
       /**--------------------------------------------------------------------------------------------------------- */
       /**Security check */
@@ -1223,26 +1434,30 @@ export class DashboardController {
           )
         )
       }
-      const dataModelObject = JSON.parse(JSON.stringify(dataModel))
-      /** Forbidden tables  */
+
+
+
+
+      const dataModelObject = JSON.parse(JSON.stringify(dataModel));
+
+
+
+      /** Forbidden tables   tengo todas las tablas que están prohividas para mi. */
       let uniquesForbiddenTables = DashboardController.getForbiddenTables(
         dataModelObject,
         req['user'].role,
         req.user._id
       )
 
+      //console.log('uniquesForbiddenTables', uniquesForbiddenTables);
+      //console.log('req.body.query', req.body.query);
+
+
       const includesAdmin = req['user'].role.includes("135792467811111111111110")
-      if(includesAdmin){
-        //the admin sees everything
-       uniquesForbiddenTables = [];
+      if (includesAdmin || DashboardController.isAnonymousUser(req.user)) {
+        // el admin ve todo, y el usuario anónimo (informes públicos) también
+        uniquesForbiddenTables = [];
       }
-
-
-/* SDA CUSTOM*/	  if( req.user._id == '135792467811111111111112'){
-/* SDA CUSTOM*/        console.log('ANONYMOUS USER QUERY....NO PERMISSIONS APPLY HERE.....');
-/* SDA CUSTOM*/        uniquesForbiddenTables = [];
-/* SDA CUSTOM*/      }
-
 
       let mylabels = []
       let myQuery: any
@@ -1252,7 +1467,7 @@ export class DashboardController {
         let notAllowedColumns = []
         for (let c = 0; c < req.body.query.fields.length; c++) {
           if (
-            uniquesForbiddenTables.includes(req.body.query.fields[c].table_id)
+            uniquesForbiddenTables.includes(req.body.query.fields[c].table_id.split('.')[0])
           ) {
             notAllowedColumns.push(req.body.query.fields[c])
           } else {
@@ -1266,22 +1481,22 @@ export class DashboardController {
           }
           myQuery.filters = req.body.query.filters
         }
-
         myQuery.sortedFilters = req.body.query.sortedFilters;
+        myQuery.resultSortingColumns = req.body.query.resultSortingColumns;
       } else {
-        // Labels are the technical name...
+        // las etiquetas son el nombre técnico...
         myQuery = JSON.parse(JSON.stringify(req.body.query))
         for (let c = 0; c < req.body.query.fields.length; c++) {
           mylabels.push(req.body.query.fields[c].column_name)
         }
       }
-      myQuery.queryMode = req.body.query.queryMode? req.body.query.queryMode: 'EDA'; // I always add it
-      myQuery.rootTable = req.body.query.rootTable? req.body.query.rootTable: ''; // I always add it
+      myQuery.queryMode = QueryModeUtil.normalize(req.body.query.queryMode ? req.body.query.queryMode : 'EDA');
+      myQuery.rootTable = myQuery.queryMode == 'TREE' && req.body.query.rootTable ? req.body.query.rootTable : '';
       myQuery.simple = req.body.query.simple;
       myQuery.queryLimit = req.body.query.queryLimit;
       myQuery.joinType = req.body.query.joinType ? req.body.query.joinType : 'inner';
 
-      if (myQuery.fields.length == 0) {
+       if (myQuery.fields.length === 0 || myQuery.fields.length < req.body.query.fields.length ) { //Not allowed to see all the data. If you have one forbidden column you cannot see the query. It will breack the chart
         console.log('you cannot see any data');
         return res.status(200).json([['noDataAllowed'], [[]]]);
       }
@@ -1292,10 +1507,8 @@ export class DashboardController {
       }
 
 
-      // For compatibility. If I don't have the column type in the filter, I'll add it.
-
-      // For compatibility. If I don't have the aggregation type in the filter.....
-      if(myQuery.filters){
+      /** For compatibility. If I don't have the column type in the filter, I add it */
+      if (myQuery.filters) {
         for (const filter of myQuery.filters) {
           if (!filter.filter_column_type) {
             const filterTable = dataModelObject.ds.model.tables.find((t) => t.table_name == filter.filter_table.split('.')[0]);
@@ -1305,107 +1518,117 @@ export class DashboardController {
               filter.filter_column_type = filterColumn?.column_type || 'text';
             }
           }
-          // for compatibility. If I don't have the aggregation type in the filter I put it in where
+          /** por compatibilidad. Si no tengo el el tipo de agregación en el filtro lo pongo en el where*/ 
           if(! filter.hasOwnProperty('filterBeforeGrouping') ){
             filter.filterBeforeGrouping = true;
           }
         }
       }
-      
+
       let nullFilter = {};
       const filters = myQuery.filters;
 
 
-
-      // We follow this approach when applying a filter that includes multiple elements, one of which is null. For example: filtering by [3, 5, null, 7].
       filters.forEach(a => {
-      // Filter nulls and empty values ​​from the dashboard . If the selector contains empty values, should they be treated as SDA CUSTOM? 
         a.filter_elements.forEach(b => {
-          if( b.value1){
-            if ( b.value1.includes('emptyString')  && b.value1.length  == 1 ){
-              // if it is one I turn it into a null or empty
+          if (b.value1) {
+            if (b.value1.includes('emptyString') && b.value1.length == 1) {
+              /** if it is the only value selected I turn the filter into a null or empty*/
               a.filter_type = 'null_or_empty';
-              // The sortedFilters are controlled in the getSortedFilters function of mySql-builder.service.ts
-            }if ( b.value1.includes('emptyString')  && b.value1.length  > 1 ){
-             // if there are more than one, I remove them to a separate filter.
-             const nullFilter = JSON.parse(JSON.stringify(a));
-             nullFilter.filter_id = 'is_null';
-             nullFilter.filter_type = 'null_or_empty';
-             nullFilter.source_filter_id = a.filter_id; // Added filter_id from the source
-             nullFilter.filter_elements = [{value1:['null']}];
-              b.value1 = b.value1.filter(c => c != 'emptyString')
-              filters.push(nullFilter);
-            
-            } 
-          }
-        });
-
-
-
-
-
-        a.filter_elements.forEach(b => {
-          if( b.value1){
-            if ( 
-                ( b.value1.includes('null') ||  b.value1.includes( eda_api_config.null_value ) ||  b.value1.includes('1900-01-01') )  
-                && b.value1.length > 1  //If I have multiple elements 
-                && ( a.filter_type == '=' || a.filter_type == 'in' ||  a.filter_type == 'like' || a.filter_type == 'between')
-            ) {
-                // If there are more than one, I remove it from a separate filter.
+            } if (b.value1.includes('emptyString') && b.value1.length > 1) {
+              /** if there are more than one, remove it to a separate filter */
               const nullFilter = JSON.parse(JSON.stringify(a));
               nullFilter.filter_id = 'is_null';
-              nullFilter.filter_type = 'is_null';
-              nullFilter.filter_elements = [{value1:['null']}]
-              nullFilter.isGlobal= true,
-              nullFilter.applyToAll= false;
-
+              nullFilter.filter_type = 'null_or_empty';
+              nullFilter.source_filter_id = a.filter_id;
+              nullFilter.filter_elements = [{ value1: ['null'] }];
+              b.value1 = b.value1.filter(c => c != 'emptyString');
+              filters.push(nullFilter);
+            }
+          }
+        });
+        a.filter_elements.forEach(b => {
+          if (b.value1) {
+            if (
+              (b.value1.includes('null') || b.value1.includes('1900-01-01'))
+              && b.value1.length > 1  /** Si tengo varios elementos  */
+              && (a.filter_type == '=' || a.filter_type == 'in' || a.filter_type == 'like' || a.filter_type == 'between')
+            ) {
+              nullFilter = {
+                filter_id: 'is_null',
+                filter_table: a.filter_table,
+                filter_column: a.filter_column,
+                filter_type: 'is_null',
+                filter_elements: [{ value1: ['null'] }],
+                filter_column_type: a.filter_column_type,
+                isGlobal: true,
+                applyToAll: false
+              }
               b.value1 = b.value1.filter(c => c != 'null')
               filters.push(nullFilter);
-              }else  if ( ( b.value1.includes('null')||  b.value1.includes( eda_api_config.null_value )  || b.value1.includes('1900-01-01') ) 
-              && b.value1.length > 1  // If I have multiple elements  
-              && ( a.filter_type == '!=' || a.filter_type == 'not_in' ||  a.filter_type == 'not_like' )
-              ) {
-                  // If there are more than one, I remove it from a separate filter.
-                  const nullFilter = JSON.parse(JSON.stringify(a));
-                  nullFilter.filter_id = 'not_null';
-                  nullFilter.filter_type = 'not_null';
-                  nullFilter.filter_elements = [{value1:['null']}]; 
-                  b.value1 = b.value1.filter(c => c != 'null')
-                  filters.push(nullFilter);
-            } else if ( 
-              ( b.value1.includes('null') ||  b.value1.includes( eda_api_config.null_value ) || b.value1.includes('1900-01-01') )  
-              && b.value1.length == 1  
-              && ( a.filter_type == '=' || a.filter_type == 'in' ||  a.filter_type == 'like' || a.filter_type == 'between') 
-              ){
-                a.filter_type='is_null';
-            } else if ( 
-              ( b.value1.includes('null') ||  b.value1.includes( eda_api_config.null_value ) || b.value1.includes('1900-01-01') )  
-              && b.value1.length == 1  
-              &&  ( a.filter_type == '!=' || a.filter_type == 'not_in' ||  a.filter_type == 'not_like') 
-            ){
-              a.filter_type='not_null';
-            } 
-         }
+            } else if ((b.value1.includes('null') || b.value1.includes('1900-01-01'))
+              && b.value1.length > 1  /** Si tengo varios elementos  */
+              && (a.filter_type == '!=' || a.filter_type == 'not_in' || a.filter_type == 'not_like')
+            ) {
+              nullFilter = {
+                filter_id: 'not_null',
+                filter_table: a.filter_table,
+                filter_column: a.filter_column,
+                filter_type: 'not_null',
+                filter_elements: [{ value1: ['null'] }],
+                filter_column_type: a.filter_column_type,
+                isGlobal: true,
+                applyToAll: false
+              }
+              b.value1 = b.value1.filter(c => c != 'null')
+              filters.push(nullFilter);
+            } else if (
+              (b.value1.includes('null') || b.value1.includes('1900-01-01'))
+              && b.value1.length == 1
+              && (a.filter_type == '=' || a.filter_type == 'in' || a.filter_type == 'like' || a.filter_type == 'between')
+            ) {
+              a.filter_type = 'is_null';
+            } else if (
+              (b.value1.includes('null') || b.value1.includes('1900-01-01'))
+              && b.value1.length == 1
+              && (a.filter_type == '!=' || a.filter_type == 'not_in' || a.filter_type == 'not_like')
+            ) {
+              a.filter_type = 'not_null';
+            }
+          }
         })
-      }) 
+      })
 
       myQuery.filters = filters;
 
-      if(uniquesForbiddenTables.length > 0){
-        if(   myQuery.filters.filter( f=> uniquesForbiddenTables.includes( f.filter_table.split('.')[0]) ).length > 0 ){
+
+      if (uniquesForbiddenTables.length > 0) {
+        if (myQuery.filters.filter(f => uniquesForbiddenTables.includes(f.filter_table.split('.')[0])).length > 0) {
           console.log('you are not allowed to user this filters');
           return res.status(200).json([['noFilterAllowed'], [[]]]);
         }
 
       }
 
-      /* SDA CUSTOM */ builtQuery = await connection.getQueryBuilded(
+      if (!myQuery.forSelector) {
+        const mandatoryFilterMissing = await DashboardController.isMandatoryFilterMissing(
+          req.body.dashboard?.dashboard_id,
+          req.body.dashboard?.panel_id,
+          myQuery.filters
+        );
+        if (mandatoryFilterMissing) {
+          console.log('a mandatory global filter has no value, query blocked');
+          return res.status(200).json([['mandatoryFilterMissing'], [[]]]);
+        }
+      }
+
+      const query = await connection.getQueryBuilded(
         myQuery,
         dataModelObject,
         req.user,
-        req.body.query.queryLimit // Added dlimit 
+        req.body.query.queryLimit // Agregado de limite para fuente de datos generados a partir de un excel
       )
-      /* SDA CUSTOM */ const query = builtQuery
+      builtQuery = query
 
       /**---------------------------------------------------------------------------------------------------------*/
 
@@ -1419,132 +1642,323 @@ export class DashboardController {
       console.log('\n-------------------------------------------------------------------------------\n');
 
       /**cached query */
-      let cacheEnabled = false;
-      dataModelObject.ds.metadata.cache_config &&
-      dataModelObject.ds.metadata.cache_config.enabled === true;
+      let cacheEnabled =
+        dataModelObject.ds.metadata.cache_config &&
+        dataModelObject.ds.metadata.cache_config.enabled
 
       const cachedQuery = cacheEnabled
-        ? await CachedQueryService.checkQuery(req.body.model_id, query)
+        ? await CachedQueryService.checkQuery(req.body.model_id, query, 'EDA')
         : null
 
-      if (!cachedQuery) {
-        connection.client = await connection.getclient();
-        const getResults = await connection.execQuery(query);
+        
+      
 
-        let numerics = []
-        // If it is oracle or some mysql it will be difficult to make the numbers normal.
-        if (
-          dataModel.ds.connection.type == 'oracle' ||
-          dataModel.ds.connection.type == 'mysql'
-        ) {
-          req.body.query.fields.forEach((e, i) => {
-            if (e.column_type == 'numeric') {
-              numerics.push('true')
-            } else {
-              numerics.push('false')
-            }
-          })
+
+      let output;
+
+  if (!cachedQuery) {
+    // Conexión y consulta
+    connection.client = await connection.getclient();
+    const getResults = await connection.execQuery(query);
+
+    let numerics: string[] = [];
+
+    // Normalización de números si es Oracle o MySQL
+    if (dataModel.ds.connection.type == 'oracle' || dataModel.ds.connection.type == 'mysql') {
+      req.body.query.fields.forEach((e, i) => {
+        numerics.push(e.column_type === 'numeric' ? 'true' : 'false');
+      });
+    }
+
+    let results: any[] = [];
+
+    for (let i = 0, n = getResults.length; i < n; i++) {
+      const r = getResults[i];
+      const outputRow = Object.keys(r).map((key, ind) => {
+        if (dataModel.ds.connection.type == 'oracle' || dataModel.ds.connection.type == 'mysql') {
+          if (numerics[ind] === 'true') {
+            const res = parseFloat(r[key]);
+            return isNaN(res) ? eda_api_config.null_value : res;
+          } else {
+            return r[key] === null ? eda_api_config.null_value : r[key];
+          }
+        } else {
+          // Otros DB
+          if (numerics[ind] !== 'true' && r[key] === null) {
+            return eda_api_config.null_value;
+          } else {
+            return r[key];
+          }
         }
+      });
+      results.push(outputRow);
+    }
 
-        let results = []
+    output = [mylabels, results];
 
-        // Normalize data here i also transform oracle numbers who come as strings to real numbers
-        for (let i = 0, n = getResults.length; i < n; i++) {
-          const r = getResults[i]
-          const output = Object.keys(r).map((i, ind) => {
-            // If it is oracle or some mysql it will be a bit difficult to make the numbers normal. 
-            if (
-              dataModel.ds.connection.type == 'oracle' ||
-              dataModel.ds.connection.type == 'mysql'
-            ) {
-              if (numerics[ind] == 'true') {
-                const res = parseFloat(r[i])
-                if (isNaN(res)) {
-                   return eda_api_config.null_value;
-                } else {
-                  return res
-                }
-              } else {
-                // this is to avoid nulls I remove the nulls and change them to '' from the values
-                if (r[i] === null) {
-                  return eda_api_config.null_value;
-                } else {
-                    return r[i];
-                }
-              }
-            } else {
-              // I remove the eyes and change them to eda_api_config.null value of the levels
-              if (numerics[ind] != 'true' && r[i] == null) {
-                return eda_api_config.null_value;
-              } else {
-                return r[i];
-              }
+    // Guardar en caché si aplica
+    if (output[1].length < cache_config.MAX_STORED_ROWS && cacheEnabled) {
+      CachedQueryService.storeQuery(req.body.model_id, query, output, 'EDA');
+    }
 
+  } else {
+    console.log('\x1b[36m%s\x1b[0m', '💾 Cached query 💾');
+    output = cachedQuery.cachedQuery.response;
+  }
 
-            }
+  // ------------------ Procesamiento común ------------------
 
-          })
+  // Suma acumulativa
+  DashboardController.cumulativeSum(output, req.body.query);
 
+  // Revisar si hay predicción y el tipo
+  if(req.body.query?.prediction && req.body.query?.prediction !== 'None' && ['line','area','table'].includes(req.body.output?.config?.chartType)) {
+    await DashboardController.setupPrediction(output, req.body, myQuery, connection, dataModelObject, req.user)
+  }
 
-          results.push(output)          
-        }
-        // Labels are the technical name...
-        const output = [mylabels, results]
-        if (output[1].length < cache_config.MAX_STORED_ROWS && cacheEnabled) {
-          CachedQueryService.storeQuery(req.body.model_id, query, output)
-        }
+  console.log(
+    '\x1b[32m%s\x1b[0m',
+    `Date: ${formatDate(new Date())} Dashboard:${req.body.dashboard.dashboard_id
+    } Panel:${req.body.dashboard.panel_id} DONE\n`
+  );
 
-        /**CUMULATIVE SUM ->
-        * If dates are aggregated by month or day
-        * and the cumulative flag is set, the cumulative sum is performed on all numeric fields
-        */
-        DashboardController.cumulativeSum(output, req.body.query)
+  return res.status(200).json(output);
 
-        console.log(
-          '\x1b[32m%s\x1b[0m',
-          `Date: ${formatDate(new Date())} Dashboard:${req.body.dashboard.dashboard_id
-          } Panel:${req.body.dashboard.panel_id} DONE\n`
-        )
-
-            
-
-        return res.status(200).json(output)
-
-        /**
-         * The query is to the cache
-         */
-      } else {
-        /**SUMA ACUMULATIVA ->
-        * If dates are added by month or day
-        * and the cumulative flag is active, the cumulative sum is performed on all numeric fields.
-         */
-        console.log('\x1b[36m%s\x1b[0m', '💾 Cached query 💾')
-        DashboardController.cumulativeSum(
-          cachedQuery.cachedQuery.response,
-          req.body.query
-        )
-        console.log(
-          '\x1b[32m%s\x1b[0m',
-          `Date: ${formatDate(new Date())} Dashboard:${req.body.dashboard.dashboard_id
-          } Panel:${req.body.dashboard.panel_id} DONE\n`
-        )    
-        return res.status(200).json(cachedQuery.cachedQuery.response)
-      }
     } catch (err) {
-      /* SDA CUSTOM */ // SDA CUSTOM - Audit log for panel query failures (EDA mode)
-      /* SDA CUSTOM */ insertServerLog(req, 'error', 'PanelQueryFailed', req.user.name, await buildPanelQueryErrorType(req.body && req.body.dashboard, err, 'EDA', (typeof builtQuery !== 'undefined' ? builtQuery : '')))
-      /* SDA CUSTOM */ // END SDA CUSTOM
       console.log(err)
-/* SDA CUSTOM */ next(new HttpException(500, await DashboardController.buildDbErrorMessageForRequest(err, req)))
+      insertServerLog(req, 'error', 'PanelQueryFailed', req.user?.name, await buildPanelQueryErrorType(req.body?.dashboard, err, 'EDA', builtQuery));
+      next(new HttpException(500, await DashboardController.buildDbErrorMessageForRequest(err, req)))
     }
   }
 
 
+  static async setupPrediction(output: any, body: any, myQuery: any, connection?: any, dataModelObject?: any, user?: any){
+    // Leer configuración de predicción del body
+    const predictionConfig = body.query?.predictionConfig || {};
+    const steps = predictionConfig.steps || 3;
+
+    // Buscamos campo de la fecha — sin él no podemos generar fechas futuras
+    const dateField = myQuery.fields.find(field => field.column_type === 'date');
+    if (!dateField){
+      return;
+    }
+
+    const timeFormat = dateField.format;
+    const lastDate = output[1][output[1].length - 1][0];
+
+    // Generamos las próximas fechas en el mismo formato que las existentes (mes, semana, día...)
+    const nextLabels = TimeFormatService.nextInSequenceGeneric( timeFormat, lastDate, steps );
+
+    const rows = output[1];
+    const lastIndex = rows.length - 1;
+
+    let predictions: number[] = [];
+
+    const isTable = body.output?.config?.chartType === 'table';
+
+    // Determinar índice de la columna objetivo (común a ambos métodos)
+    const targetColumnSpec = predictionConfig.targetColumn;
+    let targetIndex = 1; // por defecto: primera columna numérica tras la fecha
+    if (targetColumnSpec) {
+      const idx = myQuery.fields.findIndex(f =>
+        f.column_name === targetColumnSpec.column_name && f.table_id === targetColumnSpec.table_id
+      );
+      if (idx >= 0) targetIndex = idx;
+    }
+
+    switch(body.query?.prediction){
+        case 'Arima': {
+          const originalDataset = rows.map(row => row[targetIndex]).filter(val => Number.isFinite(val));
+          const setup = {steps, rows, lastIndex, nextLabels, isTable, labels: output[0]};
+          // arimaParams puede ser undefined (usará configs automáticas) o {p,d,q} manual
+          DashboardController.applyArimaPredicction(
+            predictions, originalDataset, setup, predictionConfig.arimaParams, targetIndex);
+          break;
+        }
+        case 'Tensorflow': {
+          // Dataset objetivo
+          const originalDataset = rows.map(row => row[targetIndex]).filter(val => Number.isFinite(val));
+
+          // Extraer referenceDatasets directamente de las filas del resultado (todas las columnas numéricas excepto la objetivo)
+          const referenceDatasets: number[][] = [];
+          for (let i = 0; i < myQuery.fields.length; i++) {
+            if (i === targetIndex) continue;
+            if (myQuery.fields[i].column_type === 'numeric') {
+              const refData = rows.map(row => row[i]).filter((val): val is number => Number.isFinite(val));
+              if (refData.length >= 4) {
+                referenceDatasets.push(refData);
+              }
+            }
+          }
+
+          const setup = {steps, rows, lastIndex, nextLabels, isTable, labels: output[0]};
+          // tfParams puede ser undefined o {epochs, lookback, learningRate}
+          await DashboardController.applyTensorflowPredicction(
+            predictions, originalDataset, setup, predictionConfig.tensorflowParams, referenceDatasets, targetIndex);
+          break;
+        }
+      }
+  }
+
+  // encontrar los datasets de las columnas de referencia para la predicción multivariante con TensorFlow. Cada dataset es un array de números alineado con el campo de fecha.
+  static async fetchReferenceDatasets(referenceColumns: {table_name: string, column_name: string}[],
+    dateField: any, myQuery: any, connection: any, dataModelObject: any, user: any, queryLimit?: number ): Promise<number[][]> {
+    const referenceDatasets: number[][] = [];
+
+    for (const refCol of referenceColumns) {
+      // Encontrar tablas
+      const table = dataModelObject.ds?.model?.tables?.find(t => t.table_name === refCol.table_name);
+      if (!table) {
+        console.warn(`[Prediction] Reference table not found: ${refCol.table_name}`);
+        continue;
+      }
+      // Encontrar columnas
+      const colDef = table.columns?.find(c => c.column_name === refCol.column_name);
+      if (!colDef) {
+        console.warn(`[Prediction] Reference column not found: ${refCol.column_name} in ${refCol.table_name}`);
+        continue;
+      }
+
+      // Build a query with the same date field + this reference column
+      const refQuery = {
+        fields: [
+          { ...dateField },  // Same date field as main query for alignment
+          {
+            column_name: colDef.column_name,
+            column_type: colDef.column_type || 'numeric',
+            table_id: refCol.table_name,
+            display_name: colDef.display_name?.default || colDef.column_name,
+            order: 0,
+            aggregation_type: 'sum',
+          }
+        ],
+        filters: myQuery.filters || [],
+        queryMode: myQuery.queryMode || 'EDA',
+        simple: myQuery.simple,
+        joinType: myQuery.joinType || 'inner',
+      };
+
+      try {
+        const refQueryBuilt = await connection.getQueryBuilded(refQuery, dataModelObject, user, queryLimit);
+        connection.client = await connection.getclient();
+        const refResults = await connection.execQuery(refQueryBuilt);
+
+        // Extract numeric values from results (column index 1 = the reference column)
+        let dataset: number[];
+        if (Array.isArray(refResults) && refResults.length > 0) {
+          if (Array.isArray(refResults[0])) {
+            // MongoDB format: already arrays
+            dataset = refResults.map(row => row[1]).filter(val => Number.isFinite(val));
+          } else {
+            // SQL format: objects
+            const keys = Object.keys(refResults[0]);
+            const valueKey = keys[1]; // Second column is the numeric value
+            dataset = refResults.map(row => {
+              const val = parseFloat(row[valueKey]);
+              return isNaN(val) ? null : val;
+            }).filter(val => val !== null && Number.isFinite(val));
+          }
+        }
+
+        if (dataset && dataset.length > 0) {
+          referenceDatasets.push(dataset);
+        } else {
+          console.warn(`[Prediction] No data for reference column ${refCol.table_name}.${refCol.column_name}`);
+        }
+      } catch (err) {
+        console.warn(`[Prediction] Failed to fetch reference column ${refCol.table_name}.${refCol.column_name}:`, err.message);
+      }
+    }
+
+    return referenceDatasets;
+  }
+
+  // Formula de arima
+  static applyArimaPredicction(predictions: number[], originalDataset: any, setup: {steps,rows,lastIndex,nextLabels:any[],isTable?:boolean,labels?:any[]}, arimaParams?: {p: number, d: number, q: number}, targetIndex: number = 1) {
+    try {
+      predictions = ArimaService.forecast(originalDataset, setup.steps, arimaParams);
+    } catch (err) {
+      console.error('Error ARIMA:', err);
+      return;
+    }
+
+    if (setup.isTable) {
+      // Para tablas: añadir columna extra "Predicción" (histórico = 0, predichos = valor real)
+      setup.rows.forEach((row: any[]) => {
+        row.push(0);
+      });
+      if (setup.labels) setup.labels.push('Predicción');
+      const numColsWithPred = setup.rows[0].length;
+      setup.nextLabels.forEach((label, index) => {
+        const newRow = new Array(numColsWithPred).fill(null);
+        newRow[0] = label;
+        newRow[numColsWithPred - 1] = predictions[index] ?? null;
+        setup.rows.push(newRow);
+      });
+    } else {
+      const numCols = setup.rows[0].length;
+      // Para gráficos: añadir columna extra de predicción para serie visual separada
+      // Solo el último punto real tiene valor para conectar visualmente ambas líneas
+      setup.rows.forEach((row, index) => {
+        row.push(index === setup.lastIndex ? row[targetIndex] : null);
+      });
+
+      const numColsWithPred = numCols + 1;
+      setup.nextLabels.forEach((label, index) => {
+        const newRow = new Array(numColsWithPred).fill(null);
+        newRow[0] = label;
+        newRow[numColsWithPred - 1] = predictions[index] ?? null;
+        setup.rows.push(newRow);
+      });
+    }
+  }
+
+  // Predicción con TensorFlow
+  static async applyTensorflowPredicction(predictions: number[], originalDataset: any, setup: {steps,rows,lastIndex,nextLabels:any[],isTable?:boolean,labels?:any[]}, tfParams?: any, referenceDatasets?: number[][], targetIndex: number = 1) {
+    try {
+      predictions = await TensorflowService.forecast(originalDataset, setup.steps, tfParams, referenceDatasets);
+    } catch (err) {
+      console.error('Error TensorFlow:', err);
+      return;
+    }
+
+    const numCols = setup.rows[0].length;
+
+    if (setup.isTable) {
+      // Para tablas: añadir columna extra "Predicción" (histórico = 0, predichos = valor real)
+      setup.rows.forEach(row => {
+        row.push(0);
+      });
+      if (setup.labels) setup.labels.push('Predicción');
+      const numColsWithPred = setup.rows[0].length;
+      setup.nextLabels.forEach((label, index) => {
+        const newRow = new Array(numColsWithPred).fill(null);
+        newRow[0] = label;
+        newRow[numColsWithPred - 1] = predictions[index] ?? null;
+        setup.rows.push(newRow);
+      });
+    } else {
+      // Para gráficos: añadir columna extra de predicción para serie visual separada
+      // Solo el último punto real tiene valor para conectar visualmente ambas líneas
+      setup.rows.forEach((row, index) => {
+        row.push(index === setup.lastIndex ? row[targetIndex] : null);
+      });
+
+      const numColsWithPred = setup.rows[0].length;
+      setup.nextLabels.forEach((label, index) => {
+        const newRow = new Array(numColsWithPred).fill(null);
+        newRow[0] = label;
+        newRow[numColsWithPred - 1] = predictions[index] ?? null;
+        setup.rows.push(newRow);
+      });
+    }
+  }
+
   /**
-   * Run a SQL query for a dashboard
+   * Executa una consulta SQL  per un dashboard
    */
   static async execSqlQuery(req: Request, res: Response, next: NextFunction) {
-    /* SDA CUSTOM */ let builtQuery = ''
+    let builtQuery = ''
     try {
       let connectionProps: any;
       if (req.body.dashboard?.connectionProperties !== undefined) connectionProps = req.body.dashboard.connectionProperties;
@@ -1555,7 +1969,6 @@ export class DashboardController {
       /**Security check */
       const allowed = DashboardController.securityCheck(dataModel, req.user)
       if (!allowed) {
-        console.log('SQL Query not allowed by security');
         return next(
           new HttpException(
             500,
@@ -1574,15 +1987,10 @@ export class DashboardController {
       )
 
       const includesAdmin = req['user'].role.includes("135792467811111111111110")
-      if(includesAdmin){
-        // the admin sees everything
-       uniquesForbiddenTables = [];
+      if (includesAdmin || DashboardController.isAnonymousUser(req.user)) {
+        // el admin ve todo, y el usuario anónimo (informes públicos) también
+        uniquesForbiddenTables = [];
       }
-
-/* SDA CUSTOM */      if( req.user._id == '135792467811111111111112'){
-/* SDA CUSTOM */        console.log('ANONYMOUS USER QUERY....NO PERMISSIONS APPLY HERE.....');
-/* SDA CUSTOM */       uniquesForbiddenTables = [];
-/* SDA CUSTOM */      }
 
       let notAllowedQuery = false
       uniquesForbiddenTables.forEach(table => {
@@ -1591,154 +1999,279 @@ export class DashboardController {
         }
       })
       if (notAllowedQuery) {
-         return res.status(200).json("[['noDataAllowed'],[]]")
-      } else {
-        /* SDA CUSTOM */ builtQuery = connection.BuildSqlQuery(
-          req.body.query,
-          dataModelObject,
-          req.user
-        )
-        /* SDA CUSTOM */ const query = builtQuery
+        console.log('Not allowed table in query')
+        return res.status(200).json("[['noDataAllowed'],[]]")
+      }
 
-        /**If query is in format select foo from a, b queryBuilder returns null */
-        if (!query) {
-          return next(new HttpException(500,'Queries in format "select x from A, B" are not suported'));
+      if (!req.body.query?.forSelector) {
+        const mandatoryFilterMissing = await DashboardController.isMandatoryFilterMissing(
+          req.body.dashboard?.dashboard_id,
+          req.body.dashboard?.panel_id,
+          req.body.query?.filters
+        );
+        if (mandatoryFilterMissing) {
+          console.log('a mandatory global filter has no value, query blocked')
+          return res.status(200).json("[['mandatoryFilterMissing'],[]]")
+        }
+      }
+
+      const query = connection.BuildSqlQuery(
+        req.body.query,
+        dataModelObject,
+        req.user
+      )
+      builtQuery = query
+
+      /**If query is in format select foo from a, b queryBuilder returns null */
+      if (!query) {
+        return next(new HttpException(500, 'Queries in format "select x from A, B" are not suported'));
+      }
+
+      console.log('\x1b[32m%s\x1b[0m', `QUERY for user ${req.user.name}, with ID: ${req.user._id},  at: ${formatDate(new Date())} `);
+      console.log(query)
+      console.log('\n-------------------------------------------------------------------------------\n');
+
+      /**cached query */
+      let cacheEnabled =
+        dataModelObject.ds.metadata.cache_config &&
+        dataModelObject.ds.metadata.cache_config.enabled
+      const cachedQuery = cacheEnabled && !req.body.cleanCache
+        ? await CachedQueryService.checkQuery(req.body.model_id, query, 'SQL')
+        : null;
+
+      if (!cachedQuery) {
+        connection.client = await connection.getclient()
+        const getResults = await connection.execSqlQuery(query);
+        let results = [];
+        const resultsRollback = [];
+        const oracleDataTypes = [];
+        let oracleEval: Boolean = true;
+        let labels: Array<string>
+        if (getResults.length > 0) {
+          labels = Object.keys(getResults[0]).map(i => i)
+        } else {
+          labels = ['NoData']
+        }
+        // Normalize data
+
+        for (let i = 0, n = getResults.length; i < n; i++) {
+          const r = getResults[i];
+          /** si es oracle  o alguns mysql haig de fer una merda per tornar els numeros normals. */
+          /** poso els resultats al resultat i faig una matriu de tipus de numero. també faig una copia de seguretat */
+          if (
+            dataModel.ds.connection.type == 'oracle' ||
+            dataModel.ds.connection.type == 'mysql'
+          ) {
+            const output = Object.keys(r).map(i => r[i])
+            resultsRollback.push([...output])
+            const tmpArray = []
+
+            output.forEach((val, index) => {
+
+              if (DashboardController.isNotNumeric(val)) {
+                tmpArray.push('NaN');
+                if (val === null) {
+                  output[index] = eda_api_config.null_value;  // los valores nulos  les canvio per un espai en blanc pero que si no tinc problemes
+                  resultsRollback[i][index] = eda_api_config.null_value; // los valores nulos  les canvio per un espai en blanc pero que si no tinc problemes
+                }
+              } else {
+                tmpArray.push('int')
+                if (val !== null) {
+                  output[index] = parseFloat(val);
+                } else {
+                  output[index] = eda_api_config.null_value;
+                  resultsRollback[i][index] = eda_api_config.null_value;
+                  //output[index] = null;
+                }
+
+              }
+            })
+            oracleDataTypes.push(tmpArray)
+            results.push(output)
+          } else {
+            const output = Object.keys(r).map(i => r[i]);
+            output.forEach((val, index) => {
+              if (val === null) {
+                output[index] = eda_api_config.null_value;// los valores nulos les canvio per un espai en blanc pero que si no tinc problemes
+                resultsRollback[i][index] = eda_api_config.null_value; // los valores nulos les canvio per un espai en blanc pero que si no tinc problemes
+              }
+            })
+            results.push(output)
+            resultsRollback.push(output)
+          }
         }
 
-        console.log('\x1b[32m%s\x1b[0m', `SQL QUERY for user ${req.user.name}, with ID: ${req.user._id},  at: ${formatDate(new Date())} `);
-        console.log(query)
-        console.log('\n-------------------------------------------------------------------------------\n');
 
-        /**cached query */
-        let cacheEnabled =
-          dataModelObject.ds.metadata.cache_config &&
-          dataModelObject.ds.metadata.cache_config.enabled
-        const cachedQuery = cacheEnabled
-          ? await CachedQueryService.checkQuery(req.body.model_id, query)
-          : null
-
-        if (!cachedQuery) {
-          connection.client = await connection.getclient()
-          const getResults = await connection.execSqlQuery(query);
-          let results = [];
-          const resultsRollback = [];
-          const oracleDataTypes = [];
-          let oracleEval: Boolean = true;
-          let labels: Array<string>
-          if (getResults.length > 0) {
-            labels = Object.keys(getResults[0]).map(i => i)
-          } else {
-            labels = ['NoData']
-          }
-          // Normalize data
-
-          for (let i = 0, n = getResults.length; i < n; i++) {
-            const r = getResults[i]
-            // if it's oracle or some mysql I have to do some shit to get back the normal numbers. 
-            // I put the results in the result and make an array of number types. I also make a backup 
-            if (
-              dataModel.ds.connection.type == 'oracle' ||
-              dataModel.ds.connection.type == 'mysql'
-            ) {
-              const output = Object.keys(r).map(i => r[i])
-              resultsRollback.push([...output])
-              const tmpArray = []
-
-              output.forEach((val, index) => {
-
-                if (DashboardController.isNotNumeric(val)) {
-                  tmpArray.push('NaN');
-                  if(val===null  ){
-                    output[index] =  eda_api_config.null_value;  // I change the null values ​​to a blank space but otherwise I have no problems.
-                    resultsRollback[i][index] =  eda_api_config.null_value; // I change the null values ​​to a blank space but otherwise I have no problems.
-                  }
-                } else {
-                  tmpArray.push('int')
-                  if(val !== null){
-                    output[index] = parseFloat(val);
-                  }else{
-                    output[index] =  eda_api_config.null_value;
-                    resultsRollback[i][index] =  eda_api_config.null_value;
-                    //output[index] = null;
-                  }
-                  
-                }
-              })
-              oracleDataTypes.push(tmpArray)
-              results.push(output)
-            } else {
-              const output = Object.keys(r).map(i => r[i]);
-              output.forEach((val, index) => {
-                if(val===null  ){
-                  output[index] =  eda_api_config.null_value;//I change the null values ​​to a blank space  otherwise I have  problems.
-                  resultsRollback[i][index] =   eda_api_config.null_value; //I change the null values ​​to a blank space  otherwise I have  problems.
-                }
-              })
-              results.push(output)
-              resultsRollback.push(output)
-            }
-          }
-
-          // if I have oracle results I evaluate the number type array to see if I have mixed integers and text.
-          //I check each value with the next one below the array. 
-          if (oracleDataTypes.length > 1) {
-            for (var i = 0; i < oracleDataTypes.length - 1; i++) {
-              var e = oracleDataTypes[i]
-              for (var j = 0; j < e.length; j++) {
-                if(oracleDataTypes[0][j]=='int'  ){
-                  if ( oracleDataTypes[i][j] != oracleDataTypes[i + 1][j]) {
-                    oracleEval = false
-                  }
-                }
+        /** si tinc resultats de oracle evaluo la matriu de tipus de numero per verure si tinc enters i textos barrejats.
+         * miro cada  valor amb el seguent per baix de la matriu. */
+        if (oracleDataTypes.length > 1) {
+          for (var i = 0; i < oracleDataTypes.length - 1; i++) {
+            for (var j = 0; j < oracleDataTypes[i].length; j++) {
+              if (oracleDataTypes[j][0] === 'int' && oracleDataTypes[i][j] !== oracleDataTypes[i + 1][j]) {
+                oracleEval = false;
               }
             }
           }
-         // if I have mixed numbers. I put the rollback 
-          if (oracleEval !== true) {
-            results = resultsRollback
-          }else{
-            // I put in null state the null numbers
-            for (var i = 0; i < results.length; i++) {
-              var e = results[i]
-              for (var j = 0; j < e.length; j++) {
-                const t = oracleDataTypes?.[0]?.[j];  // <-- changed
-                if( t === 'int' && results[i][j] === eda_api_config.null_value){
-                    results[i][j] = null;
-                }
-              }            
+        }
+
+        /** si tinc numeros barrejats. Poso el rollback */
+        if (!oracleEval) {
+          results = resultsRollback;
+        } else {
+          // pongo a nulo los numeros nulos
+          for (var i = 0; i < results.length; i++) {
+            for (var j = 0; j < results[i].length; j++) {
+              const t = oracleDataTypes?.[0]?.[j];  // <-- changed
+              if( t === 'int' && results[i][j] === eda_api_config.null_value){
+                  results[i][j] = null;
+              }
             }
           }
-          const output = [labels, results]
-          if (output[1].length < cache_config.MAX_STORED_ROWS && cacheEnabled) {
-            CachedQueryService.storeQuery(req.body.model_id, query, output)
-          }
-
-
-          console.log(
-            '\x1b[32m%s\x1b[0m',
-            `Date: ${formatDate(new Date())} Dashboard:${req.body.dashboard.dashboard_id
-            } Panel:${req.body.dashboard.panel_id} DONE\n`
-          )
-          return res.status(200).json(output)
-        } else {
-          console.log('\x1b[36m%s\x1b[0m', '💾 Cached query 💾')
-          console.log(
-            '\x1b[32m%s\x1b[0m',
-            `Date: ${formatDate(new Date())} Dashboard:${req.body.dashboard.dashboard_id
-            } Panel:${req.body.dashboard.panel_id} DONE\n`
-          )
-          return res.status(200).json(cachedQuery.cachedQuery.response)
         }
+
+        const output = [labels, results];
+        if (cacheEnabled && !req.body.cleanCache && output[1].length < cache_config.MAX_STORED_ROWS) {
+          await CachedQueryService.storeQuery(req.body.model_id, query, output, 'SQL');
+        }
+
+        console.log(
+          '\x1b[32m%s\x1b[0m',
+          `Date: ${formatDate(new Date())} Dashboard:${req.body.dashboard.dashboard_id
+          } Panel:${req.body.dashboard.panel_id} DONE\n`
+        )
+        //console.log('Query output');
+        //console.log(output);
+        return res.status(200).json(output)
+      } else {
+        console.log('\x1b[36m%s\x1b[0m', '💾 Cached query 💾')
+        console.log(
+          '\x1b[32m%s\x1b[0m',
+          `Date: ${formatDate(new Date())} Dashboard:${req.body.dashboard.dashboard_id
+          } Panel:${req.body.dashboard.panel_id} DONE\n`
+        )
+        return res.status(200).json(cachedQuery.cachedQuery.response)
       }
+
     } catch (err) {
-      /* SDA CUSTOM */ // SDA CUSTOM - Audit log for panel query failures (SQL mode)
-      /* SDA CUSTOM */ insertServerLog(req, 'error', 'PanelQueryFailed', req.user.name, await buildPanelQueryErrorType(req.body && req.body.dashboard, err, 'SQL', (typeof builtQuery !== 'undefined' ? builtQuery : '')))
-      /* SDA CUSTOM */ // END SDA CUSTOM
       console.log(err)
-/* SDA CUSTOM */ next(new HttpException(500, await DashboardController.buildDbErrorMessageForRequest(err, req)))
+      insertServerLog(req, 'error', 'PanelQueryFailed', req.user?.name, await buildPanelQueryErrorType(req.body?.dashboard, err, 'SQL', builtQuery));
+      next(new HttpException(500, await DashboardController.buildDbErrorMessageForRequest(err, req)))
     }
   }
-  //Check if a value is not numeric
+
+
+  static async isPublicDashboardRequest(req: Request): Promise<boolean> {
+    const anonymousUserId = '135792467811111111111112';
+    const requestUserId = req?.user?._id;
+    const isAnonymous = !req?.user || requestUserId == anonymousUserId;
+    let visibility = req?.body?.dashboard?.config?.visible || req?.body?.dashboard?.visible;
+
+    if (!visibility && req?.body?.dashboard?.dashboard_id) {
+      try {
+        const dashboard = await Dashboard.findById(req.body.dashboard.dashboard_id, 'config.visible').exec();
+        visibility = dashboard?.config?.visible;
+      } catch (e) {
+        visibility = undefined;
+      }
+    }
+
+    const isPublicDashboard = visibility === 'public' || visibility === 'shared';
+
+    return isAnonymous && isPublicDashboard;
+  }
+
+  static async buildDbErrorMessageForRequest(err: any, req: Request): Promise<string> {
+    const lang = DashboardController.resolveDbErrorLangFromRequest(req);
+
+    if (await DashboardController.isPublicDashboardRequest(req)) {
+      return 'Error';
+    }
+
+    return DashboardController.parseDbErrorMySQL(err, lang);
+  }
+
+  static resolveDbErrorLangFromRequest(req: Request): string {
+    const supportedLangs = ['es', 'ca', 'en', 'fr', 'pl', 'gl'];
+    const queryLang = (req?.query as any)?.lang;
+    const paramLang = (req?.params as any)?.lang;
+    const bodyLang = (req?.body as any)?.lang;
+    const headerLang = req?.headers?.['x-sda-lang'];
+    const explicitLang = [queryLang, paramLang, bodyLang, headerLang].find(value => typeof value === 'string') as string | undefined;
+
+    if (explicitLang) {
+      const normalized = explicitLang.toLowerCase();
+      return supportedLangs.includes(normalized) ? normalized : 'en';
+    }
+
+    const refererLike = String(req?.headers?.referer || req?.headers?.referrer || req?.headers?.origin || '').toLowerCase();
+    const match = refererLike.match(/\/(es|ca|en|fr|pl|gl)\//);
+
+    if (match && match[1]) {
+      return supportedLangs.includes(match[1]) ? match[1] : 'en';
+    }
+
+    return 'en';
+  }
+
+  /**
+   * Parses a MySQL/MariaDB error and returns a localized descriptive message for the user.
+   */
+  static parseDbErrorMySQL(err: any, lang?: string | false): string {
+    const msg: string = err?.message || '';
+    const code: string = err?.code || '';
+    const l = resolveDbLang(lang);
+
+    // Error number: 1054; Symbol: ER_BAD_FIELD_ERROR
+    if (code === 'ER_BAD_FIELD_ERROR' || err?.errno === 1054) {
+      const match = msg.match(/Unknown column '([^']+)'/i);
+      return getDbErrorMessage('unknownColumn', l, match ? match[1] : '?');
+    }
+
+    // Error number: 1146; Symbol: ER_NO_SUCH_TABLE; SQLSTATE: 42S02
+    if (code === 'ER_NO_SUCH_TABLE' || err?.errno === 1146) {
+      const match = msg.match(/Table '([^']+)' doesn't exist/i);
+      const tableName = match ? match[1].split('.').pop() : '?';
+      return getDbErrorMessage('unknownTable', l, tableName);
+    }
+
+    // Error number: 1045/1698; Symbol: ER_ACCESS_DENIED_ERROR / ER_ACCESS_DENIED_NO_PASSWORD_ERROR
+    if (code === 'ER_ACCESS_DENIED_ERROR' || code === 'ER_ACCESS_DENIED_NO_PASSWORD_ERROR' ||
+        err?.errno === 1045 || err?.errno === 1698 || /Access denied for user/i.test(msg)) {
+      return getDbErrorMessage('accessDenied', l);
+    }
+
+    // Error number: 1064; Symbol: ER_PARSE_ERROR
+    if (code === 'ER_PARSE_ERROR' || err?.errno === 1064) {
+      return getDbErrorMessage('syntaxError', l);
+    }
+
+    // Error number: 1040; Symbol: ER_CON_COUNT_ERROR
+    if (code === 'ER_CON_COUNT_ERROR' || err?.errno === 1040) {
+      return getDbErrorMessage('tooManyConnections', l);
+    }
+
+    // Error number: 1205; Symbol: ER_LOCK_WAIT_TIMEOUT
+    if (code === 'ER_LOCK_WAIT_TIMEOUT' || err?.errno === 1205) {
+      return getDbErrorMessage('lockTimeout', l);
+    }
+
+    // Node.js connection errors
+    if (code === 'ECONNREFUSED' || code === 'ER_GET_CONNECTION_TIMEOUT') {
+      return getDbErrorMessage('connectionRefused', l);
+    }
+
+    // Generic fallback with the original MySQL/MariaDB message
+    if (msg) {
+      const truncated = msg.length > 500 ? msg.substring(0, 500) + '...' : msg;
+      return getDbErrorMessage('generic', l, truncated);
+    }
+
+    return getDbErrorMessage('fallback', l);
+  }
+
+  /*
+  Check if a value is not numeric
+  */
   static isNotNumeric(val) {
 
     let isNotNumeric = false;
@@ -1746,7 +2279,7 @@ export class DashboardController {
       if (
         isNaN(val) || val.toString().indexOf('-') >= 0 || val.toString().indexOf('/') >= 0 ||
         val.toString().indexOf('|') >= 0 || val.toString().indexOf(':') >= 0 || val.toString().indexOf('T') >= 0 ||
-        val.toString().indexOf('Z') >= 0 || val.toString().indexOf('Z') >= 0 || val.toString().replace(/['"]+/g, '').length == 0 ) {
+        val.toString().indexOf('Z') >= 0 || val.toString().indexOf('Z') >= 0 || val.toString().replace(/['"]+/g, '').length == 0) {
         isNotNumeric = true;
       }
     } catch (e) {
@@ -1763,10 +2296,10 @@ export class DashboardController {
     if (user.role.includes('135792467811111111111110')) {
       return true;
     }
-    /*SDA CUSTOM*/if(user._id== '135792467811111111111112'){
-    /*SDA CUSTOM*/  console.log('Anonymous access');
-    /*SDA CUSTOM*/  return true;
-    /*SDA CUSTOM*/}
+    /** el usuario anónimo (informes públicos) también */
+    if (DashboardController.isAnonymousUser(user)) {
+      return true;
+    }
     if (dataModel.ds.metadata.model_granted_roles.length > 0) {
       const users = [];
       const roles = [];
@@ -1782,7 +2315,7 @@ export class DashboardController {
             break
           case 'users':
             permission.users.forEach(u => {
-              if ( !users.includes(u.toString()) )  users.push(u.toString());
+              if (!users.includes(u.toString())) users.push(u.toString());
             })
             break
           case 'groups':
@@ -1820,8 +2353,8 @@ export class DashboardController {
       const dataModel = await connection.getDataSource(req.body.model_id)
       const dataModelObject = JSON.parse(JSON.stringify(dataModel));
 
-      //for compatibility If I don't have the type of column in the filter I add it
-      //for compatibility If I don't have the type of aggregation in the filter...
+      /** por compatibilidad. Si no tengo el tipo de columna en el filtro lo añado */
+      /** por compatibilidad. Si no tengo el el tipo de agregación en el filtro.....*/
       if(req.body.query.filters){
         for (const filter of req.body.query.filters) {
           if (!filter.filter_column_type) {
@@ -1831,13 +2364,12 @@ export class DashboardController {
               filter.filter_column_type = filterColumn?.column_type || 'text';
             }
           }
-          //for compatibility If I don't have the type of aggregation in the filter, I put it in the where
+          /** por compatibilidad. Si no tengo el el tipo de agregación en el filtro lo pongo en el where*/ 
           if(! filter.hasOwnProperty('filterBeforeGrouping') ){
             filter.filterBeforeGrouping = true;
           }
         }
       }
-
       const query = await connection.getQueryBuilded(
         req.body.query,
         dataModelObject,
@@ -1876,7 +2408,7 @@ export class DashboardController {
       return res.status(200).json(output)
     } catch (err) {
       console.log(err)
-/* SDA CUSTOM */ next(new HttpException(500, await DashboardController.buildDbErrorMessageForRequest(err, req)))
+      next(new HttpException(500, await DashboardController.buildDbErrorMessageForRequest(err, req)))
     }
   }
 
@@ -1934,7 +2466,7 @@ export class DashboardController {
       data[1] = newRows
     }
   }
-  
+
   /**
    * Clones an existing dashboard.
    * 
@@ -1942,18 +2474,12 @@ export class DashboardController {
    * @param res - Express response object
    * @param next - Express next function
    * @returns A Promise that resolves with the cloned dashboard or rejects with an error
-   */
+  */
   static async clone(req: Request, res: Response, next: NextFunction) {
     try {
-      /* SDA CUSTOM */ const isReadOnly = await DashboardController.isReadOnlyUser(req);
-      /* SDA CUSTOM */ if (isReadOnly) {
-      /* SDA CUSTOM */   return next(new HttpException(403, 'Read-only users cannot clone dashboards'));
-      /* SDA CUSTOM */ }
-      /* SDA CUSTOM */
-
       const dashboardId = req.params.id;
       console.log('Attempting to clone dashboard with ID:', dashboardId);
-      
+
       // Find the original dashboard by ID
       const originalDashboard = await Dashboard.findById(dashboardId).exec();
 
@@ -1962,19 +2488,32 @@ export class DashboardController {
         return next(new HttpException(404, 'Dashboard not found'));
       }
 
+      if (DashboardController.isPublicVisibility(originalDashboard.config.visible) && !DashboardController.canManagePublicDashboards(req)) {
+        return next(new HttpException(403, 'You do not have permission to clone a public dashboard'));
+      }
+
+      const dashboards = await Dashboard.find({},
+        'config.title config.visible config.tag config.onlyIcanEdit config.author config.createdAt config.modifiedAt'
+      ).populate('user', 'name').exec()
+
+      let newName = originalDashboard.config.title + ' copy';
+      while (dashboards.find(d => d.config.title === newName)) {
+        newName += ' copy';
+      }
+
       // Create a new dashboard object with cloned properties
       const clonedDashboard: IDashboard = new Dashboard({
         config: {
           ...originalDashboard.config,
-          title: `${originalDashboard.config.title} copy`, // Append 'copy' to the title
-          createdAt: new Date(),
-          modifiedAt: new Date()
+          title: newName, // Append 'copy' to the title
+          createdAt: new Date().toISOString(),
+          modifiedAt: new Date().toISOString(),
+          author: req.user.name
         },
         user: req.user._id, // Set the current user as the owner of the cloned dashboard
         group: originalDashboard.group // Maintain the same group permissions
       });
 
-      
       // Save the cloned dashboard to the database
       const savedDashboard = await clonedDashboard.save();
       console.log('Cloned dashboard saved:', savedDashboard);
@@ -1985,212 +2524,178 @@ export class DashboardController {
       console.error('Error cloning dashboard:', err);
       next(new HttpException(500, 'Error cloning dashboard'));
     }
-}
+  }
+
 
   static async cleanDashboardCache(req: Request, res: Response, next: NextFunction) {
     let connectionProps: any;
-    if (req.body.dashboard?.connectionProperties !== undefined) connectionProps = req.body.dashboard.connectionProperties;
+    if (req.body.dashboard?.connectionProperties !== undefined)
+      connectionProps = req.body.dashboard.connectionProperties;
 
     const connection = await ManagerConnectionService.getConnection(req.body.model_id, connectionProps);
-    const dataModel = await connection.getDataSource(req.body.model_id)
+    const dataModel = await connection.getDataSource(req.body.model_id);
 
-    if (dataModel.ds.metadata.cache_config.enabled) {
-      /**Security check */
-      const allowed = DashboardController.securityCheck(dataModel, req.user)
-      if (!allowed) {
-        return next(
-          new HttpException(
-            500,
-            `Sorry, you are not allowed here, contact your administrator`
-          )
+    if (!dataModel.ds.metadata.cache_config.enabled) {
+      return res.status(200).json({ ok: true });
+    }
+
+    /**Security check */
+    const allowed = DashboardController.securityCheck(dataModel, req.user)
+    if (!allowed) {
+      return next(
+        new HttpException(
+          500,
+          `Sorry, you are not allowed here, contact your administrator`
         )
+      )
+    }
+
+    const dataModelObject = JSON.parse(JSON.stringify(dataModel))
+
+    for (const query of req.body.queries) {
+      if (query.queryMode === 'SQL') {
+        let userSql = query.SQLexpression;
+        let hashedQuery = CachedQueryService.build(req.body.model_id, userSql, 'SQL');
+        await CachedQueryService.deleteQuery(hashedQuery);
+      } else {
+        let edaQuery = await connection.getQueryBuilded(query, dataModelObject, req.user);
+        let hashedQuery = CachedQueryService.build(req.body.model_id, edaQuery, 'EDA');
+        await CachedQueryService.deleteQuery(hashedQuery);
       }
-
-      const dataModelObject = JSON.parse(JSON.stringify(dataModel))
-
-      req.body.queries.forEach(async query => {
-        let sqlQuery = await connection.getQueryBuilded(
-          query,
-          dataModelObject,
-          req.user
-        )
-        let hashedQuery = CachedQueryService.build(req.body.model_id, sqlQuery)
-        let res = await CachedQueryService.deleteQuery(hashedQuery)
-      })
     }
 
     return res.status(200).json({ ok: true })
   }
 
-/* SDA CUSTOM */ static async isPublicDashboardRequest(req: Request): Promise<boolean> {
-/* SDA CUSTOM */   const anonymousUserId = '135792467811111111111112';
-/* SDA CUSTOM */   const requestUserId = req?.user?._id;
-/* SDA CUSTOM */   const isAnonymous = !req?.user || requestUserId == anonymousUserId;
-/* SDA CUSTOM */   let visibility = req?.body?.dashboard?.config?.visible || req?.body?.dashboard?.visible;
-/* SDA CUSTOM */
-/* SDA CUSTOM */   if (!visibility && req?.body?.dashboard?.dashboard_id) {
-/* SDA CUSTOM */     try {
-/* SDA CUSTOM */       const dashboard = await Dashboard.findById(req.body.dashboard.dashboard_id, 'config.visible').exec();
-/* SDA CUSTOM */       visibility = dashboard?.config?.visible;
-/* SDA CUSTOM */     } catch (e) {
-/* SDA CUSTOM */       visibility = undefined;
-/* SDA CUSTOM */     }
-/* SDA CUSTOM */   }
-/* SDA CUSTOM */
-/* SDA CUSTOM */   const isPublicDashboard = visibility === 'public' || visibility === 'shared';
-/* SDA CUSTOM */
-/* SDA CUSTOM */   return isAnonymous && isPublicDashboard;
-/* SDA CUSTOM */ }
+    /**
+   * Normalizes legacy visibility values to new values
+   * @param dashboard Dashboard to normalize
+   */
+  private static normalizeVisibility(dashboard: any): void {
+    if (!dashboard.config.visible) {
+      dashboard.config.visible = 'private';
+    } else if (dashboard.config.visible === 'public') {
+      dashboard.config.visible = 'common';
+    } else if (dashboard.config.visible === 'shared') {
+      dashboard.config.visible = 'open';
+    }
+  }
 
-/* SDA CUSTOM */ static async buildDbErrorMessageForRequest(err: any, req: Request): Promise<string> {
-/* SDA CUSTOM */   const lang = DashboardController.resolveDbErrorLangFromRequest(req);
-/* SDA CUSTOM */
-/* SDA CUSTOM */   if (await DashboardController.isPublicDashboardRequest(req)) {
-/* SDA CUSTOM */     return 'Error';
-/* SDA CUSTOM */   }
-/* SDA CUSTOM */
-/* SDA CUSTOM */   return DashboardController.parseDbErrorMySQL(err, lang);
-/* SDA CUSTOM */ }
+  /**
+   * "open" y su alias legacy "shared" son las visibilidades públicas.
+   * @param visible Valor de config.visible a comprobar
+   */
+  private static isPublicVisibility(visible: any): boolean {
+    return ['open', 'shared'].includes(visible);
+  }
 
-/* SDA CUSTOM */ static resolveDbErrorLangFromRequest(req: Request): string {
-/* SDA CUSTOM */   const supportedLangs = ['es', 'ca', 'en', 'gl'];
-/* SDA CUSTOM */   const queryLang = (req?.query as any)?.lang;
-/* SDA CUSTOM */   const paramLang = (req?.params as any)?.lang;
-/* SDA CUSTOM */   const bodyLang = (req?.body as any)?.lang;
-/* SDA CUSTOM */   const headerLang = req?.headers?.['x-sda-lang'];
-/* SDA CUSTOM */   const explicitLang = [queryLang, paramLang, bodyLang, headerLang].find(value => typeof value === 'string') as string | undefined;
-/* SDA CUSTOM */
-/* SDA CUSTOM */   if (explicitLang) {
-/* SDA CUSTOM */     const normalized = explicitLang.toLowerCase();
-/* SDA CUSTOM */     return supportedLangs.includes(normalized) ? normalized : 'en';
-/* SDA CUSTOM */   }
-/* SDA CUSTOM */
-/* SDA CUSTOM */   const refererLike = String(req?.headers?.referer || req?.headers?.referrer || req?.headers?.origin || '').toLowerCase();
-/* SDA CUSTOM */   const match = refererLike.match(/\/(es|ca|en|gl|pl)\//);
-/* SDA CUSTOM */
-/* SDA CUSTOM */   if (match && match[1]) {
-/* SDA CUSTOM */     return supportedLangs.includes(match[1]) ? match[1] : 'en';
-/* SDA CUSTOM */   }
-/* SDA CUSTOM */
-/* SDA CUSTOM */   return 'en';
-/* SDA CUSTOM */ }
+  /**
+   * Un admin siempre puede gestionar dashboards públicos; un no-admin solo si
+   * custom_behaviour.ALLOW_NON_ADMIN_MANAGE_PUBLIC_REPORTS está activado.
+   * @param req Express Request con la información del usuario
+   */
+  private static canManagePublicDashboards(req: Request): boolean {
+    const isAdmin = req.user.role.includes('135792467811111111111110');
+    return isAdmin || !!eda_api_config.custom_behaviour?.ALLOW_NON_ADMIN_MANAGE_PUBLIC_REPORTS;
+  }
 
-/*SDA CUSTOM*/ static parseDbErrorMySQL(err: any, lang?: string | false): string {
-/*SDA CUSTOM*/   /** Parse a MySQL/MariaDB error and return a localized descriptive message for the user. */
-/*SDA CUSTOM*/   const msg: string = err?.message || '';
-/*SDA CUSTOM*/   const code: string = err?.code || '';
-/*SDA CUSTOM*/   const l = resolveSdaDbLang(lang);
-/*SDA CUSTOM*/
-/*SDA CUSTOM*/   // Error number: 1054; Symbol: ER_BAD_FIELD_ERROR
-/*SDA CUSTOM*/   if (code === 'ER_BAD_FIELD_ERROR' || err?.errno === 1054) {
-/*SDA CUSTOM*/     const match = msg.match(/Unknown column '([^']+)'/i);
-/*SDA CUSTOM*/     return getSdaDbErrorMessage('unknownColumn', l, match ? match[1] : '?');
-/*SDA CUSTOM*/   }
-/*SDA CUSTOM*/
-/*SDA CUSTOM*/   // Error number: 1146; Symbol: ER_NO_SUCH_TABLE; SQLSTATE: 42S02
-/*SDA CUSTOM*/   if (code === 'ER_NO_SUCH_TABLE' || err?.errno === 1146) {
-/*SDA CUSTOM*/     const match = msg.match(/Table '([^']+)' doesn't exist/i);
-/*SDA CUSTOM*/     const tableName = match ? match[1].split('.').pop() : '?';
-/*SDA CUSTOM*/     return getSdaDbErrorMessage('unknownTable', l, tableName);
-/*SDA CUSTOM*/   }
-/*SDA CUSTOM*/
-/*SDA CUSTOM*/   // Error number: 1045/1698; Symbol: ER_ACCESS_DENIED_ERROR / ER_ACCESS_DENIED_NO_PASSWORD_ERROR
-/*SDA CUSTOM*/   if (code === 'ER_ACCESS_DENIED_ERROR' || code === 'ER_ACCESS_DENIED_NO_PASSWORD_ERROR' ||
-/*SDA CUSTOM*/       err?.errno === 1045 || err?.errno === 1698 || /Access denied for user/i.test(msg)) {
-/*SDA CUSTOM*/     return getSdaDbErrorMessage('accessDenied', l);
-/*SDA CUSTOM*/   }
-/*SDA CUSTOM*/
-/*SDA CUSTOM*/   // Error number: 1064; Symbol: ER_PARSE_ERROR
-/*SDA CUSTOM*/   if (code === 'ER_PARSE_ERROR' || err?.errno === 1064) {
-/*SDA CUSTOM*/     return getSdaDbErrorMessage('syntaxError', l);
-/*SDA CUSTOM*/   }
-/*SDA CUSTOM*/
-/*SDA CUSTOM*/   // Error number: 1040; Symbol: ER_CON_COUNT_ERROR
-/*SDA CUSTOM*/   if (code === 'ER_CON_COUNT_ERROR' || err?.errno === 1040) {
-/*SDA CUSTOM*/     return getSdaDbErrorMessage('tooManyConnections', l);
-/*SDA CUSTOM*/   }
-/*SDA CUSTOM*/
-/*SDA CUSTOM*/   // Error number: 1205; Symbol: ER_LOCK_WAIT_TIMEOUT
-/*SDA CUSTOM*/   if (code === 'ER_LOCK_WAIT_TIMEOUT' || err?.errno === 1205) {
-/*SDA CUSTOM*/     return getSdaDbErrorMessage('lockTimeout', l);
-/*SDA CUSTOM*/   }
-/*SDA CUSTOM*/
-/*SDA CUSTOM*/   // Node.js connection errors
-/*SDA CUSTOM*/   if (code === 'ECONNREFUSED' || code === 'ER_GET_CONNECTION_TIMEOUT') {
-/*SDA CUSTOM*/     return getSdaDbErrorMessage('connectionRefused', l);
-/*SDA CUSTOM*/   }
-/*SDA CUSTOM*/
-/*SDA CUSTOM*/   // Generic fallback with the original MySQL/MariaDB message
-/*SDA CUSTOM*/   if (msg) {
-/*SDA CUSTOM*/     const truncated = msg.length > 500 ? msg.substring(0, 500) + '...' : msg;
-/*SDA CUSTOM*/     return getSdaDbErrorMessage('generic', l, truncated);
-/*SDA CUSTOM*/   }
-/*SDA CUSTOM*/
-/*SDA CUSTOM*/   return getSdaDbErrorMessage('fallback', l);
-/*SDA CUSTOM*/ }
+  /**
+   * A global filter marked as mandatory (config.filters[].isMandatory, set from the Global Filter
+   * dialog) must always have a value for the panels it applies to. The client already strips empty
+   * filters out of the filters array before sending a query, so if a mandatory filter's id isn't
+   * present here (or carries no value), it means the user removed it — whether by clearing the chip,
+   * a dependent-filter cascade emptying it, or editing the URL of a public report — and the query
+   * must be refused rather than silently run unfiltered. Not used for forSelector queries: those are
+   * what populate the filter's own value list / dependent filter options, so they must run even
+   * while the filter has no value yet.
+   */
+  private static async isMandatoryFilterMissing(dashboardId: string, panelId: string, filters: any[]): Promise<boolean> {
+    if (!dashboardId) return false;
+
+    const dashboard = await Dashboard.findById(dashboardId, 'config.filters').exec();
+    const definedFilters: any[] = (dashboard as any)?.config?.filters || [];
+
+    const mandatoryFilters = definedFilters.filter((f: any) =>
+      f.isMandatory === true && (!panelId || (f.panelList || []).includes(panelId))
+    );
+
+    if (mandatoryFilters.length === 0) return false;
+
+    const noValueDateTypes = ['not_null', 'not_null_nor_empty', 'null_or_empty'];
+
+    return mandatoryFilters.some((mf: any) => {
+      const applied = (filters || []).find((f: any) => f.filter_id === mf.id);
+      if (!applied) return true;
+      if (noValueDateTypes.includes(applied.filter_type)) return false;
+      return !(applied.filter_elements || []).some((el: any) => el.value1?.length > 0 || el.value2?.length > 0);
+    });
+  }
+
+  /**
+   * El usuario anónimo (edaanonim) es quien abre los enlaces públicos (#/public/:id).
+   * Sobre él no se aplican permisos de modelo, tablas ni columnas.
+   * @param user Usuario de la request
+   */
+  private static isAnonymousUser(user: any): boolean {
+    return user?._id?.toString() === '135792467811111111111112';
+  }
+
 }
 
-function insertServerLog(
-  req: Request,
-  level: string,
-  action: string,
-  userMail: string,
-  type: string
-) {
-  const ip = req.headers['x-forwarded-for'] || req.get('origin')
-  var date = new Date()
-  var month = date.getMonth() + 1
-  var monthstr = month < 10 ? '0' + month.toString() : month.toString()
-  var day = date.getDate()
-  var daystr = day < 10 ? '0' + day.toString() : day.toString()
-  var date_str =
-    date.getFullYear() +
-    '-' +
-    monthstr +
-    '-' +
-    daystr +
-    ' ' +
-    date.getHours() +
-    ':' +
-    date.getMinutes() +
-    ':' +
-    date.getSeconds()
-  ServerLogService.log({ level, action, userMail, ip, type, date_str })
+// Normalize dashboard log payload including report name — parsed by the frontend as id--title--detail
+export function buildDashboardLogType(dashboardId: any, dashboardTitle: string, extra?: string) {
+  const safeId = (dashboardId || '').toString().replace(/\|,\|/g, ' ')
+  const safeTitle = (dashboardTitle || '-').toString().replace(/\|,\|/g, ' ')
+  if (!extra) return `${safeId}--${safeTitle}`
+  const safeExtra = extra.toString().replace(/\|,\|/g, ' ')
+  return `${safeId}--${safeTitle}--${safeExtra}`
 }
 
-/* SDA CUSTOM */ // SDA CUSTOM - Normalize dashboard log payload including report name
-/* SDA CUSTOM */ function buildDashboardLogType(dashboardId: any, dashboardTitle: string, extra?: string) {
-/* SDA CUSTOM */   const safeId = (dashboardId || '').toString().replace(/\|,\|/g, ' ')
-/* SDA CUSTOM */   const safeTitle = (dashboardTitle || '-').toString().replace(/\|,\|/g, ' ')
-/* SDA CUSTOM */   if (!extra) return `${safeId}--${safeTitle}`
-/* SDA CUSTOM */   const safeExtra = extra.toString().replace(/\|,\|/g, ' ')
-/* SDA CUSTOM */   return `${safeId}--${safeTitle}--${safeExtra}`
-/* SDA CUSTOM */ }
-/* SDA CUSTOM */ // END SDA CUSTOM
+// Normalize panel query error payload with dashboard and panel identifiers, resolving title/panel name from DB when missing
+export async function buildPanelQueryErrorType(dashboard: any, err: any, mode: string, sqlQuery: any) {
+  const dashboardId = (dashboard && (dashboard.dashboard_id || dashboard._id || dashboard.id)) || ''
+  let dashboardTitle = (dashboard && (dashboard.dashboard_name || dashboard.title || dashboard.name)) || '-'
+  const panelId = (dashboard && (dashboard.panel_id || dashboard.panelId)) || '-'
+  let panelName = (dashboard && (dashboard.panel_name || dashboard.panelTitle || dashboard.panel_title)) || '-'
+  if ((dashboardTitle === '-' || panelName === '-') && dashboardId) {
+    try {
+      const dashboardDoc: any = await Dashboard.findById(dashboardId).exec()
+      if (dashboardDoc && dashboardDoc.config) {
+        if (dashboardTitle === '-') dashboardTitle = dashboardDoc.config.title || '-'
+        if (panelName === '-' && dashboardDoc.config.panel && panelId) {
+          const panel = dashboardDoc.config.panel.find(p => (p && p.id) == panelId)
+          if (panel && panel.title) panelName = panel.title
+        }
+      }
+    } catch (lookupErr) {
+      // Best-effort enrichment: if the lookup fails (e.g. DB down), keep the
+      // default values so the original error log is not lost
+      console.error('Error enriching panel query error type:', lookupErr);
+    }
+  }
+  const rawMessage = (err && (err.message || (err.toString && err.toString()))) || 'unknown_error'
+  const safeMessage = rawMessage.toString().replace(/\|,\|/g, ' ').replace(/\s+/g, ' ').substring(0, 180)
+  const rawSql = (sqlQuery || '').toString()
+  const rawSqlTrimmed = rawSql.length > 6000 ? rawSql.substring(0, 6000) : rawSql
+  const safeSqlB64 = Buffer.from(rawSqlTrimmed, 'utf8').toString('base64')
+  const safeSql = (sqlQuery || '').toString().replace(/\|,\|/g, ' ').replace(/--/g, ' ').replace(/\s+/g, ' ').substring(0, 1000)
+  const safePanelName = (panelName || '-').toString().replace(/\|,\|/g, ' ').replace(/--/g, ' ').replace(/\s+/g, ' ').substring(0, 180)
+  return buildDashboardLogType(dashboardId, dashboardTitle, `mode:${mode}--panel:${panelId}--panel_name:${safePanelName}--error:${safeMessage}--sql_b64:${safeSqlB64}--sql:${safeSql}`)
+}
 
-/* SDA CUSTOM */ // SDA CUSTOM - Normalize panel query error payload with dashboard and panel identifiers
-/* SDA CUSTOM */ async function buildPanelQueryErrorType(dashboard: any, err: any, mode: string, sqlQuery: any) {
-/* SDA CUSTOM */   const dashboardId = (dashboard && (dashboard.dashboard_id || dashboard._id || dashboard.id)) || ''
-/* SDA CUSTOM */   let dashboardTitle = (dashboard && (dashboard.dashboard_name || dashboard.title || dashboard.name)) || '-'
-/* SDA CUSTOM */   const panelId = (dashboard && (dashboard.panel_id || dashboard.panelId)) || '-'
-/* SDA CUSTOM */   let panelName = (dashboard && (dashboard.panel_name || dashboard.panelTitle || dashboard.panel_title)) || '-'
-/* SDA CUSTOM */   if ((dashboardTitle === '-' || panelName === '-') && dashboardId) {
-/* SDA CUSTOM */     const dashboardDoc: any = await Dashboard.findById(dashboardId).exec()
-/* SDA CUSTOM */     if (dashboardDoc && dashboardDoc.config) {
-/* SDA CUSTOM */       if (dashboardTitle === '-') dashboardTitle = dashboardDoc.config.title || '-'
-/* SDA CUSTOM */       if (panelName === '-' && dashboardDoc.config.panel && panelId) {
-/* SDA CUSTOM */         const panel = dashboardDoc.config.panel.find(p => (p && p.id) == panelId)
-/* SDA CUSTOM */         if (panel && panel.title) panelName = panel.title
-/* SDA CUSTOM */       }
-/* SDA CUSTOM */     }
-/* SDA CUSTOM */   }
-/* SDA CUSTOM */   const rawMessage = (err && (err.message || err.toString && err.toString())) || 'unknown_error'
-/* SDA CUSTOM */   const safeMessage = rawMessage.toString().replace(/\|,\|/g, ' ').replace(/\s+/g, ' ').substring(0, 180)
-/* SDA CUSTOM */   const rawSql = (sqlQuery || '').toString()
-/* SDA CUSTOM */   const rawSqlTrimmed = rawSql.length > 6000 ? rawSql.substring(0, 6000) : rawSql
-/* SDA CUSTOM */   const safeSqlB64 = Buffer.from(rawSqlTrimmed, 'utf8').toString('base64')
-/* SDA CUSTOM */   const safeSql = (sqlQuery || '').toString().replace(/\|,\|/g, ' ').replace(/--/g, ' ').replace(/\s+/g, ' ').substring(0, 1000)
-/* SDA CUSTOM */   const safePanelName = (panelName || '-').toString().replace(/\|,\|/g, ' ').replace(/--/g, ' ').replace(/\s+/g, ' ').substring(0, 180)
-/* SDA CUSTOM */   return buildDashboardLogType(dashboardId, dashboardTitle, `mode:${mode}--panel:${panelId}--panel_name:${safePanelName}--error:${safeMessage}--sql_b64:${safeSqlB64}--sql:${safeSql}`)
-/* SDA CUSTOM */ }
-/* SDA CUSTOM */ // END SDA CUSTOM
+async function setDasboardsAuthorDate(dashboards: any[]) {
+  for (const reportType of dashboards) {
+    for (const report of reportType) {
+
+      // Setear la fecha si la tiene, sino, asignarle el día de hoy
+      report.config.modifiedAt = await DateUtil.convertDashboardDate(report.config.modifiedAt);
+
+      // Si no tiene autor le asignamos 'Undefined'
+      if (!report.config.author)
+        report.config.author = 'Undefined';
+    }
+  }
+}
+
+
+

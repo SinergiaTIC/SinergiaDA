@@ -1,11 +1,17 @@
-
-import { AfterViewInit, Component, ElementRef, Input, OnInit, ViewChild } from "@angular/core";
+import { StyleProviderService } from '@eda/services/service.index';
+import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, Input, OnInit, ViewChild } from "@angular/core";
 import { EdaKnob } from "./edaKnob";
+import { Knob } from './primengKnob/knob';
+
+import { FormsModule } from '@angular/forms'; 
+import { CommonModule } from '@angular/common';
 
 @Component({
+  standalone: true,
   selector: 'eda-knob',
   templateUrl: './eda-knob.component.html',
   styleUrls: ['./eda-knob.component.css'],
+  imports: [FormsModule, CommonModule, Knob]
 })
 
 export class EdaKnobComponent implements OnInit, AfterViewInit {
@@ -14,53 +20,105 @@ export class EdaKnobComponent implements OnInit, AfterViewInit {
   @ViewChild('parentDiv')
   parentDiv: ElementRef;
 
-  size: number = 100;
+  size: number;
   color: string;
+  assignedColors: string;
   limits: Array<number>;
   value: number;
   comprareValue: number;
   class: string;
+  resizeObserver!: ResizeObserver;
+  paleta: any;
 
-  constructor() { }
+  constructor(private styleProviderService: StyleProviderService, private cdr: ChangeDetectorRef) { }
 
   ngOnInit(): void {
-    this.color = this.inject.color ? this.inject.color : "#024873";
+    this.paleta = this.styleProviderService.ActualChartPalette;
+
+    // Get the color from assignedColors
+    this.assignedColors = this.inject.assignedColors;
+    if (this.assignedColors && this.assignedColors.length > 0) {
+      this.color = this.assignedColors[0]['color'];
+    } else {
+      // If there are no assignedColors, use the default palette
+      this.color = this.paleta?.['paleta']?.[0] || '#0cb7bd';
+    }
+    
     this.value = this.inject.data.values[0][0];
     this.limits = this.getLimits();
     this.comprareValue = this.inject.data.values[0][1] ? this.inject.data.values[0][1] : this.limits[1];
     this.class = this.value > 999999 ? 'p-knob-text-small' : this.value < 1000 ? 'p-knob-text-large' : 'p-knob-text';
+
+    if (this.inject.semaphoreColor) {
+      this.color = this.computeSemaphoreColor(this.value, this.limits[0], this.limits[1]);
+    }
+  }
+
+  ngOnDestroy(): void {
+    if (this.resizeObserver) {
+      this.resizeObserver.disconnect();
+    }
   }
 
   ngAfterViewInit(): void {
-    const w = this.parentDiv.nativeElement.offsetWidth;
-    const h = this.parentDiv.nativeElement.offsetHeight;
-    let val:number = 10;
-    if( w>0 && h>0){
-      if( w<=h){
-        val = w;
-      }else{
-        val = h;
+    // Move up two levels to find the container
+    const realParent = this.parentDiv.nativeElement.parentElement.parentElement as HTMLElement;
+
+    // Create a ResizeObserver to resize the chart
+    this.resizeObserver = new ResizeObserver(entries => {
+      const { width: w, height: h } = entries[0].contentRect;
+      if (w > 0 && h > 0) {
+        let val = w <= h ? w : h;
+        val = parseInt((val / 1.2).toFixed());
+        this.size = val;
+        this.applyTextStyle();
+        this.cdr.detectChanges();
       }
-      val = parseInt((val/1.2).toFixed());
+    });
+    
+    this.resizeObserver.observe(realParent);
+
+    const w = realParent.offsetWidth;
+    const h = realParent.offsetHeight;
+    if (w > 0 && h > 0) {
+      let val = w <= h ? w : h;
+      val = parseInt((val / 1.2).toFixed());
+      this.size = val;
+      this.applyTextStyle();
+      this.cdr.detectChanges();
     }
-    setTimeout(_ => { this.size =  val }, 0)
+  }
+
+  private applyTextStyle(): void {
+    const parent = this.parentDiv?.nativeElement;
+    const color = this.styleProviderService.panelFontColor.source['_value'];
+    const fontFamily = this.styleProviderService.panelFontFamily.source['_value'];
+
+    // Knob center text
+    const centerText = parent?.querySelector('.p-knob-text');
+    if (centerText) {
+      centerText.style.setProperty('color', color, 'important');
+      centerText.style.setProperty('font-family', fontFamily, 'important');
+    }
+
+    // All text elements inside SVGs (min and max)
+    const svgTexts = parent?.querySelectorAll('svg text');
+    svgTexts?.forEach(el => {
+      el.setAttribute('fill', color);
+      el.style.setProperty('fill', color, 'important'); 
+      el.style.setProperty('font-family', fontFamily, 'important');
+    });
   }
 
   public getLimits() {
-
     let limits = [];
 
     if (this.inject.dataDescription.numericColumns.length === 2) {
-
       limits = [0, this.inject.data.values[0][1]];
-
     } else {
-
       if (this.inject.limits) {
         limits = this.inject.limits;
-      }
-      else {
-
+      } else {
         let n = parseInt(this.inject.data.values[0][0]);
         let count = 1;
 
@@ -69,14 +127,27 @@ export class EdaKnobComponent implements OnInit, AfterViewInit {
           count *= 10;
         }
 
-       limits = [0, count]
-
+        limits = [0, count];
       }
-
     }
-    if(limits[1] < this.value) limits[1] = this.value;
+    
+    if (limits[1] < this.value) limits[1] = this.value;
     return limits;
+  }
 
+  private computeSemaphoreColor(value: number, min: number, max: number): string {
+    const ratio = Math.max(0, Math.min(1, (value - min) / (max - min || 1)));
+    const hue = Math.round(ratio * 120); // 0 deg = red, 60 deg = yellow, 120 deg = green
+    return `hsl(${hue}, 85%, 42%)`;
+  }
+
+  getStyle() {
+    return {
+      'color': this.styleProviderService.panelFontColor.source['_value'], 
+      'font-family': this.styleProviderService.panelFontFamily.source['_value'],
+      'justify-items': 'center', 
+      'display': 'block'
+    };
   }
 
 }

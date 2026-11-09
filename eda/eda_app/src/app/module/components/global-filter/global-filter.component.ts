@@ -1,0 +1,1225 @@
+import { Component, inject, Input, OnInit, ChangeDetectorRef } from "@angular/core";
+import { AlertService, ChartUtilsService, DashboardService, GlobalFiltersService, QueryBuilderService, UserService } from "@eda/services/service.index";
+import { DatePickerConfig } from "@eda/shared/components/date-picker/datePickerConfig";
+import { getDateFilterOperatorLabel, getDateFilterValueLabel } from "@eda/shared/components/date-picker/date-filter-display.util";
+import { EdaDialogController } from "@eda/shared/components/shared-components.index";
+import { EdaBlankPanelComponent } from "@eda/components/eda-panels/eda-blank-panel/eda-blank-panel.component";
+import { OverlayPanelModule } from "primeng/overlaypanel";
+import * as _ from 'lodash';
+import { DashboardPage } from "app/module/pages/dashboard/dashboard.page";
+import { GLOBAL_FILTER_BUTTON_POSITION, SHOW_EMPTY_VALUE_IN_FILTERS } from '@eda/configs/customizable/customizable_merged';
+import { normalizeQueryMode } from '@eda/shared/utils/query-mode.util';
+import { MultiSelectModule } from "primeng/multiselect";
+import { FormsModule } from "@angular/forms";
+import { StyleProviderService } from '@eda/services/service.index';
+import { CommonModule } from '@angular/common';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { DestroyRef } from '@angular/core';
+import { AutoCompleteModule } from 'primeng/autocomplete';
+import '@angular/localize/init';
+import { DropdownModule } from 'primeng/dropdown';       // if use <p-dropdown>
+import { InputSwitchModule } from 'primeng/inputswitch'; // if use <p-inputSwitch>
+import { ScrollPanelModule } from 'primeng/scrollpanel'; // if use <p-scrollPanel>
+import { GlobalFilterDialogComponent } from "../component.index";
+import { DatePickerComponent } from "@eda/shared/components/shared-components.index";
+
+const STANDALONE_COMPONENTS = [
+    DatePickerComponent
+];
+
+const PRIMENG_MODULES = [
+    DropdownModule,
+    InputSwitchModule,
+    ScrollPanelModule,
+    AutoCompleteModule,
+    OverlayPanelModule
+];
+
+const DIALOGS_COMPONENTS = [
+    GlobalFilterDialogComponent
+];
+
+const ANGULAR_MODULES = [
+    FormsModule,
+    MultiSelectModule,
+    CommonModule
+]
+
+@Component({
+    standalone: true,
+    selector: 'app-v2-global-filter',
+    templateUrl: './global-filter.component.html',
+    imports: [STANDALONE_COMPONENTS, PRIMENG_MODULES, ANGULAR_MODULES, DIALOGS_COMPONENTS],
+    styleUrls: ['./global-filter.component.css']
+})
+export class GlobalFilterComponent implements OnInit {
+    @Input() dashboard: DashboardPage;
+
+    public globalFilters: any[] = [];
+    public globalFilter: any;
+    public styleButton: any = {};
+    public orderDependentFilters: any[] = [];
+    loading: boolean = true;
+    placeholderText = this.loading ? $localize`:@@Cargando:Cargando...` : '';
+    public filterController: EdaDialogController;
+    public hideFilters: boolean = false;
+    public isAdmin: boolean = false;
+    public isDashboardCreator: boolean = false;
+    public filterButtonVisibility = { public: false, readOnly: false };
+    private styleProviderService = inject(StyleProviderService)
+    private itemJustSelected = false;
+
+
+    //Date filter ranges Dropdown
+    public datePickerConfigs: {} = {};
+
+    public filtrar: string = $localize`:@@filtrarH4:Filtrar`;
+    public resumen: string = $localize`:@@filterSummary:Resumen de filtros`;
+    public resumenSingular: string = $localize`:@@filterSummarySingular:Resumen de filtro`;
+    public selectedItemsLabel: string = $localize`:@@globalFilterSelectedItemsLabel:elementos seleccionados`;
+
+    public filterHoverTooltipHtml: string =
+        `<span class="tooltip-green">${$localize`:@@filterHoverGreen:Verde`}</span>: ${$localize`:@@filterHoverAffected:Paneles afectados por este filtro`}<br>` +
+        `<span class="tooltip-red">${$localize`:@@filterHoverRed:Rojo`}</span>: ${$localize`:@@filterHoverNotAffected:Paneles no afectados por este filtro`}`;
+
+    // Wait 2s before activating the filter hover effect
+    private filterHoverTimeout: any;
+    public filterHoverActiveId: string | null = null;
+
+    private tooltipHideTimeout: any;
+    // Flag to view last panel
+    private lastPanel: any;
+    private isDropdownOpen: boolean = false;
+    private acFocusedFilterId: string | null = null;
+
+    public autoCompleteValues: string[];
+    public filterTimeout: any;
+
+    constructor(
+        private globalFilterService: GlobalFiltersService,
+        private dashboardService: DashboardService,
+        private queryBuilderService: QueryBuilderService,
+        private alertService: AlertService,
+        private userService: UserService,
+        private destroyRef: DestroyRef,
+        private cdr: ChangeDetectorRef,
+        private chartUtils: ChartUtilsService,
+    ) { }
+
+    public ngOnInit(): void {
+        this.isAdmin = this.userService.isAdmin;
+        // this.isDashboardCreator = this.dashboard.isDashboardCreator;
+        // this.hideFilters = this.dashboard.display_v.panelMode;
+        this.updateStyleButton();
+        // Subscribe to dynamic style changes and unsubscribe on destroy
+        this.styleProviderService.filtersFontColor.pipe(takeUntilDestroyed(this.destroyRef))
+            .subscribe(() => this.updateStyleButton());
+        this.styleProviderService.filtersFontFamily.pipe(takeUntilDestroyed(this.destroyRef))
+            .subscribe(() => this.updateStyleButton());
+        this.styleProviderService.filtersFontSize.pipe(takeUntilDestroyed(this.destroyRef))
+            .subscribe(() => this.updateStyleButton());
+        this.styleProviderService.panelColor.pipe(takeUntilDestroyed(this.destroyRef))
+            .subscribe(() => this.updateStyleButton());
+    }
+
+    updateStyleButton() {
+        this.styleButton = {
+            color: this.styleProviderService.filtersFontColor.source['_value'],
+            backgroundColor: this.styleProviderService.panelColor.source['_value'],
+            fontSize: (this.styleProviderService.filtersFontSize.source['_value'] * 2 + 14) + 'px',
+            fontFamily: this.styleProviderService.filtersFontFamily.source['_value'],
+        };
+    }
+
+    public async initGlobalFilters(filters: any[]): Promise<void> {
+        this.globalFilters = _.cloneDeep(filters).map((f: any) => {
+            if (f.queryMode) f.queryMode = normalizeQueryMode(f.queryMode);
+            return f;
+        });
+        const userName = JSON.parse(localStorage.getItem('user'))?.id;
+        this.isDashboardCreator = userName === this.dashboard.dashboard?.user;
+        this.setFiltersVisibility();
+        this.setFilterButtonVisibilty();
+        await this.fillFiltersData();
+        // Filter data already loaded
+        this.placeholderText ='';
+
+
+        // Initialize dependent filters, only if configured:
+        if(this.orderDependentFilters.length !== 0) {
+            const initDependentFilter = this.orderDependentFilters.find((f: any) => f.x===0 && f.y===0);
+            const initDependentGlobalFilter = this.globalFilters.find((gf: any) => gf.id === initDependentFilter.filter_id)
+            this.applyingDependentFilter(initDependentGlobalFilter, this.globalFilters);
+        }
+
+        this.loading = false;
+
+        this.globalFilters.forEach(filter => {
+            this.setGlobalEmptyFilter(filter);
+        });
+    }
+
+    /** Pushes an empty global filter to all linked panels so it appears in the AND/OR dialog */
+    public setGlobalEmptyFilter(filter: any): void {
+        setTimeout(() => {
+            this.dashboard.edaPanels.forEach((panel: EdaBlankPanelComponent) => {
+                if (filter.panelList.includes(panel.panel.id)) {
+                    const formatedFilter = this.globalFilterService.formatFilter(filter);
+                    panel.assertGlobalEmptyFilter(formatedFilter);
+                }
+            });
+        }, 500);
+    }
+
+    public async initOrderDependentFilters(orderDependentFilters: any[]): Promise<void> {
+        this.orderDependentFilters = _.cloneDeep(orderDependentFilters);
+    }
+
+    private setFiltersVisibility(): void {
+        for (const filter of this.globalFilters) {
+            if (!filter.hasOwnProperty("visible")) {
+                filter.visible = 'common';
+            }
+        }
+    }
+
+    // method to show or hide the filter button on the dashboard
+    private setFilterButtonVisibilty(): void {
+        let myFilters = _.cloneDeep(this.globalFilters);
+        if (!this.isDashboardCreator || !this.isAdmin) {
+            myFilters = myFilters.filter((f: any) => {
+                return (f.visible != "hidden" && f.visible == "readOnly") ||
+                    (f.visible != "hidden" && f.visible == "public")
+            });
+        }
+
+        myFilters.forEach(a => {
+            if (a.visible == "public") {
+                this.filterButtonVisibility.public = true;
+            } else if (a.visible == "readOnly") {
+                this.filterButtonVisibility.readOnly = true;
+            }
+        });
+    }
+
+    public async fillFiltersData(): Promise<void> {
+        const tasks: Promise<any>[] = [];
+
+        for (const filter of this.globalFilters) {
+            if (this.getFilterType(filter) === 'date') {
+                this.loadDatesFromFilter(filter)
+            } else {
+                tasks.push(this.loadGlobalFiltersData(filter)); // Promise to ensure all data has been loaded
+            }
+        }
+        await Promise.all(tasks);
+    }
+
+    /** Apply filter to panels when filter's selected value changes */
+    public applyGlobalFilter(filter: any): void {
+        const formatedFilter = this.globalFilterService.formatFilter(filter);
+        this.setFilterButtonVisibilty();
+
+        this.dashboard.edaPanels.forEach((panel: EdaBlankPanelComponent) => {
+            // If GlobalFilter is linked to Panel then assertFilter
+            if (filter.panelList.includes(panel.panel.id)) {
+                panel.assertGlobalFilter(formatedFilter);
+            } else {
+                // If in panel exists GlobalFilter but NOT linked to panel
+                const existFilter = panel.globalFilters.find((gf) => gf.filter_id == filter.id);
+                if (existFilter?.filter_id && !filter.panelList.includes(panel.panel.id)) {
+                    // Remove GlobalFilter from panel
+                    panel.globalFilters = panel.globalFilters.filter((gf) => gf.filter_id != filter.id);
+                }
+            }
+        });
+    }
+
+    public setGlobalFilterItems(filter: any) {
+
+        // Changing the selected values of a report filter changes the report
+        this.dashboardService.setNotSaved(true);
+
+        // Apply dependent filters if a sort order is configured
+        if(this.orderDependentFilters.length !==0) this.applyingDependentFilter(filter, this.globalFilters);
+
+        // Check if we have filters to map that were imported from another dashboard
+        this.dashboard.edaPanels.forEach((ebp: EdaBlankPanelComponent) => {
+
+            const filterMap = ebp.panel.globalFilterMap || [];
+
+            if (filter.panelList.includes(ebp.panel.id)) {
+                    const filterApplied = ebp.globalFilters.find((gf: any) => gf.filter_id === filter.id);
+
+                    if (filterApplied) {
+                        filterApplied.filter_elements = this.globalFilterService.assertGlobalFilterItems(filter, filter.dateFilterType);
+                        filterApplied.filter_codes = this.globalFilterService.assertGlobalFilterCodes(filter, filter.dateFilterType);
+                    } else {
+                        const formatedFilter = this.globalFilterService.formatFilter(filter);
+                        ebp.assertGlobalFilter(formatedFilter);
+                    }
+
+                } else if (filterMap.length) {  // Section where imported filters are mapped
+
+                    const map = filterMap.find((f) => f.targetId == filter.id);
+                    const panelFilter = ebp.globalFilters.find(gf => gf.filter_id === map?.sourceId);
+                    const items = this.globalFilterService.formatFilter(filter);
+
+                    // If the imported filter belongs to a panel => selectedFilter
+                    if(!panelFilter) {
+                        const selectedFilter = ebp.selectedFilters.find(gf => gf.filter_id === map?.sourceId);
+                        if(selectedFilter?.filter_elements) {
+                            selectedFilter.filter_elements = items.filter_elements; // Copying the selected items
+                        }
+
+                    } else {
+                        if (panelFilter?.filter_elements) {
+                            panelFilter.filter_elements = items.filter_elements; // Copying the selected items
+                            ebp.assertGlobalFilter(panelFilter);
+                        }
+                    }
+
+                }
+        })
+    }
+
+    async applyingDependentFilter(filter, globalFilters) {
+        await this.recursiveFilters(filter, globalFilters, this.dashboard.dataSource._id, this.dashboard.dashboardId, []);
+    }
+
+    async recursiveFilters(filter: any, globalFilters: any, _id: any, dashboardId: any, filterCollection: any) {
+        
+        if(filter.children.length !==0) {
+
+            for(let i=0; i<filter.children.length; i++) {
+
+                const filterItem = globalFilters.find((gl: any) => gl.id === filter.children[i].filter_id);
+
+                filterCollection.push({
+                        filter_column: filter.selectedColumn.column_name,
+                        filter_column_type: filter.selectedColumn.column_type,
+                        filter_elements: [{value1: filter.selectedItems}],
+                        filter_id: filter.id,
+                        filter_table: filter.selectedTable.table_name,
+                        filter_type: "in",
+                        isGlobal: filter.isGlobal,
+                        joins:[],
+                })
+
+                // Parent filters are added
+                for(let r=0; r<globalFilters.length; r++) {
+                    if(globalFilters[r].id !==filter.id && globalFilters[r].id !==filterItem.id) {  
+                        this.filterCollectionRecursive(globalFilters[r].children, filterItem.id, globalFilters[r], filterCollection)
+                    }
+                }
+
+                const queryParams = {
+                    table: filterItem.selectedTable.table_name,
+                    dataSource: _id,
+                    dashboard: dashboardId,
+                    panel: '',
+                    joinType: "inner",
+                    prediction: 'None',
+                    rootTable: filterItem.selectedTable.table_name,
+                    queryMode: filterItem.queryMode,
+                    forSelector: true,
+                    groupByEnabled: true,
+                    queryLimit: 5000,
+                    filters: filterCollection
+                };
+
+                // EXECUTE THE QUERY
+                
+                this.loading = true;
+                const query = this.queryBuilderService.normalQuery([filterItem.selectedColumn], queryParams);
+                const res = await this.dashboardService.executeQuery(query).toPromise();
+
+                // Filtering the new values:
+                const filterName = res[0][0];
+                const filterData = res[1].map((item: any) => {
+                    return ({
+                        label: item[0],
+                        value: item[0],
+                    })
+                })
+
+                filterItem.data = filterData;
+
+                // Create a Set with all valid values
+                const validValues = new Set(filterData.map((fd: any) => fd.value));
+                // Filter selected items that exist in validValues
+                filterItem.selectedItems = filterItem.selectedItems.filter(item => validValues.has(item));
+
+                this.loading = false;
+
+                ///////////////////////////////////////////////////////////
+                // VERIFICA SI CHILDREN ES DE LONGITUD DIFERENTE DE CERO //
+                ///////////////////////////////////////////////////////////
+                if(filterItem.children.length !== 0) {
+                    // RECURSIVIDAD
+                    this.recursiveFilters(filterItem, globalFilters, _id, dashboardId, filterCollection);
+                    // .....
+                } else {
+                    filterCollection = [];
+                }
+            }
+        } else {
+            // The filter has no children
+        }
+    }
+
+    filterCollectionRecursive( children: any[] | undefined, id: string, globalFilter: any, filterCollection: any[] ): boolean {
+        
+        if (!children || children.length === 0) return false;
+
+        for (const child of children) {
+            if (child.filter_id === id) {
+                const newFilter = {
+                    filter_column: globalFilter.selectedColumn.column_name,
+                    filter_column_type: globalFilter.selectedColumn.column_type,
+                    filter_elements: [{ value1: globalFilter.selectedItems }],
+                    filter_id: globalFilter.id,
+                    filter_table: globalFilter.selectedTable.table_name,
+                    filter_type: "in",
+                    isGlobal: globalFilter.isGlobal,
+                    joins: [],
+                };
+
+                // compare only relevant properties
+                const newKey = {
+                    filter_column: newFilter.filter_column,
+                    filter_column_type: newFilter.filter_column_type,
+                    filter_elements: newFilter.filter_elements,
+                    filter_table: newFilter.filter_table,
+                    filter_type: newFilter.filter_type,
+                    isGlobal: newFilter.isGlobal,
+                    joins: newFilter.joins ?? []
+                };
+
+                const exists = filterCollection.some((fc: any) => {
+                    const fcKey = {
+                    filter_column: fc.filter_column,
+                    filter_column_type: fc.filter_column_type,
+                    filter_elements: fc.filter_elements,
+                    filter_table: fc.filter_table,
+                    filter_type: fc.filter_type,
+                    isGlobal: fc.isGlobal,
+                    joins: fc.joins ?? []
+                    };
+                    return _.isEqual(fcKey, newKey);
+                });
+
+                if (!exists) {
+                    filterCollection.push(newFilter);
+                }
+                return true; // found (or already existed) => stop search
+            }
+
+            if (child.children && child.children.length > 0) {
+                const found = this.filterCollectionRecursive(child.children, id, globalFilter, filterCollection);
+                if (found) return true;
+            }
+        }
+
+        return false;
+    }
+
+    // Global Filter Dialog
+    public onShowGlobalFilter(isnew: boolean, filter?: any): void {
+        if (this.dashboard.validateDashboard('GLOBALFILTER')) {
+
+            const treeQueryMode = this.dashboard.edaPanels.some(
+                (panel) => panel.selectedQueryMode === 'TREE'
+            );
+
+            const globalFilter: any = {
+                isnew,
+                queryMode: treeQueryMode ? 'TREE' : 'EDA',
+                ...filter
+            };
+
+            if (!isnew) {
+                if (!globalFilter.selectedTable) {
+                    globalFilter.selectedTable = { table_name: filter.table.value };
+                }
+
+                if (!globalFilter.selectedColumn) {
+                    globalFilter.selectedColumn = { ...filter.column.value };
+                }
+            }
+
+            
+            this.globalFilter = globalFilter;
+        }
+    }
+    // Legacy Global Filter
+   public async onGlobalFilterAuto(filter: any, targetTable: string): Promise<void> {
+    return new Promise<void>(async (resolve, reject) => {
+        try {
+            this.loading = true;
+            if (filter.isdeleted) {
+                filter.selectedItems = [];
+                this.applyGlobalFilter(filter);
+                this.removeGlobalFilter(filter);
+            } else {
+                let existFilter = await this.globalFilters.find((f) => f.id === filter.id);
+
+                if (existFilter) {
+                    existFilter.selectedItems = filter.selectedItems;
+                } else {
+                    this.globalFilters.push(filter);
+                    this.cdr.detectChanges();
+                }
+
+                // Load Filter dropdowns options
+                if (filter.column?.value?.column_type === 'date' && filter.selectedItems.length > 0) {
+                    this.loadDatesFromFilter(filter);
+                } else {
+                    await this.loadGlobalFiltersData(filter);
+                    this.cdr.detectChanges();
+                }
+
+                this.applyGlobalFilter(filter);
+
+                if (filter.applyToAll && (this.dashboard.applyToAllfilter.present === false)) {
+                    this.dashboard.applyToAllfilter = { present: true, refferenceTable: targetTable, id: filter.id };
+                    this.dashboard.updateApplyToAllFilterInPanels();
+                }
+            }
+            this.loading = false;
+            resolve();
+        } catch (err) {
+            console.log(err)
+            reject(err);
+        }
+    })
+}
+    validateFilter(){
+        const mandatoryFilters: {value :boolean, items: any} = this.checkAllMandatoryFilters(); 
+        if(mandatoryFilters.value){
+            // Applying the report filters changes the report (same as reloadOnGlobalFilter did)
+            this.dashboardService.setNotSaved(true);
+            this.dashboard.refreshPanels()
+        } else{
+            this.alertService.addError($localize`:@@AddMandatoryFilters:Los siguientes filtros son obligatorios y no tienen valor asignado:` + mandatoryFilters.items);
+        }
+    }
+
+    checkAllMandatoryFilters(): {value :boolean, items: any}{
+        let nonEmptyFilters: {value :boolean, items: any} = {value: true,items: []};
+        // Date operators that filter on the field being (not) empty do not need a value
+        const noValueDateTypes = ['not_null', 'not_null_nor_empty', 'null_or_empty'];
+        this.globalFilters.forEach(element => {
+            if(element.isMandatory && element.isMandatory === true){
+                if (noValueDateTypes.includes(element.dateFilterType)) return;
+                if(element.selectedItems.length < 1){
+                    nonEmptyFilters.value = false;
+                    nonEmptyFilters.items.push(element.selectedColumn.display_name.default);
+                }
+            }
+        });
+        return nonEmptyFilters;
+    }
+
+    // Global Filter Dialog
+    public async onGlobalFilter(apply: boolean, gf?: any): Promise<void> {
+        if (!this.globalFilter && gf) {
+            this.globalFilter = gf;
+        }
+
+
+        if (apply) {
+            // Adding, editing or removing a report filter changes the report
+            this.dashboardService.setNotSaved(true);
+            this.dashboard.edaPanels.forEach(panel => {
+                if (!this.globalFilter.isdeleted) {
+                    panel.globalFilters = panel.globalFilters.filter((f: any) => f.filter_id !== this.globalFilter.id);
+                }
+            });
+
+            if (this.globalFilter.isnew) {
+
+
+                // Add one more item to the dependent filter order:
+                if(this.orderDependentFilters.length !== 0) {
+                    this.orderDependentFilters.push({
+                        cols: 3,
+                        rows: 1,
+                        y: this.orderDependentFilters.length,
+                        x: 0,
+                        filter_table: this.globalFilter.selectedTable.table_name,
+                        filter_column: this.globalFilter.selectedColumn.column_name,
+                        filter_type: this.globalFilter.selectedColumn.column_type,
+                        filter_id: this.globalFilter.id,
+                        description_table: this.globalFilter.selectedTable?.display_name?.default || this.globalFilter.selectedTable?.table_name,
+                        description_column: this.globalFilter.selectedColumn?.display_name?.default || this.globalFilter.selectedColumn?.column_name,
+                    })
+                    this.alertService.addInfo($localize`:@@newFilterAddToDF:Se agregó un nuevo filtro a la relación de filtros dependientes`);
+                }
+
+                this.globalFilters.push(this.globalFilter);
+
+            }
+
+            for (const filter of this.globalFilters) {
+                if (this.globalFilter.id == filter.id && !filter.isdeleted && !this.globalFilter.isdeleted) {
+                    filter.data = this.globalFilter.data;
+                    filter.selectedTable = this.globalFilter.selectedTable;
+                    filter.selectedColumn = this.globalFilter.selectedColumn;
+                    filter.selectedItems = this.globalFilter.selectedItems;
+                    filter.selectedRange = this.globalFilter.selectedRange;
+                    filter.dateFilterType = this.globalFilter.dateFilterType;
+                    filter.dynamicValue = this.globalFilter.dynamicValue;
+                    filter.panelList = this.globalFilter.panelList;
+                    filter.pathList = this.globalFilter.pathList;
+                    filter.type = this.globalFilter.type;
+                    filter.isGlobal = this.globalFilter.isGlobal;
+                    filter.visible = this.globalFilter.visible;
+                    filter.isAutocompleted = this.globalFilter.isAutocompleted !== undefined ? this.globalFilter.isAutocompleted : false;
+                    filter.isMandatory = this.globalFilter.isMandatory ?? false;
+                    filter.applyToAll = this.globalFilter.applyToAll;
+                    filter.multipleSelection = this.globalFilter.multipleSelection ?? true;
+
+                    if (filter.pathList) {
+                        for (const key in filter.pathList) {
+                            if (filter.pathList[key]?.selectedTableNodes) {
+                                const selectedTableNodes = filter.pathList[key].selectedTableNodes;
+                                delete (selectedTableNodes.parent);
+                            }
+                        }
+                    }
+
+
+                    delete (filter.isnew);
+                } else if (filter.isdeleted || (this.globalFilter.id === filter.id && this.globalFilter.isdeleted)) {
+                    filter.selectedItems = [];
+                    this.applyGlobalFilter(filter);
+                    this.removeGlobalFilter(filter);
+                }
+            }
+
+            if (!this.globalFilter.isdeleted) {
+                // Load Filter dropdwons option s
+                if (this.globalFilter.selectedColumn.column_type === 'date' && this.globalFilter.selectedItems.length > 0) {
+                    this.loadDatesFromFilter(this.globalFilter);
+                } else {
+                    await this.loadGlobalFiltersData();
+                }
+
+                this.applyGlobalFilter(this.globalFilter);
+            }
+        }
+
+        this.globalFilter = undefined;
+        this.cdr.detectChanges();
+        this.dashboard.refreshPanels();
+    }
+
+    public deleteFilterEvent(event: any) {
+        // The dependent filter order is reset
+        if(event) {
+
+            if(this.orderDependentFilters.length !==0) {
+                // Removing the sort order
+                this.orderDependentFilters = [];
+                // Removing relationships between global filters
+                this.globalFilters.forEach((gf: any) => {
+                    gf.children = [];
+                });
+    
+                this.alertService.addWarning($localize`:@@DFSettingsRestarted:Se ha reiniciado la configuración de los filtros dependientes`);
+                this.initGlobalFilters(this.globalFilters)
+            }
+
+        }
+    }
+
+    // Deprecated
+    // Legacy Global Filter
+    public async xonGlobalFilter(filter: any, targetTable: string): Promise<void> {
+        return new Promise<void>(async (resolve, reject) => {
+            try {
+                if (filter.isdeleted) {
+                    filter.selectedItems = [];
+                    this.applyGlobalFilter(filter);
+                    this.removeGlobalFilter(filter);
+                } else {
+                    let existFilter = this.globalFilters.find((f) => f.id === filter.id);
+
+                    if (existFilter) {
+                        existFilter.selectedItems = filter.selectedItems;
+                    } else {
+                        this.globalFilters.push(filter);
+                    }
+
+                    // Load Filter dropdwons option s
+                    if (filter.column.value.column_type === 'date' && filter.selectedItems.length > 0) {
+                        this.loadDatesFromFilter(filter);
+                    } else {
+                        await this.loadGlobalFiltersData(filter);
+                    }
+
+                    // Apply globalFilter to linkedPanels
+                    this.applyGlobalFilter(filter);
+                }
+                resolve();
+            } catch (err) {
+                reject(err);
+            }
+        })
+    }
+
+    public getFilterType(globalFilter: any): string {
+        let type = '';
+
+        if (globalFilter.filter_column_type) {
+            type = globalFilter.filter_column_type;
+        } else if (globalFilter.selectedColumn) {
+            type = globalFilter.selectedColumn.column_type;
+        } else {
+            type = globalFilter.column.value.column_type;
+        }
+
+        // New filter_column_type property on globalFilters
+        globalFilter.filter_column_type = type;
+
+        return type;
+    }
+
+    /** Resolves a raw selectedItems entry (e.g. the 'emptyString' sentinel) back to its display label */
+    public getFilterItemLabel(filter: any, item: any): string {
+        return filter.data?.find((d: any) => d.value === item)?.label ?? item;
+    }
+
+    public getFilterLabel(globalFilter: any): string {
+        let label = '';
+
+        if (globalFilter.selectedColumn) {
+            label = globalFilter.selectedColumn.display_name.default;
+        } else {
+            label = globalFilter.column?.label;
+        }
+
+        return label;
+    }
+
+    /** Just the value part of the summary, e.g. "Hoy" or "05-08-26 - 08-08-26" — the operator lives in its own badge */
+    public getDateFilterValueText(filter: any): string {
+        // Single-value comparison operators only ever mean one date, even though selectedItems
+        // stores it duplicated as [date, date] for internal consistency with the pair-shaped operators
+        const items = filter.selectedItems;
+        const isDiscreteList = Array.isArray(items?.[0]);
+        return getDateFilterValueLabel({
+            operator: filter.dateFilterType,
+            dynamicRangeValue: filter.dynamicValue || filter.selectedRange,
+            value1: isDiscreteList ? items[0] : items?.[0],
+            value2: isDiscreteList ? undefined : items?.[1],
+        });
+    }
+
+    /** Just the operator part of the summary, e.g. "=" or "Entre" — rendered as a badge */
+    public getDateFilterOperatorText(filter: any): string {
+        return getDateFilterOperatorLabel(filter.dateFilterType, this.chartUtils.filterTypesLabels);
+    }
+
+    public removeGlobalFilter(filter: any, reload?: boolean): void {
+
+        const formatedFilter = filter;
+
+        // Remove 'applytoall' filter if it's the same fitler
+        if (this.dashboard.applyToAllfilter && this.dashboard.applyToAllfilter.id === filter.id) {
+            this.dashboard.applyToAllfilter = { present: false, refferenceTable: null, id: null };
+            this.dashboard.updateApplyToAllFilterInPanels();
+        }
+
+        // Update fileterList and clean panels' filters
+        this.globalFilters = this.globalFilters.filter((f: any) => f.id !== filter.id);
+        
+        this.dashboard.edaPanels.forEach(panel => {
+            panel.globalFilters = panel.globalFilters.filter((f: any) => f.filter_id !== filter.id);
+        });
+
+        // Verifying global filters in panels
+        filter.panelList.map((id: string) => this.dashboard.edaPanels.toArray().find(p => p.panel.id === id))
+        .forEach((panel: EdaBlankPanelComponent) => { // Entire array of panels that contain the global filter
+            if (panel) panel.rebootGlobalFilter(formatedFilter);
+        });
+
+        this.removeMapFilter(filter);
+
+        if (reload) {
+            this.dashboardService.setNotSaved(true);
+        }
+    }
+
+
+    public removeGlobalFilterOnClick(filter: any, reload?: boolean): void {
+        this.dashboard.edaPanels.forEach(panel => {
+            panel.globalFilters = panel.globalFilters.filter((f: any) => f.filter_id !== filter.id);
+        });
+
+        this.removeGlobalFilter(filter, reload);
+    }
+
+    public removeMapFilter(filter: any): void {
+        this.dashboard.edaPanels.forEach((ebp: EdaBlankPanelComponent) => {
+            const filterMap = ebp.panel.globalFilterMap ?? [];
+            if (!filterMap.length) return;
+
+            const mapping = filterMap.find(f => f.targetId === filter.id);
+            if (!mapping) return;
+
+
+            const panelFilter = ebp.selectedFilters.find(f => f.filter_id === mapping.sourceId);
+
+            if (!panelFilter) return;
+
+            ebp.panel.globalFilterMap = filterMap.filter(f => f.filter_id !== panelFilter.filter_id);
+        });
+    }
+
+    /**
+     * Process data from date picker and apply filter
+     * @param event dates and range(week, month, year, all) if any
+     * @param filter 
+     */
+    public processPickerEvent(event: any, filter: any): void {
+        filter.dateFilterType = event.operator;
+
+        if (event.dates) {
+            const dtf = new Intl.DateTimeFormat('en', { year: 'numeric', month: '2-digit', day: '2-digit' });
+            const toStr = (date: Date) => {
+                const [{ value: mo }, , { value: da }, , { value: ye }] = dtf.formatToParts(date);
+                return `${ye}-${mo}-${da}`;
+            };
+
+            const isStaticInNotIn = ['in', 'not_in'].includes(event.operator) && !event.range;
+            if (isStaticInNotIn) {
+                // Discrete, individually picked dates — kept as a single nested list, not a start/end pair
+                filter.selectedItems = [event.dates.filter((d: any) => d != null).map(toStr)];
+            } else {
+                if (!event.dates[1]) {
+                    event.dates[1] = event.dates[0];
+                }
+                filter.selectedItems = [event.dates[0], event.dates[1]].map(toStr);
+            }
+
+            filter.selectedRange = event.range;
+            filter.dynamicValue = event.range;
+        }
+
+        if (!event.dates) {
+            filter.selectedItems = [];
+        }
+
+        if (!event.range) {
+            filter.selectedRange = null;
+            filter.dynamicValue = null;
+        }
+
+        this.loadDatesFromFilter(filter);
+        this.applyGlobalFilter(filter);
+    }
+
+    /**
+     * Set datePicker's configuration
+     * @param filter 
+     */
+    private loadDatesFromFilter(filter) {
+        this.datePickerConfigs[filter.id] = new DatePickerConfig();
+        const config = this.datePickerConfigs[filter.id];
+        config.dateRange = [];
+        config.range = filter.selectedRange;
+        config.filter = filter;
+        config.dateFilterType = filter.dateFilterType;
+        if (filter.selectedItems.length > 0) {
+            if (!filter.selectedRange) {
+                // Static in/not_in stores its discrete dates nested as selectedItems[0]
+                const isDiscreteList = Array.isArray(filter.selectedItems[0]);
+                if (isDiscreteList) {
+                    // Restore every discrete date, not just the first and last
+                    config.dateRange = filter.selectedItems[0].map((d: string) => new Date(d.replace(/-/g, '/')));
+                } else {
+                    let firstDate = filter.selectedItems[0];
+                    let lastDate = filter.selectedItems[filter.selectedItems.length - 1];
+                    config.dateRange.push(new Date(firstDate.replace(/-/g, '/')));
+                    config.dateRange.push(new Date(lastDate.replace(/-/g, '/')));
+                }
+            }
+        }
+    }
+
+    private async loadGlobalFiltersData(globalFilter?: any): Promise<void> {
+
+        if (!globalFilter) {
+            globalFilter = this.globalFilter;
+        }
+
+        let targetTable: string;
+        let targetColumn: any;
+        if (globalFilter.selectedTable) {
+            targetTable = globalFilter.selectedTable.table_name;
+            targetColumn = globalFilter.selectedColumn;
+            targetColumn.ordenation_type = targetColumn.ordenation_type || "Asc";
+
+        } else {
+            targetTable = globalFilter.table.value;
+            targetColumn = globalFilter.column.value;
+            targetColumn.ordenation_type = targetColumn.ordenation_type || "Asc";
+        }
+
+        const queryParams = {
+            table: targetTable,
+            dataSource: this.dashboard.dataSource._id,
+            dashboard: '',
+            panel: '',
+            filters: []
+        };
+
+        try {
+            
+            const query = this.queryBuilderService.normalQuery([targetColumn], queryParams);
+            query.query.forSelector = true;
+
+            
+            const res = await this.dashboardService.executeQuery(query).toPromise();
+            const message = res[0][0];
+            
+            if (['noDataAllowed', 'noFilterAllowed'].includes(message)) {
+                const restrictedFilter = this.globalFilters.find((gf: any) => gf.id == globalFilter.id);
+                if (restrictedFilter) {
+                    restrictedFilter.visible = 'hidden';
+                    restrictedFilter.data = false;
+                }
+            }
+            
+            const data = res[1].filter(item => !!item[0]).map(item => ({ label: item[0], value: item[0] }));
+
+            // If I have empty values I replace them with the empty string text — equivalent to IS NULL OR EMPTY
+            if (SHOW_EMPTY_VALUE_IN_FILTERS && res[1].filter(item => item[0]?.toString() == '').length > 0) {
+                data.unshift({ label: $localize`:@@emptyStringTxt:Vacío`, value: 'emptyString' });
+            }
+
+            // Before assigning:
+            const foundFilter = this.globalFilters.find((gf: any) => gf.id == globalFilter.id);
+
+            if (foundFilter) {
+                foundFilter.data = data;
+            }
+        } catch (err) {
+            this.alertService.addError(err);
+            throw err;
+        }
+    }
+
+    public findGlobalFilterByUrlParams(urlParams: any): void {
+        if (Object.keys(urlParams).length === 0) {
+            return;
+        }
+
+        for (const filter of this.globalFilters) {
+            for (const param of Object.keys(urlParams)) {
+                const paramTable = _.split(param, '.')[0];
+                const paramColumn = _.split(param, '.')[1];
+
+                const tableName = filter.table?.value || filter.selectedTable?.table_name;
+                if (tableName === paramTable) {
+                    const columnName = filter.column?.value?.column_name || filter.selectedColumn.column_name;
+
+                    if (columnName === paramColumn) {
+                        filter.selectedItems = _.split(urlParams[param], '|');
+
+                        filter.panelList
+                            .map(id => this.dashboard.panels.find(p => p.id === id))
+                            .forEach((panel) => {
+                                const panelFilter = panel.content.query.query.filters;
+                                let formatedFilter = this.globalFilterService.formatFilter(filter);
+
+                                let pathList: any;
+                                if (formatedFilter.pathList) {
+                                    Object.entries(formatedFilter.pathList).forEach(([clave, valor]: any) => {
+                                        if(clave === panel.id) pathList = valor.path;
+                                    });
+                                }
+
+                                // Add the joins from the URL filter
+                                formatedFilter.joins = pathList;
+
+                                if (formatedFilter.pathList && formatedFilter.pathList[panel.id] && formatedFilter.pathList[panel.id].table_id) {
+                                    formatedFilter.filter_table = formatedFilter.pathList[panel.id].table_id;
+                                }
+
+                                // Filter control
+                                if( _.findIndex(panelFilter, (inx) => inx.filter_column === formatedFilter.filter_column) >=0 ){
+                                    panelFilter.splice(_.findIndex(panelFilter, (inx) => inx.filter_column === formatedFilter.filter_column), 1);
+                                }
+                                panelFilter.push(formatedFilter);
+
+                                // Inject URL filter into sortedFilters when advanced filters exist
+                                const sortedFilters = panel.content?.query?.query?.sortedFilters;
+                                if (sortedFilters && sortedFilters.length > 0) {
+                                    const existingIndex = sortedFilters.findIndex((sf: any) => sf.filter_id === formatedFilter.filter_id);
+                                    if (existingIndex >= 0) {
+                                        sortedFilters[existingIndex].filter_elements = formatedFilter.filter_elements;
+                                        sortedFilters[existingIndex].filter_codes = formatedFilter.filter_codes;
+                                        sortedFilters[existingIndex].joins = formatedFilter.joins;
+                                        sortedFilters[existingIndex].filter_table = formatedFilter.filter_table;
+                                    } else {
+                                        const lastElement = sortedFilters[sortedFilters.length - 1];
+                                        sortedFilters.push({
+                                            cols: 3,
+                                            rows: 1,
+                                            y: lastElement.y + 1,
+                                            x: 0,
+                                            filter_table: formatedFilter.filter_table,
+                                            filter_column: formatedFilter.filter_column,
+                                            filter_type: formatedFilter.filter_type,
+                                            filter_column_type: formatedFilter.filter_column_type,
+                                            filter_elements: formatedFilter.filter_elements,
+                                            filter_codes: formatedFilter.filter_codes,
+                                            filter_id: formatedFilter.filter_id,
+                                            isGlobal: formatedFilter.isGlobal,
+                                            value: "and",
+                                            joins: formatedFilter.joins,
+                                            pathList: formatedFilter.pathList,
+                                            valueListSource: formatedFilter.valueListSource,
+                                            filterBeforeGrouping: formatedFilter.filterBeforeGrouping ?? true,
+                                            autorelation: formatedFilter.autorelation,
+                                            computed_column: formatedFilter.computed_column,
+                                            SQLexpression: formatedFilter.SQLexpression,
+                                            applyToAll: formatedFilter.applyToAll,
+                                        });
+                                    }
+                                }
+                            });
+
+                    }
+                }
+            }
+        }
+    }
+
+    public getPanelWidthVar(filter: any): any {
+        if (!filter.data || filter.data.length === 0) return {};
+        const longest = filter.data.reduce((max: number, item: any) =>
+            Math.max(max, (item.label?.length ?? 0)), 0);
+        const px = Math.min(Math.max(longest * 6 + 80, 150), 500);
+        return { '--ms-panel-width': px + 'px' };
+    }
+
+    public disableGlobalFilter(filter: any): boolean {
+        let disabled = false;
+
+        if (!this.isAdmin && !this.isDashboardCreator && filter.visible === 'readOnly') {
+            disabled = true;
+        } else if (this.isAdmin || this.isDashboardCreator || filter.visible === 'common') {
+            disabled = false;
+        }
+
+        return disabled;
+    }
+
+    // Function to load all values via endpoint
+   public async loadFilterAutoComplete(event: any, filtro: any) {
+       // Minimum characters before filtering
+       const minLength = 2;
+       if (event.query.length < minLength) {
+           this.autoCompleteValues = [];
+           return;
+        }
+
+        // Reset to control the double keyenter event
+        this.itemJustSelected = false;
+
+        // Milliseconds delay to avoid multiple loads while typing
+        const delay = 300;
+        clearTimeout(this.filterTimeout);
+
+
+        this.filterTimeout = setTimeout(async () => {
+            let targetTable: string;
+            let targetColumn: any;
+            if (filtro.selectedTable) {
+                targetTable = filtro.selectedTable.table_name;
+                targetColumn = filtro.selectedColumn;
+                targetColumn.ordenation_type = targetColumn.ordenation_type || "Asc";
+
+            } else {
+                targetTable = filtro.table.value;
+                targetColumn = filtro.column.value;
+                targetColumn.ordenation_type = targetColumn.ordenation_type || "Asc";
+            }
+
+            const queryParams = {
+                table: targetTable,
+                dataSource: this.dashboard.dataSource._id,
+                dashboard: this.dashboard.dashboardId,
+                panel: '',
+                joinType: "inner",
+                rootTable:filtro.selectedTable.table_name,
+                prediction: 'None',
+                groupByEnabled: true,
+                queryMode: filtro.queryMode,
+                forSelector: true,
+                queryLimit: 5000,
+                filters: [{
+                    filter_column:filtro.selectedColumn.column_name,
+                    filter_column_type:filtro.selectedColumn.column_type,
+                    filter_elements:[{value1: [event.query]}],
+                    filter_id:filtro.id,
+                    filter_table:filtro.selectedTable.table_name,
+                    filter_type:"like",
+                    isGlobal:filtro.isGlobal,
+                    joins:[],
+                }]
+            };
+        const query = this.queryBuilderService.normalQuery([targetColumn], queryParams);
+        const res = await this.dashboardService.executeQuery(query).toPromise();
+        
+        const data = res[1].filter(item => !!item[0] || item[0] == '').map(item => ({ label: item[0], value: item[0] }));
+        this.globalFilters.find((gf: any) => gf.id == filtro.id).data = data;
+
+        const selected = filtro.selectedItems || [];
+        this.autoCompleteValues = data.filter(item => !selected.includes(item.value));
+
+        }, delay);
+
+    }
+
+    onItemSelected(filtro: any) {
+        // If we manually select with enter we don't want the first item
+        this.itemJustSelected = true;
+        filtro.selectedItems = filtro.selectedItems.map((item: any) => {
+            if (item && typeof item === 'object' && 'value' in item) {
+                return item.value;
+            }
+            return item;
+        });
+        filtro.selectedItems = _.uniq(filtro.selectedItems);
+        // Update Global filter
+        this.setGlobalFilterItems(filtro)
+    }
+
+
+    onAddValue(event: KeyboardEvent, filter: any) {
+        // If a selection just occurred, do nothing
+        if (this.itemJustSelected) {
+            this.itemJustSelected = false; // reset
+            return;
+        }
+        event.preventDefault(); 
+
+        if (this.autoCompleteValues && this.autoCompleteValues.length > 0) {
+            const selected = filter.selectedItems || [];
+            const firstItem: any = this.autoCompleteValues.find((item: any) => !selected.includes(item.value));
+
+            if (firstItem) {
+                filter.selectedItems = [...selected, firstItem];
+                (event.target as HTMLInputElement).value = '';
+                this.autoCompleteValues = [];
+            }
+        }
+
+        this.onItemSelected(filter);
+    }
+
+    // This method have the same functionality as the chip in global filter, but this one is for the tooltip
+    public removeFilterItem(filter: any, item: any): void {
+        filter.selectedItems = filter.selectedItems.filter((i: any) => i !== item);
+        this.setGlobalFilterItems(filter);
+    }
+
+    public removeAllFilterItems(filter: any): void {
+        filter.selectedItems = [];
+        this.setGlobalFilterItems(filter);
+    }
+
+    public onSingleSelectChange(filter: any): void {
+        if (filter.selectedItems?.length > 1) {
+            filter.selectedItems = [filter.selectedItems[filter.selectedItems.length - 1]];
+        }
+        this.setGlobalFilterItems(filter);
+    }
+
+    public onFilterChange(filter: any): void {
+        this.setGlobalFilterItems(filter);
+    }
+
+    public setDropdownOpen(value: boolean): void {
+        this.isDropdownOpen = value;
+    }
+
+    public onAutocompleteFocus(filter: any): void {
+        this.acFocusedFilterId = filter.id;
+    }
+
+    public onAutocompleteBlur(): void {
+        this.acFocusedFilterId = null;
+    }
+
+    /** Resting state of an autocomplete filter with values: chips hidden, summary shown */
+    public isAutocompleteCollapsed(filter: any): boolean {
+        return filter.selectedItems?.length > 0 && this.acFocusedFilterId !== filter.id;
+    }
+
+    /** Same rule as the multiselect: up to 3 labels joined, otherwise a count */
+    public getAutocompleteSummary(filter: any): string {
+        const items: any[] = filter.selectedItems ?? [];
+        if (items.length > 3) {
+            return `${items.length} ${this.selectedItemsLabel}`;
+        }
+        return items.map((item: any) => this.getFilterItemLabel(filter, item)).join(', ');
+    }
+
+    // Method to show the filter tooltip
+    public showFilterTooltip(event: MouseEvent, op: any, filter?: any): void {
+    // if the dropdown is open the tooltip is not shown
+        if (this.isDropdownOpen) return;
+    // If the filter doesn't have selected values, the tooltip won't be shown — unless it's a date
+    // filter configured with a no-value operator (not_null, not_null_nor_empty, null_or_empty),
+    // where selectedItems is always empty even though the filter is meaningfully set.
+        if (filter && (!filter.selectedItems || filter.selectedItems.length === 0) && !filter.dateFilterType) return;
+    // If there is some active timeout to hide the tooltip, it will be cleared 
+        if (this.tooltipHideTimeout && this.lastPanel === filter.id) {
+           clearTimeout(this.tooltipHideTimeout);
+           this.tooltipHideTimeout = null;
+        }
+        this.lastPanel = filter.id;
+        op?.show(event);
+    }
+    // Method to hide the filter tooltip
+    public hideFilterTooltip(op: any): void {
+    // A timeout is set to avoid the tooltip to be hidden when the user is moving the mouse from the filter item to the tooltip
+        this.tooltipHideTimeout = setTimeout(() => {
+            op?.hide();
+            this.tooltipHideTimeout = null;
+        }, 150);
+    }
+
+    public onFilterHover(filter: any): void {
+        if (this.filterHoverTimeout) {
+            clearTimeout(this.filterHoverTimeout);
+        }
+        this.filterHoverActiveId = null;
+        this.filterHoverTimeout = setTimeout(() => {
+            this.dashboard.hoveredFilterPanelIds = filter.panelList || [];
+            this.dashboard.isFilterHoverActive = true;
+            this.filterHoverActiveId = filter.id;
+        }, 2000);
+    }
+
+    // Clears panel highlight immediately when mouse leaves
+    public onFilterLeave(): void {
+        if (this.filterHoverTimeout) {
+            clearTimeout(this.filterHoverTimeout);
+            this.filterHoverTimeout = null;
+        }
+        this.dashboard.hoveredFilterPanelIds = [];
+        this.dashboard.isFilterHoverActive = false;
+        this.filterHoverActiveId = null;
+    }
+
+    get filterButtonPosition(): string {
+        return this.dashboard?.dashboard?.config?.styles?.filterButtonPosition ?? GLOBAL_FILTER_BUTTON_POSITION;
+    }
+}

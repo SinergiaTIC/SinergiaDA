@@ -6,19 +6,19 @@ import { EdaBlankPanelComponent } from '../eda-blank-panel.component';
 import { ChartsConfigUtils } from './charts-config-utils';
 import { PanelInteractionUtils } from './panel-interaction-utils';
 
-import { NULL_VALUE, EMPTY_VALUE } from '../../../../../config/personalitzacio/customizables'
+import { NULL_VALUE, EMPTY_VALUE } from '../../../../../config/customizable/customizable_merged'
 
 export const QueryUtils = {
 
   /**
    * Creates fake columns for SQL Queries
-   * @return builded column
+   * @return built column
    */
 
   createColumn: (columnName: string, columnType: string, sqlOriginTable: any): any => {
 
     const column = {
-      table_id: sqlOriginTable.value,
+      table_id: sqlOriginTable?.value,
       column_name: columnName,
       column_type: columnType,
       description: { default: columnName, locaized: [] },
@@ -29,66 +29,11 @@ export const QueryUtils = {
       row_granted_roles: [],
       ordenation_type: 'No',
       tableCount: 0,
-      visible: true,
- /* SDA CUSTOM*/   hidden: false
+      visible: true
     }
     return column;
   },
 
-
-  /**
-   * Switch sql mode or eda mode and run query
-   * @param ebp edaBlankPanelComponent
-   * @param query query to run
-   *
-   */
-  switchAndRun: async (ebp: EdaBlankPanelComponent, query: Query) => {
-    try {
-      if (ebp.selectedQueryMode != 'SQL') {
-        const queryData = JSON.parse(JSON.stringify(query));
-        queryData.query.filters = query.query.filters.filter((f) =>
-          (f.filter_elements[0]?.value1 && f.filter_elements[0].value1.length !== 0)
-          || ['not_null', 'not_null_nor_empty', 'null_or_empty'].includes(f.filter_type)
-        );
-        const response = await ebp.dashboardService.executeQuery(queryData).toPromise();
-        return response;
-      } else {
-        let response = await ebp.dashboardService.executeSqlQuery(query).toPromise();
-        const numFields = response[0].length;
-        const types = new Array(numFields);
-        types.fill(null);
-
-        /** SI NO ESTA FILTRADO POR LA SEGURIDAD */
-        if( response.toString().indexOf( 'noDataAllowed' ) < 1 ) {
-          for (let row = 0; row < response[1].length; row++) {
-            response[1][row].forEach((field, i) => {
-              if (types[i] === null) {
-                if (typeof field === 'number') {
-                  types[i] = 'numeric';
-                } else if (typeof field === 'string') {
-                  types[i] = 'text';
-                }
-              }
-            });
-            if (!types.includes(null)) {
-              break;
-            }
-          }
-
-          ebp.currentQuery = [];
-          types.forEach((type, i) => {
-            ebp.currentQuery.push(QueryUtils.createColumn(response[0][i], type, ebp.sqlOriginTable));
-          });
-        }else{
-          //Not allowed data. Lo convierto en objeto.
-          response = [ ['noDataAllowed'],[]];
-        }
-        return response;
-      }
-    } catch (err) {
-      throw err;
-    }
-  },
 
   analizedQuery: async (ebp: EdaBlankPanelComponent) => {
     const query = QueryUtils.initEdaQuery(ebp);
@@ -103,7 +48,7 @@ export const QueryUtils = {
   },
   
   transformAnalizedQueryData: (ebp: EdaBlankPanelComponent, data: any) => {
-    const labels = [$localize`:@@atributoLabel:Atributo`, $localize`:@@atributoConsulta:Consulta`, $localize`:@@atributoValor:Valor`];
+    const labels = [$localize`:@@atributoLabel:Atributo`, $localize`:@@atributoConsulta:Consulta`, $localize`:@@value:Valor`];
     const values = [];
 
     const i18n = {
@@ -118,22 +63,12 @@ export const QueryUtils = {
         "max": $localize`:@@maxLabel:Valor máximo`,
         "min": $localize`:@@minLabel:Valor mínimo`,
         "mode": $localize`:@@moda_countsLabel:Moda`,
-        "avg": $localize`:@@avgLabel:Media`,
+        "avg": $localize`:@@aggTmean:Media`,
         "median": $localize`:@@medianLabel:Mediana`,
         "median_count_bymonth": $localize`:@@median_count_bymonthLabel:Mediana por mes`,
         "max_bymonth": $localize`:@@max_bymonthLabel:Máximos por mes`,
         "min_bymonth": $localize`:@@min_bymonthLabel:Mínimos por mes`,
     };
-
-    // display control for the table DataQuality
-    if( Array.isArray(data)) {
-      if(data[0][0] === 'noDataAllowed') {
-        return {
-          labels: data[0],
-          values: data[1]
-        }
-      }
-    }
 
     for (const key in data) {
 
@@ -148,6 +83,56 @@ export const QueryUtils = {
       values
     }
   },
+  /**
+   * Switch sql mode or eda mode and run query
+   * @param ebp edaBlankPanelComponent
+   * @param query query to run
+   *
+   */
+  switchAndRun: async (ebp: EdaBlankPanelComponent, query: Query) => {
+    const isSqlMode = ebp.selectedQueryMode === 'SQL';
+
+    const executeEdaQuery = async (): Promise<any> => {
+      const filteredQuery: Query = {
+        ...query,
+        query: {
+          ...query.query,
+          filters: query.query.filters.filter(f =>
+            (f.filter_elements[0]?.value1?.length > 0) ||
+            ['not_null', 'not_null_nor_empty', 'null_or_empty'].includes(f.filter_type)
+          )
+        }
+      };
+      return ebp.dashboardService.executeQuery(filteredQuery).toPromise();
+    };
+
+    const executeSqlQuery = async (): Promise<any> => {
+      const response = await ebp.dashboardService.executeSqlQuery(query).toPromise();
+      const [headers, rows] = response;
+
+      const types = headers.map((_, i) => {
+        let foundString = false;
+        for (const row of rows) {
+          const field = row[i];
+          if (typeof field === 'number') return 'numeric';
+          if (typeof field === 'string') {
+            // Check for HTML tags in strings
+            if (/<[a-z][\s\S]*>/i.test(field)) return 'html';
+            foundString = true;
+          }
+        }
+        return foundString ? 'text' : null;
+      });
+
+      ebp.currentQuery = headers.map((header, i) =>
+        QueryUtils.createColumn(header, types[i], ebp.sqlOriginTable)
+      );
+
+      return response;
+    };
+
+    return isSqlMode ? await executeSqlQuery() : await executeEdaQuery();
+  },
 
   getQueryFromServer: async (ebp: EdaBlankPanelComponent, query: Query): Promise<string> => {
     const serverquery = await ebp.dashboardService.getBuildedQuery(query).toPromise();
@@ -159,32 +144,84 @@ export const QueryUtils = {
     else return QueryUtils.initSqlQuery(ebp);
   },
 
+  /** Heal a filters array's global entries against the live global filter bar's join paths. A
+   * global filter the user hasn't actively touched this session still holds whatever was last
+   * saved to panel.content — assertGlobalFilter() (which resolves joins/filter_table from
+   * pathList) never ran for it live, so a stale/never-resolved join path would otherwise silently
+   * drop its table from the query. Used both for ebp.globalFilters (runQuery) and for the raw
+   * persisted panelContent.query.query.filters (loadChartsData, which bypasses ebp.globalFilters
+   * entirely when the panel has no nav children). */
+  healGlobalFilterJoins: (ebp: EdaBlankPanelComponent, filters: any[]) => {
+    const liveGlobalFilterDefs = ebp.dashboard?.globalFilter?.globalFilters || [];
+    for (const filter of filters || []) {
+      if (!filter.isGlobal) continue;
+      const livePath = liveGlobalFilterDefs.find((d: any) => d.id === filter.filter_id)?.pathList?.[ebp.panel.id];
+      if (livePath) {
+        filter.joins = livePath.path;
+        filter.filter_table = livePath.table_id;
+      }
+    }
+  },
+
   /**
  * Runs a query and sets panel chart
  * @param globalFilters flag to apply when runQuery() is called from dashboard component.
  */
   runQuery: async (ebp: EdaBlankPanelComponent, globalFilters: boolean) => {
 
-    // Update of the globalFilters Elements
+    // Update globalFilters elements
+
+    QueryUtils.healGlobalFilterJoins(ebp, ebp.globalFilters);
 
     if(ebp.sortedFilters === undefined) ebp.sortedFilters = []; // if it is an old report, we define the report as empty
 
-    /* SDA CUSTOM*/ for(let i = ebp.sortedFilters.length - 1; i >= 0; i--){
-    /* SDA CUSTOM*/   if(ebp.sortedFilters[i].isGlobal) {
-    /* SDA CUSTOM*/     const matchingGlobalFilter = ebp.globalFilters.find((globalFilter: any) => globalFilter.filter_id === ebp.sortedFilters[i].filter_id);
-    /* SDA CUSTOM*/     if (matchingGlobalFilter) {
-    /* SDA CUSTOM*/       ebp.sortedFilters[i].filter_elements = matchingGlobalFilter.filter_elements;
-    /* SDA CUSTOM*/       ebp.sortedFilters[i].filter_codes = matchingGlobalFilter.filter_codes;
-    /* SDA CUSTOM*/       ebp.sortedFilters[i].filter_type = matchingGlobalFilter.filter_type;
-    /* SDA CUSTOM*/       ebp.sortedFilters[i].filter_column_type = matchingGlobalFilter.filter_column_type;
-    /* SDA CUSTOM*/       ebp.sortedFilters[i].dynamicValue = matchingGlobalFilter.dynamicValue;
-    /* SDA CUSTOM*/     } else {
-    /* SDA CUSTOM*/       ebp.sortedFilters.splice(i, 1);
-    /* SDA CUSTOM*/     }
-    /* SDA CUSTOM*/   }
-    /* SDA CUSTOM*/ }
+    for(let i=0; i<ebp.sortedFilters.length; i++){
+      if(ebp.sortedFilters[i].isGlobal) {
+        const liveGlobalFilter = ebp.globalFilters.find((globalFilter: any) => globalFilter.filter_id === ebp.sortedFilters[i].filter_id);
+        if (liveGlobalFilter) {
+          ebp.sortedFilters[i].filter_elements = liveGlobalFilter.filter_elements;
+          ebp.sortedFilters[i].filter_codes = liveGlobalFilter.filter_codes;
+          // filter_type must stay in sync with filter_elements/filter_codes' shape (e.g. a date
+          // filter's operator changing from 'between' to '=' changes it from 2 elements to 1) —
+          // it was only ever set once, when the filter was first added to the AND/OR tree.
+          ebp.sortedFilters[i].filter_type = liveGlobalFilter.filter_type;
+        }
+      }
+    }
 
-    /** Manages duplicate columns. If I have two columns with the same name, I add the suffix _1, _2, _3, etc. */
+    /** When advanced (AND/OR) filters are configured, filters/global filters added afterwards
+     * (e.g. from the global filter bar) are not part of the saved tree yet. Append them here
+     * as top-level AND conditions so running the query from outside the panel picks them up,
+     * mirroring EdaFilterAndOrComponent.addMissingFilters() which only runs when the dialog opens. */
+    if (ebp.sortedFilters.length !== 0) {
+      const existingIds = new Set(ebp.sortedFilters.map((sf: any) => sf.filter_id));
+
+      const missing = [
+        ...ebp.selectedFilters.filter((sf: any) => sf.filterBeforeGrouping !== false),
+        ...ebp.globalFilters.filter((gf: any) => gf.filterBeforeGrouping !== false),
+      ].filter((f: any) => !existingIds.has(f.filter_id));
+
+      if (missing.length > 0) {
+        const maxY = Math.max(...ebp.sortedFilters.map((sf: any) => sf.y)) + 1;
+
+        missing.forEach((f: any, i: number) => {
+          ebp.sortedFilters.push({
+            cols: 3, rows: 1, y: maxY + i, x: 0,
+            filter_table: f.filter_table,
+            filter_column: f.filter_column,
+            filter_type: f.filter_type,
+            filter_column_type: f.filter_column_type,
+            filter_elements: f.filter_elements,
+            filter_codes: f.filter_codes,
+            filter_id: f.filter_id,
+            isGlobal: f.isGlobal,
+            value: 'and',
+          });
+        });
+      }
+    }
+
+    /** Handle duplicate columns. If two columns have the same name add suffix _1, _2, _3.... etc */
     let dup = [];
     let cont = 0;
     ebp.currentQuery.forEach(a=> {
@@ -200,10 +237,12 @@ export const QueryUtils = {
     ebp.display_v.disablePreview = false;
 
     if (!globalFilters) {
-        ebp.spinnerService.on();
+
+      ebp.spinnerService.on();
+
     } else {
-        ebp.panelChart.NO_DATA = false;
-        ebp.display_v.minispinner = true;
+      ebp.panelChart.NO_DATA = false;
+      ebp.display_v.minispinner = true;
     }
 
     try {
@@ -218,34 +257,41 @@ export const QueryUtils = {
       const response = await QueryUtils.switchAndRun(ebp, query);
       ebp.chartLabels = ebp.chartUtils.uniqueLabels(response[0]);   // Chart labels
       ebp.chartData = response[1].map(item => item.map(a => {
-        if(a === null){
+
+        if(a === null  && NULL_VALUE != 'LEAVE_THE_NULL'){
           return NULL_VALUE;
         }
         if(a === ''){
           return EMPTY_VALUE;
         }
+
         return a;
-      })); // canviem els null y els '' per valor customitzable
+
+      })); // replace nulls and '' with customizable values
        
       // ebp.chartData = response[1];       // Chart data
       ebp.ableBtnSave();                 // Button save
-      /* Labels i Data - Arrays */
+      /* Labels and Data - Arrays */
       if (!globalFilters) {
+
         PanelInteractionUtils.verifyData(ebp);
-  		// This if and else statement allows to keep the previously configured chart even if the data is different.
-        // If the query does not meet the requirements for the corresponding chart, a table will be displayed with the data.
+
+        // This if/else preserves the previously configured chart even if the data changes.
+        // If the query no longer fits the configured chart, a table will be used to display the data.
         if(ebp.chartForm.value.chart===null || ebp.chartForm.value.chart.subValue==='tableanalized'){
           ebp.changeChartType('table', 'table', null);
           ebp.chartForm.patchValue({chart: ebp.chartUtils.chartTypes.find(o => o.value === 'table')});
-        }else {
-            if(!ebp.chartForm.value.chart.ngIf && !ebp.chartForm.value.chart.tooManyData){
-              ebp.changeChartType(ebp.chartForm.value.chart.value, ebp.chartForm.value.chart.subValue, ebp.panelChartConfig.config);
-              ebp.chartForm.patchValue({chart: ebp.chartUtils.chartTypes.find(o => o.subValue === ebp.chartForm.value.chart.subValue)});
-            }
-            else {
-              ebp.changeChartType('table', 'table', null);
-              ebp.chartForm.patchValue({chart: ebp.chartUtils.chartTypes.find(o => o.value === 'table')});
-            }
+        } 
+
+        else {
+          if(!ebp.chartForm.value.chart.ngIf && !ebp.chartForm.value.chart.tooManyData){
+            ebp.changeChartType(ebp.chartForm.value.chart.value, ebp.chartForm.value.chart.subValue, ebp.panelChartConfig.config);
+            ebp.chartForm.patchValue({chart: ebp.chartUtils.chartTypes.find(o => o.subValue === ebp.chartForm.value.chart.subValue)});
+          }
+          else {
+            ebp.changeChartType('table', 'table', null);
+            ebp.chartForm.patchValue({chart: ebp.chartUtils.chartTypes.find(o => o.value === 'table')});
+          }
         }
 
         ebp.spinnerService.off();
@@ -263,8 +309,9 @@ export const QueryUtils = {
       ebp.spinnerService.off();
     }
 
-    // Control whether the dragAndDrop component can be displayed
+    // Ensure the dragAndDrop component can be displayed
     ebp.dragAndDropAvailable = !ebp.chartTypes.filter( grafico => grafico.subValue === 'crosstable')[0].ngIf;
+
 
   },
 
@@ -293,35 +340,39 @@ export const QueryUtils = {
           ebp.cumsumAlertController = null;
         }
       })
-
     } else {
 
-      // Section that initiates the initAxes if the ordering is empty in the config
-
-		// Check Ronald
-      if(ebp.chartForm.controls.chart.value!==null   && ebp.chartForm.controls.chart.value.subValue  == 'crosstable'  ) {
-          // Verify a new change in axes since the edition of the cross table begins
+      // Section that initializes initAxes if ordering is empty in the config
+      if(ebp.chartForm.controls.chart.value!==null && ebp.chartForm.controls.chart.value?.subValue  == 'crosstable') {
+        // Verify new changes in Axes since the start of crosstable editing
         if(!ebp.newAxesChanged && (!ebp.chartTypes.filter( grafico => grafico.subValue==='crosstable' )[0].ngIf || !ebp.chartTypes.filter( grafico => grafico.subValue==='table' )[0].ngIf)) {
 
-          if(ebp.currentQuery.length>2 && (ebp.currentQuery.find( valor => valor.column_type === 'numeric') !== undefined)) {
-            const config = ebp.panelChartConfig.config.getConfig(); // Adquiera la configuración config
-            ebp.currentQuery = ebp.newCurrentQuery(ebp.currentQuery, ebp.initAxes(ebp.currentQuery)); // Reordeno el currentQuery
-            config['ordering'] = [{axes: ebp.initAxes(ebp.currentQuery)}]; // Agrego el nuevo axes a la config
+          if(ebp.currentQuery.length>2 && (ebp.currentQuery.find( valor => valor.column_type === 'numeric') !== undefined) && ebp.panelChartConfig?.config) {
+            const config = ebp.panelChartConfig.config.getConfig(); // Retrieve the config
+            // Exclude nav-children from the query so they don't appear in crosstable axes
+            const _navChildKeys = new Set<string>();
+            ebp.currentQuery.forEach((col: any) => { if (col.downChild) _navChildKeys.add(`${col.downChild.table_id}.${col.downChild.column_name}`); });
+            const _queryForAxes = ebp.currentQuery.filter((col: any) => !_navChildKeys.has(`${col.table_id}.${col.column_name}`));
+            ebp.currentQuery = ebp.newCurrentQuery(ebp.currentQuery, ebp.initAxes(_queryForAxes)); // Reorder the currentQuery
+            config['ordering'] = [{axes: ebp.initAxes(_queryForAxes)}]; // Add the new axes to the config
             ebp.copyConfigCrossTable = JSON.parse(JSON.stringify(config));
           }
         }
       }
 
       /**
-          * Too much rows check
-          */
-      const totalTableCount = ebp.currentQuery.reduce((a, b) => {
+     * Too many rows check — use effective fields to avoid nav-children inflating the count
+     */
+      const _fieldsForCount = (ebp.currentQuery || []).some((col: any) => col.downChild)
+        ? QueryUtils.getEffectiveFields(ebp)
+        : ebp.currentQuery;
+      const totalTableCount = _fieldsForCount.reduce((a, b) => {
         return a + parseInt(b.tableCount);
       }, 0);
       const aggregations = ebp.currentQuery.filter(col => col.aggregation_type.filter(agg => (agg.value !== 'none' && agg.selected === true)).length > 0).length;
       /**
-       * If the table row count is greather than the MAX_TABLE_ROWS_FOR_ALERT
-       * And there is no aggretation
+       * If the table row count is greater than the MAX_TABLE_ROWS_FOR_ALERT
+       * And there is no aggregation
        * And there is no limit OR the limit is over the MAX_TABLE_ROWS_FOR_ALERT
        */
       if ( (totalTableCount > MAX_TABLE_ROWS_FOR_ALERT)  && (ebp.selectedFilters.length + aggregations <= 0 )
@@ -345,23 +396,64 @@ export const QueryUtils = {
 
     ebp.newAxesChanged = false;
 
-    // Al aplicar Ejecutar el treetable de reinicia
-    if(ebp.panelChart.props.chartType==='treetable') {
-      ebp.panelChart.props.config.getConfig()['editedTreeTable'] = false;
+    // When Execute is applied the treetable is reset
+    // TODO: REVIEW THE VARIABLE
+    if(ebp.panelChartConfig.edaChart==='treetable') {
+      ebp.panelChartConfig.config.getConfig()['editedTreeTable'] = false;
     }
 
   },
 
 
   /**
+   * Returns effective fields for query execution, excluding navigable children
+   * and applying active navigation substitutions. If there are no navigable
+   * children it will return currentQuery UNMODIFIED.
+   */
+  getEffectiveFields: (ebp: EdaBlankPanelComponent): any[] => {
+    // We will only show parent fields in the query; navigable children are shown only as navigation substitutions when applicable. To do that, first identify which columns are navigable children...
+    const navigableChildKeys = new Set<string>();
+    for (const col of ebp.currentQuery) {
+      if (col.downChild) {
+        navigableChildKeys.add(`${col.downChild.table_id}.${col.downChild.column_name}`);
+      }
+    }
+
+    // Map parent col key → active nav target
+    const navSubstitutions = new Map<string, any>();
+    for (const entry of (ebp.navState || [])) {
+      navSubstitutions.set(entry.rootKey, entry.navPath[entry.currentIndex]);
+    }
+
+    const effectiveFields: any[] = [];
+    for (const col of ebp.currentQuery) {
+      const colKey = `${col.table_id}.${col.column_name}`;
+
+      // skip navigable children 
+      if (navigableChildKeys.has(colKey)) continue;
+
+      // substitute the parent field with its active navigation target when navigation is active
+      if (navSubstitutions.has(colKey)) {
+        effectiveFields.push(navSubstitutions.get(colKey));
+      } else {
+        effectiveFields.push(col);
+      }
+    }
+
+    return effectiveFields;
+  },
+
+  /**
    * Builds a query object
    */
   initEdaQuery: (ebp: EdaBlankPanelComponent): Query => {
     const config = ChartsConfigUtils.setConfig(ebp);
+    const hasNavChildren = (ebp.currentQuery || []).some((col: any) => col.downChild);
+    const fields = hasNavChildren ? QueryUtils.getEffectiveFields(ebp) : ebp.currentQuery;
 
     const params = {
       table: '',
-      dataSource: ebp.inject.dataSource._id,
+      dataSource: ebp.dataSource._id,
       panel: ebp.panel.id,
       dashboard: ebp.inject.dashboard_id,
       filters: ebp.mergeFilters(ebp.selectedFilters, ebp.globalFilters),
@@ -369,23 +461,25 @@ export const QueryUtils = {
       queryLimit: ebp.queryLimit,
       joinType: ebp.joinType,
       rootTable: ebp.rootTable?.table_name,
-      /* SDA CUSTOM */ groupByEnabled: ebp.groupByEnabled,
+      groupByEnabled: ebp.groupByEnabled,
       connectionProperties: ebp.connectionProperties,
+      prediction: ebp.panel?.content?.query?.query?.prediction ? ebp.panel.content.query.query.prediction:'None',
+      predictionConfig: ebp.panel?.content?.query?.query?.predictionConfig || undefined,
       sortedFilters: ebp.sortedFilters,
+      resultSortingColumns: ebp.resultSortingColumns
     };
-
-    return ebp.queryBuilder.normalQuery(ebp.currentQuery, params, ebp.selectedQueryMode);
+    return ebp.queryBuilder.normalQuery(fields, params, ebp.selectedQueryMode);
   },
 
 
   /**
-   * Builds a query object
+   * Builds a query object for SQL mode
    */
   initSqlQuery: (ebp: EdaBlankPanelComponent): Query => {
     const config = ChartsConfigUtils.setConfig(ebp);
     const params = {
       table: '',
-      dataSource: ebp.inject.dataSource._id,
+      dataSource: ebp.dataSource._id,
       panel: ebp.panel.id,
       dashboard: ebp.inject.dashboard_id,
       filters: ebp.mergeFilters(ebp.selectedFilters, ebp.globalFilters),

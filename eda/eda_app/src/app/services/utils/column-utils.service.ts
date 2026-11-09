@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { FilterType } from '@eda/services/utils/chart-utils.service';
+import { ChartUtilsService, FilterType } from '@eda/services/utils/chart-utils.service';
 import { FileUtiles } from '@eda/services/utils/file-utils.service';
 import * as _ from 'lodash';
 interface FilterOptions {
@@ -9,7 +9,6 @@ interface FilterOptions {
     column_type: string;
     type: string;
     selectedRange: string;
-    /* SDA CUSTOM */ dynamicValue?: string;
     valueListSource?: {};
     autorelation?: boolean;
     joins?: any[];
@@ -19,33 +18,74 @@ interface FilterOptions {
     computed_column?: string;
     SQLexpression?: string;
 }
-
 @Injectable()
 export class ColumnUtilsService {
-    constructor(private fileUtiles: FileUtiles) { }
+    constructor(private fileUtiles: FileUtiles, private chartUtils: ChartUtilsService) { }
+
+    /**
+     * @deprecated The method should not be used. Use setFilter(options: FilterOptions) instead
+    */
+    public addFilter(obj: any, table: string, column: string, column_type: string, type: string, selectedRange:string, valueListSource?:{}): object {
+        const values = Object.keys(obj).map((key) => {
+            if (!_.isNil(Object.values(obj[key]))) {
+                //transform single values to array _-(··)-_  
+                if(!Array.isArray( obj[key])){
+                    obj[key] = [obj[key]];
+                }
+                return { [key]: obj[key] };
+            }
+        });
 
 
-    public setFilter(options: FilterOptions): object {
-        /* SDA CUSTOM */ const { obj, table, column, column_type, type, selectedRange, dynamicValue, valueListSource, autorelation, joins, filterBeforeGrouping, aggregation_type, data, computed_column, SQLexpression } = options;
+        if (typeof valueListSource !== 'undefined') {
+            return {
+                filter_id: this.fileUtiles.generateUUID(),
+                filter_table: table,
+                filter_column: column,
+                filter_column_type: column_type,
+                filter_type: type,
+                filter_elements: values,
+                selectedRange:selectedRange,
+                valueListSource: valueListSource ,
+                isGlobal : false
+            };
+        }
+
+
+        return {
+            filter_id: this.fileUtiles.generateUUID(),
+            filter_table: table,
+            filter_column: column,
+            filter_column_type: column_type,
+            filter_type: type,
+            filter_elements: values,
+            selectedRange:selectedRange,
+            isGlobal : false
+        };
+    }
     
+    public setFilter(options: FilterOptions): object {    
+        const { obj, table, column, column_type, type, selectedRange, valueListSource, autorelation, joins, filterBeforeGrouping, aggregation_type, data, computed_column, SQLexpression } = options;    
         const values = Object.keys(obj).map((key) => {
             if (!_.isNil(obj[key])) {
                 return { [key]: Array.isArray(obj[key]) ? obj[key] : [obj[key]] };
             }
         }).filter(Boolean);
+    
+        let valuesIds
+        // Adding the values Codes
+        if(data.length !== 0) {
+            valuesIds = [{value1: _.cloneDeep(values)[0].value1.map((e: any) => data.find((d: any) => d.value === e)?.id ?? e)}];
+        } else {
+            valuesIds = _.cloneDeep(values);
+        }
 
-        /* SDA CUSTOM */ let valuesIds
-        /* SDA CUSTOM */ // Adding the values Codes
-        /* SDA CUSTOM */ if (Array.isArray(data) && data.length !== 0 && _.cloneDeep(values)[0]?.value1) {
-        /* SDA CUSTOM */     valuesIds = [{
-        /* SDA CUSTOM */         value1: _.cloneDeep(values)[0].value1.map((e: any) => {
-        /* SDA CUSTOM */             const match = data.find((d: any) => d.value === e);
-        /* SDA CUSTOM */             return !_.isNil(match?.id) ? match.id : e;
-        /* SDA CUSTOM */         })
-        /* SDA CUSTOM */     }];
-        /* SDA CUSTOM */ } else {
-        /* SDA CUSTOM */     valuesIds = _.cloneDeep(values);
-        /* SDA CUSTOM */ }
+        // The backend never learned to treat a value1/value2 pair as an "in"/"not_in" clause —
+        // it only ever reads value1, silently dropping the range's end. A dynamic in/not_in
+        // range must be sent as between/not_between so the backend actually ranges over it.
+        const wireFilterType = (column_type === 'date' && selectedRange && ['in', 'not_in'].includes(type))
+            ? (type === 'in' ? 'between' : 'not_between')
+            : type;
 
         const filterObject = {
             isGlobal: false,
@@ -53,11 +93,14 @@ export class ColumnUtilsService {
             filter_table: table,
             filter_column: column,
             filter_column_type: column_type,
-            filter_type: type,
+            filter_type: wireFilterType,
+            // The operator the user actually picked (e.g. 'in') — filter_type may have been
+            // remapped above for the backend's sake and no longer matches what was selected.
+            // Stored as its display label/symbol (e.g. '!=' -> '≠') so filter tags can render it directly.
+            display_filter_type: this.chartUtils.filterTypesLabels.find(f => f.value === type)?.label || type,
             filter_elements: values,
             filter_codes: valuesIds,
             selectedRange: selectedRange,
-            /* SDA CUSTOM */ dynamicValue: dynamicValue || null,
             autorelation, 
             joins,
             filterBeforeGrouping,
@@ -65,15 +108,15 @@ export class ColumnUtilsService {
             computed_column,
             SQLexpression
         };
-
+    
         if (valueListSource) {
             filterObject['valueListSource'] = valueListSource;
         }
-
+    
         return filterObject;
     }
 
-
+    
     public handleInputTypes(type: string) {
         let inputType;
         switch (type) {
@@ -82,6 +125,9 @@ export class ColumnUtilsService {
                 break;
             case 'numeric':
                 inputType = 'number';
+                break;
+            case 'html':
+                inputType = 'html';
                 break;
             case 'date':
                 inputType = 'date';
@@ -123,17 +169,17 @@ export class ColumnUtilsService {
             filterValue.value2 = event.value2 !== '' ? event.value2 : null;
         }
 
-        // Comprovem que tenim el filtre seleccionat
+        // Check that we have the selected filter
         if (!_.isNil(validators.selected)) {
             if (!!validators.between) {
-                // Validacio si es fa un filtre entre dos valors
+                // Validation if a filter is applied between two values
                 if (!_.isNil(filterValue.value1) && !_.isNil(filterValue.value2)) {
                     button = false;
                 } else {
                     button = true;
                 }
             } else if (!validators.between) {
-                // Validacio amb filtre d'un sol valor
+                // Validation with a single-value filter
                 if (!validators.value) {
                     button = false;
                 } else {
@@ -144,7 +190,7 @@ export class ColumnUtilsService {
         return button;
     }
 
-    // Funcio que haura de retornar l'ordenació
+    // Function that should return the sorting
     public handleOrdenation() {
 
     }

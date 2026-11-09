@@ -1,75 +1,161 @@
-import { GroupService } from './../../../../services/api/group.service';
-import { LinkedDashboardProps } from '@eda/components/eda-panels/eda-blank-panel/link-dashboards/link-dashboard-props';
-import { TableConfig } from './panel-charts/chart-configuration-models/table-config';
-import { PanelChartComponent } from './panel-charts/panel-chart.component';
-import { Component, Input, OnInit, ViewChild, Output, EventEmitter } from '@angular/core';
-import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
-import { CdkDragDrop, moveItemInArray, transferArrayItem, CdkDrag } from '@angular/cdk/drag-drop';
-import { Column, EdaPanel, InjectEdaPanel } from '@eda/models/model.index';
-import {
-    DashboardService, ChartUtilsService, AlertService,
-    SpinnerService, FileUtiles, EdaChartType,
-    FilterType, QueryBuilderService, OrdenationType, UserService
-} from '@eda/services/service.index';
-import {
-    EdaPageDialogComponent, EdaDialogController, EdaContextMenu, EdaDialogCloseEvent
-} from '@eda/shared/components/shared-components.index';
-import { EdaChartComponent } from '@eda/components/component.index';
-import { EdaFilterAndOrComponent } from '../../eda-filter-and-or/eda-filter-and-or.component';
-import { PanelChart } from './panel-charts/panel-chart';
+// Angular
+import { Component, Input, Output, EventEmitter, ViewChild, OnInit, AfterViewChecked, inject, computed, CUSTOM_ELEMENTS_SCHEMA, ChangeDetectorRef, ElementRef } from '@angular/core';
+import { CommonModule, NgClass } from '@angular/common';
+import { FormsModule, ReactiveFormsModule, UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
+import { DragDropModule, CdkDrag, CdkDragDrop, moveItemInArray, transferArrayItem, copyArrayItem } from '@angular/cdk/drag-drop';
+import { ActivatedRoute } from '@angular/router';
+import { lastValueFrom } from 'rxjs';
 import * as _ from 'lodash';
-/* SDA CUSTOM */ import { rangeDateFormats } from '@eda/shared/components/date-dialog/date-format-dialog.index';
+import Swal from 'sweetalert2';
+// PrimeNG
+import { ButtonModule } from 'primeng/button';
+import { Dropdown, DropdownModule } from 'primeng/dropdown';
+import { TooltipModule } from 'primeng/tooltip';
+import { ConfirmationService, SharedModule } from 'primeng/api';
+import { ProgressSpinnerModule } from 'primeng/progressspinner';
+import { TreeModule } from 'primeng/tree';
+// Eda config
+import { resolveQueryMode } from '@eda/shared/utils/query-mode.util';
+import { AGG_TYPES, NULL_VALUE, EMPTY_VALUE, SHOW_LOCK_IN_PANEL_HEADER, ALLOWED_QUERY_MODES, SHOW_HIDDEN_FIELDS, SHOW_WHAT_IF, ALLOWED_JOIN_TYPES, KPI_CONFIG } from '@eda/configs/customizable/customizable_merged';
+import {Column, EdaPanel, InjectEdaPanel } from '@eda/models/model.index';
+import { PanelChart } from './panel-charts/panel-chart';
+import { PanelOptions } from './panel-utils/panel-menu-options';
+import { TableConfig } from './panel-charts/chart-configuration-models/table-config';
 import { ChartConfig } from './panel-charts/chart-configuration-models/chart-config';
 import { ChartJsConfig } from './panel-charts/chart-configuration-models/chart-js-config';
-import { EdaInputText } from '@eda/shared/components/eda-input/eda-input-text';
+import { KpiConfig } from './panel-charts/chart-configuration-models/kpi-config';
+import { KpiDeviationConfig } from './panel-charts/chart-configuration-models/kpi-deviation-config';
+import { DynamicTextConfig } from './panel-charts/chart-configuration-models/dynamicText-config';
+import { LinkedDashboardProps } from '@eda/components/eda-panels/eda-blank-panel/link-dashboards/link-dashboard-props';
+// Eda Services
+import { EdaChartType, FilterType, OrdenationType} from '@eda/services/service.index';
+import { DashboardService, ChartUtilsService, AlertService, SpinnerService, FileUtiles, QueryBuilderService, UserService } from '@eda/services/service.index';
+import { GroupService } from '../../../../services/api/group.service';
+import { QueryService } from '@eda/services/api/query.service';
+import { IaFormStateService } from '@eda/services/shared/IaFormState.service'; 
 
-/** Panel utils  */
-import { PanelOptions } from './panel-utils/panel-menu-options';
+// Standalone components
+import { EdaDialog2Component, EdaDialogController, EdaContextMenu, EdaDialogCloseEvent, EdaContextMenuComponent} from '@eda/shared/components/shared-components.index';
+import { rangeDateFormats } from '@eda/shared/components/date-picker/date-picker.index';
+import { FocusOnShowDirective } from '@eda/shared/directives/autofocus.directive';
+import { EdaInputText } from '@eda/shared/components/eda-input/eda-input-text';
+import { EdaChartComponent } from '@eda/components/eda-chart/eda-chart.component';
+import { PanelChartComponent } from './panel-charts/panel-chart.component';
+import { DragDropComponent } from '@eda/components/drag-drop/drag-drop.component';
+import { ColumnDialogComponent } from '@eda/components/component.index';
+import { FilterDialogComponent } from '@eda/components/component.index';
+import { WhatIfDialogComponent } from '@eda/components/component.index';
+import { FilterMapperDialog } from '@eda/components/filter-mapper-dialog/filter-mapper.dialog';
+import { FilterMapperComponent } from '@eda/components/filter-mapper/filter-mapper.component';
+import { ChatEdaAIComponent } from '@eda/components/ebp-chatgpt/chat-eda-ai.component';
+import { LinkDashboardsComponent } from '@eda/components/component.index';
+import { DashboardPage } from 'app/module/pages/dashboard/dashboard.page';
+import { EdadynamicTextComponent } from '@eda/components/component.index';
+import { EdaTitlePanelComponent } from '@eda/components/component.index';
+import { PanelMenuModule } from 'primeng/panelmenu';
+import { OverlayPanelModule } from 'primeng/overlaypanel';
+import { ChartTypeSelectorDialogComponent } from './chart-type-selector-dialog/chart-type-selector-dialog.component';
+import { PromptComponent } from '@eda/components/prompt/prompt.component';
+import { FilterAndOrDialogComponent } from './filter-and-or-dialog/filter-and-or-dialog.component';
+import { EdaFilterAndOrComponent } from '../../eda-filter-and-or/eda-filter-and-or.component';
+
+// Panel Utils
 import { TableUtils } from './panel-utils/tables-utils';
 import { QueryUtils } from './panel-utils/query-utils';
 import { EbpUtils } from './panel-utils/ebp-utils';
 import { ChartsConfigUtils } from './panel-utils/charts-config-utils';
-import { PanelInteractionUtils } from './panel-utils/panel-interaction-utils'
-import { ActivatedRoute } from '@angular/router';
-import { NULL_VALUE, EMPTY_VALUE } from '../../../../config/personalitzacio/customizables'
-import { KpiConfig } from './panel-charts/chart-configuration-models/kpi-config';
-import { QueryService } from '@eda/services/api/query.service';
-import { ConfirmationService } from 'primeng/api';
-import Swal from 'sweetalert2';
+import { PanelInteractionUtils } from './panel-utils/panel-interaction-utils';
+import { NavigationUtils } from './panel-utils/navigation-utils';
 
-import { aggTypes } from 'app/config/aggretation-types';
+//
+import { CumSumAlertDialogComponent } from '@eda/components/component.index';
+import { AlertDialogComponent } from '@eda/components/component.index';
+import { IconComponent } from '@eda/shared/components/icon/icon.component';
 
-
+// Tests
+import { MapEditDialogComponent } from '@eda/components/component.index';
+import { MapCoordDialogComponent } from '@eda/components/component.index';
+import { ChartDialogComponent } from '@eda/components/component.index';
+import { BubblechartDialog } from '@eda/components/component.index';
+import { TreeTableDialogComponent } from '@eda/components/component.index';
+import { SunburstDialogComponent } from '@eda/components/component.index';
+import { ScatterPlotDialog } from '@eda/components/component.index';    
+import { TreeMapDialog } from '@eda/components/component.index';
+import { FunnelDialog } from '@eda/components/component.index';
+import { KnobDialogComponent } from '@eda/components/component.index';
+import { SankeyDialog } from '@eda/components/component.index';
+import { dynamicTextDialogComponent } from '@eda/components/component.index';
+import { TableDialogComponent } from '@eda/components/component.index';
+import { TableGradientDialogComponent } from '@eda/components/component.index';
+import { KpiEditDialogComponent } from '@eda/components/component.index';
 export interface IPanelAction {
     code: string;
     data: any;
 }
 
+interface ChatMessage {
+    id?: string | number;
+    role: 'user' | 'assistant' | 'system' | 'error';
+    content: string;
+    timestamp?: number;
+}
+
+const DIALOGS_COMPONENTS = [
+    ChartDialogComponent,BubblechartDialog, MapCoordDialogComponent, MapEditDialogComponent,
+    TreeTableDialogComponent, SunburstDialogComponent, TreeMapDialog, ScatterPlotDialog,
+    FunnelDialog, KnobDialogComponent, SankeyDialog, dynamicTextDialogComponent, TableDialogComponent,
+    TableGradientDialogComponent, AlertDialogComponent, KpiEditDialogComponent
+];
+const ANGULAR_MODULES = [FormsModule, ReactiveFormsModule, CommonModule, NgClass, CumSumAlertDialogComponent];
+const PRIMENG_MODULES = [ ButtonModule, DragDropModule, DropdownModule, TooltipModule, SharedModule, TreeModule, ProgressSpinnerModule, PanelMenuModule, OverlayPanelModule];
+const STANDALONE_COMPONENTS = [
+    EdaDialog2Component, WhatIfDialogComponent, ChatEdaAIComponent, FilterMapperComponent, EdadynamicTextComponent, EdaTitlePanelComponent,
+    PanelChartComponent, EdaContextMenuComponent, FilterMapperDialog, ColumnDialogComponent, FilterDialogComponent, LinkDashboardsComponent,
+    DragDropComponent, ChartTypeSelectorDialogComponent,
+    IconComponent, FocusOnShowDirective, PromptComponent,
+    FilterAndOrDialogComponent,
+]
+// Label for each possible query mode value. Not client-configurable — ALLOWED_QUERY_MODES (customizable_default.ts) decides which values are enabled and in what order.
+export const QUERY_MODE_LABELS: any[] = [
+    { label: $localize`:@@PanelModeSelectorEDA:Modo EDA`, value: 'EDA' },
+    { label: $localize`:@@PanelModeSelectorSQL:Modo SQL`, value: 'SQL' },
+    { label: $localize`:@@PanelModeSelectorTree:Modo Árbol`, value: 'TREE' },
+]
+
 @Component({
+    standalone: true,
+    imports : [ STANDALONE_COMPONENTS,PRIMENG_MODULES, ANGULAR_MODULES, DIALOGS_COMPONENTS],
     selector: 'eda-blank-panel',
+    schemas: [CUSTOM_ELEMENTS_SCHEMA],
     templateUrl: './eda-blank-panel.component.html',
     styleUrls: ['./eda-blank-panel.component.css'],
 })
-export class EdaBlankPanelComponent implements OnInit {
+export class EdaBlankPanelComponent implements OnInit, AfterViewChecked {
+    /** Reference to the dashboard root element (used for image capture during Excel export) */
+    public elRef = inject(ElementRef);
 
-    @ViewChild('pdialog', { static: false }) pdialog: EdaPageDialogComponent;
     @ViewChild('edaChart', { static: false }) edaChart: EdaChartComponent;
-    @ViewChild(PanelChartComponent, { static: false }) panelChart: PanelChartComponent;
+    @ViewChild('PanelChartComponent', { static: false }) panelChart: PanelChartComponent;
     @ViewChild('panelChartComponentPreview', { static: false }) panelChartPreview: PanelChartComponent;
     @ViewChild('op', { static: false }) op: any;
+    @ViewChild(DragDropComponent) dragDrop: DragDropComponent;
 
 
 
+    @Input() panelContent: any = {};
+    @Input() panelText: any;
+    @Input() dashboard: DashboardPage;
     @Input() panel: EdaPanel;
     @Input() inject: InjectEdaPanel;
+    @Input() availableChatGpt: any;
     @Output() remove: EventEmitter<any> = new EventEmitter();
     @Output() duplicate: EventEmitter<any> = new EventEmitter();
     @Output() action: EventEmitter<IPanelAction> = new EventEmitter<IPanelAction>();
-    @Output() d3Action: EventEmitter<IPanelAction> = new EventEmitter<IPanelAction>();
-    /*SDA CUSTOM*/ @Output() rootTableFirstSet = new EventEmitter<string>();
-    /*SDA CUSTOM*/ @Output() rootTableCleared = new EventEmitter<void>();
+    @Output() panelConfigChanged: EventEmitter<any> = new EventEmitter<IPanelAction>();
+    @Output() rootTableFirstSet: EventEmitter<string> = new EventEmitter<string>();
+    @Output() rootTableCleared: EventEmitter<void> = new EventEmitter<void>();
 
-    /** properties that are injected into the dialogue with the specific properties of each chart. */
+    /** Properties injected into the dialog with chart-specific properties. */
     public configController: EdaDialogController;
     public filterController: EdaDialogController;
     public chartController: EdaDialogController;
@@ -92,14 +178,21 @@ export class EdaBlankPanelComponent implements OnInit {
     public contextMenu: EdaContextMenu;
     public lodash: any = _;
 
+    // public screenWidth: number = window.innerWidth;  Used to display the screen width for debugging purposes.
 
-/* SDA CUSTOM  */ public showHiddenColumn: boolean = false;
+    public dataSource: any;
+    public isImported: boolean = false;
+    public readonly: boolean = false;
+    public extraStyles;
+    public indextab = 0;
+
     public inputs: any = {};
-
     /**Dashbard emitter */
     // public actualSize : {litle:boolean, medium:boolean}
 
     /** Page variables */
+    public titleClick: boolean = false;
+    public descriptionClick: boolean = false;
     public title: string = '';
     // Display variables
     public display_v = {
@@ -120,6 +213,9 @@ export class EdaBlankPanelComponent implements OnInit {
         disableQueryInfo: true,
         notSaved: false,
         minispinnerSQL: false,
+        advancedSetting: 0,
+        filterMapperDialog: false,
+        showQueryContainer: false,
         filterAndOr_dialog: false,
     };
 
@@ -130,54 +226,52 @@ export class EdaBlankPanelComponent implements OnInit {
     public userSelectedTable: string;
 
     /**Strings */
-    public editQuery: string = $localize`:@@EditQuery:EDITAR CONSULTA`;
+    public editQuery: string = $localize`:@@EditQuery:Editar consulta`;
     public editSQLQuery: string = $localize`:@@EditSQLQuery:EDITAR CONSULTA SQL`;
 
     public limitRowsInfo: string = $localize`:@@limitRowsInfo:Establece un Top n para la consulta`;
     public draggFields: string = $localize`:@@dragFields:Arrastre aquí los atributos que quiera ver en su panel`;
     public draggFilters: string = $localize`:@@draggFilters:Arrastre aquí los atributos sobre los que quiera filtrar`;
+    public draggResultSorting: string = $localize`:@@draggResultSorting:Arrastre aquí los atributos sobre los que quiere ordenar`;
     public ptooltipSQLmode: string = $localize`:@@sqlTooltip:Al cambiar de modo perderás la configuración de la consulta actual`;
-/* SDA CUSTOM  */ public ptooltipHiddenColumn: string = $localize`:@@hiddenColumn:Al cambiar de modo se verán las columnas marcadas como ocultas`;
-    public ptooltipViewQuery: string = $localize`:@@ptooltipViewQuery:Ver consulta SQL`;
+    public ptooltipViewQuery: string = $localize`:@@ptooltipViewQuery:Ver consulta SQL`
+    public ptooltipOrderByControl: string = $localize`:@@ptooltipOrderByControl:Arrastra aquí los atributos por los que quieres ordenar los resultados y colócalos en el orden que prefieras. En cada uno puedes elegir ascendente (ASC), descendente (DESC) o dejarlo sin indicar.`
     public aggregationText: string = $localize`:@@aggregationText:Agregación`;
     public textBetween: string = $localize`:@@textBetween:Entre`
     public emptyStringString: string = $localize`:@@emptyStringTxt:Vacío`
-/* SDA CUSTOM */ public lockPanelTooltip: string = $localize`:@@lockPanel:Bloquear panel`;
-/* SDA CUSTOM */ public unlockPanelTooltip: string = $localize`:@@unlockPanel:Desbloquear panel`;
-
-
-
+    public yesText: string = $localize`:@@si:Si`;
+    public noText: string = $localize`:@@no:No`;
     /** Query Variables */
     public tables: any[] = [];
     public tablesToShow: any[] = [];
+    public tablesToShowBase: any[] = [];
     public assertedTables: any[] = [];
     public columns: any[] = [];
     public aggregationsTypes: any[] = [];
     public filtredColumns: Column[] = [];
+    public resultSortingColumns: any[] = [];
     public ordenationTypes: OrdenationType[];
     public currentQuery: any[] = [];
     public currentSQLQuery: string = '';
-    public queryLimit: number = 5000; // by default 5.000
-    public joinType: string = 'inner';
-    public sortedFilters: any[] = [];
-    public temporalSortedFilters: any[] = [];
-    /* SDA CUSTOM */ public atLeastThereIsOneWithAggregation: boolean = false;
-    /* SDA CUSTOM */ public groupByEnabled: boolean = true;
-    /* SDA CUSTOM */ public groupByLabel: string = $localize`:@@groupBy:Agrupar`;
-    /* SDA CUSTOM */ public groupByDisabledReasonMessage: string = $localize`:@@groupByDisabledReason:No se puede cambiar el agrupamiento porque hay campos con agregaciones configuradas. Elimina las agregaciones primero.`;
-    /* SDA CUSTOM */ public groupByDisabledAggregationsMessage: string = $localize`:@@groupByDisabledAggregations:En modo agrupar desactivado, las agregaciones en los campos están deshabilitadas automáticamente.`;
+    public queryLimit: number = 5000; // 5.000 by default
+    public groupByEnabled: boolean = true;
+    public dynamicFilters: boolean = true;
+    public dynamicFiltersAvailable: boolean; // True when the dashboard has at least one EDA panel. Set in ngOnInit.
 
-    public queryModes: any[] = [
-        /* SDA CUSTOM */ { label: $localize`:@@PanelModeSelectorEDA:Modo EDA`, value: 'EDA', disabled: true},
-        { label: $localize`:@@PanelModeSelectorSQL:Modo SQL`, value: 'SQL' },
-        { label: $localize`:@@PanelModeSelectorTree:Modo Árbol`, value: 'EDA2' }
-    ];
-    public selectedQueryMode: string = 'EDA2';
+    public queryModes: any[] = ALLOWED_QUERY_MODES.map(v => QUERY_MODE_LABELS.find(l => l.value === v));
+
+    public selectedQueryMode: string = ALLOWED_QUERY_MODES[0];
+
+    /** Keeps PrimeNG's keyboard focus on the selected mode so it doesn't look like two modes are selected. */
+    public syncQueryModeFocus(dropdown: Dropdown): void {
+        dropdown.focusedOptionIndex.set(dropdown.findSelectedOptionIndex());
+    }
 
     // Depreacted use selectedQueryMode instead of
     // public modeSQL: boolean;
-    public sqlOriginTables: {}[];
+    public sqlOriginTables: any[];
     public sqlOriginTable: any;
+    public sqlIndicationOpenSection = 'general';
 
     /** Chart Variables */
     public chartTypes: EdaChartType[]; // All posible chartTypes
@@ -187,12 +281,17 @@ export class EdaBlankPanelComponent implements OnInit {
     public filterTypes: FilterType[];
     public selectedFilters: any[] = [];
     public globalFilters: any[] = [];
+    public sortedFilters: any[] = [];
+    public globalFiltersBackup: any[];
+    public temporalSortedFilters: any[] = [];
     public filterValue: any = {};
-    /*SDA CUSTOM*/ public _pendingGlobalFilterReload: boolean = false;
+    public tableInput: string;
+    public columnInput: string;
 
     public loadingNodes: boolean = false;
     public rootTable: any;
     public tableNodes: any = [];
+    public displayedTableNodes: any[] = [];
     public selectedTableNode: any;
     public nodeJoins: any[] = [];
 
@@ -203,40 +302,71 @@ export class EdaBlankPanelComponent implements OnInit {
     public colorsDeepCopy: any = {};
 
     public queryFromServer: string = '';
-/* SDA CUSTOM  */    public showHiddId: boolean;
-    // join types
+    
+    // Message history.
+    public promptMessages: ChatMessage[] = []; 
+
+    // join types 
     joinTypeOptions: any[] = [
-        { icon: 'pi pi-align-left', joinType: 'left', description: 'Se mostrarán todos los registros de la tabla principal a los que el usuario tenga acceso, y los registros relacionados del resto de tablas.' },
-        { icon: 'pi pi-align-center', joinType: 'inner', description: 'Solo se mostrarán los registros relacionados en ambas tablas a los que el usuario tenga acceso.' },
-        // { icon: 'pi pi-align-right', joinType: 'right' }
-        //,         { icon: 'pi pi-align-justify', joinType: 'full outer' }
-    ];
+        { icon: 'pi pi-align-left', label: 'Left', joinType: 'left' },
+        { icon: 'pi pi-align-center', label: 'Inner', joinType: 'inner' },
+        { icon: 'pi pi-align-right', label: 'Right', joinType: 'right' }
+    ].filter(option => ALLOWED_JOIN_TYPES.includes(option.joinType));
 
+    public joinType = (this.joinTypeOptions.find(o => o.joinType === 'inner') ?? this.joinTypeOptions[0])?.joinType; // default init in Inner, or first allowed type
 
+    
     /**panel chart component configuration */
     public panelChartConfig: PanelChart = new PanelChart();
 
+    /* Navigation state is not saved at runtime. */
+    public navState: Array<{
+        rootKey: string;
+        navPath: any[];
+        currentIndex: number;
+        navFilters: any[];
+    }> = [];
+
+    /* Date-based navigation state (runtime year → month → day) */
+    public dateNavState: Array<{
+        columnKey: string;
+        initialFormat: string;
+        formatChain: string[];
+        currentFormatIndex: number;
+        navFilters: any[];
+    }> = [];
+
+    
     public connectionProperties: any;
 
+    // ChatGPT dialog
+    public isVisibleEbpChatGpt = false;
+    public dataChatGpt: any;
+    public chartTypeSelectorController: EdaDialogController;
 
     // for the drag-drop component
-    public axes:any[]=[];
+    public axes:any[]=[]; 
     public newAxesChanged: boolean = false;
-    public graphicType: string; // We extract the type of graph at the beginning and when executing
-    public configCrossTable: any;
+    public graphicType: string; // We extract the chart type at initialization and at runtime execution.
     public copyConfigCrossTable: any = {};
     public dragAndDropAvailable: boolean = false;
 
-    // Hide the executing button
-    public hiddenButtonExecuter: boolean = false;
+    private route = inject(ActivatedRoute);
+    private formBuilder = inject(UntypedFormBuilder);
+    private iaFormStateService = inject(IaFormStateService);
 
-    public variableTemporal: any[] = [];
+    public editingTitle: boolean = false;
+    public promptAvailable = computed(() => this.iaFormStateService.formData().AVAILABLE);
+
+    readonly showLockInHeader = SHOW_LOCK_IN_PANEL_HEADER;
+    readonly showHiddenFieldsButton = SHOW_HIDDEN_FIELDS !== 'disabled';
+    readonly showHiddenFieldsButtonAdminOnly = SHOW_HIDDEN_FIELDS === 'admin-only';
+    public showHiddenColumn: boolean = false;
+
 
     constructor(
-        private route: ActivatedRoute,
         public queryBuilder: QueryBuilderService,
         public fileUtiles: FileUtiles,
-        private formBuilder: UntypedFormBuilder,
         public dashboardService: DashboardService,
         public queryService: QueryService,
         public chartUtils: ChartUtilsService,
@@ -244,102 +374,98 @@ export class EdaBlankPanelComponent implements OnInit {
         public spinnerService: SpinnerService,
         public groupService: GroupService,
         public userService: UserService,
-        private confirmationService: ConfirmationService
+        private confirmationService: ConfirmationService,
+        private cdr: ChangeDetectorRef,
     ) {
         this.initializeBlankPanelUtils();
         this.initializeInputs();
-
-        this.route.queryParams.subscribe(params => {
-            try {
-                if (params['cnproperties']) {
-                    this.connectionProperties = JSON.parse(decodeURIComponent(params['cnproperties']));
-                }
-            } catch (err) {
-                console.error('queryParams: '+ err)
-            }
-        });
-    }
-
-    ngOnInit(): void {
-        this.index = 0;
-/* SDA CUSTOM  */ this.showHiddenColumn = false;
-/* SDA CUSTOM  */ this.showIdForHiddenMode();
-
-        this.setTablesData();
-
-        /**If panel comes from server */
-        if (this.panel.content) {
-            try{
-                const contentQuery = this.panel.content.query;
-
-                const modeSQL = contentQuery.query.modeSQL; // Count old dashboards without queryMode reported
-                let queryMode = contentQuery.query.queryMode;
-
-                if (!queryMode) {
-                    queryMode = modeSQL ? 'SQL' : 'EDA';
-                }
-
-                this.selectedQueryMode = queryMode;
-
-                if (queryMode == 'EDA2') {
-                    this.rootTable = contentQuery.query.rootTable;
-                }
-
-                this.sortedFilters = contentQuery.query.sortedFilters; // sortedFilters is extracted from the server
-
-                if (modeSQL || queryMode=='SQL') {
-                    this.currentSQLQuery = contentQuery.query.SQLexpression;
-                    try{
-                        this.sqlOriginTable = this.tables.filter(t => t.table_name === contentQuery.query.fields[0].table_id)
-                        .map(table => ({ label: table.display_name.default, value: table.table_name }))[0];
-                    }catch(e){
-                        console.log('Si hay filtros de seguridad puede que no se encuentre la tabla de origen');
-                    }
-
-                }
-
-                this.loadChartsData(this.panel.content);
-            } catch(e){
-                console.error('Error loading panen conent.....');
-                throw e;
-            }
-        }
+        this.connectionProperties = computed(() => this.route.snapshot.paramMap.get('cnproperties'));
 
         this.dashboardService.notSaved.subscribe(
             (data) => this.display_v.notSaved = data,
             (err) => this.alertService.addError(err)
         );
+    }
+
+    public async setPanelDataSource() {
+        if (!this.dataSource) {
+            const panelDataSource = this.panel.dataSource?._id;
+
+            if (panelDataSource && panelDataSource !== this.inject.dataSource._id) {
+                this.dataSource = await lastValueFrom(this.dashboardService.getDataSource(panelDataSource));
+                this.isImported = true;
+            } else {
+                this.dataSource = this.inject.dataSource;
+            }
+        }
+    }
+
+    async ngOnInit() {
+        this.index = 0;
+        this.readonly = this.panel.readonly;
+        this.dynamicFiltersAvailable = this.dashboard.dynamicFiltersAvailable();
+        if (this.panel.description === undefined) this.panel.description = '';
+
+        await this.setTablesData();
+
+        /**If panel comes from server */
+        if (this.panel.content) {
+            try {
+                const contentQuery = this.panel.content.query;
+
+                // resolveQueryMode ensures compatibility with legacy dashboards where queryMode is not provided.
+                const modeSQL = contentQuery.query.modeSQL;
+                const queryMode = contentQuery.query.queryMode;
+                this.selectedQueryMode = resolveQueryMode(queryMode, modeSQL);
+
+                if (this.selectedQueryMode == 'TREE') {
+                    this.rootTable = contentQuery.query.rootTable;
+                }
+
+                this.sortedFilters = contentQuery.query.sortedFilters || [];
+
+            if (modeSQL || queryMode == 'SQL') {
+                this.currentSQLQuery = contentQuery.query.SQLexpression;
+                this.sqlOriginTable = this.sqlOriginTables.find(t => t.value === contentQuery.query.fields[0].table_id);
+                this.cdr.detectChanges();
+            }
+            this.loadChartsData(this.panel.content);
+            this.dynamicFilters = this.panel.content.dynamicFilters ?? true;
+            this.resultSortingColumns = this.panel.content.resultSortingColumns ?? [];
+            } catch(e){
+                console.error('Error loading panel conent: ');
+                throw e;
+            }
+        }
 
         this.contextMenu = new EdaContextMenu({
             header: $localize`:@@panelOptions0:OPCIONES DEL PANEL`,
             contextMenuItems: PanelOptions.generateMenu(this)
         });
 
-        if(this.sortedFilters === undefined) this.sortedFilters = []; // if it is an old report, we define the report as empty
-        /* SDA CUSTOM */ this.normalizeLegacyDateFilters();
+        this.extraStyles =
+            ['knob', 'radar'].includes(this.panel.content?.chart) ? { minHeight: '55vh', minWidth: '55vw', display: 'inline-block', alignItems: 'center' } :
+            ['kpi'].includes(this.panel.content?.chart) ? {height: '100%', width: '100%', alignContent: 'center'} : 
+            {height: '100%', width: '100%'};
+        
+        if(this.sortedFilters === undefined) this.sortedFilters = []; // Si se trata de un informe antiguo, definimos el informe como vacío.
+
+
     }
-
-
-    /* SDA CUSTOM */  public toggleLock() {
-    /* SDA CUSTOM */    this.panel.locked = !this.panel.locked;
-    /* SDA CUSTOM */    if (this.panelChartConfig) {
-    /* SDA CUSTOM */      this.panelChartConfig.locked = this.panel.locked;
-    /* SDA CUSTOM */    }
-    /* SDA CUSTOM */    const showResizeControls = this.getEditMode() && !!this.inject?.canSave && !this.panel.locked;
-    /* SDA CUSTOM */    const chartInstance = this.panelChart?.componentRef?.instance;
-    /* SDA CUSTOM */    if (chartInstance?.inject) {
-    /* SDA CUSTOM */      chartInstance.inject.showResizeControls = showResizeControls;
-    /* SDA CUSTOM */    }
-    /* SDA CUSTOM */    this.dashboardService._notSaved.next(true);
-    /* SDA CUSTOM */  }
+    
+    public openContextMenu(event: MouseEvent): void {
+        this.contextMenu.contextMenuItems = PanelOptions.generateMenu(this);
+        this.contextMenu.showContextMenu(event);
+    }
 
     /**
      * When selecting a node from the tree, it loads the columns to display.
      * @param event selected node. Can be rootNode (table_id) or childNode (child_id).
      */
     public tableNodeSelect(event: any): void {
+        // TODO
         // clean columns filter.
-        this.inputs.findColumn.reset();
+        // this.inputs.findColumn.reset();
 
         if (this.currentQuery.length == 0) {
             this.nodeJoins = [];
@@ -365,19 +491,38 @@ export class EdaBlankPanelComponent implements OnInit {
      * Expand table relations
      * @param event node to expand. Empty for nodes without more paths.
     */
-    public tableNodeExpand(event: any): void {
-        this.loadingNodes = true;
+public tableNodeExpand(event: any): void {
+  const node = event?.node;
+  if (!node) return;
 
-        const node = event?.node;
+  this.loadingNodes = true;
 
-        if (node) {
-            PanelInteractionUtils.expandTableNode(this, node);
-        }
+  const targetNode = this.tableInput ? (this.findOriginalNode(node) || node) : node;
+  PanelInteractionUtils.expandTableNode(this, targetNode);
 
-        this.loadingNodes = false;
+  setTimeout(() => {
+    // If the expansion did not produce children, we remove the expandable folder properties.
+    if (targetNode.children?.length === 0) {
+      delete targetNode.children;
+      delete targetNode.expandedIcon;
+      delete targetNode.collapsedIcon;
     }
+    this.loadingNodes = false;
+    // Reapply the filter after expansion to include the newly loaded children.
+    if (this.tableInput) {
+      this.displayedTableNodes = this.filterTreeNodes(this.tableNodes, this.tableInput.toLowerCase());
+    }
+  });
+}
+
+
+
 
     public checkNodeSelected(node: any) {
+        // If it is the parent, it will always have a selected value.
+        if(node?.parent === undefined)
+            return true
+
         if (node?.child_id) {
             const nodeJoins = JSON.stringify((node.joins || ['root'])[0]);
             const nodeTableId = node.child_id;
@@ -395,21 +540,73 @@ export class EdaBlankPanelComponent implements OnInit {
         }
     }
 
-    getEditMode() {
+    isEditable() {
+        const user = localStorage.getItem('user');
+        const userName = JSON.parse(user)._id;
+        const userRole = JSON.parse(user).role;
+        const isAdmin = userRole.includes('135792467811111111111110');
+        const imProperty = userName === this.dashboard.dashboard.user;
+        return (userName !== '135792467811111111111112' && !this.inject.isObserver) && !this.readonly && (!this.dashboard.dashboard.config.onlyIcanEdit || imProperty || isAdmin);
+    }
+
+    isRemovable() {
         const user = localStorage.getItem('user');
         const userName = JSON.parse(user).name;
-        if(JSON.parse(user).role.includes('135792467811111111111110') ) return true; // Admin role always can edit
         return (userName !== 'edaanonim' && !this.inject.isObserver);
     }
 
-/* SDA CUSTOM */    public isAnonymousUser(): boolean {
-/* SDA CUSTOM */        const user = localStorage.getItem('user');
-/* SDA CUSTOM */        if (!user) {
-/* SDA CUSTOM */            return false;
-/* SDA CUSTOM */        }
-/* SDA CUSTOM */        const userName = JSON.parse(user).name;
-/* SDA CUSTOM */        return userName === 'edaanonim';
-/* SDA CUSTOM */    }
+    // Toggles whether columns marked as hidden are shown (with reduced opacity) in the attributes list.
+    public async changeHiddenMode(): Promise<void> {
+        this.showHiddenColumn = !this.showHiddenColumn;
+        const selectedTable = this.getUserSelectedTable();
+        // Reload without clearing the attribute search, then re-apply the typed text
+        PanelInteractionUtils.loadColumns(this, selectedTable);
+        this.applyColumnSearch(this.columnInput);
+    }
+
+    /** Filters the attribute list by the search text, ignoring case and accents (e.g. "pub" matches "Público"). */
+    private applyColumnSearch(search: string): void {
+        if (!search) return;
+        const normalize = (text: string) => text.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
+        const term = normalize(search);
+        this.columns = this.columns.filter(col => normalize(col.display_name.default).includes(term));
+    }
+    readonly showWhatIf = SHOW_WHAT_IF;
+
+    isPanelLocked(): boolean {
+        return (this.panel as any).dragEnabled === false;
+    }
+
+    togglePanelLock(): void {
+        const panel = this.panel as any;
+        const locked = this.isPanelLocked();
+        panel.dragEnabled = locked;
+        panel.resizeEnabled = locked;
+        this.dashboard.gridsterOptions.api?.optionsChanged();
+        this.dashboardService.setNotSaved(true);
+        this.refreshKpiResizeControls();
+    }
+
+    ngAfterViewChecked(): void {
+        this.refreshKpiResizeControls();
+    }
+
+    /**
+     * forks mode only (KPI_CONFIG.USE_EDALITICS_SIZE_LOGIC === false): keeps the KPI's hover +/- resize
+     * buttons visible only while the panel is editable and unlocked, mirroring the
+     * canEdit/canSave/!locked gating used for the same purpose in develop.
+     */
+    private refreshKpiResizeControls(): void {
+        if (KPI_CONFIG.USE_EDALITICS_SIZE_LOGIC) return;
+        const chartType = this.panelChartConfig?.chartType;
+        if (!chartType?.startsWith('kpi') || chartType === 'kpideviation') return;
+        const instance = this.panelChart?.componentRef?.instance;
+        if (!instance?.inject) return;
+        const desired = this.isEditable() && !this.isPanelLocked();
+        if (instance.inject.showResizeControls !== desired) {
+            instance.inject.showResizeControls = desired;
+        }
+    }
 
     public showWhatIfSection(): boolean {
         return this.currentQuery.some((query: any) => query.whatif_column);
@@ -422,8 +619,8 @@ export class EdaBlankPanelComponent implements OnInit {
     public async runWhatIfQuery(column?: any): Promise<void> {
         try {
             await this.runQueryFromDashboard(true);
-            this.panelChart.updateComponent();
         } catch (err) {
+            console.log(err);
             throw err;
         }
     }
@@ -432,7 +629,7 @@ export class EdaBlankPanelComponent implements OnInit {
 
         this.chartForm = this.formBuilder.group({ chart: [null, Validators.required] });
 
-        this.chartTypes = this.chartUtils.chartTypes; // Loading all avabile chart type from a chartUtilService
+        this.chartTypes = this.chartUtils.chartTypes; // Loading all disponibles chart type from a chartUtilService
 
         this.filterTypes = this.chartUtils.filterTypes;
 
@@ -466,15 +663,18 @@ export class EdaBlankPanelComponent implements OnInit {
      * @return  merged filters
      */
     mergeFilters(localFilters: any[], globalFilters: any[]) {
-        const out = localFilters.filter(f => f.isGlobal === false);
+        const out = localFilters.filter(f => f.isGlobal !== true);
         globalFilters.forEach(f => out.push(f));
         return out;
     }
 
-    public setTablesData = () => {
-        const tables = TableUtils.getTablesData(this.inject.dataSource.model.tables, this.inject.applyToAllfilter);
+    public async setTablesData()  {
+        await this.setPanelDataSource();
+
+        const tables = TableUtils.getTablesData(this.dataSource.model.tables, this.inject.applyToAllfilter);
         this.tables = [].concat(_.cloneDeep(tables.allTables), this.assertedTables);
         this.tablesToShow = [].concat(_.cloneDeep(tables.tablesToShow), this.assertedTables);
+        this.tablesToShowBase = [...this.tablesToShow];
         this.sqlOriginTables = _.cloneDeep(tables.sqlOriginTables);
     }
 
@@ -487,124 +687,133 @@ export class EdaBlankPanelComponent implements OnInit {
 
     /**
      * Runs a query and sets global config for this panel
-     * @param panelContent panel content to build query .
+     * @param panelContent Panel content with query to execute
      */
     async loadChartsData(panelContent: any) {
-        if (this.panel.content) {
+        try {
+            if (!panelContent?.query) return;
+
             this.display_v.minispinner = true;
 
-            /*SDA CUSTOM*/ if (this.panel._isDuplicate) {
-            /*SDA CUSTOM*/     this.buildGlobalconfiguration(panelContent);
-            /*SDA CUSTOM*/     return;
-            /*SDA CUSTOM*/ }
+            PanelInteractionUtils.handleGlobalFilterMapper(this);
+            this.setupQueryContext(panelContent);          // 1. build currentQuery + navState
+            if (NavigationUtils.panelHasNavigation(panelContent)) {
+                this.restoreDateNavState(panelContent);    // 2. restore date nav (uses currentQuery to update formats)
+            }
+            PanelInteractionUtils.handleFilters(this, panelContent.query.query); // 3. populate selectedFilters (reads dateNavState)
 
-            try {
-                const response = await QueryUtils.switchAndRun(this, panelContent.query);
-                this.chartLabels = this.chartUtils.uniqueLabels(response[0]);
-                this.chartData = response[1].map(item => item.map(a => {  // we change the nulls for customisable value
-                        if(a === null){
+            // panelContent.query.query.filters is the persisted snapshot — when there are no nav
+            // children, it's sent to the backend as-is (see queryToRun below), bypassing the live
+            // global filter bar entirely. Heal its joins so a filter whose join path was never
+            // resolved at save time doesn't silently drop its table from the query.
+            QueryUtils.healGlobalFilterJoins(this, panelContent.query.query.filters);
+            // Duplicated panel: skip this initial query run (the inherited global filters are
+            // still being attached asynchronously by the dashboard) — buildGlobalconfiguration
+            // triggers the real, filter-aware query run once that's done. Everything above this
+            // point still needs to run, since it builds currentQuery/navState/selectedFilters.
+            if (this.panel._isDuplicate) {
+                this.buildGlobalconfiguration(panelContent);
+                return;
+            }
+
+            const hasNavChildren = this.currentQuery.some((col: any) => col.downChild);
+            const queryToRun = hasNavChildren ? QueryUtils.initEdaQuery(this) : panelContent.query;
+            const response = await QueryUtils.switchAndRun(this, queryToRun);
+            
+            const [labels, values] = response;
+            
+            this.chartLabels = this.chartUtils.uniqueLabels(labels);
+                this.chartData = response[1].map(item => item.map(a => {
+                
+                        if(a === null  && NULL_VALUE != 'LEAVE_THE_NULL'){
                           return NULL_VALUE;
                         }
                         if(a === ''){
                           return EMPTY_VALUE;
                         }
+                
                         return a;
-                }));
-
-                this.buildGlobalconfiguration(panelContent);
-            } catch (err) {
-                this.alertService.addError(err);
-                this.display_v.minispinner = false;
-            }
+                
+                })); // We replace nulls and empty strings with a customizable value.
+            
+            this.buildGlobalconfiguration(panelContent);
+        } catch (err) {
+            this.alertService.addError(err);
+            this.display_v.minispinner = false;
+            throw err;
         }
-
     }
 
     /**
      * Sets configuration dialog and chart
-     * @param panelContent panel content to build configuration .
+     * @param panelContent Panel content to build configuration
      */
-
-    public async buildGlobalconfiguration(panelContent: any) {
-        const modeSQL = panelContent.query.query.modeSQL;
-        /* SDA CUSTOM */ const groupByEnabled = panelContent.query.query.groupByEnabled;
+    public buildGlobalconfiguration(panelContent: any): void {
+        const { query, chart, edaChart } = panelContent;
+        const { modeSQL, fields, filters, queryLimit, groupByEnabled, config } = query.query;
         const queryMode = this.selectedQueryMode;
-        /*SDA CUSTOM*/ this.showHiddenColumn = true;
+        const isEdaMode = queryMode && queryMode !== 'SQL';
+        const isModeSqlDisabled = modeSQL === false;
 
+        // Only process if we are not in SQL mode or read-only mode!
+        if (isEdaMode || isModeSqlDisabled) {
+            if (queryMode === 'TREE') {
+            this.rootTable = this.tables.find(t => t.table_name === this.rootTable);
 
-        const currentQuery = panelContent.query.query.fields;
-
-
-        if ((queryMode && queryMode != 'SQL') || modeSQL === false) {
-
-            try {
-                if (queryMode == 'EDA2') {
-                    this.rootTable = this.tables.find((t) => t.table_name == this.rootTable);
-                    // Assert Relation Tables
-
-                  	const currentQuery = panelContent.query.query.fields;
-  					for (const column of currentQuery) {
-                        PanelInteractionUtils.assertTable(this, column);
-                    }
-
-                    PanelInteractionUtils.handleCurrentQuery2(this);
-
-                    this.reloadTablesData();
-                    PanelInteractionUtils.loadTableNodes(this);
-                    this.userSelectedTable = undefined;
-                    this.columns = [];
-                } else {
-                    PanelInteractionUtils.handleCurrentQuery(this);
-                    this.columns = this.columns?.filter((c) => !c.isdeleted);
+            for (const column of fields) {
+                    PanelInteractionUtils.assertTable(this, column);
                 }
 
+                PanelInteractionUtils.handleCurrentQuery2(this);
+                if (NavigationUtils.panelHasNavigation(panelContent)) { this.restoreNavigationLinks(panelContent); }
+                this.reloadTablesData();
+                PanelInteractionUtils.loadTableNodes(this);
 
-            } catch(e) {
-                console.error('Error loading columns to define query in blank panel compoment........ Do you have deleted any column?????');
-                console.error(e);
-                throw e;
+                this.displayedTableNodes = this.tableNodes;
+
+                this.userSelectedTable = undefined;
+                this.columns = [];
+            } else {
+                this.rootTable = null; // No root table in EDA mode.
+                PanelInteractionUtils.handleCurrentQuery(this);
+                if (NavigationUtils.panelHasNavigation(panelContent)) { this.restoreNavigationLinks(panelContent); }
+                this.columns = this.columns.filter(c => !c.isdeleted);
             }
-
-
         }
 
-        this.queryLimit = panelContent.query.query.queryLimit;
-        /*SDA CUSTOM*/ this.joinType = panelContent.query.query.joinType || 'inner';
-        /* SDA CUSTOM */ this.groupByEnabled = groupByEnabled ?? true;
-        PanelInteractionUtils.handleFilters(this, panelContent.query.query);
-        /* SDA CUSTOM */ this.normalizeLegacyDateFilters();
-        PanelInteractionUtils.handleFilterColumns(this, panelContent.query.query.filters, panelContent.query.query.fields);
-        this.chartForm.patchValue({chart: this.chartUtils.chartTypes.find(o => o.subValue === panelContent.edaChart)});
+        // Global panel configuration
+        this.queryLimit = queryLimit;
+        this.joinType = panelContent.query.query.joinType || 'inner';
+        this.groupByEnabled = groupByEnabled ?? true;
+        PanelInteractionUtils.handleFilters(this, query.query);
+        PanelInteractionUtils.handleFilterColumns(this, filters, fields);
 
         PanelInteractionUtils.verifyData(this);
 
-        const config = ChartsConfigUtils.recoverConfig(panelContent.chart, panelContent.query.output.config);
-        await this.changeChartType(panelContent.chart, panelContent.edaChart, config);
+        // Configure chart type
+        const chartOption = this.chartUtils.chartTypes.find(c => c.subValue === edaChart);
+        this.chartForm.patchValue({ chart: chartOption });
 
-        /*SDA CUSTOM*/ this.showHiddenColumn = false;
+        const recoveredConfig = ChartsConfigUtils.recoverConfig(chart, panelContent.query.output.config);
+        this.changeChartType(chart, edaChart, recoveredConfig);
+
+        // Show panel and configure chart type
         this.display_v.saved_panel = true;
         this.display_v.minispinner = false;
 
-        this.graphicType = this.chartForm.value.chart.value; // We start the type of Crosstable graphics
-        this.previousChartForm = _.cloneDeep(this.chartForm); // Copiamos el anterior chartForm que habia configurado después de hacer click en el selector de gráficos.
+        this.graphicType = chartOption?.value;
 
+        // Check if the chart is a pivot table.
+        const crossTableChart = this.chartTypes.find(g => g.subValue === 'crosstable');
+        this.dragAndDropAvailable = !crossTableChart?.ngIf;
 
-        // Verify if it is a cross table to show it on home screen
-        this.dragAndDropAvailable = !this.chartTypes.filter( grafico => grafico.subValue === 'crosstable')[0].ngIf;
-
-
-        const currentQueryCheck = this.currentQuery;
-        this.atLeastThereIsOneWithAggregation = this.checkAtLeastOneWithAggregation(currentQueryCheck);
-        /*SDA CUSTOM*/ let _ranQuery = false;
-        /*SDA CUSTOM*/ if (this._pendingGlobalFilterReload) {
-        /*SDA CUSTOM*/     this._pendingGlobalFilterReload = false;
-        /*SDA CUSTOM*/     QueryUtils.runQuery(this, true);
-        /*SDA CUSTOM*/     _ranQuery = true;
-        /*SDA CUSTOM*/ }
-        /*SDA CUSTOM*/ if (this.panel._isDuplicate) {
-        /*SDA CUSTOM*/     delete this.panel._isDuplicate;
-        /*SDA CUSTOM*/     if (!_ranQuery) QueryUtils.runQuery(this, true);
-        /*SDA CUSTOM*/ }
+        if (this.panel._isDuplicate) {
+            delete this.panel._isDuplicate;
+            // runQuery touches the panelChart ViewChild (static: false), which only
+            // resolves after ngAfterViewInit. We're still inside ngOnInit here, so defer
+            // to the next macrotask instead of failing with a silent unhandled rejection.
+            setTimeout(() => QueryUtils.runQuery(this, true));
+        }
     }
 
 
@@ -612,8 +821,8 @@ export class EdaBlankPanelComponent implements OnInit {
      * Updates panel content with actual state
      */
     public savePanel() {
+        this.indextab = 0;
 
-        this.panel.title = this.pdialog.getTitle();
         if (this.panel?.content) {
             this.panel.content.query.query.queryMode = this.selectedQueryMode;
             this.panel.content.query.query.rootTable = this.rootTable;
@@ -624,13 +833,29 @@ export class EdaBlankPanelComponent implements OnInit {
             this.display_v.saved_panel = true;
 
             const query = this.initObjectQuery();
-            const chart = this.chartForm.value.chart.value ? this.chartForm.value.chart.value : this.chartForm.value.chart;
-            const edaChart = this.panelChart.props.edaChart;
-
-            this.panel.content = { query, chart, edaChart };
+            // Nav filters are runtime-only — strip before saving so they don't pollute
+            // the saved filters. They are restored via navActiveNodes.navFilters on reload.
+            query.query.filters = (query.query.filters || []).filter((f: any) => !f.isNavFilter);
+            const formChart = this.chartForm?.value.chart?.value ? this.chartForm?.value.chart?.value : this.chartForm?.value.chart;
+            const chart = formChart || this.graficos?.chartType;
+            const edaChart = this.panelChart?.props.edaChart || this.graficos?.edaChart;
+            const navigationLinks: any[] = this.buildNavigationLinks(query);
+            const navActiveNodes = (this.navState || []).map((entry: any) => ({
+                parentKey: entry.rootKey,
+                currentIndex: entry.currentIndex,
+                navFilters: entry.navFilters || []
+            }));
+            const savedDateNavState = (this.dateNavState || []).map((entry: any) => ({
+                columnKey: entry.columnKey,
+                initialFormat: entry.initialFormat,
+                formatChain: entry.formatChain,
+                currentFormatIndex: entry.currentFormatIndex,
+                navFilters: entry.navFilters
+            }));
+            this.panel.content = { query, chart, edaChart, dynamicFilters: this.dynamicFilters, navigationLinks, navActiveNodes, savedDateNavState, fullCurrentQuery: this.currentQuery, resultSortingColumns: this.resultSortingColumns };
 
             /**This is to repaint on panel redimension */
-            if (['parallelSets', 'kpi','dynamicText', 'treeMap', 'scatterPlot', 'knob', 'funnel','bubblechart', 'sunburst'].includes(chart)) {
+            if (['parallelSets', 'kpi','dynamicText', 'treeMap', 'scatterPlot', 'knob', 'funnel','bubblechart', 'sunburst','radar'].includes(chart)) {
                 this.renderChart(this.currentQuery, this.chartLabels, this.chartData, chart, edaChart, this.panelChartConfig.config);
             }
         } else {
@@ -640,13 +865,10 @@ export class EdaBlankPanelComponent implements OnInit {
 
 
         //not saved alert message
-        this.dashboardService._notSaved.next(true);
+        this.dashboardService.setNotSaved(true);
 
-        // It remains false after saving
-        this.hiddenButtonExecuter = false;
-
-        // The static variable of the AND | OR filters is reset
-        EdaFilterAndOrComponent.reiniciarDashboard();
+        // Reset the prompt chat.
+        this.promptMessages = [];
 
     }
 
@@ -666,12 +888,20 @@ export class EdaBlankPanelComponent implements OnInit {
         const output = this.panel.content.query.output;
         PanelInteractionUtils.verifyData(this);
         const config = output.styles ? new ChartConfig(output.styles) : new ChartConfig(output.config);
+        // If using styles (legacy), carry over coloredBarsConfig from output.config
+        if (output.styles && output.config?.coloredBarsConfig) {
+            (config.getConfig() as any)['coloredBarsConfig'] = output.config.coloredBarsConfig;
+        }
+        if (output.config?.showUniqueColors != null) {
+            (config.getConfig() as any)['showUniqueColors'] = output.config.showUniqueColors;
+            (config.getConfig() as any)['uniqueBarColors'] = output.config.uniqueBarColors ?? [];
+        }
         this.changeChartType(content.chart, content.edaChart, config);
         this.chartForm.patchValue({ chart: this.chartUtils.chartTypes.find(o => o.subValue === content.edaChart) });
     }
 
     /**
-     * Triggers PanelChartComponent.ngOnChanges()
+     * Triggers PanelChartComponent.ngOnChanges() 
      * @param query Query object.
      * @param chartLabels data labels.
      * @param chartData data values.
@@ -681,30 +911,28 @@ export class EdaBlankPanelComponent implements OnInit {
     private renderChart(query: any, chartLabels: any[], chartData: any[], type: string, subType: string, config: ChartConfig) {
         const chartConfig = config || new ChartConfig(ChartsConfigUtils.setVoidChartConfig(type));
         this.panelChartConfig = new PanelChart({
-            query: query,
+            query: QueryUtils.getEffectiveFields(this),
             data: { labels: chartLabels, values: chartData },
             chartType: type,
             config: chartConfig,
             edaChart: subType,
-            maps: this.inject.dataSource.model.maps,
-            size: { x: this.panel.w, y: this.panel.h },
+            maps: this.dataSource.model.maps,
             linkedDashboardProps: this.panel.linkedDashboardProps,
-            /* SDA CUSTOM */ canEdit: this.getEditMode(),
-            /* SDA CUSTOM */ canSave: !!this.inject?.canSave,
-            /* SDA CUSTOM */ locked: this.panel.locked,
+            predictionConfig: this.panel.content?.query?.query?.predictionConfig,
+            childNavConfig: NavigationUtils.hasNavigation(this) ? this.computeChildNavConfig() : { parentFields: [], childFieldMap: {}, navColumnSubstitution: {} },
         });
     }
 
     /**
      * Updates chart configuration properties
      */
-    public setChartProperties() {
-        const config = this.panelChart.getCurrentConfig();
-        //W T F F!!!!!!!!!!!=)&/=)!/(!&=)&)!=
-        if (config
-            && ['bar', 'line', 'horizontalBar', 'polarArea', 'doughnut', 'pyramid', 'radar'].includes(config.chartType)
+    public setChartProperties(config?: any) {
+        config = config || this.panelChart?.getCurrentConfig();
+
+        if (config 
+            && ['bar', 'line', 'horizontalBar', 'polarArea', 'doughnut', 'pyramid', 'radar'].includes(config.chartType) 
             && config.chartType === this.graficos.chartType ) {
-            this.graficos = this.panelChart.getCurrentConfig();
+            this.graficos = config;
         }
     }
 
@@ -715,72 +943,121 @@ export class EdaBlankPanelComponent implements OnInit {
         const config = this.panelChart.getCurrentConfig();
         if (['doughnut', 'polarArea', 'bar', 'line', 'radar'].includes(config?.chartType) ||   //NG2 CHARTS
             ['treeMap', 'sunburst', 'scatterPlot', 'funnel', 'bubblechart', 'parallelSets'].includes(this.panelChart.props.chartType) || //D3 CHARTS
-            'geoJsonMap'.includes(this.panelChart.props.chartType) || //Leaflet
+            'geoJsonMap'.includes(this.panelChart.props.chartType) || //Leaflet 
             ['table', 'crosstable', 'treetable'].includes(this.panelChart.props.chartType)) // tables
-
         {
             this.action.emit({ code: 'ADDFILTER', data: {...event, panel: this.panel} });
-        }
-        else {
+        } else {
             console.log('No filter here... yet');
         }
     }
 
+    
 
     public changeChartTypeCheck(type: string, subType: string, config?: ChartConfig) {
+        // Child navigation makes sense in tables and pivot tables — only clear it when switching to another chart type.
+        const isTableType = type === 'table' || subType === 'crosstable' || subType === 'table';
+        const hadChildNav = !isTableType && this.currentQuery.some((col: any) => col.downChild);
+        if (hadChildNav) {
+            NavigationUtils.clearChildNavigation(this);
+        }
 
         if (subType=='tableanalized') {
             Swal.fire({
-                title: $localize`:@@NameTablaQuality:Tabla DataQuality`,
+                title: $localize`:@@chartTypesTableAnalized:Tabla DataQuality`,
                 text: $localize`:@@SureDataQuality:¿Estás seguro de que deseas continuar con la visualización de DataQuality? Esta acción puede tomar un poco de tiempo.`,
                 icon: 'warning',
                 showCancelButton: true,
-                confirmButtonColor: '#3085d6',
-                cancelButtonColor: '#d33',
                 confirmButtonText: $localize`:@@ContinueTablaQuality:Continuar`,
-                cancelButtonText: $localize`:@@CancelTablaQuality:Cancelar`,
+                cancelButtonText: $localize`:@@cancelarBtn:Cancelar`,
             }).then( (borrado) => {
                 if(borrado.value){
                     try {
-                        this.changeChartType(type, subType, config)
-                        this.previousChartForm = _.cloneDeep(this.chartForm);
+                        this.changeChartType(type, subType, config);
+                        this.dashboardService.setNotSaved(true);
+                        if (hadChildNav) { QueryUtils.runQuery(this, false); }
                     } catch (err) {
                         this.alertService.addError(err);
                         throw err;
                     }
-                } else {
-                    this.chartForm = _.cloneDeep(this.previousChartForm);
                 }
             })
+
+            this.closeEditarConsulta();
         } else {
             this.changeChartType(type, subType, config);
-            this.previousChartForm = _.cloneDeep(this.chartForm);
+            this.dashboardService.setNotSaved(true);
+            if (hadChildNav) { QueryUtils.runQuery(this, false); }
         }
     }
 
+
     /**
-     * Changes chart type
+     * Changes chart type 
      * @param type chart type
      * @param content panel content
      */
     public async changeChartType(type: string, subType: string, config?: ChartConfig) {
-
-        this.graphicType = type; // Update the variable type for the drag-drop component
+        // We update the variable type for the drag-and-drop component.
+        this.graphicType = type;
         this.graficos = {};
-
-      	let allow = _.find(this.chartTypes, c => c.value === type && c.subValue == subType);
-      	this.display_v.chart = type;
+        this.display_v.chart = type;
         this.graficos.chartType = type;
         this.graficos.edaChart = subType;
+        // Review for dashboards with chart type changes followed by duplication.
+        if (this.panel.content) {
+            this.panel.content.chart = type;
+            this.panel.content.edaChart = subType;
+        }
         this.graficos.addTrend = config && config.getConfig() ? config.getConfig()['addTrend'] : false;
+        this.graficos.showPredictionLines = config && config.getConfig() ? config.getConfig()['showPredictionLines'] : false;
         this.graficos.numberOfColumns = config && config.getConfig() ? config.getConfig()['numberOfColumns'] : null;
         this.graficos.assignedColors = config && config.getConfig() ? config.getConfig()['assignedColors'] : null;
 
+        // We want to preserve the prediction across chart type changes.
+        // If the chart is line/area and there is an active prediction in the query, force showPredictionLines.
+        if (['line', 'area'].includes(type)) {
+            const prediction = this.panel?.content?.query?.query?.prediction;
+            // If a prediction exists, we enforce it.
+            if (prediction && prediction !== 'None') {
+                if (config && config.getConfig()) {
+                    config.getConfig()['showPredictionLines'] = true;
+                }
+                this.graficos.showPredictionLines = true;
+            }
+        }
 
+        const allow = _.find(this.chartTypes, c => c.value === type && c.subValue == subType);
 
-        if (!_.isEqual(this.display_v.chart, 'no_data') && !allow.ngIf && !allow.tooManyData) {
+        if (!_.isEqual(this.display_v.chart, 'no_data') && allow && !allow.ngIf && !allow.tooManyData) {
             const _config = new ChartConfig(ChartsConfigUtils.setVoidChartConfig(type));
+
+            // Preserve assignedColors, coloredBarsConfig, showUniqueColors, and uniqueBarColors before merging.
+            const savedAssignedColors = config && config.getConfig() ? config.getConfig()['assignedColors'] : null;
+            const savedColoredBarsConfig = config && config.getConfig() ? config.getConfig()['coloredBarsConfig'] : null;
+            const savedShowUniqueColors = config && config.getConfig() ? config.getConfig()['showUniqueColors'] : null;
+            const savedUniqueBarColors = config && config.getConfig() ? config.getConfig()['uniqueBarColors'] : null;
+
             _.merge(_config, config||{});
+
+            // Restore assignedColors after merging.
+            if (savedAssignedColors) {
+                _config.getConfig()['assignedColors'] = savedAssignedColors;
+            }
+            // Restore coloredBarsConfig after merging.
+            if (savedColoredBarsConfig) {
+                _config.getConfig()['coloredBarsConfig'] = savedColoredBarsConfig;
+            }
+            // Restore showUniqueColors and uniqueBarColors after merging.
+            if (savedShowUniqueColors != null) {
+                _config.getConfig()['showUniqueColors'] = savedShowUniqueColors;
+                _config.getConfig()['uniqueBarColors'] = savedUniqueBarColors ?? [];
+            }
+
+            // Ensure that showPredictionLines is propagated to _config (keep the prediction line when switching between chart types).
+            if (['line', 'area'].includes(type) && this.graficos.showPredictionLines) {
+                _config.getConfig()['showPredictionLines'] = true;
+            }
 
             if (subType=='tableanalized') {
                 try {
@@ -789,6 +1066,7 @@ export class EdaBlankPanelComponent implements OnInit {
                     const transformedData = QueryUtils.transformAnalizedQueryData(this, data);
                     this.renderChart(this.currentQuery, transformedData.labels, transformedData.values, type, subType, _config);
                 } catch(err) {
+                    console.log(err)
                     throw err;
                 } finally {
                     this.spinnerService.off();
@@ -796,43 +1074,48 @@ export class EdaBlankPanelComponent implements OnInit {
             } else {
                 this.renderChart(this.currentQuery, this.chartLabels, this.chartData, type, subType, _config);
             }
+        }else{
+            try{
+                console.log('no allow');
+                console.log(allow);
+            }catch (e){
+                console.log(e);
+            }
+
         }
 
-        // Controlar si se ejecuta una tabla cruzada
-        // Se verifica si la longitud de la variable axes
-
-        // Referencia a config
-        const configCrossTable = this.panelChartConfig.config.getConfig()
-
-
+        // Check whether a pivot table should be executed
+        // This is determined by the length of the axes variable
+        // Reference to config
         if(subType === 'crosstable'){
+            const configCrossTable = this.panelChartConfig.config.getConfig()
+            // Excluir nav-children para que no aparezcan en los ejes del editor drag-drop
+            const _navChildKeysCT = new Set<string>();
+            this.currentQuery.forEach((col: any) => { if (col.downChild) _navChildKeysCT.add(`${col.downChild.table_id}.${col.downChild.column_name}`); });
+            const _queryForAxesCT = this.currentQuery.filter((col: any) => !_navChildKeysCT.has(`${col.table_id}.${col.column_name}`));
 
             if(config===null){
-
                 if(Object.keys(this.copyConfigCrossTable).length !== 0) {
                     this.axes = this.copyConfigCrossTable['ordering'][0].axes;
-                    configCrossTable['ordering'] = [{axes: this.axes}];
+                    if(configCrossTable) configCrossTable['ordering'] = [{axes: this.axes}];
                 } else {
-                    this.axes = this.initAxes(this.currentQuery);
+                    this.axes = this.initAxes(_queryForAxesCT);
                     configCrossTable['ordering'] = [{axes: this.axes}];
                 }
-
             } else {
                 if(config['config']['ordering'] === undefined) {
-                    this.axes = this.initAxes(this.currentQuery);
+                    this.axes = this.initAxes(_queryForAxesCT);
                 } else {
                     if(config['config']['ordering'].length === 0) {
-                        this.axes = this.initAxes(this.currentQuery);
+                        this.axes = this.initAxes(_queryForAxesCT);
                     } else {
                         this.axes = config['config']['ordering'][0]['axes']
                     }
                 }
             }
-
         }
 
-
-
+        this.cdr.detectChanges();
     }
 
     /**
@@ -854,7 +1137,7 @@ export class EdaBlankPanelComponent implements OnInit {
 
     public getUserSelectedTable(): any {
         let selectedTable: any;
-        if (this.selectedQueryMode !== 'EDA2') {
+        if (this.selectedQueryMode !== 'TREE') {
           selectedTable = this.tablesToShow.filter(table => table.table_name === this.userSelectedTable)[0];
           if (!selectedTable) selectedTable = this.tablesToShow.filter(table => table.table_name === this.userSelectedTable.split('.')[0])[0];
         } else {
@@ -864,53 +1147,100 @@ export class EdaBlankPanelComponent implements OnInit {
         return selectedTable;
     }
 
-    /**
-     *
-     */
+    // Filter the entity searcher based on the active query mode.
+    // EDA mode (standard): filters the flat tablesToShow list.
+    // TREE mode with active query: recursively filters displayedTableNodes.
     public onTableInputKey(event: any) {
-        this.setTablesData();
-        if (event.target.value) {
-            this.tablesToShow = this.tablesToShow
-                .filter(table => table.display_name.default.toLowerCase().includes(event.target.value.toLowerCase()));
+        if (this.selectedQueryMode === 'TREE' && this.currentQuery.length > 0) {
+            const term = event.target.value?.toLowerCase();
+            this.displayedTableNodes = term
+                ? this.filterTreeNodes(this.tableNodes, term)
+                : this.tableNodes;
+        } else {
+            if (event.target.value) {
+                this.tablesToShow = this.tablesToShowBase
+                    .filter(table => table.display_name.default.toLowerCase().includes(event.target.value.toLowerCase()));
+            } else {
+                this.tablesToShow = [...this.tablesToShowBase];
+            }
         }
-
     }
+
+    // Recursively filter a tree node array by search term.
+    private filterTreeNodes(nodes: any[], term: string): any[] {
+        const result: any[] = [];
+        for (const node of nodes) {
+            if (node.label?.toLowerCase().includes(term)) {
+                result.push(node);
+            } else {
+                const hasExpandedChildren = node.expanded === true
+                    && node.children?.length > 0
+                    && node.children[0]?.label !== undefined;
+                if (hasExpandedChildren) {
+                    const filtered = this.filterTreeNodes(node.children, term);
+                    if (filtered.length > 0) {
+                        result.push({ ...node, children: filtered });
+                    }
+                }
+            }
+        }
+        return result;
+    }
+
+    /**
+     * Finds the original node in tableNodes (full tree) that corresponds to
+     * the target node received from the expansion event.
+     * This is necessary because filtering creates cloned objects with reduced children;
+     * expansion must operate on the real node so that tableNodes is properly updated.
+     * The node is identified by table_id (root nodes) or child_id (child nodes).
+     */
+    private findOriginalNode(target: any, nodes: any[] = this.tableNodes): any {
+        for (const node of nodes) {
+            if (target.table_id && node.table_id === target.table_id) return node;
+            if (target.child_id && node.child_id === target.child_id) return node;
+            const hasChildren = node.children?.length > 0 && node.children[0]?.label !== undefined;
+            if (hasChildren) {
+                const found = this.findOriginalNode(target, node.children);
+                if (found) return found;
+            }
+        }
+        return null;
+    }
+
 
     public onColumnInputKey(event: any) {
         if (!_.isNil(this.userSelectedTable)) {
             const selectedTable = this.getUserSelectedTable();
             PanelInteractionUtils.loadColumns(this, selectedTable) ;
-            if (event.target.value) {
-                this.columns = this.columns
-                    .filter(col => col.display_name.default.toLowerCase().includes(event.target.value.toLowerCase()));
-            }
+            this.applyColumnSearch(event.target.value);
         }
     }
 
     /**
      * Move column with drag and drop
-     * @param event
+     * @param event 
      */
-    public drop(event: CdkDragDrop<string[]>) {
+    public drop(event: any, list?: any) {
         if (event.previousContainer === event.container) {
-            //Reordeno
+            //Reordering
             moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
         } else {
             transferArrayItem(event.previousContainer.data, event.container.data, event.previousIndex, event.currentIndex);
-            //open dialog or filter
+            //Open dialog or filter
             const column = <Column><unknown>event.container.data[event.currentIndex];
-            if(event.container.element.nativeElement.className.toString().includes('select-list')) {
+            const className = list || event.container.element.nativeElement.className.toString() || '';
+
+            if(className.includes('select-list')) {
                 this.moveItem(column);
                 this.openColumnDialog(column);
             } else {
                 this.openColumnDialog(column, true);
-                // I remove the aggregation if I can.
+                // Remove aggregation if possible.
                 try{
                     const c:Column = <Column><unknown>event.container.data[event.currentIndex];
                     c.aggregation_type.forEach( e=> e.selected = false);
                     c.aggregation_type.map( e=> e.value == 'none'? e.selected = true:true );
                 }catch(e){
-                    console.error(e)
                     throw e;
                 }
             }
@@ -919,15 +1249,73 @@ export class EdaBlankPanelComponent implements OnInit {
 
 
 
-    /* Drag&Drop conditions */
+    public dropToResultSorting(event: CdkDragDrop<any[]>) {
+
+        if (event.previousContainer === event.container) {
+            moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
+        } else {
+            const draggedColumn = event.previousContainer.data[event.previousIndex];
+
+            // Si no tenemos ordenation_type, añadimos 
+            draggedColumn.ordenation_type ??= 'No';
+
+            // A column of a related table keeps its join path (same as moveItem does).
+            // Without it the API cannot join that table to sort by it, and the ORDER BY
+            // would reference a table that is not part of the query.
+            if (draggedColumn.table_id !== this.rootTable?.table_name
+                && (!draggedColumn.joins || draggedColumn.joins.length === 0)
+                && this.nodeJoins?.length) {
+                draggedColumn.joins = this.nodeJoins[this.nodeJoins.length - 1];
+            }
+
+            const alreadyAdded = this.resultSortingColumns
+                .some(col => col.column_name === draggedColumn.column_name);
+            if (!alreadyAdded) {
+                copyArrayItem(
+                    event.previousContainer.data,
+                    event.container.data,
+                    event.previousIndex,
+                    event.currentIndex
+                );
+            }
+        }
+
+    }
+
+    public changeResultSortingValue(column: any) {
+
+        if (column.ordenation_type === 'Asc') {
+            column.ordenation_type = 'No';
+        } else if (column.ordenation_type === 'No') {
+            column.ordenation_type = 'Desc';
+        } else if (column.ordenation_type === 'Desc') {
+            column.ordenation_type = 'Asc';
+        }
+
+        const newValue = column.ordenation_type;
+        const syncOrdenation = (arr: any[]) => {
+            const match = arr.find(c => c.column_name === column.column_name && c.table_id === column.table_id);
+            if (match) match.ordenation_type = newValue;
+        };
+        syncOrdenation(this.currentQuery);
+        syncOrdenation(this.resultSortingColumns);
+    }
+
+    public removeResultSorting(column: any) {
+        this.resultSortingColumns = this.resultSortingColumns
+            .filter(col => col.column_name !== column.column_name);
+    }
+
+    /* Condicions Drag&Drop */
     public isAllowed = (drag?: CdkDrag, drop?) => false;
 
     /**
      * Opens columnDialog
-     * @param column
+     * @param column 
      * @param isFilter is filter column or normal column
      */
     public openColumnDialog(column: Column, isFilter?: boolean): void {
+
         this.disableBtnSave();
 
         if (column.table_id !== this.rootTable?.table_name) {
@@ -941,17 +1329,14 @@ export class EdaBlankPanelComponent implements OnInit {
             panel: this.panel,
             table: this.findTable(column.table_id)?.display_name?.default,
             filters: this.selectedFilters,
-            connectionProperties: this.connectionProperties
+            connectionProperties: this.connectionProperties,
+            chartSubType: this.graficos?.edaChart || ''
         };
 
         if (!isFilter) {
             this.configController = new EdaDialogController({
                 params: p,
                 close: (event, response) => {
-
-                    /* SDA CUSTOM  */ const currenQuery = this.currentQuery;
-                    /* SDA CUSTOM  */ this.atLeastThereIsOneWithAggregation = this.checkAtLeastOneWithAggregation(currenQuery);
-
                     if (response.duplicated) {
                         this.currentQuery.push(response.column);
                         this.configController = undefined;
@@ -964,7 +1349,6 @@ export class EdaBlankPanelComponent implements OnInit {
                             if (f.removed) {
                                 this.selectedFilters = _.filter(this.selectedFilters, o => o.filter_id !== f.filter_id);
                             }
-                            /* SDA CUSTOM */ this.updateSortedFilterFromFilter(f);
                         }
                         this.configController = undefined;
                     }
@@ -991,7 +1375,14 @@ export class EdaBlankPanelComponent implements OnInit {
                                 field.column_type = 'date';
                                 field.old_column_type = 'numeric';
                             }
-                        }
+                        } 
+                    }
+
+                    for (const sortCol of this.resultSortingColumns) {
+                        const match = this.currentQuery.find(c =>
+                            c.column_name === sortCol.column_name && c.table_id === sortCol.table_id
+                        );
+                        if (match) sortCol.ordenation_type = match.ordenation_type;
                     }
 
                     if (event === EdaDialogCloseEvent.NONE) {
@@ -1013,7 +1404,6 @@ export class EdaBlankPanelComponent implements OnInit {
                             if (f.removed) {
                                 this.selectedFilters = _.filter(this.selectedFilters, o => o.filter_id !== f.filter_id);
                             }
-                            /* SDA CUSTOM */ this.updateSortedFilterFromFilter(f);
                         });
                     }
 
@@ -1021,16 +1411,7 @@ export class EdaBlankPanelComponent implements OnInit {
                 }
             });
         }
-
     }
-
-/* SDA CUSTOM  */    checkAtLeastOneWithAggregation(currentQuery: any) {
-/* SDA CUSTOM  */        return currentQuery.some(column => {
-/* SDA CUSTOM  */            return column.aggregation_type.some((at: any) => {
-/* SDA CUSTOM  */                return (at.selected && (at.display_name !== 'None'))
-/* SDA CUSTOM  */            })
-/* SDA CUSTOM  */        })
-/* SDA CUSTOM  */    }
 
     /**
      * find table by name
@@ -1045,46 +1426,38 @@ export class EdaBlankPanelComponent implements OnInit {
      * @param filter filter so set
      */
     public assertGlobalFilter(_filter: any) {
-
         const globalFilter = _.cloneDeep(_filter);
 
         if (_filter.pathList && _filter.pathList[this.panel.id]) {
-            /*SDA CUSTOM*/ globalFilter.joins = _filter.pathList[this.panel.id].path;
-            /*SDA CUSTOM*/ if (_filter.pathList[this.panel.id].table_id) {
-            /*SDA CUSTOM*/     globalFilter.filter_table = _filter.pathList[this.panel.id].table_id;
-            /*SDA CUSTOM*/ }
+            globalFilter.joins = _filter.pathList[this.panel.id].path
+            globalFilter.filter_table = _filter.pathList[this.panel.id].table_id;
         }
         const filterInx = this.globalFilters.findIndex((gf: any) => gf.filter_id === globalFilter.filter_id)
 
         if (filterInx != -1) {
-            this.globalFilters.splice(filterInx, 1); // Here is filterInx to update the globalFilters
+            this.globalFilters.splice(filterInx, 1);
             this.globalFilters.push(globalFilter);
         } else {
             this.globalFilters.push(globalFilter);
         }
-
     }
 
+    /** Registers a global filter (even if empty) so it appears in the AND/OR dialog without triggering a query */
     public assertGlobalEmptyFilter(_filter: any) {
-
         const globalFilter = _.cloneDeep(_filter);
 
         if (_filter.pathList && _filter.pathList[this.panel.id]) {
-            /*SDA CUSTOM*/ globalFilter.joins = _filter.pathList[this.panel.id].path;
-            /*SDA CUSTOM*/ if (_filter.pathList[this.panel.id].table_id) {
-            /*SDA CUSTOM*/     globalFilter.filter_table = _filter.pathList[this.panel.id].table_id;
-            /*SDA CUSTOM*/ }
+            globalFilter.joins = _filter.pathList[this.panel.id].path;
+            globalFilter.filter_table = _filter.pathList[this.panel.id].table_id;
         }
-        const filterInx = this.globalFilters.findIndex((gf: any) => gf.filter_id === globalFilter.filter_id)
+        const filterInx = this.globalFilters.findIndex((gf: any) => gf.filter_id === globalFilter.filter_id);
 
-        if (filterInx != -1) {
-            this.globalFilters.splice(filterInx, 1); // Here is filterInx to update the globalFilters
+        if (filterInx !== -1) {
+            this.globalFilters.splice(filterInx, 1);
             this.globalFilters.push(globalFilter);
         } else {
             this.globalFilters.push(globalFilter);
         }
-
-        this.variableTemporal = _.cloneDeep(this.globalFilters);
     }
 
     public addingGlobalFilterEbp(_filter: any) {
@@ -1109,20 +1482,25 @@ export class EdaBlankPanelComponent implements OnInit {
             }
 
             this.sortedFilters.push(newSortedFilter);
-            this.savePanel()
+            this.savePanel();
+            this.dashboardService.setNotSaved(true);
         }
-    }
+    }    
 
     public rebootGlobalFilter(_filter: any){
 
-        // SDA CUSTOM - Consistent with updateSortedFiltersColumnDialogFunction/updateSortedFiltersFilterDialogFunction: removing a filter used in the and/or config resets it entirely
-        /* SDA CUSTOM  */ if (this.sortedFilters.some((sortedFilter: any) => _filter.id === sortedFilter.filter_id)) {
-        /* SDA CUSTOM  */     this.sortedFilters = [];
-        /* SDA CUSTOM  */     this.alertService.addWarning($localize`:@@filterSettingsReboot:La configuración de filtros se ha reiniciado`);
-        /* SDA CUSTOM  */ }
+        if(this.sortedFilters.length !==0) {
+            this.alertService.addWarning($localize`:@@globalFilterSettingsReboot:La configuración de filtros del panel involucrado se ha reiniciado`);
+        }
+
+        if(this.sortedFilters.some((sortedFilter: any) => _filter.id === sortedFilter.filter_id)){
+            this.sortedFilters = [];
+            this.savePanel(); // Panel setting saved
+            this.dashboardService.setNotSaved(true);
+        }
 
     }
-
+    
     /* General page functions */
     public disableBtnSave = () => this.display_v.btnSave = true;
 
@@ -1133,29 +1511,15 @@ export class EdaBlankPanelComponent implements OnInit {
     }
 
 
-    onJoinTypeChange(){
+    onJoinTypeChange(type?: any) {
+        this.joinType = type.joinType;
         this.display_v.joinType = true;
     }
 
     public openEditarConsulta(): void {
-        /* SDA CUSTOM  */const nullFilterTypes = ['not_null', 'not_null_nor_empty', 'null_or_empty'];
-        if(this.variableTemporal.some(filter => {
-        /* SDA CUSTOM  */    if (nullFilterTypes.includes(filter.filter_type)) return false;
-        /* SDA CUSTOM  */    const val1 = filter.filter_elements?.[0]?.value1;
-        /* SDA CUSTOM  */    return val1 == null || val1.length === 0;
-        }) && this.variableTemporal.length != 0) {
-            this.globalFilters = _.cloneDeep(this.variableTemporal);
-        }
-
-        this.variableTemporal = [];
-
         this.display_v.page_dialog = true;
         this.ableBtnSave();
         PanelInteractionUtils.verifyData(this);
-/* SDA CUSTOM  */       this.showHiddenColumn = false;
-/* SDA CUSTOM  */       this.columns = this.columns.filter (c => !c.hidden);
-
-        // Temporarily store the sortedFilters in the temporarySortedFilters
         this.temporalSortedFilters = _.cloneDeep(this.sortedFilters);
     }
 
@@ -1163,76 +1527,94 @@ export class EdaBlankPanelComponent implements OnInit {
      * Reset state when panel edition is cancelled
      */
     public closeEditarConsulta(): void {
-
         // Reset all the variables
         this.display_v.saved_panel = false;
         this.columns = [];
         this.currentQuery = [];
+        this.navState = [];
+        this.dateNavState = [];
+        this.indextab = 0;
+        this.sortedFilters = _.cloneDeep(this.temporalSortedFilters);
+        EdaFilterAndOrComponent.reiniciarDashboard();
 
         if (this.panelDeepCopy.query) {
             this.panelDeepCopy.query.query.filters = this.mergeFilters(this.panelDeepCopy.query.query.filters, this.globalFilters);
 
             this.filtredColumns = [];
-            //Reassing sqlQuery -if exists
+
             this.currentSQLQuery = this.panelDeepCopy.query.query.SQLexpression;
 
-            const queryMode = this.panelDeepCopy.query.query.queryMode;
-            const modeSQL = this.panelDeepCopy.query.query.modeSQL;
+            this.selectedQueryMode = resolveQueryMode(this.panelDeepCopy.query.query.queryMode, this.panelDeepCopy.query.query.modeSQL);
 
-            this.selectedQueryMode = _.isNil(queryMode) ? (modeSQL ? 'SQL' : 'EDA') : queryMode;
-            this.rootTable = this.panelDeepCopy.rootTable;
+            if(this.selectedQueryMode == 'TREE'){
+                this.rootTable = this.panelDeepCopy.rootTable;
+            }
+            
+            
         }
 
         this.loadChartsData(this.panelDeepCopy);
         this.userSelectedTable = undefined;
         this.tablesToShow = this.tables;
+        this.tablesToShowBase = [...this.tables];
         this.display_v.chart = '';
         this.display_v.page_dialog = false;
 
-        // After canceling, the value returns to false
-        this.hiddenButtonExecuter = false
+        // Reset the prompt chat.
+        this.promptMessages = [];
 
-        // When you cancel the EBP configuration, sortedFilters value returns to what it was from the beginning.
-        this.sortedFilters = _.cloneDeep(this.temporalSortedFilters);
-        // The static variable previousDashboard of the AND | OR filters of the eda-filter-and-or component is reset.
-        EdaFilterAndOrComponent.reiniciarDashboard();
-
-        // Setting the rootTable to undefined when panel is canceled.
-        this.rootTable = undefined;
     }
 
     /**
      * Set new chart properties when editionChartPanel is closed
-     * @param event
+     * @param event 
      * @param properties properties to set
      */
-    public onCloseChartProperties(event, properties): void {
+ public onCloseChartProperties(event, properties): void {
         if (!_.isEqual(event, EdaDialogCloseEvent.NONE)) {
             if (properties) {
                 this.graficos = {};
                 this.graficos = _.cloneDeep(properties);
-
-                //assignedColors se le modifica el color dependiendo de su label
-                this.graficos.assignedColors.forEach((e, index) => {
-                    if (this.graficos.chartLabels.includes(e.value)) {
+            if(properties.edaChart !== 'histogram'){
+                // assignedColors is updated by changing the color based on its label.
+                this.graficos.assignedColors.forEach((e) => {
+                if (this.graficos.chartLabels.includes(e.value)) {
                         let indexColor = this.graficos.chartLabels.findIndex(element => element === e.value)
-                        e.color = this.graficos.chartColors[0].backgroundColor[indexColor]
-                    }
+                        const candidateColor = this.graficos.chartColors[0].backgroundColor[indexColor];
+                        // Solo sobreescribir si es un array de colores (doughnut/polarArea), no un string de color único
+                        if (candidateColor?.length > 1) {
+                            e.color = candidateColor;
+                        }
+                        // For area/radar/line charts, preserve the original hex color from assignedColors.
+                }
+            });
+            }else{
+                this.graficos.assignedColors = [];
+                this.graficos.chartLabels.forEach(element => {
+                    this.graficos.assignedColors.push({value: element, color: this.graficos.chartColors[0].backgroundColor})
                 });
-
-                this.panel.content.query.output.config = { colors: this.graficos.chartColors, chartType: this.graficos.chartType, assignedColors: this.graficos.assignedColors };
+                properties.chartDataset[0].data = this.graficos.assignedColors.map(element => element.value)
+            }
+        
+                this.panel.content.query.output.config = { colors: this.graficos.chartColors, chartType: this.graficos.chartType, assignedColors: this.graficos.assignedColors, chartLegend: this.graficos.chartLegend, coloredBarsConfig: this.graficos.coloredBarsConfig, showUniqueColors: this.graficos.showUniqueColors, uniqueBarColors: this.graficos.uniqueBarColors, showGridLines: this.graficos.showGridLines };
                 const layout =
                     new ChartConfig(new ChartJsConfig(this.graficos.chartColors, this.graficos.chartType,
                     this.graficos.addTrend, this.graficos.addComparative, this.graficos.showLabels,
-                    this.graficos.showLabelsPercent, this.graficos.numberOfColumns, this.graficos.assignedColors));
-
+                    this.graficos.showLabelsPercent, this.graficos.numberOfColumns, this.graficos.assignedColors, this.graficos.showPointLines, this.graficos.showPredictionLines, this.graficos.chartLegend, this.graficos.showGridLines ?? true));
+                if (this.graficos.coloredBarsConfig) {
+                    (layout.getConfig() as any)['coloredBarsConfig'] = this.graficos.coloredBarsConfig;
+                }
+                (layout.getConfig() as any)['showUniqueColors'] = this.graficos.showUniqueColors ?? false;
+                (layout.getConfig() as any)['uniqueBarColors'] = this.graficos.uniqueBarColors ?? [];
+                (layout.getConfig() as any)['showGridLines'] = this.graficos.showGridLines ?? true;
                 this.renderChart(this.currentQuery, this.chartLabels, this.chartData, this.graficos.chartType, this.graficos.edaChart, layout);
             }
             //not saved alert message
-            this.dashboardService._notSaved.next(true);
-        }
-        this.chartController = undefined;
+        this.dashboardService.setNotSaved(true);
     }
+    this.chartController = undefined;
+}
+
 
     public onCloseTableProperties(event, properties: TableConfig): void {
         if (!_.isEqual(event, EdaDialogCloseEvent.NONE)) {
@@ -1244,39 +1626,64 @@ export class EdaBlankPanelComponent implements OnInit {
 
             }
             //not saved alert message
-            this.dashboardService._notSaved.next(true);
+            this.dashboardService.setNotSaved(true);
         }
         this.tableController = undefined;
     }
 
-    public onCloseMapProperties(event, response: { color: string, logarithmicScale: boolean, legendPosition: string, baseLayer: boolean, draggable: boolean, zoom:number, coordinates: Array<Array<number>> }): void {
+    public onCloseMapProperties(event, response: {
+        logarithmicScale: boolean,
+        legendPosition: string,
+        baseLayer: boolean,
+        draggable: boolean,
+        zoom: number,
+        coordinates: Array<Array<number>>,
+        assignedColors: any[],
+        color?: string
+    }): void {
         if (!_.isEqual(event, EdaDialogCloseEvent.NONE)) {
-            this.panel.content.query.output.config.color = response.color;
-            this.panel.content.query.output.config.logarithmicScale = response.logarithmicScale;
-            this.panel.content.query.output.config.legendPosition = response.legendPosition;
-            this.panel.content.query.output.config.baseLayer = response.baseLayer;
-            this.panel.content.query.output.config.draggable = response.draggable;
-            this.panel.content.query.output.config.zoom = response.zoom;
-            this.panel.content.query.output.config.coordinates =
-              response.coordinates;
+            this.panel.content.query.output.config = {
+                ...this.panel.content.query.output.config,
+                assignedColors: response.assignedColors,
+                color: response.color, // legacy
+                logarithmicScale: response.logarithmicScale,
+                legendPosition: response.legendPosition,
+                baseLayer: response.baseLayer,
+                draggable: response.draggable,
+                zoom: response.zoom,
+                coordinates: response.coordinates
+            };
+
             const config = new ChartConfig(this.panel.content.query.output.config);
-            this.renderChart(this.currentQuery, this.chartLabels, this.chartData, this.graficos.chartType, this.graficos.edaChart, config);
-            this.dashboardService._notSaved.next(true);
+            this.renderChart( this.currentQuery, this.chartLabels, this.chartData, this.graficos.chartType, this.graficos.edaChart, config);
+            this.dashboardService.setNotSaved(true);
         }
         this.mapController = undefined;
     }
-    public onCloseMapCoordProperties(event, response: { initialColor: string, finalColor: string, logarithmicScale: boolean, draggable: boolean, zoom:number, coordinates: Array<Array<number>> }): void {
+        
+    public onCloseMapCoordProperties(event, response: { 
+        assignedColors: any[],
+        initialColor?: string,  // For legacy compatibility.
+        finalColor?: string,    // For legacy compatibility.
+        logarithmicScale: boolean, 
+        draggable: boolean, 
+        zoom: number, 
+        coordinates: Array<Array<number>> 
+    }): void {
         if (!_.isEqual(event, EdaDialogCloseEvent.NONE)) {
-            this.panel.content.query.output.config.initialColor = response.initialColor;
-            this.panel.content.query.output.config.finalColor = response.finalColor;
-            this.panel.content.query.output.config.logarithmicScale = response.logarithmicScale;
-            this.panel.content.query.output.config.draggable = response.draggable;
-            this.panel.content.query.output.config.zoom = response.zoom;
-            this.panel.content.query.output.config.coordinates =
-              response.coordinates;
+            this.panel.content.query.output.config = {
+                ...this.panel.content.query.output.config,
+                assignedColors: response.assignedColors, 
+                logarithmicScale: response.logarithmicScale,
+                draggable: response.draggable,
+                zoom: response.zoom,
+                coordinates: response.coordinates
+            };
+            
             const config = new ChartConfig(this.panel.content.query.output.config);
-            this.renderChart(this.currentQuery, this.chartLabels, this.chartData, this.graficos.chartType, this.graficos.edaChart, config);
-            this.dashboardService._notSaved.next(true);
+            this.renderChart(this.currentQuery, this.chartLabels, this.chartData, 
+                this.graficos.chartType, this.graficos.edaChart, config);
+            this.dashboardService.setNotSaved(true);
         }
         this.mapCoordController = undefined;
     }
@@ -1284,11 +1691,11 @@ export class EdaBlankPanelComponent implements OnInit {
     public onCloseSankeyProperties(event, response): void {
         if (!_.isEqual(event, EdaDialogCloseEvent.NONE)) {
 
-            //Recorremos todos los assignedColors que tenemos
+            // We iterate over all assignedColors we have.
             this.panelChart.componentRef.instance.assignedColors.forEach((e) => {
-                //Valores label que tenemos en el chart
+                // Label values present in the chart.
                 let chartValues = this.panelChart.componentRef.instance.data.values.map(item => item.find(value => typeof value === 'string'));
-                // Si algunos de los labels del chart coinciden con alguno de assignedColors, se remplazara
+                // If any chart labels match those in assignedColors, they will be replaced.
                 if (chartValues.includes(e.value)) {
                     let indexColor = chartValues.findIndex(element => element === e.value)
                     e.color = response.colors[indexColor]
@@ -1297,7 +1704,7 @@ export class EdaBlankPanelComponent implements OnInit {
             this.panel.content.query.output.config = { colors: response.colors, assignedColors: this.panelChart.componentRef.instance.assignedColors };
             const config = new ChartConfig(this.panel.content.query.output.config);
             this.renderChart(this.currentQuery, this.chartLabels, this.chartData, this.graficos.chartType, this.graficos.edaChart, config);
-            this.dashboardService._notSaved.next(true);
+            this.dashboardService.setNotSaved(true);
 
         }
         this.sankeyController = undefined;
@@ -1305,11 +1712,11 @@ export class EdaBlankPanelComponent implements OnInit {
 
     public onCloseTreeMapProperties(event, response): void {
         if (!_.isEqual(event, EdaDialogCloseEvent.NONE)) {
-            //Recorremos todos los assignedColors que tenemos
+            //  We iterate over all assignedColors we have.
             this.panelChart.componentRef.instance.assignedColors.forEach((e) => {
-                //Valores label que tenemos en el chart
+                // Label values in the chart.
                 let chartValues = this.panelChart.componentRef.instance.data.children.map(item => item.name);
-                // Si algunos de los labels del chart coinciden con alguno de assignedColors, se remplazara
+                // If any chart labels match those in assignedColors, they will be replaced.
                 if (chartValues.includes(e.value)) {
                     let indexColor = chartValues.findIndex(element => element === e.value)
                     e.color = response.colors[indexColor]
@@ -1318,7 +1725,7 @@ export class EdaBlankPanelComponent implements OnInit {
             this.panel.content.query.output.config = { colors: response.colors, assignedColors: this.panelChart.componentRef.instance.assignedColors };
             const config = new ChartConfig(this.panel.content.query.output.config);
             this.renderChart(this.currentQuery, this.chartLabels, this.chartData, this.graficos.chartType, this.graficos.edaChart, config);
-            this.dashboardService._notSaved.next(true);
+            this.dashboardService.setNotSaved(true);
         }
         this.treeMapController = undefined;
     }
@@ -1331,56 +1738,53 @@ export class EdaBlankPanelComponent implements OnInit {
             this.renderChart(this.currentQuery, this.chartLabels, this.chartData, this.graficos.chartType, this.graficos.edaChart, config);
         }
 
-        // Al final de todo
         this.treeTableController = undefined;
 
     }
 
     public onCloseFunnelProperties(event, response): void {
         if (!_.isEqual(event, EdaDialogCloseEvent.NONE)) {
-            this.panel.content.query.output.config = { colors: response.colors };
+            // Do not overwrite the entire config; only update what is necessary.
+            this.panel.content.query.output.config = {
+                ...this.panel.content.query.output.config, // Keep the existing config.
+                assignedColors: response.assignedColors // Add assignedColors
+            };
+            
             const config = new ChartConfig(this.panel.content.query.output.config);
             this.renderChart(this.currentQuery, this.chartLabels, this.chartData, this.graficos.chartType, this.graficos.edaChart, config);
-
-            this.dashboardService._notSaved.next(true);
-
+            this.dashboardService.setNotSaved(true);
         }
         this.funnelController = undefined;
     }
 
     public onCloseBubblechartProperties(event, response): void {
         if (!_.isEqual(event, EdaDialogCloseEvent.NONE)) {
-            //Recorremos todos los assignedColors que tenemos
+            // We iterate over all assignedColors we have.
             this.panelChart.componentRef.instance.assignedColors.forEach((e) => {
-                //Valores label que tenemos en el chart
+                // Label values in the chart.
                 let chartValues = this.panelChart.componentRef.instance.data.children.map(item => item.name);
-                // Si algunos de los labels del chart coinciden con alguno de assignedColors, se remplazara
+                // If any chart labels match those in assignedColors, they will be replaced.
                 if (chartValues.includes(e.value)) {
                     let indexColor = chartValues.findIndex(element => element === e.value)
                     e.color = response.colors[indexColor]
                 }
             });
-
+            
             this.panel.content.query.output.config = { colors: response.colors, assignedColors: this.panelChart.componentRef.instance.assignedColors };
             const config = new ChartConfig(this.panel.content.query.output.config);
             this.renderChart(this.currentQuery, this.chartLabels, this.chartData, this.graficos.chartType, this.graficos.edaChart, config);
-            this.dashboardService._notSaved.next(true);
-
+            this.dashboardService.setNotSaved(true);
         }
         this.bubblechartController = undefined;
     }
 
-
-
-
-
     public onCloseScatterProperties(event, response): void {
         if (!_.isEqual(event, EdaDialogCloseEvent.NONE)) {
-            //Recorremos todos los assignedColors que tenemos
+            // We iterate over all assignedColors we have.
             this.panelChart.componentRef.instance.assignedColors.forEach((e) => {
-                //Valores label que tenemos en el chart
+                // Label values in the chart.
                 let chartValues = this.panelChart.componentRef.instance.data.map(item => item.label);
-                // Si algunos de los labels del chart coinciden con alguno de assignedColors, se remplazara
+                // If any chart labels match those in assignedColors, they will be replaced.
                 if (chartValues.includes(e.value)) {
                     let indexColor = chartValues.findIndex(element => element === e.value)
                     e.color = response.colors[indexColor]
@@ -1391,7 +1795,7 @@ export class EdaBlankPanelComponent implements OnInit {
             const config = new ChartConfig(this.panel.content.query.output.config);
             this.renderChart(this.currentQuery, this.chartLabels, this.chartData, this.graficos.chartType, this.graficos.edaChart, config);
 
-            this.dashboardService._notSaved.next(true);
+            this.dashboardService.setNotSaved(true);
 
         }
         this.scatterPlotController = undefined;
@@ -1401,11 +1805,11 @@ export class EdaBlankPanelComponent implements OnInit {
         const chartInstance = this.panelChart?.componentRef?.instance;
         const dataDescription = chartInstance?.inject?.dataDescription;
         const otherColumns = dataDescription?.otherColumns;
-
-        // Validación principal para continuar
+    
+        // Main validation to proceed.
         if (otherColumns && Array.isArray(otherColumns) && otherColumns.length > 1) {
             if (!_.isEqual(event, EdaDialogCloseEvent.NONE)) {
-                // Extraemos los valores string del data
+                // We extract string values from the data.
                 let chartValues: string[] = Array.from(
                     new Set(
                         chartInstance.data.map((item: any[]) => {
@@ -1413,24 +1817,24 @@ export class EdaBlankPanelComponent implements OnInit {
                             return found ? found.split("|")[0] : "";
                         })
                     )
-                );
-
-                chartInstance.assignedColors.forEach((assignedColor: any) => {
-                    // Verificamos si algún valor del chart coincide con el valor del color asignado
+                );  
+    
+                chartInstance.assignedColors.forEach((assignedColor: any) => {    
+                    // We check whether any chart value matches the assigned color value.
                     const indexColor = chartValues.findIndex(value => value === assignedColor.value);
                     if (indexColor >= 0 && response.colors && response.colors[indexColor]) {
                         assignedColor.color = response.colors[indexColor];
                     }
                 });
-
-                // Asignamos los nuevos colores al config
+    
+                // We assign the new colors to the config.
                 this.panel.content.query.output.config = {
                     colors: response.colors,
                     assignedColors: chartInstance.assignedColors
                 };
-
+    
                 const config = new ChartConfig(this.panel.content.query.output.config);
-
+    
                 this.renderChart(
                     this.currentQuery,
                     this.chartLabels,
@@ -1439,18 +1843,18 @@ export class EdaBlankPanelComponent implements OnInit {
                     this.graficos.edaChart,
                     config
                 );
-
-                // Indicamos que hay cambios no guardados
-                this.dashboardService._notSaved.next(true);
+    
+                // We indicate that there are unsaved changes.
+                this.dashboardService.setNotSaved(true);
             }
-
+        
         } else {
                 if(!_.isEqual(event, EdaDialogCloseEvent.NONE)) {
-                    //Recorremos todos los assignedColors que tenemos
-                    //Valores label que tenemos en el chart
+                    // We iterate over all assignedColors we have.
+                    // Values of labels in the chart.
                     let chartValues = this.panelChart.componentRef.instance.data.map(item => item.find(value => typeof value === 'string'));
                     this.panelChart.componentRef.instance.assignedColors.forEach((e) => {
-                        // Si algunos de los labels del chart coinciden con alguno de assignedColors, se remplazara
+                        // If any chart labels match those in assignedColors, they will be replaced.
                         if (chartValues.some(value => value.includes(e.value))) {
                             let indexColor = chartValues.findIndex(element => element === e.value)
                             e.color = response.colors[indexColor]
@@ -1460,13 +1864,12 @@ export class EdaBlankPanelComponent implements OnInit {
                     const config = new ChartConfig(this.panel.content.query.output.config);
                     this.renderChart(this.currentQuery, this.chartLabels, this.chartData, this.graficos.chartType, this.graficos.edaChart, config);
 
-                    this.dashboardService._notSaved.next(true);
-                }
-            }
-            // Fa que desapareixi el dialeg
+                    this.dashboardService.setNotSaved(true);
+                }  
+            } 
+            // Close the dialog.
             this.sunburstController = undefined;
     }
-
     public onCloseKnobProperties(event, response): void {
         if (!_.isEqual(event, EdaDialogCloseEvent.NONE)) {
 
@@ -1474,7 +1877,7 @@ export class EdaBlankPanelComponent implements OnInit {
             const config = new ChartConfig(this.panel.content.query.output.config);
             this.renderChart(this.currentQuery, this.chartLabels, this.chartData, this.graficos.chartType, this.graficos.edaChart, config);
 
-            this.dashboardService._notSaved.next(true);
+            this.dashboardService.setNotSaved(true);
 
         }
         this.knobController = undefined;
@@ -1492,83 +1895,127 @@ export class EdaBlankPanelComponent implements OnInit {
             );
 
 
-            this.dashboardService._notSaved.next(true);
+            this.dashboardService.setNotSaved(true);
         }
 
         this.linkDashboardController = undefined;
     }
 
     public onCloseKpiProperties(event, response): void {
-        if (!_.isEqual(event, EdaDialogCloseEvent.NONE)) {
-            this.panel.content.query.output.config.alertLimits = response.alerts;
-            this.panel.content.query.output.config.sufix = response.sufix;
-            /* SDA CUSTOM */ this.panel.content.query.output.config.fontScale = response.fontScale;
-            /* SDA CUSTOM */ this.panel.content.query.output.config.lineWidth = response.lineWidth;
-            /* SDA CUSTOM */ this.panel.content.query.output.config.lineStyle = response.lineStyle;
-            /* SDA CUSTOM */ this.panel.content.query.output.config.showXAxis = response.showXAxis;
-            /* SDA CUSTOM */ this.panel.content.query.output.config.showXAxisLabels = response.showXAxisLabels;
-            /* SDA CUSTOM */ this.panel.content.query.output.config.xAxisLabelCount = response.xAxisLabelCount;
-            /* SDA CUSTOM */ // SDA CUSTOM - KPI chart label settings
-            /* SDA CUSTOM */ this.panel.content.query.output.config.labelColor = response.labelColor;
-            /* SDA CUSTOM */ this.panel.content.query.output.config.labelBackgroundColor = response.labelBackgroundColor;
-            /* SDA CUSTOM */ this.panel.content.query.output.config.showLabels = response.showLabels;
-            /* SDA CUSTOM */ this.panel.content.query.output.config.showLabelsPercent = response.showLabelsPercent;
-            /* SDA CUSTOM */ // END SDA CUSTOM
+    if (!_.isEqual(event, EdaDialogCloseEvent.NONE)) {
 
-            let layout: any;
-            if (response.edaChart) {
-                this.panel.content.query.output.config.colors = response.edaChart.chartColors;
-                this.panel.content.query.output.config.chartType = response.chartType;
-                this.panel.content.query.output.config.chartSubType = response.chartSubType;
-                layout = new ChartJsConfig(
-                    response.edaChart.chartColors,
-                    response.edaChart.chartType,
-                    response.edaChart.addTrend,
-                    response.edaChart.addComparative,
-                    response.edaChart.showLabels,
-                    response.edaChart.showLabelsPercent,
-                    response.edaChart.numberOfColumns,
-                    response.edaChart.assignedColors
-                );
-            }
-
-            /* SDA CUSTOM */ const config = new ChartConfig(new KpiConfig({
-                /* SDA CUSTOM */ sufix: response.sufix,
-                /* SDA CUSTOM */ fontScale: response.fontScale,
-                /* SDA CUSTOM */ alertLimits: response.alerts,
-                /* SDA CUSTOM */ edaChart: layout,
-                /* SDA CUSTOM */ color: response.color,
-                /* SDA CUSTOM */ lineWidth: response.lineWidth,
-                /* SDA CUSTOM */ lineStyle: response.lineStyle,
-                /* SDA CUSTOM */ showXAxis: response.showXAxis,
-                /* SDA CUSTOM */ showXAxisLabels: response.showXAxisLabels,
-                /* SDA CUSTOM */ xAxisLabelCount: response.xAxisLabelCount,
-                /* SDA CUSTOM */ // SDA CUSTOM - KPI chart label settings
-                /* SDA CUSTOM */ labelColor: response.labelColor,
-                /* SDA CUSTOM */ labelBackgroundColor: response.labelBackgroundColor,
-                /* SDA CUSTOM */ showLabels: response.showLabels,
-                /* SDA CUSTOM */ showLabelsPercent: response.showLabelsPercent,
-                /* SDA CUSTOM */ // END SDA CUSTOM
-            /* SDA CUSTOM */ }));
-            this.renderChart(this.currentQuery, this.chartLabels, this.chartData, response.chartType, response.chartSubType, config);
-            this.dashboardService._notSaved.next(true);
+        if (response.chartType === 'kpideviation') {
+            this.panel.content.query.output.config = {
+                ...this.panel.content.query.output.config,
+                backgroundColor: response.backgroundColor || '',
+                kpiColor: response.kpiColor || '',
+                prefixImage: response.prefixImage || '',
+                modifiedFontPoints: response.modifiedFontPoints || 0,
+                alertLimits: response.alerts || [],
+            };
+            const config = new ChartConfig(new KpiDeviationConfig({
+                backgroundColor: response.backgroundColor || '',
+                kpiColor: response.kpiColor || '',
+                prefixImage: response.prefixImage || '',
+                modifiedFontPoints: response.modifiedFontPoints || 0,
+                alertLimits: response.alerts || [],
+            }));
+            this.renderChart(this.currentQuery, this.chartLabels, this.chartData, 'kpideviation', 'kpideviation', config);
+            this.dashboardService.setNotSaved(true);
+            this.kpiController = undefined;
+            return;
         }
-        this.kpiController = undefined;
+
+        // Usar spread operator para mantener el config existente
+        // Use the spread operator to preserve the existing config.
+        this.panel.content.query.output.config = {
+            ...this.panel.content.query.output.config,
+            assignedColors: response.assignedColors,
+            alertLimits: response.alerts,
+            sufix: response.sufix,
+            modifiedFontPoints: response.modifiedFontPoints || 0,
+            fontScale: response.fontScale ?? KPI_CONFIG.DEFAULT_FONT_SCALE,
+            imageScale: response.imageScale ?? KPI_CONFIG.IMAGE_DEFAULT_SCALE,
+            valueFontScale: response.valueFontScale ?? KPI_CONFIG.DEFAULT_FONT_SCALE,
+            sufixFontScale: response.sufixFontScale ?? KPI_CONFIG.DEFAULT_FONT_SCALE,
+            backgroundColor: response.backgroundColor || '',
+            kpiColor: response.kpiColor || '',
+            prefixImage: response.prefixImage || '',
+        };
+
+        let layout: any;
+        if (response.edaChart) {
+            this.panel.content.query.output.config.colors = response.edaChart.chartColors;
+            this.panel.content.query.output.config.chartType = response.chartType;
+            this.panel.content.query.output.config.chartSubType = response.chartSubType;
+
+            layout = new ChartJsConfig(
+                response.edaChart.chartColors,
+                response.edaChart.chartType,
+                response.edaChart.addTrend,
+                response.edaChart.addComparative,
+                response.edaChart.showLabels,
+                response.edaChart.showLabelsPercent,
+                response.edaChart.numberOfColumns,
+                response.assignedColors,  //  Pass assignedColors from the response, not from edaChart.
+                response.edaChart.showPointLines,
+                response.edaChart.showPredictionLines,
+                response.edaChart.chartLegend ?? true,
+                response.edaChart.showGridLines ?? true,
+                response.edaChart.lineWidth ?? 2,
+                response.edaChart.lineStyle || 'solid',
+                response.edaChart.showXAxis ?? true,
+                response.edaChart.showXAxisLabels ?? true,
+                response.edaChart.xAxisLabelCount || 0,
+                response.edaChart.labelColor || '#000000',
+                response.edaChart.labelBackgroundColor || '',
+                response.edaChart.chartLineColor || '',
+                response.edaChart.chartFillColor || '',
+                response.edaChart.showAllXAxisLabels ?? true,
+            );
+        }
+
+        const config = new ChartConfig(
+            new KpiConfig({
+                sufix: response.sufix,
+                alertLimits: response.alerts,
+                edaChart: layout,
+                assignedColors: response.assignedColors,
+                modifiedFontPoints: response.modifiedFontPoints || 0,
+                fontScale: response.fontScale ?? KPI_CONFIG.DEFAULT_FONT_SCALE,
+                imageScale: response.imageScale ?? KPI_CONFIG.IMAGE_DEFAULT_SCALE,
+                valueFontScale: response.valueFontScale ?? KPI_CONFIG.DEFAULT_FONT_SCALE,
+                sufixFontScale: response.sufixFontScale ?? KPI_CONFIG.DEFAULT_FONT_SCALE,
+                backgroundColor: response.backgroundColor || '',
+                kpiColor: response.kpiColor || '',
+                prefixImage: response.prefixImage || '',
+            })
+        );
+
+        this.renderChart(
+            this.currentQuery,
+            this.chartLabels,
+            this.chartData,
+            response.chartType,
+            response.chartSubType,
+            config
+        );
+        this.dashboardService.setNotSaved(true);
     }
+    this.kpiController = undefined;
+}
 
     public onClosedynamicTextProperties(event, response): void {
         if (!_.isEqual(event, EdaDialogCloseEvent.NONE)) {
-            const config = new ChartConfig(response.color);
+            const config = new ChartConfig(new DynamicTextConfig(response.color, response.modifiedFontPoints || 0));
             this.renderChart(this.currentQuery, this.chartLabels, this.chartData, this.graficos.chartType, this.graficos.edaChart, config);
 
-            this.dashboardService._notSaved.next(true);
+            this.dashboardService.setNotSaved(true);
         }
         this.dynamicTextController = undefined;
     }
 
     public handleTabChange(event: any): void {
-        this.hiddenButtonExecuter = !this.hiddenButtonExecuter;
-
         this.index = event.index;
         if (this.index === 1) {
             const content = this.panel.content;
@@ -1582,8 +2029,8 @@ export class EdaBlankPanelComponent implements OnInit {
                     || content.chart === 'scatterPlot'
                     || content.chart === 'funnel'
                     || content.chart === 'knob'
-                    || content.chart === 'sunburst'
-                    || content.chart === 'bubblechart'
+                    || content.chart === 'sunburst' 
+                    || content.chart === 'bubblechart' 
                     || content.chart === 'dynamicText')
             ) {
 
@@ -1598,18 +2045,20 @@ export class EdaBlankPanelComponent implements OnInit {
 
     public onResize(event) {
         this.display_v.responsive = event.currentTarget.innerWidth <= 1440;
+        //this.screenWidth = event.currentTarget.innerWidth;
     }
 
     /** Run query From dashboard component */
     public runQueryFromDashboard = (globalFilters: boolean) => QueryUtils.runQuery(this, globalFilters);
 
     /**
-    * Function that initialises the axes in its basic form --> Basic cross table.
+    * Function that initializes axes in their basic form → basic pivot table.
     */
     public initAxes(currenQuery) {
 
         let currenQueryCopy = [...currenQuery];
 
+        // itemX = "Vertical axis" (rows), itemY = "Horizontal axis" (columns), itemZ = numeric measures.
         let vx = currenQuery.find( (v:any) => v.column_type==='text' || v.column_type==='date')
         let objx = {}
         let itemX = []
@@ -1621,13 +2070,12 @@ export class EdaBlankPanelComponent implements OnInit {
             objx = {column_name: vx.column_name, column_type: vx.column_type, description: vx.display_name.default}
             itemX = [objx]
             if (indexX !== -1) {
-                currenQueryCopy.splice(indexX, 1); // Deletes the found item
+                currenQueryCopy.splice(indexX, 1);
             }
         } else {
             objx = {column_name: vx.column_name, column_type: vx.column_type, description: vx.display_name.default}
             itemX = [objx]
         }
-
 
         let itemY = [];
         currenQueryCopy.forEach( (v:any) => {
@@ -1649,8 +2097,38 @@ export class EdaBlankPanelComponent implements OnInit {
             itemZ.shift();
         }
 
-        return [{ itemX: itemX, itemY: itemY, itemZ: itemZ }]
+        // Columns with downChild (parent-child families) must always be on the vertical axis (itemX).
+        // Any that remain in itemY (horizontal) are moved to itemX.
+        const navParentNames = new Set(currenQuery.filter((c: any) => c.downChild).map((c: any) => c.column_name));
+        const toMoveToVertical: any[] = [];
+        itemY = itemY.filter((item: any) => {
+            if (navParentNames.has(item.column_name)) { toMoveToVertical.push(item); return false; }
+            return true;
+        });
+        itemX.push(...toMoveToVertical);
 
+        // Columns flagged with _forceItemX (previously nav-children detached in pivot mode)
+        // must also be moved to itemX to prevent itemY from expanding excessively and causing a potential OOM in the pivot table.
+        const forceXNames = new Set(currenQuery.filter((c: any) => c._forceItemX).map((c: any) => c.column_name));
+        if (forceXNames.size > 0) {
+            const toForceVertical: any[] = [];
+            itemY = itemY.filter((item: any) => {
+                if (forceXNames.has(item.column_name)) { toForceVertical.push(item); return false; }
+                return true;
+            });
+            itemX.push(...toForceVertical);
+            // Clear flags so they don't persist across subsequent initAxes calls
+            for (const col of currenQuery) {
+                if (col._forceItemX) delete col._forceItemX;
+            }
+            // If itemY is now empty, promote the first numeric measure as a column axis
+            if (itemY.length === 0 && itemZ.length > 0) {
+                itemY.push(itemZ[0]);
+                itemZ.shift();
+            }
+        }
+
+        return [{ itemX: itemX, itemY: itemY, itemZ: itemZ }]
 
     }
 
@@ -1658,60 +2136,109 @@ export class EdaBlankPanelComponent implements OnInit {
     * Runs actual query when execute button is pressed to check for heavy queries
     */
     public runManualQuery = () => {
-        this.hiddenButtonExecuter = true;
-        // isNewAxes --> Verify if the axes construction is new.
-        QueryUtils.runManualQuery(this);
+
+        if(!this.groupByEnabled) {
+            let isAnAggregation: boolean = false;
+            isAnAggregation = this.currentQuery.some((column: any) =>
+                column.aggregation_type.some((at: any) =>
+                    at.selected && at.value !== 'none'
+                )
+            );
+            if(isAnAggregation) {
+                this.alertService.addWarning($localize`:@@mustAddTheGroupingsToRunWithAggregations:Debe activar las agrupaciones para ejecutar con agregaciones configuradas en los atributos`);
+                return;
+            }
+        }
+
+        const chartType = this.panelChart?.props?.chartType || '';
+
+        if (chartType == 'crosstable' && this.indextab === 1) {
+            this.makeNewCrosstable();
+        } else {
+            QueryUtils.runManualQuery(this);
+        }
+
+        this.indextab = 1;
     };
 
     public moveItem = (column: any) => {
         PanelInteractionUtils.moveItem(this, column);
 
-        if (this.selectedQueryMode == 'EDA2' && this.currentQuery.length === 1) {
+        // First column of a new panel (query never executed): let the dashboard try to
+        // inherit an existing TREE global filter's path for this rootTable.
+        if (this.selectedQueryMode === 'TREE' && this.currentQuery.length === 1 && _.isNil(this.panel.content) && this.rootTable) {
+            this.rootTableFirstSet.emit(this.rootTable.table_name);
+        }
+
+        const sortingMatch = this.resultSortingColumns.find(
+            c => c.column_name === column.column_name && c.table_id === column.table_id
+        );
+        if (sortingMatch?.ordenation_type) {
+            const queryMatch = this.currentQuery.find(
+                c => c.column_name === column.column_name && c.table_id === column.table_id
+            );
+            if (queryMatch) queryMatch.ordenation_type = sortingMatch.ordenation_type;
+        }
+
+        if (this.selectedQueryMode == 'TREE' && this.currentQuery.length === 1) {
             PanelInteractionUtils.loadTableNodes(this);
-            /*SDA CUSTOM*/ this.rootTableFirstSet.emit(this.rootTable?.table_name);
+            this.displayedTableNodes = this.tableNodes;
+            this.rootTableFirstSet.emit(this.rootTable?.table_name);
        }
     }
 
     public searchRelations = (c: Column) => PanelInteractionUtils.searchRelations(this, c);
 
-    public loadColumns = (table: any) => PanelInteractionUtils.loadColumns(this, table);
+    public loadColumns = (table: any) => PanelInteractionUtils.loadColumns(this, table, true);
 
-/* SDA CUSTOM */   public removeColumn = (c: Column, list?: string) => {
-/* SDA CUSTOM */       // rootTableName To have the principal table => conditions to check if we can delete the column
-/* SDA CUSTOM */       const rootTableName = this.rootTable?.table_name;
-/* SDA CUSTOM */       // joins is reliable when interacting on the app; table_id comparison is the fallback after save and reload when joins may be empty
-/* SDA CUSTOM */       const isNotRootColumn = !!c?.joins?.length || (!!rootTableName && c?.table_id !== rootTableName);
-/* SDA CUSTOM */       const rootColumnElements = this.currentQuery.filter(col => !col?.joins?.length && (!rootTableName || col?.table_id === rootTableName)).length;
-/* SDA CUSTOM */       const currentQueryLength = this.currentQuery.length;
+    public removeColumn = (c: Column, list?: string) => {
+        // The root table restriction only applies in TREE mode.
+        const isTreeMode = this.selectedQueryMode === 'TREE';
 
-/* SDA CUSTOM */       // We just proceed if it is not the last column of the root table
-/* SDA CUSTOM */       if (isNotRootColumn || rootColumnElements > 1 || currentQueryLength === 1) {
-/* SDA CUSTOM */           // We check if the removed column's filter is part of the advanced (and/or) filter configuration
-/* SDA CUSTOM */           if (this.sortedFilters.some((sf: any) => sf.filter_column === c.column_name && sf.filter_table === c.table_id)) {
-                                /* SDA CUSTOM */ // Consistent with updateSortedFiltersColumnDialogFunction/updateSortedFiltersFilterDialogFunction: removing a filter used in the and/or config resets it entirely
-                                /* SDA CUSTOM */ this.sortedFilters = [];
-                                /* SDA CUSTOM */ this.alertService.addWarning($localize`:@@filterSettingsReboot:La configuración de filtros se ha reiniciado`);
-                            }
-/* SDA CUSTOM */           // Last column of a new panel (query never executed): reset global filter config before utils runs
-/* SDA CUSTOM */           if (currentQueryLength === 1 && _.isNil(this.panel.content)) {
-/* SDA CUSTOM */               this.rootTableCleared.emit();
-/* SDA CUSTOM */               this.globalFilters = [];
-/* SDA CUSTOM */           }
-                            PanelInteractionUtils.removeColumn(this, c, list);
-                        }
-/* SDA CUSTOM */       else {
-/* SDA CUSTOM */       // We stop the event propagation to not open the attribute panel
-/* SDA CUSTOM */           event.stopPropagation();
-/* SDA CUSTOM */           this.alertService.addError($localize`:@@cannotRemoveLastColumn:No se puede eliminar todas las columnas de la tabla raíz sin eliminar las columnas dependientes.`);
-/* SDA CUSTOM */       }
+        const rootTableName = this.rootTable?.table_name;
+        const isNotRootColumn = !!c?.joins?.length || (!!rootTableName && c?.table_id !== rootTableName);
+        const rootColumnElements = this.currentQuery.filter(col => !col?.joins?.length && (!rootTableName || col?.table_id === rootTableName)).length;
+        const currentQueryLength = this.currentQuery.length;
 
-/* SDA CUSTOM  */       const currenQuery = this.currentQuery;
-/* SDA CUSTOM  */       this.atLeastThereIsOneWithAggregation = this.checkAtLeastOneWithAggregation(currenQuery);
-                   }
+        if (!isTreeMode || isNotRootColumn || rootColumnElements > 1 || currentQueryLength === 1) {
+            const columnHadFilter = this.selectedFilters.some((sf: any) => sf.filter_column === c.column_name);
 
+            // Last column of a new panel (query never executed): reset global filter config before utils runs.
+
+            if (currentQueryLength === 1 && _.isNil(this.panel.content)) {
+                this.rootTableCleared.emit();
+                this.globalFilters = [];
+            }
+
+            const removed = PanelInteractionUtils.removeColumn(this, c, list);
+            if (removed !== false) {
+                // We check whether a field being removed had a filter in selectedFilters (this is verified before removeColumn deletes it).
+                if (columnHadFilter) {
+                    if (this.sortedFilters.length !== 0) {
+                        this.alertService.addWarning($localize`:@@filterSettingsReboot:La configuración de filtros se ha reiniciado`);
+                    }
+                    this.sortedFilters = []; // resets the values because one or more filters were deleted
+                }
+                // Clean up downChild references to the removed column
+                const removedKey = `${c.table_id}.${c.column_name}`;
+                for (const col of this.currentQuery) {
+                    if (col.downChild &&
+                        `${col.downChild.table_id}.${col.downChild.column_name}` === removedKey) {
+                        delete col.downChild;
+                    }
+                }
+                // Clean up any nav state for this column
+                this.navState = this.navState.filter(d => d.rootKey !== removedKey);
+            }
+        }
+        else {
+            // We stop event propagation to prevent the attributes panel from opening.
+            event.stopPropagation();
+            this.alertService.addError($localize`:@@cannotRemoveLastColumn:No se puede eliminar todas las columnas de la tabla raíz sin eliminar las columnas dependientes.`);
+        }
+    }
+    
     public getOptionDescription = (value: string): string => EbpUtils.getOptionDescription(value);
-
-    public getOptionDescriptionValid = (value: string): string => EbpUtils.getOptionDescriptionValid(value);
 
     public getOptionIcon = (value: string): string => EbpUtils.getOptionIcon(value);
 
@@ -1726,31 +2253,48 @@ export class EdaBlankPanelComponent implements OnInit {
         } else return null;
     }
 
-    /** duplicates a dashboard panel and positions it one point below the original one. */
+    /** It duplicates a dashboard panel and positions it one step below the original.*/
     public duplicatePanel(): void {
-        /*SDA CUSTOM*/const sourcePanelId = this.panel.id;
+        const sourcePanelId = this.panel.id;
+        // Sync panel.content with the live rendered state first (same thing saveDashboard() does
+        // before persisting) — otherwise an unsaved live edit (e.g. a KPI suffix typed in but not
+        // saved yet) is missing from panel.content and the clone silently reverts to the last
+        // saved value.
+        this.savePanel();
         let duplicatedPanel = _.cloneDeep(this.panel, true);
         duplicatedPanel.id = this.fileUtiles.generateUUID();
-        /*SDA CUSTOM*/duplicatedPanel.y = duplicatedPanel.y + 1;
-        /*SDA CUSTOM*/duplicatedPanel._isDuplicate = true;
-        /*SDA CUSTOM*/this.duplicate.emit({ panel: duplicatedPanel, sourcePanelId });
+        duplicatedPanel.y = duplicatedPanel.y + 1;
+        duplicatedPanel._isDuplicate = true;
+        this.duplicate.emit({ panel: duplicatedPanel, sourcePanelId });
     }
 
-
+    
     public removePanel(): void {
         this.remove.emit(this.panel.id);
     }
 
 
-    public showDescription(event): void {
-        this.description = event.description.default;
-    }
 
-    public async getQuery($event) {
+    public async getQuery($event: MouseEvent) {
+
+        if(!this.groupByEnabled) {
+            let isAnAggregation: boolean = false;
+            isAnAggregation = this.currentQuery.some((column: any) =>
+                column.aggregation_type.some((at: any) =>
+                    at.selected && at.value !== 'none'
+                )
+            );
+            if(isAnAggregation) {
+                this.alertService.addWarning($localize`:@@mustAddTheGroupingsToRunWithAggregations:Debe activar las agrupaciones para ejecutar con agregaciones configuradas en los atributos`);
+                return;
+            }
+        }
+
+        this.display_v.showQueryContainer = true;
         this.display_v.minispinnerSQL = true;
         this.queryFromServer = null;
 
-        this.op.toggle($event);
+        // this.op.toggle($event);
 
         const query = QueryUtils.initEdaQuery(this);
         let serverQuery = await QueryUtils.getQueryFromServer(this, query);
@@ -1782,7 +2326,6 @@ export class EdaBlankPanelComponent implements OnInit {
     }
 
     public changeQueryMode(): void {
-        console.log(this.selectedQueryMode);
         this.index = 0;
         this.currentSQLQuery = '';
         this.currentQuery = [];
@@ -1792,15 +2335,20 @@ export class EdaBlankPanelComponent implements OnInit {
         this.action.emit({ code: 'QUERYMODE', data: { queryMode: this.selectedQueryMode, panel: this.panel } })
     }
 
-/** This function allows the switch in the attribute column to see or hide the columns with the hidden attribute. */
-/* SDA CUSTOM  */    public async changeHiddenMode(): Promise<void> {
-/* SDA CUSTOM  */       this.showHiddenColumn = !this.showHiddenColumn;
-/* SDA CUSTOM  */       const selectedTable = this.getUserSelectedTable();
-/* SDA CUSTOM  */       this.loadColumns(selectedTable);
-/* SDA CUSTOM  */    }
 
+    private _panelInfoOverlayTimeout: ReturnType<typeof setTimeout> | null = null;
 
-    public accopen(e) { }
+    public showPanelInfoOverlay(event: Event, overlay: any): void {
+        this._panelInfoOverlayTimeout = setTimeout(() => overlay.show(event), 1000);
+    }
+
+    public hidePanelInfoOverlay(overlay: any): void {
+        if (this._panelInfoOverlayTimeout) {
+            clearTimeout(this._panelInfoOverlayTimeout);
+            this._panelInfoOverlayTimeout = null;
+        }
+        overlay.hide();
+    }
 
     /** This funciton return the display name for a given table. Its used for the query resumen      */
     public getNiceTableName(table: any) {
@@ -1808,6 +2356,11 @@ export class EdaBlankPanelComponent implements OnInit {
     }
 
 
+    public onWhatIfDialog(): void {
+        this.display_v.whatIf_dialog = true;
+    }
+
+    
     public getColumnJoins(column: Column) {
         let pathStr = '';
         if (column.joins?.length > 0) {
@@ -1850,13 +2403,12 @@ export class EdaBlankPanelComponent implements OnInit {
 
     public getDisplayAggregation(aggregation: any) {
         let str = '';
-        const aggregationText = aggTypes.filter(agg => agg.value === aggregation.value)[0].label
+        const aggregationText = AGG_TYPES.filter(agg => agg.value === aggregation.value)[0].label
         str = `&nbsp<strong>( ${aggregationText} )</strong>&nbsp`;
         return str;
     }
 
     public getDisplayFilterStr(filter: any) {
-
         let str = '';
 
         const table = this.findTable(filter.filter_table.split('.')[0]);
@@ -1871,25 +2423,22 @@ export class EdaBlankPanelComponent implements OnInit {
             const whereMessage: string = $localize`:@@whereMessage: Filtro sobre todos los registros`;
             const havingMessage: string = $localize`:@@havingMessage: Filtro sobre los resultados`;
 
-            // Nomenclature:  WHERE => Filtering on all records | HAVING => Filtering on results
+            // Naming convention: WHERE => Filter on all records | HAVING => Filter on results
             const filterBeforeGroupingText = filter.filterBeforeGrouping ? whereMessage : havingMessage
-
             // Aggregation
             const aggregation = filter.aggregation_type;
-
             let valueStr = '';
 
-            /* SDA CUSTOM: if dynamicValue is set, show the human-readable label instead of resolved dates */
-/* SDA CUSTOM  */            if (filter.dynamicValue) {
-/* SDA CUSTOM  */                const label = rangeDateFormats.find((r: any) => r.value === filter.dynamicValue)?.label || filter.dynamicValue;
-/* SDA CUSTOM  */                valueStr = `"${label}"`;
-/* SDA CUSTOM  */            } else if (values) {
+            if (filter.selectedRange) {
+                // Dynamic date range (e.g. "Aquesta setmana") — show its label instead of the
+                // literal dates it currently resolves to, which change every time the query runs.
+                valueStr = `"${rangeDateFormats.find(r => r.value === filter.selectedRange)?.label || filter.selectedRange}"`;
+            } else if (values) {
                 if (values.length == 1 && !['in', 'not_in'].includes(filter.filter_type)) {
                     valueStr = `"${values[0]}"`;
                 }  else if (values.length > 1 || ['in', 'not_in'].includes(filter.filter_type)) {
                     valueStr = `[${values.map((v: string) => (`"${v}"`) ).join(', ')}]`;
-                    valueStr =  valueStr.replace('emptyString', this.emptyStringString ); // This is done in case nulls are filtered out from the dashboard that can be internationalised.
-
+                    valueStr = valueStr.replace('emptyString', this.emptyStringString); // This is done in case nulls are filtered out from the dashboard that can be internationalised.
                 }
 
                 if (values2) {
@@ -1899,64 +2448,72 @@ export class EdaBlankPanelComponent implements OnInit {
                         valueStr = `AND [${values2.map((v: string) => (`"${v}"`) ).join(', ')}]`;
                     }
                 }
+
             }
 
-            let aggregationLabel = 'none';
-            if(aggTypes.filter(agg => agg.value === aggregation).length !== 0) aggregationLabel = aggTypes.filter(agg => agg.value === aggregation)[0].label;
 
-            // Aggregate of internationalisation of the between
-            let filterType = filter.filter_type
+            let aggregationLabel = '';
+            if(AGG_TYPES.filter(agg => agg.value === aggregation).length !== 0) aggregationLabel = AGG_TYPES.filter(agg => agg.value === aggregation)[0].label;
 
-/* SDA CUSTOM */        if(filterType === 'between') filterType = this.chartUtils.filterTypesLabels.find((value: any) => value.value === 'between').label;
-/* SDA CUSTOM */        if(filterType === 'in') filterType = this.chartUtils.filterTypesLabels.find((value: any) => value.value === 'in').label;
-/* SDA CUSTOM */        if(filterType === 'not_in') filterType = this.chartUtils.filterTypesLabels.find((value: any) => value.value === 'not_in').label;
-/* SDA CUSTOM */        if(filterType === 'not_null') filterType = this.chartUtils.filterTypesLabels.find((value: any) => value.value === 'not_null').label;
-/* SDA CUSTOM */        if(filterType === 'not_null_nor_empty') filterType = this.chartUtils.filterTypesLabels.find((value: any) => value.value === 'not_null_nor_empty').label;
-/* SDA CUSTOM */        if(filterType === 'null_or_empty') filterType = this.chartUtils.filterTypesLabels.find((value: any) => value.value === 'null_or_empty').label;
+            // display_filter_type carries the operator the user actually picked (e.g. 'in' -> "Dentro de"),
+            // already resolved to its label — filter_type may have been remapped for the backend's sake
+            // (e.g. a dynamic 'in' range becomes 'between' since the backend can't range over 'in').
+            // Fall back to resolving filter_type's own label (not just the raw value) for filters
+            // persisted before display_filter_type existed — e.g. a static 'in' still reads 'in' as
+            // its wire type (only a dynamic range gets remapped to 'between'), so the lookup still works.
+            let filterType = filter.display_filter_type
+                || this.chartUtils.filterTypesLabels.find(f => f.value === filter.filter_type)?.label
+                || filter.filter_type;
 
-            str = `<strong>${tableName}</strong>&nbsp[${columnName}]&nbsp<strong>${filterType}</strong>&nbsp${valueStr}  &nbsp<strong>${filterBeforeGroupingText}</strong>&nbsp - ${this.aggregationText}: &nbsp<strong>${aggregationLabel}</strong>&nbsp`;
+            str = `<strong>${tableName}</strong>&nbsp[${columnName}]&nbsp<strong>${filterType}</strong>&nbsp${valueStr}  &nbsp<strong>${filterBeforeGroupingText}</strong>&nbsp${aggregationLabel ? ` - ${this.aggregationText}: &nbsp<strong>${aggregationLabel}</strong>` : ''}&nbsp`;
         }
 
         return str;
     }
 
+    /** False for a filter that's been cleared (no value, no dynamic range) — it applies no real
+     * constraint and shouldn't be listed as an active filter in the summary overlay/dialog. */
+    public isFilterActive(filter: any): boolean {
+        const noValueTypes = ['not_null', 'not_null_nor_empty', 'null_or_empty'];
+        if (noValueTypes.includes(filter.filter_type)) return true;
+        if (filter.selectedRange) return true;
 
+        const value1 = filter.filter_elements?.[0]?.value1;
+        const value2 = filter.filter_elements?.[1]?.value2;
+        return (Array.isArray(value1) && value1.length > 0) || (Array.isArray(value2) && value2.length > 0);
+    }
 
-/* SDA CUSTOM */     public showIdForHiddenMode() {
-/* SDA CUSTOM */         if (this.inject.dataSource._id == "111111111111111111111111") {
-/* SDA CUSTOM */             this.showHiddId = true;
-/* SDA CUSTOM */         } else {
-/* SDA CUSTOM */             this.showHiddId = false;
-/* SDA CUSTOM */         }
-/* SDA CUSTOM */     }
-
-    public onWhatIfDialog(): void {
-        this.display_v.whatIf_dialog = true;
+    public hasActiveFilters(filters: any[]): boolean {
+        return (filters || []).some(f => this.isFilterActive(f));
     }
 
     public onCloseWhatIfDialog(): void {
         this.display_v.whatIf_dialog = false;
     }
 
-    public filterAndOrDialog(): void {
+    public closeChatGpt(event: any) {
+        this.isVisibleEbpChatGpt = false;
+    } 
 
-        const numFilters = this.selectedFilters.length + this.globalFilters.length;
-
-        if(numFilters === 0) {
-            this.alertService.addWarning($localize`:@@withoutFilters:Aún no has configurado filtros. Usa el panel de filtros o los filtros globales`);
-            return;
-        } else {
-            this.display_v.filterAndOr_dialog = true;
-        }
+    public onFilterMapper() {
+        this.display_v.filterMapperDialog = true;
     }
 
-    public onCloseFilterAndOrDialog(): void {
-        this.display_v.filterAndOr_dialog = false;
+    public onCloseFilterMapperDialog(response?: any): void {
+        if (response) {
+            this.panel.globalFilterMap = response.connections || [];
+            this.dashboardService.setNotSaved(true);
+        }
+
+        this.display_v.filterMapperDialog = false;
+    }
+
+    public isSpecialChart(type: string): boolean {
+        return ['kpi', 'knob', 'dynamicText'].includes(type);
     }
 
     public disableRunQuery(): boolean {
         let disable = false;
-
         if (this.selectedQueryMode !== 'SQL') {
             if (this.currentQuery.length === 0 && this.index === 0) {
                 disable = true;
@@ -1967,11 +2524,15 @@ export class EdaBlankPanelComponent implements OnInit {
             }
         }
 
+        if (this.panelChart?.props?.chartType == 'crosstable' && this.indextab === 1) {
+            if (!this.isCrosstableValid()) return true;
+        }
+
         return disable;
     }
 
     /**
-    * Function that reorders the currentQuery array according to the new sort value of the axes variable returned by the drag-drop component.
+    * Function that reorders the currentQuery array according to the new sort order of the axes variable returned by the drag-and-drop component.
     */
     public newCurrentQuery(currenQuery, axes) {
 
@@ -2004,41 +2565,202 @@ export class EdaBlankPanelComponent implements OnInit {
             });
         });
 
+        // Nav-child columns are excluded from axes (drag-drop never shows them) but must
+        // remain in currentQuery so the navigation hierarchy stays intact.
+        const navChildKeys = new Set(
+            newCurrentQuery
+                .filter((col: any) => col.downChild)
+                .map((col: any) => `${col.downChild.table_id}.${col.downChild.column_name}`)
+        );
+        currenQuery.forEach((col: any) => {
+            const key = `${col.table_id}.${col.column_name}`;
+            if (navChildKeys.has(key) && !newCurrentQuery.find((c: any) => c.table_id === col.table_id && c.column_name === col.column_name)) {
+                newCurrentQuery.push(col);
+            }
+        });
+
         return newCurrentQuery;
 
     }
 
-    // Function that receives the axes variable modified by the drag-drop component.
+    // Function that receives the axes variable modified by the drag-and-drop component.
     public newAxesOrdering(newAxes) {
+        // itemX = vertical axis. If the user drags a parent with children into itemY (horizontal)
+        // or itemZ (numeric), we move it back to itemX to enforce the restriction.
+        if (newAxes[0]) {
+            const navParentNames = new Set(
+                this.currentQuery.filter((col: any) => col.downChild).map((col: any) => col.column_name)
+            );
+            const toMoveToVertical: any[] = [];
+            newAxes[0].itemY = newAxes[0].itemY.filter((item: any) => {
+                if (navParentNames.has(item.column_name)) { toMoveToVertical.push(item); return false; }
+                return true;
+            });
+            newAxes[0].itemZ = newAxes[0].itemZ.filter((item: any) => {
+                if (navParentNames.has(item.column_name)) { toMoveToVertical.push(item); return false; }
+                return true;
+            });
+            if (toMoveToVertical.length) newAxes[0].itemX.push(...toMoveToVertical);
+        }
+
         this.axes = newAxes;
-        this.newAxesChanged = true; // Indicates that the generic cross table will be used.
-        const config = this.panelChartConfig.config.getConfig(); // Acquire the configuration config
-        this.currentQuery = this.newCurrentQuery(this.currentQuery, newAxes); // I reorder the currentQuery
-        config['ordering'] = [{axes: newAxes}]; // I add the new axes to the config
-        this.copyConfigCrossTable = JSON.parse(JSON.stringify(config));;
-        QueryUtils.runManualQuery(this) // Running with the new currentQuery configuration
+        this.newAxesChanged = true; // Indicates that the generic pivot table will be used.
+        const config = this.panelChartConfig.config.getConfig(); // Acquire the config configuration.
+        this.currentQuery = this.newCurrentQuery(this.currentQuery, newAxes); // Reorder currentQuery.
+        config['ordering'] = [{axes: newAxes}]; // Add the new axes to the config.
+        this.copyConfigCrossTable = JSON.parse(JSON.stringify(config));
+        QueryUtils.runManualQuery(this) // Executing with the new currentQuery configuration.
     }
 
-    public newSortedFiltersFunction(event: any[]) {
-        this.sortedFilters = event; // We save the sortedFilters in the EBP
-        this.display_v.btnSave = true; // The confirm button is disabled
+
+    getAttributeTypeIcon(type: string) {
+        const icons = {
+            numeric: 'mdi-numeric',
+            date: 'mdi-calendar-text',
+            coordinate: 'mdi-map-marker',
+            text: 'mdi-alphabetical',
+            html: 'mdi-language-html5'
+        };
+        return icons[type as keyof typeof icons] || '';
     }
 
-    public updateSortedFiltersColumnDialogFunction(e: any) {
+    // New method to control which section is open.
+    toggleSection(section: string): void {
+        this.sqlIndicationOpenSection = this.sqlIndicationOpenSection === section ? '' : section
+    }
 
-        if(e.add){
+    // Method to check if a section is open.
+    isSectionOpen(section: string): boolean {
+        return this.sqlIndicationOpenSection === section
+    }
 
-            // SDA CUSTOM - Only append to an already configured and/or setup; if empty (not configured yet),
-            // leave it empty so it gets fully rebuilt from selectedFilters/globalFilters next time the dialog opens
-            /* SDA CUSTOM */ if (this.sortedFilters.length !== 0) {
+    // Method that compares the original table with the current one (cross table only).
+    isCrosstableModified(): boolean {
+        if (this.panelChart?.props?.chartType == 'crosstable' && this.indextab === 1) {
+            if(this.dragDrop?.newAxesOrdering.length !== 0)
+                return this.dragDrop?.newAxesOrdering!=this.axes;
+        }
+        return false;
+    }
 
-            /* SDA CUSTOM */     const lastElement = this.sortedFilters[this.sortedFilters.length-1];
+    // Method that executes the apply action for the crosstable.
+    makeNewCrosstable() {
+        this.dragDrop.temporalExecution();
+    }
 
-            /* SDA CUSTOM */     const newSortedFilter = {
-                    cols: 3,
-                    rows: 1,
-                    y: lastElement.y+1,
-                    x: 0,
+    // Method that checks whether the crosstable is valid or not.
+    isCrosstableValid():boolean {
+        return this.dragDrop?.validated;
+    }
+
+    toggleGroupBy(): void {        
+        if(this.groupByEnabled) {
+            const currentQueryLength = this.currentQuery.length
+            let isAnAggregation: boolean = false;
+
+            isAnAggregation = this.currentQuery.some((column: any) =>
+                column.aggregation_type.some((at: any) =>
+                    at.selected && at.value !== 'none'
+                )
+            );
+
+            if(currentQueryLength !== 0){
+                if(isAnAggregation) {
+                    this.alertService.addWarning($localize`:@@noAttributeShouldHaveAggregation:Ningún Atributo debe tener agregación`);
+                    return;
+                }
+            } else {
+                this.alertService.addWarning($localize`:@@mustConfigureAtLeastOneAttribute:Debe configurar un atributo como mínimo para habilitar esta opción`);
+                return
+            }
+        }
+        
+        this.groupByEnabled = !this.groupByEnabled;
+    }
+
+    dynamicFiltersInteraction(): void {
+        this.dynamicFilters = !this.dynamicFilters;
+    }
+
+    newCurrentQueryUpdate(event: any) {
+        this.currentQuery = event;
+    }
+
+    onChartSuggestionSelected(event: { type: string, subType: string }): void {
+        const chartType = this.chartUtils.chartTypes.find(
+            o => o.value === event.type && o.subValue === event.subType
+        );
+        if (chartType) {
+            this.chartForm.patchValue({ chart: chartType });
+        }
+        QueryUtils.runManualQuery(this);
+        this.indextab = 1;
+    }
+
+    principalTableUpdate(event: any) {
+
+        const {principalTable, currentQuery, queryLimit} = event
+
+        this.queryLimit = queryLimit;
+
+        const rootTable = this.tables.find((table: any) => {
+            return table.table_name === principalTable;
+        })
+        
+        this.rootTable = _.cloneDeep(rootTable);
+        this.userSelectedTable = principalTable;
+                
+        let columns: any[] = []
+        columns = rootTable.columns.filter((col: any) => {
+            if(col.visible) return !currentQuery.some((e: any) => e.column_name === col.column_name)
+        })
+
+        this.columns = columns;
+    }
+
+    newSelectedFiltersUpdate(event: any) {
+        const {filteredColumns, selectedFilters} = event
+        this.selectedFilters = _.cloneDeep(selectedFilters)
+        this.filtredColumns = _.cloneDeep(filteredColumns)
+    }
+
+    trackByTable(_index: number, table: any): any {
+        return table.value;
+    }
+
+    startEditTitle() {
+        this.editingTitle = true;
+        this.titleClick=true;
+    }
+
+    // ─── AND/OR Filter Dialog ────────────────────────────────────────────────
+
+    public filterAndOrDialog(): void {
+        const numFilters = this.selectedFilters.length + this.globalFilters.length;
+        if (numFilters === 0) {
+            this.alertService.addWarning($localize`:@@withoutFilters:Aún no has configurado filtros. Usa el panel de filtros o los filtros globales`);
+            return;
+        }
+        this.display_v.filterAndOr_dialog = true;
+    }
+
+    public onCloseFilterAndOrDialog(): void {
+        this.display_v.filterAndOr_dialog = false;
+    }
+
+    public newSortedFiltersFunction(event: any[]): void {
+        this.sortedFilters = event;
+        this.display_v.btnSave = true;
+        this.dashboardService.setNotSaved(true);
+    }
+
+    public updateSortedFiltersColumnDialogFunction(e: any): void {
+        if (e.add) {
+            if (this.sortedFilters.length !== 0) {
+                const lastElement = this.sortedFilters[this.sortedFilters.length - 1];
+                const newSortedFilter = {
+                    cols: 3, rows: 1,
+                    y: lastElement.y + 1, x: 0,
                     filter_table: e.filter.filter_table,
                     filter_column: e.filter.filter_column,
                     filter_type: e.filter.filter_type,
@@ -2046,36 +2768,27 @@ export class EdaBlankPanelComponent implements OnInit {
                     filter_elements: e.filter.filter_elements,
                     filter_codes: e.filter.filter_codes,
                     filter_id: e.filter.filter_id,
-                    /* SDA CUSTOM */ selectedRange: e.filter.selectedRange,
-                    /* SDA CUSTOM */ dynamicValue: e.filter.dynamicValue,
-                    value: "and",
-                }
-
-            /* SDA CUSTOM */     this.sortedFilters.push(newSortedFilter);
-            /* SDA CUSTOM */ }
-
+                    value: 'and',
+                };
+                this.sortedFilters.push(newSortedFilter);
+                this.dashboardService.setNotSaved(true);
+            }
         } else {
-            // SDA CUSTOM - When deleting a filter, reset all advanced filters and show warning
-            /* SDA CUSTOM */ this.sortedFilters = [];
-            /* SDA CUSTOM */ this.alertService.addWarning($localize`:@@filterSettingsReboot:La configuración de filtros se ha reiniciado`);
+            if (this.sortedFilters.length !== 0) {
+                this.alertService.addWarning($localize`:@@filterSettingsReboot:La configuración de filtros se ha reiniciado`);
+            }
+            this.sortedFilters = [];
+            this.dashboardService.setNotSaved(true);
         }
     }
 
-    public updateSortedFiltersFilterDialogFunction(e: any) {
-
-        if(e.add){
-
-            // SDA CUSTOM - Only append to an already configured and/or setup; if empty (not configured yet),
-            // leave it empty so it gets fully rebuilt from selectedFilters/globalFilters next time the dialog opens
-            /* SDA CUSTOM */ if (this.sortedFilters.length !== 0) {
-
-            /* SDA CUSTOM */     const lastElement = this.sortedFilters[this.sortedFilters.length-1];
-
-            /* SDA CUSTOM */     const newSortedFilter = {
-                    cols: 3,
-                    rows: 1,
-                    y: lastElement.y+1,
-                    x: 0,
+    public updateSortedFiltersFilterDialogFunction(e: any): void {
+        if (e.add) {
+            if (this.sortedFilters.length !== 0) {
+                const lastElement = this.sortedFilters[this.sortedFilters.length - 1];
+                const newSortedFilter = {
+                    cols: 3, rows: 1,
+                    y: lastElement.y + 1, x: 0,
                     filter_table: e.filter.filter_table,
                     filter_column: e.filter.filter_column,
                     filter_type: e.filter.filter_type,
@@ -2083,43 +2796,65 @@ export class EdaBlankPanelComponent implements OnInit {
                     filter_elements: e.filter.filter_elements,
                     filter_codes: e.filter.filter_codes,
                     filter_id: e.filter.filter_id,
-                    /* SDA CUSTOM */ selectedRange: e.filter.selectedRange,
-                    /* SDA CUSTOM */ dynamicValue: e.filter.dynamicValue,
-                    value: "and",
-                }
-
-            /* SDA CUSTOM */     this.sortedFilters.push(newSortedFilter);
-            /* SDA CUSTOM */ }
-
+                    value: 'and',
+                };
+                this.sortedFilters.push(newSortedFilter);
+                this.dashboardService.setNotSaved(true);
+            }
         } else {
-            // SDA CUSTOM - When deleting a filter, reset all advanced filters and show warning
-            /* SDA CUSTOM */ this.sortedFilters = [];
-            /* SDA CUSTOM */ this.alertService.addWarning($localize`:@@filterSettingsReboot:La configuración de filtros se ha reiniciado`);
+            if (this.sortedFilters.length !== 0) {
+                this.alertService.addWarning($localize`:@@filterSettingsReboot:La configuración de filtros se ha reiniciado`);
+            }
+            this.sortedFilters = [];
+            this.dashboardService.setNotSaved(true);
         }
     }
 
-    /* SDA CUSTOM */ private updateSortedFilterFromFilter(f: any): void {
-    /* SDA CUSTOM */     if (!f || f.removed) return;
-    /* SDA CUSTOM */     const existing = this.sortedFilters.find(sf => sf.filter_id === f.filter_id);
-    /* SDA CUSTOM */     if (!existing) return;
-    /* SDA CUSTOM */     existing.filter_elements = f.filter_elements;
-    /* SDA CUSTOM */     existing.filter_codes = f.filter_codes;
-    /* SDA CUSTOM */     existing.filter_type = f.filter_type;
-    /* SDA CUSTOM */     existing.filter_column_type = f.filter_column_type;
-    /* SDA CUSTOM */     existing.dynamicValue = f.dynamicValue;
-    /* SDA CUSTOM */     existing.selectedRange = f.selectedRange;
-    /* SDA CUSTOM */     this.sortedFilters = [...this.sortedFilters];
-    /* SDA CUSTOM */ }
+    // ─── NAVIGATION FEATURE ────────────────────────────────────────────────────
+    // The logic is in NavigationUtils—these are thin wrappers that pass this.
+    public buildNavigationLinks(query: any): any[] {
+        return NavigationUtils.buildNavigationLinks(this, query);
+    }
 
-    /* SDA CUSTOM */ private normalizeLegacyDateFilters(): void {
-    /* SDA CUSTOM */     const normalize = (f: any) => {
-    /* SDA CUSTOM */         if (f.selectedRange && !f.dynamicValue) {
-    /* SDA CUSTOM */             f.dynamicValue = f.selectedRange;
-    /* SDA CUSTOM */         }
-    /* SDA CUSTOM */     };
-    /* SDA CUSTOM */     this.selectedFilters.forEach(normalize);
-    /* SDA CUSTOM */     this.globalFilters.forEach(normalize);
-    /* SDA CUSTOM */     this.sortedFilters.forEach(normalize);
-    /* SDA CUSTOM */ }
+    public handleNavEvent(event: any): void {
+        if (event.navType === 'in') NavigationUtils.handleNavIn(this, event);
+        else if (event.navType === 'out') NavigationUtils.handleNavOut(this, event);
+    }
 
+    public computeChildNavConfig(): {
+        parentFields: string[],
+        childFieldMap: { [k: string]: string },
+        navColumnSubstitution: { [originalName: string]: string }
+    } {
+        return NavigationUtils.computeChildNavConfig(this);
+    }
+
+    private restoreNavigationLinks(panelContent: any): void {
+        NavigationUtils.restoreNavigationLinks(this, panelContent);
+    }
+
+    private restoreDateNavState(panelContent: any): void {
+        NavigationUtils.restoreDateNavState(this, panelContent);
+    }
+
+    private setupQueryContext(panelContent: any): void {
+        const { modeSQL } = panelContent.query.query;
+        const queryMode = this.selectedQueryMode;
+        const isEdaMode = queryMode && queryMode !== 'SQL';
+        if (isEdaMode || modeSQL === false) {
+            if (queryMode === 'TREE') {
+                this.rootTable = this.tables.find((t: any) => t.table_name === this.rootTable);
+                for (const column of panelContent.query.query.fields) {
+                    PanelInteractionUtils.assertTable(this, column);
+                }
+                PanelInteractionUtils.handleCurrentQuery2(this);
+            } else {
+                this.rootTable = null;
+                PanelInteractionUtils.handleCurrentQuery(this);
+            }
+            this.restoreNavigationLinks(panelContent);
+        }
+    }
+
+    // ─── END NAVIGATION FEATURE ────────────────────────────────────────────────
 }

@@ -1,20 +1,22 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, CUSTOM_ELEMENTS_SCHEMA, OnInit } from '@angular/core';
 import { SettingsService, StyleProviderService } from '@eda/services/service.index';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 
 declare function init_plugins();
 
 @Component({
     selector: 'app-pages',
     templateUrl: './pages.component.html',
-    styleUrls: ['./pages.component.css']
+    standalone: true,
+    imports: [RouterModule],
+    schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
 export class PagesComponent implements OnInit {
 
     backgroundColor : string
     panelMode: boolean = false;
 
-    constructor( private router: Router,
+    constructor(
         private route: ActivatedRoute,
         private settingSerive: SettingsService,
         private styleProviderService : StyleProviderService) {
@@ -37,7 +39,7 @@ export class PagesComponent implements OnInit {
         this.route.queryParams.subscribe(params => {
             try{
                     if(params['panelMode'] == 'true'){
-                        this.panelMode =true; // en mode panel es mostra nomel els panells
+                        this.panelMode =true; // In panel mode, only panels are shown
                     }
             }catch(e){
             }

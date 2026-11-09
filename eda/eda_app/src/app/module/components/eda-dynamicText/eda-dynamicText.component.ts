@@ -1,64 +1,101 @@
 import { Component, OnInit, Input, EventEmitter, Output, ViewChild, ElementRef} from '@angular/core';
 import { EdadynamicText } from './eda-dynamicText';
-import { dynamicTextDialogComponent } from './../eda-panels/eda-blank-panel/dynamicText-dialog/dynamicText-dialog.component';
-
+import { StyleProviderService } from '@eda/services/service.index';
+import { FormsModule } from '@angular/forms'; 
+import { CommonModule } from '@angular/common';
 @Component({
+    standalone: true,
     selector: 'eda-dynamicText',
-    templateUrl: './eda-dynamicText.component.html'
+    templateUrl: './eda-dynamicText.component.html',
+    imports: [FormsModule, CommonModule]
 })
 
 export class EdadynamicTextComponent implements OnInit {
     @Input() inject: EdadynamicText;
-    @Input() color: dynamicTextDialogComponent;
+    @Input() color;
     @Output() onNotify: EventEmitter<any> = new EventEmitter();
-    @ViewChild('dynamicTextContainer')
-    dynamicTextContainer: ElementRef;
+    @ViewChild('dynamicTextContainer', { static: false }) dynamicTextContainer!: ElementRef;
 
- 
     containerHeight: number = 20;
     containerWidth: number = 20;
 
-    constructor() { }
+    constructor(private styleProviderService : StyleProviderService) { }
 
-    ngOnInit() {
-      
+    ngOnInit() {}
+
+    getStyle(): any {
+        let color = this.inject?.color;
+        
+        if (this.styleProviderService.loadingFromPalette) {
+            color = this.styleProviderService.panelFontColor.source['_value'];
+            this.inject.color = this.styleProviderService.panelFontColor.source['_value'];
+        }
+        const fontSize = this.getFontSize();
+        color = this.findColor(color);
+        
+        return {
+            'font-weight': 'bold',
+            'font-size': fontSize,
+            'color': color,
+        };
     }
 
-    getStyle():any{
-        let color;
-        try{
-            if(this.inject.color["color"]!==undefined){
-                color = this.inject.color["color"];
-            }else {   
-                color = this.inject.color;
+    findColor(color) {
+        while (color) {
+            if (typeof color === "string") {
+                return color;
             }
-        }catch( e ){
-            console.log("error getting color for dynamic text component");
-            console.log(e);
-            console.log(this.inject);
-            color =null;
+            if (color && typeof color === "object" && "color" in color) {
+                color = color.color;
+            } else {
+                break;
+            }
         }
-        return {'font-weight': 'bold',  'font-size': this.getFontSize()  +'px' , display: 'inline','color': color}
+        return null; 
     }
 
-    getFontSize():string{
-        let result:number = 1;
-        //  By default is the height / 2
-        result = this.containerHeight/2;
-        // But maybe the widht is no enought.... lets check...
-        if( result*4 > this.containerWidth){
-            result =  this.containerWidth/4;
+
+    getFontSize(): string {
+        let result = 1;
+
+        if (!this.dynamicTextContainer) {
+            return '1px';
         }
-        // But maybe the string lenght is too long... lets check 
-        let strlen =  this.inject.value.toString().length;
-        if( strlen * result > this.containerWidth*1.5 ){
+
+        const realContainer = this.dynamicTextContainer.nativeElement
+            ?.parentElement
+            ?.parentElement
+            ?.parentElement;
+
+        const containerWidth = realContainer.offsetWidth;
+        const containerHeight = realContainer.offsetHeight;
+
+        this.containerWidth = containerWidth;
+        this.containerHeight = containerHeight;
+
+        result = containerHeight / 2;
+
+        if (result * 4 > containerWidth) {
+            result = containerWidth / 4;
+        }
+
+        const text = (this.inject?.value ?? '').toString();
+        const strlen = text.length || 1;
+
+        if (strlen * result > containerWidth * 1.5) {
             result = result / 1.5;
         }
-        // Ok.... we are done...
-        return result.toFixed().toString();
 
+        result = Math.max(result, 10) - 5;
 
+        if (this.inject?.modifiedFontPoints) {
+            result += this.inject.modifiedFontPoints;
+        }
+
+        return `${Math.max(result, 1).toFixed()}px`;
     }
+
+
 
 
 
@@ -71,9 +108,6 @@ export class EdadynamicTextComponent implements OnInit {
             this.containerHeight = height  ;
             this.containerWidth = width  ;
         }
+          this.getFontSize();
       }
-
-
-
-
 }

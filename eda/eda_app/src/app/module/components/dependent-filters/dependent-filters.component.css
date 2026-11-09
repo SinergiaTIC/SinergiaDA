@@ -1,0 +1,68 @@
+.content-gridster{
+    /* background-color: #00BFB3; ==> COLOR CORPORATIVO */  
+    background-color: #fff; 
+    margin-top: 5px;
+    padding: 2px;
+    border-radius: 0.75rem;
+    border: 1px solid rgba(var(--corporate-primary-rgb), 0.5);
+}
+
+.gridster {
+    height: 48vh;
+    background-color: transparent;
+    border: 1px solid #13d60c00;  /* Border lines around each item  */
+}
+
+.button-holder {
+    background-color: rgba(255, 0, 0, 0);
+    border: none;
+
+}
+
+.gridster-item {
+    cursor: grab;
+    border: 1px solid #CCCCCC;
+    background-color: #fff;
+    border-radius: 10px;
+}
+
+.gridster-item:active {
+    cursor: grabbing;
+}
+
+.gridster-item:hover {
+    background-color: rgba(var(--corporate-primary-rgb), 0.5);
+}
+
+
+.content-item {
+    /* border: 1px solid #CCCCCC; */
+    background-color: #cf0c0c00;
+    /* margin-top: 4px; */
+    border-radius: 10px;
+    margin-top: 3px;
+    margin-left: 10px;
+    padding: 5px
+}
+
+::ng-deep .df-filter-tooltip {
+    max-width: 24rem;
+}
+::ng-deep .df-filter-tooltip .p-tooltip-text {
+    background-color: #ffffff;
+    color: #000000;
+    border: 1px solid #e5e7eb;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+}
+::ng-deep .df-filter-tooltip.p-tooltip-top .p-tooltip-arrow {
+    border-top-color: #ffffff;
+}
+
+::ng-deep gridster.display-grid .gridster-column {
+  border-left-color: rgba(var(--corporate-primary-rgb), 0.2) !important;
+  border-right-color: rgba(var(--corporate-primary-rgb), 0.2) !important;
+}
+::ng-deep gridster.display-grid .gridster-row {
+  border-top-color: rgba(var(--corporate-primary-rgb), 0.2) !important;
+  border-bottom-color: rgba(var(--corporate-primary-rgb), 0.2) !important;
+}

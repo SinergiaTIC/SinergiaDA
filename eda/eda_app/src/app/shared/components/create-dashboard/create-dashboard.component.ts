@@ -1,14 +1,31 @@
-import { Component, EventEmitter, OnInit, Output } from "@angular/core";
-import { FormBuilder, UntypedFormGroup, Validators } from "@angular/forms";
-import { AlertService, DashboardService, GroupService, IGroup, SidebarService, StyleProviderService } from "@eda/services/service.index";
+import { Component, EventEmitter, inject, OnInit, Output, ViewEncapsulation } from "@angular/core";
+import { FormBuilder, FormsModule, ReactiveFormsModule, UntypedFormGroup, Validators } from "@angular/forms";
+import { AlertService, DashboardService, GroupService, IGroup, SidebarService, StyleProviderService, UserService } from "@eda/services/service.index";
 import { SelectItem } from "primeng/api";
+import { CreateDashboardService } from "@eda/services/utils/create-dashboard.service";
+import { SharedModule } from "@eda/shared/shared.module";
+import { DropdownModule } from "primeng/dropdown";
+import { ButtonModule } from "primeng/button";
+import { MultiSelectModule } from "primeng/multiselect";
+import { SelectButtonModule } from "primeng/selectbutton";
+import { EdaDialog2Component } from "../shared-components.index";
 import * as _ from 'lodash';
+import { DataSourceNamesService } from "@eda/services/shared/datasource-names.service";
+import { ALLOW_NON_ADMIN_MANAGE_PUBLIC_REPORTS } from "@eda/configs/customizable/customizable_merged";
 
 @Component({
+    standalone: true,
     selector: 'app-create-dashboard',
-    templateUrl: './create-dashboard.component.html'
+    templateUrl: './create-dashboard.component.html',
+    imports: [SharedModule, ReactiveFormsModule, FormsModule, DropdownModule, ButtonModule, SelectButtonModule, MultiSelectModule, EdaDialog2Component],
+    styleUrls: ['./create-dashboard.component.css'],
+    encapsulation: ViewEncapsulation.None
 })
 export class CreateDashboardComponent implements OnInit {
+    private createDashboardService = inject(CreateDashboardService);
+    private dataSourceNameService = inject(DataSourceNamesService);
+    private userService = inject(UserService);
+
     public display: boolean = false;
     public dataSources: any[] = [];
     public form: UntypedFormGroup;
@@ -24,7 +41,7 @@ export class CreateDashboardComponent implements OnInit {
         private alertService: AlertService,
         private groupService: GroupService,
         private dashboardService: DashboardService,
-        private sidebarService: SidebarService,
+        // private sidebarService: SidebarService,
         private stylesProviderService: StyleProviderService
     ) {
         this.initializeForm();
@@ -32,7 +49,6 @@ export class CreateDashboardComponent implements OnInit {
 
     public ngOnInit(): void {
         this.display = true;
-        this.sidebarService.getDataSourceNamesForDashboard();
         this.loadGroups();
     }
 
@@ -45,23 +61,23 @@ export class CreateDashboardComponent implements OnInit {
         });
 
         this.visibleTypes = [
-            { label: $localize`:@@commonPanel:Común`, value: 'public', icon: 'fa fa-fw fa-globe' },
-            { label: $localize`:@@groupPanel:Grupo`, value: 'group', icon: 'fa fa-fw fa-users' },
+            { label: $localize`:@@publicPanel:Publico`, value: 'open', icon: 'fa fa-fw fa-globe' },
+            { label: $localize`:@@commonPanel:Común`, value: 'common', icon: 'fa fa-fw fa-building' },
+            { label: $localize`:@@group:Grupo`, value: 'group', icon: 'fa fa-fw fa-users' },
             { label: $localize`:@@privatePanel:Privado`, value: 'private', icon: 'fa fa-fw fa-lock' },
-        ];
+        ].filter(type => type.value !== 'open' || this.userService.isAdmin || ALLOW_NON_ADMIN_MANAGE_PUBLIC_REPORTS);
 
-        this.form.controls['visible'].setValue(this.visibleTypes[2].value);
+        const defaultVisibleType = this.visibleTypes.find(type => type.value === 'private') ?? this.visibleTypes[0];
+        this.form.controls['visible'].setValue(defaultVisibleType?.value ?? null);
 
-        this.sidebarService.currentDatasourcesDB.subscribe(
-            (res) => {
-                this.dataSources = res;
-                this.dataSources = this.dataSources.sort((a, b) => {
-                    let va = a.model_name.toLowerCase();
-                    let vb = b.model_name.toLowerCase();
-                    return va < vb ?  -1 : va > vb ? 1 : 0
-                });
-            }
-        );
+        this.dataSourceNameService.getDataSourceNamesForDashboard().subscribe((res) => {
+            this.dataSources = res?.ds;
+            this.dataSources = this.dataSources.sort((a, b) => {
+                let va = a.model_name.toLowerCase();
+                let vb = b.model_name.toLowerCase();
+                return va < vb ?  -1 : va > vb ? 1 : 0
+            });
+        });
     }
 
     private async loadGroups(): Promise<void> {
@@ -69,7 +85,10 @@ export class CreateDashboardComponent implements OnInit {
             this.grups = await this.groupService.getGroupsByUser().toPromise();
 
             if (this.grups.length === 0) {
-                this.visibleTypes.splice(1, 1);
+                const groupIndex = this.visibleTypes.findIndex(type => type.value === 'group');
+                if (groupIndex > -1) {
+                    this.visibleTypes.splice(groupIndex, 1);
+                }
             }
         } catch (err) {
             this.alertService.addError(err)
@@ -83,12 +102,11 @@ export class CreateDashboardComponent implements OnInit {
 
         if (this.showGroups) {
             groupControl.setValidators(Validators.required);
-        }
-
-        if (!this.showGroups) {
+        } else {
             groupControl.setValidators(null);
             groupControl.setValue(null);
         }
+        groupControl.updateValueAndValidity();
 
     }
 
@@ -102,13 +120,11 @@ export class CreateDashboardComponent implements OnInit {
                     ds,
                     title: this.form.value.name,
                     visible: this.form.value.visible,
-                    tag: null,
-                    refreshTime:null,
-                    styles:this.stylesProviderService.generateDefaultStyles(),
-                    /*SDA CUSTOM*/ createdAt: new Date(),
-                    /*SDA CUSTOM*/ modifiedAt: new Date(),
-                    external: null,
-                    /*SDA CUSTOM*/ active: true
+                    tag: null, 
+                    refreshTime:null, 
+                    clickFiltersEnabled:true, 
+                    styles: this.stylesProviderService.generateDefaultStyles(),
+                    external: null
                 },
                 group: this.form.value.group
                     ? _.map(this.form.value.group, '_id')
@@ -125,7 +141,9 @@ export class CreateDashboardComponent implements OnInit {
         }
     }
 
-    private onClose(res?: any): void {
+    public onClose(res?: any): void {
+        this.display = false;
+        this.createDashboardService.close();
         this.close.emit(res);
     }
 }

@@ -36,6 +36,7 @@ export class ViewDialogComponent extends EdaDialogAbstract {
 			technical_name: [null, Validators.required],
 			SQLexpression: [null, Validators.required]
 		});
+
 	}
 	onShow(): void {
 
@@ -51,6 +52,7 @@ export class ViewDialogComponent extends EdaDialogAbstract {
 	async checkView() {
 		this.spinnerService.on();
 		this.form.value.SQLexpression= this.form.value.SQLexpression.replace(';','')
+
 		const body = {
 			model_id: this.controller.params.model_id,
 			user: this.controller.params.user,

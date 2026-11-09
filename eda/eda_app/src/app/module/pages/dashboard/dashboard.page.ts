@@ -1,0 +1,1656 @@
+import { ChangeDetectorRef, Component, CUSTOM_ELEMENTS_SCHEMA, inject, OnInit, QueryList, ViewChild, ViewChildren } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
+import { lastValueFrom, Subscription } from 'rxjs';
+import { DateUtils } from '@eda/services/utils/date-utils.service';
+import { resolveQueryMode, isEdaQueryMode } from '@eda/shared/utils/query-mode.util';
+import { ALLOWED_QUERY_MODES } from '@eda/configs/customizable/customizable_merged';
+import * as _ from 'lodash';
+import { ButtonModule } from 'primeng/button';
+import { DropdownModule } from 'primeng/dropdown';
+import { MenuModule } from 'primeng/menu';
+import { MessageModule } from 'primeng/message';
+import { CompactType, DisplayGrid, GridsterComponent, GridsterConfig, GridsterItem, GridsterItemComponent, GridType } from 'angular-gridster2';
+import { AlertService, DashboardService, FileUtiles, GlobalFiltersService, StyleProviderService, IGroup, DashboardStyles, ChartUtilsService, UserService } from '@eda/services/service.index';
+import { EdaPanel, EdaPanelType, InjectEdaPanel } from '@eda/models/model.index';
+import { DashboardSidebarComponent } from './dashboard-sidebar/dashboard-sidebar.component';
+import { GlobalFilterComponent } from '@eda/components/global-filter/global-filter.component';
+import { EdaBlankPanelComponent, IPanelAction, QUERY_MODE_LABELS } from '@eda/components/eda-panels/eda-blank-panel/eda-blank-panel.component';
+import { FormsModule } from '@angular/forms';
+import { FocusOnShowDirective } from '@eda/shared/directives/autofocus.directive';
+import { CommonModule } from '@angular/common';
+import { AssistantService } from '@eda/services/api/assistant.service';
+import { EdaTitlePanelComponent, EdaTabsPanelComponent } from '@eda/components/component.index';
+import { ZoomSdaComponent } from './zoom-control/zoom.component';
+import { ZoomStateService } from './zoom-control/zoom-state.service';
+import { SHOW_ZOOM_IN_SIDEBAR } from '@eda/configs/customizable/customizable_default';
+import { COMPONENT_PLUGINS } from '../../../plugins/component-plugins/component-plugin-registry';
+
+// Sidebar imports
+import { DashboardSidebarService } from '@eda/services/shared/dashboard-sidebar.service';
+import { DependentFilters } from '@eda/components/dependent-filters/dependent-filters.component';
+import { FilterDialogComponent } from '@eda/components/component.index';
+import { GlobalFilterDialogComponent } from '@eda/components/component.index';
+import { ImportPanelDialog } from "@eda/components/import-panel/import-panel.dialog";
+import { DashboardSaveAsDialog } from "@eda/components/dashboard-save-as/dashboard-save-as.dialog";
+import { DashboardEditStyleDialog } from "@eda/components/dashboard-edit-style/dashboard-edit-style.dialog";
+import { DashboardVisibleModal } from "@eda/components/dashboard-visible/dashboard-visible.modal";
+import { DashboardTagModal } from './dashboard-tag/dashboard-tag.modal';
+import { DashboardMailConfigModal } from "@eda/components/dashboard-mail-config/dashboard-mail-config.modal";
+import { DashboardCustomActionDialog } from "@eda/components/dashboard-custom-action/dashboard-custom-action.dialog";
+
+const PRIMENG_MODULES = [
+    ButtonModule,
+    DropdownModule,
+    MenuModule,
+    MessageModule,
+]
+
+const ANGULAR_MODULES = [
+    FormsModule,
+    FocusOnShowDirective,
+    CommonModule,
+];
+const GRIDSTER_MODULES = [
+    GridsterComponent,
+    GridsterItemComponent
+]
+
+// Standalone Components
+const STANDALONE_COMPONENTS = [
+  DashboardSidebarComponent,
+  EdaBlankPanelComponent,
+  GlobalFilterComponent,
+  DashboardSaveAsDialog,
+  DashboardEditStyleDialog,
+  DashboardCustomActionDialog,
+  DashboardTagModal,
+  DashboardMailConfigModal,
+  DashboardVisibleModal,
+  GlobalFilterDialogComponent,
+  FilterDialogComponent,
+  ImportPanelDialog,
+  DependentFilters,
+  EdaTitlePanelComponent,
+  EdaTabsPanelComponent,
+  ZoomSdaComponent
+]
+@Component({
+  selector: 'app-v2-dashboard-page',
+  standalone: true,
+  schemas: [CUSTOM_ELEMENTS_SCHEMA],
+  imports: [STANDALONE_COMPONENTS, ANGULAR_MODULES, GRIDSTER_MODULES, PRIMENG_MODULES],
+  providers: [ZoomStateService],
+
+  templateUrl: './dashboard.page.html',
+  styleUrls: ['./dashboard.page.css'],
+})
+export class DashboardPage implements OnInit {
+  @ViewChild(DashboardSidebarComponent) sidebar!: DashboardSidebarComponent;
+  @ViewChild(GlobalFilterComponent) globalFilter: GlobalFilterComponent;
+  @ViewChildren(EdaBlankPanelComponent) edaPanels: QueryList<EdaBlankPanelComponent>;
+
+  /**
+   * Report component plugin (toolbar replacing the three dots ⠿).
+   * Only the plugin declaring `type: 'report-toolbar'` is mounted; if none is
+   * registered, the template falls back to the original three-dots menu.
+   */
+  public menuPlugin = COMPONENT_PLUGINS.find(p => p.type === 'report-toolbar');
+
+  private sidebarService = inject(DashboardSidebarService)
+  private globalFiltersService = inject(GlobalFiltersService);
+  private stylesProviderService = inject(StyleProviderService);
+  private dashboardService = inject(DashboardService);
+  private alertService = inject(AlertService);
+  private fileUtils = inject(FileUtiles);
+  private route = inject(ActivatedRoute);
+  private chartUtils = inject(ChartUtilsService);
+  private dateUtilsService = inject(DateUtils);
+  private userService = inject(UserService);
+  private zoomState = inject(ZoomStateService);
+
+  public title: string = $localize`:@@loading:Cargando informe...`;
+  public styles: DashboardStyles;
+  public gridsterOptions: GridsterConfig;
+  public gridsterDashboard: GridsterItem[];
+  private edaPanelsSubscription: Subscription;
+  private routeParamsSubscription: Subscription;
+  /** Dashboard id currently shown, to tell real route changes from the initial emission. */
+  private routeDashboardId: string = null;
+
+  /**
+   * x/y/cols/rows of every panel as last loaded or saved. Gridster fires itemChange/itemResize not
+   * only when the user moves or resizes a panel, but also while initializing the grid and whenever
+   * the pixel size is recalculated (window resize, zoom), so those callbacks are only taken as a
+   * real layout change when the grid layout differs from this snapshot.
+   */
+  private savedLayout: string = null;
+
+  /** Right after loading a report gridster may still be placing/re-arranging items; until this
+   *  moment any layout callback is absorbed into the reference layout instead of marking changes. */
+  private layoutReadyAt = 0;
+
+  public reportTitle: any;
+  public reportPanel: any;
+  public backgroundColor: any;
+  public panelTitle: any;
+  public panelTabText: any;
+  public panelTabAlign: any;
+  public panelContent: any;
+  public gridsterItemStyle: any;
+  public availableChatGpt: any = false;
+  public height: number = 1000;
+  public toLitle: boolean = false;
+  public toMedium: boolean = false;
+  public queryParams: any = {};
+  public hideWheel: boolean = false;
+  public panelMode: boolean = false;
+  public readonly showZoomInSidebar = SHOW_ZOOM_IN_SIDEBAR;
+  public connectionProperties: any;
+
+
+  titleClick: boolean = false;
+  sidebarVisible = false;
+  notSaved: boolean = false;
+
+  dashboardId: string;
+  dashboard: any;
+  dataSource: any;
+  panels: any[] = [];
+
+  grups: IGroup[] = [];
+  injectEdaPanel: InjectEdaPanel;
+
+  public onlyIcanEdit: boolean = false;
+  public refreshTime: number;
+  public clickFiltersEnabled: boolean = true;
+  public stopRefresh: boolean = false;
+
+  // Custom data portal
+  public applyCustomizeHTML: string = '';
+  public finalCustimizeHTML: string = '';
+
+  //Filter control variables
+  public lastFilters: any[] = [];
+  public lastMultipleFilters: any[] = [];
+  public chartFilter: any;
+
+  public applyToAllfilter: {
+    present: boolean,
+    refferenceTable: string,
+    id: string
+  };
+
+  public hoveredFilterPanelIds: string[] = [];
+  public isFilterHoverActive: boolean = false;
+
+  public urls: any[] = [];
+  public sendViaMailConfig: any = { enabled: false};
+
+  public selectedTags: any[] = [];
+
+  constructor(public assistantService: AssistantService, private cdr: ChangeDetectorRef) {
+
+  }
+
+  ngOnInit(): void {
+    this.initializeResponsiveSizes();
+    this.initializeGridsterOptions();
+    this.loadDashboard();
+    this.dashboardService.notSaved.subscribe(
+      (data) => this.notSaved = data
+    );
+
+    // Allow other components (e.g. the side menu) to save the report before leaving it.
+    this.dashboardService.registerSaveHandler(() => this.saveDashboard());
+
+    // When navigating between reports (same component, different id), reset the
+    // unsaved-changes flag and reload the dashboard so it never opens marked as modified.
+    this.routeDashboardId = this.route.snapshot.paramMap.get('id');
+    this.routeParamsSubscription = this.route.paramMap.subscribe(params => {
+      const newId = params.get('id');
+      if (!newId || newId === this.routeDashboardId) return;
+      this.routeDashboardId = newId;
+      this.dashboardService.setNotSaved(false);
+      this.loadDashboard();
+    });
+
+    this.assistantService.availableChatGpt().subscribe((resp: any) => {
+      if(resp.response.available) {
+        this.availableChatGpt = true;
+      } else {
+        this.availableChatGpt = false;
+      }
+    })
+  }
+
+
+  /* Set applyToAllFilters for new panel when it's created */
+      public ngAfterViewInit(): void {
+          this.zoomState.init(this.route.snapshot.paramMap.get('id'));
+
+          this.edaPanelsSubscription = this.edaPanels.changes.subscribe((comps: QueryList<EdaBlankPanelComponent>) => {
+              const globalFilters = this.globalFilter?.globalFilters.filter(filter => filter.isGlobal === true);
+              const unsetPanels = this.edaPanels.filter(panel => _.isNil(panel.panel.content));
+
+              this.setPanelsQueryMode();
+
+              setTimeout(() => {
+                  const treeQueryMode = this.edaPanels.some((panel) => panel.selectedQueryMode === 'TREE');
+
+                  unsetPanels.forEach(panel => {
+                      globalFilters.forEach(filter => {
+                          if (panel && !treeQueryMode) {
+                              filter.panelList.push(panel.panel.id);
+                              const formatedFilter = this.globalFiltersService.formatFilter(filter);
+                              panel.assertGlobalFilter(formatedFilter)
+                          }
+                      });
+                  });
+
+              }, 0);
+          });
+
+      }
+
+  /**
+   * When a brand-new (non-duplicated) TREE panel gets its root table set for the first time,
+   * replicate the path of an existing TREE global filter that already targets a sibling panel
+   * sharing that same root table, so the new panel is filtered immediately without having to
+   * reopen the global filter dialog.
+   */
+  public onNewPanelRootTableSet(rootTableName: string, panel: EdaPanel): void {
+      if (!rootTableName) return;
+      const newPanelComp = this.edaPanels.find(p => p.panel.id === panel.id);
+      if (!newPanelComp) return;
+
+      const globalFilters = this.globalFilter?.globalFilters?.filter((f: any) => f.isGlobal && f.queryMode === 'TREE' && f.pathList) || [];
+
+      globalFilters.forEach((filter: any) => {
+          if (!filter.panelList?.length) return;
+
+          // Find the first active panel in this filter that shares the same rootTable
+          const matchingPanelId = filter.panelList.find((pid: string) => {
+              const existing = this.edaPanels.find(p => p.panel.id === pid);
+              return existing?.rootTable?.table_name === rootTableName;
+          });
+
+          if (matchingPanelId && filter.pathList[matchingPanelId]) {
+              filter.pathList[panel.id] = { ...filter.pathList[matchingPanelId] };
+              filter.panelList.push(panel.id);
+              const formatted = this.globalFiltersService.formatFilter(filter);
+              newPanelComp.assertGlobalFilter(formatted);
+          }
+      });
+  }
+
+  /**
+   * When a TREE panel loses its root table (all columns removed), it can no longer be a valid
+   * target for any global filter path, so we drop it from panelList/pathList to keep the
+   * global filters consistent.
+   */
+  public onNewPanelRootTableCleared(panel: EdaPanel): void {
+      const globalFilters = this.globalFilter?.globalFilters?.filter((f: any) => f.isGlobal && f.queryMode === 'TREE') || [];
+
+      globalFilters.forEach((filter: any) => {
+          filter.panelList = filter.panelList?.filter((pid: string) => pid !== panel.id) || [];
+          if (filter.pathList?.[panel.id]) {
+              delete filter.pathList[panel.id];
+          }
+      });
+  }
+
+  ngOnDestroy() {
+    // Reset styles to defaults
+    this.stylesProviderService.setStyles(this.stylesProviderService.generateDefaultStyles())
+    this.stylesProviderService.setDefaultBackgroundColor();
+    this.stylesProviderService.loadingFromPalette = false;
+    this.stopRefresh = true;
+    this.dashboard.config.stopRefresh = true;
+    clearInterval(this.countdownInterval);
+    this.mobileResizeObserver?.disconnect();
+    if (this.edaPanelsSubscription) {
+        this.edaPanelsSubscription.unsubscribe();
+    }
+    if (this.routeParamsSubscription) {
+        this.routeParamsSubscription.unsubscribe();
+    }
+    this.dashboardService.clearSaveHandler();
+  }
+
+
+
+
+
+    private initializeGridsterOptions(): void {
+    this.gridsterOptions = {
+      gridType: GridType.VerticalFixed, // General Gridster configuration: enables vertical scrolling and generated items have fixed size.
+      compactType: CompactType.None, // Controls the compaction setting in gridster
+      displayGrid: DisplayGrid.OnDragAndResize, // Configures the gridster grid display
+      pushItems: true, // Makes elements automatically rearrange
+      avoidOverlapped: true, // Ensures there are no overlaps
+      swap: true,
+      draggable: {
+        enabled: true,
+        ignoreContent: true,
+        dragHandleClass: 'drag-handler' // Class that makes elements draggable
+      },
+      resizable: {
+        enabled: true,
+      },
+      minCols: 40,
+      maxCols: 40,
+      minRows: 30, // Can be optimized for different screens; 30 works well
+      maxRows: 300,
+      margin: 2, // Reduces the margin between cells
+      fixedRowHeight: undefined, // Reduces the row height size
+      fixedColWidth: undefined, // Also adjusts the column width
+      disableScrollHorizontal: true, // Disables horizontal scroll if needed
+      disableScrollVertical: true, // Disables vertical scroll if needed
+      itemChangeCallback: (item: GridsterItem) => this.onItemChange(item),
+      itemResizeCallback: (item: GridsterItem) => this.onItemChange(item),
+      // Gridster places and re-arranges items during initialization (pushItems/avoidOverlapped/swap),
+      // so the layout that was actually loaded is captured once every item has been initialized.
+      itemInitCallback: () => this.captureLoadedLayout()
+    };
+      this.updateSquareCells();
+      window.addEventListener('resize', () => this.updateSquareCells());
+
+    }
+
+    private  updateSquareCells() {
+    const container = document.querySelector('gridster') as HTMLElement;
+    if (!container) return;
+
+    const cols = this.gridsterOptions.minCols!;
+    const width = container.clientWidth;
+    const mobileBreakpoint = this.gridsterOptions.mobileBreakpoint || 640;
+    // If viewing on mobile, Gridster stacks the elements.
+    //https://github.com/tiberiuzuld/angular-gridster2/blob/master/src/assets/gridTypes.md
+    if (width < mobileBreakpoint) {
+      // Mobile mode: fixed height per cell so panels have a reasonable size
+      this.gridsterOptions.fixedRowHeight = 100;
+    } else {
+      let cellSize = Math.floor(width / cols);
+      if(cellSize < 30){
+        // if the cell is very tight, give it a bit more height.
+        cellSize = 30;
+      }
+      this.gridsterOptions.fixedRowHeight = cellSize;
+    }
+    this.sortPanelsForMobile();
+    this.gridsterOptions.api?.optionsChanged();
+  }
+
+  public async loadDashboard() {
+    // Hide the previous report's layout: until the new one is placed, grid callbacks must not be
+    // mistaken for user changes.
+    this.savedLayout = null;
+    this.layoutReadyAt = Date.now() + 1000;
+    const dashboardId = this.route.snapshot.paramMap.get('id');
+    const data = await lastValueFrom(this.dashboardService.getDashboard(dashboardId));
+    const dashboard = data.dashboard;
+    this.dataSource = data.datasource;
+    if (dashboard?.config) {
+      this.onlyIcanEdit = dashboard.config.onlyIcanEdit ;
+      this.dashboardId = dashboardId;
+      this.dashboard = dashboard;
+      this.title = dashboard.config.title;
+      this.applyToAllfilter = dashboard.config.applyToAllfilter || { present: false, refferenceTable: null, id: null };
+      this.globalFilter?.initOrderDependentFilters(dashboard.config.orderDependentFilters || []); // Dependent filters
+      //this.globalFilter?.initGlobalFilters(dashboard.config.filters || []);// Dashboard filters
+      this.globalFilter?.initGlobalFilters( this.checkFiltersVisibility( dashboard.config.filters , data.datasource.model.tables ) ||[]);// Dashboard filters
+      this.initPanels(dashboard);
+      this.sortPanelsForMobile();
+      this.styles = dashboard.config.styles || this.stylesProviderService.generateDefaultStyles();
+      this.getUrlParams();
+      this.globalFilter?.findGlobalFilterByUrlParams(this.queryParams);
+      this.globalFilter?.fillFiltersData();
+
+      if (this.styles.palette !== undefined) {
+        this.chartUtils.MyPaletteColors = this.styles.palette['paleta'];
+      }
+
+
+      if (this.dashboard.config.styles?.palette && this.dashboard.config.styles?.stylesApplied) {
+        this.assignStyles();
+        this.stylesProviderService.setStyles(this.styles, true)
+      }
+
+      if (!this.panelTitle) {
+        const defaultColor = '#000000';
+        const defaultFamily = this.stylesProviderService.DEFAULT_FONT_FAMILY;
+        const defaultSize = '20px';
+        this.panelTitle = {
+          color: defaultColor,
+          'font-size': defaultSize,
+          'font-family': defaultFamily,
+          display: 'flex',
+          'justify-content': 'flex-start'
+        };
+        this.panelTabText = {
+          color: defaultColor,
+          'font-size': defaultSize,
+          'font-family': defaultFamily,
+        };
+        this.panelTabAlign = { 'text-align': 'left' };
+      }
+
+      if (dashboard.config.refreshTime) {
+        dashboard.config.stopRefresh = false;
+        this.startCountdown(dashboard.config.refreshTime);
+      }
+      this.selectedTags = Array.isArray(this.dashboard.config.tag)
+        ? this.dashboard.config.tag.filter(tag => tag !== null && tag !== undefined && tag !== '')
+        : (this.dashboard.config.tag ? [this.dashboard.config.tag] : []);
+    }
+
+    // A dashboard that has just been loaded has no unsaved changes yet.
+    this.dashboardService.setNotSaved(false);
+    this.captureLoadedLayout();
+
+    this.checkImportedPanels(dashboard);
+    this.updateFilterDatesInPanels();
+  }
+
+  private updateFilterDatesInPanels(): void {
+
+        // A dynamic in/not_in date range was never supported as a literal SQL IN by the backend
+        // (it only reads value1, dropping the range's end). Filters saved before this was fixed —
+        // including ones from the old pre-migration app — still carry filter_type 'in'/'not_in'
+        // frozen from when they were created. Remap it here too so old dashboards get the correct
+        // between/not_between query, without needing to be re-saved.
+        const wireFilterType = (filter: any): string => {
+            if (filter.filter_column_type === 'date' && filter.selectedRange && ['in', 'not_in'].includes(filter.filter_type)) {
+                return filter.filter_type === 'in' ? 'between' : 'not_between';
+            }
+            return filter.filter_type;
+        };
+
+        /**Set ranges for dates in panel filters */
+        this.panels.filter(panel => panel.content).forEach(panel => {
+
+            let panelFilters = [...panel.content.query.query.filters];
+            panel.content.query.query.filters = [];
+
+            panelFilters.forEach(pFilter => {
+
+                if (!!pFilter.selectedRange) {
+
+                    let range = this.dateUtilsService.getRange(pFilter.selectedRange);
+                    let stringRange = this.dateUtilsService.rangeToString(range);
+
+                    pFilter.filter_elements[0] = { value1: [stringRange[0]] }
+                    pFilter.filter_elements[1] = { value2: [stringRange[1]] }
+                    pFilter.filter_type = wireFilterType(pFilter);
+
+                }
+
+                panel.content.query.query.filters.push(pFilter);
+
+            });
+
+            // Same date recompute + filter_type remap for the AND/OR filter tree, which the
+            // loop above doesn't touch — it lives at panel.content.query.query.sortedFilters.
+            const sortedFilters = panel.content.query.query.sortedFilters;
+            if (Array.isArray(sortedFilters)) {
+                sortedFilters.forEach(sFilter => {
+                    if (!!sFilter.selectedRange) {
+                        let range = this.dateUtilsService.getRange(sFilter.selectedRange);
+                        let stringRange = this.dateUtilsService.rangeToString(range);
+
+                        sFilter.filter_elements[0] = { value1: [stringRange[0]] };
+                        sFilter.filter_elements[1] = { value2: [stringRange[1]] };
+                        sFilter.filter_type = wireFilterType(sFilter);
+                    }
+                });
+            }
+
+        });
+
+        /**Set ranges for dates in global filters */
+        this.globalFilter?.globalFilters.filter(f => f.selectedRange).forEach(filter => {
+
+            let range = this.dateUtilsService.getRange(filter.selectedRange);
+            let stringRange = this.dateUtilsService.rangeToString(range);
+            filter.selectedItems = stringRange;
+
+            this.panels.filter(panel => panel.content).forEach(panel => {
+
+                const panelFilters = [...panel.content.query.query.filters];
+                panel.content.query.query.filters = [];
+
+                panelFilters.forEach(pFilter => {
+
+                    if (pFilter.filter_id === filter.id) {
+                        const formatedFilter = this.globalFiltersService.formatFilter(filter);
+                        panel.content.query.query.filters.push(formatedFilter);
+                    } else {
+                        panel.content.query.query.filters.push(pFilter);
+                    }
+                });
+            });
+        });
+    }
+
+
+  // Method that assigns styles
+  public assignStyles() {
+    // Report title panel
+    this.reportPanel = {
+      height: 5 + (this.dashboard.config.styles.title.fontSize*0.25) + 'vh',
+    };
+
+    // Report title text
+    this.reportTitle = {
+      color: this.dashboard.config.styles.title.fontColor,
+      'font-size': (20 + this.dashboard.config.styles.title.fontSize * 3) + 'px',
+      'font-family': this.dashboard.config.styles.title.fontFamily,
+      display: 'flex',
+    'justify-content': this.dashboard.config.styles.titleAlign === 'center' ? 'center'
+                      : this.dashboard.config.styles.titleAlign === 'flex-end' ? 'right'
+                      : 'flex-start'
+    };
+
+    // Chart title panel
+    const bgImage = this.dashboard.config.styles.backgroundImage;
+    this.backgroundColor = {
+      background: this.dashboard.config.styles.backgroundColor,
+      ...(bgImage ? {
+        'background-image': `url(${bgImage})`,
+        'background-size': '100% auto',
+        'background-position': 'top center',
+        'background-repeat': 'repeat-y'
+      } : {})
+    };
+
+    // If there is a background image, panels are shown at 80% opacity
+    const panelBg = bgImage
+      ? this.hexColorToRgba(this.dashboard.config.styles.panelColor, 0.5)
+      : this.dashboard.config.styles.panelColor;
+
+    // Chart title text
+    this.panelTitle = {
+      color: this.dashboard.config.styles.panelTitle.fontColor,
+      'font-size': (20 + this.dashboard.config.styles.panelTitle.fontSize * 3) + 'px',
+      'font-family': this.dashboard.config.styles.panelTitle.fontFamily,
+      display: 'flex',
+      'justify-content': this.dashboard.config.styles.panelTitleAlign === 'center' ? 'center'
+                        : this.dashboard.config.styles.panelTitleAlign === 'flex-end' ? 'right'
+                        : 'flex-start'
+    };
+
+    this.panelContent = {
+      background: panelBg,
+    };
+
+    this.gridsterItemStyle = bgImage ? { 'background-color': panelBg } : {};
+
+    // Tab text (like panelTitle but with display:block and text-align)
+    this.panelTabText = {
+      background: panelBg,
+      color: this.dashboard.config.styles.panelTitle.fontColor,
+      'font-size': (20 + this.dashboard.config.styles.panelTitle.fontSize * 3) + 'px',
+      'font-family': this.dashboard.config.styles.panelTitle.fontFamily,
+    };
+
+    this.panelTabAlign = {
+      'text-align': this.dashboard.config.styles.panelTitleAlign === 'center' ? 'center'
+                    : this.dashboard.config.styles.panelTitleAlign === 'flex-end' ? 'right'
+                    : 'left'
+    };
+
+    this.stylesProviderService.ActualChartPalette = this.dashboard.config.styles.palette;
+  }
+
+  private hexColorToRgba(hex: string, alpha: number): string {
+    const clean = (hex || '#ffffff').replace('#', '');
+    const full = clean.length === 3
+      ? clean.split('').map(c => c + c).join('')
+      : clean;
+    const n = parseInt(full, 16);
+    return `rgba(${(n >> 16) & 255}, ${(n >> 8) & 255}, ${n & 255}, ${alpha})`;
+  }
+
+  private initPanels(dashboard: any) {
+    if (!dashboard.config.panel) {
+      this.panels.push(
+        new EdaPanel({
+          id: this.fileUtils.generateUUID(),
+          title: $localize`:@@newPanelTitle:Nuevo Panel`,
+          type: EdaPanelType.BLANK,
+          dragAndDrop: true,
+          resizable: true,
+          w: 20,
+          h: 10,
+          cols: 20,
+          rows: 10,
+        })
+      );
+    } else {
+      this.panels = dashboard.config.panel;
+    }
+
+    // AngularGridster2 new properties (cols, rows)
+    for (const panel of this.panels) {
+      panel.cols = panel.cols || panel.w;
+      panel.rows = panel.rows || panel.h;
+    }
+
+    const user = localStorage.getItem('user');
+    const userID = JSON.parse(user)._id;
+
+    this.injectEdaPanel = {
+      dataSource: this.dataSource,
+      dashboard_id: this.dashboardId,
+      applyToAllfilter: this.applyToAllfilter,
+      isObserver: this.grups.filter(group => group.name === 'EDA_RO' && group.users.includes(userID)).length !== 0,
+      gridsterOptions: this.gridsterOptions
+    }
+    this.stylesProviderService.loadedPanels = dashboard.config?.panel?.length || -1;
+  }
+
+  // Init functions
+  private initializeResponsiveSizes(): void {
+      if (window.innerWidth >= 1200) {
+          this.toLitle = false;
+          this.toMedium = false;
+      }
+
+      if (window.innerWidth < 1000) {
+          this.toLitle = true;
+          this.toMedium = false;
+      }
+  }
+
+  showSidebar(event: Event) {
+    if (this.sidebar) {
+      this.sidebar.showPopover(event);
+    }
+  }
+
+  public isTablePanel(panel: any): boolean {
+    const isTableChart = ['table', 'crosstable', 'treetable'].includes(panel.content?.chart);
+    const isTitleOrTabs = panel.type === 1 || panel.type === 2;
+    return isTableChart || isTitleOrTabs;
+  }
+
+  public canIedit(): boolean {
+    let result: boolean = false;
+    result = this.userService.isAdmin;
+    // if not admin...
+    if (!result) {
+        // Dashboard data hasn't loaded yet (child components can render/query
+        // this before the async fetch in ngOnInit resolves) — default to no edit access.
+        if (!this.dashboard) {
+            return false;
+        }
+        if (this.dashboard.onlyIcanEdit) {
+            result = this.userService.user._id === this.dashboard.user
+        } else {
+            // Anonymous user cannot edit
+            result = this.userService.user._id !== '135792467811111111111112';
+        }
+
+    }
+    return result;
+  }
+
+  onRemovePanel(panel: any) {
+    this.panels.splice(_.findIndex(this.panels, { id: panel }), 1);
+
+    for (const filter of this.globalFilter.globalFilters) {
+      filter.panelList = filter.panelList.filter((id: string) => id !== panel);
+    }
+
+    let valor = this.getBottomMostItem();
+    const rowHeight = this.gridsterOptions.fixedRowHeight || 150;
+    this.height = valor !== undefined ? (valor.y + valor.rows + 4) * rowHeight + 150 : 750;
+    this.cdr.detectChanges();
+    this.stylesProviderService.loadedPanels--;
+  }
+
+  public reloadOnGlobalFilter(): void {
+    //not saved alert message
+    this.dashboardService.setNotSaved(true);
+
+    // Simulate a click on the btn
+    const interval = setInterval(() => {
+      if (this.globalFilter.loading === false) {
+          clearInterval(interval); // stop the polling
+          let btn = document.getElementById('dashFilterBtn');
+          if (btn) btn.click();
+          else this.reloadPanels();
+      }
+    }, 100); // checks every 100ms
+  }
+
+  public async reloadPanels(): Promise<void> {
+    const tasks = this.edaPanels.map(async (panel) => {
+      if (panel.currentQuery.length > 0) {
+        panel.display_v.chart = '';
+
+        await panel.runQueryFromDashboard(true);
+
+        // Update panelChart if it exists
+        if (panel.panelChart) {
+          try {
+            panel.panelChart?.updateComponent();
+          } catch (error) {
+            console.error('Error al actualizar panelChart', error);
+          }
+        }
+      }
+    });
+
+    // Wait for all to finish in parallel
+    await Promise.all(tasks);
+  }
+
+  public async onPanelAction(event: IPanelAction): Promise<void> {
+    let modeEDA = false;
+    const panel = event?.data?.panel;
+    const filtersEnabled: boolean = this.dashboard.config.clickFiltersEnabled;
+    const isImportedPanel: boolean = panel?.globalFilterMap;
+
+    if (panel) {
+      modeEDA = isEdaQueryMode(panel.content?.query?.query?.queryMode, panel.content?.query?.query?.modeSQL);
+    }
+
+    // Cancel event if the column is navigable
+    if(this.checkNavigableColumn(event)) return;
+
+    if (modeEDA && event.code === "ADDFILTER" && this.validateDashboard('GLOBALFILTER') && filtersEnabled && !isImportedPanel) {
+      this.alertService.addSuccess($localize`:@@filteredReportMessage:Por favor, espera un momento mientras procesamos la selección.`);
+      const data = event?.data;
+      let column: any = this.getCorrectColumnFiltered(event);
+      const table = this.dataSource.model.tables.find((table: any) => table.table_name === column?.table_id);
+
+      if (column && table) {
+        this.edaPanels.forEach(panel => {
+          if (panel.panelChart) panel.panelChart.updateComponent();
+        });
+
+        let config = this.setPanelsToFilter(panel);
+        let existingFilter = this.globalFilter.globalFilters.find(f =>
+          this.getChartClicked(f, table.table_name, column.column_name) &&
+          f.panelList.includes(panel.content.query.dashboard.panel_id)
+        );
+
+        if (existingFilter) {
+          await this.handleExistingFilter(existingFilter, data, table, column);
+        } else {
+          await this.handleNewFilter(table, column, data, config);
+        }
+
+        this.edaPanels.forEach(panel => {
+          if (panel.panelChart) panel.panelChart.updateComponent();
+        });
+      }
+    } else if (event.code === "QUERYMODE") {
+      this.setPanelsQueryMode();
+    } else if (event.code === 'MAPFILTERS') {
+      this.onMapFilters();
+    }
+  }
+
+  // DYNAMIC FILTER FUNCTIONS
+  // DYNAMIC FILTER FUNCTIONS
+
+  // Dynamic filter UI (sidebar/panel toggles) only makes sense if there's at least one EDA panel.
+  public dynamicFiltersAvailable(): boolean {
+    return this.panels.some((p: any) => isEdaQueryMode(p.content?.query?.query?.queryMode, p.content?.query?.query?.modeSQL));
+  }
+
+   // Handles the case when a filter already exists
+  private async handleExistingFilter(existingFilter: any, data: any, table: any, column: any): Promise<void> {
+    const filterName = existingFilter.column?.label || existingFilter.selectedColumn?.display_name?.default ||"default";
+
+    if (existingFilter.selectedItems.length === 0) { // Existing filter is empty
+      this.handleEmptyFilter(existingFilter, data);
+    } else if (existingFilter.selectedItems.length === 1) { // Existing filter has 1 value
+      await this.handleSingleValueFilter(existingFilter, filterName, data, table, column);
+    } else { // Existing filter has multiple values
+      this.handleMultipleValuesFilter(existingFilter, filterName, data);
+    }
+  }
+
+   // CASE: Empty filter → Add the value
+  private handleEmptyFilter(existingFilter: any, data: any): void {
+    existingFilter.selectedItems = [data.label];
+    this.globalFilter.applyGlobalFilter(existingFilter);
+    this.reloadOnGlobalFilter();
+  }
+
+   // CASE: Filter with only 1 value
+  private async handleSingleValueFilter(existingFilter: any, filterName: string, data: any, table: any, column: any ): Promise<void> {
+    const backupFilter = this.lastMultipleFilters.find(f => f.filterName === filterName);
+
+    if (backupFilter) { // We have a previous filter value
+      this.restoreFilterFromBackup(existingFilter, filterName, backupFilter);
+    } else { // No previous value
+      await this.removeOrClearFilter(existingFilter, data, table, column);
+    }
+  }
+
+   // Restores the filter from the saved backup
+  private restoreFilterFromBackup(existingFilter: any, filterName: string, backupFilter: any): void {
+    existingFilter.selectedItems = [...backupFilter.filter.selectedItems];
+    this.lastMultipleFilters = this.lastMultipleFilters.filter(f => f.filterName !== filterName);
+    this.globalFilter.applyGlobalFilter(existingFilter);
+    this.reloadOnGlobalFilter();
+  }
+
+   // Removes or clears the filter depending on whether it is fromChart or not
+  private async removeOrClearFilter(existingFilter: any, data: any, table: any, column: any): Promise<void> {
+    if (existingFilter.fromChart) {
+      await this.deleteFilterCompletely(existingFilter, data, table, column);
+    } else {
+      this.clearFilterValues(existingFilter);
+    }
+  }
+
+   // Completely removes a fromChart filter
+  private async deleteFilterCompletely(existingFilter: any, data: any, table: any, column: any): Promise<void> {
+    const filterTable = existingFilter.selectedTable?.table_name || existingFilter.table?.value;
+    const filterColumn = existingFilter.selectedColumn?.column_name || existingFilter.column?.value?.column_name;
+
+    // Clear filter from all panels
+    this.cleanFilterFromAllPanels(filterTable, filterColumn);
+
+    // Clear from the current panel
+    this.cleanFilterFromPanel(data.panel, filterTable, filterColumn);
+
+    // Remove from globalFilter
+    this.globalFilter.removeGlobalFilter(existingFilter, true);
+    this.reloadOnGlobalFilter();
+  }
+
+   // Clears the filter from all dashboard panels
+  private cleanFilterFromAllPanels(filterTable: string, filterColumn: string): void {
+    this.edaPanels['_results'].forEach(p => {
+      // Clear from panel.content
+      if (p.panel?.content?.query?.query?.filters) {
+        p.panel.content.query.query.filters = p.panel.content.query.query.filters.filter(
+          f => !(f.filter_table === filterTable && f.filter_column === filterColumn)
+        );
+      }
+
+      // Clear from inject.content
+      if (p.inject?.content?.query?.query?.filters) {
+        p.inject.content.query.query.filters = p.inject.content.query.query.filters.filter(
+          f => !(f.filter_table === filterTable && f.filter_column === filterColumn)
+        );
+      }
+
+      // Clear from panel globalFilters
+      if (p.globalFilters && Array.isArray(p.globalFilters)) {
+        p.globalFilters = p.globalFilters.filter(
+          f => !(
+            (f.filter_table === filterTable && f.filter_column === filterColumn) ||
+            (f.table?.value === filterTable && f.column?.value?.column_name === filterColumn)
+          )
+        );
+      }
+
+      // Clear from panelChart.inject if it exists
+      if (p.panelChart?.inject?.content?.query?.query?.filters) {
+        p.panelChart.inject.content.query.query.filters = p.panelChart.inject.content.query.query.filters.filter(
+          f => !(f.filter_table === filterTable && f.filter_column === filterColumn)
+        );
+      }
+    });
+  }
+
+   // Clears the filter from a specific panel
+  private cleanFilterFromPanel(panel: any, filterTable: string, filterColumn: string): void {
+    if (panel?.content?.query?.query?.filters) {
+      panel.content.query.query.filters = panel.content.query.query.filters.filter(
+        f => !(f.filter_table === filterTable && f.filter_column === filterColumn)
+      );
+    }
+  }
+
+   // Clears filter values without removing it (for non-fromChart filters)
+  private clearFilterValues(existingFilter: any): void {
+    existingFilter.selectedItems = [];
+    this.globalFilter.applyGlobalFilter(existingFilter);
+    this.reloadOnGlobalFilter();
+  }
+
+   // CASE: Filter with multiple values → Save backup and filter by a single one
+  private handleMultipleValuesFilter(existingFilter: any, filterName: string, data: any): void {
+    // Save backup if it doesn't exist
+    if (!this.lastMultipleFilters.find(f => f.filterName === filterName)) {
+      this.lastMultipleFilters.push({
+        filterName: filterName,
+        filter: JSON.parse(JSON.stringify(existingFilter))
+      });
+    }
+
+    // Filter only by the clicked value
+    existingFilter.selectedItems = [data.label];
+    this.globalFilter.applyGlobalFilter(existingFilter);
+    this.reloadOnGlobalFilter();
+  }
+
+   // Creates a new filter when none exists
+  private async handleNewFilter(table: any, column: any, data: any, config: any): Promise<void> {
+    this.chartFilter = this.createChartFilter(table, column, data.label, config);
+    data.panel.content.query.query?.filters.push(
+      this.createChartFilter(table, column, data.label, config)
+    );
+
+    try {
+      await this.globalFilter.onGlobalFilterAuto(this.chartFilter, table.table_name);
+      this.reloadOnGlobalFilter();
+    } catch (error) {
+      console.error('Error creando filtro:', error);
+    }
+  }
+
+
+/**
+ * Checks the security configuration of filters and hides the column if the filter is not visible to the user due to security filter reasons
+ * @param filters - receives the report's filter array
+ * @param tables - receives the model's table array
+ * @returns - the report's filter array indicating which ones are hidden by security
+ */
+  private checkFiltersVisibility(filters, tables) {
+    if (filters && filters.length > 0) {
+      filters.forEach((f) => {
+        // Check if the filter was created in TREE mode
+        if (f.selectedColumn && f.selectedTable) {
+          f.selectedColumn.visible = (
+            (tables.filter((t) => t.table_name == f.selectedTable.table_name)[0]?.visible == true) &&
+            (tables.filter((t) => t.table_name == f.selectedTable.table_name)[0]?.columns.filter((c) => c.column_name == f.selectedColumn.column_name)[0]?.visible == true)
+          )
+        }
+        // if selectedColumn is not defined, the filter is created in EDA mode
+        else {
+          f.column.value.visible = (
+            (tables.filter((t) => t.table_name == f.table.value)[0]?.visible == true) &&
+            (tables.filter((t) => t.table_name == f.table.value)[0]?.columns.filter((c) => c.column_name == f.column.value.column_name)[0]?.visible == true)
+          )
+        }
+      })
+    }
+    return filters;
+  }
+
+
+  createChartFilter(table: any, column: any, dataLabel: string, config: any): any {
+
+    let allNonDynamics = this.edaPanels.filter((panel: any) => !panel.dynamicFilters)
+
+    if(allNonDynamics.length === 0){
+      const filter = {
+        id: `${table.table_name}_${column.column_name}`,
+        filter_id: `${table.table_name}_${column.column_name}`,
+        isGlobal: true,
+        isAutocompleted: config.isAutocompleted ?? false,
+        applyToAll: config.applyToAll ?? true,
+        panelList: config.panelList.map((p) => p.id),
+        table: { label: table.display_name.default, value: table.table_name },
+        column: {
+            label: column.display_name?.default || column.column_name,
+            value: column
+        },
+        selectedItems: [dataLabel],
+        fromChart: true,
+        visible: 'public',
+        data: []
+      };
+
+      return filter;
+
+    } else {
+
+      let allNonDynamicsPanels = allNonDynamics.map(panel => panel.panel.id)
+
+      const filter = {
+        id: `${table.table_name}_${column.column_name}`,
+        filter_id: `${table.table_name}_${column.column_name}`,
+        isGlobal: true,
+        isAutocompleted: config.isAutocompleted ?? false,
+        applyToAll: false,
+        panelList: config.panelList.filter((panel: any) => !panel.id.includes(allNonDynamicsPanels)).map((p: any) => p.id),
+        table: { label: table.display_name.default, value: table.table_name },
+        column: {
+            label: column.display_name?.default || column.column_name,
+            value: column
+        },
+        selectedItems: [dataLabel],
+        fromChart: true,
+        visible: 'public',
+        data: []
+      };
+
+      return filter;
+    }
+
+      //FALSE ==> collect panels that do not have click enabled
+        // Modify properties isGlobal? applyToAll? panelList?
+
+  }
+
+  deleteDynamicFilter(chartToRemove: any, table: any, filterName: any) {
+    // Delete the existing filter
+    let filterToAddIndx = this.lastFilters.findIndex(element => element.filterName === chartToRemove.column.label &&
+      element.filter.table.label === chartToRemove.table.label)
+    // Remove the fromChart filter from the global filter
+    this.globalFilter.removeGlobalFilterOnClick(chartToRemove, true);
+    // Retrieve the corresponding filter and remove it from the saved filters
+    if (filterToAddIndx !== -1 ) {
+      this.globalFilter.onGlobalFilterAuto(this.lastFilters[filterToAddIndx].filter, table.table_name)
+      this.lastFilters.splice(filterToAddIndx, 1);
+    }
+  }
+
+  recoverDynamicFilter(chartToRemove?: any, existingFilter?: any, filterName?: string) {
+    // Restore selectedItems from the saved filter
+    chartToRemove.selectedItems = [...existingFilter.filter.selectedItems];
+
+    // Remove that filter from the array
+    this.lastMultipleFilters = this.lastMultipleFilters.filter(f => f.filterName !== filterName);
+
+    // Apply global filter
+    this.globalFilter.applyGlobalFilter(chartToRemove);
+  }
+
+  isFilterAppliedToChart(anyChartToRemove: any, data: any) : boolean {
+
+    let filterInPanel = data.panel.content.query.query?.filters.find((f: any) =>
+      (f.filter_elements?.some((fe: any) => fe.value1?.includes(data.label))) ||
+      (data.label.includes(f.selectedItems)))
+      !== undefined;
+
+    if(anyChartToRemove && filterInPanel) {
+      // even if it matches, if it is not applied as a filter in the panel itself, we will create a new one
+      return false;
+    }
+    return true;
+  }
+
+  /** Updates applyToAllFilter in every panel */
+  public updateApplyToAllFilterInPanels(): void {
+    this.edaPanels.forEach((panel) => {
+      panel.inject.applyToAllfilter = this.applyToAllfilter;
+      panel.reloadTablesData();
+    });
+  }
+
+  public onMapFilters() {
+    this.sidebarService.invokeMethod('onImportPanel');
+  }
+
+  checkImportedPanels(dashboard) {
+    dashboard.config.panel?.forEach(element => {
+      try {
+        if (element.globalFilterMap) {
+          const panelFilters = element.content.query.query.filters;
+          element.globalFilterMap.forEach(filterLinkId => {
+            // Find the dashboard filter that targetId points to
+            const dashboardFilterToApply = dashboard.config.filters.find(filter => filter.id === filterLinkId.targetId);
+            const sourceFilter = panelFilters.find(f => f.filter_id === filterLinkId.sourceId);
+            const valueToApply = dashboardFilterToApply.selectedItems;
+            const columnType = dashboardFilterToApply.column?.value?.column_type || dashboardFilterToApply.selectedColumn?.column_type;
+            const isDate = columnType === 'date';
+
+            if (sourceFilter?.filter_elements) {
+              if (isDate) {
+                if (!sourceFilter.filter_elements[1]) {
+                  sourceFilter.filter_elements[1] = { value2: [] };
+                }
+                sourceFilter.filter_elements[0].value1 = valueToApply[0] ? [valueToApply[0]] : [];
+                sourceFilter.filter_elements[1].value2 = valueToApply[1] ? [valueToApply[1]] : [];
+              } else {
+                sourceFilter.filter_elements[0].value1 = valueToApply;
+              }
+            }
+          });
+        }
+      } catch (error) {
+        console.log('Error al cargar imported panels', error)
+        this.alertService.addError('Error al cargar imported panels')
+      }
+    });
+  }
+
+  public onDuplicatePanel(event: { panel: any, sourcePanelId: string }): void {
+    const { panel, sourcePanelId } = event;
+
+    if (this.globalFilter?.globalFilters) {
+      this.globalFilter.globalFilters
+        .filter((f: any) => f.isGlobal)
+        .forEach((filter: any) => {
+          if (filter.pathList && filter.pathList[sourcePanelId]) {
+            filter.pathList[panel.id] = _.cloneDeep(filter.pathList[sourcePanelId]);
+          }
+          if (filter.panelList.includes(sourcePanelId) && !filter.panelList.includes(panel.id)) {
+            filter.panelList.push(panel.id);
+          }
+        });
+    }
+
+    this.panels.push(panel);
+    this.dashboardService.setNotSaved(true);
+    this.stylesProviderService.loadedPanels++;
+
+    const _dupSub = this.edaPanels.changes.subscribe(() => {
+      _dupSub.unsubscribe();
+      const newPanel = this.edaPanels.toArray().find(p => p.panel.id === panel.id);
+      if (newPanel && this.globalFilter?.globalFilters) {
+        const applicable = this.globalFilter.globalFilters.filter((f: any) => f.isGlobal && f.panelList.includes(panel.id));
+        applicable.forEach((filter: any) => {
+          newPanel.assertGlobalFilter(this.globalFiltersService.formatFilter(filter));
+        });
+        // By this point the panel's own ngOnInit (and its _isDuplicate query run) has
+        // already completed, so trigger the query run directly instead of relying on a
+        // flag nothing else re-checks.
+        if (applicable.length > 0) newPanel.runQueryFromDashboard(true);
+      }
+    });
+  }
+
+  async onGlobalFilter(data: any) {
+    // const data = action?.data;
+    if (data && !_.isNil(data?.inx)) {
+      const panel = data?.panel;
+      const column = data.query.find((query: any) => query?.display_name?.default === data.filterBy);
+      const table = this.dataSource.model.tables.find((table: any) => table.table_name === column?.table_id);
+
+      if (column && table) {
+        let config = this.setPanelsToFilter(panel);
+
+        let globalFilter = {
+          id: `${table.table_name}_${column.column_name}`,  //this.fileUtils.generateUUID(),
+          isGlobal: true,
+          isAutocompleted: config.isAutocompleted,
+          applyToAll: config.applyToAll,
+          panelList: config.panelList.map(p => p.id),
+          table: { label: table.display_name.default, value: table.table_name },
+          column: { label: column.display_name.default, value: column },
+          selectedItems: [data.label]
+        };
+
+        await this.globalFilter.onGlobalFilter(true, globalFilter);
+
+
+        this.dashboardService.setNotSaved(true);
+
+        // Simulate a click on the btn
+        setTimeout(() => {
+          let btn = document.getElementById('dashFilterBtn');
+          if (btn) btn.click();
+          else this.refreshPanelsOthersCharts();
+        }, 100);
+      }
+    }
+    this.setPanelsQueryMode();
+  }
+
+  private setPanelsToFilter(panel: any): any {
+    const newPanel = this.panels.find(p => p.id === panel.id);
+    const panels = this.globalFiltersService.panelsToDisplay(this.dataSource.model.tables, this.panels, newPanel);
+    const panelsToFilter = panels.filter(p => p.avaliable === true);
+
+    return {
+        panelList: panelsToFilter,
+        applyToAll: (panels.length === panelsToFilter.length)
+    };
+  }
+
+  /** Selects the mode in which queries will be allowed. EDA and Tree type queries cannot be mixed in the same report. */
+  private setPanelsQueryMode(): void {
+    // Only panels with a saved query define the report's mode: an empty (new) panel would
+    // otherwise resolve to the legacy default 'EDA' and wrongly lock the report / re-add EDA.
+    const savedPanels = this.panels.filter((p) => p.content?.query?.query);
+    const treeQueryMode = savedPanels.some((p) => resolveQueryMode(p.content.query.query.queryMode, p.content.query.query.modeSQL) === 'TREE');
+    const standardQueryMode = savedPanels.some((p) => isEdaQueryMode(p.content.query.query.queryMode, p.content.query.query.modeSQL));
+
+    for (const panel of this.edaPanels) {
+      const savedQuery = panel.panel?.content?.query?.query;
+      const ownMode = savedQuery ? resolveQueryMode(savedQuery.queryMode, savedQuery.modeSQL) : null;
+      let allowedModes = [...ALLOWED_QUERY_MODES];
+
+      if (treeQueryMode) {
+
+        allowedModes = allowedModes.filter(v => v !== 'EDA');
+      } else if (standardQueryMode) {
+        allowedModes = allowedModes.filter(v => v !== 'TREE');
+      }
+
+      // Keep offering a panel's own already-saved mode even if it's no longer
+      // configured in QUERY_MODE, so legacy panels stay visible/selectable
+      // without letting new panels be created in a retired mode.
+      if (ownMode && !allowedModes.includes(ownMode)) {
+        allowedModes = [...allowedModes, ownMode];
+      }
+
+      if (((!standardQueryMode && !treeQueryMode) || this.edaPanels.length === 1) && this.globalFilter.globalFilters.length === 0) {
+
+        allowedModes = ownMode && !ALLOWED_QUERY_MODES.includes(ownMode) ? [...ALLOWED_QUERY_MODES, ownMode] : [...ALLOWED_QUERY_MODES];
+      }
+
+      panel.queryModes = allowedModes.map(v => QUERY_MODE_LABELS.find(l => l.value === v));
+
+      // Only correct the live selection when it is no longer a valid option
+      // (e.g. another panel just locked the report into the TREE/EDA family).
+      // Never overwrite a mode the user just picked in the dropdown while it
+      // is still allowed - doing so unconditionally used to snap SQL/EDA
+      // selections back to TREE right after the dropdown change was made.
+      if (allowedModes.length > 0 && !allowedModes.includes(panel.selectedQueryMode)) {
+        panel.selectedQueryMode = allowedModes[0];
+      }
+    }
+  }
+
+  refreshPanels() {
+    this.edaPanels.forEach(async (panel) => {
+      if (panel.currentQuery.length > 0) {
+        panel.display_v.chart = '';
+        await panel.runQueryFromDashboard(true);
+        setTimeout(() => panel.panelChart?.updateComponent(), 100);
+      }
+    });
+  }
+
+  refreshPanelsOthersCharts() {
+    this.edaPanels.forEach(async (panel) => {
+      if (panel.currentQuery.length > 0) {
+        const chartType = panel.graphicType;
+        const isChartJS = ['doughnut', 'polarArea', 'bar', 'horizontalBar', 'line', 'area', 'barline', 'histogram', 'pyramid', 'radar', 'knob'].includes(chartType);
+        if (!isChartJS) {
+          panel.display_v.chart = '';
+          await panel.runQueryFromDashboard(true);
+        }
+        setTimeout(() => panel.panelChart?.updateComponent(), 100);
+      }
+    });
+  }
+
+
+  public async saveDashboard() {
+    const mandatoryFilters = this.globalFilter?.checkAllMandatoryFilters();
+    if (mandatoryFilters && !mandatoryFilters.value) {
+      this.alertService.addError($localize`:@@AddMandatoryFilters:Los siguientes filtros son obligatorios y no tienen valor asignado:` + mandatoryFilters.items);
+      return;
+    }
+
+    this.triggerTimer();
+    const body = {
+      config: {
+        title: this.title,
+        panel: [] as any[],
+        ds: { _id: this.dataSource._id },
+        filters: this.cleanFiltersData(),
+        applyToAllfilter: this.applyToAllfilter,
+        visible: this.dashboard.config.visible ?? 'private',
+        tag: this.selectedTags,
+        refreshTime: (this.dashboard.config.refreshTime > 5) ? this.dashboard.config.refreshTime : this.dashboard.config.refreshTime ? 5 : null,
+        clickFiltersEnabled: this.dashboard.config.clickFiltersEnabled,
+        panelLockEnabled: this.dashboard.config.panelLockEnabled,
+        createdAt: this.dashboard.config.createdAt || new Date().toISOString(),
+        modifiedAt: new Date().toISOString(),
+        sendViaMailConfig: this.dashboard.config.sendViaMailConfig || this.sendViaMailConfig,
+        mailingAlertsEnabled: false as boolean,
+        onlyIcanEdit: this.dashboard.config.onlyIcanEdit,
+        styles: this.dashboard.config.styles,
+        urls: this.dashboard.config.urls,
+        author: this.dashboard.config?.author,
+        orderDependentFilters: this.globalFilter?.orderDependentFilters,
+      },
+      group: this.dashboard.group ? _.map(this.dashboard.group) : undefined,
+    };
+
+    body.config.panel = this.savePanels();
+    body.config.mailingAlertsEnabled = body.config.panel.some((panel: any) =>
+      panel.content?.chart === 'kpi' &&
+      panel.content?.query?.output?.config?.alertLimits?.some((a: any) => a.mailing?.enabled === true)
+    );
+
+    try {
+      await lastValueFrom(this.dashboardService.updateDashboard(this.dashboardId, body));
+      this.alertService.addSuccess($localize`:@@dahsboardSaved:Informe guardado correctamente`);
+      this.dashboardService.setNotSaved(false);
+      // The layout just saved becomes the new reference for detecting further moves/resizes.
+      this.captureLoadedLayout();
+    } catch (err) {
+      this.alertService.addError(err);
+      throw err;
+    }
+
+    this.checkImportedPanels(this.dashboard);
+  }
+
+  private savePanels(): any[] {
+    // Each EdaBlankPanel component save method
+    this.edaPanels.forEach(panel => { panel.savePanel(); });
+
+    const _panels = JSON.parse(JSON.stringify(this.panels));
+
+    for (const panel of _panels) {
+      const dashboardId = panel.dashboard?._id;
+    }
+
+    return _panels;
+  }
+
+  public cleanFiltersData() {
+    const filtersCleaned = [];
+
+    for (const _globalFilter of this.globalFilter?.globalFilters) {
+      const globalFilter = _.cloneDeep(_globalFilter);
+
+      delete (globalFilter.isnew);
+
+      if (globalFilter.pathList) {
+        for (const key in globalFilter.ist) {
+          const selectedTableNodes = globalFilter.pathList[key].selectedTableNodes;
+          delete (selectedTableNodes.parent);
+        }
+      }
+
+      if (globalFilter.selectedTable) {
+        delete (globalFilter.selectedTable.columns);
+      }
+
+      globalFilter.data = null;
+      filtersCleaned.push(globalFilter);
+    }
+
+    return filtersCleaned;
+  }
+
+private countdownInterval: any;
+
+public startCountdown(seconds: number) {
+
+  if (this.dashboard.config.stopRefresh) return;
+
+  let counter = seconds;
+
+  // Avoid duplicate intervals
+  clearInterval(this.countdownInterval);
+  this.countdownInterval = setInterval(() => {
+    if (this.dashboard.config.stopRefresh) {
+      clearInterval(this.countdownInterval);
+      return;
+    }
+    counter--;
+    if (counter < 0) {
+      this.onResetWidgets();
+      counter = seconds; // Changed from recursion to counter
+    }
+  }, 1000);
+}
+
+  public onResetWidgets(): void {
+    // Get the queries in the dashboard for delete it from cache
+    const queries = [];
+    this.panels.forEach( p=> {
+            if(p.content  !== undefined && p.content.query  !== undefined && p.content.query.query  !== undefined){
+                queries.push( p.content.query.query );
+            }
+        });
+    let body =
+    {
+        model_id: this.dataSource._id,
+        queries: queries
+    }
+
+    this.dashboardService.cleanCache(body).subscribe(
+        res => {
+            this.loadDashboard();
+            this.dashboardService.setNotSaved(false);
+        },
+        err => console.log(err)
+    )
+  }
+
+  triggerTimer() {
+
+    // If there is a configured time, stop it
+    this.dashboard.config.stopRefresh = true;
+    clearInterval(this.countdownInterval);
+
+    //Give time to stop counter if any
+    setTimeout(() => {
+        const refreshTime = this.dashboard.config.refreshTime;
+        // if there is no refresh time, do not start the counter
+        if (!refreshTime) {
+            this.dashboard.config.stopRefresh = true;
+            return;
+        }
+        // if the refresh time is less than 5 seconds, set it to 5 seconds         if (refreshTime < 5) this.dashboard.config.refreshTime = 5;
+        this.dashboard.config.stopRefresh = false;
+        // start the counter
+        this.startCountdown(this.dashboard.config.refreshTime);
+    }, 2000);
+  }
+
+  public validateDashboard(action: string): boolean {
+    let isvalid = true;
+
+    if (action == 'GLOBALFILTER') {
+      const emptyQuery = this.edaPanels.some((panel) => panel.currentQuery.length === 0);
+      if (emptyQuery) isvalid = false;
+
+      if (!isvalid) {
+        this.alertService.addError($localize`:@@AddFiltersWarningTittle:Solo puedes añadir filtros cuando todos los paneles están configurados`)
+      }
+    }
+
+    return isvalid;
+  }
+
+  public getCorrectColumnFiltered(event): string {
+    const chartType = event.data?.panel?.content?.chart;
+    const edaChart = event.data?.panel?.content?.edaChart;
+    const queries = event.data?.query || [];
+    const filterBy = event.data?.filterBy;
+    if (['doughnut', 'polarArea', 'bar', 'line', 'radar'].includes(chartType)) {
+      if (edaChart === 'stackedbar100') {
+        // For stackedbar100, a label is a value, not a table column, and cannot be filterby.
+        // The last text column is the value we are looking for
+        const textColumns = queries.filter(q => q.column_type === 'text');
+        // if there are two text columns, the second is the value; otherwise, the first (and only) is the value
+        return textColumns.length > 1 ? textColumns[1] : textColumns[0];
+      }
+      const queryFiltered = queries.find(q => q.display_name?.default === filterBy);
+      if (queryFiltered?.column_type === 'numeric') {
+        return queries.find(q => q.column_type === 'text');
+      }
+      else if (event.data.query.length > 2) // If the query has more than two values in bars, we need to redefine filterBy
+        return event.data.query.find((query: any) => query?.display_name?.default === event.data.query[0].display_name.default);
+      else
+        return event.data.query.find((query: any) => query?.display_name?.default === event.data.filterBy);
+    }
+    else if (['table', 'crosstable', 'treetable'].includes(event.data.panel.content.chart)) {
+      return event.data.query.find((query: any) => query?.column_name === event.data.filterBy);
+    }
+    else {
+      // If the event is from a D3Chart or Leaflet library chart
+        return event.data.query.find((query: any) => query?.column_name?.localeCompare(event.data.filterBy, undefined, { sensitivity: 'base' }) === 0);
+//        return event.data.query.find((query: any) => query?.display_name?.default.localeCompare(event.data.filterBy, undefined, { sensitivity: 'base' }) === 0);
+    }
+  }
+
+  //----------------------------------------//
+  //-- Check if this is needed or can be removed --//
+  // Gets the item at the bottommost position of the gridster -- Check if this is needed
+  getBottomMostItem(): GridsterItem | undefined {
+      let bottomMostItem: GridsterItem | undefined;
+      let maxBottom = -1; // Initialize with a low value
+
+      for (let item of this.panels) {
+          // Calculate the final Y position (bottom) of the item
+          const bottom = item.y + item.rows;
+
+          // If the current item is lower, update it
+          if (bottom > maxBottom) {
+          maxBottom = bottom;
+          bottomMostItem = item;
+          }
+      }
+      return bottomMostItem; // The item at the lowest position in the entire gridster
+  }
+
+  // Function that updates the gridster height value each time an element changes
+  onItemChange(item: GridsterItem): void {
+    // Gridster also calls this while initializing the grid and on pixel recalculations, so the
+    // report is only marked as modified when the grid layout really differs from the loaded one.
+    this.markLayoutChanged();
+    if (this.panels) {
+      const rowHeight = this.gridsterOptions.fixedRowHeight || 150;
+      const isMobile = window.innerWidth < (this.gridsterOptions.mobileBreakpoint || 640);
+      if (isMobile) {
+        this.updateMobileHeight();
+      } else {
+        let valor = this.getBottomMostItem();
+        this.height = ((valor.y + valor.rows + 4) * rowHeight) + 250;
+        this.cdr.detectChanges();
+      }
+    }
+  }
+
+  /** Marks the report as modified only when the panel layout differs from the last loaded/saved one. */
+  private markLayoutChanged(): void {
+    if (this.savedLayout === null) return;
+    if (Date.now() < this.layoutReadyAt) {
+      // Gridster is still placing or re-arranging items right after loading the report, so those
+      // internal moves become part of the reference layout rather than user changes.
+      this.captureLoadedLayout();
+      return;
+    }
+    if (this.currentLayout() !== this.savedLayout) {
+      this.dashboardService.setNotSaved(true);
+    }
+  }
+
+  /** Stores the current panel layout as the reference of what is saved. */
+  private captureLoadedLayout(): void {
+    this.savedLayout = this.currentLayout();
+  }
+
+  private currentLayout(): string {
+    return JSON.stringify((this.panels || []).map(p => ({ id: p.id, x: p.x, y: p.y, cols: p.cols, rows: p.rows })));
+  }
+
+
+  private getUrlParams(): void {
+    this.route.queryParams.subscribe(params => {
+      this.queryParams = params;
+      try{
+        if(params['hideWheel'] == 'true'){
+          this.hideWheel =true;
+        }
+        if(params['panelMode'] == 'true'){
+          this.panelMode =true;
+          this.hideWheel =true;
+        }
+        if (params['cnproperties']) {
+          this.connectionProperties = JSON.parse(decodeURIComponent(params['cnproperties']));
+        }
+
+      } catch(e){
+        console.error('getUrlParams: '+ e);
+      }
+    });
+  }
+
+
+// Function to detect the clicked filter
+  private getChartClicked(f: any, tableName: string, columnName: string, label?: any): boolean {
+    const norm = (val: any) => val?.toString()?.normalize("NFD")?.replace(/[\u0300-\u036f]/g, "")?.toLowerCase()?.trim();
+
+    const newTable = norm(f.selectedTable?.table_name);
+    const newColumn = norm(f.selectedColumn?.column_name);
+    const oldTable = norm(f.table?.value);
+    const oldColumn = norm(f.column?.value?.column_name);
+
+    const targetTable = norm(tableName);
+    const targetColumn = norm(columnName);
+
+    const tableMatch = newTable === targetTable || oldTable === targetTable;
+    const columnMatch = newColumn === targetColumn || oldColumn === targetColumn;
+
+    // If no label is provided, only verify table and column
+    if (!label) {
+      return tableMatch && columnMatch;
+    }
+
+    // If a label is provided, also verify that it matches
+    const targetLabel = norm(label);
+    let labelMatch = false;
+
+    if (Array.isArray(f.selectedItems)) {
+      f.selectedItems.forEach((item) => {
+        const normItem = norm(item);
+        if (normItem === targetLabel) {
+          labelMatch = true;
+        }
+      });
+    }
+    return tableMatch && columnMatch && labelMatch;
+  }
+
+  // Auxiliary functions for mobile
+  private readonly MOBILE_MARGIN = 8; // must match the margin-bottom in the CSS
+  private mobileResizeObserver: ResizeObserver | null = null;
+
+  private updateMobileHeight(): void {
+    if (this.mobileResizeObserver) return;
+
+    const gridsterEl = document.querySelector('gridster') as HTMLElement;
+    if (!gridsterEl) return;
+
+    const measure = () => {
+      const isMobile = window.innerWidth < (this.gridsterOptions.mobileBreakpoint || 640);
+      if (!isMobile) {
+        this.mobileResizeObserver?.disconnect();
+        this.mobileResizeObserver = null;
+        return;
+      }
+      const items = gridsterEl.querySelectorAll('gridster-item') as NodeListOf<HTMLElement>;
+      if (!items?.length) return;
+
+      let total = 50;
+      items.forEach(item => total += item.offsetHeight + this.MOBILE_MARGIN);
+
+      if (total > 100 && total !== this.height) {
+        this.height = total;
+        this.cdr.detectChanges();
+      }
+    };
+
+    this.mobileResizeObserver = new ResizeObserver(measure);
+    this.mobileResizeObserver.observe(gridsterEl);
+    measure();
+  }
+
+  private sortPanelsForMobile(): void {
+    if (!this.panels?.length) return;
+    const isMobile = window.innerWidth < (this.gridsterOptions.mobileBreakpoint || 640);
+    if (isMobile) {
+      this.panels.sort((a, b) => a.y - b.y || a.x - b.x);
+      this.updateMobileHeight();
+    }
+  }
+
+  // Function to check if the clicked column is navigable
+  public checkNavigableColumn(event: any): boolean {
+    const columnClicked = event?.data?.filterBy;
+    if (!columnClicked) return false;
+
+    // Child-nav: the column is a parent or child of a downChild link → do not filter on click
+    const navigationLinks: any[] = event?.data?.panel?.content?.navigationLinks || [];
+    const linkedParentColumnNames = navigationLinks.map((link: any) => link.parentColumn);
+    const linkedChildColumnNames = navigationLinks.map((link: any) => link.childColumn);
+    if ([...linkedParentColumnNames, ...linkedChildColumnNames].includes(columnClicked)) return true;
+
+    // Date-nav: the column has dateNav=true → also do not filter on click
+    const fields: any[] = event?.data?.panel?.content?.query?.query?.fields || [];
+    return fields.some((f: any) => f.column_name === columnClicked && f.dateNav === true);
+  }
+}

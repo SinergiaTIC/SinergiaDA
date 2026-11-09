@@ -1,0 +1,335 @@
+<div class="flex flex-row h-screen overflow-hidden">
+
+<!-- Main content -->
+<div class="flex-1 min-w-0 flex flex-col overflow-hidden">
+
+  <!-- Header + Filters (no scroll) -->
+  <div class="shrink-0 max-w-[2000px] w-full mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-4 space-y-4">
+    <!-- Header -->
+    <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+      <div class="flex items-center gap-2">
+        <eda-icon name="home" class="text-corporate-primary" />
+        <h1 class="text-2xl font-semibold" i18n="@@sidebarMyDashboards">Mis informes</h1>
+      </div>
+      <div class="flex flex-col sm:flex-row items-start sm:items-center gap-4 w-full sm:w-auto">
+        <div class="flex relative w-full sm:w-[300px]">
+          <eda-icon name="magnifying-glass"
+            class="absolute left-3 top-1/2 h-4 w-4 -translate-y-[65%] text-muted-foreground" />
+          <input type="text" [(ngModel)]="searchQuery" (keyup)="filterByTitle($event)"
+            class="w-full rounded-md border border-input bg-background py-2 !pl-9 !pr-9 text-sm"
+            i18n-placeholder="@@searcherInput" placeholder="Buscador">
+          <eda-icon name="plus" size="sm" (click)="toggleAdvancedFilter($event)"
+            class="absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 cursor-pointer filter-toggle-icon"
+            [class.text-muted-foreground]="!showAdvancedFilter()"
+            [class.filter-toggle-icon--active]="showAdvancedFilter()" />
+
+          @if(showAdvancedFilter()) {
+            <div class="advanced-filter-panel absolute top-full right-0 z-50 mt-2 w-full rounded-lg border bg-white shadow-lg"
+              (click)="$event.stopPropagation()">
+              <!-- Header -->
+              <div class="flex items-center justify-between px-4 py-3 border-b">
+                <span class="text-xs font-semibold uppercase tracking-wide text-muted-foreground"
+                  i18n="@@advancedFilterTitle">Filtro avanzado</span>
+                <button class="filter-clear-btn"
+                  (click)="clearAdvancedFilters()" i18n="@@clearFiltersBtn">Limpiar</button>
+              </div>
+              <div class="p-4 space-y-3">
+                <!-- Author -->
+                <div class="space-y-1">
+                  <label class="text-xs font-medium text-muted-foreground" i18n="@@authorFilterLabel">Propietario</label>
+                  <input type="text" [(ngModel)]="advancedFilters.author" (ngModelChange)="applyAdvancedFilters()"
+                    class="w-full rounded-md border border-input bg-background px-3 py-1.5 text-sm"
+                    i18n-placeholder="@@authorFilterPlaceholder" placeholder="Autor...">
+                </div>
+                <!-- Datasource type -->
+                <div class="space-y-1">
+                  <label class="text-xs font-medium text-muted-foreground" i18n="@@datasourceFilterLabel">Datasource</label>
+                  <input type="text" [(ngModel)]="advancedFilters.datasource" (ngModelChange)="applyAdvancedFilters()"
+                    class="w-full rounded-md border border-input bg-background px-3 py-1.5 text-sm"
+                    i18n-placeholder="@@datasourceFilterPlaceholder" placeholder="postgres, mysql...">
+                </div>
+                
+                <!-- Created at -->
+                <div class="space-y-1">
+                  <label class="text-xs font-medium text-muted-foreground" i18n="@@createdFilterLabel">Creado en</label>
+                  <eda-date-picker class="block w-full" [inject]="createdPickerConfig"  (onDatesChanges)="onCreatedDatesChange($event)" />
+                </div>
+                <!-- Modified at -->
+                <div class="space-y-1">
+                  <label class="text-xs font-medium text-muted-foreground" i18n="@@modifiedFilterLabel">Modificado en</label>
+                  <eda-date-picker class="block w-full" [inject]="modifiedPickerConfig"  (onDatesChanges)="onModifiedDatesChange($event)" />
+                </div>
+                <!-- Tags[] -->
+                <div class="space-y-1">
+                  <label class="text-xs font-medium text-muted-foreground" i18n="@@tagsFilterLabel">Tags</label>
+                  <p-multiSelect
+                    [options]="tags | slice:0:-2"
+                    [(ngModel)]="advancedTags"
+                    (ngModelChange)="applyAdvancedFilters()"
+                    optionLabel="label"
+                    optionValue="value"
+                    appendTo="body"
+                    [style]="{width: '100%'}"
+                    i18n-placeholder="@@tagsFilterPlaceholder"
+                    placeholder="Selecciona tags...">
+                  </p-multiSelect>
+                </div>
+              </div>
+            </div>
+          }
+        </div>
+        @if(!isObserver){
+          <button
+            class="btn-corporate-gradient text-white font-bold px-4 py-2 rounded flex items-center"
+            (click)="onCreateDashboard()">
+            <span i18n="@@tituloNuevoInforme">Crear nuevo informe</span>
+          </button>
+        }
+      </div>
+    </div>
+
+    <!-- Filters -->
+    <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4" style="overflow-wrap:anywhere"> <!-- Filters -->
+      <div class="flex-1 min-w-0 w-full">
+        <div class="text-sm text-muted-foreground"> <span i18n="@@filterReports">FILTRAR INFORMES:</span> </div>
+        <!-- Tags container -->
+        <div class="flex flex-wrap items-center gap-2 overflow-hidden"> <span
+            class="flex items-center px-4 py-2 text-sm text-gray-700">Tags:</span> @for (option of filteredTags(); track
+          option.value) { <div [ngClass]="isTagSelected(option.value) ? 'tag-selected' : 'tag'"
+            (click)="handleTagSelect(option)"> {{ option.label }} </div> } </div>
+      </div> <!-- Sort reports -->
+      <div class="w-full sm:w-auto flex-shrink-0">
+        <div class="text-base text-muted-foreground" i18n="@@sortReports">ORDENAR INFORMES:</div>
+        <p-dropdown class="sort-dropdown"
+          [(ngModel)]="sortingType" (onChange)="handleSorting()"
+          [options]="sortOptions" optionLabel="label" optionValue="value"
+          appendTo="body" [style]="{'width': '180px'}">
+        </p-dropdown>
+      </div>
+    </div>
+
+  </div><!-- end header+filters -->
+
+  <!-- Dashboards (scrollable) -->
+  <div class="flex-1 overflow-y-auto">
+    <div class="max-w-[2000px] mx-auto px-4 sm:px-6 lg:px-8 py-4">
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <!-- Public Reports -->
+        <ng-container
+          *ngTemplateOutlet="reportsTemplate; context: { reports: publicReports, title: publicTitle, colKey: 'open' }"></ng-container>
+        <!-- Commons -->
+        <ng-container
+          *ngTemplateOutlet="reportsTemplate; context: { reports: commonReports, title: commonTitle, colKey: 'common' }"></ng-container>
+        <!-- Groups -->
+        <ng-container
+          *ngTemplateOutlet="reportsTemplate; context: { reports: roleReports, title: groupTitle, colKey: 'group' }"></ng-container>
+        <!-- Private -->
+        <ng-container
+          *ngTemplateOutlet="reportsTemplate; context: { reports: privateReports, title: privateTitle, colKey: 'private' }"></ng-container>
+      </div>
+    </div>
+  </div><!-- end dashboards -->
+
+</div><!-- end main content -->
+
+  <app-chatbot></app-chatbot>
+
+</div><!-- end flex-row wrapper -->
+
+
+<!-- Template: single dashboard card -->
+<ng-template #reportCard let-report>
+  <div class="report-card rounded-lg border bg-card text-card-foreground shadow-sm transition-colors" [attr.id]="'dashboard-' + report._id">
+    <div class="px-4 py-2 cursor-pointer" (mousedown)="openReport(report, $event)">
+      @if(!isEditing || editingReportId !== report._id){
+      <h3 class="text-base font-semibold flex items-center justify-between gap-1">
+        <span>{{ report.config?.title }}</span>
+        <!-- Info icon with tooltip -->
+        <span class="relative group/info inline-flex shrink-0 ml-auto" (mousedown)="$event.stopPropagation()">
+          <i class="pi pi-info-circle cursor-pointer text-gray-500"></i>
+          <div class="absolute z-50 right-0 bottom-full mb-1 w-[32rem] rounded-md border bg-popover p-3 shadow-lg text-sm text-popover-foreground opacity-0 invisible group-hover/info:opacity-100 group-hover/info:visible transition-all duration-200 pointer-events-none">
+            <div class="font-semibold text-base mb-2 break-words">{{ report.config?.title }}</div>
+            <div class="space-y-1">
+              @if(report.config?.ds?.name) {
+                <div class="flex gap-1">
+                  <span class="text-muted-foreground shrink-0" i18n="@@DatadourceTitle">Datasource:</span>
+                  <span class="break-words">{{ report.config.ds.name }}</span>
+                </div>
+              }
+              @if(report.config?.author && report.config?.author != 'Undefined') {
+                <div class="flex gap-1">
+                  <span class="text-muted-foreground shrink-0" i18n="@@authorTooltipLabel">Autor:</span>
+                  <span class="break-words">{{ report.config.author }}</span>
+                </div>
+              }
+              @if(report.config?.createdAt) {
+                <div class="flex gap-1">
+                  <span class="text-muted-foreground shrink-0" i18n="@@createdAtTooltipLabel">Creado:</span>
+                  <span>{{ formatDate(report.config.createdAt) }}</span>
+                </div>
+              }
+              @if(report.config?.modifiedAt) {
+                <div class="flex gap-1">
+                  <span class="text-muted-foreground shrink-0" i18n="@@modifiedAtTooltipLabel">Modificado:</span>
+                  <span>{{ formatDate(report.config.modifiedAt) }}</span>
+                </div>
+              }
+              @if(report.config?.tag && report.config.tag.length > 0) {
+                <div class="flex gap-1 flex-wrap">
+                  <span class="text-muted-foreground shrink-0" i18n="@@tagsTooltipLabel">Tags:</span>
+                  @if(isArray(report.config.tag)) {
+                    @for(tag of report.config.tag; track tag) {
+                      <span class="bg-muted rounded px-1">{{ tag?.value ?? tag }}</span>
+                    }
+                  } @else {
+                    <span class="bg-muted rounded px-1">{{ report.config.tag }}</span>
+                  }
+                </div>
+              }
+            </div>
+          </div>
+        </span>
+      </h3>
+      }@else {
+      <input class="edit-title-input text-base font-semibold px-2 py-1" [(ngModel)]="editTitle"
+        (blur)="handleEditing('done', report)" (keydown.enter)="handleEditing('done', report)"
+        (keydown.escape)="handleEditing('cancel', report)" (click)="$event.stopPropagation()" autofocus />
+      }
+    </div>
+    <div class="grid grid-cols-3 items-center border-t px-4 py-2 gap-2">
+      <div class="text-sm text-muted-foreground truncate min-w-0">
+        @if (report.config?.author && report.config?.author != 'Undefined') {
+        <span class="truncate block" [title]="report.config.author">{{report.config.author}}</span>
+        }
+      </div>
+      <div class="text-sm text-muted-foreground text-center">
+        @if (report.config?.modifiedAt) {
+        <span>{{report.config.modifiedAt | date:'yyyy-MM-dd'}}</span>
+        }
+      </div>
+      <div class="flex items-center justify-end">
+        @if(report.config.visible=='open'){
+          <button class="btn-card-action rounded-md p-1 cursor-pointer" (click)="copyReport(report)"
+            title="Copiar enlace público" i18n-title="@@copyPublicLinkTooltip">
+            <eda-icon name="link" size="sm" class="mr-1"></eda-icon>
+          </button>
+        }
+        @if(!isObserver){
+          @if(canEditReport(report)){
+            @if (!isEditing || editingReportId !== report._id) {
+            <button class="btn-card-action rounded-md p-1 cursor-pointer" (click)="renameReport(report)"
+              title="Editar nombre" i18n-title="@@renameReportTooltip">
+              <eda-icon name="pencil" class="mr-1"></eda-icon>
+            </button>
+            }@else {
+            <button class="btn-card-action rounded-md p-1 cursor-pointer" (click)="handleEditing('done', report)"
+              title="Confirmar nombre" i18n-title="@@confirmRenameTooltip">
+              <eda-icon name="check" class="mr-1"></eda-icon>
+            </button>
+            }
+          }
+
+          <button class="btn-card-action rounded-md p-1 cursor-pointer" (click)="cloneReport(report)"
+            title="Duplicar informe" i18n-title="@@duplicateReportTooltip">
+            <eda-icon name="document-duplicated"></eda-icon>
+          </button>
+          <button class="btn-card-action rounded-md p-1 cursor-pointer" (click)="deleteReport(report)"
+            title="Eliminar informe" i18n-title="@@deleteReportTooltip">
+            <eda-icon name="bin"></eda-icon>
+          </button>
+        }
+      </div>
+    </div>
+  </div>
+</ng-template>
+
+<!-- Template: column of reports with folder/flat view -->
+<ng-template #reportsTemplate let-reports="reports" let-title="title" let-colKey="colKey">
+  <div class="space-y-4">
+    <h2 class="text-lg font-semibold">{{ title }}</h2>
+
+    @if (expandedFolder(); as exp) {
+      @if (exp.colKey !== colKey) {
+        <!-- Other columns: empty when a folder is expanded -->
+        <div class="mt-4 rounded-lg bg-muted p-4 text-center text-muted-foreground">
+          <span i18n="@@withoutContentYet">Sin contenido</span>
+        </div>
+      } @else {
+        <!-- Active folder (same format as closed, open icon + chevron down) -->
+        <div class="folder-card-open rounded-lg border text-card-foreground shadow-sm cursor-pointer transition-colors flex items-center gap-3 px-4 min-h-[calc(5.75rem)]"
+          (click)="clickFolder(exp.tag, colKey)">
+          <!-- Icon square (open) -->
+          <div class="folder-icon-wrap-open shrink-0 flex items-center justify-center w-12 h-12 rounded-lg">
+            <svg xmlns="http://www.w3.org/2000/svg" class="folder-icon-open w-10 h-10" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M5 19a2 2 0 01-2-2V7a2 2 0 012-2h4l2 2h4a2 2 0 012 2v1M5 19h14a2 2 0 002-2v-5a2 2 0 00-2-2H9a2 2 0 00-2 2v5a2 2 0 01-2 2z"/>
+            </svg>
+          </div>
+          <!-- Text -->
+          <div class="flex-1 h-12">
+            <p class="folder-label-open text-l font-semibold truncate">{{ exp.tag }}</p>
+            <p class="text-sm text-muted-foreground">{{ getReportsByTag(reports, exp.tag).length }} <span i18n="@@folderReportCount">informes</span></p>
+          </div>
+          <!-- Chevron down -->
+          <svg xmlns="http://www.w3.org/2000/svg" class="folder-chevron-open w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/>
+          </svg>
+        </div>
+        <!-- Reports in the active folder -->
+        @for (report of getReportsByTag(reports, exp.tag); track report._id) {
+          <ng-container *ngTemplateOutlet="reportCard; context: { $implicit: report }"></ng-container>
+        }
+        @empty {
+          <div class="rounded-lg bg-muted p-4 text-center text-muted-foreground">
+            <span i18n="@@withoutContentYet">Sin contenido</span>
+          </div>
+        }
+      }
+    } @else if (viewMode() === 'folders') {
+      <!-- Folder cards (closed) -->
+      @for (tag of getTagsInReports(reports); track tag) {
+        <div class="folder-card rounded-lg border bg-card text-card-foreground shadow-sm cursor-pointer transition-colors flex items-center gap-3 px-4 min-h-[calc(5.75rem)]"
+          (click)="clickFolder(tag, colKey)">
+          <!-- Icon square -->
+          <div class="folder-icon-wrap shrink-0 flex items-center justify-center w-12 h-12 rounded-lg">
+            <svg xmlns="http://www.w3.org/2000/svg" class="folder-icon w-10 h-10 pl-[4px]" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M2 6a2 2 0 012-2h5l2 2h7a2 2 0 012 2v8a2 2 0 01-2 2H4a2 2 0 01-2-2V6z"/>
+            </svg>
+          </div>
+          <!-- Text -->
+          <div class="flex-1 h-12">
+            <p class="folder-label text-l font-semibold truncate">{{ tag }}</p>
+            <p class="text-sm text-muted-foreground">{{ getReportsByTag(reports, tag).length }} <span i18n="@@folderReportCount">informes</span></p>
+          </div>
+          <!-- Chevron right -->
+          <svg xmlns="http://www.w3.org/2000/svg" class="folder-chevron w-4 h-4 shrink-0 text-muted-foreground" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/>
+          </svg>
+        </div>
+      }
+
+      <!-- Untagged dashboards below folders -->
+      @for (report of getUntaggedReports(reports); track report._id) {
+        <ng-container *ngTemplateOutlet="reportCard; context: { $implicit: report }"></ng-container>
+      }
+
+      @if (reports.length === 0) {
+        <div class="mt-4 rounded-lg bg-muted p-4 text-center text-muted-foreground">
+          <span i18n="@@withoutContentYet">Sin contenido</span>
+        </div>
+      }
+    } @else {
+      <!-- Flat view (specific tag selected in filter bar) -->
+      @for (report of reports; track report._id) {
+        <ng-container *ngTemplateOutlet="reportCard; context: { $implicit: report }"></ng-container>
+      }
+      @empty {
+        <div class="mt-4 rounded-lg bg-muted p-4 text-center text-muted-foreground">
+          <span i18n="@@withoutContentYet">Sin contenido</span>
+        </div>
+      }
+    }
+  </div>
+</ng-template>
+
+
+<!-- <app-create-dashboard></app-create-dashboard> -->

@@ -1,0 +1,16 @@
+/* ---- Sidebar corporativo ---- */
+.sidebar-btn:hover,
+.sidebar-btn-active         { background-color: var(--corporate-primary); color: white; }
+.sidebar-submenu-link       { color: #6b7280; }
+.sidebar-submenu-link:hover { color: var(--corporate-primary) !important; }
+
+/* Ensure the overlay has a solid background */
+.absolute.left-full {
+  opacity: 1 !important;
+  z-index: 50;
+}
+
+/* Prevent the overlay from becoming transparent on hover */
+.absolute.left-full:hover {
+  opacity: 1 !important;
+}

@@ -1,93 +1,125 @@
-import { Component, ViewChild, AfterViewChecked } from '@angular/core';
-import { EdaDialog, EdaDialogAbstract, EdaDialogCloseEvent } from '@eda/shared/components/shared-components.index';
+import { Component, ViewChild, OnInit, Input, AfterViewChecked } from '@angular/core';
+import { EdaDialog, EdaDialogCloseEvent } from '@eda/shared/components/shared-components.index';
 import { PanelChart } from '../panel-charts/panel-chart';
 import { PanelChartComponent } from '../panel-charts/panel-chart.component';
 import { BubblechartConfig } from '../panel-charts/chart-configuration-models/bubblechart.config';
- 
-
+import { StyleProviderService, ChartUtilsService } from '@eda/services/service.index';
+import { FormsModule } from '@angular/forms';
+import { CommonModule } from '@angular/common';
+import { EdaDialog2Component } from '@eda/shared/components/shared-components.index';
+import { ColorPickerModule } from 'primeng/colorpicker';
+import { DropdownModule } from 'primeng/dropdown';
 
 @Component({
+  standalone: true,
   selector: 'app-bubblechart-dialog',
-  templateUrl: './bubblechart-dialog.component.html'
+  templateUrl: './bubblechart-dialog.component.html',
+  imports: [FormsModule, EdaDialog2Component, PanelChartComponent, CommonModule, ColorPickerModule, DropdownModule],
 })
-
-export class BubblechartDialog extends EdaDialogAbstract implements AfterViewChecked {
-
+export class BubblechartDialog implements OnInit, AfterViewChecked {
   @ViewChild('PanelChartComponent', { static: false }) myPanelChartComponent: PanelChartComponent;
+  @Input() controller;
 
   public dialog: EdaDialog;
   public panelChartConfig: PanelChart = new PanelChart();
-  public colors: Array<string> ;
-  public originalColors: string[];
-  public labels: Array<number>;
-  public display:boolean=false;
 
-  constructor() {
+  /** Source of truth for colors by label */
+  public assignedColors: { value: string | number; color: string }[] = [];
+  private originalAssignedColors: { value: string | number; color: string }[] = [];
 
-    super();
+  public labels: Array<string | number> = [];
+  public selectedPalette: { name: string; paleta: string[] } | null = null;
+  public allPalettes: any = this.stylesProviderService.ChartsPalettes;
+  public title = $localize`:@@ChartProps:PROPIEDADES DEL GRAFICO`;
 
-    this.dialog = new EdaDialog({
-      show: () => this.onShow(),
-      hide: () => this.onClose(EdaDialogCloseEvent.NONE),
-      title: $localize`:@@ChartProps:PROPIEDADES DEL GRAFICO`
-    });
-    this.dialog.style = { width: '80%', height: '70%', top:"-4em", left:'1em'};
-  }
-  ngAfterViewChecked(): void {
-    
-    if (!this.colors && this.myPanelChartComponent?.componentRef) {
-      //To avoid "Expression has changed after it was checked" warning
-      setTimeout(() => {
-        this.colors = this.myPanelChartComponent.componentRef.instance.colors.map(color => this.rgb2hex(color));
-        this.originalColors = [...this.colors];
-        this.labels = this.myPanelChartComponent.componentRef.instance.firstColLabels;
-      }, 0)
-    }
+  constructor(private stylesProviderService: StyleProviderService, private ChartUtilsService: ChartUtilsService) { }
 
-  }
-
-  onShow(): void {
+  ngOnInit(): void {
     this.panelChartConfig = this.controller.params.panelChart;
-    this.display = true;
-
   }
+
+  ngAfterViewChecked(): void {
+    if (!this.assignedColors.length && this.myPanelChartComponent?.componentRef) {
+      setTimeout(() => {
+        // Retrieve labels and colors from the chart
+        this.labels = this.myPanelChartComponent.componentRef.instance.firstColLabels;
+
+        const chartAssignedColors: { value: string | number; color: string }[] =
+          this.myPanelChartComponent.props.config.getConfig()['assignedColors'] || [];
+
+        // Initialize assignedColors from the chart or with black by default
+        this.assignedColors = this.labels.map(label => {
+          const match = chartAssignedColors.find(c => c.value === label);
+          return {
+            value: label,
+            color: match.color,
+          };
+        });
+
+        // Save a copy for cancellation
+        this.originalAssignedColors = this.assignedColors.map(c => ({ ...c }));
+      }, 0);
+    }
+  }
+
+  /** Closes the dialog */
   onClose(event: EdaDialogCloseEvent, response?: any): void {
-    return this.controller.close(event, response);
+    this.controller.close(event, response);
   }
 
-  saveChartConfig() {
-    this.onClose(EdaDialogCloseEvent.UPDATE, {colors : this.colors.map(color => this.hex2rgb(color))});
+  /** Saves the color configuration */
+  saveChartConfig(): void {
+    const colorsForConfig = this.assignedColors.map(c => c.color);
+
+    this.myPanelChartComponent.props.config.setConfig(new BubblechartConfig(colorsForConfig));
+    this.myPanelChartComponent.props.config.getConfig()['assignedColors'] = [...this.assignedColors];
+    this.myPanelChartComponent.changeChartType();
+
+    this.onClose(EdaDialogCloseEvent.UPDATE, { colors: colorsForConfig });
   }
 
-  closeChartConfig() {
+  /** Cancels changes and restores the initial state */
+  closeChartConfig(): void {
+    this.assignedColors = this.originalAssignedColors.map(c => ({ ...c }));
+
+    const colorsForConfig = this.assignedColors.map(c => c.color);
+    this.myPanelChartComponent.props.config.setConfig(new BubblechartConfig(colorsForConfig));
+    this.myPanelChartComponent.props.config.getConfig()['assignedColors'] = [...this.assignedColors];
+    this.myPanelChartComponent.changeChartType();
+
     this.onClose(EdaDialogCloseEvent.NONE);
   }
 
+  /** Called when the user edits an individual color */
   handleInputColor(): void {
-    this.myPanelChartComponent.props.config.setConfig(new BubblechartConfig(this.colors.map(c => this.hex2rgb(c)), []));
+    const colorsForConfig = this.assignedColors.map(c => c.color);
+    this.myPanelChartComponent.props.config.setConfig(new BubblechartConfig(colorsForConfig));
+    this.myPanelChartComponent.props.config.getConfig()['assignedColors'] = [...this.assignedColors];
     this.myPanelChartComponent.changeChartType();
-
-    // Restaurar configuración original sin modificar this.colors ni UI
-    setTimeout(() => {
-      this.myPanelChartComponent.props.config.setConfig(new BubblechartConfig(this.originalColors.map(c => this.hex2rgb(c)), []));
-    }, 0);
   }
 
-  hex2rgb(hex, opacity = 100): string {
-    hex = hex.replace('#', '');
-    const r = parseInt(hex.substring(0, 2), 16);
-    const g = parseInt(hex.substring(2, 4), 16);
-    const b = parseInt(hex.substring(4, 6), 16);
+  /** Applies the full palette to the chart */
+  onPaletteSelected(): void {
+    if (!this.selectedPalette) return;
+    const length = this.labels.length;
 
-    return 'rgba(' + r + ',' + g + ',' + b + ',' + opacity / 100 + ')';
+    // Map the palette to the number of labels
+    const newColors: string[] = [];
+    for (let i = 0; i < length; i++) {
+      newColors.push(this.selectedPalette.paleta[i % this.selectedPalette.paleta.length]);
+    }
+
+    // Update assignedColors
+    this.assignedColors = this.labels.map((label, i) => ({
+      value: label,
+      color: newColors[i],
+    }));
+
+    // Synchronize config and TreeMapConfig
+    const colorsForConfig = this.assignedColors.map(c => c.color);
+    this.myPanelChartComponent.props.config.setConfig(new BubblechartConfig(colorsForConfig));
+    this.myPanelChartComponent.props.config.getConfig()['assignedColors'] = [...this.assignedColors];
+
+    this.myPanelChartComponent.changeChartType();
   }
-
-  rgb2hex(rgb): string {
-    rgb = rgb.match(/^rgba?[\s+]?\([\s+]?(\d+)[\s+]?,[\s+]?(\d+)[\s+]?,[\s+]?(\d+)[\s+]?/i);
-    return (rgb && rgb.length === 4) ? '#' +
-      ('0' + parseInt(rgb[1], 10).toString(16)).slice(-2) +
-      ('0' + parseInt(rgb[2], 10).toString(16)).slice(-2) +
-      ('0' + parseInt(rgb[3], 10).toString(16)).slice(-2) : '';
-  }
-
 }

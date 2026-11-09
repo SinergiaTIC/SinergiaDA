@@ -1,0 +1,255 @@
+<div class="container mx-auto py-10">
+  <div class="space-y-6">
+
+    <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm">
+      <div class="p-6">
+        <h2 class="text-xl font-semibold" i18n="@@aiManagementTitle">Gestión de IA</h2>
+        <p class="text-gray-500 dark:text-gray-400" i18n="@@aiManagementSubtitle">Configura los parámetros del asistente de inteligencia artificial</p>
+      </div>
+
+      <div class="p-6 pt-0">
+        <form [formGroup]="aiForm" (ngSubmit)="handleSubmit()">
+          <div class="grid gap-6">
+
+            <!-- PROVIDER -->
+            <div class="space-y-2">
+              <label for="provider" class="text-sm font-medium" i18n="@@aiProvider">PROVEEDOR</label>
+              <p-dropdown inputId="provider" formControlName="PROVIDER"
+                [options]="providerOptions" optionLabel="label" optionValue="value"
+                appendTo="body" [style]="{'width':'100%'}">
+              </p-dropdown>
+            </div>
+
+            <!-- API KEY -->
+            <div class="space-y-2">
+              <label for="api_key" class="text-sm font-medium" i18n="@@aiApiKey">API KEY</label>
+              <div class="relative">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                  stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                  class="absolute left-3 top-3 h-4 w-4 text-gray-500">
+                  <path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"></path>
+                </svg>
+                <input id="api_key" [type]="showApiKey() ? 'text' : 'password'" formControlName="API_KEY"
+                  placeholder="sk-proj-..."
+                  class="flex h-10 w-full rounded-md border border-gray-200 bg-white px-3 py-2 !pl-8 !pr-10 text-sm ring-offset-white placeholder:text-gray-500 input-corporate disabled:cursor-not-allowed disabled:opacity-50 dark:border-gray-700 dark:bg-gray-800 dark:placeholder:text-gray-400" />
+                <button type="button" (click)="toggleShowApiKey()"
+                  class="absolute right-3 top-3 text-gray-500 hover:text-gray-800 dark:hover:text-gray-200">
+                  @if (showApiKey()) {
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                      stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
+                      <line x1="1" y1="1" x2="23" y2="23"></line>
+                    </svg>
+                  } @else {
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                      stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                      <circle cx="12" cy="12" r="3"></circle>
+                    </svg>
+                  }
+                </button>
+              </div>
+            </div>
+
+            <!-- QWEN BASE URL -->
+            @if (isQwen) {
+              <div class="space-y-2">
+                <label for="base_url" class="text-sm font-medium" i18n="@@aiBaseUrl">BASE URL</label>
+                <div class="relative">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                    class="absolute left-3 top-3 h-4 w-4 text-gray-500">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <line x1="2" y1="12" x2="22" y2="12"></line>
+                    <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+                  </svg>
+                  <input id="base_url" type="text" formControlName="BASE_URL"
+                    placeholder="https://dashscope-intl.aliyuncs.com/compatible-mode/v1"
+                    class="flex h-10 w-full rounded-md border border-gray-200 bg-white px-3 py-2 !pl-8 text-sm ring-offset-white placeholder:text-gray-500 input-corporate disabled:cursor-not-allowed disabled:opacity-50 dark:border-gray-700 dark:bg-gray-800 dark:placeholder:text-gray-400" />
+                </div>
+              </div>
+            }
+
+            <!-- AWS BEDROCK FIELDS -->
+            @if (isBedrock) {
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+                <!-- AWS ACCESS KEY -->
+                <div class="space-y-2">
+                  <label for="aws_access_key" class="text-sm font-medium" i18n="@@aiAwsAccessKey">AWS ACCESS KEY</label>
+                  <div class="relative">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                      stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                      class="absolute left-3 top-3 h-4 w-4 text-gray-500">
+                      <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                      <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                    </svg>
+                    <input id="aws_access_key" type="text" formControlName="AWS_ACCESS_KEY"
+                      placeholder="AKIAIOSFODNN7EXAMPLE"
+                      class="flex h-10 w-full rounded-md border border-gray-200 bg-white px-3 py-2 !pl-8 text-sm ring-offset-white placeholder:text-gray-500 input-corporate disabled:cursor-not-allowed disabled:opacity-50 dark:border-gray-700 dark:bg-gray-800 dark:placeholder:text-gray-400" />
+                  </div>
+                </div>
+
+                <!-- AWS REGION -->
+                <div class="space-y-2">
+                  <label for="aws_region" class="text-sm font-medium" i18n="@@aiAwsRegion">AWS REGION</label>
+                  <div class="relative">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                      stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                      class="absolute left-3 top-3 h-4 w-4 text-gray-500">
+                      <circle cx="12" cy="12" r="10"></circle>
+                      <line x1="2" y1="12" x2="22" y2="12"></line>
+                      <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+                    </svg>
+                    <input id="aws_region" type="text" formControlName="AWS_REGION"
+                      placeholder="eu-west-1"
+                      class="flex h-10 w-full rounded-md border border-gray-200 bg-white px-3 py-2 !pl-8 text-sm ring-offset-white placeholder:text-gray-500 input-corporate disabled:cursor-not-allowed disabled:opacity-50 dark:border-gray-700 dark:bg-gray-800 dark:placeholder:text-gray-400" />
+                  </div>
+                </div>
+
+              </div>
+
+              <!-- AWS SECRET KEY -->
+              <div class="space-y-2">
+                <label for="aws_secret_key" class="text-sm font-medium" i18n="@@aiAwsSecretKey">AWS SECRET KEY</label>
+                <div class="relative">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                    class="absolute left-3 top-3 h-4 w-4 text-gray-500">
+                    <path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"></path>
+                  </svg>
+                  <input id="aws_secret_key" [type]="showAwsSecretKey() ? 'text' : 'password'" formControlName="AWS_SECRET_KEY"
+                    placeholder="wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY"
+                    class="flex h-10 w-full rounded-md border border-gray-200 bg-white px-3 py-2 !pl-8 !pr-10 text-sm ring-offset-white placeholder:text-gray-500 input-corporate disabled:cursor-not-allowed disabled:opacity-50 dark:border-gray-700 dark:bg-gray-800 dark:placeholder:text-gray-400" />
+                  <button type="button" (click)="toggleShowAwsSecretKey()"
+                    class="absolute right-3 top-3 text-gray-500 hover:text-gray-800 dark:hover:text-gray-200">
+                    @if (showAwsSecretKey()) {
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
+                        <line x1="1" y1="1" x2="23" y2="23"></line>
+                      </svg>
+                    } @else {
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                        <circle cx="12" cy="12" r="3"></circle>
+                      </svg>
+                    }
+                  </button>
+                </div>
+              </div>
+            }
+
+            <!-- MODEL -->
+            <div class="space-y-2">
+              <label for="model" class="text-sm font-medium" i18n="@@aiModel">MODELO DE IA</label>
+              <div class="relative">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                  stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                  class="absolute left-3 top-3 h-4 w-4 text-gray-500">
+                  <path d="M12 2a10 10 0 1 0 0 20A10 10 0 0 0 12 2z"></path>
+                  <path d="M12 6v6l4 2"></path>
+                </svg>
+                <input id="model" type="text" formControlName="MODEL"
+                  placeholder="gpt-4.1"
+                  class="flex h-10 w-full rounded-md border border-gray-200 bg-white px-3 py-2 !pl-8 text-sm ring-offset-white placeholder:text-gray-500 input-corporate disabled:cursor-not-allowed disabled:opacity-50 dark:border-gray-700 dark:bg-gray-800 dark:placeholder:text-gray-400" />
+              </div>
+            </div>
+
+            <!-- CONTEXT -->
+            <div class="space-y-2">
+              <label for="context" class="text-sm font-medium" i18n="@@aiContext">CONTEXTO</label>
+              <textarea id="context" formControlName="CONTEXT" rows="3"
+                placeholder="Instrucciones de contexto para el asistente..."
+                class="flex w-full rounded-md border border-gray-200 bg-white px-3 py-2 text-sm ring-offset-white placeholder:text-gray-500 input-corporate disabled:cursor-not-allowed disabled:opacity-50 dark:border-gray-700 dark:bg-gray-800 dark:placeholder:text-gray-400 resize-none"></textarea>
+            </div>
+
+            <!-- EDA APP URL -->
+            <div class="space-y-2">
+              <label for="edaapp" class="text-sm font-medium" i18n="@@aiEDAApp">EDA APP URL</label>
+              <div class="relative">
+                <svg viewBox="0 0 34 34" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="absolute left-3 top-3 h-4 w-4 text-gray-500">
+                  <g id="Icon-Set-Filled" sketch:type="MSLayerGroup" transform="translate(-154.000000, -724.000000)" fill="#000000">
+                    <path d="M184.785,727.613 L183.355,726.184 C181.775,724.604 178.58,724.42 177,726 L170,733 C168.944,734.056 169.095,735.881 169.451,737.228 L179,728 C179.79,727.21 181.21,728.21 182,729 C182.79,729.79 183.79,731.21 183,732 L173.741,741.518 C175.088,741.873 176.944,742.056 178,741 L185,734 C186.58,732.421 186.365,729.193 184.785,727.613 L184.785,727.613 Z M162,753 C161.21,753.79 159.79,752.79 159,752 C158.21,751.21 157.21,749.79 158,749 L167.228,739.451 C165.881,739.095 164.056,738.944 163,740 L156,747 C154.42,748.58 154.604,751.775 156.184,753.354 L157.614,754.785 C159.193,756.365 162.42,756.58 164,755 L171,748 C172.056,746.944 171.874,745.088 171.518,743.741 L162,753 L162,753 Z M173.702,737.282 C173.307,736.888 172.667,736.888 172.272,737.282 L167.267,742.287 C166.872,742.683 166.872,743.322 167.267,743.718 C167.662,744.112 168.302,744.112 168.697,743.718 L173.702,738.713 C174.097,738.317 174.097,737.678 173.702,737.282 L173.702,737.282 Z" id="permalink" sketch:type="MSShapeGroup">
+                    </path>
+                  </g>
+                </svg>
+                <input id="edaapp" type="text" formControlName="EDA_APP_URL"
+                  placeholder="https://example.com/eda"
+                  class="flex h-10 w-full rounded-md border border-gray-200 bg-white px-3 py-2 !pl-8 text-sm ring-offset-white placeholder:text-gray-500 input-corporate disabled:cursor-not-allowed disabled:opacity-50 dark:border-gray-700 dark:bg-gray-800 dark:placeholder:text-gray-400" />
+              </div>
+            </div>
+
+            <!-- MCP URL -->
+            <div class="space-y-2">
+              <label for="mcpurl" class="text-sm font-medium" i18n="@@aiMCPURL">MCP URL</label>
+              <div class="relative">
+                <svg viewBox="0 0 34 34" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="absolute left-3 top-3 h-4 w-4 text-gray-500">
+                  <g id="Icon-Set-Filled" sketch:type="MSLayerGroup" transform="translate(-154.000000, -724.000000)" fill="#000000">
+                    <path d="M184.785,727.613 L183.355,726.184 C181.775,724.604 178.58,724.42 177,726 L170,733 C168.944,734.056 169.095,735.881 169.451,737.228 L179,728 C179.79,727.21 181.21,728.21 182,729 C182.79,729.79 183.79,731.21 183,732 L173.741,741.518 C175.088,741.873 176.944,742.056 178,741 L185,734 C186.58,732.421 186.365,729.193 184.785,727.613 L184.785,727.613 Z M162,753 C161.21,753.79 159.79,752.79 159,752 C158.21,751.21 157.21,749.79 158,749 L167.228,739.451 C165.881,739.095 164.056,738.944 163,740 L156,747 C154.42,748.58 154.604,751.775 156.184,753.354 L157.614,754.785 C159.193,756.365 162.42,756.58 164,755 L171,748 C172.056,746.944 171.874,745.088 171.518,743.741 L162,753 L162,753 Z M173.702,737.282 C173.307,736.888 172.667,736.888 172.272,737.282 L167.267,742.287 C166.872,742.683 166.872,743.322 167.267,743.718 C167.662,744.112 168.302,744.112 168.697,743.718 L173.702,738.713 C174.097,738.317 174.097,737.678 173.702,737.282 L173.702,737.282 Z" id="permalink" sketch:type="MSShapeGroup">
+                    </path>
+                  </g>
+                </svg>
+                <input id="mcpurl" type="text" formControlName="MCP_URL"
+                  placeholder="https://example.com/ia"
+                  class="flex h-10 w-full rounded-md border border-gray-200 bg-white px-3 py-2 !pl-8 text-sm ring-offset-white placeholder:text-gray-500 input-corporate disabled:cursor-not-allowed disabled:opacity-50 dark:border-gray-700 dark:bg-gray-800 dark:placeholder:text-gray-400" />
+              </div>
+            </div>
+
+            <!-- LIMIT y AVAILABLE -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+              <!-- LIMIT -->
+              <div class="space-y-2">
+                <label for="limit" class="text-sm font-medium" i18n="@@aiLimit">LÍMITE DIARIO DE CONSULTAS</label>
+                <div class="relative">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                    class="absolute left-3 top-3 h-4 w-4 text-gray-500">
+                    <line x1="8" y1="6" x2="21" y2="6"></line>
+                    <line x1="8" y1="12" x2="21" y2="12"></line>
+                    <line x1="8" y1="18" x2="21" y2="18"></line>
+                    <line x1="3" y1="6" x2="3.01" y2="6"></line>
+                    <line x1="3" y1="12" x2="3.01" y2="12"></line>
+                    <line x1="3" y1="18" x2="3.01" y2="18"></line>
+                  </svg>
+                  <input id="limit" type="number" formControlName="LIMIT" min="1"
+                    class="flex h-10 w-full rounded-md border border-gray-200 bg-white px-3 py-2 !pl-8 text-sm ring-offset-white placeholder:text-gray-500 input-corporate disabled:cursor-not-allowed disabled:opacity-50 dark:border-gray-700 dark:bg-gray-800 dark:placeholder:text-gray-400" />
+                </div>
+              </div>
+
+              <!-- AVAILABLE -->
+              <div class="space-y-2">
+                <label class="text-sm font-medium" i18n="@@aiAvailable">DISPONIBLE</label>
+                <div class="flex items-center h-10 space-x-3">
+                  <button type="button" role="switch" [attr.aria-checked]="availableEnabled()" (click)="toggleAvailable()"
+                    class="peer inline-flex h-6 w-11 shrink-0 cursor-pointer items-center rounded-full border-2 border-transparent transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:cursor-not-allowed disabled:opacity-50"                    
+                    [ngClass]="{'toggle-active': availableEnabled(), 'bg-input': !availableEnabled()}">
+                    <span
+                      class="pointer-events-none block h-5 w-5 rounded-full bg-white shadow-lg ring-0 transition-transform"
+                      [class.translate-x-5]="availableEnabled()" [class.translate-x-0]="!availableEnabled()"></span>
+                  </button>
+                  <span class="text-sm text-gray-600 dark:text-gray-400">
+                    {{ availableEnabled() ? 'Activo' : 'Inactivo' }}
+                  </span>
+                </div>
+              </div>
+
+            </div>
+
+            <!-- Save button -->
+            <div class="flex justify-end">
+              <button type="submit" [disabled]="isSubmitting() || aiForm.invalid"
+                class="btn-corporate-primary inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors disabled:pointer-events-none disabled:opacity-50 h-10 px-4 py-2">
+                {{ isSubmitting() ? 'Guardando...' : 'Guardar configuración' }}
+              </button>
+            </div>
+
+          </div>
+        </form>
+      </div>
+    </div>
+
+  </div>
+</div>

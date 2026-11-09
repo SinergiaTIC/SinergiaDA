@@ -1,28 +1,91 @@
-import { EdaTable, EdaColumnText, EdaColumnContextMenu } from '@eda/components/component.index';
-import { Component, OnInit, OnDestroy, EventEmitter, Output } from '@angular/core';
+import { EdaTable, EdaColumnText, EdaColumnContextMenu, EdaTableComponent } from '@eda/components/component.index';
+import { Component, OnInit, OnDestroy, EventEmitter, Output, Input, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { Router, NavigationEnd } from '@angular/router';
 import { UntypedFormGroup } from '@angular/forms';
 import { MenuItem, SelectItem, TreeNode } from 'primeng/api';
-import { AlertService, DataSourceService, QueryParams, QueryBuilderService, SpinnerService, DashboardService } from '@eda/services/service.index';
+import { AlertService, DataSourceService, QueryParams, QueryBuilderService, SpinnerService } from '@eda/services/service.index';
 import { EditTablePanel, EditColumnPanel, EditModelPanel, ValueListSource, Relation } from '@eda/models/data-source-model/data-source-models';
 import { EdaDialogController, EdaDialogCloseEvent, EdaContextMenu, EdaContextMenuItem } from '@eda/shared/components/shared-components.index';
-import { aggTypes } from 'app/config/aggretation-types';
+import { AGG_TYPES, PROTECTED_MODEL_AI_CONTROL_ENABLED, PROTECTED_MODEL_SSL_CONNECTION_SWITCH_BUTTON_ENABLED, PROTECTED_MODEL_ADD_VIEW_BUTTON_ENABLED, PROTECTED_MODEL_ADD_TABLE_FROM_CSV_BUTTON_ENABLED, PROTECTED_MODEL_ADD_TAG_BUTTON_ENABLED, PROTECTED_MODEL_ADD_RELATIONSHIP_TO_TABLE_BUTTON_ENABLED, PROTECTED_MODEL_HIDE_ALL_COLUMNS_BUTTON_ENABLED, PROTECTED_MODEL_TABLE_TYPES_BUTTON_GROUP_ENABLED, PROTECTED_MODEL_DEFINE_LIST_OF_POSSIBLE_VALUES_BUTTON_ENABLED, PROTECTED_MODEL_ADD_PERMISSION_BUTTON_ENABLED, PROTECTED_MODEL_DATA_SOURCES_ARRAY } from '@eda/configs/customizable/customizable_merged';
 import { EdaColumnFunction } from '@eda/components/eda-table/eda-columns/eda-column-function';
 import * as _ from 'lodash';
 import { EdaColumnEditable } from '@eda/components/eda-table/eda-columns/eda-column-editable';
-import { AGG_COMPUTED } from './aggregationConstants';
 import Swal from 'sweetalert2';
+import { PrimengModule } from 'app/core/primeng.module';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 
+//Standalone Tests
+import { TableEditRelationsDialogComponent } from './table-edit-relations-dialog/table-edit-relations-dialog.component';
+import { ColumnValueListDialogComponent } from './column-value-list-dialog/column-value-list-dialog.component';
+import { TableRelationsDialogComponent } from './table-relations-dialog/table-relations-dialog.component';
+import { ColumnPermissionDialogComponent } from './column-permissions-dialog/column-permission-dialog.component';
+import { CalculatedColumnDialogComponent } from './calculatedColumn-dialog/calculated-column-dialog.component';
+import { MapDialogComponent } from './mapsDialog/maps-dialog.component';
+import { ModelPermissionDialogComponent } from './model-permissions-dialog/model-permission-dialog.component';
+import { CacheDialogComponent } from './cache-dialog/cache-dialog.component';
+import { SecurityDialogComponent } from './security-dialog/security-dialog.component';
+import { AddCsvComponent } from '../data-source-list/addCSV/add-csv.component';
+import { TablePermissionDialogComponent } from './table-permissions-dialog/table-permission-dialog.component';
+import { ViewDialogEditionComponent } from './view-dialog-edition/view-dialog-edition.component';
+import { DATASOURCE_PLUGINS } from '../../../../plugins/datasource-plugins/datasource-plugin-registry';
+import { ViewDialogComponent } from './view-dialog/view-dialog.component';
+import { AddTagComponent } from '../data-source-list/add-tag/add-tag.component';
+import { CalculatedColumnEditDialogComponent } from './calculated-column-edit-dialog/calculated-column-edit-dialog.component';
+import { AddDuckdbTableDialogComponent } from './add-duckdb-table-dialog/add-duckdb-table-dialog.component';
+import { AGG_COMPUTED } from './aggregationConstants';
+
+// Angular Modules
+const ANGULAR_MODULES = [
+  FormsModule,
+  ReactiveFormsModule,
+  PrimengModule
+];
+
+// Standalone Components
+const STANDALONE_COMPONENTS = [  
+  TableEditRelationsDialogComponent,
+  ColumnValueListDialogComponent,
+  TableRelationsDialogComponent,
+  ColumnPermissionDialogComponent,
+  CalculatedColumnDialogComponent,
+  MapDialogComponent,
+  ModelPermissionDialogComponent,
+  CacheDialogComponent,
+  TablePermissionDialogComponent,
+  AddCsvComponent,
+  SecurityDialogComponent,
+  ViewDialogComponent,
+  ViewDialogEditionComponent,
+  AddTagComponent,
+  EdaTableComponent,
+  CalculatedColumnEditDialogComponent,
+  AddDuckdbTableDialogComponent
+];
 
 @Component({
-    selector: 'app-data-source-detail',
-    /*SDA CUSTOM*/ templateUrl: './sda-data-source-detail.component.html',
-    styleUrls: ['../data-source-list/data-source-list.component.css']
-})
+  standalone: true,
+  selector: 'app-data-source-detail',
+  templateUrl: './data-source-detail.component.html',
+  styleUrls: ['../data-source-list/data-source-list.component.css'],
+  schemas: [CUSTOM_ELEMENTS_SCHEMA],
 
+  imports: [ANGULAR_MODULES, STANDALONE_COMPONENTS]
+})
 export class DataSourceDetailComponent implements OnInit, OnDestroy {
+    @Input() id: string;
     @Output() onTableCreated: EventEmitter<any> = new EventEmitter();
+
+    public aiControlEnabled: boolean = PROTECTED_MODEL_AI_CONTROL_ENABLED;
+    public sslConnectionSwitchEnabled: boolean = PROTECTED_MODEL_SSL_CONNECTION_SWITCH_BUTTON_ENABLED;
+    public addViewButtonEnabled: boolean = PROTECTED_MODEL_ADD_VIEW_BUTTON_ENABLED;
+    public addTableFromCsvButtonEnabled: boolean = PROTECTED_MODEL_ADD_TABLE_FROM_CSV_BUTTON_ENABLED;
+    public addTagButtonEnabled: boolean = PROTECTED_MODEL_ADD_TAG_BUTTON_ENABLED;
+    public addRelationshipToTableButtonEnabled: boolean = PROTECTED_MODEL_ADD_RELATIONSHIP_TO_TABLE_BUTTON_ENABLED;
+    public hideAllColumnsButtonEnabled: boolean = PROTECTED_MODEL_HIDE_ALL_COLUMNS_BUTTON_ENABLED;
+    public tableTypesButtonGroupEnabled: boolean = PROTECTED_MODEL_TABLE_TYPES_BUTTON_GROUP_ENABLED;
+    public defineListOfPossibleValuesButtonEnabled: boolean = PROTECTED_MODEL_DEFINE_LIST_OF_POSSIBLE_VALUES_BUTTON_ENABLED;
+    public addPermissionButtonEnabled: boolean = PROTECTED_MODEL_ADD_PERMISSION_BUTTON_ENABLED;
 
     public form: UntypedFormGroup;
     public permissionsColumn: EdaTable;
@@ -38,20 +101,47 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
     public relationController: EdaDialogController;
     public valueListController: EdaDialogController;
     public permissionsController: EdaDialogController;
+
     public tablePermissionsController: EdaDialogController;
+    public showTablePermissionsDialog: boolean = false;
+
     public modelPermissionsController: EdaDialogController;
+    public showModelPermissionDialog: boolean = false;
+
     public newColController: EdaDialogController;
+
     public mapController: EdaDialogController;
-    public mapCoordController: EdaDialogController;
+    public showMapDialog: boolean = false;
+    
     public tagController: EdaDialogController;
+    public showAddTagDialog: boolean = false;
+
     public viewController: EdaDialogController;
+    public showViewDialog: boolean = false;
+
     public csvPanelController: EdaDialogController;
+    public showCsvDialog: boolean = false;
+
+    public showAddDuckdbTableDialog: boolean = false;
+
     public cacheController : EdaDialogController;
+    public showCacheDialog: boolean = false;
+    
     public securityController : EdaDialogController;
+    public showSecurityDialog: boolean = false;
+
     public calculatedColumnEditController = false;
+
     public items: MenuItem[];
-    // public hideAllTablesBool : boolean = false;
-    // public hideAllRelationsBool : boolean = false;
+    public user: any;
+    
+    // State control variables
+    public tablesHidden: boolean = false;
+    public relationsHidden : boolean = false;
+    public columnsHidden: boolean = false;
+
+    public viewDialogEdition: boolean = false;
+    public viewInEdition: any
 
 
 
@@ -60,6 +150,7 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
     public utilities: string = $localize`:@@utilities:Utilidades`;
     public hideTablesString: string = $localize`:@@hideTables:Ocultar todas las tablas`;
     public hideColumnsString: string = $localize`:@@hideColumns:Ocultar todas las columnas`;
+    public deleteViewString: string = $localize`:@@inputBorrarVista:Borrar vista`;
     public hideAllRelationsString: string = $localize`:@@hideAllRelations: Ocultar todas las relaciones`;
     public addCacheConfig:string = $localize`:@@addCacheConfig:Configurar Caché`;
     public viewsecurity:string = $localize`:@@viewsecurity:Ver configuración de seguridad`;
@@ -67,9 +158,7 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
     public addView:string = $localize`:@@addView:Añadir vista`;
     public addTagDataSource:string = $localize`:@@addTagDataSource: Añadir Tag`;
     public addCSV:string = $localize`:@@addCSV:Añadir tabla desde csv`;
-    // SDA CUSTOM - Replace eliminated duplicate ID addRelationButton with canonical addRelation
-/* SDA CUSTOM */    public addRelation:string = $localize`:@@addRelation:Añadir relación`;
-    // END SDA CUSTOM
+    public addRelation:string = $localize`:@@addRelation:Añadir relación`;
     public addCalculatedCol:string = $localize`:@@addCalculatedCol:Añadir columna  calculada`;
     public addPermission:string = $localize`:@@addPermission:Añadir permiso`;
     public addValueList:string = $localize`:@@addValueList:Añadir lista de valores posibles`;
@@ -79,25 +168,42 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
     public valueListSourceTabla = $localize`:@@valueListSourceTabla:Tabla relacionada`;
     public valueListSourceID = $localize`:@@valueListSourceID:Id de la columna relacionada`;
     public valueListSourceDescripcion = $localize`:@@valueListSourceDescripcion:Descripción dfe la columna relacionada`;
-    public possibleValueList = $localize`@@possibleValuesList: Tabla y columna asociadas `
-    public possibleValueListTable = $localize`@@possibleValuesListTable: Tabla `
-    public possibleValuesListID =  $localize`@@possibleValuesListID: Id de la columna`
-    public possibleValuesListDescription = $localize`@@possibleValuesListDescription: Descripción de la columna`
+    public possibleValueList = $localize`:@@possibleValuesList: Tabla y columna asociadas `
+    public possibleValueListTable = $localize`:@@possibleValuesListTable: Tabla `
+    public possibleValuesListID =  $localize`:@@possibleValuesListID: Id de la columna`
+    public possibleValuesListDescription = $localize`:@@possibleValuesListDescription: Descripción de la columna`
 
     // Types
     public columnTypes: SelectItem[] = [
         { label: 'text', value: 'text' },
         { label: 'numeric', value: 'numeric' },
         { label: 'date', value: 'date' },
-        { label: 'coordinate', value: 'coordinate' }
+        { label: 'coordinate', value: 'coordinate' },
+        { label: 'html', value: 'html' }
     ];
     public selectedcolumnType: any;
-    public tableTypes: SelectItem[] = [{ label: 'Dimension', value: 'dimension' }, { label: 'Fact', value: 'fact' }, { label: 'View', value: 'view' }];
+
+    public dimensionLabel: string = $localize`:@@dimensionLabel:Dimension`;
+    public factLabel: string = $localize`:@@factLabel:Fact`;
+    public viewLabel: string = $localize`:@@viewLabel:View`;
+
+    public tableTypes: SelectItem[] = [{ label: this.dimensionLabel, value: 'dimension' }, { label: this.factLabel, value: 'fact' }, { label: this.viewLabel, value: 'view' }];
     public selectedTableType: string;
+
+    public iaVisibilityOptions = [
+        { value: 'FULL', label: 'Full' },
+        { value: 'DECLARATION', label: 'Declaration' },
+        { value: 'NONE', label: 'None' },
+    ];
+
+    public iaVisibilityOptionsSimple = [
+        { value: 'FULL', label: 'Full' },
+        { value: 'NONE', label: 'None' },
+    ];
 
     // Aggregation Types
     public selectedAggType: any;
-    public aggTypes: SelectItem[] = aggTypes;
+    public aggTypes: SelectItem[] = AGG_TYPES;
 
     // Relations
     public tmpRelations: any = [];
@@ -105,16 +211,30 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
     // DB types[]
     public tiposBD: SelectItem[] = [
         { label: 'Postgres', value: 'postgres' },
+        { label: 'ClickHouse', value: 'clickhouse' },
         { label: 'Sql Server', value: 'sqlserver' },
         { label: 'MySQL', value: 'mysql' },
         { label: 'Vertica', value: 'vertica' },
-      /*SDA Custom  { label: 'Oracle', value: 'oracle' },  se quita el conector de oracle. No hay conexiones a oracle*/ 
+        { label: 'Oracle', value: 'oracle' },
         { label: 'BigQuery', value: 'bigquery' },
         { label: 'SnowFlake', value: 'snowflake'},
         { label: 'JsonWebService', value: 'jsonwebservice'},
-        { label: 'Mongo', value: 'mongodb'}
+
+        { label: 'Excel', value: 'excel'},
+        { label: 'Csv', value: 'csv'},
+        { label: 'DuckDB (CSV)', value: 'duckdb'},
+        // Los tipos de plugin (Odoo, Google Analytics 4, Holded, ...) se agregan solos
+        // desde el plugin.meta.ts de cada carpeta en datasource-plugins.
+        ...DATASOURCE_PLUGINS.map((p) => ({ label: p.label, value: p.type })),
     ];
+
+    public SID_Types: SelectItem[] = [
+        { label: 'SID', value: "0" },
+        { label: 'SERVICE_NAME', value: "1" }
+    ]
+
     public selectedTipoBD: SelectItem;
+    public selectedSID: SelectItem;
 
     // table permissions
     public permissions: Array<any>;
@@ -127,11 +247,8 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
         private alertService: AlertService,
         private queryBuilderService: QueryBuilderService,
         private spinnerService: SpinnerService,
-        private dashboardService: DashboardService,
         private router: Router) {
-        //
-        const _me = this;
-
+        this.user = sessionStorage.getItem('user');
         this.navigationSubscription = this.router.events.subscribe(
             (res: any) => {
                 if (res instanceof NavigationEnd) {
@@ -149,27 +266,29 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
                 contextMenuItems: [
                     new EdaContextMenuItem({
                         label: 'ELIMINAR', command: () => {
-
-                            let elem : any =  this.permissionsColumn.getContextMenuRow();
-
-                            try {
-                                elem = this.permissionsColumn.getContextMenuRow()._id?.reduce((a, b)=> a + b) ;
-                            } catch (e) {
-                            }
-
-                            const dynValue = this.modelPanel.metadata.model_granted_roles.filter(r => r.value !== undefined)
-                            .filter(r => r.value !== "(x => None)" && r.value !== "(~ => All)")
-                            .filter(r => r.value != elem.value );
-
-                            const users = this.modelPanel.metadata.model_granted_roles.filter(r => r.users !== undefined && r.users.length > 0  )
-                            .filter(r => r.users.reduce((a, b)=> a + b) !== elem);
-
-                            const groups = this.modelPanel.metadata.model_granted_roles.filter(r => r.groups !== undefined && r.groups.length > 0  )
-                            .filter(r => r.groups.reduce((a, b)=> a + b) !== elem);
                             let tmpPermissions = [];
-                            dynValue.forEach(dyn => tmpPermissions.push(dyn))
-                            groups.forEach(group => tmpPermissions.push(group));
-                            users.forEach(user => tmpPermissions.push(user));
+                            const row = this.permissionsColumn.getContextMenuRow();
+                            const table = this.dataModelService.getTable(this.columnPanel);
+
+                            if (row.user) {
+                                // Delete user permission
+                                const usersTmp = row._id;
+                                const mdgTmp = this.modelPanel.metadata.model_granted_roles.find(
+                                    r => r.table === table.table_name &&
+                                         r.column === this.columnPanel.technical_name &&
+                                         r.users === usersTmp
+                                );
+                                tmpPermissions = this.modelPanel.metadata.model_granted_roles.filter(a => a !== mdgTmp);
+                            } else if (row.group) {
+                                // Delete group permission
+                                const groupTmp = row._id;
+                                const mdgTmp = this.modelPanel.metadata.model_granted_roles.find(
+                                    r => r.table === table.table_name &&
+                                         r.column === this.columnPanel.technical_name &&
+                                         r.groups === groupTmp
+                                );
+                                tmpPermissions = this.modelPanel.metadata.model_granted_roles.filter(a => a !== mdgTmp);
+                            }
 
                             this.modelPanel.metadata.model_granted_roles = tmpPermissions;
                             this.update();
@@ -185,7 +304,6 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
                 new EdaColumnText({ field: 'value', header: $localize`:@@valueTable:VALOR` }),
             ]
         });
-
 
 
         this.permissionTable = new EdaTable({
@@ -236,9 +354,9 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
                         label: 'ELIMINAR', command: () => {
                             const elem = this.permissionModel.getContextMenuRow()._id.reduce((a, b)=> a + b) ;
                             const users = this.modelPanel.metadata.model_granted_roles.filter(r => r.users !== undefined)
-                            .filter(r => r.users.reduce((a, b)=> a + b) !== elem);
+                            .filter(r => { if(r.users.length !== 0) r.users.reduce((a, b)=> a + b) !== elem;})
                             const groups = this.modelPanel.metadata.model_granted_roles.filter(r => r.groups !== undefined)
-                            .filter(r => r.groups.reduce((a, b)=> a + b) !== elem);
+                            .filter(r =>{ if(r.groups.length !== 0) r.groups.reduce((a, b)=> a + b) !== elem});
                             let tmpPermissions = [];
                             groups.forEach(group => tmpPermissions.push(group));
                             users.forEach(user => tmpPermissions.push(user));
@@ -253,7 +371,7 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
                 new EdaColumnContextMenu(),
                 new EdaColumnText({ field: 'user', header: $localize`:@@userTable:USUARIO` }),
                 new EdaColumnText({ field: 'group', header: $localize`:@@groupTable:GRUPO` }),
-                new EdaColumnText({ field: 'permission', header:"permission" }),
+                new EdaColumnText({ field: 'permission', header:"permission" }), //Fixme
             ]
         });
 
@@ -272,7 +390,7 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
             cols: [
                 new EdaColumnText({ field: 'origin', header: $localize`:@@originRel:Origen` }),
                 new EdaColumnText({ field: 'dest', header: $localize`:@@targetRel:Destino` }),
-                new EdaColumnText({ field: 'name', header: $localize`:@@nameRel:Nombre` }),
+                new EdaColumnText({ field: 'name', header: $localize`:@@name:Nombre` }),
                 new EdaColumnEditable({ field: 'modify', click: (relation) => this.updateRelation(relation._id)}),
                 new EdaColumnFunction({ field: 'delete', click: (relation) => this.deleteRelation(relation._id)}),
             ]
@@ -280,39 +398,43 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
     }
 
     ngOnInit() {
-      this.carregarPanels();
-              this.items = [{
-            label: 'Options',
-            items: [{
-                label: 'Update',
-                icon: 'pi pi-refresh',
-                command: () => {
-                    //this.update();
+
+        console.log('columna: ',this.columnPanel)
+
+        this.carregarPanels();
+        this.items = [
+            {
+                label: 'Options',
+                items: [{
+                    label: 'Update',
+                    icon: 'pi pi-refresh',
+                    command: () => {
+                        //this.update();
+                    }
+                },
+                {
+                    label: 'Delete',
+                    icon: 'pi pi-times',
+                    command: () => {
+                        // this.delete();
+                    }
                 }
+                ]
             },
             {
-                label: 'Delete',
-                icon: 'pi pi-times',
-                command: () => {
-                    // this.delete();
+                label: 'Navigate',
+                items: [{
+                    label: 'Angular Website',
+                    icon: 'pi pi-external-link',
+                    url: 'http://angular.io'
+                },
+                {
+                    label: 'Router',
+                    icon: 'pi pi-upload',
+                    routerLink: '/fileupload'
                 }
+                ]
             }
-            ]
-        },
-        {
-            label: 'Navigate',
-            items: [{
-                label: 'Angular Website',
-                icon: 'pi pi-external-link',
-                url: 'http://angular.io'
-            },
-            {
-                label: 'Router',
-                icon: 'pi pi-upload',
-                routerLink: '/fileupload'
-            }
-            ]
-        }
         ];
     }
 
@@ -324,12 +446,12 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
     }
 
     carregarPanels() {
-        // Modelo
+        // Model
         this.dataModelService.currentModelPanel.subscribe(
             modelPanel => {
                 this.modelPanel = modelPanel;
                 this.permissions = this.modelPanel.metadata ? this.modelPanel.metadata.model_granted_roles : [];
-                 // Permisos del model
+                 // Model permissions
                 this.permissionModel.value = [];
                 this.permissions.forEach(permission => {
                     if (  permission.table === "fullModel" && permission.column === "fullModel" ) {
@@ -349,7 +471,7 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
             }
         );
 
-        // tabla
+        // Table
         this.dataModelService.currentTablePanel.subscribe(
             tablePanel => {
                 this.tablePanel = tablePanel;
@@ -357,7 +479,7 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
                 this.relationsTable.value = []
                 this.permissions = this.modelPanel.metadata ? this.modelPanel.metadata.model_granted_roles : [];
                 this.permissionTable.value = [];
-                // permisos de la taula.
+                // Table permissions
                 this.permissions.forEach(permission => {
                     if (this.tablePanel.technical_name === permission.table&&permission.column === "fullTable") {
                         this.permissionTable.value.push(
@@ -391,7 +513,7 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
             }
         );
 
-        //Columna
+        // Column
         this.dataModelService.currentColumnPanel.subscribe(
             columnPanel => {
 
@@ -404,13 +526,26 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
                 this.permissions.forEach(permission => {
 
                     const table = this.dataModelService.getTable(this.columnPanel);
-
                     if (this.columnPanel.technical_name === permission.column && table.table_name === permission.table && permission.column != "fullTable" ) {
+                        // Format the value to display it correctly
+                        let displayValue = '';
+                        if (permission.value && Array.isArray(permission.value)) {
+                            if (permission.value[0] === '(~ => All)') {
+                                displayValue = 'Todos';
+                            } else if (permission.value[0] === '(x => None)') {
+                                displayValue = 'Ninguno';
+                            } else if (permission.dynamic) {
+                                displayValue = 'Dinámico: ' + permission.value[0];
+                            } else {
+                                displayValue = permission.value.join(', ');
+                            }
+                        }
+
                         this.permissionsColumn.value.push(
                             {
                                 user: permission.usersName,
                                 group: permission.groupsName,
-                                value: permission.value,
+                                value: displayValue,
                                 _id: permission.users || permission.groups
                             }
                         );
@@ -432,9 +567,13 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
         this.dataModelService.currentModelPanel.subscribe(
             modelPanel => {
                 this.modelPanel = modelPanel;
-                this.selectedTipoBD = this.tiposBD.filter(type => type.value === modelPanel.connection.type)[0];
+                this.selectedTipoBD = this.tiposBD.filter(type => type?.value === modelPanel.connection?.type)[0];
+
+                // SID selection
+                this.selectedSID = this.SID_Types.find(type => type?.value === this.modelPanel.connection?.sid); 
             }, err => this.alertService.addError(err)
         );
+
 
     }
 
@@ -461,8 +600,7 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
 
     updateColumn() {
         if (this.columnPanel.technical_name) {
-
-            if(this.columnPanel.computed_column === 'computed') {
+            if (this.columnPanel.computed_column === 'computed') {
                 switch (this.columnPanel.column_type) {
                     case 'text': this.columnPanel.aggregation_type = AGG_COMPUTED.AGG_TEXT; break;
                     case 'date': this.columnPanel.aggregation_type = AGG_COMPUTED.AGG_DATE; break;
@@ -470,7 +608,6 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
                     default: this.columnPanel.aggregation_type = AGG_COMPUTED.AGG_COORDINATE; break;
                 }
             }
-            
             this.dataModelService.changeColumnPanel(this.columnPanel);
         }
     }
@@ -485,25 +622,34 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
         this.update();
     }
 
-    updateColumnType() {
-        this.columnPanel.column_type = this.selectedcolumnType;
+    updateColumnType(type?: any) {
+        this.columnPanel.column_type = type;
         this.update();
     }
 
-    updateTableType() {
-        this.tablePanel.table_type = this.selectedTableType;
+    updateTableType(type?: any) {
+        // this.tablePanel.table_type = this.selectedTableType;
+        this.tablePanel.table_type = type;
         this.update();
     }
 
-    updateAgg() {
-        this.columnPanel.aggregation_type = this.selectedAggType;
+    updateAgg(type?: any) {
+        const inx = this.columnPanel.aggregation_type.indexOf(type);
+        if (inx != -1) {
+            this.columnPanel.aggregation_type.splice(inx,1);
+        } else {
+            this.columnPanel.aggregation_type.push(type);
+        }
         this.update();
     }
 
     setDbType() {
-
         this.modelPanel.connection.type = this.selectedTipoBD.value;
         this.update();
+    }
+
+    isProtectedDataSource(): boolean {
+        return PROTECTED_MODEL_DATA_SOURCES_ARRAY.includes(this.id);
     }
 
     updateRelation(relation: Relation) {  
@@ -529,12 +675,8 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
             text: $localize`:@@deleteCalculatedColumn:Si, Eliminar el campo calculado!`,
             icon: 'warning',
             showCancelButton: true,
-            confirmButtonColor: '#3085d6',
-            cancelButtonColor: '#d33',
             confirmButtonText: $localize`:@@ConfirmDeleteModel:Si, ¡Eliminalo!`,
-            // SDA CUSTOM - Replace eliminated duplicate ID DeleteGroupCancel with canonical cancelarButton
-/* SDA CUSTOM */            cancelButtonText: $localize`:@@cancelarButton:Cancelar`
-            // END SDA CUSTOM
+            cancelButtonText: $localize`:@@DeleteGroupCancel:Cancelar`
         }).then(async (borrado) => {
             if (borrado.value) {
                 try {
@@ -555,6 +697,34 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
         this.update();
     }
 
+    deleteDuckdbTable(tableName: string) {
+        Swal.fire({
+            title: $localize`:@@Sure:¿Estás seguro?`,
+            text: $localize`:@@deleteDuckdbTable:Se eliminará la tabla y su archivo CSV del disco.`,
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: $localize`:@@ConfirmDeleteModel:Si, ¡Eliminalo!`,
+            cancelButtonText: $localize`:@@DeleteGroupCancel:Cancelar`
+        }).then((result) => {
+            if (result.value) {
+                const id = this.dataModelService.model_id;
+                this.spinnerService.on();
+                this.dataModelService.deleteDuckDbCsv(id, tableName).subscribe(
+                    () => {
+                        this.dataModelService.deleteView(tableName);
+                        this.typePanel = 'root';
+                        this.dataModelService.sendModel();
+                        this.spinnerService.off();
+                    },
+                    err => {
+                        this.alertService.addError(err);
+                        this.spinnerService.off();
+                    }
+                );
+            }
+        });
+    }
+
 
     deleteValuesList(columnPanel: EditColumnPanel){
         this.columnPanel.valueListSource = null;
@@ -562,28 +732,23 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
         this.update();
     }
 
-    editCalculatedField(columnPanel) {
+    editCalculatedField(columnPanel: EditColumnPanel) {
         this.calculatedColumnEditController = true;
-        // console.log('Columna enviada:::: ', columnPanel);
     }
 
     onCloseCalculatedColumnEdit() {
         this.calculatedColumnEditController = false;
     }
 
-    newColumnEdited(colum: any) {
-        console.log('ANTERIOR : ', this.columnPanel)
-        console.log('ACTUAL: ', colum);
-        this.columnPanel = _.cloneDeep(colum);
-
-        // Updating the columnPanel
+    newColumnEdited(column: any) {
+        this.columnPanel = _.cloneDeep(column);
         this.dataModelService.changeColumnPanel(this.columnPanel);
-
     }
 
     checkConection() {
         this.spinnerService.on();
         let connection = this.modelPanel.connection;
+        
         let id = this.dataModelService.model_id;
         this.dataModelService.testStoredConnection(connection, id).subscribe(
             res => { this.alertService.addSuccess($localize`:@@EstablishedConnections:Conexión establecida`); this.spinnerService.off() },
@@ -610,9 +775,8 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
             params: { table: this.tablePanel },
             close: (event, response) => {
                 if (!_.isEqual(event, EdaDialogCloseEvent.NONE)) {
-
                     const column = response.column;
-                    
+
                     let aggregation_type = [];
                     switch (column.column_type) {
                         case 'text': aggregation_type = AGG_COMPUTED.AGG_TEXT_VALUE_DISPLAY; break;
@@ -620,8 +784,7 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
                         case 'numeric': aggregation_type = AGG_COMPUTED.AGG_NUMERIC_VALUE_DISPLAY; break;
                         default: aggregation_type = AGG_COMPUTED.AGG_COORDINATE_VALUE_DISPLAY; break;
                     }
-
-                    if(column.computed_column === 'computed') { response.column.aggregation_type = aggregation_type }
+                    if (column.computed_column === 'computed') { response.column.aggregation_type = aggregation_type; }
 
                     this.dataModelService.addCalculatedColumn(response);
                     this.update();
@@ -636,7 +799,9 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
             }
         })
     }
-    openNewViewDialog() {
+
+
+   /* openNewViewDialog() {
         this.viewController = new EdaDialogController({
             params: { user: localStorage.getItem('user'), model_id: this.dataModelService.model_id },
             close: (event, response) => {
@@ -647,85 +812,120 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
                 this.viewController = undefined;
             }
         })
+    }*/
+    openNewViewDialog() {
+        this.showViewDialog = true;
     }
+        onCloseViewDialog(response?: any) {
+        this.showViewDialog = false;
+        if (response) {
+            this.dataModelService.addView(response);
+        }}
 
     openNewMapDialog() {
-        this.mapController = new EdaDialogController({
-            params: {},
-            close: (event, response) => {
-                if (!_.isEqual(event, EdaDialogCloseEvent.NONE)) {
-                    if (response.newMap) {
-                        this.dataModelService.addLinkedToMapColumns(response.linkedColumns, response.mapID);
-                    }
-                    this.dataModelService.updateMaps(response.serverMaps);
-                }
-                this.mapController = undefined;
-            }
-        })
+        this.showMapDialog = true;
+
+        // this.mapController = new EdaDialogController({
+        //     params: {},
+        //     close: (event, response) => {
+        //         if (!_.isEqual(event, EdaDialogCloseEvent.NONE)) {
+        //             if (response.newMap) {
+        //                 this.dataModelService.addLinkedToMapColumns(response.linkedColumns, response.mapID);
+        //             }
+        //             this.dataModelService.updateMaps(response.serverMaps);
+        //         }
+        //         this.mapController = undefined;
+        //     }
+        // })
     }
-    openNewMapCoordDialog() {
-        this.mapCoordController = new EdaDialogController({
-          params: {},
-          close: (event, response) => {
-            if (!_.isEqual(event, EdaDialogCloseEvent.NONE)) {
-              if (response.newMap) {
-                this.dataModelService.addLinkedToMapColumns(
-                  response.linkedColumns,
-                  response.mapID
-                );
-              }
-              this.dataModelService.updateMaps(response.serverMaps);
+
+    closeMapDialog(response?: any) {
+        if (response) {
+            if (response.newMap) {
+                this.dataModelService.addLinkedToMapColumns(response.linkedColumns, response.mapID);
             }
-            this.mapCoordController = undefined;
-          },
-        });
+            
+            this.dataModelService.updateMaps(response.serverMaps);
+        }
+
+        this.showMapDialog = false;
+    }
+
+    openAddDuckdbTableDialog() {
+        this.showAddDuckdbTableDialog = true;
+    }
+
+    onCloseDuckdbTableDialog(newTable: any) {
+        this.showAddDuckdbTableDialog = false;
+        if (newTable) {
+            this.dataModelService.addTableToModel(newTable);
+        }
     }
 
     openCSVDialog() {
-        this.csvPanelController = new EdaDialogController({
-            params: { model_id: this.dataModelService.model_id },
-            close: (event, response) => {
-                if (response) {
-                    this.onTableCreated.emit();
-                }
-                this.csvPanelController = undefined;
-            }
-        })
+        this.showCsvDialog = true;
+        // this.csvPanelController = new EdaDialogController({
+        //     params: { model_id: this.dataModelService.model_id },
+        //     close: (event, response) => {
+        //         if (response) {
+        //             this.onTableCreated.emit();
+        //         }
+        //         this.csvPanelController = undefined;
+        //     }
+        // })
+    }
+
+    closeCSVDialog(response?: any) {
+        if (response) {
+            this.onTableCreated.emit();
+        }
+
+        this.showCsvDialog = false;
     }
     
     openTagDialog() {
-        
-        this.tagController = new EdaDialogController({
-            params: { model_id: this.dataModelService.model_id, tagArray: this.modelPanel.metadata.tags },
-            close: (event, response) => {
-                if (!_.isEqual(event, EdaDialogCloseEvent.NONE)) {
-                    this.dataModelService.addTags(response);
-                    this.update();
-                }
-                this.tagController = undefined;
-            }
-        })
+        this.showAddTagDialog = true;
+    }
+
+    onCloseTagDialog(response?: any) {
+        this.showAddTagDialog = false;
+
+        if (response) {
+            this.dataModelService.addTags(response);
+            this.update();
+        }
     }
 
     openCacheDialog() {
-        this.cacheController = new EdaDialogController({
-            params: { model_id: this.dataModelService.model_id, config:this.modelPanel.metadata.cache_config },
-            close: (event, response) => {
-                if (response) {
-                    this.dataModelService.addCacheConfig(response);
-                }
-                this.cacheController = undefined;
-            }
-        })
+        this.showCacheDialog = true;
+        
+        // this.cacheController = new EdaDialogController({
+        //     params: { model_id: this.dataModelService.model_id, config:this.modelPanel.metadata.cache_config },
+        //     close: (event, response) => {
+        //         if (response) {
+        //             this.dataModelService.addCacheConfig(response);
+        //         }
+        //         this.cacheController = undefined;
+        //     }
+        // })
+    }
+
+    onCloseCacheDialog(response?: any) {
+        if (response) {
+            this.dataModelService.addCacheConfig(response);
+        }
+
+        this.showCacheDialog = false;
     }
 
     openSecurityDialog(){
-        this.securityController = new EdaDialogController({
-            params: { model: this.modelPanel },
-            close: (event) => {
-                this.securityController = undefined;
-            }
-        })
+        this.showSecurityDialog = true;
+        // this.securityController = new EdaDialogController({
+        //     params: { model: this.modelPanel },
+        //     close: (event) => {
+        //         this.securityController = undefined;
+        //     }
+        // })
     }
 
     openValueListDialog() {
@@ -734,6 +934,22 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
             params: { column: this.columnPanel, table: table },
             close: (event, response) => {
                 if (!_.isEqual(event, EdaDialogCloseEvent.NONE)) {
+
+                    const display_name = {
+                        default: "xx-bridge",
+                        localized: [],
+                    }
+
+                    const originRelation: Relation = {
+                        target_table: response.target_table,
+                        target_column: response.target_id_column,
+                        source_table: response.source_table,
+                        source_column: response.source_column,
+                        display_name: display_name,
+                        visible: true
+                    }
+
+                    this.dataModelService.addRelation(originRelation);
                     this.dataModelService.addValueListSource(response);
                     this.updateColumn();
                 }
@@ -759,42 +975,102 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
 
 
     openTablePermissionsDialog() {
-        this.tablePermissionsController = new EdaDialogController({
-            params: { table: this.tablePanel },
-            close: (event, response) => {
-                if (!_.isEqual(event, EdaDialogCloseEvent.NONE)) {
-                    this.dataModelService.addPermission(response);
-                    this.update();
-                }
-                this.tablePermissionsController = undefined;
-            }
-        });
+        this.showTablePermissionsDialog = true;
+
+        // this.tablePermissionsController = new EdaDialogController({
+        //     params: { table: this.tablePanel },
+        //     close: (event, response) => {
+        //         if (!_.isEqual(event, EdaDialogCloseEvent.NONE)) {
+        //             this.dataModelService.addPermission(response);
+        //             this.update();
+        //         }
+        //         this.tablePermissionsController = undefined;
+        //     }
+        // });
+    }
+
+    closeTablePermissionsDialog(response: any) {
+        if (response) {
+            this.dataModelService.addPermission(response);
+            this.update();
+        }
+
+        this.showTablePermissionsDialog = false;
     }
 
     openModelPermissionsDialog() {
-        this.modelPermissionsController = new EdaDialogController({
-            params: {   },
-            close: (event, response) => {
-                if (!_.isEqual(event, EdaDialogCloseEvent.NONE)) {
-                    this.dataModelService.addPermission(response);
-                    this.update();
-                }
-                this.modelPermissionsController = undefined;
-            }
-        });
+        this.showModelPermissionDialog = true;
+        // this.modelPermissionsController = new EdaDialogController({
+        //     params: {   },
+        //     close: (event, response) => {
+        //         if (!_.isEqual(event, EdaDialogCloseEvent.NONE)) {
+        //             this.dataModelService.addPermission(response);
+        //             this.update();
+        //         }
+        //         this.modelPermissionsController = undefined;
+        //     }
+        // });
+    }
+
+    closeModelPermissionsDialog(response: any) {
+        if (response) {
+            this.dataModelService.addPermission(response);
+            this.update();
+        }
+
+        this.showModelPermissionDialog = false;
     }
 
 
     hideAllTables() {
+        this.tablesHidden = !this.tablesHidden;
         this.dataModelService.hideAllTables();
     }
 
     hideAllColumns(tablePanel: any) {
+        this.columnsHidden = !this.columnsHidden;
         this.dataModelService.hideAllColumns(tablePanel);
     }
 
     hideAllRelations() {
+        this.relationsHidden = !this.relationsHidden;
         this.dataModelService.hideAllRelations();
+    }
+
+    viewEdition() {
+        Swal.fire({
+            title: $localize`:@@viewEditionTitle:Edición de la Vista`,
+            text: $localize`:@@viewEditionDescription:La edición de la vista permite modificar únicamente la consulta (query), pero no debe cambiar los nombres de las columnas.`,
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonText: $localize`:@@ContinueTablaQuality:Continuar`,
+            cancelButtonText: $localize`:@@cancelarBtn:Cancelar`,
+        }).then( (borrado) => {
+            if(borrado.value){
+                // Finding the view to edit:
+                let myViewInEdition;
+                let allViews = this.dataModelService.allViews();
+                myViewInEdition = allViews.find(e => e.table_name === this.tablePanel.technical_name && e.query === this.tablePanel.query && e.table_type === 'view')
+                this.viewInEdition = myViewInEdition;
+                this.viewDialogEdition = true;
+            } else {
+                console.log('No se hace ningun cambio: ', borrado)
+            }
+        })
+
+    }
+
+    public onCloseViewEditionDialog(event) {
+        if(event === 'cancel') {
+            this.viewDialogEdition = false;
+            return
+        }
+
+        // Changes will be made here
+        this.viewDialogEdition = false;
+        this.tablePanel.query = event.query;
+        this.tablePanel.columns = event.columns;
+        this.dataModelService.editView(this.tablePanel);
     }
 }
 

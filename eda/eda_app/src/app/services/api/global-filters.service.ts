@@ -1,25 +1,17 @@
 import { Injectable } from '@angular/core';
 import { EdaPanel } from '@eda/models/model.index';
+import { USE_VALUE_LIST_CODE_FOR_FILTERS } from '@eda/configs/customizable/customizable_merged';
+import { ChartUtilsService } from '@eda/services/utils/chart-utils.service';
 import * as _ from 'lodash';
 
 @Injectable()
 export class GlobalFiltersService {
 
-    constructor() { }
+    constructor(private chartUtils: ChartUtilsService) { }
 
-    /**
-     * Determines which panels should be displayed based on the reference panel and model tables.
-     * Only panels related to the reference panel's tables are marked as active and available.
-     *
-     * @param modelTables List of all model tables.
-     * @param panels List of all panels.
-     * @param refferencePanel The panel used as a reference for filtering.
-     * @returns Array of panels with their display status.
-     */
     public panelsToDisplay(modelTables: any[], panels: any[], refferencePanel: any) {
         const panelsTables = [];
-        const panelsToDisplay: Array<{ title, id, active, avaliable, visible }> = [];
-
+        const panelsToDisplay: any[] = [];
 
         if (refferencePanel.content) {
             const panelQuery = refferencePanel.content.query.query;
@@ -45,11 +37,15 @@ export class GlobalFiltersService {
                         if (!firstPanelRelatedTables.has(table_id)) inlcludePanel = false;
                     }
 
-                    if (inlcludePanel) {
-                        panelsToDisplay.push({ title: panel.title, id: panel.id, active: true, avaliable: true, visible: true });
-                    } else {
-                        panelsToDisplay.push({ title: panel.title, id: panel.id, active: false, avaliable: false, visible: true });
-                    }
+                    panelsToDisplay.push({
+                        title: panel.title,
+                        id: panel.id,
+                        active: inlcludePanel,
+                        avaliable: true,
+                        visible: true,
+                        content: panel.content,
+                        globalFilterMap: panel.globalFilterMap
+                    });
                 }
             }
         }
@@ -57,14 +53,6 @@ export class GlobalFiltersService {
         return panelsToDisplay;
     }
 
-    /**
-     * Finds all tables related to the given query tables, starting from the root table.
-     *
-     * @param queryTables List of table names to relate.
-     * @param modelTables List of all model tables.
-     * @param rootTable Optional root table name to start the search.
-     * @returns Map of related tables.
-     */
     public relatedTables(queryTables: any[], modelTables: any[], rootTable?: string): Map<string, any> {
         let visited = new Map();
         const startTable = modelTables.find(t => t.table_name === (rootTable || queryTables[0]));
@@ -84,22 +72,14 @@ export class GlobalFiltersService {
         return visited;
     }
 
-    /**
-     * Recursively finds all related tables for a given table and adds them to the visited map.
-     *
-     * @param modelTables List of all model tables.
-     * @param table The current table to find relations for.
-     * @param vMap Map of already visited tables.
-     * @returns Updated map of related tables.
-     */
     public findRelations(modelTables: any, table: any, vMap: any) {
         vMap.set(table.table_name, table);
         const tableRelations = table.relations.filter((rel: any) => rel.visible);
 
         for (const rel of tableRelations) {
-        /*SDA CUSTOM*/    const newTable = modelTables.find((t: any) => t.table_name === rel.target_table || t.table_name === `${rel.target_table}.${rel.target_column[0]}`);
+            let newTable = modelTables.find((t: any) => t.table_name === rel.target_table || t.table_name === `${rel.target_table}.${rel.target_column[0]}`);
 
-        /*SDA CUSTOM*/    if (newTable?.table_name && !vMap.has(newTable.table_name)) {
+            if (newTable?.table_name && !vMap.has(newTable.table_name)) {
                 this.findRelations(modelTables, newTable, vMap);
             }
         }
@@ -107,13 +87,6 @@ export class GlobalFiltersService {
         return vMap;
     }
 
-    /**
-     * Ensures that all tables in queryTables exist in modelTables, adding missing ones based on rootTable relations.
-     *
-     * @param rootTableName Name of the root table.
-     * @param queryTables List of table names to check.
-     * @param modelTables List of all model tables (will be mutated if new tables are added).
-     */
     public assertTable(rootTableName: string, queryTables: any[], modelTables: any[]): void {
         const assertTablesNames = [];
         const modelTableNames = modelTables.map((t: any) => t.table_name);
@@ -142,13 +115,6 @@ export class GlobalFiltersService {
         }
     }
 
-    /**
-     * Finds all tables related to the root panel's query tables.
-     *
-     * @param tables List of all tables.
-     * @param rootPanel The root panel to analyze.
-     * @returns Map of related tables for the root panel.
-     */
     public findRelatedTables(tables: any[], rootPanel: EdaPanel) {
         let firstPanelRelatedTables;
 
@@ -169,15 +135,6 @@ export class GlobalFiltersService {
         return firstPanelRelatedTables;
     }
 
-    /**
-     * Filters the given panels to only include those related to the root panel's tables.
-     * Updates each panel's active and available status accordingly.
-     *
-     * @param tables List of all tables.
-     * @param panels List of all panels.
-     * @param rootPanel Optional root panel to use for filtering.
-     * @returns Array of filtered panels.
-     */
     public filterPanels(tables: any[], panels: EdaPanel[], rootPanel?: any): any[] {
         const filteredPanels: any[] = panels.filter((panel) => panel.content);
 
@@ -224,13 +181,6 @@ export class GlobalFiltersService {
         return filteredPanels;
     }
 
-    /**
-     * Loads the root table and its direct relations as nodes for a tree structure.
-     *
-     * @param tables List of all tables.
-     * @param rootPanel The root panel to extract the root table from.
-     * @returns Array of nodes representing the root table and its children.
-     */
     public loadTablePaths(tables: any[], rootPanel: EdaPanel) {
         const panelQuery = rootPanel.content.query.query;
         const rootTable = panelQuery.rootTable;
@@ -260,64 +210,6 @@ export class GlobalFiltersService {
         return pathsTables;
     }
 
-    // SDA CUSTOM — Builds the tree root node for a SQL panel using the given table name directly,
-    // SDA CUSTOM   instead of relying on rootTable from the panel query (which SQL panels don't have).
-    /*SDA CUSTOM*/ public loadTablePathsFromName(tables: any[], tableName: string): any[] {
-    /*SDA CUSTOM*/     const pathsTables: any[] = [];
-    /*SDA CUSTOM*/     const table = tables.find((source: any) => source.table_name === tableName);
-    /*SDA CUSTOM*/     if (table) {
-    /*SDA CUSTOM*/         const node: any = { label: table.display_name?.default || tableName, table_id: tableName };
-    /*SDA CUSTOM*/         if (table.relations && table.relations.length > 0) {
-    /*SDA CUSTOM*/             node.expandedIcon = 'pi pi-folder-open';
-    /*SDA CUSTOM*/             node.collapsedIcon = 'pi pi-folder';
-    /*SDA CUSTOM*/             node.children = [{}];
-    /*SDA CUSTOM*/         }
-    /*SDA CUSTOM*/         pathsTables.push(node);
-    /*SDA CUSTOM*/     }
-    /*SDA CUSTOM*/     return pathsTables;
-    /*SDA CUSTOM*/ }
-
-    // SDA CUSTOM — BFS over model table relations to find the shortest join path from startTable to targetTable.
-    // SDA CUSTOM   Returns a node object compatible with pathList entries, or null if no path is found.
-    /*SDA CUSTOM*/ public findShortestPath(startTable: string, targetTable: string, modelTables: any[]): any | null {
-    /*SDA CUSTOM*/     if (!startTable || !targetTable || startTable === targetTable) return null;
-    /*SDA CUSTOM*/     const queue: Array<{ tableName: string; joins: any[][] }> = [{ tableName: startTable, joins: [] }];
-    /*SDA CUSTOM*/     const visited = new Set<string>([startTable]);
-    /*SDA CUSTOM*/     while (queue.length > 0) {
-    /*SDA CUSTOM*/         const { tableName, joins } = queue.shift();
-    /*SDA CUSTOM*/         const table = modelTables.find((t: any) => t.table_name === tableName);
-    /*SDA CUSTOM*/         if (!table) continue;
-    /*SDA CUSTOM*/         const relations = (table.relations || []).filter(
-    /*SDA CUSTOM*/             (rel: any) => !rel.bridge && !rel.autorelation && rel.visible !== false
-    /*SDA CUSTOM*/         );
-    /*SDA CUSTOM*/         for (const rel of relations) {
-    /*SDA CUSTOM*/             const nextTable: string = rel.target_table;
-    /*SDA CUSTOM*/             const sourceJoin = `${rel.source_table || tableName}.${rel.source_column[0]}`;
-    /*SDA CUSTOM*/             const joinChildId = `${rel.target_table}.${rel.target_column[0]}`;
-    /*SDA CUSTOM*/             const child_id = `${joinChildId}.${rel.source_column[0]}`;
-    /*SDA CUSTOM*/             const newJoins = [...joins, [sourceJoin, joinChildId]];
-    /*SDA CUSTOM*/             const childLabel = rel.display_name?.default || `${rel.source_column[0]} - ${rel.target_table}`;
-    /*SDA CUSTOM*/             if (nextTable === targetTable) {
-    /*SDA CUSTOM*/                 return { child_id, type: 'child', label: childLabel, autorelation: false, joins: newJoins };
-    /*SDA CUSTOM*/             }
-    /*SDA CUSTOM*/             if (!visited.has(nextTable)) {
-    /*SDA CUSTOM*/                 visited.add(nextTable);
-    /*SDA CUSTOM*/                 queue.push({ tableName: nextTable, joins: newJoins });
-    /*SDA CUSTOM*/             }
-    /*SDA CUSTOM*/         }
-    /*SDA CUSTOM*/     }
-    /*SDA CUSTOM*/     return null;
-    /*SDA CUSTOM*/ }
-
-
-    /**
-     * Expands a node in a tree structure, adding its child nodes based on table relations.
-     * Prevents duplicate paths and handles autorelations.
-     *
-     * @param tree The current tree structure.
-     * @param expandNode The node to expand.
-     * @param dataSource List of all tables (used to find relations).
-     */
     public onNodeExpand(tree: any[], expandNode: any, dataSource: any[]) {
         const table_id = expandNode.table_id || expandNode.child_id.split('.')[0];
 
@@ -383,7 +275,7 @@ export class GlobalFiltersService {
                             (source.relations || []).some((rel: any) => rel.target_table != table_id);
                     });
 
-                    // If it's expandable, we add properties to expand the node.
+                    // If it's expandable, we add properties to expand the node. 
                     if (isexpandible && !relation.autorelation) {
                         childNode.expandedIcon = "pi pi-folder-open";
                         childNode.collapsedIcon = "pi pi-folder";
@@ -398,14 +290,9 @@ export class GlobalFiltersService {
         }
     }
 
-    /**
-     * Formats a global filter object, choosing the correct format based on the presence of a pathList.
-     *
-     * @param globalFilter The global filter object to format.
-     * @returns The formatted filter object.
-     */
+
     public formatFilter(globalFilter: any) {
-        /* SDA CUSTOM */ this.normalizeLegacyFilter(globalFilter);
+        this.normalizeLegacyFilter(globalFilter);
 
         let formatedFilter: any;
         if (globalFilter.pathList) {
@@ -417,171 +304,209 @@ export class GlobalFiltersService {
         return formatedFilter;
     }
 
-    /* SDA CUSTOM */ private normalizeLegacyFilter(filter: any): void {
-    /* SDA CUSTOM */     if (filter.selectedRange && !filter.dynamicValue) {
-    /* SDA CUSTOM */         filter.dynamicValue = filter.selectedRange;
-    /* SDA CUSTOM */     }
-    /* SDA CUSTOM */     if (!filter.dateFilterType) {
-    /* SDA CUSTOM */         if (filter.selectedRange && filter.selectedRange !== 'customDate') {
-    /* SDA CUSTOM */             filter.dateFilterType = 'between';
-    /* SDA CUSTOM */         } else if (filter.selectedItems?.length >= 2) {
-    /* SDA CUSTOM */             filter.dateFilterType = 'between';
-    /* SDA CUSTOM */         } else if (filter.selectedItems?.length === 1) {
-    /* SDA CUSTOM */             filter.dateFilterType = '=';
-    /* SDA CUSTOM */         }
-    /* SDA CUSTOM */     }
-    /* SDA CUSTOM */ }
+    /** Backfills dateFilterType/dynamicValue on filters saved before operator support existed */
+    private normalizeLegacyFilter(filter: any): void {
+        if (filter.selectedRange && !filter.dynamicValue) {
+            filter.dynamicValue = filter.selectedRange;
+        }
+        if (!filter.dateFilterType) {
+            if (filter.selectedRange && filter.selectedRange !== 'customDate') {
+                filter.dateFilterType = 'between';
+            } else if (filter.selectedItems?.length >= 2) {
+                filter.dateFilterType = 'between';
+            } else if (filter.selectedItems?.length === 1) {
+                filter.dateFilterType = '=';
+            }
+        }
+    }
 
     /**
-     * Formats a global filter object for simple (non-tree) filters.
-     *
-     * @param globalFilter The global filter object to format.
-     * @returns The formatted filter object.
+     * The backend never learned to treat a value1/value2 range as an "in"/"not_in" clause —
+     * it only ever reads value1, silently dropping the range's end. A dynamic in/not_in range
+     * (e.g. "Dentro de Esta semana") must be sent as between/not_between so the backend actually
+     * ranges over it instead of matching a single date.
      */
+    private wireFilterType(dateFilterType: string, isDate: boolean, dynamicValue: any): string {
+        if (isDate && dynamicValue && ['in', 'not_in'].includes(dateFilterType)) {
+            return dateFilterType === 'in' ? 'between' : 'not_between';
+        }
+        return dateFilterType;
+    }
+
+    /** The operator's display label (e.g. '!=' -> '≠'), for filter summaries — wireFilterType may
+     * have remapped filter_type (e.g. 'in' -> 'between') to something the backend understands. */
+    private displayFilterType(dateFilterType: string): string {
+        return this.chartUtils.filterTypesLabels.find(f => f.value === dateFilterType)?.label || dateFilterType;
+    }
+
     private formatGlobalFilter(globalFilter: any) {
-        const isDate = globalFilter.column.value.column_type === 'date';
+        const columnType = globalFilter.column?.value?.column_type || globalFilter.selectedColumn?.column_type;
+        const filterTable = globalFilter.table?.value || globalFilter.selectedTable?.table_name;
+        const filterColumn = globalFilter.column?.value?.column_name || globalFilter.selectedColumn?.column_name;
+        const valueListSource = globalFilter.column?.value?.valueListSource || globalFilter.selectedColumn?.valueListSource;
+        const isDate = columnType === 'date';
+        const dateFilterType = isDate ? (globalFilter.dateFilterType || 'between') : 'in';
 
-        /* SDA CUSTOM */ const dateFilterType = isDate ? (globalFilter.dateFilterType || 'between') : 'in';
-
-        /* SDA CUSTOM */ const formatedFilter: any = {
+        const formatedFilter: any = {
             filter_id: globalFilter.id,
-            filter_table: globalFilter.table.value,
-            filter_column_type: globalFilter.column.value.column_type,
-            filter_column: globalFilter.column.value.column_name,
-            /* SDA CUSTOM */ filter_type: dateFilterType,
-            /* SDA CUSTOM */ filter_elements: this.assertGlobalFilterItems(globalFilter, dateFilterType),
-            /* SDA CUSTOM */ filter_codes: this.assertGlobalFilterCodes(globalFilter, dateFilterType),
+            filter_table: filterTable,
+            filter_column: filterColumn,
+            filter_column_type: columnType,
+            filter_type: this.wireFilterType(dateFilterType, isDate, globalFilter.dynamicValue),
+            display_filter_type: this.displayFilterType(dateFilterType),
+            filter_elements: this.assertGlobalFilterItems(globalFilter, dateFilterType),
+            filter_codes: this.assertGlobalFilterCodes(globalFilter, dateFilterType),
             isGlobal: true,
+            isAutocompleted: globalFilter.isAutocompleted,
             applyToAll: globalFilter.applyToAll,
-            valueListSource: globalFilter.column.value.valueListSource,
-            /* SDA CUSTOM */ selectedRange: globalFilter.selectedRange,
-            filterBeforeGrouping: true,
-            joins: globalFilter.joins,
-            computed_column: globalFilter.column?.value?.computed_column,
-            SQLexpression: globalFilter.column?.value?.SQLexpression,
+            valueListSource: valueListSource,
             autorelation: globalFilter.autorelation,
-        };
+            joins: globalFilter.joins,
+            filterBeforeGrouping: true,
+            computed_column: globalFilter.column?.value?.computed_column ?? globalFilter.selectedColumn?.computed_column,
+            SQLexpression: globalFilter.column?.value?.SQLexpression ?? globalFilter.selectedColumn?.SQLexpression,
+            fromChart: globalFilter.fromChart ?? false,  // <-- añadir esto
+            selectedRange: globalFilter.selectedRange,
+        }
 
-        /* SDA CUSTOM */ if (globalFilter.dynamicValue) {
-        /* SDA CUSTOM */     formatedFilter.dynamicValue = globalFilter.dynamicValue;
-        /* SDA CUSTOM */ }
+        if (globalFilter.dynamicValue) {
+            formatedFilter.dynamicValue = globalFilter.dynamicValue;
+        }
 
         return formatedFilter;
     }
 
-    /**
-     * Formats a global filter object for tree-based filters, removing selectedTableNodes from the pathList.
-     *
-     * @param globalFilter The global filter object to format.
-     * @returns The formatted filter object.
-     */
     private formatGlobalFilterTree(globalFilter: any) {
-        const isDate = globalFilter.selectedColumn.column_type === 'date';
-
-        /* SDA CUSTOM: use dateFilterType if set (from date-format-dialog), otherwise default to 'between'/'in' */
-        /*SDA CUSTOM*/ const dateFilterType = isDate ? (globalFilter.dateFilterType || 'between') : 'in';
+        const columnType = globalFilter.selectedColumn.column_type;
+        const isDate = columnType === 'date';
+        const dateFilterType = isDate ? (globalFilter.dateFilterType || 'between') : 'in';
 
         const pathList = _.cloneDeep(globalFilter.pathList);
         for (const key in pathList) {
             delete (pathList[key].selectedTableNodes);
         }
 
-/*SDA CUSTOM*/        const formatedFilter: any = {
+        const formatedFilter: any = {
             filter_id: globalFilter.id,
             filter_table: globalFilter.table_id || globalFilter.selectedTable.table_name,
             filter_column: globalFilter.selectedColumn.column_name,
-            filter_column_type: globalFilter.selectedColumn.column_type,
-/*SDA CUSTOM*/            filter_type: dateFilterType,
-/*SDA CUSTOM*/            filter_elements: this.assertGlobalFilterItems(globalFilter, dateFilterType),
-/*SDA CUSTOM*/            filter_codes: this.assertGlobalFilterCodes(globalFilter, dateFilterType),
+            filter_column_type: columnType,
+            filter_type: this.wireFilterType(dateFilterType, isDate, globalFilter.dynamicValue),
+            display_filter_type: this.displayFilterType(dateFilterType),
+            filter_elements: this.assertGlobalFilterItems(globalFilter, dateFilterType),
+            filter_codes: this.assertGlobalFilterCodes(globalFilter, dateFilterType),
             pathList: pathList,
             isGlobal: true,
+            isAutocompleted: globalFilter.isAutocompleted,
             applyToAll: globalFilter.applyToAll,
             autorelation: globalFilter.autorelation,
             valueListSource: globalFilter.selectedColumn.valueListSource,
-            filterBeforeGrouping: true,
-            joins: globalFilter.joins,
-            computed_column: globalFilter.selectedColumn.computed_column,
-            SQLexpression: globalFilter.selectedColumn.SQLexpression,
-        };
+            filterBeforeGrouping: true, // For all global filters it is Where
+            computed_column: globalFilter.selectedColumn?.computed_column,
+            SQLexpression: globalFilter.selectedColumn?.SQLexpression,
+            selectedRange: globalFilter.selectedRange,
+        }
 
-/* SDA CUSTOM: propagate dynamicValue so the backend generates BETWEEN instead of IN */
-/* SDA CUSTOM*/ if (globalFilter.dynamicValue) {
-/* SDA CUSTOM*/     formatedFilter.dynamicValue = globalFilter.dynamicValue;
+        if (globalFilter.dynamicValue) {
+            formatedFilter.dynamicValue = globalFilter.dynamicValue;
         }
 
         return formatedFilter;
     }
 
-
-    /**
-     * Returns the selected IDs for a global filter, formatted according to the column type.
-     * If the filter is of type 'date' and only one value is selected, adjusts the range to cover the entire year or month.
-     *
-     * @param globalFilter Object containing the global filter information and the selected items.
-     * @returns An array of objects with the selected IDs, structured depending on whether it is a date filter or not.
-     */
-/*SDA CUSTOM*/    public assertGlobalFilterCodes(globalFilter: any, dateFilterType?: string) {
+    public assertGlobalFilterCodes(globalFilter: any, dateFilterType?: string) {
         const columnType = globalFilter.column?.value?.column_type || globalFilter.selectedColumn?.column_type;
         const isDate = columnType === 'date';
 
-/*SDA CUSTOM*/        if (!isDate) return [{ value1: globalFilter.selectedIdValues }];
+        if (!isDate) {
+            // false (EDA) -> compare against the raw selected values | true (SinergiaDA) -> compare against the internal codes
+            const useCodes = USE_VALUE_LIST_CODE_FOR_FILTERS && globalFilter.selectedIdValues;
+            return [{ value1: useCodes ? globalFilter.selectedIdValues : globalFilter.selectedItems }];
+        }
 
-/*SDA CUSTOM*/        /* SDA CUSTOM: handle all operator types */
-/*SDA CUSTOM*/        const filterType = dateFilterType || 'between';
-/*SDA CUSTOM*/        const noValueTypes = ['not_null', 'not_null_nor_empty', 'null_or_empty'];
-/*SDA CUSTOM*/        if (noValueTypes.includes(filterType)) return [];
+        const filterType = dateFilterType || 'between';
+        const noValueTypes = ['not_null', 'not_null_nor_empty', 'null_or_empty'];
+        if (noValueTypes.includes(filterType)) return [];
 
-/*SDA CUSTOM*/        const isTwoValue = filterType === 'between' ||
-/*SDA CUSTOM*/            (globalFilter.dynamicValue && (filterType === 'in' || filterType === 'not_in'));
+        const isTwoValue = filterType === 'between' ||
+            (globalFilter.dynamicValue && (filterType === 'in' || filterType === 'not_in'));
 
-/*SDA CUSTOM*/        if (isTwoValue) {
-/*SDA CUSTOM*/            /* keep existing year/month expansion for backward compatibility */
-/*SDA CUSTOM*/            const year_length = 4;
-/*SDA CUSTOM*/            const year_month_length = 7;
-/*SDA CUSTOM*/            if (globalFilter.selectedItems[0] && !globalFilter.selectedItems[1]) {
-/*SDA CUSTOM*/                const val = globalFilter.selectedItems[0];
-/*SDA CUSTOM*/                if (val.length === year_length) {
-/*SDA CUSTOM*/                    globalFilter.selectedItems[0] = `${val}-01-01`;
-/*SDA CUSTOM*/                    globalFilter.selectedItems[1] = `${val}-12-31`;
-/*SDA CUSTOM*/                } else if (val.length === year_month_length) {
-/*SDA CUSTOM*/                    const yr = parseInt(val.slice(0, 4));
-/*SDA CUSTOM*/                    const mo = parseInt(val.slice(5, 7));
-/*SDA CUSTOM*/                    const days = new Date(yr, mo, 0).getDate();
-/*SDA CUSTOM*/                    const daysStr = days < 10 ? `0${days}` : `${days}`;
-/*SDA CUSTOM*/                    globalFilter.selectedItems[0] = `${val}-01`;
-/*SDA CUSTOM*/                    globalFilter.selectedItems[1] = `${val}-${daysStr}`;
-/*SDA CUSTOM*/                } else {
-/*SDA CUSTOM*/                    globalFilter.selectedItems[1] = globalFilter.selectedItems[0];
-/*SDA CUSTOM*/                }
-/*SDA CUSTOM*/            }
-/*SDA CUSTOM*/            return [
-/*SDA CUSTOM*/                { value1: globalFilter.selectedItems[0] ? [globalFilter.selectedItems[0]] : [] },
-/*SDA CUSTOM*/                { value2: globalFilter.selectedItems[1] ? [globalFilter.selectedItems[1]] : [] }
-/*SDA CUSTOM*/            ];
-/*SDA CUSTOM*/        }
+        const year_length = 4;
+        const year_month_length = 7;
 
-/*SDA CUSTOM*/        /* single-value operators (=, !=, >, <, >=, <=) or static in/not_in */
-/*SDA CUSTOM*/        const v1 = globalFilter.selectedItems[0];
-/*SDA CUSTOM*/        return [{ value1: v1 ? (Array.isArray(v1) ? v1 : [v1]) : [] }];
+        if (isTwoValue) {
+            if (globalFilter.selectedItems[0] && !globalFilter.selectedItems[1]) {
+                const year = globalFilter.selectedItems[0];
+                if (globalFilter.selectedItems[0].length === year_length) {
+                    globalFilter.selectedItems[0] = `${year}-01-01`;
+                    globalFilter.selectedItems[1] = `${year}-12-31`;
+                }
+                else if (globalFilter.selectedItems[0].length === year_month_length) {
+                    const year_month = globalFilter.selectedItems[0];
+                    const year = parseInt(year_month.slice(0, 5))
+                    const month = parseInt(year_month.slice(5, 7));
+                    let days = new Date(year, month, 0).getDate();
+                    let daysstr = days < 10 ? `0${days}` : `${days}`
+                    globalFilter.selectedItems[0] = `${year_month}-01`;
+                    globalFilter.selectedItems[1] = `${year_month}-${daysstr}`;
+                } else {
+                    globalFilter.selectedItems[1] = globalFilter.selectedItems[0]
+                }
+            }
+
+            return [
+                { value1: globalFilter.selectedItems[0] ? [globalFilter.selectedItems[0]] : [] },
+                { value2: globalFilter.selectedItems[1] ? [globalFilter.selectedItems[1]] : [] }
+            ];
+        }
+
+        // single-value operators (=, !=, >, <, >=, <=) or static in/not_in with discrete dates
+        const v1 = globalFilter.selectedItems[0];
+        return [{ value1: v1 ? (Array.isArray(v1) ? v1 : [v1]) : [] }];
     }
 
-
-    /**
-     * Returns the selected values (labels) for a global filter, formatted according to the column type.
-     * If the filter is of type 'date' and only one value is selected, adjusts the range to cover the entire year or month.
-     *
-     * @param globalFilter Object containing the global filter information and the selected items.
-     * @returns An array of objects with the selected values, structured depending on whether it is a date filter or not.
-     */
-/*SDA CUSTOM*/    public assertGlobalFilterItems(globalFilter: any, dateFilterType?: string) {
+    public assertGlobalFilterItems(globalFilter: any, dateFilterType?: string) {
         const columnType = globalFilter.column?.value?.column_type || globalFilter.selectedColumn?.column_type;
         const isDate = columnType === 'date';
 
-/*SDA CUSTOM*/if (!isDate) return [{ value1: globalFilter.selectedItems }];
+        if (!isDate) return [{ value1: globalFilter.selectedItems }];
 
-        /* SDA CUSTOM: delegate to assertGlobalFilterCodes — same structure for dates */
-/*SDA CUSTOM*/return this.assertGlobalFilterCodes(globalFilter, dateFilterType);
+        // Dates have no separate "code" representation — same shape as filter_codes
+        return this.assertGlobalFilterCodes(globalFilter, dateFilterType);
+    }
+
+    public formatFilterItems(columnType: string, items: any[]) {
+        const isDate = columnType === 'date';
+
+        if (isDate && items[0] && !items[1]) {
+            const input = items[0];
+
+            // Full year (e.g., "2025")
+            if (/^\d{4}$/.test(input)) {
+                const year = input;
+                items = [`${year}-01-01`, `${year}-12-31`];
+
+            // Year and month (e.g., "2025-08")
+            } else if (/^\d{4}-\d{2}$/.test(input)) {
+                const [year, month] = input.split('-').map(Number);
+                const lastDay = new Date(year, month, 0).getDate();
+                const paddedDay = String(lastDay).padStart(2, '0');
+                items = [`${input}-01`, `${input}-${paddedDay}`];
+
+            // Full date or unknown (keep as is)
+            } else {
+                items = [input, input];
+            }
+        }
+
+        if (isDate) {
+            return [
+                { value1: items[0] ? [items[0]] : [] },
+                { value2: items[1] ? [items[1]] : [] }
+            ];
+        }
+
+        return [{ value1: items }];
     }
 
 }

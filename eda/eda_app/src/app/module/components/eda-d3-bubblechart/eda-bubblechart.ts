@@ -4,7 +4,7 @@ export class EdaBubblechart {
   id : string;
   data : { labels: any[], values: any[]; };
   dataDescription : any;
-  colors: Array<string>;
-  assignedColors: any[];
+  colors : Array<string>;
   linkedDashboard : LinkedDashboardProps;
+  assignedColors: any[];
 }

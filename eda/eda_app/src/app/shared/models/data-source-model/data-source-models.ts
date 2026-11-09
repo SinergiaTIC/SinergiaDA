@@ -5,7 +5,8 @@ export class DataSourceModel {
             port: number,
             type: string,
             user: string,
-            password: string
+            password: string,
+            poolLimit: number
         },
         public metadata: {
             model_name: string,
@@ -28,6 +29,7 @@ export class EditTablePanel {
     table_granted_roles: string;
     columns: [];
     visible: boolean;
+    ia_visibility?: string;
 }
 
 export class EditColumnPanel {
@@ -39,6 +41,7 @@ export class EditColumnPanel {
     column_granted_roles: string;
     row_granted_roles: string;
     visible: boolean;
+    ia_visibility: string;
     column_type: string;
     parent: string;
     SQLexpression: any;
@@ -48,13 +51,29 @@ export class EditColumnPanel {
 }
 
 export class EditModelPanel {
-  type: string;
-  connection: {
-    type: string, host: string, database: string, user: string, password: string, schema:string, port:number, warehouse:string, ssl?: Boolean
-  };
-  metadata: {
-    model_name: string, model_granted_roles: any, cache_config, filter:string, tags:any
-  };
+    type: string;
+    connection: {
+        type: string,
+        host: string,
+        database: string,
+        user: string,
+        password: string,
+        schema: string,
+        port: number,
+        warehouse: string,
+        sid: number,
+        poolLimit?: number,
+        ssl?: Boolean
+    };
+    metadata: {
+        model_name: string,
+        model_description: string,
+        model_granted_roles: any,
+        cache_config,
+        filter: string,
+        tags: any,
+        ia_visibility: string
+    };
 }
 
 export class Relation {

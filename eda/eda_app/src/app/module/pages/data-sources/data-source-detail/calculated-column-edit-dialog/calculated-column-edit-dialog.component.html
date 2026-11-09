@@ -1,44 +1,95 @@
 <eda-dialog2
     [display]="display"
     header="Edición de campos calculados"
-    i18n-label="@@filterSettings"
-    width="50vw" height="88vh"
+    width="50vw" height="auto"
     (apply)="onApplyCalculatedColumn()"
     (close)="onCloseCalculatedColumn()"
+    [showCheckExpression]="true"
+    (checkexpression)="checkCalculatedColumn()"
 >
 
     <div content>
+        <form [formGroup]="form" class="grid gap-4 pb-4">
 
-        <form [formGroup]="form" class="form-horizontal form-material">
-
-            <div style="margin: 10px">
-                <h6 i18n="@@inputNombre">Nombre *</h6>
-                <p><input pInputText type="text" size="50" [(ngModel)]="name" formControlName="colName" id="eda_col_nombre" (keyup)="update()"></p>
+            <div class="grid gap-2">
+                <label for="eda_col_nombre"
+                    i18n="@@inputNombre"
+                    class="font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                    Nombre <span class="text-red-500">*</span>
+                </label>
+                <input id="eda_col_nombre" type="text"
+                    formControlName="colName"
+                    [(ngModel)]="name"
+                    (keyup)="update()"
+                    class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                />
             </div>
 
-            <div style="margin: 10px">
-                <h6 i18n="@@inputDescripcion">Descripción *</h6>
-                <p><input pInputText type="text" size="50" [(ngModel)]="description" formControlName="description" id="eda_descripcion" (keyup)="update()"></p>
+            <div class="grid gap-2">
+                <label for="eda_descripcion"
+                    i18n="@@inputDescripcion"
+                    class="font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                    Descripción <span class="text-red-500">*</span>
+                </label>
+                <input id="eda_descripcion" type="text"
+                    formControlName="description"
+                    [(ngModel)]="description"
+                    (keyup)="update()"
+                    class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                />
             </div>
 
-            <div style="margin: 10px">
-                <h6 class="title-datamodel" i18n="@@sqlExpColumn">Expresión SQL</h6>
-                <p><textarea pInputTextarea type="text" [(ngModel)]="sqlExpressionString" rows="5" cols="100" formControlName="sqlExpression" id="eda_sqlExpression" (keyup)="update()"></textarea></p>
+            <div class="grid gap-2">
+                <label for="eda_sqlExpression"
+                    i18n="@@sqlExpColumn"
+                    class="font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                    Expresión SQL <span class="text-red-500">*</span>
+                </label>
+                <textarea id="eda_sqlExpression"
+                    formControlName="sqlExpression"
+                    [(ngModel)]="sqlExpressionString"
+                    rows="5"
+                    (keyup)="update()"
+                    class="flex min-h-[60px] w-full rounded-md border border-input bg-background px-3 py-2 ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50">
+                </textarea>
             </div>
 
-            <div style="margin: 10px">
-                <h6 class="title-datamodel" i18n="@@inputTipoColumna">Tipo de columna</h6>
-                <p-selectButton [options]="columnTypes" [(ngModel)]="selectedcolumnType" formControlName="typeSelector" (onChange)="onTypeChange($event)">
-                </p-selectButton>
-            </div>      
+            <div class="grid gap-2">
+                <label i18n="@@inputTipoColumna"
+                    class="font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                    Tipo de columna <span class="text-red-500">*</span>
+                </label>
+                <div class="flex gap-2" formControlName="typeSelector">
+                    <button
+                        *ngFor="let type of columnTypes"
+                        type="button"
+                        (click)="onTypeChange(type)"
+                        [ngClass]="selectedcolumnType === type.value
+                            ? 'bg-[#00BFB3] text-white border-[#00BFB3]'
+                            : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-100'"
+                        class="w-full px-4 py-2 font-medium rounded-md border transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2">
+                        {{ type.label }}
+                    </button>
+                </div>
+            </div>
 
-            <div *ngIf="selectedcolumnType==='numeric'" style="margin: 10px">
-                <h6 class="title-datamodel" i18n="@@inputFormat">Número de decimales</h6>
-                <p><input pInputText type="number" [(ngModel)]="decimalNumberValue" size="50" formControlName="decimalNumber" (keyup)="update()"></p>
-            </div>      
+            @if (selectedcolumnType === 'numeric') {
+              <div class="grid gap-2">
+                <label for="eda_decimalNumber"
+                    i18n="@@inputFormat"
+                    class="font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                    Número de decimales
+                </label>
+                <input id="eda_decimalNumber" type="number"
+                    formControlName="decimalNumber"
+                    [(ngModel)]="decimalNumberValue"
+                    (keyup)="update()"
+                    class="h-10 w-40 rounded-md border border-input bg-background px-3 py-2 ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                />
+              </div>
+            }
 
         </form>
-
     </div>
 
 </eda-dialog2>

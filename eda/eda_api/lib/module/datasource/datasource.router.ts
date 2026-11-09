@@ -143,6 +143,88 @@ router.get('/check-connection/:id', authGuard, roleGuard, DataSourceController.C
 
 
 
+/* DUCKDB ROUTES crud — must be before /:id to avoid wildcard capture */
+
+/**
+ * @openapi
+ * /datasource/duckdb-folders:
+ *   get:
+ *     description: Returns the list of existing DuckDB folders available on the server
+ *     parameters:
+ *       - name: token
+ *         description: Authentication token
+ *         type: string
+ *     responses:
+ *       200:
+ *         description: List of folder names
+ *       500:
+ *         description: Server error
+ *     tags:
+ *       - DataSource Routes
+ */
+router.get('/duckdb-folders', authGuard, roleGuard, DataSourceController.GetDuckDbFolders);
+
+/**
+ * @openapi
+ * /datasource/duckdb-add-table/{id}:
+ *   post:
+ *     description: Adds a new CSV table to an existing DuckDB datasource
+ *     parameters:
+ *       - name: token
+ *         description: Authentication token
+ *         type: string
+ *       - name: id
+ *         in: path
+ *         required: true
+ *         type: string
+ *         description: Datasource ID
+ *       - name: body
+ *         in: body
+ *         required: true
+ *         description: fileName, csvContent and columnsConfig of the new table
+ *     responses:
+ *       201:
+ *         description: Table added successfully
+ *       400:
+ *         description: Missing required fields
+ *       404:
+ *         description: Datasource not found
+ *     tags:
+ *       - DataSource Routes
+ */
+router.post('/duckdb-add-table/:id', authGuard, roleGuard, DataSourceController.AddDuckDbTable);
+
+/**
+ * @openapi
+ * /datasource/duckdb-table/{id}/{tableName}:
+ *   delete:
+ *     description: Deletes a CSV table from an existing DuckDB datasource (removes file from disk)
+ *     parameters:
+ *       - name: token
+ *         description: Authentication token
+ *         type: string
+ *       - name: id
+ *         in: path
+ *         required: true
+ *         type: string
+ *         description: Datasource ID
+ *       - name: tableName
+ *         in: path
+ *         required: true
+ *         type: string
+ *         description: Name of the table (CSV file without extension)
+ *     responses:
+ *       200:
+ *         description: Table deleted successfully
+ *       400:
+ *         description: Invalid DuckDB datasource
+ *       404:
+ *         description: Datasource not found
+ *     tags:
+ *       - DataSource Routes
+ */
+router.delete('/duckdb-table/:id/:tableName', authGuard, roleGuard, DataSourceController.DeleteDuckDbCsv);
+
 /**
  * @openapi
  * /datasource/{id}:
@@ -155,7 +237,7 @@ router.get('/check-connection/:id', authGuard, roleGuard, DataSourceController.C
  *       - name: id
  *         in: path
  *         required: true
- *         type: string 
+ *         type: string
  *     responses:
  *       200:
  *         description: Returns ok
@@ -165,6 +247,8 @@ router.get('/check-connection/:id', authGuard, roleGuard, DataSourceController.C
  *       - DataSource Routes
  */
 router.get('/:id', authGuard, roleGuard, DataSourceController.GetDataSourceById);
+
+
 
 
 /**
@@ -237,6 +321,8 @@ router.get('/:id', authGuard, roleGuard, DataSourceController.GetDataSourceById)
 */
 router.post('/add-data-source/', authGuard, roleGuard, DataSourceController.GenerateDataModel);
 
+router.post('/add-duckdb-data-source', authGuard, roleGuard, DataSourceController.AddDuckDBDataSource);
+
 
 
 /**
@@ -308,6 +394,8 @@ router.post('/reload/:id', authGuard, roleGuard, DataSourceController.RefreshDat
  *     tags:
  *       - DataSource Routes 
  */
+router.post('/copy/:id', authGuard, roleGuard, DataSourceController.CopyDataSource);
+
 router.post('/remove-cache', authGuard, roleGuard, DataSourceController.removeCacheFromModel);
 
 
@@ -322,7 +410,7 @@ router.post('/remove-cache', authGuard, roleGuard, DataSourceController.removeCa
  *         description: Authentication token
  *         type: string
  *       - name: ds
- *         description: An EDA datasource. See (https://edadoc.jortilles.com/en/index.html#/modelo_de_datos?id=eda39s-data-model)
+ *         description: An Edalitics datasource. See (https://doc.edalitics.com/en/index.html#/modelo_de_datos?id=eda39s-data-model)
  *         in: body 
  *         schema:
  *            type: object

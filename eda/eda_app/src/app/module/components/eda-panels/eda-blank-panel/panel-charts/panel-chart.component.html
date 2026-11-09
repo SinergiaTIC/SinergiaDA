@@ -1,23 +1,40 @@
 
 <template #chartComponent></template>
-<ng-container *ngIf="NO_DATA">
-  <div class="d-flex justify-content-center">
-      <img src="assets/images/nodata.png" style="width: 250px;" alt="no data" />
-  </div>
-</ng-container>
+@if(NO_DATA){
+  <ng-container>
+    <div class="d-flex justify-content-center place-self-center">
+        <img src="assets/images/nodata.png" style="width: 250px;" alt="no data" />
+    </div>
+  </ng-container>
+}
 
-<ng-container *ngIf="NO_DATA_ALLOWED">
-  <div class="d-flex justify-content-center">
-      <p class="alert alert-danger text-center" style="position: absolute; top: 50%; transform: translateY(-50%); font-size: 12px;">
+
+@if(NO_DATA_ALLOWED){
+  <ng-container>
+    <div class="h-full w-full flex items-center justify-center">
+      <p class="no-permission-alert text-center mb-0">
         <span i18n="@@noDataAllowed" class="ml-2">Este panel no está disponible por falta de permisos</span>
       </p>
     </div>
-</ng-container>
+  </ng-container>
+}
 
-<ng-container *ngIf="NO_FILTER_ALLOWED">
-  <div class="d-flex justify-content-center">
-      <p class="alert alert-danger text-center" style="position: absolute; top: 50%; transform: translateY(-50%); font-size: 12px;">
+@if(NO_FILTER_ALLOWED){
+  <ng-container>
+    <div class="h-full w-full flex items-center justify-center">
+      <p class="no-permission-alert text-center mb-0">
         <span i18n="@@noFilterAllowed" class="ml-2">Este panel no está disponible por falta de permisos en un filtro</span>
       </p>
     </div>
-</ng-container>
+  </ng-container>
+}
+
+@if(MANDATORY_FILTER_MISSING){
+  <ng-container>
+    <div class="h-full w-full flex items-center justify-center">
+      <p class="no-permission-alert text-center mb-0">
+        <span i18n="@@mandatoryFilterMissing" class="ml-2">Este panel no está disponible: falta asignar un valor a un filtro obligatorio</span>
+      </p>
+    </div>
+  </ng-container>
+}

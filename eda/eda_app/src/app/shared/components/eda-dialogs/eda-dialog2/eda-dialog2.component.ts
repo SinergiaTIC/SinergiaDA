@@ -1,14 +1,89 @@
-import { Component, OnInit, OnDestroy, Input } from '@angular/core';
+import { Component, OnInit, OnDestroy, OnChanges, SimpleChanges, Input, AfterViewInit, ViewChild, ElementRef, ChangeDetectorRef } from '@angular/core';
 import { EdaDialog2 } from './eda-dialog2';
+import { Dialog } from 'primeng/dialog';
+
+
+import { CommonModule } from '@angular/common';
+import { DialogModule } from 'primeng/dialog';
+import { ButtonModule } from 'primeng/button'; // if you use buttons inside the dialog
+import { FormsModule } from '@angular/forms'; // for [(ngModel)] if you use it
+
 
 @Component({
+    standalone: true,
     selector: 'eda-dialog2',
-    templateUrl: './eda-dialog2.component.html'
+    templateUrl: './eda-dialog2.component.html',
+    imports: [
+        CommonModule,
+        DialogModule,
+        ButtonModule,
+        FormsModule
+    ],
+    styles: `
+      ::ng-deep .p-dialog .p-dialog-footer {
+        padding-bottom: 0.5rem;
+      }
+
+      :host ::ng-deep .p-dialog {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .switch-tab-btn {
+        display: flex;
+        gap: 0.5rem;
+        align-items: center;
+        justify-content: center;
+        border-radius: 0.375rem;
+        padding: 0.5rem 1.25rem;
+        min-width: 13vw;
+        background: #ffffff;
+        color: #374151;
+        border: 1px solid #d1d5db;
+        cursor: pointer;
+        font-size: 0.875rem;
+        transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+      }
+
+      .switch-tab-btn:hover {
+        background: #f3f4f6;
+        border-color: #9ca3af;
+        color: #111827;
+      }
+    `
 })
-export class EdaDialog2Component extends EdaDialog2 implements OnInit, OnDestroy {
+export class EdaDialog2Component extends EdaDialog2 implements OnInit, OnChanges, AfterViewInit, OnDestroy {
+    @ViewChild('dialogRef') dialogRef!: Dialog;
+    @ViewChild('contentWrapper') contentWrapper!: ElementRef;
+    @Input() overflow: string = 'hidden';
+    @Input() draggable: string;
+
+
+    private resizeObserver!: ResizeObserver;
     public ifShowApply: boolean;
     public ifShowClose: boolean;
-    constructor() {
+    public ifShowReset: boolean;
+    public ifShowDuplicate: boolean;
+    public ifShowDeleteFilter: boolean;
+    public ifNoStyles: boolean;
+    public ifShowNextStep: boolean;
+    public ifShowSwitchRedirecction: boolean;
+    public ifShowCheckExpression: boolean;
+
+    // Automatically translated for PrimeNG
+    get translatedBreakpoints(): Record<string, string> {
+        const result: Record<string, string> = {};
+        for (const key in this.breakpoints) {
+            const pixel = this.sizeMap[key];
+            if (pixel) {
+                result[pixel] = this.breakpoints[key];
+            }
+        }
+        return result;
+    }
+
+    constructor(private cd: ChangeDetectorRef) {
         super();
     }
 
@@ -17,10 +92,38 @@ export class EdaDialog2Component extends EdaDialog2 implements OnInit, OnDestroy
 
         this.ifShowApply = this.apply.observers.length > 0 && this.showApply;
         this.ifShowClose = this.close.observers.length > 0 && this.showClose;
+        this.ifShowDuplicate = this.duplicate.observers.length > 0 && this.showDuplicate;
+        this.ifShowReset = this.reset.observers.length > 0 && this.showReset;
+        this.ifShowDeleteFilter = this.delete.observers.length > 0 && this.showDelete;
+        this.ifNoStyles = this.notstyles.observers.length > 0 && this.showNotStyles;
+        this.ifShowNextStep = this.nextstep.observers.length > 0 && this.showNextStep;
+        this.ifShowSwitchRedirecction = this.switchredirecction.observers.length > 0 && this.showRedirecction;
+        this.ifShowCheckExpression = this.checkexpression.observers.length > 0 && this.showCheckExpression;
+    }
+
+    public ngOnChanges(changes: SimpleChanges): void {
+        if (changes['showNextStep']) {
+            this.ifShowNextStep = this.nextstep.observers.length > 0 && this.showNextStep;
+        }
+    }
+
+    ngAfterViewInit(): void {
+        if (this.contentWrapper?.nativeElement) {
+            this.resizeObserver = new ResizeObserver(() => {
+                setTimeout(() => {
+                    // Something breaks when deleting a filter
+                    // this.dialogRef.center();
+                    this.cd.detectChanges();
+                }, 1000);
+            });
+
+            this.resizeObserver.observe(this.contentWrapper.nativeElement);
+        }
     }
 
     public ngOnDestroy(): void {
         this.display = false;
+        this.resizeObserver?.disconnect();
     }
 
 }

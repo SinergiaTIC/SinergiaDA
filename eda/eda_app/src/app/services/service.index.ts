@@ -11,7 +11,7 @@ export * from './utils/map-util.service';
 export * from './utils/upload-file.service';
 export * from './utils/date-utils.service';
 export * from './utils/styles-service';
-export * from './utils/style-provider.service'
+export * from './utils/style-provider.service';
 
 
 // Sidebar
@@ -38,5 +38,4 @@ export * from './api/log.service';
 // Guards
 export { LoginGuardGuard } from './guards/login-guard.guard';
 export { VerifyTokenGuard } from './guards/verify-token.guard';
-
 

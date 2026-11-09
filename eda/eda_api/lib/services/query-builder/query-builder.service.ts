@@ -1,6 +1,6 @@
 import * as _ from 'lodash';
- /*SDA CUSTOM*/ import * as custom from  '../custom/custom' ;
-
+import Group from '../../module/admin/groups/model/group.model';
+const eda_api_config = require('../../../config/eda_api_config');
 class TreeNode {
     public value: string;
     public child: Array<TreeNode>
@@ -39,6 +39,8 @@ export abstract class QueryBuilderService {
     public usercode: string;
     public groups: Array<string> = [];
     public permissions: any[];
+    public roleNames: string[] = [];
+    private _roleNamesPromise: Promise<void>;
 
     constructor(queryTODO: any, dataModel: any, user: any) {
         this.queryTODO = queryTODO;
@@ -47,6 +49,15 @@ export abstract class QueryBuilderService {
         this.usercode = user.email;
         this.groups = user.role;
         this.tables = dataModel.ds.model.tables;
+
+        if (user.role && user.role.length > 0) {
+            this._roleNamesPromise = Group.find({ _id: { $in: user.role } })
+                .then(groups => { this.roleNames = groups.map(g => g.name); })
+                .catch(() => {});
+        } else {
+            this._roleNamesPromise = Promise.resolve();
+        }
+
     }
 
     abstract getFilters(filters, type: string, pTable: string);
@@ -58,54 +69,68 @@ export abstract class QueryBuilderService {
     abstract processFilter(filter: any, columnType: string);
     abstract normalQuery(columns: string[], origin: string, dest: any[], joinTree: any[],
         grouping: any[], filters: any[], havingFilters: any[], tables: Array<any>, limit: number, 
-        /* SDA CUSTOM */ joinType: string, valueListJoins:any[], groupByEnabled?:boolean, Schema?: string, database?: string, forSelector?: any, sortedFilters?: any[] );
+        joinType: string,groupByEnabled:boolean, valueListJoins:any[], Schema?: string, database?: string, forSelector?: any, sortedFilters?: any[]  );
     abstract sqlQuery(query: string, filters: any[], filterMarks: string[]): string;
     abstract buildPermissionJoin(origin: string, join: string[], permissions: any[], schema?: string);
     abstract parseSchema(tables: string[], schema?: string, database?: string);
 
     abstract analizedQuery(params: EdaQueryParams): any[];
 
+    abstract simpleQuery(columns: string[], origin: string, view:boolean);
 
-    public builder() {
+
+
+    public async builder() {
+
+        await this._roleNamesPromise;
 
         let graph = this.buildGraph();
-        /* We take the names of the tables, origin and destination (it is arbitrary), the columns and the type of aggregation to build the query. */
+        /* Agafem els noms de les taules, origen i destí (és arbitrari), les columnes i el tipus d'agregació per construïr la consulta */
         let origin = this.queryTODO.rootTable || this.queryTODO.fields.find(x => x.order === 0).table_id;
+        let view = this.tables.filter(table => table.table_name.trim() === origin.trim()).map(table => { return table.query ? true: false })[0];
         let dest = [];
         const valueListList = [];
         const modelPermissions = this.dataModel.ds.metadata.model_granted_roles;
 
-         this.permissions = this.getTreePermissions(modelPermissions,  this.queryTODO);
+        /** Check the permissions behaviour. If they are recursive get recursive permissions*/
+        if (eda_api_config.custom_behaviour.USE_RECURSIVE_PERMISSIONS) {
+            this.permissions = this.getRecursivePermissions(modelPermissions, this.tables, origin, this.queryTODO);
+        } else {
+            this.permissions = this.getFlatPermissions(modelPermissions, this.queryTODO);
+        }
         
-        // IF USER IS ADMIN EMPTY PERMISSIONS ARRAY
+        // SI USUARIO ES ADMIN VACIAR EL ARRAY PERMISSIONS
         
         if (this.groups.includes("135792467811111111111110")) {
             this.permissions = [];
         }
-        /** joins for the value list */
+
+        /** A "" in a numeric "in" filter means null. IN doesn't match NULL in SQL,
+         *  so split it into a separate is_null filter to avoid invalid SQL. */
+        this.queryTODO.filters.forEach(e => {
+            if (e.filter_column_type == 'numeric' &&
+                e.filter_type == 'in' &&
+                e.filter_elements[0].value1.includes('')) {
+                let ee = JSON.parse(JSON.stringify(e));
+                ee.filter_id = ee.filter_id.split('-')[0];
+                ee.filter_type = 'is_null';
+                e.filter_elements[0].value1 = e.filter_elements[0].value1.filter(obj => obj !== '');
+
+                this.queryTODO.filters.push(ee);
+                // Original filter is now useless if no values are left (in () is invalid)
+                if (e.filter_elements[0].value1.length == 0) {
+                    this.queryTODO.filters = this.queryTODO.filters.filter(obj => obj !== e);
+                }
+            }
+        });
+
+        /** joins per els value list */
         let valueListJoins = [];
 
-        /** I check the filters in case there is a numeric with value "" because it is a null.....  */
-        this.queryTODO.filters.forEach(e=>{           
-            if( e.filter_column_type == 'numeric'  && 
-                e.filter_type == 'in' && 
-                e.filter_elements[0].value1.includes( '' ) ){
-                    //If I filter for a empty in a numeric I really want to filter for a null. I add the null filter
-                    let ee =  JSON.parse(JSON.stringify(e));
-                    ee.filter_id = ee.filter_id.split('-')[0]
-                    ee.filter_type = 'is_null' 
-                    e.filter_elements[0].value1 = e.filter_elements[0].value1.filter(obj => {return obj !== ''});
-
-                    this.queryTODO.filters.push(ee);   
-                    // If the filter is empty I remove it
-                    if(e.filter_elements[0].value1.length == 0){
-                        this.queryTODO.filters = this.queryTODO.filters.filter( obj => {return obj !== e});
-                    }     
-                }
-    });
+        //console.log(this.queryTODO);
 
         if (!this.queryTODO.queryMode || this.queryTODO.queryMode == 'EDA') {
-            /** I check if any column of the query is a multivalueliest..... */
+            /** Reviso si cap columna de la  consulta es un multivalueliest..... */
             this.queryTODO.fields.forEach( e=>{
                 if( e.valueListSource ){
                     valueListList.push(JSON.parse(JSON.stringify(e)));
@@ -117,7 +142,12 @@ export abstract class QueryBuilderService {
                 }
             })
 
-            /* I check if any FILTER of the query is a multivalueliest.....  */
+            /** A selector must also return the internal code of each value-list column (issue #667) */
+            if (this.queryTODO.forSelector === true) {
+                this.addSelectorCodeFields(this.queryTODO.fields);
+            }
+
+            /** Reviso si cap FILTRE de la  consulta es un multivalueliest.....  */
             this.queryTODO.filters.forEach(e=>{
                 if(e.valueListSource){
                     e.table_id = e.filter_table;
@@ -129,7 +159,7 @@ export abstract class QueryBuilderService {
                 }
             })
 
-            /** checking the filters for any possible multivaluelist */
+            /** revisió dels filtres per si hi ha un multivaluelist */
             if(valueListList.length > 0 && this.queryTODO.filters){
                 this.queryTODO.filters.forEach(f=>{
                     valueListList.forEach(v=>{
@@ -141,7 +171,7 @@ export abstract class QueryBuilderService {
                 })
             }
 
-            /** I adjust joins to be left join in value list case */
+            /** Ajusto els joins per que siguin left join en cas els value list*/
             if(valueListList.length > 0){
                 valueListList.forEach(v=>{
                     valueListJoins.push(v.valueListSource.target_table);
@@ -152,20 +182,19 @@ export abstract class QueryBuilderService {
             }
         }
 
-        /** ..........................FOR VALUE LISTS................................ */
-
-        // Checking the Range, if it exists, add the changes, otherwise this.queryTODO remains the same.
+        /** ..........................PER ELS VALUE LISTS................................ */
+        
+        // Checkeo del rango, si existe, agrega los cambios, en otro caso todo continua igual
         this.queryTODO = this.verifyRange(this.queryTODO);
 
         const filterTables = this.queryTODO.filters.map(filter => filter.filter_table);
 
-        // We add the filter tables
+        // Afegim a dest les taules dels filtres
         filterTables.forEach(table => {
             if (!dest.includes(table) && table !== origin) {
                 dest.push(table);
             }
         });
-
 
         if (this.permissions.length > 0) {
             this.permissions.forEach(permission => {
@@ -176,11 +205,28 @@ export abstract class QueryBuilderService {
         }
         
         
-        /** WE SEPARATE BETWEEN AGGREGATION COLUMNS/GROUPING COLUMNS */
+        /** SEPAREM ENTRE AGGREGATION COLUMNS/GROUPING COLUMNS */
         let separedCols = this.getSeparedColumns(origin, dest);
         let columns = separedCols[0];
         let grouping = separedCols[1];
         
+        /**
+         * The advanced options allow sorting by columns that are not part of the query.
+         * Those columns may belong to related tables, so their table has to be treated
+         * like any other table needed by the query (join included): otherwise the
+         * ORDER BY / GROUP BY would reference a table that is not in the FROM/JOIN.
+         */
+        const sortingColumns: any[] = this.queryTODO.resultSortingColumns ?? [];
+        const sortingOnlyTables: string[] = [];
+        sortingColumns.forEach(col => {
+            if (col?.table_id && col.table_id !== origin && !dest.includes(col.table_id)) {
+                dest.push(col.table_id);
+                // The builders reference joined tables by their real name (the join key
+                // may be "table.column.column" in tree mode).
+                sortingOnlyTables.push(String(col.table_id).split('.')[0]);
+            }
+        });
+
         let joinTree = [];
         let tree = [];
         for (const query of this.queryTODO.fields) {
@@ -198,19 +244,28 @@ export abstract class QueryBuilderService {
                 }
             }
         }
+
+        /** Same for the joins of the columns used only for sorting (tree mode) */
+        for (const sortCol of sortingColumns) {
+            if (Array.isArray(sortCol?.joins) && sortCol.joins.length > 0) {
+                for (const join of sortCol.joins) {
+                    tree.push(join);
+                }
+            }
+        }
     
 
         if (!this.queryTODO.queryMode || this.queryTODO.queryMode == 'EDA') {
-            // Query tables go first in order to enhance direct relationships in EDA type queries.
+            // Las taules de les consultes van primer per potenciar relacions directes en consultes tipus EDA
             const vals = [...dest];
             const firs = [];
             vals.forEach(v => firs.push(  graph.filter( e => v == e.name )[0])   );
             firs.forEach(e => graph = graph.filter(f=> f.name != e.name)   );
             graph  = [...firs, ...graph];
             
-            /** JOINS TREE TO DO */
+            /** ARBRE DELS JOINS A FER */
             joinTree = this.dijkstraAlgorithm(graph, origin, dest.slice(0));
-            // looking for direct relations.
+            // Busco relacions directes.
             if( ! this.validateJoinTree(  joinTree, dest ) ){
                 let exito = false;
                 let new_origin  = '';
@@ -233,8 +288,8 @@ export abstract class QueryBuilderService {
                 }
             }
 
-            this.queryTODO.joined = false;
-            /**I put the tables of the query at the beginning of the joinTree to enhance direct relations */
+            this.queryTODO.joined = false; /** consulta normal  */
+            /**poso les taules de la consulta al principi del joinTree per potenciar relacions directes */
             const my_tables = [...dest ];
             const firsts = [];
             my_tables.forEach( e => firsts.push(  joinTree.filter( t => e == t.name )[0])  );
@@ -281,6 +336,11 @@ export abstract class QueryBuilderService {
             
             processFields(this.queryTODO.fields);
             processFields(this.queryTODO.filters);
+
+            /** A selector must also return the internal code of each value-list column (issue #667) */
+            if (this.queryTODO.forSelector === true) {
+                this.addSelectorCodeFields(this.queryTODO.fields);
+            }
             
             for (const value of valueListJoins) {
                 const multiSourceJoin = `${value.source_table}.${value.source_column}`;
@@ -304,10 +364,10 @@ export abstract class QueryBuilderService {
 
             tree = [...new Set(tree)];
             joinTree = tree;
-            this.queryTODO.joined = true;
+            this.queryTODO.joined = true; /** consulta  en modo arbol.  */
 
             dest = valueListJoins;
-            /** WE SEPARATE BETWEEN AGGREGATION COLUMNS/GROUPING COLUMNS */
+            /** SEPAREM ENTRE AGGREGATION COLUMNS/GROUPING COLUMNS */
             separedCols = this.getSeparedColumns(origin, dest);
             columns = separedCols[0];
             grouping = separedCols[1];
@@ -326,9 +386,12 @@ export abstract class QueryBuilderService {
             }else{
                 return f.filterBeforeGrouping;
             }
-        });
+            });
 
-        // for filters in the value list
+
+
+            
+        // para los filtros en los value list
         filters.forEach(f => {
             if (f.valueListSource) {
                         
@@ -336,6 +399,9 @@ export abstract class QueryBuilderService {
                 f.filter_column = f.valueListSource.target_description_column;
             }
         });
+
+
+
 
         //TO HAVING CLAUSE 
         const havingFilters = this.queryTODO.filters.filter(f => {
@@ -350,33 +416,37 @@ export abstract class QueryBuilderService {
         const tables = this.dataModel.ds.model.tables.map(table => ({ name: table.table_name, query: table.query }));
         const joinType = this.queryTODO.joinType;
         const queryLimit = this.queryTODO.queryLimit;
-        /* SDA CUSTOM */ const groupByEnabled = this.queryTODO.groupByEnabled !== undefined ? this.queryTODO.groupByEnabled : true;
+        const groupByEnabled = this.queryTODO.groupByEnabled !== undefined ? this.queryTODO.groupByEnabled : true;
         const schema = this.dataModel.ds.connection.schema || 'public'; 
         const database = this.dataModel.ds.connection.database; 
-        const forSelector = this.queryTODO.forSelector; 
+        const forSelector = this.queryTODO.forSelector;
         const fields = this.queryTODO.fields;
+        const sortedFilters = this.queryTODO.sortedFilters;
+        /**
+         * Tables joined only because a column of them is used for sorting must not filter
+         * the result, so they are joined with LEFT (the builders already do that for the
+         * tables in this list: value-list joins).
+         */
+        const joinTables = [...new Set([...(valueListJoins || []), ...sortingOnlyTables])];
+
         if (this.queryTODO.simple) {
-            this.query = this.simpleQuery(columns, origin);
+            this.query = this.simpleQuery(columns, origin, view);
             return this.query;
         } else if (this.queryTODO.analized) {
             return this.analizedQuery({
                 tables, columns, fields, origin, dest, joinTree, grouping, filters, havingFilters,
-                queryLimit, joinType, valueListJoins, schema, database, forSelector
+                queryLimit, joinType, valueListJoins: joinTables, schema, database, forSelector
             })
         } else {
-            let tables = this.dataModel.ds.model.tables
-                .map(table => { return { name: table.table_name, query: table.query } });
-
-            this.query = this.normalQuery(columns, origin, dest, joinTree, grouping,  filters, havingFilters,  tables,
-                /* SDA CUSTOM */ this.queryTODO.queryLimit,   this.queryTODO.joinType, valueListJoins, groupByEnabled, this.dataModel.ds.connection.schema, 
-                this.dataModel.ds.connection.database, this.queryTODO.forSelector, this.queryTODO.sortedFilters);
-            
+            this.query = this.normalQuery(
+                columns, origin, dest, joinTree, grouping,  filters, havingFilters, tables,
+                queryLimit, joinType, groupByEnabled, joinTables, schema, database, forSelector, sortedFilters
+            );
             return this.query;
         }
     }
 
     public verifyRange(queryTODO: any){
-        // let columnRange = queryTODO.fields.find( c => c.ranges.length!==0);
 
         queryTODO.fields.forEach( (fieldsColumn:any, j: number) => {
             
@@ -394,38 +464,38 @@ export abstract class QueryBuilderService {
         
                     let identifiedColumn = `${fieldsColumn.table_id}.${fieldsColumn.column_name}`
 
-  /**SDA CUSTOM  */ if(fieldsColumn.joins.length !== 0) { /** fields have uniquer identifier with dots if they come form a joined table tabe.column.table.column.*/
-  /**SDA CUSTOM  */    let parts = identifiedColumn.split('.');  /** we keep the first and the last one wich are the good ones.*/
-  /**SDA CUSTOM  */    let newColumn = parts[0] + '.' + parts[parts.length - 1];
-  /**SDA CUSTOM  */    identifiedColumn = newColumn;
-  /**SDA CUSTOM  */ }
+                    if(fieldsColumn.joins.length !== 0) { /** Los campos tienen un identificador único con puntos si provienen de una tabla unida table.column.table.column.*/
+                       let parts = identifiedColumn.split('.');  /** Nos quedamos con el primero y el último, que son los buenos.*/
+                       let newColumn = parts[0] + '.' + parts[parts.length - 1];
+                       identifiedColumn = newColumn;
+                    }
 
                     let SQLexpression = "CASE\n";
                 
-                    // First case: less than the first value of the range
+                    // Primer caso: menor que el primer valor del rango.
                     SQLexpression += `\tWHEN ${identifiedColumn} < ${fieldsColumn.ranges[0]} THEN '< ${fieldsColumn.ranges[0]}'\n`; 
         
-                    // Middle cases: between every pair of values in the range
+                    // Casos intermedios: entre cada par de valores en el rango
                     for (let i = 0; i < fieldsColumn.ranges.length - 1; i++) {
                         const lower = fieldsColumn.ranges[i];
                         const upper = fieldsColumn.ranges[i + 1] - 1;
                         SQLexpression += `\tWHEN ${identifiedColumn} >= ${lower} AND ${identifiedColumn} <= ${upper} THEN ' ${lower} - ${upper}'\n`;
                     }            
         
-                    // Last case: greater than or equal to the last value in the range
+                    // Último caso: mayor o igual que el último valor del rango.
                     SQLexpression += `\tWHEN ${identifiedColumn} >= ${fieldsColumn.ranges[fieldsColumn.ranges.length - 1]} THEN '>= ${fieldsColumn.ranges[fieldsColumn.ranges.length - 1]}'\n`;
                     SQLexpression += "END";            
         
                     fieldsColumn.SQLexpression = SQLexpression;
 
-                    // GENERATING THE SORTING
+                    // Generando ordenamiento
                     let rangesOrderExpression = "CASE\n";
                     let rangesOrderExpressionNumber = 1;
                     
-                    // First case:
+                    // Primer caso:
                     rangesOrderExpression += `\tWHEN ${identifiedColumn} < ${fieldsColumn.ranges[0]} THEN ${rangesOrderExpressionNumber}\n`;
 
-                    // Middle cases:
+                    // Caso del medio:
                     for(let i = 0; i<fieldsColumn.ranges.length - 1; i++) {
                         rangesOrderExpressionNumber += 1;
                         const lower = fieldsColumn.ranges[i];
@@ -433,15 +503,14 @@ export abstract class QueryBuilderService {
                         rangesOrderExpression += `\tWHEN ${identifiedColumn} >= ${lower} AND ${identifiedColumn} <= ${upper} THEN ${rangesOrderExpressionNumber}\n`;
                     }
 
-                    // Last case:
+                    // Ultimo caso:
                     rangesOrderExpression += `\tWHEN ${identifiedColumn} >= ${fieldsColumn.ranges[fieldsColumn.ranges.length - 1]} THEN  ${rangesOrderExpressionNumber + 1}\n`;
                     rangesOrderExpression += "END";
                     fieldsColumn.rangesOrderExpression = rangesOrderExpression;
 
                     queryTODO[j] = fieldsColumn;
 
-                    // ##########################################################################################################################
-                    // Aggregation of zeros and nulls for fields having aggregations of: sum, count of values and different values
+                    // Agregación de ceros y valores nulos para campos que tienen agregaciones de: suma, recuento de valores y valores diferentes.
 
                     let withRanges = "WITH ranges AS (\n";
 
@@ -471,7 +540,7 @@ export abstract class QueryBuilderService {
                         }
                     })
 
-                    // Removing the last comma from the line break
+                    // Eliminando la última coma del salto de línea
                     const lastCommaIndex = coalesceRangesAux.lastIndexOf(',\n');
                     if (lastCommaIndex !== -1) {
                         coalesceRangesAux = coalesceRangesAux.slice(0, lastCommaIndex) + coalesceRangesAux.slice(lastCommaIndex + 1);
@@ -479,18 +548,18 @@ export abstract class QueryBuilderService {
 
                     coalesceRanges = coalesceRanges + coalesceRangesAux + `FROM ranges r\nLEFT JOIN(\n`;
                     withRanges = withRanges + coalesceRanges
-                    fieldsColumn.withRanges = withRanges; // adding withRanges in field of the field that has a range
+                    fieldsColumn.withRanges = withRanges; // agregar withRanges en el campo del campo que tiene un rango
 
                     let orderRanges = `\n) t ON r.range = t.\`${fieldsColumn.display_name}\`\nORDER BY\n`;
                     orderRanges += `    CASE\n`;
                     orderRanges += `        WHEN r.range = '< ${fieldsColumn.ranges[0]}' THEN 1\n`;
 
-                    // Generate intermediate cases
+                    // Generando caso intermedios
                     for (let i = 0; i < fieldsColumn.ranges.length - 1; i++) {
                         orderRanges += `        WHEN r.range = ' ${fieldsColumn.ranges[i]} - ${fieldsColumn.ranges[i + 1] - 1}' THEN ${i + 2}\n`;
                     }
 
-                    // Add the last case for values greater than or equal to the last element
+                    // Agregue el último caso para valores mayores o iguales al último elemento.
                     orderRanges += `        WHEN r.range = '>= ${fieldsColumn.ranges[fieldsColumn.ranges.length - 1]}' THEN ${fieldsColumn.ranges.length + 1}\n`;
                     orderRanges += `    END;`;
 
@@ -503,12 +572,10 @@ export abstract class QueryBuilderService {
         })
 
         return queryTODO
-    }
+    }    
 
     public buildGraph() {
         const graph = [];
-        //No need to remove the hidden relations because I put them in the array no_relations when saving.
-        //All relationships are already good. I'll leave it because the loop is already done...
         this.tables.forEach(t => {
             const relations = [];
             t.relations
@@ -519,7 +586,7 @@ export abstract class QueryBuilderService {
     }
 
 
-    /** validates direct relationships */
+    /** valida relaciones directas */
     public validateJoinTree(joinTree:any, dest:any){
         for (let i = 0; i < dest.length; i++) {
             let elem = joinTree.find(n => n.name === dest[i]);
@@ -529,12 +596,11 @@ export abstract class QueryBuilderService {
           }
         return true;
     }
-
     
     public getGraph(graph, origin, dest) {
         let new_origin = origin;
         const workingGrapth = JSON.parse(JSON.stringify(graph));
-        //I initialise at the origin.
+        //inicializo en el origen.
         let elem = workingGrapth.filter(e => e.name === new_origin )[0];
         const ruta = { name: elem.name, paths: [] };
         elem.rel.forEach((r,i) => {
@@ -579,10 +645,6 @@ export abstract class QueryBuilderService {
           
         }
 
-
-
-
-
         const goodPaths = [];
         let finalPaths = [];
         
@@ -593,7 +655,7 @@ export abstract class QueryBuilderService {
               finalPaths.push(r);
             }
           })
-        // clean routes without duplicates.
+        // rutas limpias sin duplicados.
         ruta.paths = [...finalPaths];
         finalPaths = [];
         
@@ -602,7 +664,7 @@ export abstract class QueryBuilderService {
             dest.forEach(e => {  if(r.indexOf(e)<0){ exito=0;}} );
             if( exito==1){goodPaths.push(r);}
         })
-        //If I have an origin and a destination.
+        //Si tengo un origen y un destino.
         goodPaths.forEach((p,i)=>{
             if( dest.indexOf( p[p.length-1] ) >=0 ){ finalPaths.push(p);}
         })
@@ -672,19 +734,12 @@ export abstract class QueryBuilderService {
             })
 
         }
+        //console.log('disgtra devuelve: ');
+        //console.log(v)
         return (v);
     }
 
 
-    /** this is used for bbdd queries to generate the model. */
-    public simpleQuery(columns: string[], origin: string) {
-    
-        const schema = this.dataModel.ds.connection.schema;
-        if (schema) {
-            origin = `${schema}.${origin}`;
-        }
-        return `SELECT DISTINCT ${columns.join(', ')} \nFROM ${origin}`;
-    }
 
     public cleanOriginTable(originTable:string):string {
         let res = "";
@@ -702,23 +757,49 @@ export abstract class QueryBuilderService {
 
 
 
-    public getPermissions(modelPermissions, modelTables, originTable) {
+    public getRecursivePermissions(modelPermissions, modelTables, originTable, query) {
+
+        //console.log('recursively.... SE BUSCA EN LAS TABLAS RELACIONADAS');
+        let filters = [];
+        let columns = [];
+        // listo columnas para luego comporbar en la consulta si se usan para los filtros de visibilidad de columna.
+        query.fields.forEach(f => {
+            columns.push( { table_name:  f.table_id,  column_name: f.column_name } )
+        });
+        query.filters.forEach(f => {
+            columns.push( { table_name:  f.filter_table,  column_name: f.filter_column } )
+        });
       
         originTable = this.cleanOriginTable(originTable);
-        let filters = [];
         const permissions = this.getUserPermissions(modelPermissions);
 
        const relatedTables = this.checkRelatedTables(modelTables, originTable); 
+        //console.log('relatedTables', relatedTables);
 
         let found = -1;
         if (relatedTables !== null && permissions !== null) {
             permissions.forEach(permission => {
                 found = relatedTables.findIndex((t: any) => t.table_name === permission.table);
                 if (found >= 0) {
+
                     if(permission.dynamic){
-                            permission.value[0] =  permission.value[0].toString().replace("EDA_USER", this.usercode) 
-                           
+                            /** para permisos de usuario */
+                            permission.value[0] =  permission.value[0].toString().replace("'EDA_USER'", `'${this.usercode}'` ).replace("EDA_USER",  `'${this.usercode}'` ) ;
+                            /** para permisos de grupo */
+                            permission.value[0] =  permission.value[0].toString().replace("EDA_ROLES", this.roleNames.map(r => `'${r}'`).join(',')  ) ;         
                     }
+
+                    
+                    if( permission.value[0] == '(x => None)' && 
+                     columns.findIndex((t: any) => t.table_name.split('.')[0] === permission.table && t.column_name === permission.column ) < 0    
+                    ){
+                    //console.log('No puedo ver la columna pero no se usa. No hago nada ', permission.column );  
+                    found = -1;  
+                    }else   if( permission.value[0] == '(~ => All)' ){
+                    //console.log('Puedo verlo todo ', permission.column );  
+                    found = -1;  
+                    }else { 
+
                     let filter = {
                         filter_table: permission.table,
                         filter_column: permission.column,
@@ -731,6 +812,10 @@ export abstract class QueryBuilderService {
 
                     filters.push(filter);
                     found = -1;
+
+                    }
+
+
                 }
             });
         }
@@ -738,19 +823,19 @@ export abstract class QueryBuilderService {
         return filters;
     }
 
-  /*SDA CUSTOM*/ @custom.queryBuilderServiceCustomGetTreePermissions 
-    public getTreePermissions(modelPermissions,  query) {
+    public getFlatPermissions(modelPermissions,  query) {
           /**
-         * I have all modelPermissions permissions
-         * I have my query 
-         * I have to add the wheres that modify the query to implement the permissions.
+         * Tento todos los permisos modelPermissions
+         * Tengo mi consulta query
+         * Tengo que añadir los wheres que tocan a la consulta para implmentar los permisos.
          **/      
 
+        //console.log('Tree Model permissions');
         let filters = [];
         let columns = [];
        
         const permissions = this.getUserPermissions(modelPermissions);
-
+        //console.log('No recursively....');
         query.fields.forEach(f => {
             columns.push( { table_name:  f.table_id,  column_name: f.column_name } )
 
@@ -764,7 +849,7 @@ export abstract class QueryBuilderService {
         if (columns.length > 0  && permissions !== null) {
             permissions.forEach(permission => {
                 found = columns.findIndex((t: any) => t.table_name.split('.')[0] === permission.table);
-                if (found >= 0) {
+                if (found >= 0 && permission.value[0] != '(~ => All)' ) {
                     if(permission.dynamic){
                             permission.value[0] =  permission.value[0].toString().replace("EDA_USER", this.usercode) 
                            
@@ -795,15 +880,20 @@ export abstract class QueryBuilderService {
                 case 'users':
                     if (permission.users.includes(this.user) && !permission.global) {
                         permissions.push(permission);
+                    }else if(permission.dynamic == true && permission.users.length == 0){
+                        permissions.push(permission); // si son permisos dinámicos para todos
                     }
                     break;
                 case 'groups':
                     this.groups.forEach(group => {
                         if (permission.groups.includes(group) && !permission.global) {
                             permissions.push(permission)
+                        }else if(permission.dynamic == true && permission.groups.length == 0){
+                            permissions.push(permission); // si son permisos dinámicos para todos
                         }
                     })
             }
+
         });
         return permissions;
     }
@@ -830,34 +920,86 @@ export abstract class QueryBuilderService {
      */
 
     // not needed to filter relations. They are stored in a different array
-        public findRelationsRecursive(tables, table, vMap) {
-// SDA CUSTOM - Added safety check for table and relations to avoid TypeError
-/* SDA CUSTOM */ 
-/* SDA CUSTOM */         if (!table) return vMap;
-/* SDA CUSTOM */         vMap.set(table.table_name, table);
-/* SDA CUSTOM */         if (table.relations) {
-/* SDA CUSTOM */             table.relations
-/* SDA CUSTOM */                .forEach(rel => {
-/* SDA CUSTOM */                     const newTable = tables.find(t => t.table_name === rel.target_table);
-/* SDA CUSTOM */                     if (newTable && !vMap.has(newTable.table_name)) {
-/* SDA CUSTOM */                         this.findRelationsRecursive(tables, newTable, vMap);
-/* SDA CUSTOM */                        }
-/* SDA CUSTOM */                    });
-/* SDA CUSTOM */                }
-/* SDA CUSTOM */        return vMap;
-/* SDA CUSTOM */    }
-// END SDA CUSTOM
-
-    public findJoinColumns(tableA: string, tableB: string) {
-
-        const table = this.tables.find(x => x.table_name === tableA);
-        // No needed to filter visible relations because they are stored in a different array: no_relations
-        const source_columns = table.relations.find(x => x.target_table === tableB).source_column;
-        const target_columns = table.relations.find(x => x.target_table === tableB).target_column;
-        return [target_columns, source_columns];
-
+    public findRelationsRecursive(tables, table, vMap) {
+        // Added safety check for table and relations to avoid TypeError
+        if (!table) return vMap;
+        vMap.set(table.table_name, table);
+        if (table.relations) {
+            table.relations
+                .forEach(rel => {
+                    const newTable = tables.find(t => t.table_name === rel.target_table);
+                    if (newTable && !vMap.has(newTable.table_name)) {
+                        this.findRelationsRecursive(tables, newTable, vMap);
+                    }
+                });
+        }
+        return vMap;
     }
 
+    public findJoinColumns(tableA: string, tableB: string) {
+        let computed = 'no';
+        const table = this.tables.find(x => x.table_name === tableA);
+        // No needed to filter visible relations because they are stored in a different array: no_relations
+        let source_columns = table.relations.find(x => x.target_table === tableB).source_column;
+        let target_columns = table.relations.find(x => x.target_table === tableB).target_column;
+        
+        // We change to an Array if there are not Arrays.
+        if(!Array.isArray(source_columns)) source_columns = [source_columns]; 
+        if(!Array.isArray(target_columns)) target_columns = [target_columns]; 
+
+        //Comprobando campos calculados para usarlos en los joins en vez del nombre del campo.
+        source_columns.forEach((sc, ind) => {
+            if(table.columns.find( c=> c.column_name === sc)?.computed_column == 'computed'  ){
+                source_columns[ind] = table.columns.find( c=> c.column_name === sc).SQLexpression; 
+                computed = 'source';
+            }
+        });
+
+        const tdest = this.tables.find(x => x.table_name === tableB);
+
+        target_columns.forEach( (tc,ind) => {
+            if(tdest.columns.find( c=> c.column_name === tc)?.computed_column == 'computed'  ){
+                target_columns[ind] = tdest.columns.find( c=> c.column_name === tc).SQLexpression; 
+                 computed = 'target';
+            }
+        });
+
+        return [target_columns, source_columns, computed];
+    }
+
+
+    /**
+     * false (EDA default) -> value-list filters compare against the description column (target_description_column).
+     * true (SinergiaDA) -> value-list filters compare against the internal code column (target_id_column) instead.
+     */
+    public useValueListCodeForFilters(): boolean {
+        return !!eda_api_config.custom_behaviour?.USE_VALUE_LIST_CODE_FOR_FILTERS;
+    }
+
+    /**
+     * A selector query has to return, for every value-list column, the display label AND its internal
+     * code (two columns). The frontend builds filter_codes from that code (column-utils.service.ts -> setFilter);
+     * without it the label ends up in filter_codes and code-mode filters compare labels against the code column,
+     * returning nothing (issue #667). No-op for regular panel queries (forSelector is only set by the selectors).
+     */
+    private addSelectorCodeFields(fields: any[]) {
+        const extra: any[] = [];
+        for (const field of fields || []) {
+            const vls = field?.valueListSource;
+            if (!vls?.target_table || !vls?.target_id_column) continue;
+            if (field.table_id !== vls.target_table) continue;
+            const alreadyThere = fields.some(f => f.table_id === vls.target_table && f.column_name === vls.target_id_column);
+            if (alreadyThere) continue;
+            extra.push({
+                ...JSON.parse(JSON.stringify(field)),
+                column_name: vls.target_id_column,
+                display_name: vls.target_id_column,
+                column_type: 'text',
+                order: fields.length + extra.length,
+            });
+        }
+        if (extra.length > 0) fields.push(...extra);
+    }
 
     public findColumn(table: string, column: string) {
         const tmpTable = this.tables.find((t: any) => t.table_name === table.split('.')[0]);
@@ -867,13 +1009,15 @@ export abstract class QueryBuilderService {
     }
 
     public findHavingColumn( havingFilter:any) {
+        
+
         if(this.queryTODO.fields.find((f: any)=> f.table_id === havingFilter.filter_table && 
                                             f.filter === havingFilter.filter_column)){
             return this.queryTODO.fields.find((f: any)=> f.table_id === havingFilter.filter_table && 
                                              f.filter === havingFilter.filter_column);
         }else{
 
-            return  { // we return a dummy column with the values we need to do the having
+            return  { // devolvemos una columna ficticia con los valores que necesitamos para hacer el having
                 table_id: havingFilter.filter_table ,
                 column_name: havingFilter.filter_column,
                 display_name: havingFilter.filter_column,
@@ -889,20 +1033,15 @@ export abstract class QueryBuilderService {
                 whatif_column: false,
                 whatif: {},
                 joins: [],
-                autorelation: false,
-                computed_column: havingFilter.computed_column ?? 'no',
-                SQLexpression: havingFilter.SQLexpression ?? '',
+                autorelation: false
             }
         }
-
-        
     }
 
-/* SDA CUSTOM */    public setFilterType(filter: string, dynamicValue?: string) {
-/* SDA CUSTOM */        if (dynamicValue && (filter === 'in' || filter === 'not_in')) return 2;
+    public setFilterType(filter: string) {
         if (['=', '!=', '>', '<', '<=', '>=', 'like', 'not_like'].includes(filter)) return 0;
         else if (['not_in', 'in'].includes(filter)) return 1;
-/* SDA CUSTOM */        else if (filter === 'between' || filter === 'not_between') return 2;
+        else if (filter === 'between' || filter === 'not_between') return 2;
         else if (filter === 'not_null') return 3;
         else if (filter === 'is_null') return 4;
         else if (filter === 'not_null_nor_empty') return 5;
@@ -913,13 +1052,12 @@ export abstract class QueryBuilderService {
 
     public sqlBuilder(userQuery: any, filters: any[]): string {
 
-
         const graph = this.buildGraph();
         const schema = this.dataModel.ds.connection.schema;
         const modelPermissions = this.dataModel.ds.metadata.model_granted_roles;
         let query = userQuery.SQLexpression;
         
-        // I add a blank space at the end of each line to ensure that words do not run together.
+        // añado un espacio en blanco al final de cada linea para asegurar que no se juntan palabras
         let reg = new RegExp(`\n`, "g");
         query = query.replace(reg, ` `);
 
@@ -970,67 +1108,7 @@ export abstract class QueryBuilderService {
         //Get sql formated filters ad types
         const formatedFilters: any[] = [];
         filters.forEach(filter => {
-
-            /*SDA CUSTOM*/
-            /*SDA CUSTOM*/ // Global filter applied to a SQL panel: match filter_column directly against
-            /*SDA CUSTOM*/ // the SQL marks (e.g. filter_column="type" matches ${c.type}).
-            /*SDA CUSTOM*/ // We do NOT use filter.joins (the BFS path) for column matching because:
-            /*SDA CUSTOM*/ //   - BFS may find a "wrong" shortest path (e.g. via assigned_user_id instead
-            /*SDA CUSTOM*/ //     of via registrations) whose join columns don't include the filter column.
-            /*SDA CUSTOM*/ //   - filter_column already contains the exact column name the user selected.
-            /*SDA CUSTOM*/ // For valueListSource: use filter_codes (stored IDs) instead of filter_elements (labels).
-            /*SDA CUSTOM*/ if (filter.isGlobal === true && filter.filter_type !== 'between') {
-            /*SDA CUSTOM*/     const filterCol: string = filter.filter_column;
-            /*SDA CUSTOM*/     const markHit = filterMarks.some((mark: string) => {
-            /*SDA CUSTOM*/         const subs = mark.slice(mark.indexOf('{') + 1, mark.indexOf('}'));
-            /*SDA CUSTOM*/         const markCol = subs.slice(subs.indexOf('.') + 1);
-            /*SDA CUSTOM*/         return markCol.toUpperCase() === filterCol.toUpperCase();
-            /*SDA CUSTOM*/     });
-            /*SDA CUSTOM*/     if (markHit) {
-            /*SDA CUSTOM*/         const colType: string = filter.filter_column_type;
-            /*SDA CUSTOM*/         const rawValues: any[] = (filter.valueListSource && filter.filter_codes?.[0]?.value1?.length > 0)
-            /*SDA CUSTOM*/             ? filter.filter_codes[0].value1
-            /*SDA CUSTOM*/             : (filter.filter_elements?.[0]?.value1 || []);
-            /*SDA CUSTOM*/         let valuesStr: string | null;
-            /*SDA CUSTOM*/         if (colType === 'numeric') {
-            /*SDA CUSTOM*/             // Filter out 'emptyString' and other non-numeric sentinels before Number() conversion.
-            /*SDA CUSTOM*/             // Number('emptyString') = NaN which produces invalid SQL "in (NaN)".
-            /*SDA CUSTOM*/             const validNums: number[] = rawValues
-            /*SDA CUSTOM*/                 .filter((v: any) => v !== 'emptyString' && v !== null && v !== undefined && v !== '')
-            /*SDA CUSTOM*/                 .map((v: any) => Number(v))
-            /*SDA CUSTOM*/                 .filter((n: number) => !isNaN(n));
-            /*SDA CUSTOM*/             valuesStr = validNums.length > 0 ? validNums.join(', ') : null;
-            /*SDA CUSTOM*/         } else {
-            /*SDA CUSTOM*/             const mappedVals = rawValues.map((v: any) => `'${String(v).replace(/'/g, "''")}'`);
-            /*SDA CUSTOM*/             valuesStr = mappedVals.length > 0 ? mappedVals.join(', ') : null;
-            /*SDA CUSTOM*/         }
-            /*SDA CUSTOM*/         if (valuesStr !== null) {
-            /*SDA CUSTOM*/             // Build "tableName.filterCol in (values)" so that sqlQuery's indexOf('.')
-            /*SDA CUSTOM*/             // always finds the table/column separator, not a decimal dot inside the values.
-            /*SDA CUSTOM*/             // filter_table may be a child_id ("table.col.col") — take only the first segment.
-            /*SDA CUSTOM*/             const tablePrefix: string = ((filter.filter_table as string) || filterCol).split('.')[0];
-            /*SDA CUSTOM*/             formatedFilters.push({ string: `${tablePrefix}.${filterCol} in (${valuesStr})`, type: filter.filter_type });
-            /*SDA CUSTOM*/         } else {
-            /*SDA CUSTOM*/             // Only non-numeric sentinels selected (e.g. 'emptyString' = NULL).
-            /*SDA CUSTOM*/             // Substitute the matching mark directly with IS NULL in the query string.
-            /*SDA CUSTOM*/             // sqlQuery will try to replace the mark but won't find it → no-op.
-            /*SDA CUSTOM*/             // We do NOT call filterToString: it also can't handle 'emptyString' for SQL panels.
-            /*SDA CUSTOM*/             for (const mark of filterMarks) {
-            /*SDA CUSTOM*/                 const subs = mark.slice(mark.indexOf('{') + 1, mark.indexOf('}'));
-            /*SDA CUSTOM*/                 const markCol = subs.slice(subs.indexOf('.') + 1);
-            /*SDA CUSTOM*/                 if (markCol.toUpperCase() === filterCol.toUpperCase()) {
-            /*SDA CUSTOM*/                     query = query.replace(mark, `${subs} IS NULL`);
-            /*SDA CUSTOM*/                 }
-            /*SDA CUSTOM*/             }
-            /*SDA CUSTOM*/         }
-            /*SDA CUSTOM*/     } else {
-            /*SDA CUSTOM*/         formatedFilters.push({ string: this.filterToString(filter), type: filter.filter_type });
-            /*SDA CUSTOM*/     }
-            /*SDA CUSTOM*/
-            /*SDA CUSTOM*/ } else {
-                formatedFilters.push({ string: this.filterToString(filter ), type: filter.filter_type });
-            /*SDA CUSTOM*/ }
-
+            formatedFilters.push({ string: this.filterToString(filter ), type: filter.filter_type });
         });
 
         return this.sqlQuery(query, formatedFilters, filterMarks);
@@ -1042,9 +1120,17 @@ export abstract class QueryBuilderService {
         const origin = table;
         const dest = [];
         const modelPermissions = this.dataModel.ds.metadata.model_granted_roles;
-        /*SDA CUSTOM security for own tables*/const permissions = this.getPermissions(modelPermissions, this.tables, origin).filter( (p)=> p.filter_table == table );
-        const joinType = 'inner'; // it is for the permissions. It has to be like this.
-        const valueListJoins = []; // cancelled
+
+
+        /** Check the permissions behaviour. If they are recursive get recursive permissions*/
+        const permissions =
+            eda_api_config.custom_behaviour.USE_RECURSIVE_PERMISSIONS?
+            this.getRecursivePermissions(modelPermissions, this.tables, origin, this.queryTODO):
+            this.getFlatPermissions(modelPermissions, this.queryTODO)
+            ;
+        
+        const joinType = 'inner'; // es per els permisos. Ha de ser així.
+        const valueListJoins = []; // anulat
 
         let tables = this.dataModel.ds.model.tables
             .map(table => { return { name: table.table_name, query: table.query } });
@@ -1103,7 +1189,7 @@ export abstract class QueryBuilderService {
         for (let i = 0; i < words.length; i++) {
             if (
                 (words[i].toUpperCase() === 'FROM' || words[i].toUpperCase() === 'JOIN') &&
-                (words[i + 1] !== '(' && words[i + 1].toUpperCase() !== 'SELECT')  // the word that comes after a from and is not a subquery
+                (words[i + 1] !== '(' && words[i + 1].toUpperCase() !== 'SELECT')  // la paraula que ve despres de un from i no es una subconsulta
             ) {
                 tables.push(words[i + 1]);
             }
@@ -1137,15 +1223,23 @@ export abstract class QueryBuilderService {
             Object.values(register).forEach((value: any, i) => {
                 const type = queryData.columns[i].type;
                 if (type === 'text') {
-                    row += `'${value.replace(/'/g, "''")}',`;
+                    if (value === null || value === undefined || value === '') {
+                        row += `null,`;
+                    } else {
+                        row += `'${value.replace(/'/g, "''")}',`;
+                    }
                 } else if (type === 'timestamp') {
-                    let date = value ? `TO_TIMESTAMP('${value}', '${queryData.columns[i].format}'),` : `${null},`
+                    let date = value ? `TO_TIMESTAMP('${value}', '${queryData.columns[i].format}'),` : `null,`
                     row += `${date}`;
                 } else {
-                    value = queryData.columns[i].separator === ',' ? parseFloat(value.replace(".", "").replace(",", "."))
-                        : parseFloat(value.replace(",", ""));
-                    value = value ? value : null;
-                    row += `${value},`;
+                    if (value === null || value === undefined || value === '') {
+                        row += `null,`;
+                    } else {
+                        value = queryData.columns[i].separator === ',' ? parseFloat(value.replace(".", "").replace(",", "."))
+                            : parseFloat(value.replace(",", ""));
+                        value = value ? value : null;
+                        row += `${value},`;
+                    }
                 }
             });
             row = row.slice(0, -1);
@@ -1269,9 +1363,9 @@ export abstract class QueryBuilderService {
 
     public getEqualFilters = (filters) => {
         /**
-         * FILTERS HAVE DIFFERENT LEVELS GLOBAL = AT DASHBOARD LEVEL - LOCAL = AT PANEL LEVEL - SECURITY = COMING FROM SECURITY
-         * FILTORS ARE CONCATENATED WITH AN AND NORMALLY. BUT IF I PUT FILTERS ON THE SAME COLUMN AT THE SAME LEVEL (ISGLOBAL) THEY ARE CONCATENATED
-         * WITH A OR. WHICH IS THE EXPECTED PERFORMANCE.
+         * LOS FILTROS TIENEN DIFERENTES NIVELES GLOBAL = A NIVEL DE DASHBOARD - LOCAL = A NIVEL DE PANEL - SEGURIDAD = QUE VIENEN DE LA SEGURIDAD
+         * LOS FILTORS SE CONCATENAN CON UN AND NORMALMENTE. PERO SI PONGO FILTROS SOBRE LA MISMA COLUMNA AL MISMO NIVEL (ISGLOBAL) SE CONCATENAN
+         * CON UN OR. QUE ES EL FUNCIONAMIENTO ESPERADO.
          * 
           */
         let filterMap = new Map();
@@ -1279,13 +1373,13 @@ export abstract class QueryBuilderService {
         filters.forEach(filter => {
             let myKey = filter.filter_table + filter.filter_column + filter.isGlobal;
             if(filter.isGlobal == 'security'){
-                myKey = filter.filter_table +'security'  /**   if it is a security filter, all filters must be combined. */
+                myKey = filter.filter_table +'security'  /**   si es de seguridad se deben combinar todos los filtros. */
             }
             let node = filterMap.get(myKey);
             if (node) {
                 node.push(filter);
                 node.forEach(filter => {
-                    if (!toRemove.includes(filter.filter_id)) {
+                    if (!toRemove.includes(filter.filter_id) && filter.filter_id.indexOf('security')<0 ) {
                         toRemove.push(filter.filter_id);
                     }
                 })
@@ -1307,12 +1401,10 @@ export abstract class QueryBuilderService {
         if (equalfilters.toRemove.length > 0) {
             equalfilters.map.forEach((value, key) => {
                 let filterSTR = '\nand ( '    
-                //we put the nulls first
-                let n = value.filter( f=> (f.filter_type == 'not_null'  || f.filter_type == 'not_null_nor_empty' || f.filter_type == 'null_or_empty' || f.filter_type == 'is_null' ) );
-                // and the values afterwards.
-                let values = [...n, ...value.filter( f=> f.filter_type != 'not_null' && f.filter_type != 'not_null_nor_empty' && f.filter_type != 'null_or_empty' && f.filter_type != 'is_null' )];          
+                let n = value.filter( f=> (f.filter_type == 'not_null'  || f.filter_type == 'not_null_nor_empty' || f.filter_type == 'null_or_empty') );
+                let values = [...n, ...value.filter( f=> !['not_null', 'not_null_nor_empty', 'null_or_empty'].includes(f.filter_type))];
                 values.forEach((f) => {
-                    if (f.filter_type == 'not_null' || f.filter_type == 'not_null_nor_empty' ) {                        //Until the type of conjunction can be determined. Filters on the same column is an OR because I want two groups. EXCEPT WHEN IT IS A NULL
+                    if (f.filter_type == 'not_null' || f.filter_type == 'not_null_nor_empty' || f.filter_type == 'null_or_empty') {                        //Fins que no es pugi determinar el tipus de conjunció. Els filtres sobre una mateixa columna es un or perque vull dos grups. EXCEPTE QUAN ES UN NULL
                         filterSTR += this.filterToString(f) + '\n  and ';
                     } else {
                         filterSTR += this.filterToString(f) + '\n  or ';

@@ -1,45 +1,68 @@
+@if(!inject.showChart){
+  <div #kpiContainer class="absolute inset-0 flex justify-center items-center overflow-hidden">
+    <ng-container *ngTemplateOutlet="kpiValueContainer;"></ng-container>
+  </div>
+}
 
-
-<ng-container *ngIf="!inject.showChart">
-    <div #kpiContainer class="w-100 h-100 d-flex justify-content-center text-center text-wrap" >
-        <ng-container *ngTemplateOutlet="kpiValueContainer;"></ng-container>
+@if(inject.showChart){
+  <div class="absolute inset-0 overflow-hidden">
+    <div #kpiContainer class="absolute top-0 left-0 w-full z-10 flex justify-center items-center" style="height: 30%;">
+      <ng-container *ngTemplateOutlet="kpiValueContainer;"></ng-container>
     </div>
-</ng-container>
-
-<!-- SDA CUSTOM - KPI with chart overlay and editable font controls -->
-<ng-container *ngIf="inject.showChart">
-    <div #kpiContainer class="w-100 h-100" style="position: relative;">
-        <div style="position: absolute; top: 0; left: 0; right: 0; z-index: 2; display: flex; justify-content: center; pointer-events: none;">
-            <div style="width: 100%; pointer-events: auto;">
-                <ng-container *ngTemplateOutlet="kpiValueContainer;"></ng-container>
-            </div>
-        </div>
-        <div style="position: absolute; bottom: 0; left: 0; right: 0; height: 50%; max-height: 50%; max-width: 1300px;">
-            <!-- {{inject.edaChart?.chartOptions | json}} -->
-            <eda-chart #EdaChart [inject]="inject.edaChart"></eda-chart>
-        </div>
+    <div class="absolute bottom-0 left-0 w-full overflow-hidden" style="height: 70%;">
+      <eda-chart #EdaChart [inject]="inject.edaChart" class="h-full w-full"></eda-chart>
     </div>
-</ng-container>
-<!-- END SDA CUSTOM -->
+  </div>
+}
 
 <ng-template #kpiValueContainer>
-    <!-- SDA CUSTOM - KPI value controls and sufix editor -->
-    <div style="position: relative; width: 100%; height: 100%;" (mouseenter)="onMouseEnter()" (mouseleave)="onMouseLeave()">
-        <div *ngIf="shouldShowControls()" style="position: absolute; top: 4px; right: 4px; display: flex; gap: 6px; align-items: center; z-index: 1;">
-            <button type="button" (click)="decreaseFont()" title="Reducir tamaño" style="width: 24px; height: 24px; border: 1px solid #ccc; background: #fff; border-radius: 4px; line-height: 20px;">-</button>
-            <button type="button" (click)="increaseFont()" title="Aumentar tamaño" style="width: 24px; height: 24px; border: 1px solid #ccc; background: #fff; border-radius: 4px; line-height: 20px;">+</button>
-            <span style="font-size: 12px; color: #666; min-width: 44px; text-align: right;">{{getFontSize()}}</span>
+  @if (useHoverResize) {
+    <div class="relative w-full h-full flex items-center justify-center" (mouseenter)="onMouseEnter()" (mouseleave)="onMouseLeave()">
+      @if (shouldShowControls()) {
+        <div class="absolute top-1 right-1 flex items-center gap-1.5 z-10">
+          <button type="button" i18n-title="@@kpiDecreaseFontSize" title="Reducir tamaño" (click)="decreaseFont()"
+                  [disabled]="!canDecreaseFont()"
+                  class="w-6 h-6 flex items-center justify-center rounded border border-gray-300 bg-white hover:bg-gray-100 text-gray-700 text-sm leading-none disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-white">-</button>
+          <button type="button" i18n-title="@@kpiIncreaseFontSize" title="Aumentar tamaño" (click)="increaseFont()"
+                  [disabled]="!canIncreaseFont()"
+                  class="w-6 h-6 flex items-center justify-center rounded border border-gray-300 bg-white hover:bg-gray-100 text-gray-700 text-sm leading-none disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-white">+</button>
+          <span class="text-xs text-gray-500" style="min-width: 2.75rem; text-align: right;">{{getScalePercent()}}%</span>
         </div>
-        <div #sufixContainer class="pointer" title="Añadir unidades" style="color: var(--panel-font-color); font-family: var(--panel-font-family);" >
-            <div [ngStyle]="getStyle()" (click)="setSufix()">
-                {{inject.value | number:'1.0-10':'es' }} {{inject.sufix}}
-            </div>
-
-            <div *ngIf="!!sufixClick" class="ui-inputgroup w-100">
-                <input type="text" pInputText class="w-100" [(ngModel)]="inject.sufix" (focusout)="setSufix()" (keydown.enter)="setSufix()" name="unidades" autofocusOnShow>
-            </div>
-        </div>
+      }
+      <ng-container *ngTemplateOutlet="kpiValueContent;"></ng-container>
     </div>
-    <!-- END SDA CUSTOM -->
+  } @else {
+    <ng-container *ngTemplateOutlet="kpiValueContent;"></ng-container>
+  }
 </ng-template>
 
+<ng-template #kpiValueContent>
+    <div #sufixContainer class="pointer" title="Añadir unidades"
+         style="max-width: 100%; overflow: hidden;"
+         [style.width]="'100%'"
+         [style.height]="sufixClick ? null : '100%'">
+        <div class="w-full h-full flex items-center justify-center"
+             [style.gap]="edaHasImage() ? '0.75rem' : '0'"
+             (click)="setSufix()">
+          @if (edaHasImage()) {
+            <div [ngStyle]="edaImageWrapStyle()">
+              <img [src]="inject.prefixImage" alt="" [ngStyle]="edaImageTagStyle()" />
+            </div>
+          }
+          <div [ngStyle]="edaTextWrapStyle()">
+            <div [ngStyle]="edaValueStyle()" (click)="setSufix(); $event.stopPropagation()">{{ inject.value | number:'1.0-10':'es' }}</div>
+            @if (edaSufixText()) {
+              <div [ngStyle]="edaSufixStyle()" (click)="setSufix(); $event.stopPropagation()">{{ inject.sufix }}</div>
+            }
+          </div>
+        </div>
+
+        @if(!!sufixClick){
+          <div class="ui-inputgroup w-100" style="margin-top: 0.25em;">
+            <input type="text" pInputText [(ngModel)]="inject.sufix" (focusout)="setSufix()"
+              (keydown.enter)="setSufix()" name="unidades" autofocusOnShow
+              class="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-50 text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#00BFB3] focus:border-[#00BFB3] text-sm"/>
+          </div>
+        }
+    </div>
+</ng-template>

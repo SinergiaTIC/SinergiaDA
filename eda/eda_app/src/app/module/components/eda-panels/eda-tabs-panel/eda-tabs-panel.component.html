@@ -1,0 +1,45 @@
+<div class="flex flex-col h-full rounded-lg pl-2 pt-2 pr-2 bg-white">
+    <div class="flex h-full pb-2 items-stretch drag-handler min-h-0">
+        <div #tabsContainer class="tabs-container flex-1 overflow-hidden p-1" [ngStyle]="panelTabAlign">
+            <!-- Loading state -->
+            @if(isLoading){
+                <div class="text-gray-500 text-sm" i18n="@@Cargando">
+                    <i class="pi pi-spin pi-spinner mr-2"></i>
+                    Cargando...
+                </div>
+            }
+
+            <!-- Empty state -->
+            @if(!isLoading && filteredDashboards.length === 0){
+                <div class="text-gray-400 text-sm text-center p-4" i18n="@@tabsDashboardSettings">
+                    <i class="pi pi-info-circle mr-2"></i>
+                    Configura las pestañas para mostrar dashboards
+                </div>
+            }
+
+            <!-- Dashboard tabs -->
+            @for(dashboard of filteredDashboards; track dashboard.id){
+                <button
+                    class="tab-button text-gray-700 focus:ring-2 focus:ring-sky-200 font-medium leading-5 rounded-lg text-sm px-4 py-2.5 focus:outline-none transition-colors duration-150"
+                    (click)="openDashboard(dashboard)" [ngStyle]="panelText"
+                    >
+                    <i class="pi pi-external-link tab-icon text-sm flex-shrink-0"></i>
+                    <span class="tab-title">{{ dashboard.title }}</span>
+                </button>
+            }
+        </div>
+
+        @if(display.editMode){
+            <i class="pi pi-ellipsis-v cursor-pointer ml-2 text-base shrink-0 self-center"
+                (click)="openContextMenu($event)"></i>
+        }
+    </div>
+</div>
+
+<eda-context-menu [inject]="contextMenu"></eda-context-menu>
+
+@if(editTabsController){
+    <div>
+        <app-edit-tabs-dialog [controller]="editTabsController"></app-edit-tabs-dialog>
+    </div>
+}

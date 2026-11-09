@@ -1,0 +1,36 @@
+<eda-dialog2 [display]="display"
+  header="DASHBOARD VISIBILITY" width="50vw" height="45vh"
+  [disableApply]="disableApply()"
+  (apply)="onApply()"
+  (close)="onClose()">
+
+  <div content class="p-6">
+    <form [formGroup]="form" class="form-horizontal form-material" (ngSubmit)="true">
+    <div class="grid space-y-8">
+    <!-- Selection buttons -->
+      <h6 i18n="@@selectDashboardPrivacity"> Selecciona la privacidad del informe </h6>
+      <div class="col-12">
+        <p-selectButton [options]="visibleTypes" formControlName="visible" (onChange)="handleSelectedBtn($event)"
+          class="visibility-selector">
+        </p-selectButton>
+      </div>
+
+      @if(showUrl){
+        <span (click)="copyURL()" class="vis-copy-url-btn" i18n="@@copyPublicURL">
+          <i class="pi pi-copy"></i> copiar URL pública
+        </span>
+      }
+
+      @if (showGroups) {
+      <!-- Groups multiselect -->
+      <div class="col-12">
+        <p-multiSelect formControlName="group" [options]="grups" [filter]="true" optionLabel="name" i18n-defaultLabel="@@multiSelectDefaultLabel" defaultLabel="Selecciona un grupo *"
+          class="w-full bg-gray-100 rounded-md border text-gray-700" appendTo="body" >
+        </p-multiSelect>
+      </div>
+      }
+    </div>
+    </form>
+
+  </div>
+</eda-dialog2>

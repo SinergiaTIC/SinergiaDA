@@ -1,11 +1,11 @@
-<eda-dialog [inject]="dialog">
+<eda-dialog2 >
     <div body>
         <form [formGroup]="form" class="form-horizontal form-material">
             <div class="grid" style="max-height: 20em;">
 
                 <div class="col-12 xl:col-3">
                     <p-dropdown [options]="targetTables" formControlName="targetTable" filter="true" optionLabel="label"
-                        i18n-placeholder="@@placeholderTargetTables" placeholder="tabla destino"
+                        i18n-placeholder="@@placeholderTargetTables" placeholder="Tabla destino"
                         id="eda_add_relation_targetTable" [style]="{width:'150px'}">
                     </p-dropdown>
                 </div>
@@ -61,7 +61,7 @@
     <div footer>
         <div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix text-right">
 
-            <!--SDA CUSTOM--><button type="button" pButton (click)="saveRelation()" class="ui-button" i18n-label="@@guardarButton"
+            <button type="button" pButton (click)="saveRelation()" class="ui-button" i18n-label="@@guardarBtn"
                 icon="fa fa-check" label="Confirmar" id="eda_add_relation_confirm"
                 [disabled]="selectedSourceCols.length === 0">
             </button>
@@ -73,4 +73,4 @@
         </div>
     </div>
 
-</eda-dialog>
+</eda-dialog2>

@@ -1,4 +1,4 @@
-import { MongoDBBuilderService } from '../../query-builder/qb-systems/mongodb-builder-service';
+import { MongoDBBuilderService } from '../../query-builder/qb-systems/mongodb-builder.service';
 import { AbstractConnection } from '../abstract-connection';
 import { MongoClient } from "mongodb";
 import _ from 'lodash';
@@ -39,7 +39,7 @@ export class MongoDBConnection extends AbstractConnection {
             this.connectUrl = `${type}://${credentialStr}${host}:${port}/${db}?authSource=${authSource}`;
 
             const options = { useNewUrlParser: true, useUnifiedTopology: true };
-            const connection = await MongoClient.connect(this.connectUrl, options);
+            const connection = await MongoClient.connect(this.connectUrl);
             return connection;
         } catch (error) {
             throw error;
@@ -64,6 +64,7 @@ export class MongoDBConnection extends AbstractConnection {
     }
 
     async execQuery(query: any): Promise<any> {
+        //console.log(query);
         const client = await this.getclient()
 
         try {
@@ -127,6 +128,7 @@ export class MongoDBConnection extends AbstractConnection {
                 query.pipeline.push({ ['$sort']: $sort });
             }
 
+            //console.log("Info de la consulta: ", JSON.stringify(query.pipeline));
             data = await collection.aggregate(query.pipeline).toArray();
 
 
@@ -144,6 +146,7 @@ export class MongoDBConnection extends AbstractConnection {
                 });
             }
 
+        //console.log(formatData);
             return formatData;
         } catch (err) {
             console.error(err);

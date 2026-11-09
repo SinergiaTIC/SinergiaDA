@@ -1,70 +1,75 @@
-import { UntypedFormGroup, UntypedFormBuilder } from '@angular/forms';
-import { Component, OnInit, ViewChild } from '@angular/core';
-import { EdaDialogAbstract, EdaDialogCloseEvent, EdaDialog } from '@eda/shared/components/shared-components.index';
-import {  DataSourceService } from '@eda/services/service.index';
+import { FormGroup, ReactiveFormsModule, FormControl, Validators, FormsModule } from '@angular/forms';
+import { Component, EventEmitter, OnInit, Output, ViewChild } from '@angular/core';
+import { DataSourceService } from '@eda/services/service.index';
 import { SelectItem } from 'primeng/api';
 import { UploadFileComponent } from '../upload-file/upload-file.component';
-
+import { EdaDialog2Component } from "@eda/shared/components/shared-components.index";
+import { CommonModule } from '@angular/common';
+import { DropdownModule } from 'primeng/dropdown';
 @Component({
+  standalone: true,
   selector: 'app-map-dialog',
   templateUrl: './maps-dialog.component.html',
-  styleUrls: ['./maps-dialog.component.css']
+  styleUrls: ['./maps-dialog.component.css'],
+  imports: [EdaDialog2Component, CommonModule, ReactiveFormsModule, FormsModule, UploadFileComponent, DropdownModule]
 })
 
-export class MapDialogComponent extends EdaDialogAbstract implements OnInit {
+export class MapDialogComponent implements OnInit {
+  public display: boolean = false;
+  @Output() close: EventEmitter<any> = new EventEmitter<any>();
+
+  public title = $localize`:@@addMap:Mapas`;
 
   @ViewChild('fileUploader', { static: false }) fileUploader: UploadFileComponent;
 
-  public dialog: EdaDialog;
-  public form: UntypedFormGroup;
   public fields: SelectItem[];
-  public selectedField: string;
   public tables: SelectItem[];
-  public selectedTable: SelectItem;
   public columns: SelectItem[];
-  public selectedColumn: SelectItem;
-  public linkedColumns: Array<any> = [];
-  public serverMaps: Array<any> = [];
-  public center: Array<number>;
-  // public selectedMap : string;
+  public columnsValues: any;
+  public linkedColumns: any[] = [];
+  public serverMaps: any[] = [];
+  public center: any[];
+  public isFileLoaded: boolean = false; // GeoJSON has been added
 
-  constructor(
-    private formBuilder: UntypedFormBuilder,
-    private dataSourceService: DataSourceService) {
-    super();
-    this.dialog = new EdaDialog({
-      show: () => this.onShow(),
-      hide: () => this.onClose(EdaDialogCloseEvent.NONE),
-      title: $localize`:@@MapDatamodel:Mapas`
-    });
-    this.dialog.style= {width: '80%', height:'75%', 'top':"-4em", 'left':'1em'};
+  activeTab: 'step1' | 'step2' | 'available' = 'step1';
+  selectedMap = "customers - Country"
 
-    this.form = this.formBuilder.group({
-      mapURL: [null],
-      selectedField: [null],
-      mapName: [null],
-      x: [null],
-      y: [null]
+  public mapForm = new FormGroup({
+    mapName: new FormControl("", Validators.required),
+    latitude: new FormControl(""),
+    longitude: new FormControl(""),
+    dataModelField: new FormControl(""),
+    selectedTable: new FormControl(""),
+    selectedColumn: new FormControl(""),
+  })
+
+  constructor(private dataSourceService: DataSourceService) {
+    this.mapForm.get('selectedTable')!.valueChanges.subscribe(valor => {
+      this.getColumns(valor);
     });
   }
 
   ngOnInit(): void {
+    this.display = true;
     this.serverMaps = this.dataSourceService.getMaps() || [];
+    this.tables = this.dataSourceService.getModel().map(table => ({ label: table.display_name.default, value: table.table_name })).sort();
   }
 
+
   fileLoaded() {
+    this.isFileLoaded = true;
     const geoJson = this.fileUploader.currentFile.file;
     this.fields = Object.keys(geoJson.features[0].properties).sort().map(key => { return { label: key, value: key } });
     let bs = geoJson.features.map(f => {
       let type = f.geometry.type;
       if (type === 'MultiPolygon') {
-       return  [
+        return [
           f.geometry.coordinates[0][0].map(cord => cord[0]),
           f.geometry.coordinates[0][0].map(cord => cord[1])
 
         ]
       } else {
-       return [
+        return [
           f.geometry.coordinates[0].map(cord => cord[0]),
           f.geometry.coordinates[0].map(cord => cord[1])
 
@@ -72,6 +77,7 @@ export class MapDialogComponent extends EdaDialogAbstract implements OnInit {
       }
 
     });
+
     let bounds = bs.reduce((a, b) => [[].concat.apply(a[0], b[0]), [].concat.apply(a[1], b[1])]);
     let minX = bounds[0].reduce((min, v) => min >= v ? v : min, Infinity);
     let minY = bounds[1].reduce((min, v) => min >= v ? v : min, Infinity);
@@ -82,32 +88,42 @@ export class MapDialogComponent extends EdaDialogAbstract implements OnInit {
     this.center = [centerX, centerY];
   }
 
-  getColumns() {
-    if (this.selectedTable) {
-      this.columns = this.dataSourceService.getModel().filter(table => table.table_name === this.selectedTable.value)[0].columns
-        .map(col => ({ label: col.display_name.default, value: { table: this.selectedTable.value, col: col } }));
+  getColumns(selectedTable: string) {
+
+    if (selectedTable) {
+      const match = this.dataSourceService.getModel().filter(table => table.table_name.toLowerCase() === selectedTable.toLowerCase());
+
+      if (match.length > 0) {
+        this.columns = match[0].columns
+          .map(col => ({ label: col.display_name.default, value: JSON.stringify({ table: selectedTable, col: col } ) }));
+          this.columns.sort((a, b) => a.label.localeCompare(b.label));
+          this.columnsValues = match[0].columns;
+      }
     }
   }
+
   pushItem() {
-    if (this.selectedColumn) {
-      this.linkedColumns.push(this.selectedColumn.value);
+    const selectedColumn = this.columnsValues.find(columnas => columnas.display_name.default === this.mapForm.value.selectedColumn);
+    if (selectedColumn) {
+      this.linkedColumns.push({table: this.mapForm.value.selectedTable, col: selectedColumn});
     }
   }
+
   saveMap() {
     let newMap = false;
-    //If map uploaded push to current maps (loaded - eventualy deleted + new)
-    if (this.fileUploader.currentFile && this.form.value.selectedField && this.form.value) {
+    // If map uploaded push to current maps (loaded - eventualy deleted + new)
+    if (this.fileUploader.currentFile && this.mapForm.value.dataModelField && this.mapForm.value) {
       newMap = true;
       this.serverMaps.push(
         {
           mapID: this.fileUploader.currentFile.file._id,
-          field: this.form.value.selectedField.value,
-          name: this.form.value.mapName ? this.form.value.mapName : '-' ,
+          field: this.mapForm.value.dataModelField,
+          name: this.mapForm.value.mapName ? this.mapForm.value.mapName : '-',
           center: this.center,
           linkedColumns: this.linkedColumns
         });
     }
-    this.onClose(EdaDialogCloseEvent.NEW,
+    this.onClose(
       {
         mapID: this.fileUploader.currentFile ? this.fileUploader.currentFile.file._id : null,
         newMap: newMap ? true : false,
@@ -115,21 +131,39 @@ export class MapDialogComponent extends EdaDialogAbstract implements OnInit {
         serverMaps: this.serverMaps
       });
   }
-  deleteMap(map: any) {
+
+  removeMap(map: any) {
     this.serverMaps = this.serverMaps.filter(m => m.mapID !== map.mapID);
   }
+
   deleteLink(link) {
     this.linkedColumns = this.linkedColumns.filter(col => col.col.column_name !== link.col.column_name);
   }
+
   closeDialog() {
-    this.onClose(EdaDialogCloseEvent.NONE);
-  }
-  onShow(): void {
-    this.tables = this.dataSourceService.getModel().map(table => ({ label: table.display_name.default, value: table.table_name })).sort();
-
-  }
-  onClose(event: EdaDialogCloseEvent, response?: any): void {
-    return this.controller.close(event, response);
+    this.onClose();
   }
 
+
+  onClose(response?: any): void {
+    this.display = false;
+    this.close.emit(response);
+  }
+
+  // Methods that control the flags
+  setActiveTab(tab: 'step1' | 'available'): void {
+    this.activeTab = tab;
+  }
+  nextStep(): void {
+    this.activeTab = 'step2';
+  }
+
+  get canGoNext(): boolean {
+    return this.isFileLoaded && this.mapForm.value.mapName !== '' && this.mapForm.value.dataModelField !== '';
+  }
+  // The confirm button is enabled if we are on the available maps tab 
+  // Or if we are on the creation tab and columns have been linked
+  get canConfirm(): boolean {
+    return this.activeTab === 'available' || (this.activeTab === 'step2' && this.linkedColumns.length > 0);
+  }
 }

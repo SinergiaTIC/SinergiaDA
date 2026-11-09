@@ -23,7 +23,7 @@ export class SidebarService extends ApiService {
     }
 
     getDataSourceNames(): void {
-       /* this.get(this.globalDSRoute + '/names') Comentado por Juanjo para poder poner el datasource publico*/
+       /* this.get(this.globalDSRoute + '/names') Commented by Juanjo to allow the public datasource */
         this.get(this.globalDSRoute + '/namesForEdit')
             .subscribe((names: any) => {
                 this._datasources.next(names.ds);
@@ -53,10 +53,12 @@ export class SidebarService extends ApiService {
     getToggleSideNav(): Observable<boolean> {
         return this.hideSideNavSubj.asObservable();
     }
+
     /* SDA CUSTOM*/ private isObserverSubject = new BehaviorSubject<boolean>(false);
     /* SDA CUSTOM*/ isObserver$ = this.isObserverSubject.asObservable();
   
     /* SDA CUSTOM*/ setIsObserver(value: boolean) {
     /* SDA CUSTOM*/    this.isObserverSubject.next(value);
     /* SDA CUSTOM*/ }
+
 }

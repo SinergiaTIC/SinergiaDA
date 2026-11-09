@@ -8,23 +8,31 @@ import { DynamicTextConfig } from '../panel-charts/chart-configuration-models/dy
 import { MapConfig } from '../panel-charts/chart-configuration-models/map-config';
 import { SankeyConfig } from '../panel-charts/chart-configuration-models/sankey-config';
 import { FunnelConfig } from '../panel-charts/chart-configuration-models/funnel.config';
+import { KpiTrendConfig } from '../panel-charts/chart-configuration-models/kpi-trend-config';
+import { KpiDeviationConfig } from '../panel-charts/chart-configuration-models/kpi-deviation-config';
 
 import { TableConfig } from '../panel-charts/chart-configuration-models/table-config';
 import { ScatterConfig } from '../panel-charts/chart-configuration-models/scatter-config';
 import { SunburstConfig } from '../panel-charts/chart-configuration-models/sunburst-config';
 import { BubblechartConfig } from '../panel-charts/chart-configuration-models/bubblechart.config';
 import { TreeTableConfig } from '../panel-charts/chart-configuration-models/treeTable-config';
+import { KPI_CONFIG } from '@eda/configs/customizable/customizable_merged';
 
 export const ChartsConfigUtils = {
 
   setConfig: (ebp: EdaBlankPanelComponent) => {
-
     let tableRows: number;
     let config: any = null;
+
+    if (!ebp.panelChart) {
+      return new ChartConfig(config);
+    }
+
 
     if (ebp.panelChart.componentRef && ['table', 'crosstable'].includes(ebp.panelChart.props.chartType)) {
       tableRows = ebp.panelChart.componentRef.instance.inject.rows || 10;
       config = {
+        chartType: ebp.panelChart.props.chartType,
         withColTotals: ebp.panelChart.componentRef.instance.inject.withColTotals,
         withColSubTotals: ebp.panelChart.componentRef.instance.inject.withColSubTotals,
         withRowTotals: ebp.panelChart.componentRef.instance.inject.withRowTotals,
@@ -38,55 +46,74 @@ export const ChartsConfigUtils = {
         noRepetitions: ebp.panelChart.componentRef.instance.inject.noRepetitions,
         negativeNumbers: ebp.panelChart.componentRef.instance.inject.negativeNumbers,
         ordering: ebp.panelChart.componentRef.instance.inject.ordering,
+        headerColor: ebp.panelChart.componentRef.instance.inject.headerColor || '',
+        bandingColor: ebp.panelChart.componentRef.instance.inject.bandingColor || '',
+        colorEnabled: ebp.panelChart.componentRef.instance.inject.colorEnabled !== false,
       }
 
+    } else if (ebp.panelChart.componentRef && ebp.panelChart.props.chartType === 'kpideviation') {
+      const inst = ebp.panelChart.componentRef?.instance;
+      config = {
+        backgroundColor: inst?.inject?.backgroundColor || '',
+        kpiColor: inst?.inject?.kpiColor || '',
+        positiveColor: inst?.inject?.positiveColor || '',
+        negativeColor: inst?.inject?.negativeColor || '',
+        prefixImage: inst?.inject?.prefixImage || '',
+        modifiedFontPoints: inst?.inject?.modifiedFontPoints || 0,
+        alertLimits: inst?.inject?.alertLimits || [],
+      };
     } else if (ebp.panelChart.componentRef && ebp.panelChart.props.chartType.includes('kpi')) {
-      const kpiChart = ebp.panelChart.componentRef.instance.inject.edaChart;
+      const kpiChart = ebp.panelChart.componentRef.instance.inject?.edaChart;
 
       config = {
         sufix: ebp.panelChart.componentRef.instance.inject.sufix,
         alertLimits: ebp.panelChart.componentRef.instance.inject.alertLimits,
-        /* SDA CUSTOM */ fontScale: ebp.panelChart.componentRef.instance.inject.fontScale,
-        /* SDA CUSTOM */ color: ebp.panelChart.componentRef.instance.inject.color,
-        /* SDA CUSTOM */ lineWidth: ebp.panelChart.componentRef.instance.inject.lineWidth,
-        /* SDA CUSTOM */ lineStyle: ebp.panelChart.componentRef.instance.inject.lineStyle,
-        /* SDA CUSTOM */ showXAxis: ebp.panelChart.componentRef.instance.inject.showXAxis,
-        /* SDA CUSTOM */ showXAxisLabels: ebp.panelChart.componentRef.instance.inject.showXAxisLabels,
-        /* SDA CUSTOM */ xAxisLabelCount: ebp.panelChart.componentRef.instance.inject.xAxisLabelCount,
-        /* SDA CUSTOM */ labelColor: ebp.panelChart.componentRef.instance.inject.labelColor,
-        /* SDA CUSTOM */ labelBackgroundColor: ebp.panelChart.componentRef.instance.inject.labelBackgroundColor,
-        /* SDA CUSTOM */ showLabels: ebp.panelChart.componentRef.instance.inject.showLabels,
-        /* SDA CUSTOM */ showLabelsPercent: ebp.panelChart.componentRef.instance.inject.showLabelsPercent,
+        assignedColors: ebp.panelChart.props.config?.getConfig()?.['assignedColors'] || null,
+        modifiedFontPoints: ebp.panelChart.componentRef.instance.inject.modifiedFontPoints || 0,
+        fontScale: ebp.panelChart.componentRef.instance.inject.fontScale ?? KPI_CONFIG.DEFAULT_FONT_SCALE,
+        imageScale: ebp.panelChart.componentRef.instance.inject.imageScale ?? KPI_CONFIG.IMAGE_DEFAULT_SCALE,
+        valueFontScale: ebp.panelChart.componentRef.instance.inject.valueFontScale ?? KPI_CONFIG.DEFAULT_FONT_SCALE,
+        sufixFontScale: ebp.panelChart.componentRef.instance.inject.sufixFontScale ?? KPI_CONFIG.DEFAULT_FONT_SCALE,
+        backgroundColor: ebp.panelChart.componentRef.instance.inject.backgroundColor || '',
+        kpiColor: ebp.panelChart.componentRef.instance.inject.kpiColor || '',
+        prefixImage: ebp.panelChart.componentRef.instance.inject.prefixImage || '',
         edaChart: {}
       }
 
-      /* SDA CUSTOM */ if (kpiChart?.edaChart) {
+      if (kpiChart?.hasOwnProperty('edaChart')) {
         config.edaChart.colors = kpiChart.chartColors;
         config.edaChart.chartType = ebp.panelChart.props.chartType;
-        /* SDA CUSTOM */ config.edaChart.showLabels = ebp.panelChart.componentRef.instance.inject.showLabels;
-        /* SDA CUSTOM */ config.edaChart.showLabelsPercent = ebp.panelChart.componentRef.instance.inject.showLabelsPercent;
-
-        // colors: ebp.panelChart.props.config && ebp.panelChart.props.config.getConfig() ? ebp.panelChart.props.config.getConfig()['colors'] : [],
-        // chartType: ebp.panelChart.props.chartType,
+        config.edaChart.assignedColors = ebp.panelChart.props.config?.getConfig()?.['assignedColors'] || null;  // ambién en edaChart
+        config.edaChart.lineWidth = kpiChart.lineWidth ?? 2;
+        config.edaChart.lineStyle = kpiChart.lineStyle || 'solid';
+        config.edaChart.showXAxis = kpiChart.showXAxis ?? true;
+        config.edaChart.showXAxisLabels = kpiChart.showXAxisLabels ?? true;
+        config.edaChart.xAxisLabelCount = kpiChart.xAxisLabelCount || 0;
+        config.edaChart.showAllXAxisLabels = kpiChart.showAllXAxisLabels ?? true;
+        config.edaChart.labelColor = kpiChart.labelColor || '#000000';
+        config.edaChart.labelBackgroundColor = kpiChart.labelBackgroundColor || '';
+        config.edaChart.showLabels = kpiChart.showLabels ?? false;
+        config.edaChart.showLabelsPercent = kpiChart.showLabelsPercent ?? false;
+        config.edaChart.chartLineColor = kpiChart.chartLineColor || '';
+        config.edaChart.chartFillColor = kpiChart.chartFillColor || '';
       }
-
     } else if (ebp.panelChart.componentRef && ebp.panelChart.props.chartType === 'dynamicText') {
+      const dtInstance = ebp.panelChart.componentRef.instance;
       config = {
-        color: ebp.panelChart.componentRef ? ebp.panelChart.componentRef.instance.inject.color : ebp.panelChart.props.config.getConfig()['color']
+        color: dtInstance ? dtInstance.inject.color : ebp.panelChart.props.config.getConfig()['color'],
+        modifiedFontPoints: dtInstance ? (dtInstance.inject.modifiedFontPoints || 0) : (ebp.panelChart.props.config.getConfig()['modifiedFontPoints'] || 0)
       }
     } else if (ebp.panelChart.props.chartType === 'geoJsonMap') {
-
       config = {
         zoom: ebp.panelChart.componentRef ? ebp.panelChart.componentRef.instance.inject.zoom : null,
         coordinates: ebp.panelChart.componentRef ? ebp.panelChart.componentRef.instance.inject.coordinates : null,
         logarithmicScale: ebp.panelChart.componentRef ? ebp.panelChart.componentRef.instance.inject.logarithmicScale : null,
         baseLayer: ebp.panelChart.componentRef ? ebp.panelChart.componentRef.instance.inject.baseLayer : null,
         legendPosition: ebp.panelChart.componentRef ? ebp.panelChart.componentRef.instance.inject.legendPosition : null,
-        color: ebp.panelChart.componentRef ? ebp.panelChart.componentRef.instance.inject.color : null,
+        assignedColors: ebp.panelChart.componentRef ? ebp.panelChart.componentRef.instance.assignedColors : null,
         draggable: ebp.panelChart.componentRef ? ebp.panelChart.componentRef.instance.inject.draggable : null,
-
       }
-    } else if(ebp.panelChart.props.chartType === 'treetable') {
+    } else if (ebp.panelChart.props.chartType === 'treetable') {
       config = {
         chartType: ebp.panelChart.props.chartType,
         editedTreeTable: ebp.panelChart.props.config && ebp.panelChart.props.config.getConfig() ? ebp.panelChart.props.config.getConfig()['editedTreeTable'] : false,
@@ -94,42 +121,55 @@ export const ChartsConfigUtils = {
         leafLabels: ebp.panelChart.props.config && ebp.panelChart.props.config.getConfig() ? ebp.panelChart.props.config.getConfig()['leafLabels'] : [],
       }
 
-    }  else if (ebp.panelChart.props.chartType === 'coordinatesMap') {
+    } else if (ebp.panelChart.props.chartType === 'coordinatesMap') {
       config = {
-        zoom: ebp.panelChart.componentRef ? ebp.panelChart.componentRef.instance.inject.zoom : null,
-        coordinates: ebp.panelChart.componentRef ? ebp.panelChart.componentRef.instance.inject.coordinates : null,
-        logarithmicScale: ebp.panelChart.componentRef ? ebp.panelChart.componentRef.instance.inject.logarithmicScale : null,
-        initialColor: ebp.panelChart.componentRef ? ebp.panelChart.componentRef.instance.inject.initialColor : null,
-        finalColor: ebp.panelChart.componentRef ? ebp.panelChart.componentRef.instance.inject.finalColor : null,
-        draggable: ebp.panelChart.componentRef ? ebp.panelChart.componentRef.instance.inject.draggable : null,
-        }
+          zoom: ebp.panelChart.componentRef ? ebp.panelChart.componentRef.instance.inject.zoom : null,
+          coordinates: ebp.panelChart.componentRef ? ebp.panelChart.componentRef.instance.inject.coordinates : null,
+          logarithmicScale: ebp.panelChart.componentRef ? ebp.panelChart.componentRef.instance.inject.logarithmicScale : null,
+          assignedColors: ebp.panelChart.componentRef ? ebp.panelChart.componentRef.instance.assignedColors : null,
+          draggable: ebp.panelChart.componentRef ? ebp.panelChart.componentRef.instance.inject.draggable : null,
       }
-    else if (["parallelSets", "treeMap", "scatterPlot", "funnel", "bubblechart", "sunburst"].includes(ebp.panelChart.props.chartType)) {
+    } else if (ebp.panelChart.props.chartType === 'kpitrend') {
+      const inst = ebp.panelChart.componentRef?.instance;
       config = {
-        colors: ebp.panelChart.componentRef ? ebp.panelChart.componentRef.instance.colors : [],
+        sufix: inst?.inject?.sufix || '',
+        backgroundColor: inst?.inject?.backgroundColor || '',
+        kpiColor: inst?.inject?.kpiColor || '',
+        assignedColors: ebp.panelChart.props.config?.getConfig()?.['assignedColors'] || [],
+        modifiedFontPoints: inst?.inject?.modifiedFontPoints || 0,
+      };
+    } else if (["parallelSets", "treeMap", "scatterPlot", "funnel", "bubblechart", "sunbursts"].includes(ebp.panelChart.props.chartType)) {
+      config = {
         assignedColors: ebp.panelChart.componentRef ? ebp.panelChart.componentRef.instance.assignedColors : [],
       }
-    }
-    else if (ebp.panelChart.props.chartType === 'knob') {
+    } else if (ebp.panelChart.props.chartType === 'knob') {
+
       config = {
-        color: ebp.panelChart.componentRef ? ebp.panelChart.componentRef.instance.color : ebp.panelChart.props.config.getConfig()['color'],
-        limits: ebp.panelChart.componentRef ? ebp.panelChart.componentRef.instance.limits : ebp.panelChart.props.config.getConfig()['limits']
+        assignedColors: ebp.panelChart.componentRef ? ebp.panelChart.componentRef.instance.assignedColors : ebp.panelChart.props.config.getConfig()['assignedColors'],
+        limits: ebp.panelChart.componentRef ? ebp.panelChart.componentRef.instance.limits : ebp.panelChart.props.config.getConfig()['limits'],
+        semaphoreColor: ebp.panelChart.componentRef ? ebp.panelChart.componentRef.instance.inject?.semaphoreColor : ebp.panelChart.props.config.getConfig()['semaphoreColor']
       };
-    } else{
+    } else {
       // Chart.js
       config = {
-        /* SDA CUSTOM */ colors: ebp.panelChart.props.config && ebp.panelChart.props.config.getConfig() ? ebp.panelChart.props.config.getConfig()['colors'] : [],
-        /* SDA CUSTOM */ chartType: ebp.panelChart.props.chartType,
+        chartType: ebp.panelChart.props.chartType,
         addTrend: ebp.panelChart.props.config && ebp.panelChart.props.config.getConfig() ? ebp.panelChart.props.config.getConfig()['addTrend'] : false,
         addComparative: ebp.panelChart.props.config && ebp.panelChart.props.config.getConfig() ? ebp.panelChart.props.config.getConfig()['addComparative'] : false,
         showLabels: ebp.panelChart.props.config && ebp.panelChart.props.config.getConfig() ? ebp.panelChart.props.config.getConfig()['showLabels'] : false,
         showLabelsPercent: ebp.panelChart.props.config && ebp.panelChart.props.config.getConfig() ? ebp.panelChart.props.config.getConfig()['showLabelsPercent'] : false,
+        showPointLines: ebp.panelChart.props.config && ebp.panelChart.props.config.getConfig() ? ebp.panelChart.props.config.getConfig()['showPointLines'] : false,
+        showPredictionLines: ebp.panelChart.props.config && ebp.panelChart.props.config.getConfig() ? ebp.panelChart.props.config.getConfig()['showPredictionLines'] : false,
         numberOfColumns: ebp.panelChart.props.config && ebp.panelChart.props.config.getConfig() ? ebp.panelChart.props.config.getConfig()['numberOfColumns'] : null,
         assignedColors: ebp.panelChart.props.config && ebp.panelChart.props.config.getConfig() ? ebp.panelChart.props.config.getConfig()['assignedColors'] : [], // o null?
+        chartLegend: ebp.panelChart.props.config && ebp.panelChart.props.config.getConfig() ? ebp.panelChart.props.config.getConfig()['chartLegend'] ?? true : true,
+        coloredBarsConfig: ebp.panelChart.props.config && ebp.panelChart.props.config.getConfig() ? ebp.panelChart.props.config.getConfig()['coloredBarsConfig'] : null,
+        showUniqueColors: ebp.panelChart.props.config && ebp.panelChart.props.config.getConfig() ? ebp.panelChart.props.config.getConfig()['showUniqueColors'] : null,
+        uniqueBarColors: ebp.panelChart.props.config && ebp.panelChart.props.config.getConfig() ? ebp.panelChart.props.config.getConfig()['uniqueBarColors'] : null,
+        showGridLines: ebp.panelChart.props.config && ebp.panelChart.props.config.getConfig() ? ebp.panelChart.props.config.getConfig()['showGridLines'] ?? true : true
       };
     }
-    return new ChartConfig(config);
 
+    return new ChartConfig(config);
   },
 
     /**
@@ -140,35 +180,39 @@ export const ChartsConfigUtils = {
         if (['table', 'crosstable'].includes(type)) {
           return new TableConfig(false, false, 10, false, false, false, false, null, null, null, false, false ,  []);
         }else if (['bar', 'line', 'area', 'pie', 'doughnut', 'polarArea', 'barline', 'horizontalBar', 'pyramid', 'histogram', 'radar'].includes(type)) {
-            return new ChartJsConfig(null, type, false, false, false, false, null, []);
+            return new ChartJsConfig(null, type, false, false, false, false, null,[], false, false);
         } else if (type === 'parallelSets') {
-            return new SankeyConfig([],[]);
+            return new SankeyConfig([]);
         } else if (type === 'treeMap') {
-            return new TreeMapConfig([],[]);
+            return new TreeMapConfig([]);
         } else if(type === 'treetable') {
           return new TreeTableConfig(false, [], []);
         } else if (type === 'scatterPlot') {
-            return new ScatterConfig([],[]);
+            return new ScatterConfig([]);
         } else if (type === 'funnel') {
             return new FunnelConfig([]);
         } else if (type === 'bubblechart') {
-            return new BubblechartConfig([],[]);
+            return new BubblechartConfig([]);
         } else if (type === 'knob') {
             return new KnobConfig(null, null);
         } else if (type === 'sunburst') {
-            return new SunburstConfig([],[]);
+            return new SunburstConfig([]);
         } else if (type === 'kpi') {
             return new KpiConfig();
         } else if (['kpibar', 'kpiline', 'kpiarea'].includes(type)) {
             return new KpiConfig({
-                edaChart:  new ChartJsConfig(null, type, false, false, false, false, null, ['a'])
+                edaChart:  new ChartJsConfig(null, type, false, false, false, false, null,[], false, false)
             });
         } else if (type === 'dynamicText') {
             return new DynamicTextConfig(null);
+        } else if (type === 'kpitrend') {
+            return new KpiTrendConfig();
+        } else if (type === 'kpideviation') {
+            return new KpiDeviationConfig();
         }
     },
 
-  recoverConfig: (type: string, config: TableConfig | KpiConfig | DynamicTextConfig | ChartJsConfig | MapConfig | SankeyConfig | TreeMapConfig | TreeTableConfig | KnobConfig | FunnelConfig | BubblechartConfig |SunburstConfig) => {
+  recoverConfig: (type: string, config: TableConfig | KpiConfig | DynamicTextConfig | ChartJsConfig | MapConfig | SankeyConfig | TreeMapConfig | TreeTableConfig | KnobConfig | FunnelConfig | BubblechartConfig | SunburstConfig | KpiTrendConfig) => {
 
     return new ChartConfig(config);
 

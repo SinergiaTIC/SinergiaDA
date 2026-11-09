@@ -3,13 +3,12 @@ import { HttpException } from '../../global/model/index';
 import { ActiveDirectoryService } from '../../../services/active-directory/active-directory.service';
 import User, { IUser } from './model/user.model';
 import Group, { IGroup } from '../groups/model/group.model';
-// SDA CUSTOM - Use SDA daily log service instead of winston-based service
-import ServerLogService from '../../../services/server-log/server-log-sda.service';
-// END SDA CUSTOM
+import { insertServerLog } from '../../../services/server-log/server-log.service';
 import * as path from 'path';
 import * as fs from 'fs';
 import { QueryOptions } from 'mongoose';
 import { GroupController } from '../groups/group.controller';
+import { PluginRegistry } from '../../../plugins';
 
 
 
@@ -17,9 +16,6 @@ const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const SEED = require('../../../../config/seed').SEED;
 const crypto = require('crypto');
-const eda_api_config = require('../../../../config/eda_api_config.js');
-
-
 
 
 export class UserController {
@@ -77,67 +73,59 @@ export class UserController {
                             email: userAD.username,
                             password: bcrypt.hashSync('no_serveix_de_re_pero_no_pot_ser_null', 10),
                             img: body.img,
-                            role: adGroupsInMongo
+                            role: adGroupsInMongo,
+                            creation_date: new Date()
                         });
-                        userToSave.save(async (err, userSaved) => {
-                            if (err) {
-                                return next(new HttpException(400, 'Some error ocurred while creating the User'));
-                            }
-                            Object.assign(user, userSaved);
-                            user.password = ':)';
-                            token = await jwt.sign({ user }, SEED, { expiresIn: 14400 }); // 4 hours
-                            // Borrem de tots els grups el usuari actualitzat
-                            await Group.updateMany({}, { $pull: { users: userSaved._id } });
-                            // Introduim de nou els grups seleccionat al usuari actualitzat
-                            await Group.updateMany({ _id: { $in: adGroupsInMongo } }, { $push: { users: userSaved._id } }).exec();
-                            return res.status(200).json({ user, token: token, id: user._id });
-                        });
+                        const userSaved = await userToSave.save();
+                        if (!userSaved)
+                            return next(new HttpException(400, 'Some error ocurred while creating the User'));
+
+                        Object.assign(user, userSaved);
+                        user.password = ':)';
+                        token = await jwt.sign({ user }, SEED, { expiresIn: 14400 }); // 4 hours
+                        // Borrem de tots els grups el usuari actualitzat
+                        await Group.updateMany({}, { $pull: { users: userSaved._id } });
+                        // Introduim de nou els grups seleccionat al usuari actualitzat
+                        await Group.updateMany({ _id: { $in: adGroupsInMongo } }, { $push: { users: userSaved._id } });
+                        return res.status(200).json({ user, token: token, id: user._id });
                     } else {
                         // Si esta registrat, actualitzem algunes dades
                         userEda.name = userAD.displayName;
                         userEda.email = userAD.username;
                         userEda.password = userEda.password;
                         userEda.role = adGroupsInMongo;
-                        userEda.save(async (err, userSaved) => {
-                            if (err) {
-                                return next(new HttpException(400, 'Some error ocurred while creating the User'));
-                            }
-
-                            Object.assign(user, userSaved);
+                        try {
+                            const userSaved = await userEda.save();
+                            Object.assign(user, userSaved.toObject ? userSaved.toObject() : userSaved);
                             user.password = ':)';
-                            token = await jwt.sign({ user }, SEED, { expiresIn: 14400 }); // 4 hours
+                            token = jwt.sign({ user }, SEED, { expiresIn: 14400 }); // 4 hours
 
                             // Borrem de tots els grups el usuari actualitzat
-                            await Group.updateMany({}, { $pull: { users: userSaved._id } });
+                            await Group.updateMany({}, { $pull: { users: (userSaved)._id } });
                             // Introduim de nou els grups seleccionat al usuari actualitzat
-                            await Group.updateMany({ _id: { $in: adGroupsInMongo } }, { $push: { users: userSaved._id } }).exec();
+                            await Group.updateMany({ _id: { $in: adGroupsInMongo } }, { $push: { users: (userSaved)._id } });
                             return res.status(200).json({ user, token: token, id: user._id });
-                        });
-                        
+                        } catch (error) {
+                            return next(new HttpException(400, 'Some error ocurred while creating the User'));
+                        }
                     }
             } else {
                 // Si no ho troba, login amb mongo
                 const userEda = await UserController.getUserInfoByEmail(body.email, false);
+
                 if (! await bcrypt.compareSync(body.password, userEda.password)) {
-// SDA CUSTOM Introduit arrel de SinergiaCRM
-// SDA CUSTOM Comprobem també MD5 i GlassFis
-// SDA CUSTOM Busca artxiu de configuracio de Sinergia
-/**SDA CUSTOM  */  const scrm = path.resolve(__dirname, `../../../../config/sinergiacrm.config.js`);
-/**SDA CUSTOM  */  if (fs.existsSync(scrm)) {
-/**SDA CUSTOM  */      const hash = crypto.createHash('md5').update(body.password).digest("hex");
-/**SDA CUSTOM  */      if(hash.toString() !== userEda.password.toString()){
-/**SDA CUSTOM  */              //Si no es un md5 directe 
-/**SDA CUSTOM  */              const hash2 =  userEda.password.toString().replace(/^\$2y(.+)$/i, '$2a$1');
-/**SDA CUSTOM  */              await bcrypt.compare( hash , hash2).then(function(res){
-/**SDA CUSTOM  */                  if( res == false){
-/**SDA CUSTOM  */                      return next(new HttpException(400, 'Incorrect credentials - password'));
-/**SDA CUSTOM  */                   }
-/**SDA CUSTOM  */              });
-/**SDA CUSTOM  */      }
-/**SDA CUSTOM  */  }else{
-/**SDA CUSTOM  */          return next(new HttpException(400, 'Incorrect credentials - password'));
-/**SDA CUSTOM  */  }          
-                    
+                    let validLegacyPassword = false;
+                    try {
+                        const authPlugin = PluginRegistry.getAuthPlugins().find(plugin => plugin.isEnabled());
+                        validLegacyPassword = !!authPlugin
+                            && await authPlugin.verifyLegacyPassword(body.password, userEda.password.toString());
+                    } catch (err) {
+                        validLegacyPassword = false;
+                    }
+
+                    if (!validLegacyPassword) {
+                        return next(new HttpException(400, 'Incorrect credentials - password'));
+                    }
                 }
 
                     Object.assign(user, userEda);
@@ -155,37 +143,29 @@ export class UserController {
     }
 
 
-    static async singleSingnOn(req:Request, res:Response, next:NextFunction){
+    static async getUserInfoByEmail(usuari: string, ad: boolean): Promise<IUser | null> {
+        try {
+            const user = await User.findOne({ email: usuari });
 
-        console.log('Single Sign On', req.body);
-        return res.status(200).json({user:req.body.userMail})
+            if (!user && !ad) {
+                throw new HttpException(400, 'Incorrect user');
+            }
+
+            // Si no existe el usuario pero es AD, devolvemos null
+            return user || null;
+
+        } catch (err) {
+            if (err instanceof HttpException) {
+                throw err;
+            }
+            throw new HttpException(500, 'Login error');
+        }
     }
 
-    static async getUserInfoByEmail(usuari: string, ad: boolean): Promise<any> {
-
-        return new Promise((resolve, reject) => {
-            User.findOne({ email: usuari }, async (err, user) => {
-                if (err) {
-                    reject(new HttpException(500, 'Login error'));
-                }
-
-                if (!user && !ad) {
-                    reject(new HttpException(400, 'Incorrect user'));
-                } else if (!user && ad) {
-                    resolve(null);
-                }
-
-                resolve(user)
-            });
-        });
-
-    }
 
     static async create(req: Request, res: Response, next: NextFunction) {
-
         try {
             const body = req.body;
-
             const user: IUser = new User({
                 name: body.name,
                 email: body.email,
@@ -194,23 +174,19 @@ export class UserController {
                 role: body.role
             });
 
-            user.save(async (err, userSaved) => {
-                if (err) {
-                    console.log(err);
-                    return next(new HttpException(400, 'Some error ocurred while creating the User'));
-                }
+            const userSaved = await user.save();
 
-                // Borrem de tots els grups el usuari actualitzat
-                await Group.updateMany({}, { $pull: { users: userSaved._id } });
-                // Introduim de nou els grups seleccionat al usuari actualitzat
-                await Group.updateMany({ _id: { $in: body.role } }, { $push: { users: userSaved._id } }).exec();
+            if (!userSaved) {
+                return next(new HttpException(400, 'Some error ocurred while creating the User'));
+            }
+            // Borrem de tots els grups el usuari actualitzat
+            await Group.updateMany({}, { $pull: { users: userSaved._id } });
+            // Introduim de nou els grups seleccionat al usuari actualitzat
+            await Group.updateMany({ _id: { $in: body.role } }, { $push: { users: userSaved._id } });
 
-                /* SDA CUSTOM */ // SDA CUSTOM - Audit log for user creation
-                /* SDA CUSTOM */ insertServerLog(req, 'info', 'UserCreated', req.user.name, buildUserLogType(userSaved && userSaved._id, userSaved && userSaved.email, userSaved && userSaved.name, `roles:${(body.role || []).length}`));
-                /* SDA CUSTOM */ // END SDA CUSTOM
+            insertServerLog(req, 'info', 'UserCreated', req.user.name.toString(), buildUserLogType(userSaved?._id, userSaved?.email, userSaved?.name, `roles:${(body.role || []).length}`));
 
-                return res.status(201).json({ ok: true, user: userSaved, userToken: req.user });
-            });
+            return res.status(201).json({ ok: true, user: userSaved, userToken: req.user });
         } catch (err) {
             console.log(err);
             next(err);
@@ -227,41 +203,39 @@ export class UserController {
     }
 
     static async getUsers(req: Request, res: Response, next: NextFunction) {
-
         try {
+            const userID = req.user._id;
 
-            let userID = req.user._id;
-            const groups = await Group.find({ users: { $in: userID } }).exec();
-            const isAdmin = groups.filter(g => g.role === 'EDA_ADMIN_ROLE').length > 0;
+            // Verificar si el usuario es admin
+            const groupsOfUser = await Group.find({ users: { $in: userID } });
+            const isAdmin = groupsOfUser.some(g => g.role === 'EDA_ADMIN_ROLE');
 
-            User.find({}, 'name email img role google').exec((err, users: IUser[]) => {
-                if (err) {
-                    return next(new HttpException(500, 'Error loading users'));
-                }
-                let options:QueryOptions = {};
-                Group.find({}, 'name role', options, (err, groups: IGroup[]) => {
-                    if (err) {
-                        return next(new HttpException(500, 'Error loading users'));
-                    }
+            // Traer todos los usuarios
+            let users = await User.find({}, 'name email img role google');
 
-                    for (const user of users) {
-                        const groupsUsers = [];
-                        for (const role of user.role) {
-                            groupsUsers.push(groups.find((group: IGroup) => JSON.stringify(role) === JSON.stringify(group._id)));
-                        }
-                        user.role = groupsUsers;
-                    }
+            // Traer todos los grupos
+            const allGroups = await Group.find({}, 'name role');
 
-                    users = isAdmin ? users : UserController.filterUsersByGroup(req.user, users);
-                    
+            // Mapear roles de cada usuario a los grupos
+            let usersRoles = users.map(user => {
+                const groupsUsers = user.role.map(role =>
+                    allGroups.find(group => group._id.toString() === role.toString())
+                );
+                return { ...user.toObject(), role: groupsUsers };
+            });
 
-                    return res.status(200).json(users);
-                });
-            })
+            // Filtrar usuarios si no es admin
+            if (!isAdmin) {
+                usersRoles = UserController.filterUsersByGroup(req.user, users);
+            }
+
+            return res.status(200).json(usersRoles);
+
         } catch (err) {
-            next(err);
+            return next(new HttpException(500, 'Error loading users'));
         }
     }
+
 
     /**Get all users who belong to the same grup as user */
     static filterUsersByGroup(user, users) {
@@ -284,86 +258,73 @@ export class UserController {
 
     static async getUser(req: Request, res: Response, next: NextFunction) {
         try {
-            User.findById({ _id: req.params.id }, (err, user) => {
+            // Obtener el usuario
+            const user = await User.findById(req.params.id);
+            if (!user) {
+                return next(new HttpException(500, 'User not found with this id'));
+            }
 
-                if (err) {
-                    return next(new HttpException(500, 'User not found with this id'));
-                }
-                /* SDA CUSTOM */ // SDA CUSTOM - Prevent null dereference when user id does not exist
-                /* SDA CUSTOM */ if (!user) {
-                /* SDA CUSTOM */     return next(new HttpException(400, 'User not found with this id'));
-                /* SDA CUSTOM */ }
-                /* SDA CUSTOM */ // END SDA CUSTOM
-                let options:QueryOptions = {};
-                Group.find({ _id: { $in: user.role } }, 'name role', options, (err, groups) => {
-                    if (err) {
-                        return next(new HttpException(500, 'Error waiting for user groups'));
-                    }
+            // Obtener los grupos del usuario
+            const groups = await Group.find(
+                { _id: { $in: user.role } },
+                'name role'
+            );
 
-                    // const isAdmin = groups.filter(g => g.role === 'EDA_ADMIN_ROLE').length > 0;
-
-                    user.role = groups;
-
-                    user.password = ':)';
-                    return res.status(200).json({ ok: true, user });
-                });
-            });
+            user.role = groups;
+            user.password = ':)';
+            return res.status(200).json({ ok: true, user });
         } catch (err) {
-            next(err);
+            next(new HttpException(500, 'Error waiting for user groups'));
         }
     }
 
+
+
     static async getIsAdmin(req: Request, res: Response, next: NextFunction) {
         try {
-            User.findById({ _id: req.params.id }, (err, user) => {
+            // Buscar el usuario
+            const user = await User.findById(req.params.id);
+            if (!user) {
+                return next(new HttpException(500, 'User not found with this id'));
+            }
 
-                if (err) {
-                    return next(new HttpException(500, 'User not found with this id'));
-                }
-                /* SDA CUSTOM */ // SDA CUSTOM - Prevent null dereference when user id does not exist
-                /* SDA CUSTOM */ if (!user) {
-                /* SDA CUSTOM */     return next(new HttpException(400, 'User not found with this id'));
-                /* SDA CUSTOM */ }
-                /* SDA CUSTOM */ // END SDA CUSTOM
-                let options:QueryOptions = {};
-                Group.find({ _id: { $in: user.role } }, 'name role',options, (err, groups) => {
-                    if (err) {
-                        return next(new HttpException(500, 'Error waiting for user groups'));
-                    }
+            // Buscar los grupos del usuario
+            const groups = await Group.find(
+                { _id: { $in: user.role } },
+                'name role'
+            );
 
-                    const isAdmin = groups.filter(g => g.role === 'EDA_ADMIN_ROLE').length > 0;
+            // Verificar si es admin
+            const isAdmin = groups.some(g => g.role === 'EDA_ADMIN_ROLE');
 
-                    return res.status(200).json({ isAdmin });
-                });
-            });
+            return res.status(200).json({ isAdmin });
+
         } catch (err) {
-            next(err);
+            next(new HttpException(500, 'Error waiting for user groups'));
         }
-    };
+    }
+
+
 
     static async getIsDataSourceCreator(req: Request, res: Response, next: NextFunction) {
-        try {
-            User.findById({ _id: req.params.id }, (err, user) => {
+                try {
+            // Buscar el usuario
+            const user = await User.findById(req.params.id);
+            if (!user) {
+                return next(new HttpException(500, 'User not found with this id'));
+            }
 
-                if (err) {
-                    return next(new HttpException(500, 'User not found with this id'));
-                }
-                /* SDA CUSTOM */ // SDA CUSTOM - Prevent null dereference when user id does not exist
-                /* SDA CUSTOM */ if (!user) {
-                /* SDA CUSTOM */     return next(new HttpException(400, 'User not found with this id'));
-                /* SDA CUSTOM */ }
-                /* SDA CUSTOM */ // END SDA CUSTOM
-                let options:QueryOptions = {};
-                Group.find({ _id: { $in: user.role } }, 'name role',options, (err, groups) => {
-                    if (err) {
-                        return next(new HttpException(500, 'Error waiting for user groups'));
-                    }
-                    const isDataSourceCreator = groups.filter(g => g.name === 'EDA_DATASOURCE_CREATOR').length > 0;
-                    return res.status(200).json({ isDataSourceCreator });
-                });
-            });
+            // Buscar los grupos del usuario
+            const groups = await Group.find(
+                { _id: { $in: user.role } },
+                'name role'
+            );
+
+            // Verificar si es dataSourceCreator
+            const isDataSourceCreator = groups.filter(g => g.name === 'EDA_DATASOURCE_CREATOR').length > 0;
+            return res.status(200).json({ isDataSourceCreator });
         } catch (err) {
-            next(err);
+            next(new HttpException(500, 'Error waiting for user groups'));
         }
     };
 
@@ -371,10 +332,11 @@ export class UserController {
         try {
             const img = req.params.img;
 
-            const pathImage = path.resolve(__dirname, `../../uploads/users/${img}`);
+            const ROOT_PATH = process.cwd();
+            const uploadsPath = path.join(ROOT_PATH, 'lib/module/uploads/images', img);
 
-            if (fs.existsSync(pathImage)) {
-                res.sendFile(pathImage);
+            if (fs.existsSync(uploadsPath)) {
+                res.sendFile(uploadsPath);
             } else {
                 const pathNoImage = path.resolve(__dirname, `../../../assets/no-img.jpg`);
                 res.sendFile(pathNoImage);
@@ -387,109 +349,107 @@ export class UserController {
     static async update(req: Request, res: Response, next: NextFunction) {
         try {
             const body = req.body;
-            User.findById(req.params.id, (err, user: IUser) => {
 
-                if (err) {
-                    return next(new HttpException(500, 'Error user not found'));
-                }
+            // Buscar el usuario
+            const user = await User.findById(req.params.id);
 
-                if (!user) {
-                    return next(new HttpException(400, `User with this id not found`));
-                }
+            if (!user) {
+                return next(new HttpException(400, `User with this id not found`));
+            }
 
-                /* SDA CUSTOM */ // SDA CUSTOM - Capture previous user values to audit sensitive changes
-                /* SDA CUSTOM */ const previousEmail = user.email;
-                /* SDA CUSTOM */ const previousName = user.name;
-                /* SDA CUSTOM */ const previousRoles = ((user.role || []) as any[]).map(role => String(role)).filter(r => r).sort();
-                /* SDA CUSTOM */ const isPasswordUpdated = !!(body.password && body.password !== '');
-                /* SDA CUSTOM */ // END SDA CUSTOM
+            // Capturamos valores previos para auditar cambios sensibles
+            const previousEmail = user.email;
+            const previousName = user.name;
+            const previousRoles = ((user.role || []) as any[]).map(role => String(role)).filter(r => r).sort();
+            const isPasswordUpdated = !!(body.password && body.password !== '');
 
-                user.name = body.name;
-                user.email = body.email;
-                user.role = body.role;
+            // Actualizar campos
+            user.name = body.name;
+            user.email = body.email;
+            user.role = body.role;
 
-                if (body.password) {
-                    if (body.password !== '') {
-                        user.password = bcrypt.hashSync(body.password, 10);
-                    }
-                }
+            // Actualizar password si existe
+            if (body.password && body.password !== '') {
+                user.password = bcrypt.hashSync(body.password, 10);
+            }
 
-                user.save(async (err, userSaved) => {
+            // Guardar cambios
+            const userSaved = await user.save();
 
-                    if (err) {
-                        return next(new HttpException(500, 'Error updating user'));
-                    }
+            // Eliminar el usuario de todos los grupos
+            await Group.updateMany(
+                {},
+                { $pull: { users: req.params.id } }
+            );
 
-                    // Borrem de tots els grups el usuari actualitzat
-                    await Group.updateMany({}, { $pull: { users: { $in: [req.params.id] } } }).exec();
-                    // Introduim de nou els grups seleccionat al usuari actualitzat
-                    await Group.updateMany({ _id: { $in: body.role } }, { $push: { users: req.params.id } }).exec();
+            // Agregar el usuario a los grupos seleccionados
+            await Group.updateMany(
+                { _id: { $in: body.role } },
+                { $push: { users: req.params.id } }
+            );
 
-                    /* SDA CUSTOM */ // SDA CUSTOM - Audit log for user update and role/password changes
-                    /* SDA CUSTOM */ const currentRoles = body.role !== undefined
-                    /* SDA CUSTOM */     ? ((body.role || []) as any[]).map(role => role && role._id ? String(role._id) : String(role)).filter(r => r).sort()
-                    /* SDA CUSTOM */     : previousRoles;
-                    /* SDA CUSTOM */ insertServerLog(req, 'info', 'UserUpdated', req.user.name, buildUserLogType(userSaved && userSaved._id, userSaved && userSaved.email, userSaved && userSaved.name, `updated_from:${previousEmail}`));
-                    /* SDA CUSTOM */ if (!areStringArraysEqual(previousRoles, currentRoles)) {
-                    /* SDA CUSTOM */     insertServerLog(req, 'info', 'UserRolesChanged', req.user.name, buildUserLogType(userSaved && userSaved._id, userSaved && userSaved.email, userSaved && userSaved.name, `roles:${previousRoles.length}->${currentRoles.length}`));
-                    /* SDA CUSTOM */ }
-                    /* SDA CUSTOM */ if (isPasswordUpdated) {
-                    /* SDA CUSTOM */     insertServerLog(req, 'info', 'UserPasswordChanged', req.user.name, buildUserLogType(userSaved && userSaved._id, userSaved && userSaved.email, userSaved && userSaved.name, `password_changed_for:${previousName}`));
-                    /* SDA CUSTOM */ }
-                    /* SDA CUSTOM */ // END SDA CUSTOM
+            // No devolver el password real
+            userSaved.password = ':)';
 
-                    userSaved.password = ':)';
+            const currentRoles = body.role !== undefined
+                ? ((body.role || []) as any[]).map(role => role && role._id ? String(role._id) : String(role)).filter(r => r).sort()
+                : previousRoles;
+            insertServerLog(req, 'info', 'UserUpdated', req.user.name.toString(), buildUserLogType(userSaved?._id, userSaved?.email, userSaved?.name, `updated_from:${previousEmail}`));
+            if (!areStringArraysEqual(previousRoles, currentRoles)) {
+                insertServerLog(req, 'info', 'UserRolesChanged', req.user.name.toString(), buildUserLogType(userSaved?._id, userSaved?.email, userSaved?.name, `roles:${previousRoles.length}->${currentRoles.length}`));
+            }
+            if (isPasswordUpdated) {
+                insertServerLog(req, 'info', 'UserPasswordChanged', req.user.name.toString(), buildUserLogType(userSaved?._id, userSaved?.email, userSaved?.name, `password_changed_for:${previousName}`));
+            }
 
-                    return res.status(200).json({ ok: true, user: userSaved });
-                });
-            });
+            return res.status(200).json({ ok: true, user: userSaved });
+
         } catch (err) {
-            next(err);
+            return next(new HttpException(500, 'Error updating user'));
         }
     }
 
+
     static async delete(req: Request, res: Response, next: NextFunction) {
-        let options:QueryOptions = {};
+
         try {
-            User.findByIdAndDelete(req.params.id, options, (err, userRemoved) => {
+            const {id} = req.params; // id del usuario que se desea eliminar
+            const userRemoved = await User.findByIdAndDelete(id);
 
-                if (err) {
-                    return next(new HttpException(500, 'Error removing an user'));
-                }
+            if (!userRemoved) {
+                return next(new HttpException(400, 'Not exists user with this id'));
+            }
 
-                if (!userRemoved) {
-                    return next(new HttpException(400, 'Not exists user with this id'));
-                }
+            insertServerLog(req, 'info', 'UserDeleted', req.user.name.toString(), buildUserLogType(userRemoved?._id, userRemoved?.email, userRemoved?.name, `deleted--id:${userRemoved?._id}`));
 
-                /* SDA CUSTOM */ // SDA CUSTOM - Audit log for user deletion with recoverable ID
-                /* SDA CUSTOM */ insertServerLog(req, 'info', 'UserDeleted', req.user.name, buildUserLogType(userRemoved && userRemoved._id, userRemoved && userRemoved.email, userRemoved && userRemoved.name, `deleted--id:${userRemoved && userRemoved._id}`));
-                /* SDA CUSTOM */ // END SDA CUSTOM
-
-                return res.status(200).json({ ok: true, user: userRemoved });
-            });
+            return res.status(200).json({ ok: true, user: userRemoved });
         } catch (err) {
-            next(err);
+            return next(new HttpException(500, 'Error removing an user'));
         }
     }
 
     static async provideToken(req: Request, res: Response, next: NextFunction) {
+        try {
+            // Buscar el usuario
+            const user = await User.findOne(
+                { email: req.params.usermail },
+                'name email img role google'
+            );
 
-        User.findOne({email:req.params.usermail}, 'name email img role google').exec(async (err, user: IUser) => {
-            if (err) {
-                return next(new HttpException(500, `User with this id not found`));
-            }
             if (!user) {
-                return next(new HttpException(500, `User with this id not found`));
+                return next(new HttpException(404, `User with this email not found`));
             }
-            if(user){
-          
-                let token = await jwt.sign({ user }, SEED, { expiresIn: 3600 }); // 4 hours
-                return res.status(200).json({ user, token: token, id: user._id });
-            }
-        });
 
-        
+            // Crear token JWT
+            const token = jwt.sign({ user }, SEED, { expiresIn: 3600 }); // 1 hora
+
+            return res.status(200).json({ user, token, id: user._id });
+
+        } catch (err) {
+            return next(new HttpException(500, 'Error generating token'));
+        }
     }
+
 
     static async provideFakeToken(){
         let token = await jwt.sign({ name:'fakeuser' }, SEED, { expiresIn: 60 });
@@ -498,34 +458,21 @@ export class UserController {
 
 }
 
-function insertServerLog(req: Request, level: string, action: string, userMail: string, type: string) {
-    const ip = req.headers['x-forwarded-for'] || req.get('origin')
-    var date = new Date();
-    var month =date.getMonth()+1 ;
-    var monthstr=month<10?"0"+month.toString(): month.toString();
-    var day = date.getDate();
-    var daystr=day<10?"0"+day.toString(): day.toString();
-    var date_str = date.getFullYear() + "-" + monthstr + "-" + daystr + " " +  date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds();
-    ServerLogService.log({ level, action, userMail, ip, type, date_str});
+// Build normalized payload for user audit events
+function buildUserLogType(targetUserId: any, targetUserEmail: any, targetUserName: any, extra?: any) {
+    const safeId = (targetUserId || '').toString().replace(/\|,\|/g, ' ');
+    const safeEmail = (targetUserEmail || '-').toString().replace(/\|,\|/g, ' ');
+    const safeName = (targetUserName || '-').toString().replace(/\|,\|/g, ' ');
+    if (!extra) return `${safeId}--${safeEmail}--${safeName}`;
+    const safeExtra = extra.toString().replace(/\|,\|/g, ' ');
+    return `${safeId}--${safeEmail}--${safeName}--${safeExtra}`;
 }
 
-/* SDA CUSTOM */ // SDA CUSTOM - Build normalized payload for user audit events
-/* SDA CUSTOM */ function buildUserLogType(targetUserId: any, targetUserEmail: any, targetUserName: any, extra?: any) {
-/* SDA CUSTOM */     const safeId = (targetUserId || '').toString().replace(/\|,\|/g, ' ');
-/* SDA CUSTOM */     const safeEmail = (targetUserEmail || '-').toString().replace(/\|,\|/g, ' ');
-/* SDA CUSTOM */     const safeName = (targetUserName || '-').toString().replace(/\|,\|/g, ' ');
-/* SDA CUSTOM */     if (!extra) return `${safeId}--${safeEmail}--${safeName}`;
-/* SDA CUSTOM */     const safeExtra = extra.toString().replace(/\|,\|/g, ' ');
-/* SDA CUSTOM */     return `${safeId}--${safeEmail}--${safeName}--${safeExtra}`;
-/* SDA CUSTOM */ }
-/* SDA CUSTOM */ // END SDA CUSTOM
-
-/* SDA CUSTOM */ // SDA CUSTOM - Compare two string arrays regardless of order
-/* SDA CUSTOM */ function areStringArraysEqual(first: string[], second: string[]) {
-/* SDA CUSTOM */     if ((first || []).length !== (second || []).length) return false;
-/* SDA CUSTOM */     for (let i = 0; i < first.length; i++) {
-/* SDA CUSTOM */         if (first[i] !== second[i]) return false;
-/* SDA CUSTOM */     }
-/* SDA CUSTOM */     return true;
-/* SDA CUSTOM */ }
-/* SDA CUSTOM */ // END SDA CUSTOM
+// Compare two string arrays regardless of order
+function areStringArraysEqual(first: string[], second: string[]) {
+    if ((first || []).length !== (second || []).length) return false;
+    for (let i = 0; i < first.length; i++) {
+        if (first[i] !== second[i]) return false;
+    }
+    return true;
+}

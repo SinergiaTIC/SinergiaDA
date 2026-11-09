@@ -3,11 +3,9 @@
 
 <head>
     <meta charset="utf-8">
-<!-- SDA CUSTOM     <title>EDA</title> -->
-<!-- SDA CUSTOM --> <title>Sinergia Data Analytics</title>
+    <title>Sinergia Data Analytics</title>
 
-    <!-- Bootstrap Core CSS -->
-    <link rel="stylesheet" href="assets/js/plugins/bootstrap/css/bootstrap.min.css">
+    <base href="/">
     <!--  Material UI Icons  -->
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons" />
     <!-- Custom CSS -->
@@ -15,7 +13,6 @@
     <!-- You can change the theme colors from here -->
     <link id="tema" id="theme" rel="stylesheet">
 
-    <base href="/">
 
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="icon" type="image/x-icon" href="assets/images/logos/favicon.ico">
@@ -33,10 +30,17 @@
     <!--Poiret font family-->
     <link href="https://fonts.googleapis.com/css2?family=Bangers&family=Poiret+One&display=swap" rel="stylesheet">
 
+    <!-- Brain icon -->
+    <link href="https://use.fontawesome.com/releases/v5.15.4/css/all.css" rel="stylesheet">
+
 
 </head>
 
 <body class="card-no-border fix-sidebar mini-sidebar-2">
+
+    <!-- Start => Required for the Google button -->
+    <script src="https://accounts.google.com/gsi/client" async></script>
+    <!-- End => Required for the Google button -->
 
     <app-root>
         <div class="preloader">
@@ -47,20 +51,33 @@
         </div>
     </app-root>
 
+    <!-- Translate the preloader label: index.html is not processed by Angular i18n,
+         but the localize build sets <html lang="..."> for each locale -->
+    <script>
+        (function () {
+            var labels = {
+                es: 'Cargando EDA App...',
+                ca: 'Carregant EDA App...',
+                en: 'Loading EDA App...',
+                fr: 'Chargement de EDA App...',
+                pl: 'Ładowanie EDA App...'
+            };
+            var lang = (document.documentElement.lang || 'es').slice(0, 2);
+            var label = document.querySelector('.loader__label');
+            if (label && labels[lang]) label.textContent = labels[lang];
+        })();
+    </script>
+
     <!-- ============================================================== -->
     <!-- All Jquery -->
     <!-- ============================================================== -->
     <script src="assets/js/plugins/jquery/jquery.min.js"></script>
-    <!-- Bootstrap tether Core JavaScript -->
-    <script src="assets/js/plugins/bootstrap/js/popper.min.js"></script>
-    <script src="assets/js/plugins/bootstrap/js/bootstrap.min.js"></script>
     <!-- slimscrollbar scrollbar JavaScript -->
     <script src="assets/js/perfect-scrollbar.jquery.min.js"></script>
     <!--Menu sidebar -->
     <script src="assets/js/sidebarmenu.js"></script>
     <!--Custom JavaScript -->
     <script src="assets/js/custom.js"></script>
-
 </body>
 
 </html>

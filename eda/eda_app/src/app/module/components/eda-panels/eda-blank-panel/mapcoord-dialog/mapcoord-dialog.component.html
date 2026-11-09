@@ -1,62 +1,129 @@
-<eda-dialog [inject]="dialog">
+<eda-dialog2 [display]="display" [header]="title" width="80vw" height="80vh" [overflow]="'auto'"
+  (apply)="saveChartConfig()" (close)="closeChartConfig()">
 
-  <div body class="grid" style=" height: 100%;">
-    <div class="col-9">
-
-        <div class="eda-chart-panel" style=" width: 100%; background-color: var(--panel-color);">
-          <panel-chart *ngIf="display" #PanelChartComponent [props]="panelChartConfig"  style="height: 100%; width: 100%; display:block;  margin-top:1em">
-          </panel-chart>
+    <div content class="flex flex-col md:flex-row flex-1 overflow-hidden h-full ">
+        <!-- Chart Preview -->
+        <div
+            class="p-6 flex-[2] flex items-center justify-center border-b md:border-b md:border-r bg-slate-50 border border-gray-400">
+            <div class="relative w-full h-[60vh] ">
+                @if (display) {
+                <panel-chart #PanelChartComponent [props]="panelChartConfig" class="h-full w-full block"></panel-chart>
+                }
+            </div>
         </div>
 
-    </div>
+        <div class="p-6 flex-[1] overflow-y-auto">
+            <div class="space-y-6">
+                <!-- Colors -->
+                <div class="space-y-4">
+                    <span class="text-lg font-semibold" i18n="@@colorsChartH6">Colores</span>
+                    <h6 i18n="@@ChangeDefaultsColors" class="mb-1">Color de los gráficos:</h6>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="flex items-stretch gap-2 mb-4 md:col-span-2">
+                            <p-dropdown
+                                [(ngModel)]="selectedPalette"
+                                [options]="allPalettes"
+                                optionLabel="name"
+                                i18n-placeholder="@@selectPalette"
+                                placeholder="-- Seleccione una paleta --"
+                                (ngModelChange)="onPaletteSelected()"
+                                [style]="{'width':'180px'}"
+                                appendTo="body">
+                            </p-dropdown>
+                            @if (selectedPalette) {
+                                <div class="flex rounded overflow-hidden" style="width: 80px;">
+                                    @for (color of selectedPalette.paleta.slice(0, 8); track $index) {
+                                        <div class="flex-1" [style.background-color]="color"></div>
+                                    }
+                                </div>
+                            }
+                        </div>
+
+                        <!-- Initial color block -->
+                        <div class="flex flex-col gap-2">
+                            <span class="font-semibold">Color Inicial</span>
+                            <div class="flex items-center justify-between border rounded-lg p-3 bg-white hover:bg-slate-50">
+                                <div class="flex items-center gap-2">
+                                    <input class="text-md text-slate-500 font-mono">{{ initialColor }}
+                                    <p-colorPicker [(ngModel)]="initialColor" (onChange)="handleInputColor()" format="hex"
+                                        appendTo="body"></p-colorPicker>
+                                </div>
+                            </div>
+                        </div>
+                    
+                        <!-- Final color block -->
+                        <div class="flex flex-col gap-2">
+                            <span class="font-semibold">Color Final</span>
+                            <div class="flex items-center justify-between border rounded-lg p-3 bg-white hover:bg-slate-50">
+                                <div class="flex items-center gap-2">
+                                    <input class="text-md text-slate-500 font-mono">{{ finalColor }}
+                                    <p-colorPicker [(ngModel)]="finalColor" (onChange)="handleInputColor()" format="hex"
+                                        appendTo="body"></p-colorPicker>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
 
 
-    <div class="col-3">
 
+                </div>
 
-      <h6 i18n="@@colorsCoordChartH6" class="custom-border-b1">
-        Rango de colores
-      </h6>
+                <!-- Logarithmic scale -->
+                <div class="space-y-2">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-2">
+                            <label for="logarithmic-switch" class="block text-sm font-medium" i18n="@@logarithmicScale">Escala logarítmica</label>
+                            <div class="relative group">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                                    class="text-slate-400">
+                                    <circle cx="12" cy="12" r="10"></circle>
+                                    <path d="M12 16v-4"></path>
+                                    <path d="M12 8h.01"></path>
+                                </svg>
+                                <div class="absolute left-full top-1/2 transform -translate-y-1/2 ml-2 w-60 eda-tooltip-popup opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-opacity">
+                                    <span i18n="@@mpa">Aplica escala logarítmica a los valores del mapa</span>
+                                </div>
+                            </div>
+                        </div>
+                        <label class="relative inline-flex items-center cursor-pointer">
+                            <input type="checkbox" [(ngModel)]="logarithmicScale" class="sr-only peer"
+                                (ngModelChange)="renderMap()">
+                            <div
+                                class="w-11 h-6 bg-gray-200 rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all corp-toggle">
+                            </div>
+                        </label>
+                    </div>
+                </div>
 
-      <div class="chart-color-selection" >
-        <div class="mb-1" style="display:grid;grid-template-columns: repeat(3, 1fr);gap: 10px;align-items: center;">
-            <a i18n="@@colorsInitialText"> Color inicial </a>
-            <input type="text" [(ngModel)]="initialColor"  pInputText  (keyup)="handleInputColor()" />
-            <p-colorPicker [(ngModel)]="initialColor" appendTo="body"   (onHide)="handleInputColor()"></p-colorPicker>
+                <!-- Mouse functions -->
+                <div class="space-y-2">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-2">
+                            <label for="mouse-functions-switch" class="block text-sm font-medium" i18n="@@activeMouseFunctions">Activar funciones del ratón</label>
+                            <div class="relative group">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                                    class="text-slate-400">
+                                    <circle cx="12" cy="12" r="10"></circle>
+                                    <path d="M12 16v-4"></path>
+                                    <path d="M12 8h.01"></path>
+                                </svg>
+                                <div class="absolute left-full top-1/2 transform -translate-y-1/2 ml-2 w-60 eda-tooltip-popup opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-opacity">
+                                    <span i18n="@@activeMouseFunctionsTooltip">Permite arrastrar y hacer zoom con el ratón</span>
+                                </div>
+                            </div>
+                        </div>
+                        <label class="relative inline-flex items-center cursor-pointer">
+                            <input type="checkbox" [(ngModel)]="draggable" (ngModelChange)="nullMouseOptions()"
+                                class="sr-only peer">
+                            <div
+                                class="w-11 h-6 bg-gray-200 rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all corp-toggle">
+                            </div>
+                        </label>
+                    </div>
+                </div>
+            </div>
         </div>
-        <div class="mb-1" style="display:grid;grid-template-columns: repeat(3, 1fr);gap: 10px;align-items: center;">
-          <a i18n="@@colorsFinalText" >Color final </a>
-          <input type="text" [(ngModel)]="finalColor" pInputText (keyup)="handleInputColor()" />
-          <p-colorPicker [(ngModel)]="finalColor" appendTo="body" (onHide)="handleInputColor()"></p-colorPicker>
-        </div>
-      </div>
-
-      <h6 i18n="@@LogarithmicScaleH6" class="custom-border-b1">
-        ¿Escala logaritmica?
-      </h6>
-      <div class="mb-1">
-        <p-inputSwitch [(ngModel)]="logarithmicScale" (onChange)="renderMap()">
-        </p-inputSwitch>
-      </div>
-      <h6 i18n="@@noMouseH6" class="custom-border-b1">
-        Activar funciones del mouse
-      </h6>
-      <div class="mb-1">
-        <p-inputSwitch [(ngModel)]="draggable" (onChange)="nullMouseOptions()">
-        </p-inputSwitch>
-      </div>
     </div>
-  </div>
-
-  <div footer>
-    <div class="ui-dialog-buttonpanel ui-widget-content ui-helper-clearfix text-right">
-      <button type="submit" pButton (click)="saveChartConfig()" icon="fa fa-check"
-        class="p-button-raised p-button-success" i18n-label="@@guardarButton" label="Confirmar"
-        id="eda_chart_dialog_confirmar">
-      </button>
-      <button type="button" pButton (click)="closeChartConfig()" icon="fa fa-times"
-        class="p-button-raised p-button-danger" i18n-label="@@cancelarButton" label="Cancelar">
-      </button>
-    </div>
-  </div>
-</eda-dialog>
+</eda-dialog2>

@@ -1,0 +1,158 @@
+<div class="flex h-screen">
+
+    <div class="relative flex-shrink-0 bg-white" style="width: 40px; z-index: 30;">
+
+        <!-- Tab (3-bar icon) -->
+        <div class="absolute top-0 left-0 w-10 h-12 flex flex-col items-center justify-center gap-1 cursor-pointer"
+             style="z-index: 10;"
+             (mouseenter)="openSidebar()" (mouseleave)="closeSidebar()">
+            <span class="block w-5 h-0.5 bg-black rounded"></span>
+            <span class="block w-5 h-0.5 bg-black rounded"></span>
+            <span class="block w-5 h-0.5 bg-black rounded"></span>
+        </div>
+
+        <!-- Panel: absolute overlay sliding from left:0, above the tab and the iframe -->
+        <div class="absolute top-0 left-0 h-full flex flex-col shadow-2xl transition-transform duration-300"
+             [style.min-width]="sidebarWidth" [style.width]="sidebarWidth" style="z-index: 20;"
+             [style.transform]="sidebarOpen ? 'translateX(0)' : 'translateX(-100%)'"
+             (mouseenter)="openSidebar()" (mouseleave)="closeSidebar()">
+
+            <!-- Editable content (includes background) -->
+            <div class="flex-1 overflow-hidden relative" [style.background-color]="sidebarBgColor">
+                <div [innerHTML]="safeSidebarHtml" class="h-full pt-6"></div>
+                                <!-- Pin button -->
+                <button class="absolute top-2 left-2 p-1 rounded cursor-pointer transition-all duration-200"
+                        [style.background-color]="isPinned ? 'rgba(255,255,255,0.25)' : 'transparent'"
+                        [style.opacity]="isPinned ? '1' : '0.5'"
+                        (click)="togglePin()"
+                        [title]="isPinned ? 'Desanclar menú' : 'Anclar menú'">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="white" viewBox="0 0 16 16">
+                        <path d="M9.828.722a.5.5 0 0 1 .354.146l4.95 4.95a.5.5 0 0 1 0 .707c-.48.48-1.072.588-1.503.588-.177 0-.335-.018-.46-.039l-3.134 3.134a5.927 5.927 0 0 1 .16 1.013c.046.702-.032 1.687-.72 2.375a.5.5 0 0 1-.707 0l-2.829-2.828-3.182 3.182c-.195.195-1.219.902-1.414.707-.195-.195.512-1.22.707-1.414l3.182-3.182-2.828-2.829a.5.5 0 0 1 0-.707c.688-.688 1.673-.767 2.375-.72a5.922 5.922 0 0 1 1.013.16l3.134-3.133a2.772 2.772 0 0 1-.04-.461c0-.43.108-1.022.589-1.503a.5.5 0 0 1 .353-.146z"/>
+                    </svg>
+                </button>
+                @if (canEdit) {
+                    <div class="absolute top-2 right-4 flex flex-row items-center gap-2">
+                        @if (haveUnsavedChanges) {
+                            <button
+                                class="flex right-40 items-center gap-1.5 pl-2.5 pr-3 py-1 rounded-full text-xs font-semibold cursor-pointer
+                                       bg-white/20 text-white border border-white/40 backdrop-blur-sm
+                                       hover:bg-white/35 transition-colors"
+                                (click)="saveSidebar()">
+                                <eda-icon name="check" class="h-3.5 w-3.5" style="margin-top: -10px; margin-right: 5px;" />
+                                <span>Guardar</span>
+                            </button>
+                        }
+                        <button class="cursor-pointer" title="Editar sidebar" (click)="openEditDialog()">
+                            <eda-icon name="pencil" class="h-6 w-6 text-white opacity-70 hover:opacity-100" />
+                        </button>
+                    </div>
+                }
+            </div>
+
+            <!-- Fixed footer: not editable -->
+            <div [style.background-color]="sidebarBgColor" class="relative">
+
+                <span i18n="@@hechoCon" class="pt-4 pb-2 pl-[10%] block text-white font-bold"> HECHO CON </span>
+                <div class="pb-4 w-[80%] flex self-center justify-center mx-auto">
+                    <img src="assets/images/Logo-edalitics.png" alt="">
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Spacer: pushes the iframe when the sidebar opens (total = 16vw, minus the fixed 40px bar) -->
+    <div class="flex-shrink-0"
+         [style.width]="sidebarOpen ? 'calc(' + sidebarWidth + ' - 40px)' : '0px'"
+         [style.min-width]="sidebarOpen ? 'calc(' + sidebarWidth + ' - 40px)' : '0px'"
+         style="transition: width 300ms ease-in-out, min-width 300ms ease-in-out;">
+    </div>
+
+    <!-- Iframe -->
+    <div class="flex-1 border flex items-center justify-center bg-gray-50">
+        @if (iframeSrc) {
+            <iframe [src]="iframeSrc"
+                class="w-full h-full" id="showDashboard" name="placeholder" frameborder="0"></iframe>
+        } @else {
+            <div class="text-center text-gray-400 space-y-2">
+                <svg xmlns="http://www.w3.org/2000/svg" class="mx-auto h-12 w-12 opacity-40" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 17V7m0 10a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2h2a2 2 0 012 2m0 10a2 2 0 002 2h2a2 2 0 002-2M9 7a2 2 0 012-2h2a2 2 0 012 2m0 10V7m0 10a2 2 0 002 2h2a2 2 0 002-2V7a2 2 0 00-2-2h-2a2 2 0 00-2 2" />
+                </svg>
+                <p class="text-sm" i18n="@@noInitialDashboard">No hay ningún dashboard inicial configurado.</p>
+                @if (canEdit) {
+                    <p class="text-xs" i18n="@@configureInitialDashboard">Edita el portal para seleccionar uno.</p>
+                }
+            </div>
+        }
+    </div>
+
+</div>
+
+<!-- Edit dialog (admin only) -->
+@if (showEditDialog) {
+    <eda-dialog2
+        [display]="showEditDialog"
+        header="Editar sidebar"
+        width="80vw"
+        height="80vh"
+        [overflow]="'hidden'"
+        [showReset]="true"
+        (apply)="onDialogApply()"
+        (close)="onDialogClose()"
+        (reset)="onDialogReset()">
+
+        <div content class="flex flex-col" style="height: calc(80vh - 130px)">
+
+            <!-- Columns: HTML + preview -->
+            <div class="flex flex-1 overflow-hidden">
+
+                <!-- Left column: editable HTML -->
+                <div class="flex-1 flex flex-col p-4 border-r">
+                    <h4 class="text-xs text-gray-500 mb-2 font-semibold">HTML del sidebar</h4>
+                    <textarea
+                        [(ngModel)]="editingHtml"
+                        (ngModelChange)="onEditingHtmlChange($event)"
+                        class="flex-1 w-full font-mono text-xs border rounded p-3 resize-none outline-none focus:ring-1 focus:ring-blue-300"
+                        spellcheck="false">
+                    </textarea>
+                </div>
+
+                <!-- Right column: live preview -->
+                <div class="w-[16vw] p-4 pt-10 shrink-0 flex flex-col overflow-hidden">
+                    <div class="flex-1 overflow-auto">
+                        <div [innerHTML]="safeEditingHtml" class="h-full"></div>
+                    </div>
+                    <!-- Non-editable footer -->
+                    <div [style.background-color]="previewBgColor">
+                        <span i18n="@@hechoCon" class="pt-3 pb-1 pl-[10%] block text-white text-xs font-bold">HECHO CON</span>
+                        <div class="pb-3 flex justify-center">
+                            <img src="assets/images/Logo-edalitics.png" class="w-[70%]" alt="">
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Bottom section: initial dashboard -->
+            <div class="border-t px-4 py-3 flex items-center gap-4 bg-gray-50 flex-shrink-0">
+                <label class="text-xs font-semibold text-gray-600 whitespace-nowrap" i18n="@@initialDashboardLabel">
+                    Dashboard inicial:
+                </label>
+                <select
+                    [(ngModel)]="editingInitialDashboardId"
+                    class="flex-1 max-w-xs border rounded px-2 py-1.5 text-xs text-gray-700 outline-none focus:ring-1 focus:ring-blue-300 bg-white">
+                    <option value="" i18n="@@noneOption">— Ninguno —</option>
+                    @for (dashboard of publicDashboards; track dashboard._id) {
+                        <option [value]="dashboard._id">{{ dashboard.config?.title || dashboard._id }}</option>
+                    }
+                </select>
+                @if (publicDashboards.length === 0) {
+                    <span class="text-xs text-gray-400" i18n="@@noPublicDashboards">No hay dashboards públicos disponibles.</span>
+                }
+            </div>
+
+        </div>
+    </eda-dialog2>
+}
+
+

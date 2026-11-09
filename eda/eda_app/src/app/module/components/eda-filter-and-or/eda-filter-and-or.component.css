@@ -1,88 +1,192 @@
+.query-preview-box {
+    background-color: #ffffff;
+    border-radius: 10px;
+    border: 1px solid #dee2e6;
+    padding: 10px 16px;
+    margin-bottom: 12px;
+    box-shadow: 0 1px 4px rgba(0,0,0,.08);
+}
 
-.gridster {
+.query-preview-box .text-query {
+    color: #212529;
+    font-size: 0.72rem;
+    font-weight: 600;
+    margin: 0;
+    line-height: 1.6;
+}
+
+/* ── Legend ───────────────────────────────────────────────── */
+.eda-filter-legend {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 10px;
+}
+
+.eda-filter-legend span {
+    display: inline-flex;
+    align-items: center;
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.03em;
+    padding: 5px 14px;
+    border-radius: 20px;
+}
+
+.eda-filter-legend .global-filter {
+    border: 2px solid var(--corporate-primary);
+    background-color: rgba(var(--corporate-primary-rgb), 0.08);
+    color: var(--corporate-primary);
+}
+
+.eda-filter-legend .panel-filter {
+    border: 2px solid #a0aab2;
+    background-color: #f1f3f4;
+    color: #3d4a52;
+}
+
+/* ── Gridster container — same visual as content-gridster ─── */
+.filter-and-or-container {
+    background-color: #fff;
+    margin-top: 5px;
+    border-radius: 10px;
+    border: 2px solid rgba(var(--corporate-primary-rgb), 0.2);
+}
+
+.filter-and-or-container .gridster {
     background-color: transparent;
-    border: 1px solid #13d60c00;  /* Border lines around each item  */
-    /* position: static; */
-    width: 96%;
-    /* It is the value for which it will give space to write the query  */
-    /* width: 65%;  */
-    height: 50%;
+    border: none;
+    width: 100%;
+    height: 48vh;
 }
 
-.gridster .gridster-column {
-    border-left: 1px solid rgb(240, 240, 243);
-    border-right: 1px solid rgb(240, 240, 243);
-    outline: 1px solid rgb(240, 240, 243);
-}
-.gridster .gridster-row {
-    border-top: 1px solid rgb(240, 240, 243);
-    border-bottom: 1px solid rgb(240, 240, 243);
-    outline: 1px solid rgb(240, 240, 243);
+.filter-and-or-container .gridster .gridster-column {
+    border-left: 1px solid #f0f0f3;
+    border-right: 1px solid #f0f0f3;
+    outline: 1px solid #f0f0f3;
 }
 
-.gridster-item {
-    background-color: #ffffff; 
-    border: 1.5px solid #b5b2b2c3;  /* Border lines around each item */
-    cursor: pointer;
+.filter-and-or-container .gridster .gridster-row {
+    border-top: 1px solid #f0f0f3;
+    border-bottom: 1px solid #f0f0f3;
+    outline: 1px solid #f0f0f3;
+}
+
+/* ── Gridster cards ───────────────────────────────────────── */
+.filter-and-or-container .gridster-item {
+    background-color: #ffffff;
+    border: 1.5px solid #dee2e6;
+    cursor: grab;
     padding: 0 10px;
-    border-radius: 5px;
+    border-radius: 10px;
+    box-shadow: 0 1px 4px rgba(0,0,0,.08);
+    transition: .3s;
 }
 
-/* Change item preview colorChange item preview color */
-.gridster-preview {
-    background-color: transparent; /* Change this value to the color of your choice */
+.filter-and-or-container .gridster-item.gridster-item-moving {
+    transition: 0s;
+    cursor: grabbing;
 }
 
-/* Adjusting the button size */
+.filter-and-or-container .gridster-item:hover {
+    box-shadow: 0 3px 10px rgba(var(--corporate-primary-rgb), 0.18);
+}
+
+.filter-and-or-container .gridster-preview {
+    background-color: rgba(var(--corporate-primary-rgb), 0.08);
+    border-radius: 10px;
+    border: 1.5px dashed var(--corporate-primary);
+    opacity: 0.6;
+}
+
+.filter-and-or-container .global-filter {
+    border: 2px solid var(--corporate-primary);
+    background-color: rgba(var(--corporate-primary-rgb), 0.5);
+}
+
+.filter-and-or-container .panel-filter {
+    border: 2px solid #a0aab2;
+    background-color: #f1f3f4;
+}
+
+/* ── AND / OR select button ───────────────────────────────── */
+.button-holder {
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+}
+
 .small-button .p-button {
-    padding: 3px 6px !important;  /* Reduce padding */
-    height: 22px !important;      /* Reduce button height */
-    min-width: 20px !important;   /* Adjust minimum button width */
-    font-size: 8px !important;   /* Change font size */
+    padding: 3px 7px !important;
+    height: 22px !important;
+    min-width: 24px !important;
+    font-size: 8.5px !important;
     font-style: italic;
-    font-weight: 500;
+    font-weight: 600;
+    border-radius: 6px !important;
+    letter-spacing: 0.03em;
 }
 
-/* Make sure the container is also small */
 .small-button .p-selectbutton {
-    height: 22px !important;      /* Reduces height */
+    height: 22px !important;
+    border-radius: 6px !important;
+    overflow: hidden;
+    display: flex;
 }
 
+/* Left button (OR): no right border */
+.small-button .p-selectbutton .p-button:first-child {
+    border-top-right-radius: 0 !important;
+    border-bottom-right-radius: 0 !important;
+    border-right: none !important;
+}
+
+/* Right button (AND): no left border */
+.small-button .p-selectbutton .p-button:last-child {
+    border-top-left-radius: 0 !important;
+    border-bottom-left-radius: 0 !important;
+    border-left: none !important;
+}
+
+.small-button .p-button.p-highlight {
+    background-color: var(--corporate-primary) !important;
+    border-color: var(--corporate-primary) !important;
+    color: #ffffff !important;
+}
+
+.small-button .p-button.p-highlight:hover {
+    background-color: var(--corporate-primary) !important;
+    border-color: var(--corporate-primary) !important;
+    filter: brightness(0.9);
+}
+
+/* ── Filter label text ────────────────────────────────────── */
 .texto-filtro {
     font-style: italic;
     font-size: 0.8rem;
-    color: rgb(73, 80, 87);
-    margin: 5px 10px 5px 10px;
+    color: #495057;
+    margin: 0 8px;
+    line-height: 1.3;
 }
 
-/* Class that aligns text to the right when there is no button */
-/* .texto-derecha {
-    margin-left: auto; Pushes text to the right
-} */
-
 .text-query {
-    font-weight: bold;
+    font-weight: 600;
     font-size: 0.7rem;
 }
 
-
-.gridster-item .d-flex {
+/* ── Flex layout inside card ──────────────────────────────── */
+.filter-and-or-container .gridster-item .d-flex {
     display: flex;
     justify-content: flex-start;
     align-items: center;
     height: 100%;
+    gap: 6px;
 }
 
-.global-filter{
-  border: 3px solid #99dd9b;
-}
-
-.panel-filter{
-  border: 3px solid #c5ccc6;
-}
-
+/* ── Tooltip ──────────────────────────────────────────────── */
 .custom-tooltip {
-  max-width: 6500px !important;
-  white-space: normal !important;
-  word-wrap: break-word;
+    max-width: 6500px !important;
+    white-space: normal !important;
+    word-wrap: break-word;
 }

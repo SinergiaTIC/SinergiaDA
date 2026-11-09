@@ -1,0 +1,70 @@
+
+import express from 'express';
+
+// Opciones de autenticaciones
+import SAMLRouter from './SAML/SAML.router';
+import GOOGLERouter from './GOOGLE/GOOGLE.router';
+import MICROSOFTRouter from './MICROSOFT/MICROSOFT.router';
+import SAML_ORCL_Router from './SAML_ORCL/SAML_ORCL.router';
+
+// LoginType
+import {loginType} from './loginType'
+
+// EDA API Configuración
+const EDA_API_CONFIG = require('../../../config/eda_api_config');
+
+const router = express.Router();
+
+
+/**
+ * @openapi
+ * /auth/typeLogin:
+ *   get:
+ *     description: Returns the active login types configured in the system (e.g. local, SAML, Google, Microsoft). Used by the frontend to display the appropriate login buttons.
+ *     responses:
+ *       200:
+ *         description: Active login type configuration returned successfully.
+ *       500:
+ *         description: Server error retrieving login type configuration.
+ *     tags:
+ *       - Authentication Routes
+ */
+router.get('/typeLogin', loginType.loginTypeSelection);
+
+if(EDA_API_CONFIG.authentication_type?.type === 'sso_mixto'){
+
+    if(
+        EDA_API_CONFIG.authentication_type.options.authentication === "saml" &&
+        EDA_API_CONFIG.authentication_type.options.authorization === "bbdd_orcl" 
+      ) 
+    {
+        // Autenticación con SAML y bbdd oracle para la autorización
+        router.use('/saml', SAML_ORCL_Router); // samlorcl
+    }   
+
+}
+
+if(EDA_API_CONFIG.authentication_type?.type === 'sso'){
+
+    if(
+        EDA_API_CONFIG.authentication_type.options.authentication === "sso" &&
+        EDA_API_CONFIG.authentication_type.options.authorization === "sso" 
+      ) 
+    {
+        // Autenticaciones con SAML
+        if(EDA_API_CONFIG.authentication_type.options.elements.some((item: any) => item === 'saml')) router.use('/saml', SAMLRouter);
+
+        if(EDA_API_CONFIG.authentication_type.options.elements.some((item: any) => item === 'google')) router.use('/google', GOOGLERouter);
+
+        if(EDA_API_CONFIG.authentication_type.options.elements.some((item: any) => item === 'microsoft')) router.use('/microsoft', MICROSOFTRouter);
+
+    }  
+
+}
+
+
+
+
+
+
+export default router;

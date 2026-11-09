@@ -1,0 +1,33 @@
+::ng-deep p-inputnumber.ng-invalid .p-inputtext {
+  border-color: #e24c4c !important;
+  box-shadow: 0 0 0 0.2rem rgba(226, 76, 76, 0.25) !important;
+}
+
+.toggle-blocked {
+  cursor: not-allowed !important;
+
+  > div:last-of-type {
+    background-color: #fecaca !important; /* red-200 */
+    opacity: 0.6;
+  }
+
+  &::after {
+    content: attr(data-tooltip);
+    position: absolute;
+    bottom: calc(100% + 6px);
+    right: 0;
+    background-color: #1e293b;
+    color: #fff;
+    padding: 4px 10px;
+    border-radius: 4px;
+    font-size: 0.72rem;
+    white-space: nowrap;
+    display: none;
+    z-index: 100;
+    pointer-events: none;
+  }
+
+  &:hover::after {
+    display: block;
+  }
+}

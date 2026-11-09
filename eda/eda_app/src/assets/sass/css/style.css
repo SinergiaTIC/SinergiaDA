@@ -1,24 +1,163 @@
-/**
- * Table Of Content
- *
- * 	1. Globals
- *	2. Headers
- *	3. Navigations
- *	4. Banners
- *	5. Footers
- *	6. app
- *	7. Widgets
- *	8. Custom Templates
- */
-/* @import url("https://fonts.googleapis.com/css?family=Montserrat:300,400,500,600,700"); */
 
 @import url(../css/icons/material-design-iconic-font/css/materialdesignicons.min.css);
 @import url(../css/spinners.css);
 @import url(../css/animate.css);
 @import url(../eda-styles/index-styles.css);
-/* customizables variables.  */
+
+@import "primeng/resources/themes/lara-light-blue/theme.css";
+@import "primeng/resources/primeng.css";
 @import url(./custom.css);
 
+/* Tailwind CSS: Organización por capas */
+@layer tailwind-base, primeng, tailwind-utilities;
+
+@layer tailwind-base {
+  @tailwind base;
+}
+
+@layer primeng {
+  /* Aquí puedes incluir estilos específicos para PrimeNG si necesitas */
+
+    /* Cambiar tamaño de fuente de los labels de opciones */
+  .p-multiselect-label  {
+    padding-top: .5rem !important;
+    padding-bottom: .5rem !important;
+  }
+  /* === Buscador del multiselect === */
+  .p-multiselect-panel .p-multiselect-filter-container .p-inputtext {
+    border: 1px solid black !important;
+    height: 3vh;
+  }
+
+  /* === Checkbox vacío === */
+  .p-multiselect-panel .p-checkbox .p-checkbox-box {
+    border: 1px solid lightgray !important;
+  }
+
+  /* === Checkbox marcado === */
+  .p-multiselect-panel .p-checkbox.p-highlight .p-checkbox-box {
+    border: 1px solid lightgray !important;
+    
+  }
+
+
+
+  /* === p-dropdown corporate colors === */
+  .p-dropdown:not(.p-disabled):hover {
+    border-color: var(--corporate-primary);
+  }
+  .p-dropdown:not(.p-disabled).p-focus {
+    border-color: var(--corporate-primary);
+    box-shadow: 0 0 0 2px rgba(var(--corporate-primary-rgb), 0.15);
+  }
+  .p-dropdown-panel .p-dropdown-item.p-highlight {
+    background: rgba(var(--corporate-primary-rgb), 0.08);
+    color: var(--corporate-primary);
+  }
+  .p-dropdown-panel .p-dropdown-item:not(.p-highlight):not(.p-disabled):hover {
+    background: rgba(var(--corporate-primary-rgb), 0.06);
+  }
+
+/* Panel del multiselect */
+.multiselect-auto-width {
+  min-width: var(--ms-panel-width, calc(10vw + 120px)) !important;
+}
+}
+
+
+@layer tailwind-utilities {
+  @tailwind components;
+  @tailwind utilities;
+}
+
+/* === Corporate toggle switch (outside layers — beats tailwind-utilities) === */
+input[type="checkbox"].peer:checked ~ .corp-toggle {
+  background-color: var(--corporate-primary) !important;
+}
+input[type="checkbox"].peer:focus ~ .corp-toggle {
+  outline: none;
+  box-shadow: 0 0 0 4px rgba(var(--corporate-primary-rgb), 0.25);
+}
+/* === Corporate accent color (radio / checkbox) === */
+.accent-corp {
+  accent-color: var(--corporate-primary);
+}
+
+/* === p-datatable sort icon corporate color === */
+.p-datatable .p-sortable-column.p-highlight,
+.p-datatable .p-sortable-column.p-highlight .p-sortable-column-icon {
+  color: var(--corporate-primary) !important;
+}
+.p-datatable .p-sortable-column:not(.p-highlight):hover .p-sortable-column-icon {
+  color: var(--corporate-primary) !important;
+  opacity: 0.6;
+}
+
+/* ====== Custom Base Styles ====== */
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 240 10% 3.9%;
+    --primary: 177 100% 37%;            /* #00B0BA */
+    --primary-foreground: 0 0% 100%;
+    --ring: 177 100% 37%;
+    --card: 0 0% 100%;
+    --card-foreground: 240 10% 3.9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 240 10% 3.9%;
+    --secondary: 240 4.8% 95.9%;
+    --secondary-foreground: 240 5.9% 10%;
+    --muted: 240 4.8% 95.9%;
+    --muted-foreground: 240 3.8% 46.1%;
+    --accent: 240 4.8% 95.9%;
+    --accent-foreground: 240 5.9% 10%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 240 5.9% 90%;
+    --input: 240 5.9% 90%;
+    --radius: 0.5rem;
+  }
+
+  .dark {
+    --background: 20 14.3% 4.1%;
+    --foreground: 0 0% 95%;
+    --card: 24 9.8% 10%;
+    --card-foreground: 0 0% 95%;
+    --popover: 0 0% 9%;
+    --popover-foreground: 0 0% 95%;
+    --primary: 177 100% 37%;
+    --primary-foreground: 0 0% 100%;
+    --ring: 177 100% 37%;
+    --secondary: 240 3.7% 15.9%;
+    --secondary-foreground: 0 0% 98%;
+    --muted: 0 0% 15%;
+    --muted-foreground: 240 5% 64.9%;
+    --accent: 12 6.5% 15.1%;
+    --accent-foreground: 0 0% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 0 85.7% 97.3%;
+    --border: 240 3.7% 15.9%;
+    --input: 240 3.7% 15.9%;
+  }
+
+  /* ==== Focus ring personalizado para elementos interactivos ==== */
+  input:focus,
+  textarea:focus,
+  select:focus,
+  button:focus {
+    @apply ring-2 ring-ring outline-none;
+  }
+}
+
+/* TODO Ring Focus, Dark */
+/* border-gray-200 bg-white px-3 py-2 text-sm ring-offset-white
+placeholder:text-gray-500 focus:outline-none focus:ring-2
+focus:ring-[#00BFB3] focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50
+dark:border-gray-700 dark:bg-gray-800 dark:ring-offset-gray-800 dark:placeholder:text-gray-400 dark:focus:ring-[#00BFB3] */
+body {
+  @apply text-gray-900 dark:text-gray-100;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
 
 html {
     font-size: 13px;
@@ -28,10 +167,10 @@ html {
     pointer-events: none;
 }
 
-.readonly input{
+.readonly input{ 
     background-color: greenyellow!important;
 }
-
+  
 
 .custom .leaflet-popup-content-wrapper, .leaflet-popup-tip {
     background: #010913ce !important;
@@ -104,7 +243,7 @@ body .ui-tree {
     padding: 25px;
     z-index: 10;
 }
-
+ 
 .btn-inverse {
     background: #2f3d4a;
     border: 1px solid #2f3d4a;
@@ -113,7 +252,7 @@ body .ui-tree {
 
 .btn {
     padding: 7px 12px;
-    cursor: pointer;
+    cursor: pointer; 
 }
 
 .btn-circle {
@@ -136,22 +275,25 @@ body .ui-tree {
 }
 
 
+* {
+    scrollbar-width: thin;
+    scrollbar-color: var(--scrollbar-thumb) transparent;
+}
+
 ::-webkit-scrollbar {
-    width: 10px;
+    width: 5px;
     height: 5px;
 }
 ::-webkit-scrollbar-thumb {
-    background: #d6d6d6;
-    border-radius: 3px;
-  }
+    background: var(--scrollbar-thumb);
+    border-radius: 9999px;
+}
 ::-webkit-scrollbar-thumb:hover {
-    background: #ccc;
-    box-shadow: inset 0 0 6px rgba(94, 94, 94, 0.5);
-    border-radius: 3px;
+    background: var(--scrollbar-thumb-hover);
+    border-radius: 9999px;
 }
 ::-webkit-scrollbar-track {
-    box-shadow: inset 0 0 6px rgba(0,0,0,.3);
-    border-radius: 3px;
+    background: transparent;
 }
 
 
@@ -209,8 +351,8 @@ body .ui-tree {
     border-radius: 7px;
     color: #fff;
     font-size: 14px;
-    color: var(--header-font-color);
-    background: #414344;
+    /* color: var(--header-font-color);
+    background: #414344; */
 }
 
 .right-sidebar-footer {
@@ -224,30 +366,6 @@ body .ui-tree {
 
 .pointer {
     cursor: pointer;
-}
-
-.w-50 {
-    width: 50px;
-}
-
-.w-100 {
-    width: 100px;
-}
-
-.w-150 {
-    width: 150px;
-}
-
-.img-50 {
-    width: 50px;
-}
-
-.img-100 {
-    width: 100px;
-}
-
-.img-150 {
-    width: 150px;
 }
 
 .logo-text {
@@ -307,6 +425,13 @@ body .ui-tree {
 
 
 /* Primeng Components css */
+.p-dropdown, .p-multiselect {
+    border-width: 1px!important;
+}
+#dashboard-mail-config .p-multiselect,
+#dashboard-mail-config .p-dropdown {
+    width: 100% !important;
+}
 
 .panel-heading .pi {
     /* color: var(--header-bg-color)!important; */
@@ -349,6 +474,84 @@ body .ui-tree {
 
 /*=============*/
 
+/* ARREGLAR PROBLEMA DE COLORPICKER ==> PROVISONAL HASTA QUE LO ARREGLEN ELLOS */
+.p-colorpicker-preview {
+  border: 1px solid black !important; /* 👈 borde completo */
+  border-radius: 6px;                 /* 👈 opcional: esquinas redondeadas */
+  width: 2rem;                        /* 👈 opcional: tamaño uniforme */
+  height: 2rem;
+}
+
+/* css para el picklist de grouplist */
+.p-picklist-custom .p-picklist-filter-input {
+  border: 1px solid black !important;
+}
+
+/* Tag normal con hover */
+.tag {
+  padding: 0.5rem 1rem; /* px-4 py-2 equivalente */
+  font-size: 0.875rem;  /* text-sm */
+  color: #374151;       /* gray-700 */
+  background-color: #f3f4f6; /* gray-100 */
+  border-radius: 0.375rem; /* rounded-md */
+  cursor: pointer;
+  transition: all 0.3s ease;
+  align-content: center;
+  white-space: nowrap;
+}
+
+.tag:hover {
+  background: linear-gradient(to right, var(--corporate-primary), var(--corporate-primary-gradient));
+  color: white;
+}
+
+/* Tag seleccionado (igual que hover) */
+.tag-selected {
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+  color: white;
+  border-radius: 0.375rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  background: linear-gradient(to right, var(--corporate-primary), var(--corporate-primary-gradient));
+  align-content: center;
+  white-space: nowrap;
+}
+
+
+/* Controles del medio centrados */
+.p-picklist-custom .p-picklist-buttons-wrapper {
+  position: sticky;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 1;
+}
+
+/* Contenedor de items con scroll independiente */
+.p-picklist-custom .p-picklist-source-wrapper,
+.p-picklist-custom .p-picklist-target-wrapper {
+  max-height: 46vh;   /* altura total de la lista */
+  display: flex;
+  flex-direction: column;
+}
+
+/* Scroll solo en los items */
+.p-picklist-custom .p-picklist-list {
+  overflow-y: auto;
+  flex-grow: 1;        /* ocupa todo el espacio disponible dentro del wrapper */
+}
+
+/* Ajuste de padding solo lateral para los headers */
+.p-picklist-custom .p-picklist-header {
+  padding-top: 0.3125rem;   /* ejemplo: 5px arriba */
+  padding-bottom: 0rem;/* 5px abajo */
+  padding-left: 1.25rem;    /* lateral */
+  padding-right: 1.25rem;
+}
+
+
+/*=============*/
+
 html {
     position: relative;
     min-height: 100%;
@@ -386,59 +589,13 @@ html body .mdi-set {
     line-height: initial;
 }
 
-/*******************
- Headings
- *******************/
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
-    color: #455a64;
-    font-family:   var(--DEFAULT_FONT_FAMILY); /*"Questrial";*/
-    font-weight: 400;
-}
-
-h1 {
-    line-height: 40px;
-    font-size: 36px;
-}
-
-h2 {
-    line-height: 36px;
-    font-size: 24px;
-}
-
-h3 {
-    line-height: 30px;
-    font-size: 21px;
-}
-
-h4 {
-    line-height: 22px;
-    font-size: 18px;
-}
-
-h5 {
-    line-height: 18px;
-    font-size: 16px;
-    font-weight: 400;
-}
-
-h6 {
-    line-height: 16px;
-    font-size: 14px;
-    font-weight: 400;
-}
-
 /*Theme Colors*/
 /*bootstrap Color*/
 /*Light colors*/
 /*Normal Color*/
 /*Extra Variable*/
-/*==============================================================
-  For all pages
+/*============================================================== 
+  For all pages 
   ============================================================== */
 
 /*******************
@@ -838,6 +995,80 @@ html body .waves-notransition {
 }
 
 /*******************
+ New dialog buttons
+ ******************/
+
+.cancel-button {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  border-radius: 0.375rem;
+  padding: 0.5rem 1rem;
+  color: white;
+  background: linear-gradient(to right, var(--btn-cancel-bg), var(--btn-cancel-bg-end));
+  border: none;
+  cursor: pointer;
+}
+
+.execute-button {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  border-radius: 0.375rem;
+  padding: 0.5rem 1rem;
+  color: #374151;
+  background: #ffffff;
+  border: 1px solid #d1d5db;
+  cursor: pointer;
+}
+
+.execute-button:disabled {
+  background: #f9fafb;
+  color: #9ca3af;
+  border-color: #e5e7eb;
+  cursor: not-allowed;
+}
+
+.confirm-button {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  border-radius: 0.375rem;
+  padding: 0.5rem 1rem;
+  color: white;
+  background: linear-gradient(to right, var(--btn-confirm-bg), var(--btn-confirm-bg-end));
+  border: none;
+  cursor: pointer;
+}
+
+.confirm-button:disabled {
+  background: #d1d5db;
+  color: #6b7280;
+  cursor: not-allowed;
+}
+
+.cancel-button,
+.execute-button,
+.confirm-button {
+  transition: background 0.2s ease, box-shadow 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+}
+
+.cancel-button:hover:not(:disabled) {
+  background: linear-gradient(to right, var(--btn-cancel-hover-bg), var(--btn-cancel-hover-bg-end));
+}
+
+.execute-button:hover:not(:disabled) {
+  background: #f3f4f6;
+  border-color: #9ca3af;
+}
+
+.confirm-button:hover:not(:disabled) {
+  background: linear-gradient(to right, var(--btn-confirm-hover-bg), var(--btn-confirm-hover-bg-end));
+}
+
+
+
+/*******************
  Form-control
  ******************/
 .form-control {
@@ -885,15 +1116,27 @@ form label {
     padding-bottom: 20px;
 }
 
+/* p-inputSwitch corporate color */
+.p-inputswitch.p-inputswitch-checked .p-inputswitch-slider {
+    background: var(--corporate-primary) !important;
+}
+.p-inputswitch.p-inputswitch-checked:not(.p-disabled):hover .p-inputswitch-slider {
+    background: var(--corporate-primary) !important;
+    filter: brightness(0.88);
+}
+.p-inputswitch.p-focus .p-inputswitch-slider {
+    box-shadow: 0 0 0 0.2rem rgba(225, 29, 72, 0.25) !important;
+}
+
 /*******************
- Form validation error
+ Form validation error 
  ******************/
 .error .help-block {
     color: #fb3a3a;
 }
 
 /*******************
- File Upload
+ File Upload 
  ******************/
 .fileupload {
     overflow: hidden;
@@ -1000,8 +1243,8 @@ pre {
     border-color: #06d79c;
 }
 
-/*==============================================================
-  For Laptop & above all (1650px)
+/*============================================================== 
+  For Laptop & above all (1650px) 
   ============================================================== */
 @media (min-width: 1650px) {
     .widget-app-columns {
@@ -1033,8 +1276,8 @@ pre {
     }
 }
 
-/*==============================================================
-  For Laptop & above all (1370px)
+/*============================================================== 
+  For Laptop & above all (1370px) 
   ============================================================== */
 @media (max-width: 1370px) {
     .widget-app-columns {
@@ -1050,33 +1293,33 @@ pre {
     .auto-height {
         min-height: 186px;
     }
-
+    /* revisar TODO */
     h1 {
-        line-height: 35px;
-        font-size: 32px;
-    }
-
-    h2 {
         line-height: 30px;
-        font-size: 20px;
+        font-size: 1.5rem;
     }
-
+/* modificar */ 
+    h2 {
+        line-height: 25px;
+        font-size: 1.4rem !important;
+    }
+    
     h3 {
         line-height: 30px;
-        font-size: 18px;
+        font-size: 1 rem;
     }
-
+    
     h4 {
         line-height: 20px;
-        font-size: 16px;
+        font-size: 0.8rem;
     }
-
+    
     h5 {
         line-height: 16px;
         font-size: 14px;
         font-weight: 400;
     }
-
+    
     h6 {
         line-height: 13px;
         font-size: 10px;
@@ -1093,8 +1336,8 @@ pre {
     }
 }
 
-/*-- ==============================================================
-  Small Desktop & above all (1024px)
+/*-- ============================================================== 
+  Small Desktop & above all (1024px) 
   ============================================================== */
 @media (min-width: 1024px) {
     .page-wrapper {
@@ -1127,12 +1370,18 @@ pre {
         display: flex !important;
     }
 
+    /* modificar */ 
+    h2 {
+        line-height: 18px;
+        font-size: 1rem;
+    }
+
 }
 
-/*-- ==============================================================
-  Ipad & above all(768px)
+/*-- ============================================================== 
+  Ipad & above all(768px) 
   ============================================================== */
-@media (min-width: 768px) {
+@media (max-width: 768px) {
 
     /*This is for the breeadcrumd*/
     .page-titles .breadcrumb {
@@ -1160,7 +1409,29 @@ pre {
         flex-wrap: nowrap !important;
         -webkit-flex-wrap: nowrap !important;
     }
+        /* modificar */ 
+    h2 {
+        font-size: 1rem !important;
+    }
+
 }
+
+
+
+/*-- ============================================================== 
+  movil vertical(500px) 
+  ============================================================== */
+@media (max-width: 500px) {
+
+        /* modificar */ 
+    h2 {
+        font-size: 0.9rem !important;
+    }
+
+}
+
+
+
 
 
 
@@ -1178,83 +1449,15 @@ pre {
     width: inherit;
 }
 
-/*SDA CUSTOM*/ .filter-tooltip-header {
-/*SDA CUSTOM*/     display: flex;
-/*SDA CUSTOM*/     justify-content: space-between;
-/*SDA CUSTOM*/     align-items: center;
-/*SDA CUSTOM*/     padding-bottom: 0.5rem;
-/*SDA CUSTOM*/     margin-bottom: 0.5rem;
-/*SDA CUSTOM*/     border-bottom: 1px solid #dee2e6;
-/*SDA CUSTOM*/ }
-
-/*SDA CUSTOM*/ .filter-tooltip-header-title {
-/*SDA CUSTOM*/     font-weight: 600;
-/*SDA CUSTOM*/     font-family: var(--eda-filters-font-family) !important;
-/*SDA CUSTOM*/ }
-
-/*SDA CUSTOM*/ .filter-tooltip-remove-all {
-/*SDA CUSTOM*/     background: transparent;
-/*SDA CUSTOM*/     border: none;
-/*SDA CUSTOM*/     color: #6c757d;
-/*SDA CUSTOM*/     cursor: pointer;
-/*SDA CUSTOM*/     font-size: 0.9rem;
-/*SDA CUSTOM*/     padding: 0.25rem;
-/*SDA CUSTOM*/     border-radius: 50%;
-/*SDA CUSTOM*/     width: 1.75rem;
-/*SDA CUSTOM*/     height: 1.75rem;
-/*SDA CUSTOM*/     display: flex;
-/*SDA CUSTOM*/     align-items: center;
-/*SDA CUSTOM*/     justify-content: center;
-/*SDA CUSTOM*/     transition: color 0.2s, background-color 0.2s;
-/*SDA CUSTOM*/     margin-left: 0.5rem;
-/*SDA CUSTOM*/ }
-
-/*SDA CUSTOM*/ .filter-tooltip-remove-all:hover {
-/*SDA CUSTOM*/     color: #c0392b;
-/*SDA CUSTOM*/     background-color: rgba(192, 57, 43, 0.1);
-/*SDA CUSTOM*/ }
-
-/*SDA CUSTOM*/ .filter-tooltip-items {
-/*SDA CUSTOM*/     display: flex;
-/*SDA CUSTOM*/     flex-wrap: wrap;
-/*SDA CUSTOM*/     gap: 0.4rem;
-/*SDA CUSTOM*/ }
-
-/*SDA CUSTOM*/ .filter-tooltip-chip {
-/*SDA CUSTOM*/     display: inline-flex;
-/*SDA CUSTOM*/     align-items: center;
-/*SDA CUSTOM*/     gap: 0.3rem;
-/*SDA CUSTOM*/     background-color: #E8F5E9;
-/*SDA CUSTOM*/     border-radius: 3px;
-/*SDA CUSTOM*/     padding: 0.25rem 0.5rem;
-/*SDA CUSTOM*/     max-width: 100%;
-/*SDA CUSTOM*/     transition: background-color 0.2s;
-/*SDA CUSTOM*/ }
-
-/*SDA CUSTOM*/ .filter-tooltip-chip:hover {
-/*SDA CUSTOM*/     background-color: #d4edda;
-/*SDA CUSTOM*/ }
-
-/*SDA CUSTOM*/ .filter-tooltip-chip-text {
-/*SDA CUSTOM*/     overflow: hidden;
-/*SDA CUSTOM*/     text-overflow: ellipsis;
-/*SDA CUSTOM*/     white-space: nowrap;
-/*SDA CUSTOM*/     font-family: var(--eda-filters-font-family) !important;
-/*SDA CUSTOM*/ }
-
-/*SDA CUSTOM*/ .filter-tooltip-chip .p-multiselect-token-icon {
-/*SDA CUSTOM*/     margin-left: 0.5rem;
-/*SDA CUSTOM*/ }
-
 /* JJ Puesto para quitar el overlay que no se borra*/
 /*.p-component-overlay-enter {
     animation: p-component-overlay-enter-animation 150ms forwards;
   }*/
-
+  
   .p-component-overlay-leave {
     animation: p-component-overlay-leave-animation 150ms forwards;
   }
-
+  
   @keyframes p-component-overlay-enter-animation {
     from {
       background-color: transparent;
@@ -1278,12 +1481,12 @@ pre {
 .ui-table-auto-layout > .ui-table-wrapper {
     overflow-x: unset;
 }
-
+ 
 .edaLoginTitle{
     font-family:  var(--DEFAULT_FONT_FAMILY);
     letter-spacing: 1em;
     font-weight: 700;
-    color: #163c49;
+    color: #163c49;	
     margin-left: 20px;
 
 }
@@ -1297,20 +1500,20 @@ pre {
 .edaLoginCreditsCaption{
     font-family: "Scada", Sans-serif;
     font-weight: 600;
-	color: #163c49;
+	color: #163c49;	
 
 }
 .circle:before {
     content: ' \25CF';
     font-size: 25px;
   }
+  
 
 
 
 
-
-/*-- ==============================================================
-  Phone and below ipad(767px)
+/*-- ============================================================== 
+  Phone and below ipad(767px) 
   ============================================================== */
 @media (max-width: 767px) {
     .container-fluid {
@@ -1389,22 +1592,52 @@ pre {
 
 
 
-.p-datatable-thead tr{
-    background:  #e9ecef !important;
-  }
-  .p-datatable .p-datatable-thead > tr > th{
-    background: #e9ecef !important;
+/* CUSTOMIZABLE DATATABLE Y TREETABLE STYLES */
+
+/* .p-datatable .p-datatable-thead > tr > th {
+    background-color: #A8113C !important;
+    color: #000000 !important;
+} */
+
+/* texto del título */
+/* .p-datatable .p-datatable-thead > tr > th .p-column-title {
+    background-color: transparent !important;
+} */
+
+/* sortable */
+/* .p-datatable .p-sortable-column,
+.p-datatable .p-sortable-column * {
+    background-color: transparent !important;
+    color: #ffffff !important;
+} */
+
+/* icono de ordenación */
+/* .p-datatable .p-sortable-column-icon {
+    color: #ffffff !important;
+} */
+/* 
+.p-datatable .p-sortable-column:hover,
+.p-datatable .p-sortable-column:hover * {
+    color: #000000 !important;
+}
+
+.p-treetable .p-treetable-thead > tr > th{
+    background: #A8113C  !important;
     border: 1px solid #fff;
+    cursor: default;
   }
 
+.p-treetable .p-treetable-thead > tr > th .header-title{
+    color: #ffffff;
+}
+.p-treetable .p-treetable-thead > tr > th:hover .header-title{
+    color: #000000;
+} */
 
 
 
-
-
-
-/*==============================================================
-  Editable variables
+/*============================================================== 
+  Editable variables 
   ============================================================== */
 :root {
     --panel-color: #fff;
@@ -1434,7 +1667,7 @@ pre {
     --panel-font-color:"#455a64";
   }
 
-
+  
 .eda-title {
     font-family: var(--eda-title-font-family) !important;
     font-size: var(--eda-title-big);
@@ -1444,7 +1677,7 @@ pre {
     margin-bottom: auto;
     font-weight: 600;
     white-space: nowrap;
-
+    
 }
 
 .justify-title-content {
@@ -1502,9 +1735,9 @@ pre {
     /* border-width: 0 0 1px 1px!important; */
 }
 
-.p-datatable-thead tr {
+/* .p-datatable-thead tr {
     background: #e9ecef00 !important;
-}
+} */
 
 
 .component .p-paginator {
@@ -1561,15 +1794,15 @@ pre {
 
 
 
-  /*==============================================================
-  For Laptop & above all (1370px)
+  /*============================================================== 
+  For Laptop & above all (1370px) 
   ============================================================== */
   @media (max-width: 1370px) {
     html {
       font-size: 11px;
     }
     .p-component {
-      font-size: 0.8rem;
+      font-size: 0.9rem;
     }
     .p-card .p-card-title {
       font-size: 0.8rem;
@@ -1580,10 +1813,10 @@ pre {
     }
 
   }
+  
 
-
-/*==============================================================
-  For Laptop & above all (1370px)
+/*============================================================== 
+  For Laptop & above all (1370px) 
   ============================================================== */
   @media (max-width: 1370px) {
 
@@ -1597,7 +1830,7 @@ pre {
         white-space: nowrap;
     }
 
-
+    
     .filters-size{
         font-size: var(--eda-filters-small);
         font-family: var(--eda-filters-font-family);
@@ -1619,7 +1852,7 @@ pre {
     .map-legend {
         font-size: var(--panel-small);
     }
-
+    
     .map-legend h6{
         font-size: var(--panel-small);
     }
@@ -1641,14 +1874,14 @@ pre {
 
 
 
-/*==============================================================
+/*============================================================== 
   For olds and small screens
   ============================================================== */
   @media (max-width: 1025px) {
 
     .eda-title {
         font-family: var(--font-family);
-        font-size: var(--eda-title-very-small);
+        font-size: var(--eda-title-very-small); 
         line-height: 0.7;
         text-align: center;
         margin-bottom: auto;
@@ -1656,7 +1889,7 @@ pre {
         white-space: nowrap;
     }
 
-
+    
     .filters-size{
         font-size: var(--eda-filters-small);
         font-family: var(--eda-filters-font-family);
@@ -1678,7 +1911,7 @@ pre {
     .map-legend {
         font-size: var(--panel-small);
     }
-
+    
     .map-legend h6{
         font-size: var(--panel-small);
     }
@@ -1694,11 +1927,191 @@ pre {
     .component .p-datatable .p-datatable-footer {
         font-size: var(--panel-small);
 
-
+        
     }
     .p-datatable .p-datatable-tfoot>tr>td, .p-datatable .p-datatable-thead>tr>th{
         font-weight: 300;
     }
 
-  }
+    .p-multiselect-filter .p-inputtext .p-component {
+        border-radius: 5px;
+        border: solid 1px;
+        height: 3vh;
+    }
 
+
+}
+
+/* p-colorPicker: degradado de saturación/brillo + tira de matiz (independiente del tamaño de pantalla) */
+.p-colorpicker-panel .p-colorpicker-color {
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(to top, #000 0%, rgba(0, 0, 0, 0) 100%), linear-gradient(to right, #fff 0%, rgba(255, 255, 255, 0) 100%) !important;
+}
+
+.p-colorpicker-panel .p-colorpicker-hue {
+    background: linear-gradient(0deg, red 0, #ff0 17%, #0f0 33%, #0ff 50%, #00f 67%, #f0f 83%, red) !important;
+}
+
+/* ====== Tooltip global (fuera de todos los layers) ====== */
+.p-tooltip .p-tooltip-text {
+  background: #1e293b !important;
+  color: #ffffff !important;
+  border-radius: 0.375rem !important;
+  font-size: 0.8125rem !important;
+  padding: 0.375rem 0.625rem !important;
+  box-shadow: 0 4px 6px -1px rgba(0,0,0,0.2), 0 2px 4px -2px rgba(0,0,0,0.1) !important;
+  max-width: 20rem;
+}
+.p-tooltip.p-tooltip-right .p-tooltip-arrow  { border-right-color:  #1e293b !important; }
+.p-tooltip.p-tooltip-left .p-tooltip-arrow   { border-left-color:   #1e293b !important; }
+.p-tooltip.p-tooltip-top .p-tooltip-arrow    { border-top-color:    #1e293b !important; }
+.p-tooltip.p-tooltip-bottom .p-tooltip-arrow { border-bottom-color: #1e293b !important; }
+
+
+/* ====== Custom info-tooltip popup (outside layers) ====== */
+body .eda-tooltip-popup {
+  background-color: #1e293b !important;
+  color: #ffffff !important;
+  border-radius: 0.375rem;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.8125rem;
+  line-height: 1.5;
+  box-shadow: 0 4px 6px -1px rgba(0,0,0,0.2), 0 2px 4px -2px rgba(0,0,0,0.1);
+  max-width: 15rem;
+}
+
+/* ====== SweetAlert2 — corporate theme ====== */
+
+/* Confirm button: corporate gradient */
+body .swal2-confirm {
+  background: linear-gradient(135deg, var(--corporate-primary), var(--corporate-primary-gradient)) !important;
+  border: none !important;
+  border-radius: 0.5rem !important;
+  font-weight: 500 !important;
+  letter-spacing: 0.01em !important;
+  padding: 0.5rem 1.5rem !important;
+  box-shadow: 0 2px 8px rgba(var(--corporate-primary-rgb), 0.35) !important;
+  transition: transform 0.15s, box-shadow 0.15s !important;
+}
+body .swal2-confirm:hover {
+  transform: translateY(-1px) !important;
+  box-shadow: 0 4px 12px rgba(var(--corporate-primary-rgb), 0.45) !important;
+}
+body .swal2-confirm:focus {
+  box-shadow: 0 0 0 3px rgba(var(--corporate-primary-rgb), 0.3) !important;
+}
+
+/* Cancel button: corporate cancel color */
+body .swal2-cancel {
+  background: linear-gradient(135deg, var(--btn-cancel-bg), var(--btn-cancel-bg-end)) !important;
+  border: none !important;
+  color: white !important;
+  border-radius: 0.5rem !important;
+  font-weight: 500 !important;
+  padding: 0.5rem 1.5rem !important;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15) !important;
+  transition: transform 0.15s, box-shadow 0.15s !important;
+}
+body .swal2-cancel:hover {
+  background: linear-gradient(135deg, var(--btn-cancel-hover-bg), var(--btn-cancel-hover-bg-end)) !important;
+  transform: translateY(-1px) !important;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.22) !important;
+}
+body .swal2-cancel:focus {
+  box-shadow: 0 0 0 3px rgba(0,0,0,0.15) !important;
+}
+
+/* Deny button: same as cancel */
+body .swal2-deny {
+  background: transparent !important;
+  border: 1px solid #fca5a5 !important;
+  color: #dc2626 !important;
+  border-radius: 0.5rem !important;
+  font-weight: 500 !important;
+  padding: 0.5rem 1.5rem !important;
+}
+body .swal2-deny:hover {
+  background: #fef2f2 !important;
+}
+
+/* Popup: rounded, softer shadow */
+body .swal2-popup {
+  border-radius: 1rem !important;
+  padding: 1.75rem 2rem 1.5rem !important;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.15), 0 4px 12px rgba(0,0,0,0.08) !important;
+}
+
+/* Title */
+body .swal2-title {
+  font-size: 1.125rem !important;
+  font-weight: 600 !important;
+  color: #111827 !important;
+}
+
+/* Content text */
+body .swal2-html-container,
+body .swal2-content {
+  color: #374151 !important;
+  font-size: 0.9375rem !important;
+}
+
+/* Success icon: corporate color */
+body .swal2-icon.swal2-success {
+  border-color: var(--corporate-primary) !important;
+  color: var(--corporate-primary) !important;
+}
+body .swal2-icon.swal2-success .swal2-success-ring {
+  border-color: rgba(var(--corporate-primary-rgb), 0.25) !important;
+}
+body .swal2-icon.swal2-success [class^=swal2-success-line] {
+  background-color: var(--corporate-primary) !important;
+}
+
+/* Input (used in Swal.fire with input: 'text' etc.) */
+body .swal2-input,
+body .swal2-textarea,
+body .swal2-select {
+  border-color: #d1d5db !important;
+  border-radius: 0.375rem !important;
+  font-size: 0.875rem !important;
+}
+body .swal2-input:focus,
+body .swal2-textarea:focus {
+  border-color: var(--corporate-primary) !important;
+  box-shadow: 0 0 0 2px rgba(var(--corporate-primary-rgb), 0.2) !important;
+  outline: none !important;
+}
+
+/* D3 charts tooltip (treemap, bubble chart, parallel sets, scatter).
+   The div is appended by D3 outside the components, so it needs a global style.
+   Moved from assets/sass/prime-styles/custom.css, which is no longer loaded in 3.x. */
+body .d3tooltip {
+  position: absolute;
+  text-align: center;
+  cursor: pointer;
+  padding: 8px;
+  font: 12px ;
+  color: #fbfbfb;
+  background: #010913ea;
+  border: 0px;
+  border-radius: 8px;
+  pointer-events: none;
+  z-index: 1;
+}
+
+body .d3tooltip > h6{
+  color: white;
+  font-weight: bold;
+}
+
+.d3tooltip:after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  margin-left: -10px;
+  border-width: 7px;
+  border-style: solid;
+  border-color: #041429cf transparent transparent transparent;
+}

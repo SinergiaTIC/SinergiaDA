@@ -1,0 +1,105 @@
+import { Component, EventEmitter, Input, OnInit, Output } from "@angular/core";
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { EdaDialog2Component } from "@eda/shared/components/shared-components.index";
+import { ConfirmationService } from "primeng/api";
+import { DropdownModule } from 'primeng/dropdown';
+import { ConfirmDialogModule } from 'primeng/confirmdialog';
+import * as _ from 'lodash';
+
+@Component({
+    standalone: true,
+    selector: 'app-whatif-dialog',
+    templateUrl: './whatif-dialog.component.html',
+    styleUrls: ['./whatif-dialog.component.css'],
+    imports: [
+        EdaDialog2Component, CommonModule, 
+        FormsModule, DropdownModule,ConfirmDialogModule
+    ]
+})
+export class WhatIfDialogComponent implements OnInit {
+    @Input() currentQuery: any[] = [];
+    @Output() currentQueryChange: EventEmitter<any> = new EventEmitter<any>();
+    @Output() close: EventEmitter<any> = new EventEmitter<any>();
+
+    public display: boolean = false;
+
+    public whatIf: any = {};
+
+    public columnOptions: any[] = [];
+    public ifOptions: any[] = [
+        { label: 'Sumar', value: '+' },
+        { label: 'Restar', value: '-' },
+        { label: 'Multiplicar', value: '*' },
+        { label: 'Dividir', value: '/' }
+    ];
+
+    constructor(private confirmationService: ConfirmationService) { }
+
+    public ngOnInit(): void {
+        this.display = true;
+        this.setColumnOptions();
+    }
+
+    private setColumnOptions(): void {
+        const columns = this.currentQuery.filter((query: any) => query.column_type == 'numeric' && !query.whatif_column);
+        this.columnOptions = columns.map((column: any) => ({ label: column.display_name.default, value: column}))
+    }
+
+    public whatIfColumns(): any[] {
+        return this.currentQuery.filter((q: any) => q.whatif_column);
+    }
+
+    public addWhatIfColumn(): void {
+        if (this.whatIf.column && this.whatIf.operator && this.whatIf.value && this.whatIf.display_name) {
+            const whatIfColumn = _.cloneDeep(this.whatIf.column);
+            whatIfColumn.whatif_column = true;
+            whatIfColumn.display_name.default = this.whatIf.display_name;
+            whatIfColumn.whatif = { operator: this.whatIf.operator, value: this.whatIf.value, origin: this.whatIf.column };
+            this.currentQuery.push(whatIfColumn);
+            this.whatIf = {};
+        }
+    }
+
+    public getOperatorSymbol(op: string): string {
+        const map: Record<string, string> = { '+': '+', '-': '−', '*': '×', '/': '÷' };
+        return map[op] ?? op;
+    }
+
+    public generateAlias(): void {
+        if (this.whatIf.column && this.whatIf.operator && this.whatIf.value) {
+            this.whatIf.display_name = `${this.whatIf.column.display_name.default} (${this.whatIf.operator}${this.whatIf.value})`;
+        }
+    }
+
+    public removeWhatIfColumn(whatIfColumn: any): void {
+        const inx = this.currentQuery.indexOf(whatIfColumn);
+
+        if (inx >= 0) {
+            this.currentQuery.splice(inx, 1);
+        }
+    }
+
+    public disableApply(): boolean {
+        const hasAdded = this.whatIfColumns().length > 0;
+        const formFilled = this.whatIf.column && this.whatIf.operator && this.whatIf.value && this.whatIf.display_name;
+        return !hasAdded && !formFilled;
+    }
+
+    public onApplyWhatIfDialog(): void {
+        // If the form is filled, add the pending field before closing
+        if (this.whatIf.column && this.whatIf.operator && this.whatIf.value && this.whatIf.display_name) {
+            this.addWhatIfColumn();
+        }
+        this.whatIf = {};
+        this.display = false;
+        this.close.emit();
+    }
+
+    public onCloseWhatIfDialog(): void {
+        this.whatIf = {};
+        this.display = false;
+        this.close.emit();
+    }
+
+}

@@ -1,5 +1,5 @@
 import { Client as PgClient } from 'pg';
-import { PgBuilderService } from '../../query-builder/qb-systems/pg-builder-service';
+import { PgBuilderService } from '../../query-builder/qb-systems/pg-builder.service';
 import { AbstractConnection } from '../abstract-connection';
 import { AggregationTypes } from '../../../module/global/model/aggregation-types';
 
@@ -210,7 +210,8 @@ export class PgConnection extends AbstractConnection {
                     table_type: [],
                     columns: getColumns.rows,
                     relations: [],
-                    visible: true
+                    visible: true,
+                    ia_visibility: 'FULL'
                 };
                 resolve(newTable);
             } catch (err) {
@@ -234,7 +235,7 @@ export class PgConnection extends AbstractConnection {
 
         if (column.column_type === 'numeric') {
             column.aggregation_type = AggregationTypes.getValuesForNumbers();
-        } else if (column.column_type === 'text') {
+        } else if (column.column_type === 'text' || column.column_type === 'html') {
             column.aggregation_type = AggregationTypes.getValuesForText();
         } else {
             column.aggregation_type = AggregationTypes.getValuesForOthers();
@@ -245,6 +246,7 @@ export class PgConnection extends AbstractConnection {
         column.column_granted_roles = [];
         column.row_granted_roles = [];
         column.visible = true;
+        column.ia_visibility = 'FULL';
         column.tableCount = tableCount || 0;
 
         return column;

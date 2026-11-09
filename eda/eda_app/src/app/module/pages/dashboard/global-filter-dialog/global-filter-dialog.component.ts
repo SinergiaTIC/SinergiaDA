@@ -1,30 +1,75 @@
 import { CdkDragDrop, moveItemInArray } from "@angular/cdk/drag-drop";
 import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from "@angular/core";
 import { EdaPanel } from "@eda/models/model.index";
-import { AlertService, ChartUtilsService, DashboardService, FileUtiles, GlobalFiltersService, QueryBuilderService } from "@eda/services/service.index";
-import { EdaDatePickerConfig } from "@eda/shared/components/eda-date-picker/datePickerConfig";
-/* SDA CUSTOM */ import { DateUtils } from '@eda/services/utils/date-utils.service';
-/* SDA CUSTOM */ import { rangeDateFormats } from '@eda/shared/components/date-dialog/date-format-dialog.index';
+import { AlertService, ChartUtilsService, DashboardService, FileUtiles, GlobalFiltersService, QueryBuilderService, StyleProviderService } from "@eda/services/service.index";
+import { DatePickerConfig } from "@eda/shared/components/date-picker/datePickerConfig";
+import { getDateFilterOperatorLabel, getDateFilterValueLabel } from "@eda/shared/components/date-picker/date-filter-display.util";
 import * as _ from 'lodash';
+import { NgClass } from "@angular/common";
+import { DatePickerComponent } from "@eda/shared/components/shared-components.index";
+import { EdaDialog2Component } from "@eda/shared/components/shared-components.index";
+import { DropdownModule } from "primeng/dropdown";
+import { FormsModule, ReactiveFormsModule } from "@angular/forms";  
+import { CardModule } from "primeng/card";
+import { TreeSelectModule } from "primeng/treeselect";
+import { MultiSelectModule } from "primeng/multiselect";
+import { TooltipModule } from "primeng/tooltip";
+import { TableModule } from "primeng/table";
+import { ButtonModule } from "primeng/button";
+import { CommonModule } from '@angular/common';
+import { DragDropModule } from '@angular/cdk/drag-drop';
+import { AutoCompleteModule } from "primeng/autocomplete";
+import { SHOW_EMPTY_VALUE_IN_FILTERS } from '@eda/configs/customizable/customizable_merged';
+
+const ANGULAR_MODULES = [
+    CommonModule,
+    FormsModule,
+    ReactiveFormsModule,
+    NgClass,
+    DragDropModule,
+];
+
+const PRIMENG_MODULES = [
+    DropdownModule,
+    CardModule,
+    TreeSelectModule,
+    MultiSelectModule,
+    TooltipModule,
+    TableModule,
+    ButtonModule,
+    AutoCompleteModule
+];
+
+const STANDALONE_COMPONENTS = [
+    EdaDialog2Component,
+    DatePickerComponent,
+];
 
 @Component({
+    standalone: true,
     selector: 'app-global-filter-dialog',
     templateUrl: './global-filter-dialog.component.html',
-    styleUrls: ['../dashboard.component.css']
+    styleUrls: ['../dashboard.page.css', './global-filter-dialog.component.css'], 
+    imports: [ ANGULAR_MODULES, PRIMENG_MODULES, STANDALONE_COMPONENTS ],
 })
 export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
     @Input() globalFilter: any;
     @Input() globalFilterList: any[] = [];
     @Input() dataSource: any;
+    @Input() dashboard: any;
     public modelTables: any[] = [];
     @Input() panels: EdaPanel[] = [];
 
     public allPanels: any[] = [];
     public filteredPanels: any[] = [];
-    /* SDA CUSTOM */ private _pathBackup: { [panelId: string]: any } = {};
+    public loading: boolean = true;
+    public multipleSelection: boolean = true;
+    private _pathBackup: { [panelId: string]: any } = {};
 
     @Output() close: EventEmitter<any> = new EventEmitter<any>();
     @Output() globalFilterChange: EventEmitter<any> = new EventEmitter<any>();
+    @Output() deleteFilterEvent: EventEmitter<any> = new EventEmitter<any>();
+
 
     public display: boolean = false;
 
@@ -39,6 +84,13 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
     public unselecteddot: string = $localize`:@@unselecteddot:Paneles no filtrados`;
     public aliasValuePh : string = $localize`:@@aliasValuePh: Alias del filtro (opcional)`;
 
+    public tooltipApplyToAll: string = $localize`:@@tooltipApplyToAll:Si está activado, el filtro se aplica a todos los paneles del informe.`;
+    public tooltipAutocomplete: string = $localize`:@@tooltipAutocomplete:Si está activado, los valores se buscan dinámicamente mediante autocompletado.`;
+    public tooltipMandatory: string = $localize`:@@tooltipMandatory:Si está activado, el filtro debe tener un valor seleccionado para poder visualizar el informe.`;
+    public uniqueSelectionDescription: string = $localize`:@@uniqueSelectionDescription:Active esta opción para permitir la selección múltiple.`;
+    public multipleSelectionDescription: string = $localize`:@@multipleSelectionDescription:Si está activado, el filtro permite la selección de múltiples valores.`;
+    public tooltipVisibility: string = $localize`:@@tooltipVisibility:Público: todos pueden usarlo. Deshabilitado: otros usuarios pueden ver el filtro pero no modificarlo. Oculto: no visible para otros pero se aplica igualmente.`;
+
     public tables: any[] = [];
     public selectedTable: any;
 
@@ -46,11 +98,14 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
     public selectedColumn: any;
 
     public columnValues: any[] = [];
+    /** SDA CUSTOM - raw [label, id] rows behind columnValues, used to resolve selectedIdValues in onSelectedItemsChange */
+    public totalValues: any[] = [];
     public tableNodes: any[] = [];
+    public autoCompleteValues: string[];
+    private itemJustSelected = false;
+    public filterTimeout: any;
 
-    public totalValues: any [];
-
-    //valors del dropdown de filtrat de visiblitat
+    // Visibility filter dropdown values
     public publicRoHidden = [
         { label: $localize`:@@public:público`, value: `public` },
         { label: $localize`:@@readOnly:deshabilitado`, value: `readOnly` },
@@ -60,28 +115,27 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
     public formReady: boolean = false;
     public datePickerConfigs: any = {};
     public aliasValue: string = "";
+    public showAlias: boolean = false;
 
-    /* SDA CUSTOM */ public displayDateFormat: boolean = false;
-    /* SDA CUSTOM */ public dateFilterOperators: any[] = [];
-    /* SDA CUSTOM */ public rangeDateFormat: any[] = [];
-    /* SDA CUSTOM */ public filterSelected: any = null;
-    /* SDA CUSTOM */ public dateFormatSelected: any = null;
-    /* SDA CUSTOM */ public showDateFormatSelecter: boolean = true;
-    /* SDA CUSTOM */ public showEdaDatePicker: boolean = false;
-    /* SDA CUSTOM */ public showEdaDatePickerSingleSelection: boolean = false;
-    /* SDA CUSTOM */ public showEdaDatePickerMultipleSelection: boolean = false;
-    /* SDA CUSTOM */ public isDateFormatAvailable: boolean = false;
-    /* SDA CUSTOM */ public singleDateValue: Date = null;
-    /* SDA CUSTOM */ public multipleDateValues: Date[] = [];
+    get dialogHeight(): string {
+        return this.globalFilter?.queryMode === 'TREE' ? '80vh' : '70vh';
+    }
+
+    // Legacy
+    public applyToAll: boolean = false;
+    public isAutocompleted: boolean = false;
+    public isMandatory: boolean = false;
+    public isMandatoryError: boolean = false;
+    // selectedPanels: any[] = []
 
     constructor(
         private globalFilterService: GlobalFiltersService,
+        private styleProviderService: StyleProviderService,
         private dashboardService: DashboardService,
         private queryBuilderService: QueryBuilderService,
         private alertService: AlertService,
         private fileUtils: FileUtiles,
-        /* SDA CUSTOM */ private dateUtils: DateUtils,
-        /* SDA CUSTOM */ private chartUtilsService: ChartUtilsService
+        private chartUtils: ChartUtilsService,
     ) { }
 
     private sortByTittle = (a: any, b: any) => {
@@ -91,87 +145,112 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
     };
 
     public ngOnInit(): void {
-        this.display = true;
         this.modelTables = _.cloneDeep(this.dataSource.model.tables);
-        this.modelTables = _.cloneDeep(this.dataSource.model.tables);
+        this.initGlobalFilter();
+        this.formReady = true;
+    }
 
+    private initGlobalFilter() {
         if (this.globalFilter.isnew) {
             this.globalFilter = {
                 id: this.fileUtils.generateUUID(),
                 isnew: true,
+                isGlobal: true,
+                isAutocompleted: false,
+                isMandatory: false,
+                multipleSelection: true,
+                queryMode: this.globalFilter.queryMode,
                 data: null,
                 selectedTable: {},
                 selectedColumn: {},
                 selectedItems: [],
-                selectedIdValues: [],
                 panelList: [],
                 pathList: {},
                 type: '',
-                // selectedRange:this.selectedRange,
-                isGlobal: true,
-                visible: null,
+                visible: 'public',
             };
 
-            this.initPanels();
-            this.initTablesForFilter();
+            if (this.globalFilter.queryMode == 'TREE') this.initPanels();
+            else this.initPanelsLegacy();
 
+            this.initTablesForFilter();
         } else {
-            this.initPanels();
+            if (this.globalFilter.queryMode == 'TREE') this.initPanels();
+            else this.initPanelsLegacy();
+            this.isAutocompleted = this.globalFilter.isAutocompleted;
+            this.isMandatory = this.globalFilter.isMandatory;
+            this.multipleSelection = this.globalFilter.multipleSelection ?? true;
             this.initTablesForFilter();
 
             const tableName = this.globalFilter.selectedTable.table_name;
             this.globalFilter.selectedTable = _.cloneDeep(this.tables.find((table) => table.table_name == tableName));
 
             const columnName = this.globalFilter.selectedColumn.column_name;
-            // Recupero el display name que le haya podido poner.
+            // I retrieve the display name that may have been set
             const display_name_alias = this.globalFilter.selectedColumn.display_name.default;
 
             this.globalFilter.selectedColumn = _.cloneDeep(this.globalFilter.selectedTable.columns.find((col: any) => col.column_name == columnName));
 
-
             this.getColumnsByTable();
-            /* SDA CUSTOM */ if (this.globalFilter.selectedColumn?.column_type === 'date') {
-            /* SDA CUSTOM */     this.loadDatesFromFilter();
-            /* SDA CUSTOM */ } else {
-            /* SDA CUSTOM */     this.loadColumnValues();
-            /* SDA CUSTOM */ }
+            if (this.globalFilter.selectedColumn?.column_type === 'date') {
+                this.loadDatesFromFilter();
+            } else {
+                this.loadColumnValues();
+            }
             this.findPanelPathTables();
             this.aliasValue = display_name_alias;
-
-            /* SDA CUSTOM */ if (this.globalFilter.selectedColumn?.column_type === 'date') {
-            /* SDA CUSTOM */     this.initDateFilterConfig();
-            /* SDA CUSTOM */ }
         }
-
-        this.formReady = true;
+        // We retrieve the switch value
+        this.globalFilter.isAutocompleted = this.isAutocompleted;
+        this.globalFilter.isMandatory = this.isMandatory;
+        this.globalFilter.multipleSelection = this.multipleSelection;
     }
 
     public ngOnDestroy(): void {
         this.globalFilter = undefined;
         for (const panel of this.panels) {
-            if (panel.content) panel.content.globalFilterPaths = []; // Control for the text panels
+            if(panel?.content?.globalFilterPaths)
+                panel.content.globalFilterPaths = []
         }
+    }
+
+    public togglePanel(panel: any): void {
+        if (!panel.avaliable) {
+          console.log('not available');
+          this.initPanelsLegacy(panel);
+        } else if (panel.active) {
+          console.log('set to false');
+          panel.active = false;
+          this.filteredPanels = this.filteredPanels.filter((p: any) => p.id !== panel.id);
+          console.log(panel);
+        } else {
+          panel.active = true;
+          this.filteredPanels.push(panel);
+        }
+    }
+      
+    public isPanelSelected(panel: any): boolean {
+        const panels = [...new Set(this.filteredPanels.map((p) => p.id))];
+        return (panel.avaliable && panels.includes(panel.id)) && !panel.active_readonly;
+    }
+
+    public isPanelReadOnly(panel: any): boolean {
+        const panels = [...new Set(this.filteredPanels.map((p) => p.id))];
+        return panel.active_readonly && panels.includes(panel.id);
     }
 
     public initPanels() {
         this.allPanels = this.globalFilterService.filterPanels(this.modelTables, this.panels);
         this.allPanels = this.allPanels.sort(this.sortByTittle);
 
-        /* SDA CUSTOM */ // Override filterPanels BFS result for SQL panels: set avaliable=true and active=true
-        /* SDA CUSTOM */ // so they appear in the dialog exactly like tree panels (highlighted, treeSelect enabled).
-        /* SDA CUSTOM */ // Panels without a valid path get deactivated later in findPanelPathTables.
-        /* SDA CUSTOM */ for (const panel of this.allPanels) {
-        /* SDA CUSTOM */     if (panel.content?.query?.query?.queryMode === 'SQL') {
-        /* SDA CUSTOM */         panel.avaliable = true;
-        /* SDA CUSTOM */         panel.active = true;
-        /* SDA CUSTOM */     }
-        /* SDA CUSTOM */     if (panel.content && panel.content.globalFilterPaths === undefined) {
-        /* SDA CUSTOM */         panel.content.globalFilterPaths = [];
-        /* SDA CUSTOM */     }
-        /* SDA CUSTOM */ }
-
         if (this.globalFilter.isnew) {
             for (const panel of this.allPanels) {
+
+                // Disabling the panel if it is in SQL mode.
+                if(panel.content.query.query.queryMode === 'SQL') {
+                    panel.active = false;
+                }
+
                 this.globalFilter.pathList[panel.id] = {
                     selectedTableNodes: {},
                     path: []
@@ -193,76 +272,92 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
         this.filteredPanels = this.allPanels.filter((p: any) => p.avaliable && p.active);
     }
 
-    public initTablesForFilter() {
+    public initPanelsLegacy(panel?: any) {
+        if (!panel) {
+            panel = this.panels.filter(p => p.content)[0];
+        }
 
-        const queryTables = []; // si aparece
-        const excludedTables = this.modelTables.filter((t: any) => t.visible === false).map((t: any) => t.table_name); // Si aparece
+        const newPanel = this.panels.find((p: any) => p.id === panel.id);
+        this.allPanels = this.globalFilterService.panelsToDisplay(this.modelTables, this.panels, newPanel);
+        this.allPanels = this.allPanels.sort(this.sortByTittle);
 
-       // filteredPanels list is empty because all panels are disabled.
-        if(this.filteredPanels.length===0){
-            for (const panel of this.allPanels) {
-                /* SDA CUSTOM */ if (panel.content?.query?.query?.queryMode === 'SQL') continue; // SQL panels handled separately below
-                const panelQuery = panel.content.query.query;
-
-                for (const field of panelQuery.fields) {
-                    const table_id = field.table_id.split('.')[0];
-                    if (!queryTables.includes(table_id)) queryTables.push(table_id);
+        for (const displayPanel of this.allPanels) {
+            if (this.globalFilter.panelList?.length) {
+                const selectedPanelList = this.globalFilter.panelList;
+                 for (let displayPanel of this.allPanels) {
+                    if (!selectedPanelList.some((id: any) => displayPanel.id === id)) {
+                        displayPanel.active = false;
+                    }
                 }
             }
-        } else {
-            for (const panel of this.filteredPanels) {
-                /* SDA CUSTOM */ if (panel.content?.query?.query?.queryMode === 'SQL') continue; // SQL panels handled separately below
-                const panelQuery = panel.content.query.query;
 
-                for (const field of panelQuery.fields) {
-                    const table_id = field.table_id.split('.')[0];
-                    if (!queryTables.includes(table_id)) queryTables.push(table_id);
-                }
+            if (displayPanel.globalFilterMap?.length) {
+                displayPanel.active_readonly = true;
+                // const globalFilterMap = displayPanel.globalFilterMap;
+                // const targetCheck = globalFilterMap.some((gf: any) => gf.targetId === this.globalFilter.id);
             }
         }
 
-        const relatedMap = this.globalFilterService.relatedTables(queryTables, this.modelTables);
+        this.filteredPanels = this.allPanels.filter(p => (p.avaliable && p.active) || (p.active_readonly));
+
+        // Filter can only apply to all panels if all panels are in display list
+        this.applyToAll = (this.allPanels.length === this.filteredPanels.length);
+
+        // this.setTablesAndColumnsToFilter();
+    }
+
+    public initTablesForFilter() {
+        // Excluded tables
+        const excludedTables = this.modelTables
+            .filter((t: any) => t.visible === false)
+            .map((t: any) => t.table_name);
+
+        // Decide panels based on whether filters exist
+        const panels = this.filteredPanels.length
+            ? this.filteredPanels.filter((p: any) => !p.active_readonly)
+            : this.allPanels;
+
+        // Tables used in queries (we use a Set to avoid duplicate includes)
+        const queryTables = new Set<string>();
+        for (const panel of panels) {
+            const fields = panel.content.query.query.fields ?? [];
+            for (const field of fields) {
+                queryTables.add(field.table_id.split(".")[0]);
+            }
+        }
+
+        // Apply relationships and exclude non-visible ones
+        const relatedMap = this.globalFilterService.relatedTables([...queryTables], this.modelTables);
         relatedMap.forEach((value: any, key: string) => {
             if (!excludedTables.includes(key)) {
                 this.tables.push(value);
             }
         });
 
-        /* SDA CUSTOM */ // Add tables reachable from each SQL panel's origin table (BFS from that origin).
-        /* SDA CUSTOM */ // We run a separate relatedTables call per SQL panel so SQL origins never contaminate
-        /* SDA CUSTOM */ // the tree-panel BFS (which returns an empty Map if any table is unreachable).
-        /* SDA CUSTOM */ for (const panel of this.allPanels) {
-        /* SDA CUSTOM */     if (panel.content?.query?.query?.queryMode !== 'SQL') continue;
-        /* SDA CUSTOM */     const sqlOrigin: string = panel.content.query.query.fields?.[0]?.table_id?.split('.')[0];
-        /* SDA CUSTOM */     if (!sqlOrigin || excludedTables.includes(sqlOrigin)) continue;
-        /* SDA CUSTOM */     const sqlRelatedMap = this.globalFilterService.relatedTables([sqlOrigin], this.modelTables);
-        /* SDA CUSTOM */     sqlRelatedMap.forEach((value: any, key: string) => {
-        /* SDA CUSTOM */         if (!excludedTables.includes(key) && !this.tables.some((t: any) => t.table_name === key)) {
-        /* SDA CUSTOM */             this.tables.push(value);
-        /* SDA CUSTOM */         }
-        /* SDA CUSTOM */     });
-        /* SDA CUSTOM */ }
-
-        // this.tables = this.tables.slice();
-        this.tables.sort((a, b) => a.display_name.default.localeCompare(b.display_name.default));
+        // Sort by display_name
+        this.tables.sort((a, b) =>
+            a.display_name.default.localeCompare(b.display_name.default)
+        );
     }
 
     public onAddPanelForFilter(panel: any) {
 
         if (panel.avaliable) {
-            panel.active = !panel.active; /* SDA CUSTOM */ // SQL panels are now activatable
+            if(panel.content.query.query.queryMode != 'SQL') { // SQL panels cannot be activated
+                panel.active = !panel.active;
+            }
             this.filteredPanels = this.allPanels.filter((p: any) => p.avaliable && p.active);
 
             if (panel.active) {
-                /* SDA CUSTOM */ if (this._pathBackup[panel.id]) {
-                /* SDA CUSTOM */     this.globalFilter.pathList[panel.id] = _.cloneDeep(this._pathBackup[panel.id]);
-                /* SDA CUSTOM */     delete this._pathBackup[panel.id];
-                /* SDA CUSTOM */ }
-                /* SDA CUSTOM */ if (this.globalFilter.pathList[panel.id] && !this.isEmpty(this.globalFilter.pathList[panel.id].selectedTableNodes)) {
-                /* SDA CUSTOM */     if (!this.globalFilter.panelList.includes(panel.id)) {
-                /* SDA CUSTOM */         this.globalFilter.panelList.push(panel.id);
-                /* SDA CUSTOM */     }
-                /* SDA CUSTOM */ }
+                if (this._pathBackup[panel.id]) {
+                    this.globalFilter.pathList[panel.id] = _.cloneDeep(this._pathBackup[panel.id]);
+                    delete this._pathBackup[panel.id];
+                }
+                if (this.globalFilter.pathList[panel.id] && !this.isEmpty(this.globalFilter.pathList[panel.id].selectedTableNodes)) {
+                    if (!this.globalFilter.panelList.includes(panel.id)) {
+                        this.globalFilter.panelList.push(panel.id);
+                    }
+                }
                 this.initTablesForFilter();
                 this.findPanelPathTables();
             }
@@ -280,20 +375,31 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
     }
 
     public onChangeSelectedTable(): void {
-        this.globalFilter.selectedColumn = {};
+        this.globalFilter.selectedColumn = null;
+        this.aliasValue = '';
         this.getColumnsByTable();
         this.clearFilterPaths();
     }
 
     public onChangeSelectedColumn(): void {
-
+        this.aliasValue = '';
         this.globalFilter.selectedItems = [];
-        if (this.globalFilter.selectedColumn.column_type == 'date') {
-            this.loadDatesFromFilter();
-        } else {
-            this.loadColumnValues();
+
+        // Date filters use the date-picker (operator + dynamic range), not the autocomplete
+        // multiselect — autocomplete has no meaning for a date column.
+        if (this.globalFilter.selectedColumn?.column_type === 'date') {
+            this.isAutocompleted = false;
+            this.globalFilter.isAutocompleted = false;
         }
 
+        if(!this.globalFilter?.isAutocompleted){
+            if (this.globalFilter.selectedColumn.column_type == 'date') {
+                this.loadDatesFromFilter();
+            } else {
+                this.loadColumnValues();
+            }
+        }
+        
         this.findPanelPathTables();
     }
 
@@ -304,12 +410,12 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
             .filter((col: any) => col.visible === true)
             .forEach((col: any) => this.columns.push(col));
 
-        this.columns.sort((a, b) => a.value < b.value ? -1 : a.value > b.value ? 1 : 0);
+        
+            //this.columns.sort((a, b) => a.value < b.value ? -1 : a.value > b.value ? 1 : 0);
+        this.columns.sort((a, b) => a.display_name.default.localeCompare(b.display_name.default));
     }
 
     public async loadColumnValues() {
-
-
         const params = {
             table: this.globalFilter.selectedTable.table_name,
             dataSource: this.dataSource._id,
@@ -322,110 +428,130 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
             const query = this.queryBuilderService.normalQuery([this.globalFilter.selectedColumn], params);
             const response = await this.dashboardService.executeQuery(query).toPromise();
 
-            /* SDA CUSTOM */ if (!this.globalFilter) return;
+            if (Array.isArray(response) && response.length > 1) {
+                const data = response[1];
+                this.totalValues = data;
+                this.columnValues = data.filter(item => !!item[0]).map(item => ({ label: item[0], value: item[0] }));
 
-            // only if the value is a ValueListSource
-            if(this.globalFilter.selectedColumn.valueListSource !== undefined) {
-                // Generate all the label and id values for the valueListSource filters.
-
-                this.totalValues = response[1];
-                this.columnValues = response[1].filter(item => !!item[0] || item[0] === '').map(item => ({ label: item[0], value: item[0] }));
-
-                if(response[1].filter(item => item[0]?.toString() == '').length == 1) {
-                    this.columnValues = this.columnValues.filter(item => item.label !== '' && item.value !== '');
-                    this.columnValues.unshift(    { label: $localize`:@@emptyStringTxt:Vacío`  , value:  'emptyString' }  )
+                // If I have empty values I replace them with the empty string text — equivalent to IS NULL OR EMPTY
+                if (SHOW_EMPTY_VALUE_IN_FILTERS && data.filter(item => item[0]?.toString() === '').length > 0) {
+                    this.columnValues.unshift({ label: $localize`:@@emptyStringTxt:Vacío`, value: 'emptyString' });
                 }
-
-            } else {
-
-                if (Array.isArray(response) && response.length > 1) {
-                    const data = response[1];
-                    this.columnValues = data.filter(item => !!item[0] || item[0] === '').map(item => ({ label: item[0], value: item[0] }));
-                }
-
             }
-
         } catch (err) {
             this.alertService.addError(err)
             throw err;
         }
+        this.loading = false;
     }
 
-    onSelectedItemsChange(event: any) {
+    /**
+     * Resolves the internal code (id) behind each selected label, so the filter can be
+     * compared against the internal code column instead of the label when USE_VALUE_LIST_CODE_FOR_FILTERS
+     * is enabled. Harmless to compute unconditionally: assertGlobalFilterCodes() decides whether to use it.
+     */
+    public onSelectedItemsChange(values: any[]): void {
+        if (this.globalFilter.selectedColumn?.valueListSource === undefined) return;
 
-        if(this.globalFilter.selectedColumn.valueListSource !== undefined) {
-            this.globalFilter.selectedIdValues = event.map((e: any) => {
-                const value = this.totalValues.find(tv => e === tv[0]);
-                if(value) {
-                    return value[1]
-                } else {
-                    if(e === 'emptyString') return '';
-                }
-
-            })
-        }
-
+        this.globalFilter.selectedIdValues = (values || []).map((value: any) => {
+            const match = this.totalValues.find((tv: any) => tv[0] === value);
+            if (match) return match[1];
+            return value === 'emptyString' ? '' : undefined;
+        });
     }
 
     private loadDatesFromFilter() {
         const filter = this.globalFilter;
 
-        this.datePickerConfigs[filter.id] = new EdaDatePickerConfig();
+        this.datePickerConfigs[filter.id] = new DatePickerConfig();
         const config = this.datePickerConfigs[filter.id];
         config.dateRange = [];
         config.range = filter.selectedRange;
         config.filter = filter;
+        config.dateFilterType = filter.dateFilterType;
         if (filter.selectedItems.length > 0) {
             if (!filter.selectedRange) {
-                const items: string[] = Array.isArray(filter.selectedItems[0])
-                    ? filter.selectedItems[0]
-                    : filter.selectedItems;
-                /* SDA CUSTOM */ if (filter.dateFilterType === 'in' || filter.dateFilterType === 'not_in') {
-                /* SDA CUSTOM */     config.dateRange = items.map((d: string) => new Date(d.replace(/-/g, '/')));
-                /* SDA CUSTOM */ } else {
-                    const firstDate = items[0];
-                    const lastDate = items[items.length - 1];
+                // Static in/not_in stores its discrete dates nested as selectedItems[0]
+                const isDiscreteList = Array.isArray(filter.selectedItems[0]);
+                if (isDiscreteList) {
+                    // Restore every discrete date, not just the first and last
+                    config.dateRange = filter.selectedItems[0].map((d: string) => new Date(d.replace(/-/g, '/')));
+                } else {
+                    let firstDate = filter.selectedItems[0];
+                    let lastDate = filter.selectedItems[filter.selectedItems.length - 1];
                     config.dateRange.push(new Date(firstDate.replace(/-/g, '/')));
                     config.dateRange.push(new Date(lastDate.replace(/-/g, '/')));
-                /* SDA CUSTOM */ }
+                }
             }
         }
-
-        this.initDateFilterConfig();
     }
 
-    public processPickerEvent(event): void {
+    public processPickerEvent(event: any): void {
+        this.globalFilter.dateFilterType = event.operator;
+
         if (event.dates) {
             const dtf = new Intl.DateTimeFormat('en', { year: 'numeric', month: '2-digit', day: '2-digit' });
-            if (!event.dates[1]) {
-                event.dates[1] = event.dates[0];
+            const toStr = (date: Date) => {
+                const [{ value: mo }, , { value: da }, , { value: ye }] = dtf.formatToParts(date);
+                return `${ye}-${mo}-${da}`;
+            };
+
+            const isStaticInNotIn = ['in', 'not_in'].includes(event.operator) && !event.range;
+            if (isStaticInNotIn) {
+                // Discrete, individually picked dates — kept as a single nested list, not a start/end pair
+                this.globalFilter.selectedItems = [event.dates.filter((d: any) => d != null).map(toStr)];
+            } else {
+                if (!event.dates[1]) {
+                    event.dates[1] = event.dates[0];
+                }
+                this.globalFilter.selectedItems = [event.dates[0], event.dates[1]].map(toStr);
             }
 
-            let stringRange = [event.dates[0], event.dates[1]]
-                .map(date => {
-                    let [{ value: mo }, , { value: da }, , { value: ye }] = dtf.formatToParts(date);
-                    return `${ye}-${mo}-${da}`
-                });
-
-            this.globalFilter.selectedItems = stringRange;
             this.globalFilter.selectedRange = event.range;
+            this.globalFilter.dynamicValue = event.range;
         }
+
+        if (!event.dates) {
+            this.globalFilter.selectedItems = [];
+        }
+
+        if (!event.range) {
+            this.globalFilter.selectedRange = null;
+            this.globalFilter.dynamicValue = null;
+        }
+
+        this.loadDatesFromFilter();
+    }
+
+    /** Just the value part of the date-picker's own summary — e.g. "03-08-26 - 09-08-26" or "Avui" */
+    public getDateFilterValueText(): string {
+        const items = this.globalFilter.selectedItems;
+        const isDiscreteList = Array.isArray(items?.[0]);
+        return getDateFilterValueLabel({
+            operator: this.globalFilter.dateFilterType,
+            dynamicRangeValue: this.globalFilter.dynamicValue || this.globalFilter.selectedRange,
+            value1: isDiscreteList ? items[0] : items?.[0],
+            value2: isDiscreteList ? undefined : items?.[1],
+        });
+    }
+
+    /** Just the operator part of the date-picker's own summary, e.g. "=" or "Entre" — rendered as a badge */
+    public getDateFilterOperatorText(): string {
+        return getDateFilterOperatorLabel(this.globalFilter.dateFilterType, this.chartUtils.filterTypesLabels);
     }
 
     public findPanelPathTables() {
+        if (this.globalFilter.queryMode !== 'TREE') return;
+
         for (const panel of this.filteredPanels) {
-            /* SDA CUSTOM */ if (panel.content?.query?.query?.queryMode === 'SQL') {
-            /* SDA CUSTOM */     if (!this.globalFilter.panelList.includes(panel.id)) {
-            /* SDA CUSTOM */         this.globalFilter.panelList.push(panel.id);
-            /* SDA CUSTOM */     }
-            /* SDA CUSTOM */     continue;
-            /* SDA CUSTOM */ }
+            if (panel.content?.query?.query?.queryMode === 'SQL') continue;
+
             panel.content.globalFilterPaths = this.globalFilterService.loadTablePaths(this.modelTables, panel);
 
-            /* SDA CUSTOM */ if (this.isPathStaleForPanel(panel)) {
-            /* SDA CUSTOM */     this.globalFilter.pathList[panel.id] = { selectedTableNodes: {}, path: [] };
-            /* SDA CUSTOM */     this.globalFilter.panelList = this.globalFilter.panelList.filter((id: string) => id !== panel.id);
-            /* SDA CUSTOM */ }
+            if (this.isPathStaleForPanel(panel)) {
+                this.globalFilter.pathList[panel.id] = { selectedTableNodes: {}, path: [] };
+                this.globalFilter.panelList = this.globalFilter.panelList.filter((id: string) => id !== panel.id);
+            }
 
             if (this.globalFilter.pathList[panel.id] && this.isEmpty(this.globalFilter.pathList[panel.id].selectedTableNodes)) {
                 const panelQuery = panel.content.query.query;
@@ -439,130 +565,152 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
                     this.globalFilter.pathList[panel.id].selectedTableNodes = node;
 
                     if (!this.globalFilter.panelList.includes(panel.id)) this.globalFilter.panelList.push(panel.id);
-                /* SDA CUSTOM */} else {
-                /* SDA CUSTOM */    this.tryAutoFillSingleHop(panel);
-                /* SDA CUSTOM */    if (this.isEmpty(this.globalFilter.pathList[panel.id].selectedTableNodes)) {
-                /* SDA CUSTOM */        this.tryCopyPathFromSiblingPanel(panel);
-                /* SDA CUSTOM */    }
-                /* SDA CUSTOM */}
+                } else {
+                    this.tryAutoFillSingleHop(panel);
+                    if (this.isEmpty(this.globalFilter.pathList[panel.id].selectedTableNodes)) {
+                        this.tryCopyPathFromSiblingPanel(panel);
+                    }
+                }
             }
         }
     }
 
-    /* SDA CUSTOM */private isPathStaleForPanel(panel: any): boolean {
-    /* SDA CUSTOM */    const pathEntry = this.globalFilter.pathList[panel.id];
-    /* SDA CUSTOM */    if (!pathEntry || this.isEmpty(pathEntry.selectedTableNodes)) return false;
-    /* SDA CUSTOM */
-    /* SDA CUSTOM */    const currentRootTable = panel.content.query.query.rootTable;
-    /* SDA CUSTOM */    if (!currentRootTable) return false; // paneles sin rootTable (ej. SQL): no validar
-    /* SDA CUSTOM */
-    /* SDA CUSTOM */    const path: any[] = pathEntry.path || [];
-    /* SDA CUSTOM */
-    /* SDA CUSTOM */    if (path.length === 0) {
-    /* SDA CUSTOM */        // 0 saltos: el inicio está en selectedTableNodes.table_id
-    /* SDA CUSTOM */        return pathEntry.selectedTableNodes?.table_id !== currentRootTable;
-    /* SDA CUSTOM */    } else {
-    /* SDA CUSTOM */        // 1+ saltos: el inicio está en la primera parte del primer join
-    /* SDA CUSTOM */        return path[0][0]?.split('.')[0] !== currentRootTable;
-    /* SDA CUSTOM */    }
-    /* SDA CUSTOM */}
+    /**
+     * A previously-saved path is stale when the panel's rootTable no longer matches
+     * the table the path was built from (e.g. the user changed the panel's root table
+     * after the global filter's path was set).
+     */
+    private isPathStaleForPanel(panel: any): boolean {
+        const pathEntry = this.globalFilter.pathList[panel.id];
+        if (!pathEntry || this.isEmpty(pathEntry.selectedTableNodes)) return false;
 
-    /* SDA CUSTOM */private tryAutoFillSingleHop(panel: any): void {
-    /* SDA CUSTOM */    const filterTableName = this.globalFilter.selectedTable?.table_name;
-    /* SDA CUSTOM */    const rootTableName = panel.content.query.query.rootTable;
-    /* SDA CUSTOM */
-    /* SDA CUSTOM */    if (!filterTableName || !rootTableName || filterTableName === rootTableName) return;
-    /* SDA CUSTOM */
-    /* SDA CUSTOM */    const rootTable = this.modelTables.find((t: any) => t.table_name === rootTableName);
-    /* SDA CUSTOM */    if (!rootTable) return;
-    /* SDA CUSTOM */
-    /* SDA CUSTOM */    // Mirror onNodeExpand: exclude only bridge and autorelation (visible is not a filter in the tree).
-    /* SDA CUSTOM */    const directRelations = (rootTable.relations || []).filter((rel: any) =>
-    /* SDA CUSTOM */        !rel.bridge && !rel.autorelation && rel.target_table === filterTableName
-    /* SDA CUSTOM */    );
-    /* SDA CUSTOM */
-    /* SDA CUSTOM */    // If multiple relations exist to the same table, use the first primary; user can override manually.
-    /* SDA CUSTOM */    if (directRelations.length === 0) return;
-    /* SDA CUSTOM */
-    /* SDA CUSTOM */    const rel = directRelations[0];
-    /* SDA CUSTOM */    const sourceJoin = `${rel.source_table || rootTableName}.${rel.source_column[0]}`;
-    /* SDA CUSTOM */    const joinChildId = `${rel.target_table}.${rel.target_column[0]}`;
-    /* SDA CUSTOM */    const child_id = `${joinChildId}.${rel.source_column[0]}`;
-    /* SDA CUSTOM */    const joins: any[] = [[sourceJoin, joinChildId]];
-    /* SDA CUSTOM */
-    /* SDA CUSTOM */    const childLabel = rel.display_name?.default || `${rel.source_column[0]} - ${rel.target_table}`;
-    /* SDA CUSTOM */
-    /* SDA CUSTOM */    const syntheticNode = {
-    /* SDA CUSTOM */        child_id,
-    /* SDA CUSTOM */        type: 'child',
-    /* SDA CUSTOM */        label: childLabel,
-    /* SDA CUSTOM */        autorelation: false,
-    /* SDA CUSTOM */        joins
-    /* SDA CUSTOM */    };
-    /* SDA CUSTOM */
-    /* SDA CUSTOM */    this.globalFilter.pathList[panel.id].table_id = child_id;
-    /* SDA CUSTOM */    this.globalFilter.pathList[panel.id].path = joins;
-    /* SDA CUSTOM */    this.globalFilter.pathList[panel.id].selectedTableNodes = syntheticNode;
-    /* SDA CUSTOM */
-    /* SDA CUSTOM */    if (!this.globalFilter.panelList.includes(panel.id)) {
-    /* SDA CUSTOM */        this.globalFilter.panelList.push(panel.id);
-    /* SDA CUSTOM */    }
-    /* SDA CUSTOM */}
+        const currentRootTable = panel.content.query.query.rootTable;
 
-    /* SDA CUSTOM */private tryCopyPathFromSiblingPanel(panel: any): void {
-    /* SDA CUSTOM */    const rootTableName = panel.content.query.query.rootTable;
-    /* SDA CUSTOM */
-    /* SDA CUSTOM */    const sibling = this.filteredPanels.find((p: any) => {
-    /* SDA CUSTOM */        if (p.id === panel.id) return false;
-    /* SDA CUSTOM */        if (p.content.query.query.rootTable !== rootTableName) return false;
-    /* SDA CUSTOM */        const siblingPath = this.globalFilter.pathList[p.id];
-    /* SDA CUSTOM */        return siblingPath && !this.isEmpty(siblingPath.selectedTableNodes);
-    /* SDA CUSTOM */    });
-    /* SDA CUSTOM */
-    /* SDA CUSTOM */    if (!sibling) return;
-    /* SDA CUSTOM */
-    /* SDA CUSTOM */    const siblingPath = this.globalFilter.pathList[sibling.id];
-    /* SDA CUSTOM */    this.globalFilter.pathList[panel.id].table_id = siblingPath.table_id;
-    /* SDA CUSTOM */    this.globalFilter.pathList[panel.id].path = (siblingPath.path || []).map((j: any[]) => [...j]);
-    /* SDA CUSTOM */    this.globalFilter.pathList[panel.id].selectedTableNodes = _.cloneDeep(siblingPath.selectedTableNodes);
-    /* SDA CUSTOM */
-    /* SDA CUSTOM */    if (!this.globalFilter.panelList.includes(panel.id)) {
-    /* SDA CUSTOM */        this.globalFilter.panelList.push(panel.id);
-    /* SDA CUSTOM */    }
-    /* SDA CUSTOM */}
+        if (!currentRootTable) return false; // panels without rootTable (e.g. SQL): don't validate
 
-    /* SDA CUSTOM */private propagatePathToSimilarPanels(sourcePanelId: string, table_id: string, node: any): void {
-    /* SDA CUSTOM */    const sourcePanel = this.filteredPanels.find((p: any) => p.id === sourcePanelId);
-    /* SDA CUSTOM */    if (!sourcePanel) return;
-    /* SDA CUSTOM */
-    /* SDA CUSTOM */    const sourceRootTable = sourcePanel.content.query.query.rootTable;
-    /* SDA CUSTOM */
-    /* SDA CUSTOM */    const nodeSnapshot = {
-    /* SDA CUSTOM */        child_id: node.child_id,
-    /* SDA CUSTOM */        table_id: node.table_id,
-    /* SDA CUSTOM */        type: node.type,
-    /* SDA CUSTOM */        label: node.label,
-    /* SDA CUSTOM */        autorelation: node.autorelation,
-    /* SDA CUSTOM */        joins: (node.joins || []).map((j: any[]) => [...j])
-    /* SDA CUSTOM */    };
-    /* SDA CUSTOM */
-    /* SDA CUSTOM */    for (const panel of this.filteredPanels) {
-    /* SDA CUSTOM */        if (panel.id === sourcePanelId) continue;
-    /* SDA CUSTOM */
-    /* SDA CUSTOM */        const panelRootTable = panel.content.query.query.rootTable;
-    /* SDA CUSTOM */        const panelPath = this.globalFilter.pathList[panel.id];
-    /* SDA CUSTOM */
-    /* SDA CUSTOM */        if (panelRootTable === sourceRootTable && panelPath && this.isEmpty(panelPath.selectedTableNodes)) {
-    /* SDA CUSTOM */            panelPath.table_id = table_id;
-    /* SDA CUSTOM */            panelPath.path = (node.joins || []).map((j: any[]) => [...j]);
-    /* SDA CUSTOM */            panelPath.selectedTableNodes = { ...nodeSnapshot };
-    /* SDA CUSTOM */
-    /* SDA CUSTOM */            if (!this.globalFilter.panelList.includes(panel.id)) {
-    /* SDA CUSTOM */                this.globalFilter.panelList.push(panel.id);
-    /* SDA CUSTOM */            }
-    /* SDA CUSTOM */        }
-    /* SDA CUSTOM */    }
-    /* SDA CUSTOM */}
+        const path: any[] = pathEntry.path || [];
+
+        if (path.length === 0) {
+
+            // 0 hops: the start is at selectedTableNodes.table_id
+            return pathEntry.selectedTableNodes?.table_id !== currentRootTable;
+        } else {
+            // 1+ hops: the start is at the first part of the first join
+            return path[0][0]?.split('.')[0] !== currentRootTable;
+        }
+    }
+
+    /**
+     * Auto-completes the path when the filtered table is a single relation hop away
+     * from the panel's root table, so the user doesn't have to configure it manually.
+     */
+
+    private tryAutoFillSingleHop(panel: any): void {
+        const filterTableName = this.globalFilter.selectedTable?.table_name;
+        const rootTableName = panel.content.query.query.rootTable;
+
+        if (!filterTableName || !rootTableName || filterTableName === rootTableName) return;
+
+        const rootTable = this.modelTables.find((t: any) => t.table_name === rootTableName);
+        if (!rootTable) return;
+
+        // Mirror onNodeExpand: exclude only bridge and autorelation (visible is not a filter in the tree).
+        const directRelations = (rootTable.relations || []).filter((rel: any) =>
+            !rel.bridge && !rel.autorelation && rel.target_table === filterTableName
+        );
+
+
+        // If multiple relations exist to the same table, use the first primary; user can override manually.
+        if (directRelations.length === 0) return;
+
+        const rel = directRelations[0];
+        const sourceJoin = `${rel.source_table || rootTableName}.${rel.source_column[0]}`;
+        const joinChildId = `${rel.target_table}.${rel.target_column[0]}`;
+        const child_id = `${joinChildId}.${rel.source_column[0]}`;
+        const joins: any[] = [[sourceJoin, joinChildId]];
+
+        const childLabel = rel.display_name?.default || `${rel.source_column[0]} - ${rel.target_table}`;
+
+        const syntheticNode = {
+            child_id,
+            type: 'child',
+            label: childLabel,
+            autorelation: false,
+            joins
+        };
+
+        this.globalFilter.pathList[panel.id].table_id = child_id;
+        this.globalFilter.pathList[panel.id].path = joins;
+        this.globalFilter.pathList[panel.id].selectedTableNodes = syntheticNode;
+
+        if (!this.globalFilter.panelList.includes(panel.id)) {
+            this.globalFilter.panelList.push(panel.id);
+        }
+    }
+
+    /**
+     * If another panel sharing the same root table already has a valid path configured,
+     * replicate it so the report stays consistent (e.g. after duplicating a panel).
+     */
+    private tryCopyPathFromSiblingPanel(panel: any): void {
+        const rootTableName = panel.content.query.query.rootTable;
+
+        const sibling = this.filteredPanels.find((p: any) => {
+            if (p.id === panel.id) return false;
+            if (p.content.query.query.rootTable !== rootTableName) return false;
+            const siblingPath = this.globalFilter.pathList[p.id];
+            return siblingPath && !this.isEmpty(siblingPath.selectedTableNodes);
+        });
+
+        if (!sibling) return;
+
+        const siblingPath = this.globalFilter.pathList[sibling.id];
+        this.globalFilter.pathList[panel.id].table_id = siblingPath.table_id;
+        this.globalFilter.pathList[panel.id].path = (siblingPath.path || []).map((j: any[]) => [...j]);
+        this.globalFilter.pathList[panel.id].selectedTableNodes = _.cloneDeep(siblingPath.selectedTableNodes);
+
+        if (!this.globalFilter.panelList.includes(panel.id)) {
+            this.globalFilter.panelList.push(panel.id);
+        }
+    }
+
+    /**
+     * Replicates a manually-selected path to other panels that share the same root table
+     * and don't have a path defined yet, to keep the report consistent.
+     */
+
+    private propagatePathToSimilarPanels(sourcePanelId: string, table_id: string, node: any): void {
+        const sourcePanel = this.filteredPanels.find((p: any) => p.id === sourcePanelId);
+        if (!sourcePanel) return;
+
+        const sourceRootTable = sourcePanel.content.query.query.rootTable;
+
+        const nodeSnapshot = {
+            child_id: node.child_id,
+            table_id: node.table_id,
+            type: node.type,
+            label: node.label,
+            autorelation: node.autorelation,
+            joins: (node.joins || []).map((j: any[]) => [...j])
+        };
+
+        for (const panel of this.filteredPanels) {
+            if (panel.id === sourcePanelId) continue;
+
+            const panelRootTable = panel.content.query.query.rootTable;
+            const panelPath = this.globalFilter.pathList[panel.id];
+
+            if (panelRootTable === sourceRootTable && panelPath && this.isEmpty(panelPath.selectedTableNodes)) {
+                panelPath.table_id = table_id;
+                panelPath.path = (node.joins || []).map((j: any[]) => [...j]);
+                panelPath.selectedTableNodes = { ...nodeSnapshot };
+
+                if (!this.globalFilter.panelList.includes(panel.id)) {
+                    this.globalFilter.panelList.push(panel.id);
+                }
+            }
+        }
+    }
 
     public onNodeExpand(panel: any, event: any): void {
         const node = event?.node;
@@ -594,7 +742,12 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
                 this.globalFilter.panelList.push(panel.id);
             }
 
-            /* SDA CUSTOM */ this.propagatePathToSimilarPanels(panel.id, table_id, node);
+            this.propagatePathToSimilarPanels(panel.id, table_id, node);
+
+            // const existsPath = pathList.find((path: any) => path.panel_id == panel.id);
+            // pathList.push({ panel_id: panel.id, path: node.joins || [] });
+            // this.globalFilter.table_id = table_id;
+            this.propagatePathToSimilarPanels(panel.id, table_id, node);
         }
     }
 
@@ -609,7 +762,6 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
             this.globalFilter.isdeleted = true;
         }
 
-        // this.selectedValues = [];
         this.globalFilterList.splice(this.globalFilterList.indexOf(filter), 0);
     }
 
@@ -617,9 +769,9 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
         let label = '';
 
         if (globalFilter.selectedColumn) {
-            label = globalFilter.selectedColumn.display_name.default;
+            label = globalFilter.selectedColumn.display_name.default ?? '';
         } else {
-            label = globalFilter.column.label;
+            label = globalFilter.column?.label ?? '';
         }
 
         return label;
@@ -631,20 +783,137 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
 
     private validateGlobalFilter(): boolean {
         let valid = true;
-        if (this.aliasValue != "") this.globalFilter.selectedColumn.display_name.default = this.aliasValue;
+        const column = this.globalFilter.selectedColumn;
+        if (!column?.column_name) return false;
+
+        if (this.aliasValue) {
+            this.globalFilter.selectedColumn.display_name.default = this.aliasValue;
+        }
+
         const availablePanels = this.filteredPanels.map((p) => p.id);
 
         if (!this.globalFilter.isdeleted) {
             for (const key in this.globalFilter.pathList) {
-                /* SDA CUSTOM */ const panel = this.filteredPanels.find((p: any) => p.id === key);
-                /* SDA CUSTOM */ if (panel?.content?.query?.query?.queryMode === 'SQL') continue;
                 if (availablePanels.includes(key) && _.isEmpty(this.globalFilter.pathList[key].selectedTableNodes)) {
                     valid = false;
                 }
             }
         }
+        if(this.isMandatory){
+            // Date operators that filter on the field being (not) empty do not need a value
+            const noValueDateTypes = ['not_null', 'not_null_nor_empty', 'null_or_empty'];
+            valid = noValueDateTypes.includes(this.globalFilter.dateFilterType) || this.globalFilter.selectedItems.length > 0;
+            this.isMandatoryError = !valid;
+        }
 
         return valid;
+    }
+
+
+    onAddValue(event: KeyboardEvent, filter: any) {
+        // If a selection has just occurred, we do nothing
+        if (this.itemJustSelected) {
+            this.itemJustSelected = false; // reset
+            return;
+        }
+        event.preventDefault(); 
+
+        if (this.autoCompleteValues && this.autoCompleteValues.length > 0) {
+            const selected = filter.selectedItems || [];
+            const firstItem: any = this.autoCompleteValues.find((item: any) => !selected.includes(item.value));
+
+            if (firstItem) {
+                filter.selectedItems = [...selected, firstItem];
+                (event.target as HTMLInputElement).value = '';
+                this.autoCompleteValues = [];
+            }
+        }
+
+    }
+
+
+public async loadFilterAutoComplete(event: any, filtro: any) {
+    const minLength = 2;
+    if (!event.query || event.query.length < minLength) {
+        this.autoCompleteValues = [];
+        return;
+    }
+
+    this.itemJustSelected = false;
+
+    const delay = 300;
+    clearTimeout(this.filterTimeout);
+
+    this.filterTimeout = setTimeout(async () => {
+        let targetTable: string;
+        let targetColumn: any;
+
+        if (filtro.selectedTable) {
+            targetTable = filtro.selectedTable.table_name;
+            targetColumn = filtro.selectedColumn;
+            targetColumn.ordenation_type = targetColumn.ordenation_type || "Asc";
+        } else {
+            targetTable = filtro.table.value;
+            targetColumn = filtro.column.value;
+            targetColumn.ordenation_type = targetColumn.ordenation_type || "Asc";
+        }
+
+        const queryParams = {
+            table: targetTable,
+            dataSource: this.dashboard.dataSource._id,
+            dashboard: this.dashboard.dashboardId,
+            panel: '',
+            joinType: "inner",
+            rootTable: filtro.selectedTable?.table_name || '',
+            groupByEnabled: true,
+            queryMode: filtro.queryMode,
+            forSelector: true,
+            queryLimit: 5000,
+            filters: [{
+                filter_column: filtro.selectedColumn.column_name,
+                filter_column_type: filtro.selectedColumn.column_type,
+                filter_elements: [{ value1: [event.query] }],
+                filter_id: filtro.id,
+                filter_table: filtro.selectedTable?.table_name || '',
+                filter_type: "like",
+                isGlobal: filtro.isGlobal,
+                joins: [],
+            }]
+        };
+
+        // Build the query
+        const query = this.queryBuilderService.normalQuery([targetColumn], queryParams);
+
+        // Execute the query
+        const res = await this.dashboardService.executeQuery(query).toPromise();
+
+        // Ensure that res[1] is a valid array
+        const rawData = Array.isArray(res[1]) ? res[1] : [];
+
+        // Map only valid elements
+        const data = rawData
+            .filter(item => item && item[0] !== undefined && item[0] !== null && item[0] !== '')
+            .map(item => ({ label: item[0], value: item[0] }));
+
+        // Initialize globalFilterList if it does not exist
+        this.globalFilterList = this.globalFilterList || [];
+
+        // Find the filter by id
+        let gfItem = this.globalFilterList.find((gf: any) => gf.id == filtro.id);
+
+        // If it does not exist, create it
+        if (!gfItem) {
+            gfItem = { id: filtro.id, data: [] };
+        }
+
+        // Assign only valid elements
+        gfItem.data = data.length ? data : [];
+
+        // Safely assign to the autocomplete
+        const selected = filtro.selectedItems || [];
+        this.autoCompleteValues = (gfItem.data.filter(item => item?.label) || []).filter(item => !selected.includes(item.value));
+
+        }, delay);
     }
 
     private clear(): void {
@@ -659,12 +928,14 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
     }
 
     private clearFilterPaths(clearPanel?: any) {
+        if (this.globalFilter.queryMode !== 'TREE') return;
+
         if (clearPanel) {
             this.globalFilter.panelList = this.globalFilter.panelList.filter((p) => p !== clearPanel.id);
-            /* SDA CUSTOM */ const current = this.globalFilter.pathList[clearPanel.id];
-            /* SDA CUSTOM */ if (current && !this.isEmpty(current.selectedTableNodes)) {
-            /* SDA CUSTOM */     this._pathBackup[clearPanel.id] = _.cloneDeep(current);
-            /* SDA CUSTOM */ }
+            const current = this.globalFilter.pathList[clearPanel.id];
+            if (current && !this.isEmpty(current.selectedTableNodes)) {
+                this._pathBackup[clearPanel.id] = _.cloneDeep(current);
+            }
             this.globalFilter.pathList[clearPanel.id] = {
                 selectedTableNodes: {},
                 path: []
@@ -673,7 +944,7 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
         } else {
             this.globalFilter.panelList = [];
             this.globalFilter.pathList = {};
-            /* SDA CUSTOM */ this._pathBackup = {};
+            this._pathBackup = {};
 
             for (const panel of this.allPanels) {
                 panel.content.globalFilterPaths = [];
@@ -700,33 +971,129 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
         }
     }
 
+    onItemSelected(filtro: any) {
+        // If we select manually with Enter, we don’t want the first one
+        this.itemJustSelected = true;
+        filtro.selectedItems = filtro.selectedItems.map((item: any) => {
+            if (item && typeof item === 'object' && 'value' in item) {
+                return item.value;
+            }
+            return item;
+        });
+        filtro.selectedItems = _.uniq(filtro.selectedItems);
+        // Update global filter
+    }
+
     private findTable(tableName: string) {
         return this.modelTables.find((table: any) => table.table_name === tableName);
     }
 
-    /* SDA CUSTOM */public getDisplayPathStr(node: any): string {
-    /* SDA CUSTOM */    if (!node) return '&nbsp';
+    public getDisplayPathStr(node: any): string {
+        if (!node) return '&nbsp';
 
-    /* SDA CUSTOM */    if ((node.joins || []).length > 0) {
-    /* SDA CUSTOM */        let str = '';
-    /* SDA CUSTOM */        for (const join of node.joins) {
-    /* SDA CUSTOM */            const table = this.findTable(join[0]?.split('.')[0]);
-    /* SDA CUSTOM */            if (table) {
-    /* SDA CUSTOM */                str += `<strong>${table.display_name.default}</strong>&nbsp;<i class="pi pi-angle-right"></i>&nbsp;`;
-    /* SDA CUSTOM */            }
+        if ((node.joins || []).length > 0) {
+            let str = '';
+            for (const join of node.joins) {
+                const table = this.findTable(join[0]?.split('.')[0]);
+                if (table) {
+                    str += `<strong>${table.display_name.default}</strong>&nbsp;<i class="pi pi-angle-right"></i>&nbsp;`;
+                }
             }
-    /* SDA CUSTOM */        return str + `<strong>${node.label}</strong>`;
-    /* SDA CUSTOM */    }
-
-    /* SDA CUSTOM */    return `<strong>${node.label}</strong>`;
-    /* SDA CUSTOM */}
-
-    public onApply(): void {
-        if (this.globalFilter.selectedColumn?.column_type === 'date') {
-            this.saveDateFilterChanges();
+            return str + `<strong>${node?.label}</strong>`;
         }
 
+        return `<strong>${node?.label}</strong>`;
+    }
+
+    public applyToAllCheck() {
+        this.applyToAll = !this.applyToAll;
+
+        if (this.applyToAll){
+            this.filteredPanels = this.allPanels.filter(p => p.avaliable === true);
+
+            const selectedPanelList = this.globalFilter.panelList || [];
+            for (let displayPanel of this.allPanels) {
+                if (!selectedPanelList.some((id: any) => displayPanel.id === id)) {
+                    displayPanel.active = false;
+                }
+            }
+        }
+    }
+    
+    
+    public autocompleteFilterCheck(filtro: any) {
+        this.isAutocompleted = !this.isAutocompleted;
+        this.globalFilter.isAutocompleted = this.isAutocompleted;
+    }
+    public mandatoryFilterCheck(filtro: any) {
+        this.isMandatory = !this.isMandatory;
+        this.globalFilter.isMandatory = this.isMandatory;
+    }
+    public multipleSelectionCheck() {
+        this.multipleSelection = !this.multipleSelection;
+        this.globalFilter.multipleSelection = this.multipleSelection;
+        this.globalFilter.selectedItems = [];
+    }
+
+    public onSingleSelectChange(): void {
+        if (this.globalFilter.selectedItems?.length > 1) {
+            this.globalFilter.selectedItems = [this.globalFilter.selectedItems[this.globalFilter.selectedItems.length - 1]];
+        }
+    }
+
+    public toggleShowAlias() {
+        this.showAlias = !this.showAlias;
+    }
+
+    public onDelete() {
+
+        this.styleProviderService.loadedPanels = this.allPanels.length;
+        // Selected filter name
+        const filterNameID = this.globalFilter.id;
+        
+        // Index of the filter in the list
+        const index = this.globalFilterList.findIndex(f => f.id === filterNameID);
+        
         if (this.validateGlobalFilter()) {
+            // We remove values from the list if the filter is valid
+            this.globalFilter.selectedItems = [];
+            this.globalFilter.isdeleted = true;
+
+            if (this.globalFilter.queryMode != 'TREE') {
+                this.globalFilter.panelList = this.filteredPanels.map((p: any) => p.id);
+                this.globalFilter.applyToAll = this.applyToAll;
+            }
+
+            // Sending the true value for filter deletion BEFORE close destroys the component
+            this.deleteFilterEvent.emit(true);
+
+            // Apply list filters
+            this.globalFilterChange.emit(this.globalFilter);
+            this.display = false;
+            this.close.emit(true);
+
+            // Interval for visually removing the filter
+            const interval = setInterval(() => {
+                if (this.styleProviderService.loadedPanels === 0) {
+                    this.globalFilterList.splice(index, 1);
+                    clearInterval(interval); // Stop the interval
+                }
+            }, 100);
+        }
+    }
+
+    public onApply(): void {
+
+        console.log('hola....')
+
+        if (this.validateGlobalFilter()) {
+            this.globalFilter.multipleSelection = this.multipleSelection;
+
+            if (this.globalFilter.queryMode != 'TREE') {
+                this.globalFilter.panelList = this.filteredPanels.map((p: any) => p.id);
+                this.globalFilter.applyToAll = this.applyToAll;
+            }
+
             this.globalFilterChange.emit(this.globalFilter);
             this.display = false;
             this.close.emit(true);
@@ -740,390 +1107,11 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
         this.close.emit(false);
     }
 
-    onOpenDateFormatDialog() {
-        this.displayDateFormat = true;
+    public disableApply(): boolean {
+        // Date operators that filter on the field being (not) empty do not need a value
+        const noValueDateTypes = ['not_null', 'not_null_nor_empty', 'null_or_empty'];
+        if (noValueDateTypes.includes(this.globalFilter?.dateFilterType)) return false;
+        return this.isMandatory && this.globalFilter.selectedItems.length < 1;
     }
-
-    /* SDA CUSTOM */
-    /* SDA CUSTOM */onCloseDateFormatDialog(event: any) {
-    /* SDA CUSTOM */    this.displayDateFormat = false;
-    /* SDA CUSTOM */    if (!event) return;
-    /* SDA CUSTOM */
-    /* SDA CUSTOM */    const { dateFormatSet, filterSelected } = event;
-    /* SDA CUSTOM */    const dtf = new Intl.DateTimeFormat('en', { year: 'numeric', month: '2-digit', day: '2-digit' });
-    /* SDA CUSTOM */    const toStr = (d: Date): string => {
-    /* SDA CUSTOM */        const [{ value: mo }, , { value: da }, , { value: ye }] = dtf.formatToParts(d);
-    /* SDA CUSTOM */        return `${ye}-${mo}-${da}`;
-    /* SDA CUSTOM */    };
-    /* SDA CUSTOM */
-    /* SDA CUSTOM */    this.globalFilter.dateFilterType = filterSelected.value;
-    /* SDA CUSTOM */
-    /* SDA CUSTOM */    if (dateFormatSet.dynamic) {
-    /* SDA CUSTOM */        const dates = this.dateUtils.getRange(dateFormatSet.dynamicValue);
-    /* SDA CUSTOM */        this.globalFilter.selectedRange = dateFormatSet.dynamicValue;
-    /* SDA CUSTOM */        this.globalFilter.dynamicValue = dateFormatSet.dynamicValue;
-    /* SDA CUSTOM */
-    /* SDA CUSTOM */        if (filterSelected.value === 'in' || filterSelected.value === 'not_in') {
-    /* SDA CUSTOM */            this.globalFilter.selectedItems = [toStr(dates[0]), toStr(dates[1])];
-    /* SDA CUSTOM */        } else {
-    /* SDA CUSTOM */            this.globalFilter.selectedItems = [toStr(dates[0]), toStr(dates[1])];
-    /* SDA CUSTOM */        }
-    /* SDA CUSTOM */    } else {
-    /* SDA CUSTOM */        this.globalFilter.selectedRange = null;
-    /* SDA CUSTOM */        this.globalFilter.dynamicValue = null;
-    /* SDA CUSTOM */
-    /* SDA CUSTOM */        const noValueTypes = ['not_null', 'not_null_nor_empty', 'null_or_empty'];
-    /* SDA CUSTOM */        if (noValueTypes.includes(filterSelected.value)) {
-    /* SDA CUSTOM */            this.globalFilter.selectedItems = [];
-    /* SDA CUSTOM */        } else {
-    /* SDA CUSTOM */            const val = dateFormatSet.dateValue;
-    /* SDA CUSTOM */            const isStaticInNotIn = (filterSelected.value === 'in' || filterSelected.value === 'not_in') && Array.isArray(val.value1);
-    /* SDA CUSTOM */            if (isStaticInNotIn) {
-    /* SDA CUSTOM */                this.globalFilter.selectedItems = [val.value1];
-    /* SDA CUSTOM */            } else {
-    /* SDA CUSTOM */                this.globalFilter.selectedItems = val.value2
-    /* SDA CUSTOM */                    ? [val.value1, val.value2]
-    /* SDA CUSTOM */                    : Array.isArray(val.value1) ? val.value1 : [val.value1];
-    /* SDA CUSTOM */            }
-    /* SDA CUSTOM */        }
-    /* SDA CUSTOM */    }
-    /* SDA CUSTOM */}
-
-    /* SDA CUSTOM */
-    /* SDA CUSTOM */ getRangeLabel(value: string): string {
-    /* SDA CUSTOM */     return rangeDateFormats.find((r: any) => r.value === value)?.label || value;
-    /* SDA CUSTOM */ }
-
-/* SDA CUSTOM */
-    /* SDA CUSTOM */getDateFormatButtonLabel(filter?: any): string {
-    /* SDA CUSTOM */    const gf = filter || this.globalFilter;
-    /* SDA CUSTOM */    const op = gf.dateFilterType;
-    /* SDA CUSTOM */    if (!op) return 'Date Format';
-
-    /* SDA CUSTOM */    const noValueTypes = ['not_null', 'not_null_nor_empty', 'null_or_empty'];
-    /* SDA CUSTOM */    if (noValueTypes.includes(op)) return this.getOperatorLabel(op);
-
-    /* SDA CUSTOM */    const fmt = (s: string) => {
-    /* SDA CUSTOM */        if (!s) return '';
-    /* SDA CUSTOM */        const [ye, mo, da] = s.split('-');
-    /* SDA CUSTOM */        return `${da}-${mo}-${ye.slice(2)}`;
-    /* SDA CUSTOM */    };
-
-    /* SDA CUSTOM */    const dynamicValue = gf.dynamicValue || gf.selectedRange;
-    /* SDA CUSTOM */    if (dynamicValue && dynamicValue !== 'customDate') {
-    /* SDA CUSTOM */        return `${this.getOperatorLabel(op)} : ${this.getRangeLabel(dynamicValue)}`;
-    /* SDA CUSTOM */    }
-
-    /* SDA CUSTOM */    const items = gf.selectedItems;
-    /* SDA CUSTOM */    if (!items || items.length === 0) return 'Date Format';
-    /* SDA CUSTOM */    if (Array.isArray(items[0])) return `${this.getOperatorLabel(op)} : ${(items[0] as string[]).map(fmt).join(', ')}`;
-    /* SDA CUSTOM */    if (items.length === 1 || !items[1]) return `${this.getOperatorLabel(op)} : ${fmt(items[0])}`;
-    /* SDA CUSTOM */    return `${this.getOperatorLabel(op)} : ${fmt(items[0])} - ${fmt(items[1])}`;
-    /* SDA CUSTOM */}
-
-    /* SDA CUSTOM */
-    /* SDA CUSTOM */private getOperatorLabel(op: string): string {
-    /* SDA CUSTOM */    const labels: Record<string, string> = {
-    /* SDA CUSTOM */        'between':           this.chartUtilsService.filterTypesLabels.find((value: any) => value.value === 'between').label,
-    /* SDA CUSTOM */        'in':                this.chartUtilsService.filterTypesLabels.find((value: any) => value.value === 'in').label,
-    /* SDA CUSTOM */        'not_in':            this.chartUtilsService.filterTypesLabels.find((value: any) => value.value === 'not_in').label,
-    /* SDA CUSTOM */        'not_null':          this.chartUtilsService.filterTypesLabels.find((value: any) => value.value === 'not_null').label,
-    /* SDA CUSTOM */        'not_null_nor_empty':this.chartUtilsService.filterTypesLabels.find((value: any) => value.value === 'not_null_nor_empty').label,
-    /* SDA CUSTOM */        'null_or_empty':     this.chartUtilsService.filterTypesLabels.find((value: any) => value.value === 'null_or_empty').label,
-    /* SDA CUSTOM */        '=':                 this.chartUtilsService.filterTypesLabels.find((value: any) => value.value === '=').label,
-    /* SDA CUSTOM */        '!=':                this.chartUtilsService.filterTypesLabels.find((value: any) => value.value === '!=').label,
-    /* SDA CUSTOM */        '>':                 this.chartUtilsService.filterTypesLabels.find((value: any) => value.value === '>').label,
-    /* SDA CUSTOM */        '<':                 this.chartUtilsService.filterTypesLabels.find((value: any) => value.value === '<').label,
-    /* SDA CUSTOM */        '>=':                this.chartUtilsService.filterTypesLabels.find((value: any) => value.value === '>=').label,
-    /* SDA CUSTOM */        '<=':                this.chartUtilsService.filterTypesLabels.find((value: any) => value.value === '<=').label,
-    /* SDA CUSTOM */    };
-    /* SDA CUSTOM */    return labels[op] || op;
-    /* SDA CUSTOM */}
-
-    /* SDA CUSTOM */ private initDateFilterConfig(): void {
-    /* SDA CUSTOM */     this.dateFilterOperators = this.chartUtilsService.filterTypes.filter((ft: any) => ft.value !== 'like' && ft.value !== 'not_like');
-    /* SDA CUSTOM */     this.rangeDateFormat = [...rangeDateFormats];
-    /* SDA CUSTOM */     this.resetDateFilterUI();
-    /* SDA CUSTOM */     this.loadExistingDateFilterValues();
-    /* SDA CUSTOM */ }
-
-    /* SDA CUSTOM */ private resetDateFilterUI(): void {
-    /* SDA CUSTOM */     this.showDateFormatSelecter = true;
-    /* SDA CUSTOM */     this.showEdaDatePicker = false;
-    /* SDA CUSTOM */     this.showEdaDatePickerSingleSelection = false;
-    /* SDA CUSTOM */     this.showEdaDatePickerMultipleSelection = false;
-    /* SDA CUSTOM */     this.isDateFormatAvailable = false;
-    /* SDA CUSTOM */ }
-
-    /* SDA CUSTOM */ private loadExistingDateFilterValues(): void {
-    /* SDA CUSTOM */     const gf = this.globalFilter;
-
-    /* SDA CUSTOM */     // Try to find the filter type from various sources
-    /* SDA CUSTOM */     let dateFilterType = gf.dateFilterType;
-    /* SDA CUSTOM */     
-    /* SDA CUSTOM */     // If no dateFilterType, try to infer from selectedItems count
-    /* SDA CUSTOM */     if (!dateFilterType && gf.selectedItems?.length > 0) {
-    /* SDA CUSTOM */         // If 2 or more items, likely between/not_between or in/not_in
-    /* SDA CUSTOM */         dateFilterType = gf.selectedItems.length >= 2 ? 'between' : '=';
-    /* SDA CUSTOM */     }
-    /* SDA CUSTOM */     
-    /* SDA CUSTOM */     // If still no type but has selectedRange, default to between
-    /* SDA CUSTOM */     if (!dateFilterType && gf.selectedRange && gf.selectedRange !== 'customDate') {
-    /* SDA CUSTOM */         dateFilterType = 'between';
-    /* SDA CUSTOM */     }
-    /* SDA CUSTOM */     
-    /* SDA CUSTOM */     if (!dateFilterType && !gf.selectedItems?.length && !gf.selectedRange) {
-    /* SDA CUSTOM */         return;
-    /* SDA CUSTOM */     }
-
-    /* SDA CUSTOM */     this.filterSelected = this.dateFilterOperators.find(op => op.value === dateFilterType);
-
-    /* SDA CUSTOM */     if (!this.filterSelected && gf.selectedRange) {
-    /* SDA CUSTOM */         const hasMultipleItems = Array.isArray(gf.selectedItems?.[0]) || (gf.selectedItems?.length > 1);
-    /* SDA CUSTOM */         this.filterSelected = hasMultipleItems
-    /* SDA CUSTOM */             ? this.dateFilterOperators.find(op => op.value === 'not_in')
-    /* SDA CUSTOM */             : this.dateFilterOperators.find(op => op.value === 'between');
-    /* SDA CUSTOM */     }
-    /* SDA CUSTOM */     this.isDateFormatAvailable = true;
-
-    /* SDA CUSTOM */     const noDateNeeded = ['not_null', 'not_null_nor_empty', 'null_or_empty'];
-    /* SDA CUSTOM */     if (noDateNeeded.includes(dateFilterType)) {
-    /* SDA CUSTOM */         this.isDateFormatAvailable = false;
-    /* SDA CUSTOM */         return;
-    /* SDA CUSTOM */     }
-
-    /* SDA CUSTOM */     const dynamicValue = gf.dynamicValue || gf.selectedRange;
-    /* SDA CUSTOM */     if (dynamicValue && dynamicValue !== 'customDate') {
-    /* SDA CUSTOM */         this.dateFormatSelected = this.rangeDateFormat.find(r => r.value === dynamicValue);
-    /* SDA CUSTOM */         if (!this.dateFormatSelected) {
-    /* SDA CUSTOM */             this.dateFormatSelected = { label: this.getRangeLabel(dynamicValue), value: dynamicValue };
-    /* SDA CUSTOM */         }
-    /* SDA CUSTOM */         this.adjustRangeForOperator();
-    /* SDA CUSTOM */     } else if (dynamicValue === 'customDate' || gf.selectedItems?.length > 0) {
-    /* SDA CUSTOM */         this.dateFormatSelected = { label: $localize`:@@DatePickerCustomDate:Seleccionar fecha`, value: 'customDate' };
-    /* SDA CUSTOM */         this.adjustRangeForOperator();
-    /* SDA CUSTOM */     }
-    /* SDA CUSTOM */ }
-
-    /* SDA CUSTOM */ private adjustRangeForOperator(): void {
-    /* SDA CUSTOM */     if (!this.filterSelected) return;
-
-    /* SDA CUSTOM */     const noDateNeeded = ['not_null', 'not_null_nor_empty', 'null_or_empty'];
-    /* SDA CUSTOM */     if (noDateNeeded.includes(this.filterSelected.value)) {
-    /* SDA CUSTOM */         return;
-    /* SDA CUSTOM */     }
-
-    /* SDA CUSTOM */     if(['=', '!=', '>', '<', '>=', '<='].includes(this.filterSelected.value)) {
-    /* SDA CUSTOM */         this.showDateFormatSelecter = true;
-    /* SDA CUSTOM */         this.showEdaDatePicker = false;
-    /* SDA CUSTOM */         this.showEdaDatePickerSingleSelection = false;
-    /* SDA CUSTOM */         this.showEdaDatePickerMultipleSelection = false;
-    /* SDA CUSTOM */         this.rangeDateFormat = rangeDateFormats.filter((ft: any, index: number) => index < 5);
-    /* SDA CUSTOM */         this.rangeDateFormat.push(rangeDateFormats[rangeDateFormats.length - 1]);
-    /* SDA CUSTOM */         if (this.dateFormatSelected?.value === 'customDate') {
-    /* SDA CUSTOM */             this.showEdaDatePickerSingleSelection = true;
-    /* SDA CUSTOM */             this.initDatePickerConfigForExisting();
-    /* SDA CUSTOM */         } else if (this.dateFormatSelected && !this.rangeDateFormat.find(r => r.value === this.dateFormatSelected.value)) {
-    /* SDA CUSTOM */             this.rangeDateFormat.unshift(this.dateFormatSelected);
-    /* SDA CUSTOM */         }
-    /* SDA CUSTOM */         return;
-    /* SDA CUSTOM */     }
-
-    /* SDA CUSTOM */     if(['in', 'not_in'].includes(this.filterSelected.value)) {
-    /* SDA CUSTOM */         this.showDateFormatSelecter = true;
-    /* SDA CUSTOM */         this.showEdaDatePicker = false;
-    /* SDA CUSTOM */         this.showEdaDatePickerSingleSelection = false;
-    /* SDA CUSTOM */         this.showEdaDatePickerMultipleSelection = false;
-    /* SDA CUSTOM */         this.rangeDateFormat = rangeDateFormats.filter((ft: any, index: number) => index >= 5);
-    /* SDA CUSTOM */         if (this.dateFormatSelected?.value === 'customDate') {
-    /* SDA CUSTOM */             this.showEdaDatePickerMultipleSelection = true;
-    /* SDA CUSTOM */             this.initDatePickerConfigForExisting();
-    /* SDA CUSTOM */         } else if (this.dateFormatSelected && !this.rangeDateFormat.find(r => r.value === this.dateFormatSelected.value)) {
-    /* SDA CUSTOM */             this.rangeDateFormat.unshift(this.dateFormatSelected);
-    /* SDA CUSTOM */         }
-    /* SDA CUSTOM */         return;
-    /* SDA CUSTOM */     }
-
-    /* SDA CUSTOM */     if(['between', 'not_between'].includes(this.filterSelected.value)) {
-    /* SDA CUSTOM */         this.showDateFormatSelecter = false;
-    /* SDA CUSTOM */         this.showEdaDatePicker = true;
-    /* SDA CUSTOM */         this.showEdaDatePickerSingleSelection = false;
-    /* SDA CUSTOM */         this.showEdaDatePickerMultipleSelection = false;
-    /* SDA CUSTOM */         this.initDatePickerConfigForExisting();
-    /* SDA CUSTOM */         return;
-    /* SDA CUSTOM */     }
-
-    /* SDA CUSTOM */     this.showDateFormatSelecter = true;
-    /* SDA CUSTOM */     this.showEdaDatePicker = false;
-    /* SDA CUSTOM */     this.showEdaDatePickerSingleSelection = false;
-    /* SDA CUSTOM */     this.showEdaDatePickerMultipleSelection = false;
-    /* SDA CUSTOM */     this.rangeDateFormat = [...rangeDateFormats];
-    /* SDA CUSTOM */ }
-
-    /* SDA CUSTOM */ public handleDateFilterOperatorChange(operator: any): void {
-    /* SDA CUSTOM */     this.showDateFormatSelecter = true;
-    /* SDA CUSTOM */     this.showEdaDatePicker = false;
-    /* SDA CUSTOM */     this.showEdaDatePickerSingleSelection = false;
-    /* SDA CUSTOM */     this.showEdaDatePickerMultipleSelection = false;
-
-    /* SDA CUSTOM */     if (operator !== undefined && operator !== null) {
-    /* SDA CUSTOM */         this.isDateFormatAvailable = true;
-    /* SDA CUSTOM */     } else {
-    /* SDA CUSTOM */         this.dateFormatSelected = null;
-    /* SDA CUSTOM */         this.isDateFormatAvailable = false;
-    /* SDA CUSTOM */         this.rangeDateFormat = [];
-    /* SDA CUSTOM */         return;
-    /* SDA CUSTOM */     }
-
-    /* SDA CUSTOM */     const noDateNeeded = ['not_null', 'not_null_nor_empty', 'null_or_empty'];
-    /* SDA CUSTOM */     if (noDateNeeded.includes(operator.value)) {
-    /* SDA CUSTOM */         this.isDateFormatAvailable = false;
-    /* SDA CUSTOM */         this.showEdaDatePicker = false;
-    /* SDA CUSTOM */         this.showEdaDatePickerSingleSelection = false;
-    /* SDA CUSTOM */         this.showEdaDatePickerMultipleSelection = false;
-    /* SDA CUSTOM */         return;
-    /* SDA CUSTOM */     }
-
-    /* SDA CUSTOM */     if(['=', '!=', '>', '<', '>=', '<='].includes(operator.value)) {
-    /* SDA CUSTOM */         this.dateFormatSelected = null;
-    /* SDA CUSTOM */         this.rangeDateFormat = rangeDateFormats.filter((ft: any, index: number) => index < 5);
-    /* SDA CUSTOM */         this.rangeDateFormat.push(rangeDateFormats[rangeDateFormats.length - 1]);
-    /* SDA CUSTOM */         return;
-    /* SDA CUSTOM */     }
-
-    /* SDA CUSTOM */     if(['in', 'not_in'].includes(operator.value)) {
-    /* SDA CUSTOM */         this.dateFormatSelected = null;
-    /* SDA CUSTOM */         this.rangeDateFormat = rangeDateFormats.filter((ft: any, index: number) => index >= 5);
-    /* SDA CUSTOM */         return;
-    /* SDA CUSTOM */     }
-
-    /* SDA CUSTOM */     if(['between', 'not_between'].includes(operator.value)) {
-    /* SDA CUSTOM */         this.dateFormatSelected = { label: $localize`:@@DatePickerCustomDate:Seleccionar fecha`, value: 'customDate' };
-    /* SDA CUSTOM */         this.showDateFormatSelecter = false;
-    /* SDA CUSTOM */         this.showEdaDatePicker = true;
-    /* SDA CUSTOM */         this.initDatePickerConfigForExisting();
-    /* SDA CUSTOM */         return;
-    /* SDA CUSTOM */     }
-    /* SDA CUSTOM */ }
-
-    /* SDA CUSTOM */ public handleDateFilterFormatChange(format: any): void {
-    /* SDA CUSTOM */     this.showEdaDatePickerSingleSelection = false;
-    /* SDA CUSTOM */     this.showEdaDatePickerMultipleSelection = false;
-
-    /* SDA CUSTOM */     if (!format) {
-    /* SDA CUSTOM */         this.globalFilter.selectedRange = null;
-    /* SDA CUSTOM */         return;
-    /* SDA CUSTOM */     }
-
-    /* SDA CUSTOM */     if(['=', '!=', '>', '<', '>=', '<='].includes(this.filterSelected?.value) && format.value === 'customDate') {
-    /* SDA CUSTOM */         this.showEdaDatePickerSingleSelection = true;
-    /* SDA CUSTOM */         this.initDatePickerConfigForExisting();
-    /* SDA CUSTOM */         return;
-    /* SDA CUSTOM */     }
-
-    /* SDA CUSTOM */     if(['in', 'not_in'].includes(this.filterSelected?.value) && format.value === 'customDate') {
-    /* SDA CUSTOM */         this.showEdaDatePickerMultipleSelection = true;
-    /* SDA CUSTOM */         this.initDatePickerConfigForExisting();
-    /* SDA CUSTOM */         return;
-    /* SDA CUSTOM */     }
-
-    /* SDA CUSTOM */     this.globalFilter.selectedRange = format.value;
-    /* SDA CUSTOM */ }
-
-    /* SDA CUSTOM */ private initDatePickerConfigForExisting(): void {
-    /* SDA CUSTOM */     const filter = this.globalFilter;
-    /* SDA CUSTOM */     this.datePickerConfigs[filter.id] = new EdaDatePickerConfig();
-    /* SDA CUSTOM */     const config = this.datePickerConfigs[filter.id];
-    /* SDA CUSTOM */     config.dateRange = [];
-    /* SDA CUSTOM */     config.range = null;
-
-    /* SDA CUSTOM */     if (filter.selectedItems?.length > 0) {
-    /* SDA CUSTOM */         const items = Array.isArray(filter.selectedItems[0]) ? filter.selectedItems[0] : filter.selectedItems;
-    /* SDA CUSTOM */         /* SDA CUSTOM */ if (this.filterSelected?.value === 'in' || this.filterSelected?.value === 'not_in') {
-    /* SDA CUSTOM */             /* SDA CUSTOM */ config.dateRange = items.map((d: string) => new Date(d.replace(/-/g, '/')));
-    /* SDA CUSTOM */         } else {
-    /* SDA CUSTOM */             const firstDate = items[0];
-    /* SDA CUSTOM */             const lastDate = items[items.length - 1];
-    /* SDA CUSTOM */             if (firstDate) config.dateRange.push(new Date(firstDate.replace(/-/g, '/')));
-    /* SDA CUSTOM */             if (lastDate) config.dateRange.push(new Date(lastDate.replace(/-/g, '/')));
-    /* SDA CUSTOM */         }
-    /* SDA CUSTOM */     }
-    /* SDA CUSTOM */ }
-
-    /* SDA CUSTOM */ public saveDateFilterChanges(): void {
-    /* SDA CUSTOM */     if (this.globalFilter.selectedColumn?.column_type !== 'date') return;
-    /* SDA CUSTOM */     if (!this.filterSelected) return;
-
-    /* SDA CUSTOM */     this.globalFilter.dateFilterType = this.filterSelected.value;
-
-    /* SDA CUSTOM */     const noDateNeeded = ['not_null', 'not_null_nor_empty', 'null_or_empty'];
-    /* SDA CUSTOM */     if (noDateNeeded.includes(this.filterSelected.value)) {
-    /* SDA CUSTOM */         this.globalFilter.selectedRange = null;
-    /* SDA CUSTOM */         this.globalFilter.dynamicValue = null;
-    /* SDA CUSTOM */         this.globalFilter.selectedItems = [];
-    /* SDA CUSTOM */         return;
-    /* SDA CUSTOM */     }
-
-    /* SDA CUSTOM */     if (this.dateFormatSelected && this.dateFormatSelected.value !== 'customDate') {
-    /* SDA CUSTOM */         this.globalFilter.selectedRange = this.dateFormatSelected.value;
-    /* SDA CUSTOM */         this.globalFilter.dynamicValue = this.dateFormatSelected.value;
-    /* SDA CUSTOM */         const dates = this.dateUtils.getRange(this.dateFormatSelected.value);
-    /* SDA CUSTOM */         const dtf = new Intl.DateTimeFormat('en', { year: 'numeric', month: '2-digit', day: '2-digit' });
-    /* SDA CUSTOM */         const toStr = (d: Date): string => {
-    /* SDA CUSTOM */             const [{ value: mo }, , { value: da }, , { value: ye }] = dtf.formatToParts(d);
-    /* SDA CUSTOM */             return `${ye}-${mo}-${da}`;
-    /* SDA CUSTOM */         };
-    /* SDA CUSTOM */         this.globalFilter.selectedItems = [toStr(dates[0]), toStr(dates[1])];
-    /* SDA CUSTOM */     } else {
-    /* SDA CUSTOM */         // Static date selected via inline picker: clear dynamic values
-    /* SDA CUSTOM */         this.globalFilter.selectedRange = null;
-    /* SDA CUSTOM */         this.globalFilter.dynamicValue = null;
-    /* SDA CUSTOM */     }
-    /* SDA CUSTOM */ }
-
-    /* SDA CUSTOM */ public onApplyDateFilterFromPicker(event: any): void {
-    /* SDA CUSTOM */     if (!event.dates) return;
-    /* SDA CUSTOM */     const dtf = new Intl.DateTimeFormat('en', { year: 'numeric', month: '2-digit', day: '2-digit' });
-    /* SDA CUSTOM */     const dates = Array.isArray(event.dates) ? event.dates : [event.dates, event.dates];
-    /* SDA CUSTOM */     if (!dates[1]) dates[1] = dates[0];
-    /* SDA CUSTOM */     const stringRange = dates.map(date => {
-    /* SDA CUSTOM */         const [{ value: mo }, , { value: da }, , { value: ye }] = dtf.formatToParts(date);
-    /* SDA CUSTOM */         return `${ye}-${mo}-${da}`;
-    /* SDA CUSTOM */     });
-    /* SDA CUSTOM */     const singleValueOps = ['=', '!=', '>', '<', '>=', '<='];
-    /* SDA CUSTOM */     const multiValueOps = ['in', 'not_in'];
-    /* SDA CUSTOM */     if (singleValueOps.includes(this.filterSelected?.value)) {
-    /* SDA CUSTOM */         this.globalFilter.selectedItems = [stringRange[0]];
-    /* SDA CUSTOM */         this.globalFilter.selectedRange = 'customDate';
-    /* SDA CUSTOM */         this.globalFilter.dynamicValue = null;
-    /* SDA CUSTOM */     } else if (multiValueOps.includes(this.filterSelected?.value)) {
-    /* SDA CUSTOM */         this.globalFilter.selectedItems = [stringRange];
-    /* SDA CUSTOM */         this.globalFilter.selectedRange = 'customDate';
-    /* SDA CUSTOM */         this.globalFilter.dynamicValue = null;
-    /* SDA CUSTOM */     } else {
-    /* SDA CUSTOM */         this.globalFilter.selectedItems = stringRange;
-    /* SDA CUSTOM */         this.globalFilter.selectedRange = event.range;
-    /* SDA CUSTOM */     }
-    /* SDA CUSTOM */ }
-
-    /* SDA CUSTOM */ public onSingleDateSelected(date: Date): void {
-    /* SDA CUSTOM */     if (!date) return;
-    /* SDA CUSTOM */     const dtf = new Intl.DateTimeFormat('en', { year: 'numeric', month: '2-digit', day: '2-digit' });
-    /* SDA CUSTOM */     const [{ value: mo }, , { value: da }, , { value: ye }] = dtf.formatToParts(date);
-    /* SDA CUSTOM */     const dateStr = `${ye}-${mo}-${da}`;
-    /* SDA CUSTOM */     this.globalFilter.selectedItems = [dateStr];
-    /* SDA CUSTOM */     this.globalFilter.selectedRange = 'customDate';
-    /* SDA CUSTOM */ }
-
-    /* SDA CUSTOM */ public onMultipleDateSelected(dates: Date[]): void {
-    /* SDA CUSTOM */     if (!dates || dates.length === 0) return;
-    /* SDA CUSTOM */     const dtf = new Intl.DateTimeFormat('en', { year: 'numeric', month: '2-digit', day: '2-digit' });
-    /* SDA CUSTOM */     const stringDates = dates.map(date => {
-    /* SDA CUSTOM */         const [{ value: mo }, , { value: da }, , { value: ye }] = dtf.formatToParts(date);
-    /* SDA CUSTOM */         return `${ye}-${mo}-${da}`;
-    /* SDA CUSTOM */     });
-    /* SDA CUSTOM */     this.globalFilter.selectedItems = [stringDates];
-    /* SDA CUSTOM */     this.globalFilter.selectedRange = 'customDate';
-    /* SDA CUSTOM */ }
 
 }

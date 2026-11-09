@@ -1,9 +1,6 @@
 
 <div #parentDiv  class="text-center w-100 h-100" >
-<!-- Esto debería ser opcional
-  <h5 style="margin-left: -20px; margin-bottom: 0px; ">{{inject.dataDescription.numericColumns[0].name}}</h5>
--->
   <p-knob  [(ngModel)]="inject.data.values[0][0]" [min]="limits[0]" [max]="limits[1]" [size]="size" [disabled]="true"
-  [valueColor]="color" rangeColor="#C9C9C9" [textClass]="class"  [comprareValue]="comprareValue" ></p-knob>
+  [valueColor]="color"  [textClass]="class"  [comprareValue]="comprareValue" [gradientMode]="inject.semaphoreColor" [ngStyle]="getStyle()"></p-knob>
 
 </div>

@@ -1,13 +1,16 @@
-import { Component, OnInit, Input, ViewChild, AfterViewInit, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit, Input, ViewChild, AfterViewInit, Output, EventEmitter, NgZone } from '@angular/core';
 import { EdaChart } from './eda-chart';
 import { BaseChartDirective } from 'ng2-charts';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
-import { ChartsColors } from '@eda/configs/index';
+import { FormsModule } from '@angular/forms'; 
+import { CommonModule } from '@angular/common';
+import { NgChartsModule } from 'ng2-charts';
 
 @Component({
+    standalone: true,
     selector: 'eda-chart',
     templateUrl: './eda-chart.component.html',
-    styleUrls: []
+    imports: [FormsModule, CommonModule, NgChartsModule]
 })
 
 export class EdaChartComponent implements OnInit, AfterViewInit {
@@ -17,51 +20,9 @@ export class EdaChartComponent implements OnInit, AfterViewInit {
 
     public update: boolean;
     public chartPlugins = [  ChartDataLabels  ];
-    public static defaultChartColors: any[] = EdaChartComponent.generateChartColors();
-    public static defaultPieColors: any[] = EdaChartComponent.generatePiecolors();
+    
 
-    public static generateChartColors(iterations?: number) {
-        let MAX_ITERATIONS = 200;
-        let out = [];
-        let col = ChartsColors;
-
-        for (let i = 0; i < MAX_ITERATIONS; i += 10) {
-            for (let j = 0; j < col.length; j++) {
-                out.push(
-                    {
-                        backgroundColor: `rgba(${(col[j][0] + i) % 255}, ${(col[j][1] + i) % 255}, ${(Math.abs(col[j][2] + i)) % 255}, 0.9)`,
-                        borderColor: `rgba(${(col[j][0] + i) % 255}, ${(col[j][1] + i) % 255}, ${(Math.abs(col[j][2] + i)) % 255}, 1)`,
-                        pointBackgroundColor: `rgba(${(col[j][0] + i) % 255}, ${(col[j][1] + i) % 255}, ${(Math.abs(col[j][2] + i)) % 255}, 0.9)`,
-                        pointBorderColor: '#fff',
-                        pointHoverBackgroundColor: '#fff',
-                        pointHoverBorderColor: `rgba(${(col[j][0] + i) % 255}, ${(col[j][1] + i) % 255}, ${(col[j][2] - i) % 255}, 0.9)`
-
-                    }
-                )
-            }
-        }
-        return out;
-    }
-
-    public static generatePiecolors() {
-
-        let MAX_ITERATIONS = 1000;
-        let out = [{ backgroundColor: [], borderColor: [] }];
-        let col = ChartsColors;
-
-        for (let i = 0; i < MAX_ITERATIONS; i += 50) {
-
-            for (let j = 0; j < col.length; j++) {
-                out[0].backgroundColor.push(
-                    `rgba(${(col[j][0] + i) % 255}, ${(col[j][1] + i) % 255}, ${(Math.abs(col[j][2] + i)) % 255}, 0.8)`);
-                out[0].borderColor.push(`rgba(255,255,255,1)`)
-            }
-        }
-        return out;
-
-    }
-
-    constructor() {
+    constructor(private zone: NgZone) {
         this.update = true;
     }
 
@@ -74,24 +35,32 @@ export class EdaChartComponent implements OnInit, AfterViewInit {
             }
 
             activeEls.forEach(point => {
-                let filterBy = chart.data.datasets[point.datasetIndex].label || chart.data.labels[point.index];
-                const label = chart.data.labels[point.index];
+                const dataset = chart.data.datasets[point.datasetIndex];
+                const dataLabel = chart.data.labels[point.index];
+                const datasetLabel = dataset.label || dataLabel;
+
+                // We check if the chart is 'stackedbar100' because it has labels different from the others
+                // In this case the label is the filter and the filter is the label by its nature
+                const isStackedBar100 = this.inject['edaChart'] === 'stackedbar100';
+
+                // Depending on whether it is stackedbar100 we assign one value or the other 
+                const [filterBy, label] = isStackedBar100 ? [dataLabel, datasetLabel]: [datasetLabel, dataLabel];
+
                 const value = chart.data.datasets[point.datasetIndex].data[point.index];
-                // Si vinculo los dashboards no filtro.
+                // If dashboards are linked, do not filter.
                 if (this.inject.linkedDashboardProps) {
                     const props = this.inject.linkedDashboardProps;
                     const url = window.location.href.slice( 0, window.location.href.indexOf('/dashboard')) +`/dashboard/${props.dashboardID}?${props.table}.${props.col}=${label}`
                     window.open(url, "_blank");
                 }else{
-                    //lanzo el filtro
-                    this.onClick.emit({ inx: point.index, label, value, filterBy })
+                    // trigger the filter
+                    this.zone.run(() => {
+                        this.onClick.emit({ inx: point.index, label, value, filterBy });
+                    });
                 }
             })
         }
     }
-
-
-    chartHovered({ event, active }: { event: MouseEvent, active: {}[] }): void { }
 
     updateChartOptions(options: any) {
         this.update = false;

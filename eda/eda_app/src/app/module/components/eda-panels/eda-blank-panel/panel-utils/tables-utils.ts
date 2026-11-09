@@ -10,25 +10,20 @@ export const TableUtils = {
     * @param table  origin table to start building the path
     * @param vMap   Map() to keep tracking visited nodes -> first call is just a new Map()
   */
-  // SDA CUSTOM - Added safety checks for undefined table and missing relation targets to prevent TypeError
   findRelationsRecursive: (tables: any, table: any, vMap: any) => {
-    /* SDA CUSTOM */ if (!table) return vMap;
-    /* SDA CUSTOM */ vMap.set(table.table_name, table);
-
-    /* SDA CUSTOM */ if (table.relations) {
-    table.relations.filter(r => r.visible !== false)
-      .forEach(rel => {
-        const newTable = tables.find(t => t.table_name === rel.target_table);
-        /* SDA CUSTOM */ if (newTable && !vMap.has(newTable.table_name)) {
-          TableUtils.findRelationsRecursive(tables, newTable, vMap);
-        /* SDA CUSTOM */ }
-      });
-    /* SDA CUSTOM */ }
-
+   if (!table) return vMap;
+    vMap.set(table.table_name, table);
+     if (table.relations) {
+      table.relations.filter(r => r.visible !== false)
+        .forEach(rel => {
+          const newTable = tables.find(t => t.table_name === rel.target_table);
+          if (newTable && !vMap.has(newTable.table_name)) {
+            TableUtils.findRelationsRecursive(tables, newTable, vMap);
+          }
+        });
+    }
     return vMap;
-
   },
-  // END SDA CUSTOM
 
   /**
    * Filter and sort tables given a refference table
@@ -60,7 +55,7 @@ export const TableUtils = {
 
     if (applyToAllfilter.present) {
       const originTable = allTables.filter(t => t.table_name === applyToAllfilter.refferenceTable)[0];
-      allTables = TableUtils.filterTables(tables, originTable).filter(table => table?.visible === true);
+      allTables = TableUtils.filterTables(tables, originTable).filter(table => table.visible === true);
     }
 
     let sqlOriginTables = allTables.map(table => {

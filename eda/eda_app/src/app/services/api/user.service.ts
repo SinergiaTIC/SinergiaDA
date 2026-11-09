@@ -6,14 +6,28 @@ import { map } from 'rxjs/operators';
 import { ApiService } from './api.service';
 import { GlobalService } from './global.service';
 import { AlertService } from '../alerts/alert.service';
+import { URL_SERVICES } from '../../config/config';
+import { URL_LOGOUT_SAML } from '../../config/config';
+
+
 
 import { User } from '@eda/models/model.index';
 import Swal from 'sweetalert2';
 
-@Injectable()
+@Injectable({
+    providedIn: 'root'
+})
 export class UserService extends ApiService {
+
+    public API = URL_SERVICES;
+    public URL_LOGOUT_SAML = URL_LOGOUT_SAML;
     private route = '/admin/user';
     private routeThirdParty = '/tp/url';
+    private authSAML = '/auth/saml';
+    private authSAML_ORCL = '/auth/saml'; // ===> /auth/samlorcl
+    private authGOOGLE = '/auth/google';
+    private authMICROSOFT = '/auth/microsoft';
+    private auth = '/auth';
 
     public user: User;
     public isAdmin: boolean;
@@ -90,11 +104,11 @@ export class UserService extends ApiService {
         this.token = token;
 
         this.getIsAdminUser(this.user._id).subscribe(
-            (value: any) => this.isAdmin = value.isAdmin,
+            (value: any) => { this.isAdmin = value.isAdmin; localStorage.setItem('isAdmin', String(value.isAdmin)); },
             (err) => this.alertService.addError(err)
         );
         this.getIsDataSourceCreator(this.user._id).subscribe(
-            (value: any) => { this.isDataSourceCreator = value.isDataSourceCreator  }, 
+            (value: any) => { this.isDataSourceCreator = value.isDataSourceCreator; localStorage.setItem('isDataSourceCreator', String(value.isDataSourceCreator)); },
             (err) => this.alertService.addError(err)
         );
 
@@ -117,6 +131,36 @@ export class UserService extends ApiService {
         );
     }
 
+    loginUrlSAMLmixOrcl(): Observable<string> {
+        const url = `${this.authSAML_ORCL}/login`;
+        return this.get(url).pipe(map((r: any) => {
+            return r.url
+        }));
+    }
+
+    loginUrlSAML(): Observable<string> {
+        const url = `${this.authSAML}/login`;
+        return this.get(url).pipe(map((r: any) => {
+            return r.url
+        }));
+    }
+
+    credentialGoogle(respGoogle: any): Observable<any> {
+        return this.post(`${this.authGOOGLE}/login`, {respGoogle: respGoogle}, true)
+            .pipe(map((res:any) => {
+                this.savingStorage(res.id, res.token, res.user);
+                return true;
+            }, (err) => this.alertService.addError(err)))
+    }    
+
+    responseMicrosoft(respMicrosoft: any): Observable<any> {
+        return this.post(`${this.authMICROSOFT}/login`, {respMicrosoft: respMicrosoft}, true)
+            .pipe(map((res:any) => {
+                this.savingStorage(res.id, res.token, res.user);
+                return true;
+            }, (err) => this.alertService.addError(err)))
+    }
+
     /** Token sending by the third party through an URL*/
     tokenUrl(token: string): Observable<any> {
 
@@ -128,7 +172,7 @@ export class UserService extends ApiService {
             );
     }
 
-    /** Renovar Token */
+    /** Renew Token */
     refreshToken() {
         return this.get( `${this.route}/refresh-token` )
             .pipe(map((res: any) => {
@@ -155,17 +199,8 @@ export class UserService extends ApiService {
         if (localStorage.getItem('token') && localStorage.getItem('user') ) {
             this.token = localStorage.getItem('token');
             this.user = JSON.parse(localStorage.getItem('user'));
-
-            this.getIsAdminUser(this.user._id).subscribe(
-                (value: any) => this.isAdmin = value.isAdmin,
-                (err) => this.alertService.addError(err)
-            );
-            this.getIsDataSourceCreator(this.user._id).subscribe(
-                (value: any) => {this.isDataSourceCreator = value.isDataSourceCreator }, 
-                (err) => this.alertService.addError(err)
-            );
-            
-            
+            this.isAdmin = localStorage.getItem('isAdmin') === 'true';
+            this.isDataSourceCreator = localStorage.getItem('isDataSourceCreator') === 'true';
 
         } else {
             this.token = '';
@@ -175,18 +210,28 @@ export class UserService extends ApiService {
 
     /** Verify if user is logged */
     isLogged() {
-        return this.token.length > 5 || !!localStorage.getItem('token');
+        return this.token.length > 5;
     }
 
     /** Logout user and clean localstorage */
     logout() {
         this.user = null;
         this.token = '';
-
         localStorage.removeItem('user');
         localStorage.removeItem('token');
-
         this.router.navigate(['/login']);
+    }
+
+    SAMLlogout() {
+        // window.location.href = 'http://localhost:8666/auth/saml/logout';
+        window.location.href = `${URL_LOGOUT_SAML}${this.API}${this.authSAML_ORCL}/request-logout?token=${this.token}`;
+
+        // Clear the Token and the user
+        this.user = null;
+        this.token = '';
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+
     }
 
     /** Change the user profile image */
@@ -202,7 +247,7 @@ export class UserService extends ApiService {
 
                 }
             }).catch((err) => {
-                this.alertService.addError(err)
+                this.alertService.addError($localize`:@@attachNewImage:Debe adjuntar una nueva imagen`)
             });
     }
 
@@ -213,5 +258,14 @@ export class UserService extends ApiService {
     getToken(){
         return localStorage.getItem('token');
     }
+
+    getLoginType() {
+        return this.get( `${this.auth}/typeLogin`)
+            .pipe(map((res: any) => {
+                //authentication_type
+                return res.response;
+            }))
+    }
+
 }
 

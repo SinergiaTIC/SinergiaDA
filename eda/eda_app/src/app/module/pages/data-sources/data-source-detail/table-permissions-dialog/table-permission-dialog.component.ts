@@ -1,16 +1,24 @@
-import { Component } from "@angular/core";
-import { DataSourceService, QueryBuilderService, UserService, GroupService, QueryParams } from "@eda/services/service.index";
-import { EdaDialogAbstract, EdaDialog, EdaDialogCloseEvent } from "@eda/shared/components/shared-components.index";
-
-
-
-
+import { Component, EventEmitter, Input, OnInit, Output } from "@angular/core";
+import { DataSourceService, UserService, GroupService } from "@eda/services/service.index";
+import { EdaDialog, EdaDialog2Component } from "@eda/shared/components/shared-components.index";
+import { CommonModule } from "@angular/common";
+import { MultiSelectModule } from "primeng/multiselect";
+import { FormsModule } from '@angular/forms';
+import { PROTECTED_MODEL_DATA_SOURCES_ARRAY } from '@eda/configs/customizable/customizable_merged';
 @Component({
+    standalone: true,
     selector: 'app-table-permission-dialog',
-    templateUrl: './table-permission-dialog.component.html'
+    templateUrl: './table-permission-dialog.component.html',
+    styleUrls: ['./table-permission-dialog.component.css'],
+    imports: [EdaDialog2Component, CommonModule, MultiSelectModule, FormsModule]
 })
 
-export class TablePermissionDialogComponent extends EdaDialogAbstract {
+export class TablePermissionDialogComponent implements OnInit {
+    public display: boolean = false;
+    @Input() table: any;
+    @Output() close: EventEmitter<any> = new EventEmitter<any>();
+    
+    public title = $localize`:@@addPermission:Añadir permiso`;
 
     public dialog: EdaDialog;
 
@@ -24,41 +32,36 @@ export class TablePermissionDialogComponent extends EdaDialogAbstract {
     public roles: Array<object>;
     public selectedRoles: Array<any> = [];
 
-
+    public anyoneCanSee: boolean = false;
     public permission : boolean = true;
     public none : boolean = false;
     public type : string;
 
     public usersLabel = $localize`:@@usersPermissions:Permisos de usuario`;
-    public groupsLabel = $localize`:@@groupsPermissions:Permisos de grupo`;
+    public groupsLabel = $localize`:@@groupsPersmissions:Permisos de grupo`;
     public usersDefaultLabel = $localize`:@@users:Usuarios`;
     public groupsDefaultLabel = $localize`:@@groups:Grupos`;
 
     /* filterProps */
-    private table: any;
 
-    /*SDA CUSTOM*/ constructor(public dataSourceService: DataSourceService,
-                private userService: UserService,
-                private groupService: GroupService) {
-        super();
+    constructor(
+        public dataSourceService: DataSourceService,
+        private userService: UserService,
+        private groupService: GroupService
+    ) {}
 
-        this.dialog = new EdaDialog({
-            show: () => this.onShow(),
-            hide: () => this.onClose(EdaDialogCloseEvent.NONE),
-            title: $localize`:@@addPermissions:Añadir permiso`
-        });
-
-        this.dialog.style = { width: '40%', height:'65%', top:"-4em", left:'1em'};
-    }
-
-    onShow() {
+    ngOnInit() {
         this.load();
+        if (this.isProtectedDataSource()) this.type = 'groups';
     }
 
     load() {
-        this.table =  this.controller.params.table;
         this.loadDataSource();
         this.loadUsers();
+    }
+
+    isProtectedDataSource(): boolean {
+        return PROTECTED_MODEL_DATA_SOURCES_ARRAY.includes(this.dataSourceService.model_id);
     }
 
     loadDataSource() {
@@ -77,35 +80,39 @@ export class TablePermissionDialogComponent extends EdaDialogAbstract {
 
     savePermission() {
         let permissionFilter = {};
-
-        if(this.type === 'users'){
+        if (this.type === 'users') {
             permissionFilter = {
-                users : this.selectedUsers.map(usr => usr._id),
-                usersName : this.selectedUsers.map(usr => usr.name),
-                none : this.none ? true : false,
-                table : this.controller.params.table.technical_name,
-                column : "fullTable",
-                global : true,
-                permission : this.permission ? true : false,
-                type : 'users',
-              /*SDA Custom */      source: 'SDA'
+                users: this.selectedUsers.map(usr => usr._id),
+                usersName: this.selectedUsers.map(usr => usr.name),
+                none: this.none ? true : false,
+                table: this.table.technical_name,
+                column: "fullTable",
+                global: true,
+                permission: this.permission ? true : false,
+                type: 'users'
             };
         }
-        else if(this.type === 'groups'){
+        else if (this.type === 'groups') {
             permissionFilter = {
-                groups : this.selectedRoles.map(usr => usr._id),
-                groupsName : this.selectedRoles.map(usr => usr.name),
-                none : this.none ? true : false,
-                table : this.controller.params.table.technical_name,
-                column : "fullTable",
-                global : true,
-                permission : this.permission,
-                type : 'groups',
-            /*SDA Custom */ source: 'SDA'
+                groups: this.selectedRoles.map(usr => usr._id),
+                groupsName: this.selectedRoles.map(usr => usr.name),
+                none: this.none ? true : false,
+                table: this.table.technical_name,
+                column: "fullTable",
+                global: true,
+                permission: this.permission,
+                type: 'groups'
             };
         }
-        this.onClose(EdaDialogCloseEvent.NEW, permissionFilter);
+        
+        this.onClose(permissionFilter);
     }
+
+    
+  setPermissionType(type: "users" | "groups") {
+    this.type = type;
+  }
+
 
     resetValues(){
         if(this.type === 'users') this.selectedRoles = [];
@@ -114,10 +121,12 @@ export class TablePermissionDialogComponent extends EdaDialogAbstract {
 
     closeDialog() {
         this.selectedUsers = [];
-        this.onClose(EdaDialogCloseEvent.NONE);
+        this.onClose();
     }
 
-    onClose(event: EdaDialogCloseEvent, response?: any): void {
-        return this.controller.close(event, response);
+    onClose(response?: any): void {
+        this.display = false;
+        this.close.emit(response);
     }
+
 }

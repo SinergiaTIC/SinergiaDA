@@ -1,16 +1,19 @@
-/* JJ: La meva merda  */
-import { ChartUtilsService } from '@eda/services/service.index';
+import { ChartUtilsService, StyleProviderService } from '@eda/services/service.index';
 import * as d3 from 'd3'
-import { Component, AfterViewInit, Input, ViewChild, ElementRef, Output, EventEmitter} from '@angular/core'
+import { Component, AfterViewInit, Input, ViewChild, ElementRef, Output, EventEmitter, OnDestroy} from '@angular/core'
 import { SunBurst } from './eda-sunbrust'
-import { ChartsColors } from '@eda/configs/index'
+
+import { FormsModule } from '@angular/forms'; 
+import { CommonModule } from '@angular/common';
 
 @Component({
-  selector: 'eda-sunburst' /* tag que jo li dono  */,
+  standalone: true,
+  selector: 'eda-sunburst' /* tag assigned to this component */,
   templateUrl: './eda-sunburst.component.html' /** sdf */,
-  styleUrls: ['./eda-sunburst.component.css']
+  styleUrls: ['./eda-sunburst.component.css'],
+  imports: [FormsModule, CommonModule]
 })
-export class EdaSunburstComponent implements AfterViewInit {
+export class EdaSunburstComponent implements AfterViewInit, OnDestroy {
   @Input() inject: SunBurst
   @ViewChild('svgContainer', { static: false }) svgContainer: ElementRef
   @Output() onClick: EventEmitter<any> = new EventEmitter<any>();
@@ -20,49 +23,67 @@ export class EdaSunburstComponent implements AfterViewInit {
   id: string
   svg: any
   data: any
-  colors: Array<string>
   assignedColors: any[];
   labels: Array<string>
   firstColLabels: Array<string>;
   width: number
   heigth: number
   metricIndex: number
-  constructor(private chartUtilService : ChartUtilsService) {}
+  resizeObserver!: ResizeObserver; 
+  
+  constructor(private chartUtilService: ChartUtilsService, private styleProviderService: StyleProviderService) { }
+
   ngOnInit(): void {
-    this.id = `sunburst_${this.inject.id}` ;
+    this.id = `sunburst_${this.inject.id}`;
     this.metricIndex = this.inject.dataDescription.numericColumns[0].index;
     this.data = this.formatData(this.inject.data, this.inject.dataDescription);
-    this.labels =  this.generateDomain(this.data);
-    this.colors = this.inject.colors && this.inject.colors.length > 0 ? 
-      this.inject.colors : this.getColors(this.labels.length, ChartsColors);
-    this.assignedColors = this.inject.assignedColors || []; 
+    this.labels = this.generateDomain(this.data);
     const firstNonNumericColIndex = this.inject.dataDescription.otherColumns[0].index;
     this.firstColLabels = this.inject.data.values.map((row) => row[firstNonNumericColIndex]);
     this.firstColLabels = [...new Set(this.firstColLabels)];
+    this.assignedColors = this.inject.assignedColors;
   }
 
-  ngAfterViewInit () {
-    if (this.svg) this.svg.remove()
-    let id = `#${this.id}`
-    this.svg = d3.select(id)
-    if (
-      this.svg._groups[0][0] !== null &&
-      this.svgContainer.nativeElement.clientHeight > 0
-    ) {
-      this.draw()
+  ngAfterViewInit() {
+    const container = this.svgContainer.nativeElement as HTMLElement;
+
+    // Create SVG
+    this.svg = d3.select(container).append('svg');
+
+    this.resizeObserver = new ResizeObserver(entries => {
+      let id = `#${this.id}`;
+      this.svg = d3.select(id);
+      if (this.svg._groups[0][0] !== null && this.svgContainer.nativeElement.clientHeight > 0) {
+        this.draw();
+      }
+    });
+    this.resizeObserver.observe(container);
+
+    // Initial draw
+    if (this.svg) this.svg.remove();
+    let id = `#${this.id}`;
+    this.svg = d3.select(id);
+    if (this.svg._groups[0][0] !== null && this.svgContainer.nativeElement.clientHeight > 0) {
+      this.draw();
     }
-
   }
+
   ngOnDestroy(): void {
     if (this.div)
       this.div.remove();
+    if (this.resizeObserver)
+      this.resizeObserver.disconnect();
   }
+
   draw() {
-    const svg = this.svg
-    const width = this.svgContainer.nativeElement.clientWidth - 40
-    //const height = this.svgContainer.nativeElement.clientHeight - 20
-    let radius = width / 2
-    /** copio els objectes del d3  */
+    // Clear SVG before redrawing (prevents accumulation)
+    this.svg.selectAll('*').remove();
+    
+    const svg = this.svg;
+    const width = this.svgContainer.nativeElement.clientWidth - 40;
+    let radius = width / 2;
+    
+    /** copy d3 objects */
     let partition = data =>
       d3.partition().size([2 * Math.PI, radius * radius])(
         d3
@@ -71,10 +92,10 @@ export class EdaSunburstComponent implements AfterViewInit {
           .sort((a, b) => b.value - a.value)
       );
       
-    //Funcion de ordenación de colores de D3
+    // D3 color sorting function
     const valuesSunburst = this.assignedColors.map((item) => item.value);
-    const colorsSunburst = this.assignedColors[0].color ? this.assignedColors.map(item => item.color) : this.colors;
-    const color = d3.scaleOrdinal(this.firstColLabels,  colorsSunburst).unknown("#ccc");
+    const colorsSunburst = this.assignedColors.map(item => item.color);
+    const color = d3.scaleOrdinal(this.firstColLabels, colorsSunburst);
 
     let arc = d3
       .arc()
@@ -92,7 +113,7 @@ export class EdaSunburstComponent implements AfterViewInit {
       .innerRadius((d: any) => Math.sqrt(d.y0))
       .outerRadius(radius)
 
-    /** comença la mandanga.... */
+    /** main processing starts */
     let data = this.buildHierarchy(this.data);
     const root = partition(data)
     // Make this into a view, so that the currently hovered sequence is available to the breadcrumb
@@ -124,8 +145,6 @@ export class EdaSunburstComponent implements AfterViewInit {
 
     svg
       .attr('viewBox', `${-radius} ${-radius} ${width} ${width}`)
-      .style('max-width', `${width}px`)
-    // .style('font', '12px sans-serif')
 
     const path = svg
       .append('g')
@@ -141,33 +160,36 @@ export class EdaSunburstComponent implements AfterViewInit {
         let original = d;
         let opacity = 1;
         
-        // Subimos al primer nivel para asignar color base
+        // Go up to the first level to assign the base color
         while (d.depth > 1) d = d.parent;
         const rgbColor = d3.rgb(colorsSunburst[valuesSunburst.findIndex(item => d.data.name.includes(item))] || color(d.data.name)); 
-      
-        // Cálculo de opacidad
+        // Opacity calculation
         if (original.depth > 1) {
           const siblings = original.parent.children;
           const index = siblings.indexOf(original);
-          const total = siblings.length;
+          const total = siblings?.length;
       
           const minOpacity = 0.25;
           const maxOpacity = 1;
       
-          // Distribuye linealmente entre min y max, primero más opaco
+          // Linearly distribute between min and max, most opaque first
           if (total > 1) { opacity = maxOpacity - (index * (maxOpacity - minOpacity) / (total - 1)); }
-          else { opacity = maxOpacity; } // Solo un hijo
+          else { opacity = maxOpacity; } // Single child
         }
       
         return `rgba(${rgbColor.r}, ${rgbColor.g}, ${rgbColor.b}, ${opacity})`;
       })
+      
+      
       .attr('d', arc)
+    
       
 
     svg
       .append('g')
       .attr('fill', 'none')
       .attr('pointer-events', 'all')
+      .style("cursor", "pointer")
       .on('mouseleave', () => {
         path.attr('fill-opacity', 1)
         label.style('visibility', 'hidden')
@@ -207,8 +229,8 @@ export class EdaSunburstComponent implements AfterViewInit {
           .style('visibility', null)
           .select('.percentage')
           .text(percentage + '%')
-          .attr("font-family", "var(--panel-font-family)")
-          .attr("fill", "var(--panel-font-color)")
+          .attr("font-family", this.styleProviderService.panelFontFamily.source['_value'])
+          .attr("fill", this.styleProviderService.panelFontColor.source['_value'])
 
         var my_path = ''
         sequence.forEach(path => {
@@ -224,27 +246,37 @@ export class EdaSunburstComponent implements AfterViewInit {
             ': ' +
             d.value.toLocaleString(undefined, { maximumFractionDigits: 6 })
           )
-          .attr("font-family", "var(--panel-font-family)")
+          .attr("font-family", this.styleProviderService.panelFontFamily.source['_value'])
           .attr("pointer-events", "none")
 
-          .attr("fill", "var(--panel-font-color)")
-        // per posar-ho a dalt de tot
+          .attr("fill", this.styleProviderService.panelFontColor.source['_value'])
+        // bring it to the top
         label.raise();
         
       })
-      .on('click', (mouseevent, data) => {
-        if (this.inject.linkedDashboard) {
-          const props = this.inject.linkedDashboard;
-          const value = data.data.name;
-          const url = window.location.href.slice(0, window.location.href.indexOf('/dashboard')) + `/dashboard/${props.dashboardID}?${props.table}.${props.col}=${value}`
-          window.open(url, "_blank");
-        } else {
-          //Passem aquestes dades
-          const label = data.data.name;
-          const filterBy = this.inject.data.labels[this.inject.data.values[0].findIndex((element) => typeof element === 'string')]
-          this.onClick.emit({label, filterBy });
+    .on('click', (mouseevent, data) => {
+      if (this.inject.linkedDashboard) {
+        const props = this.inject.linkedDashboard;
+        const value = data.data.name;
+        const url =
+          window.location.href.slice(0, window.location.href.indexOf('/dashboard')) +
+          `/dashboard/${props.dashboardID}?${props.table}.${props.col}=${value}`;
+        window.open(url, "_blank");
+      } else {
+        const label = data.data.name;
+        // search all rows until a match is found
+        let idx = -1;
+        for (const row of this.inject.data.values) {
+          const tmpIdx = row.indexOf(label);
+          if (tmpIdx !== -1) {
+            idx = tmpIdx;
+            break;
+          }
         }
-      });
+        const filterBy = idx !== -1 ? this.inject.data.labels[idx] : null;
+        this.onClick.emit({ label, filterBy });
+      }
+    })
   }
 
   formatData (data, dataDescription) {
@@ -273,24 +305,8 @@ export class EdaSunburstComponent implements AfterViewInit {
     return result
   }
 
-  getColors (dataLength, colors) {
-    const colorsLength = colors.length
-    let outputColors: Array<any> = colors
-
-    if (dataLength > colorsLength) {
-      let repeat = Math.ceil(dataLength / colorsLength)
-      for (let i = 0; i < repeat - 1; i++) {
-        outputColors = [...outputColors, ...colors]
-      }
-    }
-
-    return outputColors
-      .filter((_, index) => index < dataLength)
-      .map(color => `rgb(${color[0]}, ${color[1]}, ${color[2]} )`)
-  }
-
   generateDomain (data) {
-    // map executa la funció sobre cada element del array. Es a dir sobre cada fila.
+    // map executes the function on each element of the array, i.e. on each row.
 
 
     let foo = data.map(elem => elem.filter(value => typeof value !== 'number'))
@@ -313,7 +329,7 @@ export class EdaSunburstComponent implements AfterViewInit {
     return ancestors;
   }
 
-  /** copio les funcions del d3 */
+  /** copy d3 functions */
   private buildHierarchy (data) {
     // Helper function that transforms the given data into a hierarchical format.
     const root = { name: 'root', children: [] }

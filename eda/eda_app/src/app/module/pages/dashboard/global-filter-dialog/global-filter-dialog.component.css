@@ -1,0 +1,156 @@
+.filter-label::after {
+  content: "\00a0";
+}
+
+/* ── Text sizes (+1 level throughout) ──────────────────────── */
+h3 {
+    font-size: 1.2rem;
+}
+
+label {
+    font-size: 1rem;
+    cursor: default;
+}
+
+button {
+    font-size: 0.9rem;
+}
+
+span {
+    font-size: 0.9rem;
+}
+
+/* ── Date picker - same height as the other filter value inputs in this dialog (h-[3.2rem]) ── */
+::ng-deep date-picker {
+    display: block;
+    height: 3.2rem;
+}
+
+::ng-deep date-picker .p-calendar,
+::ng-deep date-picker .p-calendar input {
+    height: 3.2rem;
+    box-sizing: border-box;
+}
+
+::ng-deep date-picker .summary-overlay {
+    padding: 0.5rem 0.5rem;
+    border: 1px solid #ced4da;
+    border-radius: 3px;
+    box-sizing: border-box;
+    font-size: 1rem;
+    height: 3.2rem;
+}
+
+/* ── PrimeNG dropdown / multiselect label ───────────────────── */
+:host ::ng-deep .p-dropdown .p-dropdown-label {
+    font-size: 1rem;
+}
+
+:host ::ng-deep .p-dropdown-panel .p-dropdown-item {
+    font-size: 1rem;
+}
+
+:host ::ng-deep .p-multiselect .p-multiselect-label {
+    font-size: 1rem;
+}
+
+:host ::ng-deep .p-multiselect-panel .p-multiselect-item {
+    font-size: 1rem;
+}
+
+:host ::ng-deep .p-inputtext {
+    font-size: 1rem;
+}
+
+/* ── Filter containers (filter listing pages) ───────────────── */
+.filters-container {
+    display: flex;
+    flex-wrap: wrap;
+    align-content: flex-start;
+    gap: 1rem;
+    scrollbar-width: thin;
+    scrollbar-color: var(--scrollbar-thumb) transparent;
+}
+
+.filter-card {
+    flex: 0 0 auto;
+    width: 15vw;
+}
+
+/* ── Autocomplete (original styling) ────────────────────────── */
+.modern-autocomplete ::ng-deep .p-autocomplete-multiple-container {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.4rem 0.6rem;
+    border: 1px solid #d1d5db;
+    min-height: 3.2rem;
+    height: auto;
+    box-sizing: border-box;
+    width: 100%;
+    box-shadow: none;
+    border-radius: 10px;
+    font-size: 1rem;
+}
+
+.modern-autocomplete ::ng-deep .p-autocomplete-multiple-container .p-autocomplete-token {
+    border-radius: 9999px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    padding: 0.25rem 0.5rem;
+    display: inline-flex;
+    align-items: center;
+    background: rgba(var(--corporate-primary-rgb), 0.12);
+    color: var(--corporate-primary);
+    border: 1px solid rgba(var(--corporate-primary-rgb), 0.25);
+}
+
+.modern-autocomplete ::ng-deep .p-autocomplete-multiple-container .p-autocomplete-token .p-autocomplete-token-icon {
+    color: var(--corporate-primary);
+    opacity: 0.7;
+}
+
+.modern-autocomplete ::ng-deep .p-autocomplete-input-token {
+    order: -1;
+    flex: 0 0 8rem;
+    width: 8rem;
+    height: 2rem;
+    font-size: 1rem;
+    border: 1px solid #d1d5db;
+    border-radius: 1px;
+    background-color: #fff;
+}
+
+.modern-autocomplete ::ng-deep .p-autocomplete-loader {
+    position: absolute;
+    right: -1.2rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--corporate-primary);
+    z-index: 10;
+}
+
+.modern-autocomplete ::ng-deep .p-autocomplete-input-token input {
+    border: none !important;
+    outline: none !important;
+    box-shadow: none !important;
+}
+
+.modern-autocomplete ::ng-deep .p-autocomplete-multiple-container::-webkit-scrollbar-thumb {
+    background-color: var(--scrollbar-thumb);
+}
+
+/* ── Multiselect chips (non-autocomplete mode) ──────────────── */
+:host ::ng-deep .eda-filter-multiselect .p-multiselect-token {
+    background: rgba(var(--corporate-primary-rgb), 0.12);
+    color: var(--corporate-primary);
+    border: 1px solid rgba(var(--corporate-primary-rgb), 0.25);
+    border-radius: 9999px;
+}
+
+:host ::ng-deep .eda-filter-multiselect .p-multiselect-token-icon {
+    color: var(--corporate-primary);
+    opacity: 0.7;
+}

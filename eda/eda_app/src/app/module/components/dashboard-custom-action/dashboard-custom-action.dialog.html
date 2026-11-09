@@ -1,0 +1,110 @@
+<eda-dialog2 [display]="display"   i18n-header="@@dialogHeaderCustomActions"
+  header="ACCIONES PERSONALIZADAS" width="50vw" height="50vh"
+  [disableApply]="disableApply()" [overflow]="'auto'"
+  (apply)="onApply()"
+  (close)="onClose()"
+  >
+
+  <div content class="p-6">
+    <!-- Must be scrollable -->
+
+    <div class="grid grid-flow-row auto-rows-auto gap-6">
+      <!-- URL list -->
+      @if(urls?.length > 0){
+          <!-- Position Column -->
+          <div class="border rounded-lg">
+            <table class="w-full">
+              <thead class="bg-gray-100">
+                <tr>
+                  <th class="p-3" i18n="@@urlString">Url</th>
+                  <th class="p-3" i18n="@@urlName">Nombre</th>
+                  <th class="p-3" i18n="@@urlDescription">Descripción</th>
+                  <th class="p-3 text-right" i18n="@@urlAction">Acciones</th>
+                </tr>
+              </thead>
+              <tbody class="font-semibold">
+                @for (url of urls; track url.id; let index = $index) {
+                  <tr>
+                    @if(editing && index == editingRow){
+                        <td class="p-3"><input class="text-gray-200" [(ngModel)]="url.url"></td>
+                        <td class="p-3"><input class="text-gray-200" [(ngModel)]="url.name"></td>
+                        <td class="p-3"><input class="text-gray-200" [(ngModel)]="url.description"></td>
+                        <td class="p-3 text-right">
+                          <button class="custom-action-icon-btn rounded-md p-2 cursor-pointer"  (click)="onRowEditSave({url: url.url, name: url.name, description: url.description} , index)">
+                            <eda-icon name="check"></eda-icon>
+                          </button>
+                          <button class="custom-action-icon-btn rounded-md p-2 cursor-pointer"  (click)="onRowEditCancel(url, index)">
+                            <eda-icon name="restart"></eda-icon>
+                          </button>
+                          <button class="custom-action-icon-btn rounded-md p-2 cursor-pointer"  (click)="onRowEditDelete(index)">
+                            <eda-icon name="bin"></eda-icon>
+                          </button>       
+                        </td>               
+                    } @else{
+                      <td class="p-3"><button (click)="customAction(url)" class="cursor-pointer p-3">{{ url.url }}</button></td>
+                      <td class="p-3">{{ url.name }}</td>
+                      <td class="p-3">{{ url.description }}</td>
+                      <td class="p-3 text-right">
+                        <button class="custom-action-icon-btn rounded-md p-2 cursor-pointer"  (click)="onRowEditInit(url, index,urls)">
+                          <eda-icon name="pencil"></eda-icon>
+                        </button>
+                      </td>
+                    }
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>   
+      }
+
+      <!-- Configuration -->
+      <div class="grid space-y-8">
+        <div class="grid grid-cols-2 gap-4">
+          <div class="grid grid-flow-col grid-rows-4 gap-6">
+      
+            <!-- Side configuration -->
+            <div class="w-full">
+              <label i18n="@@urlString" class="block mb-1">URL:</label>
+              <input type="text" [(ngModel)]="urlAdd" class="custom-action-input w-full border px-2 py-2.5 rounded">
+            </div>
+      
+            <div class="w-full">
+              <label i18n="@@urlName" class="block mb-1">Nombre:</label>
+              <input type="text" [(ngModel)]="nameAdd" class="custom-action-input w-full border px-2 py-2.5 rounded">
+            </div>
+      
+            <div class="w-full">
+              <label i18n="@@urlDescription" class="block mb-1">Descripción:</label>
+              <input type="text" [(ngModel)]="descriptionAdd" class="custom-action-input w-full border px-2 py-2.5 rounded">
+            </div>
+      
+            <div>
+              <button type="button" i18n="@@textLabelUrl"
+                class="custom-action-add-btn"
+                (click)="addUrlDashboard(urlAdd, nameAdd, descriptionAdd)">
+                Agregar url
+              </button>
+            </div>
+      
+          </div>
+      
+          <!-- Side description -->
+          <div class="size-full description" i18n="@@resumeTextConfiguration">
+            Puedes configurar una acción personalizada que quieras ejecutar.
+            Te permite llamar a una URL que haga una acción que quieras invocar.
+            Puede ser una llamada a una api, a un endpoint de una app
+            o incluso invocar procesos de carga desde una llamada http.
+            Una vez configurado podrás invocarlo siempre que que quieras desde el botón.
+          </div>
+      
+        </div>
+      </div>
+
+
+    </div>
+
+
+    
+    
+  </div>
+</eda-dialog2>

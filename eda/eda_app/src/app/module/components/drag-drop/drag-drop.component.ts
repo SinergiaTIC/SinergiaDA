@@ -1,11 +1,17 @@
 import { Component, Input, Output, OnChanges, SimpleChanges, EventEmitter } from '@angular/core';
 import { CdkDrag, CdkDragDrop, moveItemInArray, transferArrayItem } from '@angular/cdk/drag-drop';
+import { DragDropModule } from '@angular/cdk/drag-drop'; // <-- import this
+
+import { FormsModule } from '@angular/forms';
+import { CommonModule } from '@angular/common';
 
 
 @Component({
+  standalone: true,
   selector: 'drag-drop',
   templateUrl: './drag-drop.component.html',
-  styleUrls: ['./drag-drop.component.css']
+  styleUrls: ['./drag-drop.component.css'],
+  imports: [FormsModule, CommonModule, DragDropModule],
 })
 export class DragDropComponent implements OnChanges {
 
@@ -20,7 +26,7 @@ export class DragDropComponent implements OnChanges {
   itemY = [];
   itemZ = [];
   validated: boolean = false;
-
+  sameAxes: boolean = false;
   constructor() { }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -29,13 +35,12 @@ export class DragDropComponent implements OnChanges {
   
   initialization() {
 
-    // Se crea una copia para no modificar el this.axes del EBP
+    if (!this.axes || !this.axes[0]) return;
     const copiaAxes = JSON.parse(JSON.stringify(this.axes));
-
     this.itemX = copiaAxes[0].itemX;
     this.itemY = copiaAxes[0].itemY;
     this.itemZ = copiaAxes[0].itemZ;
-    
+
     this.validated = true;
   }
 
@@ -43,7 +48,7 @@ export class DragDropComponent implements OnChanges {
     this.validated = (this.itemX.length>=1 && this.itemY.length>=1 && this.itemZ.length>=1) ? true : false;  
 
     if(this.validated) {
-      this.newAxesOrdering = [{itemX: this.itemX, itemY: this.itemY, itemZ: this.itemZ}]
+      this.newAxesOrdering = [{ itemX: this.itemX, itemY: this.itemY, itemZ: this.itemZ }]
     }
   }
 
@@ -52,7 +57,7 @@ export class DragDropComponent implements OnChanges {
     this.newAxes.emit(this.newAxesOrdering);
   }
 
-  // Pasar items de un contenido a otro
+  // Move items from one container to another
   drop(event: CdkDragDrop<string[]>) {
     if (event.previousContainer === event.container) {
       moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
@@ -73,6 +78,5 @@ export class DragDropComponent implements OnChanges {
     if(data.filter((e:any) => e.description==value)[0].column_type!=='numeric') return false;
     return true;
   }
-
 
 }

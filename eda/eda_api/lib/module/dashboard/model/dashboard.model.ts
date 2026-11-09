@@ -11,6 +11,7 @@ export interface IDashboard extends mongoose.Document {
 interface IDashboardConfig {
     createdAt: Date;
     modifiedAt: Date;
+    author: string;
     sendViaMailConfig: any;
     title: string;
     visible: string;
@@ -18,9 +19,10 @@ interface IDashboardConfig {
     panel: any[];
     onlyIcanEdit: boolean;
     styles:any;
-    tag: any; //  EDA's tags
+    tag: string[]; //  EDA's tags (array of strings)
     external?: any; // external tags  to filter the dashboard
     urls:any; // urls to call from the dashboard.  url actions
+    active?: boolean; // false hides the dashboard from non-admin users; undefined/true means active
 }
 
 const DashboardSchema = new mongoose.Schema({
