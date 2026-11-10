@@ -690,10 +690,49 @@ eda-blank-panel > div.flex.flex-col > div.drag-handler h2 {
    In the profile + languages submenu, "Perfil" is redundant: the current user
    is already represented by the side-menu user badge (initials, links to the
    profile). The whole entry is hidden so only the languages remain (hiding the
-   li avoids the leftover gap of the space-y). It is targeted through its href,
-   which contains "/profile". */
-app-main-left-sidebar ul > li:has(> .sidebar-submenu-link[href*="profile"]) {
+   li avoids the leftover gap of the space-y). The submenu items are rendered as
+   buttons (not links), so the entry is targeted through its profile icon's SVG
+   path, which is language-independent. */
+app-main-left-sidebar ul > li:has(> .sidebar-submenu-link eda-icon svg path[d*="M15.75"]) {
   display: none !important;
+}
+
+/* ─── Profile: hide "Guardar cambios" for SinergiaCRM-managed users ───────
+   When the account is managed by SinergiaCRM the page shows the amber locked
+   banner (border-amber-300) and the profile is read-only, so the save button
+   is redundant. Hidden via the banner's presence (language-independent). */
+profile-sda .container:has(.border-amber-300) > .flex.justify-between > button.btn-corporate-gradient,
+.container:has(.border-amber-300) > .flex.justify-between > button.btn-corporate-gradient {
+  display: none !important;
+}
+
+/* ─── Dashboard edit: sticky top bar (title + zoom/add/save/more) ─────────
+   Keeps the dashboard header (with the edit toolbar) visible while scrolling
+   the report, easing editing. The inner wrapper is turned into `contents` so the
+   header's sticky containing block is the whole dashboard (not just the
+   127px header+filters box), which is what makes it actually stick. The
+   dashboard's <main> has overflow:hidden, which creates a non-scrolling
+   scrollport and breaks sticky, so it is relaxed to visible only while a
+   dashboard (#myDashboard) is present. No core changes. */
+main.flex-grow:has(#myDashboard) {
+  overflow: visible !important;
+}
+#myDashboard > div.w-full > div {
+  display: contents;
+}
+#myDashboard > div.w-full > div > div.flex.items-center.relative.w-full.items-start {
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  background: transparent;
+  backdrop-filter: none;
+  padding-top: 0.25rem;
+  padding-bottom: 0.25rem;
+  transition: background-color 0.2s ease, backdrop-filter 0.2s ease;
+}
+#myDashboard > div.w-full > div > div.flex.items-center.relative.w-full.items-start.sda-scrolled {
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(4px);
 }
 
 /* ─── Report filters: width and condensed text ────────────────────────────
