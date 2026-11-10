@@ -1,11 +1,10 @@
 import { Component, EventEmitter, Input, OnInit, Output } from "@angular/core";
 import { FormsModule, ReactiveFormsModule, UntypedFormBuilder, } from "@angular/forms";
-import { AlertService } from "@eda/services/service.index";
+import { AlertService, DashboardService } from "@eda/services/service.index";
 import { SharedModule } from "@eda/shared/shared.module";
 import { MultiSelectModule } from "primeng/multiselect";
 import { FloatLabelModule } from 'primeng/floatlabel';
 import { SelectButtonModule } from "primeng/selectbutton";
-import * as _ from 'lodash';
 import { DashboardPage } from "../dashboard.page";
 import { EdaDialog2Component } from "@eda/shared/components/shared-components.index";
 
@@ -23,59 +22,80 @@ export class DashboardTagModal implements OnInit {
   public display: boolean = false;
 
   public newTag: any;
-  public tags: any[];
+  public tags: any[] = [];
   public selectedTags: any[] = [];
 
-  constructor(private alertService: AlertService) { }
+  // Synthetic entries the home page's tag bar adds on top of real tags — never real tags.
+  private readonly nonAssignableTagLabels = [
+    $localize`:@@NoTag:Sin Etiqueta`,
+    $localize`:@@AllTagsFlat:Todo`,
+    $localize`:@@AllTagsGrouped:Todo agrupado`,
+  ];
+
+  constructor(private alertService: AlertService, private dashboardService: DashboardService) { }
 
   ngOnInit(): void {
-    // We retrieve all tags stored locally
-    const tags = JSON.parse(localStorage.getItem('tags')) || [];
-    this.selectedTags = this.dashboard.selectedTags;
-    this.tags = _.uniqBy(tags, 'value');
+    const tags = this.dashboard.selectedTags;
+    this.selectedTags = tags == null ? [] : (Array.isArray(tags) ? tags : [tags]);
+    this.tags = this.localTags(); // Avoids showing "null" before the full catalog loads.
 
-    // If this.tags is not an array because they are legacy tags, we need to convert it into an array
-    if(!Array.isArray(this.tags)){
-      this.tags = [this.tags];
-    }
-    
-    // We add the tags present in this document in case they are not stored locally
-    if(!Array.isArray(this.selectedTags)){
-      this.selectedTags = [this.selectedTags];
-    } 
-  
-    // Add tag values that come from imports
-    this.tags.push(...this.selectedTags.filter(  (tag): tag is string => typeof tag === "string").map(tag => ({label: tag,value: tag})));
+    this.loadExistingTags();
+  }
 
-    // Remove duplicates by 'label' in case they are already stored locally and avoid repeating them
-    this.tags = Array.from(new Map(this.tags.map(item => [item.label, item])).values());
+  private localTags(): any[] {
+    return this.selectedTags
+      .filter((tag): tag is string => typeof tag === 'string' && tag.trim() !== '')
+      .map(tag => ({ label: tag, value: tag }));
+  }
+
+  // No shared tag catalog exists, so build it from every visible dashboard.
+  private loadExistingTags(): void {
+    this.dashboardService.getDashboards().subscribe((resp: any) => {
+      const allDashboards = [
+        ...(resp?.open || []),
+        ...(resp?.common || []),
+        ...(resp?.group || []),
+        ...(resp?.private || []),
+      ];
+
+      const remoteTags = allDashboards
+        .flatMap(db => db?.config?.tag)
+        .filter(tag => tag !== null && tag !== undefined)
+        .flatMap(tag => Array.isArray(tag) ? tag : [tag])
+        .filter(tag => typeof tag !== 'string' || tag.trim() !== '')
+        .map(tag => typeof tag === 'string' ? { label: tag, value: tag } : tag);
+
+      this.tags = Array.from(new Map([...remoteTags, ...this.localTags(), ...this.tags].map(item => [item.label, item])).values())
+        .filter(tag => !this.nonAssignableTagLabels.includes(tag.label));
+    });
   }
 
   public setNewTag() {
-    const repeated = this.tags.some(tag => (this.newTag.toUpperCase() === String(tag.value).toUpperCase()));
+    const trimmed = (this.newTag || '').trim();
+    const repeated = this.tags.some(tag => (trimmed.toUpperCase() === String(tag.value).toUpperCase()));
 
-    if (this.newTag.length === 0) {
-      this.newTag = !this.newTag;
+    if (trimmed.length === 0) {
+      this.newTag = '';
       this.alertService.addError($localize`:@@emptyTag:Este tag esta vacío`);
     } else if (repeated) {
       this.newTag = '';
       this.alertService.addError($localize`:@@existentTag:Este tag ya existe`);
     } else {
-      const tag = JSON.parse(JSON.stringify({ label: this.newTag, value: this.newTag }));
-      this.tags.push(tag);
+      const tag = { label: trimmed, value: trimmed };
+      this.tags = [...this.tags, tag];
       this.newTag = '';
-      localStorage.setItem('tags', JSON.stringify(this.tags));
       this.alertService.addSuccess($localize`:@@tagCreated:Etiqueta creada correctamente`);
-      (this.selectedTags ??= []).push(tag.label);
+      this.selectedTags = [...(this.selectedTags || []), tag.label];
     }
   }
 
   public onApply() {
     this.display = false;
-    // Normalize selectedTags: convert objects to strings
-    const normalizedTags = this.selectedTags.map(tag =>
-      typeof tag === 'string' ? tag : tag.value || tag.label
-    );
+    // Convert tag objects to strings, dropping empty/null selections
+    const normalizedTags = this.selectedTags
+      .map(tag => (typeof tag === 'string' ? tag : (tag?.value ?? tag?.label)))
+      .map(tag => typeof tag === 'string' ? tag.trim() : tag)
+      .filter(tag => tag !== null && tag !== undefined && tag !== '');
     this.close.emit(normalizedTags);
     this.alertService.addSuccess($localize`:@@tagAssigned:Etiqueta asignada correctamente`);
   }
