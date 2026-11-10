@@ -1096,6 +1096,10 @@ export class GlobalFilterComponent implements OnInit {
             return item;
         });
         filtro.selectedItems = _.uniq(filtro.selectedItems);
+        // Enforce single selection when multipleSelection is disabled
+        if (filtro.multipleSelection === false && filtro.selectedItems.length > 1) {
+            filtro.selectedItems = [filtro.selectedItems[filtro.selectedItems.length - 1]];
+        }
         // Update Global filter
         this.setGlobalFilterItems(filtro)
     }
