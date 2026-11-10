@@ -60,11 +60,36 @@ export class SsoSinergiaCrmAuthPlugin implements IAuthPlugin {
         if (status?.enabled) {
             this.rememberBounce();
             const returnUrl = encodeURIComponent(state.url);
-            window.location.href = `${URL_SERVICES}/sso/redirect?return=${returnUrl}`;
-            return 'redirecting';
+            // SDA CUSTOM - bounce to the CRM without Referer: SinergiaCRM (SuiteCRM
+            // SugarApplication::checkHTTPReferer) replies with its XSRF page whenever the
+            // navigation to action=sdaRedirect comes from a foreign host, which is exactly
+            // how a plain location.href from SinergiaDA reads on production domains.
+            this.startSsoBounceWithoutReferer(`${URL_SERVICES}/sso/redirect?return=${returnUrl}`);
+            /* SDA CUSTOM */ return 'redirecting';
         }
 
         return 'not-handled';
+    }
+
+    /**
+     * SDA CUSTOM - Opens the given SSO bounce URL without sending Referer.
+     *
+     * SinergiaCRM (SuiteCRM) blocks with its "Cross Site Request Forgery (XSRF)"
+     * page every request to a logged-in action whose Referer points to a foreign
+     * host (SugarApplication::checkHTTPReferer). The SDA->CRM bounce triggered
+     * with window.location.href carries the SinergiaDA origin as Referer, so on
+     * real deployment domains the CRM rejected the flow before minting the
+     * token. A programmatic <a rel="noreferrer"> navigation drops the Referer
+     * for the whole redirect chain, and SuiteCRM accepts referer-less requests.
+     */
+    private startSsoBounceWithoutReferer(url: string): void {
+        /* SDA CUSTOM */ const anchor = document.createElement('a');
+        /* SDA CUSTOM */ anchor.href = url;
+        /* SDA CUSTOM */ anchor.rel = 'noreferrer';
+        /* SDA CUSTOM */ anchor.style.display = 'none';
+        /* SDA CUSTOM */ document.body.appendChild(anchor);
+        /* SDA CUSTOM */ anchor.click();
+        /* SDA CUSTOM */ document.body.removeChild(anchor);
     }
 
     private readTokenFromUrl(route: ActivatedRouteSnapshot): string | null {
