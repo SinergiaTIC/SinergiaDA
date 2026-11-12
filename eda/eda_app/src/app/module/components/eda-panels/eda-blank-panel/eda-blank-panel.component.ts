@@ -1314,9 +1314,10 @@ public tableNodeExpand(event: any): void {
      * @param column 
      * @param isFilter is filter column or normal column
      */
-    public openColumnDialog(column: Column, isFilter?: boolean): void {
+    public openColumnDialog(column: Column, isFilter?: boolean, fromDuplication?: boolean): void {
 
         this.disableBtnSave();
+        this.duplicatingColumnInProgress = !!fromDuplication;
 
         if (column.table_id !== this.rootTable?.table_name) {
             column.joins = (column.joins||[]).length == 0 ? this.nodeJoins[this.nodeJoins.length-1] : column.joins;
@@ -1330,7 +1331,8 @@ public tableNodeExpand(event: any): void {
             table: this.findTable(column.table_id)?.display_name?.default,
             filters: this.selectedFilters,
             connectionProperties: this.connectionProperties,
-            chartSubType: this.graficos?.edaChart || ''
+            chartSubType: this.graficos?.edaChart || '',
+            isDuplicatedColumn: this.duplicatingColumnInProgress
         };
 
         if (!isFilter) {
@@ -1340,7 +1342,8 @@ public tableNodeExpand(event: any): void {
                     if (response.duplicated) {
                         this.currentQuery.push(response.column);
                         this.configController = undefined;
-                        setTimeout(() => this.openColumnDialog(response.column), 100);
+                        this.duplicatingColumnInProgress = true;
+                        setTimeout(() => this.openColumnDialog(response.column, false, true), 100);
                     } else if (response.length > 0) {
                         for (const f of response) {
                             if (_.isNil(this.selectedFilters.find(o => o.filter_id === f.filter_id))) {
@@ -1503,6 +1506,7 @@ public tableNodeExpand(event: any): void {
     
     /* General page functions */
     public disableBtnSave = () => this.display_v.btnSave = true;
+    public duplicatingColumnInProgress: boolean = false;
 
     public ableBtnSave = () => this.display_v.btnSave = false;
 

@@ -1,6 +1,6 @@
 <eda-dialog2
 [display]="displayWindow" width="80vw" height="70vh" [overflow]="'auto'"
-  (apply)="onApply()" (close)="closeDialog()" [showDuplicate]=true (duplicate)="onDuplicate()">
+  (apply)="onApply()" (close)="closeDialog()" [showDuplicate]=true [disableDuplicate]="display.duplicateColumn || isDuplicatedColumn" (duplicate)="onDuplicate()">
 
   <div header class="flex items-center gap-2">
     @if(!editingTitle) {

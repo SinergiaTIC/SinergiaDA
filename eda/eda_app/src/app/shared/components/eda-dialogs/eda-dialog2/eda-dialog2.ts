@@ -36,6 +36,7 @@ export abstract class EdaDialog2 {
     @Input() showNextStep: boolean = false;
     @Input() disableNextStep: boolean = false;
     @Input() showCheckExpression: boolean = false;
+    @Input() disableDuplicate: boolean = false;
 
     // Standard acronym-to-pixel map
     protected sizeMap: Record<string, string> = {

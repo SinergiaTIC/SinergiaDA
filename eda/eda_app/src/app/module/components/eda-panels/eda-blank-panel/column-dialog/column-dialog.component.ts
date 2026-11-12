@@ -69,6 +69,7 @@ export class ColumnDialogComponent {
         switchButton: true,
         duplicateColumn: false
     };
+    public isDuplicatedColumn: boolean = false;
     public filter = {
         switch: false,
         types: [],
@@ -139,6 +140,7 @@ export class ColumnDialogComponent {
     }
 
     ngOnInit(): void {
+        this.isDuplicatedColumn = this.controller?.params?.isDuplicatedColumn === true;
         this.selectedColumn = this.controller.params.selectedColumn;
         const allowed = [];
         const col = $localize`:@@atributoLabel:Atributo`, from = $localize`:@@table:de la entidad`;
