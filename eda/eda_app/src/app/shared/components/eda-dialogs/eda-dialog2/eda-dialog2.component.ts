@@ -124,6 +124,18 @@ export class EdaDialog2Component extends EdaDialog2 implements OnInit, OnChanges
     public ngOnDestroy(): void {
         this.display = false;
         this.resizeObserver?.disconnect();
+        // When the host destroys this dialog in the same change-detection cycle
+        // as Apply/Close, PrimeNG's hide animation never runs, so the scroll
+        // lock it placed on <body> (p-overflow-hidden) is never released and
+        // the page loses its scrollbar. Re-check after the current destroy
+        // cycle: if no dialog mask is left in the DOM, restore the body scroll.
+        // A dialog still open keeps its mask, so it is not affected.
+        setTimeout(() => {
+            if (document.querySelectorAll('.p-dialog-mask').length === 0) {
+                document.body.classList.remove('p-overflow-hidden');
+                document.body.style.removeProperty('--scrollbar-width');
+            }
+        });
     }
 
 }
