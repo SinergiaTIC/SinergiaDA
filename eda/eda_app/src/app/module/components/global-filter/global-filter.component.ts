@@ -528,6 +528,17 @@ export class GlobalFilterComponent implements OnInit {
         }
 
 
+        // Only panels gaining or losing this filter need their query re-run.
+        let affectedPanelIds: Set<string> | undefined;
+        if (apply && this.globalFilter) {
+            affectedPanelIds = new Set<string>(this.globalFilter.panelList || []);
+            this.dashboard.edaPanels.forEach(panel => {
+                if (panel.globalFilters.some((f: any) => f.filter_id === this.globalFilter.id)) {
+                    affectedPanelIds.add(panel.panel.id);
+                }
+            });
+        }
+
         if (apply) {
             // Adding, editing or removing a report filter changes the report
             this.dashboardService.setNotSaved(true);
@@ -612,7 +623,7 @@ export class GlobalFilterComponent implements OnInit {
 
         this.globalFilter = undefined;
         this.cdr.detectChanges();
-        this.dashboard.refreshPanels();
+        this.dashboard.refreshPanels(affectedPanelIds);
     }
 
     public deleteFilterEvent(event: any) {
