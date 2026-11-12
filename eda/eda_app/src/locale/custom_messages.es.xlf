@@ -405,7 +405,7 @@
   </trans-unit>
   <trans-unit id="deactivatePublicDashboardWarning" datatype="html">
     <source>Si desactiva este informe público, la URL pública dejará de estar disponible y el informe ya no podrá visualizarse.</source>
-    <source>Si desactiva un informe público dejará de funcionar la URL pública del mismo, por lo que ya no podrá visualizarse.</source>
+    <source>Si desactiva este informe público, la URL pública dejará de estar disponible y el informe ya no podrá visualizarse.</source>
   </trans-unit>
   <trans-unit id="ConfirmDeactivate" datatype="html">
     <source>Sí, desactivarlo</source>
@@ -1097,7 +1097,7 @@
   </trans-unit>
   <trans-unit id="profileGroupsEmpty" datatype="html">
     <source>No perteneces a ningún grupo.</source>
-    <target>No perteneces a ningún grupo.</target>
+    <target>No pertenece a ningún grupo.</target>
   </trans-unit>
   <trans-unit id="profileInfoSubtitle" datatype="html">
     <source>Actualiza tu información básica de perfil</source>

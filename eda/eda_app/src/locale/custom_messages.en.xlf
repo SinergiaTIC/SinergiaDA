@@ -1077,7 +1077,7 @@
   </trans-unit>
   <trans-unit id="labelUsuarioLogin" datatype="html">
     <source>Usuario de acceso</source>
-    <target>Login user</target>
+    <target>Login username</target>
   </trans-unit>
   <trans-unit id="profileAccountTitle" datatype="html">
     <source>Mi cuenta</source>
@@ -1149,11 +1149,11 @@
     </trans-unit>
     <trans-unit id="tooltipLiveDashboard" datatype="html">
       <source>Configurar el refresco automático del informe</source>
-      <target>Configure the report automatic refresh</target>
+      <target>Configure the report's automatic refresh</target>
     </trans-unit>
     <trans-unit id="tooltipEditStyles" datatype="html">
       <source>Cambiar los estilos visuales del informe</source>
-      <target>Change the report visual styles</target>
+      <target>Change the report's visual styles</target>
     </trans-unit>
     <trans-unit id="tooltipPrivacy" datatype="html">
       <source>Configurar quién puede ver el informe</source>
@@ -1165,7 +1165,7 @@
     </trans-unit>
     <trans-unit id="tooltipPanelLock" datatype="html">
       <source>Bloquear o desbloquear el movimiento y redimensionado de los paneles</source>
-      <target>Allow panel moving and resizing</target>
+      <target>Lock or unlock panel moving and resizing</target>
     </trans-unit>
     <trans-unit id="tooltipPrivateEdition" datatype="html">
       <source>Permitir que solo el propietario edite el informe</source>

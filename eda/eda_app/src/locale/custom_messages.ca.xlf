@@ -1165,7 +1165,7 @@
     </trans-unit>
     <trans-unit id="tooltipPanelLock" datatype="html">
       <source>Bloquear o desbloquear el movimiento y redimensionado de los paneles</source>
-      <target>Permet moure els panells o canviar-ne les mides</target>
+      <target>Permet blocar o desblocar el moviment i el redimensionament dels panells</target>
     </trans-unit>
     <trans-unit id="tooltipPrivateEdition" datatype="html">
       <source>Permitir que solo el propietario edite el informe</source>
