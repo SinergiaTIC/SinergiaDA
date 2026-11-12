@@ -129,7 +129,18 @@ export class DashboardMenuSdaComponent implements OnInit, OnDestroy, DoCheck {
       const header = document.querySelector<HTMLElement>(
         '#myDashboard > div.w-full > div > div.flex.items-center.relative.w-full.items-start'
       );
-      if (header) header.classList.toggle('sda-scrolled', window.scrollY > 0);
+      if (header) {
+        const bg =
+          this.dashboard?.backgroundColor?.background ||
+          this.dashboard?.styles?.backgroundColor ||
+          this.dashboard?.dashboard?.config?.styles?.backgroundColor ||
+          this.stylesProviderService?.DEFAULT_BACKGROUND_COLOR;
+        if (bg) {
+          header.style.setProperty('--sda-report-bg', bg);
+          header.style.backgroundColor = bg;
+        }
+        header.classList.toggle('sda-scrolled', window.scrollY > 0);
+      }
     };
     window.addEventListener('scroll', this.scrollHandler, { passive: true });
     this.scrollHandler();
@@ -175,6 +186,21 @@ export class DashboardMenuSdaComponent implements OnInit, OnDestroy, DoCheck {
       }
       this.buildAddMenu();
       this.buildMoreMenu();
+    }
+    // Keep the sticky header's background in sync with the report background color.
+    const headerEl = document.querySelector<HTMLElement>(
+      '#myDashboard > div.w-full > div > div.flex.items-center.relative.w-full.items-start'
+    );
+    if (headerEl) {
+      const bg =
+        this.dashboard?.backgroundColor?.background ||
+        this.dashboard?.styles?.backgroundColor ||
+        this.dashboard?.dashboard?.config?.styles?.backgroundColor ||
+        this.stylesProviderService?.DEFAULT_BACKGROUND_COLOR;
+      if (bg) {
+        headerEl.style.setProperty('--sda-report-bg', bg);
+        headerEl.style.backgroundColor = bg;
+      }
     }
     if (!this.viewModeInit) return; // never touch panels before knowing the report mode
     this.syncTitleAffordance();

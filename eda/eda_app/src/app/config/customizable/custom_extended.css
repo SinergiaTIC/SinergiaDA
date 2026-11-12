@@ -713,26 +713,30 @@ profile-sda .container:has(.border-amber-300) > .flex.justify-between > button.b
    127px header+filters box), which is what makes it actually stick. The
    dashboard's <main> has overflow:hidden, which creates a non-scrolling
    scrollport and breaks sticky, so it is relaxed to visible only while a
-   dashboard (#myDashboard) is present. No core changes. */
+   dashboard (#myDashboard) is present. No core changes.
+   Note: the header background keeps the report's background color (it does
+   NOT switch to white/transparent when stuck); a thin bottom border is added
+   instead to make the stuck state visible. */
 main.flex-grow:has(#myDashboard) {
   overflow: visible !important;
 }
-#myDashboard > div.w-full > div {
+#myDashboard > div.w-full > div:has(> .flex.items-center.relative.w-full.items-start) {
   display: contents;
 }
 #myDashboard > div.w-full > div > div.flex.items-center.relative.w-full.items-start {
   position: sticky;
   top: 0;
   z-index: 40;
-  background: transparent;
+  background: var(--sda-report-bg, #f1f0f0);
   backdrop-filter: none;
   padding-top: 0.25rem;
   padding-bottom: 0.25rem;
-  transition: background-color 0.2s ease, backdrop-filter 0.2s ease;
+  transition: border-bottom-color 0.2s ease;
 }
 #myDashboard > div.w-full > div > div.flex.items-center.relative.w-full.items-start.sda-scrolled {
-  background: rgba(255, 255, 255, 0.85);
-  backdrop-filter: blur(4px);
+  background: var(--sda-report-bg, #f1f0f0);
+  backdrop-filter: none;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.12);
 }
 
 /* ─── Report filters: width and condensed text ────────────────────────────
