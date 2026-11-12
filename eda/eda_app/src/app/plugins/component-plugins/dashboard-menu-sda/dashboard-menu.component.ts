@@ -122,14 +122,39 @@ export class DashboardMenuSdaComponent implements OnInit, OnDestroy, DoCheck {
     this.notSavedSub = this.dashboardService.notSaved.subscribe(v => this.hasUnsavedChanges = !!v);
     this.buildAddMenu();
     this.buildMoreMenu();
+    // Toggle the header background on scroll: transparent at the top, frosted
+    // white once the user scrolls. CSS alone cannot detect the scroll position
+    // reliably here, so the class is toggled from this listener (no core changes).
+    this.scrollHandler = () => {
+      const header = document.querySelector<HTMLElement>(
+        '#myDashboard > div.w-full > div > div.flex.items-center.relative.w-full.items-start'
+      );
+      if (header) {
+        const bg =
+          this.dashboard?.backgroundColor?.background ||
+          this.dashboard?.styles?.backgroundColor ||
+          this.dashboard?.dashboard?.config?.styles?.backgroundColor ||
+          this.stylesProviderService?.DEFAULT_BACKGROUND_COLOR;
+        if (bg) {
+          header.style.setProperty('--sda-report-bg', bg);
+          header.style.backgroundColor = bg;
+        }
+        header.classList.toggle('sda-scrolled', window.scrollY > 0);
+      }
+    };
+    window.addEventListener('scroll', this.scrollHandler, { passive: true });
+    this.scrollHandler();
   }
 
   ngOnDestroy(): void {
     this.notSavedSub?.unsubscribe();
+    window.removeEventListener('scroll', this.scrollHandler);
     this.teardownTitleAffordance();
     this.teardownFilterAffordances();
     if (this.isLayoutLocked) this.restoreEditMode();
   }
+
+  private scrollHandler: () => void = () => {};
 
   /**
    * Re-asserts the view-mode flags on every cycle: panels can be replaced
@@ -161,6 +186,21 @@ export class DashboardMenuSdaComponent implements OnInit, OnDestroy, DoCheck {
       }
       this.buildAddMenu();
       this.buildMoreMenu();
+    }
+    // Keep the sticky header's background in sync with the report background color.
+    const headerEl = document.querySelector<HTMLElement>(
+      '#myDashboard > div.w-full > div > div.flex.items-center.relative.w-full.items-start'
+    );
+    if (headerEl) {
+      const bg =
+        this.dashboard?.backgroundColor?.background ||
+        this.dashboard?.styles?.backgroundColor ||
+        this.dashboard?.dashboard?.config?.styles?.backgroundColor ||
+        this.stylesProviderService?.DEFAULT_BACKGROUND_COLOR;
+      if (bg) {
+        headerEl.style.setProperty('--sda-report-bg', bg);
+        headerEl.style.backgroundColor = bg;
+      }
     }
     if (!this.viewModeInit) return; // never touch panels before knowing the report mode
     this.syncTitleAffordance();
