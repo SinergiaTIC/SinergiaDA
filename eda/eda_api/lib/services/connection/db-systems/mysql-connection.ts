@@ -226,20 +226,35 @@ async execQuery(query: string): Promise<any> {
     private async resolveValueListFilterCodes(query: any) {
         if (!EDA_API_CONFIG.custom_behaviour?.USE_VALUE_LIST_CODE_FOR_FILTERS) return;
         const maps = new Map<string, Map<string, string>>();
+        const codeSets = new Map<string, Set<string>>();
         const resolve = async (filter: any) => {
             const vls = filter?.valueListSource;
             const elements = filter?.filter_elements?.[0]?.value1;
             if (!vls?.target_table || !vls?.target_id_column || !Array.isArray(elements) || elements.length === 0) return;
             let map = maps.get(vls.target_table);
+            let validCodes = codeSets.get(vls.target_table);
             if (!map) {
                 if (!this.client) this.client = await this.getclient();
                 const [rows] = await this.client.query(`SELECT code, value FROM \`${vls.target_table}\``) as any;
                 map = new Map((rows || []).map((r: any) => [String(r.value), String(r.code)]));
+                validCodes = new Set((rows || []).map((r: any) => String(r.code)));
                 maps.set(vls.target_table, map);
+                codeSets.set(vls.target_table, validCodes);
             }
+            const storedCodes = filter?.filter_codes?.[0]?.value1;
+            if (Array.isArray(storedCodes) && storedCodes.length === elements.length
+                && storedCodes.every((c: any) => validCodes.has(String(c)))) {
+                return; // keep the stored, rename-stable codes untouched
+            }
+            const translated = elements.map((e: any) => {
+                const key = String(e);
+                if (map.has(key)) return map.get(key);
+                if (validCodes.has(key)) return e; // already a valid code, keep it
+                return e; // keep original value when it cannot be resolved
+            });
             filter.filter_codes = [{
                 ...(filter.filter_codes?.[0] || {}),
-                value1: elements.map((e: any) => map.has(String(e)) ? map.get(String(e)) : e)
+                value1: translated
             }];
         };
         for (const filter of query?.filters || []) await resolve(filter);
