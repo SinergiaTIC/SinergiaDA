@@ -1,152 +1,125 @@
-# EDALITICS
+<a href="https://www.sinergiacrm.org/sinergia-data-analytics">
+  <img  src="eda/eda_app/src/assets/images/logos/stic_200x67.png" align="right"  />
+</a>
 
-Edalitics (previously Enterprise Data Analytics) is an open-source analytics and dashboarding platform created by Jortilles. Its purpose is to make data exploration and visualization extremely easy — even for non-technical users — while still offering powerful features for advanced analysts.
+# SinergiaDA
+![Version (latest by date)](https://img.shields.io/github/v/release/SinergiaTIC/SinergiaDA?label=Version)
+[![Wiki](https://img.shields.io/badge/Information-Wiki-lightgray)](https://wiki.sinergiacrm.org/index.php?title=Manual_de_SinergiaDA)
+[![LICENSE](https://img.shields.io/badge/License-AGPL_v3-orange.svg)](./LICENSE.txt)
+[![LinkedIn](https://img.shields.io/badge/LinkedIn-0077B5)](https://www.linkedin.com/company/sinergiatic)
+[![Twitter](https://img.shields.io/twitter/follow/sinergiacrm?style=social&label=Follow)](https://twitter.com/SinergiaCRM)
+[![YouTube](https://img.shields.io/badge/Youtube-FF0000)](https://www.youtube.com/@SinergiaCRM)
 
-![Edalitics Sample](https://www.edalitics.com/wp-content/uploads/2025/10/animated.gif)
+[Website](https://www.sinergiacrm.org/sinergia-data-analytics) | 
+[Manual de uso](https://wiki.sinergiacrm.org/index.php?title=Manual_de_SinergiaDA) |
+[Manual de instalación](https://github.com/SinergiaTIC/SinergiaDA/wiki/Instalaci%C3%B3n-de-SinergiaDA)
 
-Edalitics is a metadata-driven analytical tool:
-1. Create a [data model](https://youtu.be/Px709s0ftiI)
-2. Create nice [reports](https://youtu.be/RFznLe9kxHU)
+[Español](#español) | [Català](#català) | [English](#english) | [Galego](#galego)
 
+# Español
 
-# Why Edalitics?
+## Acerca de SinergiaDA
 
-Edalitics was built with a clear mission:
+Sinergia Data Analytics (SinergiaDA) es una herramienta de inteligencia de negocio de código abierto desarrollada por la Asociación SinergiaTIC, una entidad sin ánimo de lucro cuya misión es potenciar la capacidad de las organizaciones no lucrativas de adoptar estratégicamente y utilizar eficientemente las Tecnologías de la Información y la Comunicación (TIC).
 
-To be the simplest analytics system to use, even for users without technical skills. To be the faster analytital tool for advanced users.  To allow the creation of rich dashboards without writing code and in a matter of minutes.
+SinergiaDA se basa en [Enterprise Data Analytics (EDA)](https://eda.jortilles.com/). Se integra de forma nativa con [SinergiaCRM](https://github.com/SinergiaTIC/SinergiaCRM), facilitando el análisis de sus datos y la elaboración de informes.
 
-If you want to try edalitics you always can check the [free.edalitics](https://free.edalitics.com) service or run the docker:  **docker run -p 80:80 jortilles/eda:latest**  
+## Seguridad
 
+#### Informar sobre vulnerabilidades
 
-# Key Features
+En SinergiaDA la seguridad es una prioridad. Si has identificado una vulnerabilidad o algún riesgo para la seguridad en nuestro código, te agradeceremos que nos informes de ello lo antes posible enviando un correo electrónico a [info@sinergiacrm.org](mailto:info@sinergiacrm.org). En tu informe incluye, por favor, la siguiente información:
 
-* No-code dashboard creation.
-* Advanced SQL query mode for power users.
-* Tree mode to explore logical data models.
-* KPI definitions and automatic e-mail alerts.
-* Public dashboards shareable via  [url](https://demo.edalitics.com/es/#/dashboard/61a0f5fdb9314109a45ff077).
-* Row Level Security (RLS) for controlled data access.
-* Clean, modern, responsive UI.
+- Descripción detallada del problema.
+- Pasos para reproducir la vulnerabilidad.
+- Información adicional que pueda ser relevante.
 
-# Technology Stack
+En cuanto tengamos tu informe te confirmaremos su recepción, revisaremos la información proporcionada y adoptaremos las medidas necesarias. ¡Gracias por tu colaboración!
 
-Edalitics is built using modern and widely adopted technologies:
+#### Divulgación responsable
 
-* Node.js, TypeScript, Angular.
-* MongoDB for metadata and configuration storage
-* A lightweight, extensible backend + intuitive frontend
+Por favor, evita divulgar públicamente detalles sobre cualquier vulnerabilidad hasta que hayamos tenido la oportunidad de abordarla y resolverla. Creemos en la divulgación responsable para garantizar la seguridad de aplicaciones, usuarios y datos y agradecemos tu contribución a preservar la seguridad de SinergiaDA.
 
+## Licencia
+SinergiaDA se distribuye bajo la [Licencia Pública General Affero de GNU (AGPLv3)](./LICENSE.txt). Consulta el archivo de licencia para obtener más detalles.
 
+# Català
 
-# Installation & Local Development
+## Sobre SinergiaDA
 
-You can use Edalicits as a SAS service at https://www.edalitics.com/. 
+Sinergia Data Analytics (SinergiaDA) és una eina d'intel·ligència de negoci de codi obert desenvolupada per l'Associació SinergiaTIC, una entitat sense ànim de lucre que té com a missió potenciar la capacitat de les organitzacions no lucratives d'adoptar estratègicament i utilitzar eficientment les Tecnologies de la Informació i la Comunicació (TIC).
 
-Or you can deploy a local instance of edalitics in your environment.  To do this you should: 
+SinergiaDA es basa en [Enterprise Data Analytics (EDA)](https://eda.jortilles.com/). S'integra de forma nativa amb [SinergiaCRM](https://github.com/SinergiaTIC/SinergiaCRM), facilitant-ne l'anàlisi de les dades i l'elaboració d'informes.
 
-## Clone the repository
+## Seguretat
 
-```bash
-git clone github.com/jortilles/EDA.git
-```
+#### Informar sobre vulnerabilitats
 
-## Configure the database
+A SinergiaDA la seguretat és una prioritat. Si has identificat una vulnerabilitat o algun risc per a la seguretat en el nostre codi, t'agrairem que ens n'informis el més aviat possible enviant un correu electrònic a [info@sinergiacrm.org](mailto:info@sinergiacrm.org). Al teu informe inclou, si us plau, la següent informació:
 
-Edit the MongoDB connection in:  **EDA/eda/eda_api/config/database.config.js**
+- Descripció detallada del problema.
+- Passos per reproduir la vulnerabilitat.
+- Informació addicional que pugui ser rellevant.
 
-```
-module.exports = {
-    url: "mongodb://127.0.0.1:27017/EDA"
-};
-```
+Tan aviat com tinguem el teu informe et confirmarem la seva recepció, revisarem la informació proporcionada i adoptarem les mesures necessàries. Gràcies per la teva col·laboració!
 
-## Configure the backend URL in the UI
+#### Divulgació responsable
 
-In: **EDA/eda/eda_app/src/app/config/config.ts**
-```
-export const URL_SERVICES = 'http://localhost:8666';
-```
+Si us plau, evita divulgar públicament detalls sobre qualsevol vulnerabilitat fins que hàgim tingut l'oportunitat d'abordar-la i resoldre-la. Creiem en la divulgació responsable per garantir la seguretat d'aplicacions, usuaris i dades i agraïm la teva contribució a preservar la seguretat de SinergiaDA.
 
-## Run the backend and frontend
-Backend API:
-```bash
-cd EDA/eda/eda_api
-npm install
-npm start
-```
-Frontend App
-```bash
-cd EDA/eda/eda_app
-npm install
-npm start
-```
+## Llicència
+SinergiaDA es distribueix sota la [Llicència Pública General Affero de GNU (AGPLv3)](./LICENSE.txt). Consulta l'arxiu de llicència per obtenir més detalls.
 
-The application will be available in your browser at:
+# English
 
-👉 http://localhost:4200
+## About SinergiaDA
 
+Sinergia Data Analytics (SinergiaDA) is an open-source business intelligence tool developed by the SinergiaTIC Association, a non-profit organization whose mission is to enhance the capacity of non-profit organizations to strategically adopt and efficiently use Information and Communication Technologies (ICT).
 
+SinergiaDA is based on [Enterprise Data Analytics (EDA)](https://eda.jortilles.com/). It natively integrates with [SinergiaCRM](https://github.com/SinergiaTIC/SinergiaCRM), making it easy to analyze its data and develop reports upon it.
 
-## 🐳 Run edalitics with Docker (recommended)
+## Security
 
-This is the siplest way to run edalitics locally 
-To get the latests buld: 
-```bash
-docker run -p 80:80 jortilles/eda:latest
-```
-To get a manual deploy: 
-```bash
-docker run -p 80:80 jortilles/eda:manual_latest
-```
+#### Reporting vulnerabilities
 
-Then open:
+At SinergiaDA, security is a priority. If you have identified a vulnerability or any security risk in our code, we would appreciate if you could inform us as soon as possible by sending an email to [info@sinergiacrm.org](mailto:info@sinergiacrm.org). In your report, please include the following information:
 
-👉 http://localhost
+- Detailed description of the problem.
+- Steps to reproduce the vulnerability.
+- Any additional information that may be relevant.
 
+As soon as we have your report, we will confirm its receipt, review the information provided, and take the necessary measures. Thank you for your collaboration!
 
+#### Responsible disclosure
 
-Default credentials:
+Please avoid publicly disclosing details about any vulnerability until we have had the opportunity to address and resolve it. We believe in responsible disclosure to ensure the security of applications, users, and data, and we appreciate your contribution to preserving the security of SinergiaDA.
 
-**User:** eda@jortilles.com
+## License
+SinergiaDA is distributed under the [GNU Affero General Public License (AGPLv3)](./LICENSE.txt). Please refer to the license file for more details.
 
-**Password:** default
+# Galego
 
-# ⚡ One-Click Deploy
+## Sobre SinergiaDA
 
-| Cloud Provider | Deploy Button |
-|----------------|---------------|
-| AWS | <a href="https://deploystack.io/deploy/jortilles-eda?provider=aws&language=cfn"><img src="https://raw.githubusercontent.com/deploystackio/deploy-templates/refs/heads/main/.assets/img/aws.svg" height="38"></a> |
-| DigitalOcean | <a href="https://deploystack.io/deploy/jortilles-eda?provider=do&language=dop"><img src="https://raw.githubusercontent.com/deploystackio/deploy-templates/refs/heads/main/.assets/img/do.svg" height="38"></a> |
-| Render | <a href="https://deploystack.io/deploy/jortilles-eda?provider=rnd&language=rnd"><img src="https://raw.githubusercontent.com/deploystackio/deploy-templates/refs/heads/main/.assets/img/rnd.svg" height="38"></a> |
-| Helm | `helm repo add deploystack https://deploystackio.github.io/deploy-templates/`<br>`helm repo update`<br>`helm install jortilles-eda deploystack/jortilles-eda` |
+Sinergia Data Analytics (SinergiaDA) é unha ferramenta de intelixencia empresarial de código aberto desenvolvida pola Asociación SinergiaTIC, unha entidade sen ánimo de lucro cuxa misión é potenciar a capacidade das organizacións non lucrativas de adoptar estratexicamente e utilizar eficientemente as Tecnoloxías da Información e a Comunicación (TIC).
 
-<sub>Change or add deploy options at [awesome-docker-run](https://github.com/deploystackio/awesome-docker-run/tree/main/commands/EDA)</sub>
+SinergiaDA baséase en [Enterprise Data Analytics (EDA)](https://eda.jortilles.com/). Intégrase de forma nativa con [SinergiaCRM](https://github.com/SinergiaTIC/SinergiaCRM), facilitando a análise dos seus datos e a elaboración de informes.
 
-<sub>Generated by <a href="https://deploystack.io/c/jortilles-eda" target="_blank">DeployStack.io</a></sub>
+## Seguridade
 
+#### Informar sobre vulnerabilidades
 
-# Documentation
+En SinergiaDA a seguridade é unha prioridade. Se identificaches unha vulnerabilidade ou algún risco para a seguridade no noso código, agradecerémoscho que nos informes o antes posible enviando un correo electrónico a [info@sinergiacrm.org](mailto:info@sinergiacrm.org). No teu informe inclúe, por favor, a seguinte información:
 
-Full documentation, tutorials, and guides are available at:
+- Descrición detallada do problema.
+- Pasos para reproducir a vulnerabilidade.
+- Información adicional que poida ser relevante.
 
-👉 http://doc.edalitics.com
+En canto teñamos o teu informe confirmaremos a súa recepción, revisaremos a información proporcionada e adoptaremos as medidas necesarias. Grazas pola túa colaboración!
 
+#### Divulgación responsable
 
-# 🤝 Contributing
+Por favor, evita divulgar publicamente detalles sobre calquera vulnerabilidade ata que teñamos a oportunidade de abordala e resolvela. Cremos na divulgación responsable para garantir a seguridade de aplicacións, usuarios e datos e agradecemos a túa contribución a preservar a seguridade de SinergiaDA.
 
-Contributions are welcome! You can:
-
-Report issues
-
-Submit pull requests
-
-Improve documentation
-
-Suggest new features
-
-Check the repository issues tab to get started.
-
-# 📄 License
-
-Edalitics is released under the AGPL-3.0 license.
-
+## Licenza
+SinergiaDA distribúese baixo a [Licenza Pública Xeral Affero de GNU (AGPLv3)](./LICENSE.txt). Consulta o arquivo de licenza para obter máis detalles.
