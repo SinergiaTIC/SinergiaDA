@@ -444,6 +444,16 @@ export const QueryUtils = {
   },
 
   /**
+   * The dashboard's own live report filters (id, isMandatory and panelList) for each 
+   * — so the backend can check mandatory filters against them instead of what's saved.
+   */
+  buildLiveFilters: (ebp: EdaBlankPanelComponent): { id: string; isMandatory: boolean; panelList: string[] }[] | undefined => {
+    const liveFilters = ebp.dashboard?.globalFilter?.globalFilters;
+    if (!liveFilters) return undefined;
+    return liveFilters.map((f: any) => ({ id: f.id, isMandatory: f.isMandatory === true, panelList: f.panelList || [] }));
+  },
+
+  /**
    * Builds a query object
    */
   initEdaQuery: (ebp: EdaBlankPanelComponent): Query => {
@@ -466,7 +476,8 @@ export const QueryUtils = {
       prediction: ebp.panel?.content?.query?.query?.prediction ? ebp.panel.content.query.query.prediction:'None',
       predictionConfig: ebp.panel?.content?.query?.query?.predictionConfig || undefined,
       sortedFilters: ebp.sortedFilters,
-      resultSortingColumns: ebp.resultSortingColumns
+      resultSortingColumns: ebp.resultSortingColumns,
+      liveFilters: QueryUtils.buildLiveFilters(ebp)
     };
     return ebp.queryBuilder.normalQuery(fields, params, ebp.selectedQueryMode);
   },
@@ -484,7 +495,8 @@ export const QueryUtils = {
       dashboard: ebp.inject.dashboard_id,
       filters: ebp.mergeFilters(ebp.selectedFilters, ebp.globalFilters),
       config: config.getConfig(),
-      connectionProperties: ebp.connectionProperties
+      connectionProperties: ebp.connectionProperties,
+      liveFilters: QueryUtils.buildLiveFilters(ebp)
     };
     return ebp.queryBuilder.normalQuery(ebp.currentQuery, params, ebp.selectedQueryMode, ebp.currentSQLQuery);
 
