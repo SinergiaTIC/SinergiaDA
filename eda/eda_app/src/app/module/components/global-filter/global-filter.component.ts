@@ -534,6 +534,10 @@ export class GlobalFilterComponent implements OnInit {
             this.dashboard.edaPanels.forEach(panel => {
                 if (!this.globalFilter.isdeleted) {
                     panel.globalFilters = panel.globalFilters.filter((f: any) => f.filter_id !== this.globalFilter.id);
+                    // reset advanced (AND/OR) filters of panels that no longer apply the report filter
+                    if (!this.globalFilter.panelList.includes(panel.panel.id)) {
+                        panel.rebootGlobalFilter(this.globalFilter);
+                    }
                 }
             });
 
