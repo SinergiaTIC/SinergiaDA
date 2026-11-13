@@ -623,7 +623,10 @@ export class GlobalFilterComponent implements OnInit {
 
         this.globalFilter = undefined;
         this.cdr.detectChanges();
-        this.dashboard.refreshPanels(affectedPanelIds);
+        // Cancel discards everything above, so nothing changed ==> panel not re-querying.
+        if (apply) {
+            this.dashboard.refreshPanels(affectedPanelIds);
+        }
     }
 
     public deleteFilterEvent(event: any) {
