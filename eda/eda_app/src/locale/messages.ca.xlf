@@ -5786,19 +5786,19 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       </trans-unit>
       <trans-unit id="LogsActionUpdateModelUsersAndGroupsSynced">
         <source>Update Model Users/Groups Synced</source>
-        <target>Usuaris/Grups sincronitzats</target>
+        <target>Usuaris i grups sincronitzats</target>
       </trans-unit>
       <trans-unit id="LogsActionUpdateModelUsersAndGroupsSyncFailed">
         <source>Update Model Users/Groups Sync Failed</source>
-        <target>Error en sincronització d'Usuaris/Grups</target>
+        <target>Error en la sincronització d'usuaris/Grups</target>
       </trans-unit>
       <trans-unit id="LogsActionUpdateModelRolesMapped">
         <source>Update Model Roles Mapped</source>
-        <target>Rols mapejats</target>
+        <target>Rols mapats</target>
       </trans-unit>
       <trans-unit id="LogsActionUpdateModelRolesMappingFailed">
         <source>Update Model Roles Mapping Failed</source>
-        <target>Error en mapeig de rols</target>
+        <target>Error en el mapatge de rols</target>
       </trans-unit>
       <trans-unit id="LogsActionUpdateModelDataModelBuilt">
         <source>Update Model Data Model Built</source>
@@ -5806,7 +5806,7 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       </trans-unit>
       <trans-unit id="LogsActionUpdateModelDataModelBuildFailed">
         <source>Update Model Data Model Build Failed</source>
-        <target>Error en construcció del model de dades</target>
+        <target>Error en la construcció del model de dades</target>
       </trans-unit>
       <trans-unit id="LogsActionUpdateModelCompleted">
         <source>Update Model Completed</source>
@@ -5814,11 +5814,11 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       </trans-unit>
       <trans-unit id="LogsActionUpdateModelPushFailed">
         <source>Update Model Push Failed</source>
-        <target>Error en push del model</target>
+        <target>Error en el push del model</target>
       </trans-unit>
       <trans-unit id="LogsActionUpdateModelFailed">
         <source>Update Model Failed</source>
-        <target>Error en actualització del model</target>
+        <target>Error en l'actualització del model</target>
       </trans-unit>
       <trans-unit id="ServerConsoleLive">
         <source>En vivo</source>
@@ -5826,11 +5826,11 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       </trans-unit>
       <trans-unit id="ServerConsoleReset">
         <source>El fichero de log se reinició.</source>
-        <target>El fitxer de log s'ha reiniciat.</target>
+        <target>El fitxer de registre s'ha reiniciat.</target>
       </trans-unit>
       <trans-unit id="ServerConsoleEmpty">
         <source>Sin contenido.</source>
-        <target>Sense contingut.</target>
+        <target>Sense contingut</target>
       </trans-unit>
       <trans-unit id="LogsAuditTab">
         <source>Auditoría</source>
@@ -5842,7 +5842,7 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       </trans-unit>
       <trans-unit id="SelectPeriodPlaceholder">
         <source>Selecciona periodo</source>
-        <target>Selecciona un període</target>
+        <target>Seleccioneu un període</target>
       </trans-unit>
       <trans-unit id="Today">
         <source>Hoy</source>
@@ -5854,11 +5854,11 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       </trans-unit>
       <trans-unit id="Last5Days">
         <source>Últimos 5 días</source>
-        <target>Últims 5 dies</target>
+        <target>Els últims 5 dies</target>
       </trans-unit>
       <trans-unit id="Last10Days">
         <source>Últimos 10 días</source>
-        <target>Últims 10 dies</target>
+        <target>Els últims 10 dies</target>
       </trans-unit>
       <trans-unit id="FilterByPeriod">
         <source>Periodo</source>
@@ -5874,7 +5874,7 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       </trans-unit>
       <trans-unit id="LogsQueryFailureTitle">
         <source>Detalles del error de consulta</source>
-        <target>Detalls de l'error de consulta</target>
+        <target>Detalls de l'error de la consulta</target>
       </trans-unit>
       <trans-unit id="Date">
         <source>Fecha</source>
@@ -6034,7 +6034,7 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       </trans-unit>
       <trans-unit id="HideDashboardAccessed">
         <source>Mostrar accesos a informes</source>
-        <target>Mostra els accessos a informes</target>
+        <target>Mostra els accessos als informes</target>
       </trans-unit>
       <trans-unit id="LogsViewDetails">
         <source>Ver detalles</source>
@@ -6042,7 +6042,7 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       </trans-unit>
       <trans-unit id="NoLogsFound">
         <source>No se encontraron logs para esta fecha.</source>
-        <target>No s'han trobat logs per a aquesta data.</target>
+        <target>No s'han trobat registres per a aquesta data.</target>
       </trans-unit>
       <trans-unit id="LogsFoundCount">
         <source>registros encontrados</source>
@@ -6154,7 +6154,7 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       </trans-unit>
       <trans-unit id="copyURL">
         <source>Copiar url pública</source>
-        <target>Copia l'URL pública</target>
+        <target>Copia la URL pública</target>
       </trans-unit>
       <trans-unit id="activeLabel">
         <source>Activo</source>
@@ -6303,7 +6303,7 @@ Ingresa ahora<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;" />
       </trans-unit>
       <trans-unit datatype="html" id="tableActivationAccess">
         <source>Los usuarios y grupos configurados NO tendrán acceso a la tabla: <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span class=&quot;font-bold&quot;&gt;"/><x id="INTERPOLATION" equiv-text="{{table.description}}"/><x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/></source>
-        <target>Els usuaris i grups configurats NO tindran accés a la taula: <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span class=&quot;font-bold&quot;&gt;"/><x id="INTERPOLATION" equiv-text="{{table.description}}"/><x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/></target>
+        <target>Els usuaris i grups configurats no tindran accés a la taula: <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span class=&quot;font-bold&quot;&gt;"/><x id="INTERPOLATION" equiv-text="{{table.description}}"/><x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/></target>
       </trans-unit>
       <trans-unit datatype="html" id="decimalNumberText">
         <source>Número de decimales <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/></source>
@@ -6343,7 +6343,7 @@ Ingresa ahora<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;" />
       </trans-unit>
       <trans-unit datatype="html" id="holdedApiKeyLabel">
         <source>API Key de Holded <x id="START_TAG_SPAN" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" equiv-text="&lt;/span&gt;"/></source>
-        <target>API Key de Holded <x id="START_TAG_SPAN" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" equiv-text="&lt;/span&gt;"/></target>
+        <target>Clau API de Holded <x id="START_TAG_SPAN" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" equiv-text="&lt;/span&gt;"/></target>
       </trans-unit>
     </body>
   </file>
