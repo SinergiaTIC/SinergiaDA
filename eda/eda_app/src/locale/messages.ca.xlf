@@ -2985,11 +2985,11 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       </trans-unit>
       <trans-unit id="comparativeTooltip">
         <source>La función de comparar sólo se puede activar si se dispone de un campo de fecha agregado por mes y un único campo numèrico agregado</source>
-        <target>La funció de comparar només es pot activar si es disposa d'un camp de data agregat per mes o setmana i un únic camp numèric agregat</target>
+        <target>La funció de comparar només es pot activar si es disposa d'un camp de data agregat per mes o setmana i un únic camp numèric agregat.</target>
       </trans-unit>
       <trans-unit id="canIeditTooltip">
         <source>Si esta opción está seleccionada, sólo el propietario del informe y los administradores podrán guardar los cambios</source>
-        <target>Si aquesta opció està marcada, només el propietari de l'informe i els administradors podran desar els canvis</target>
+        <target>Si aquesta opció està marcada, només el propietari de l'informe i els administradors podran desar els canvis.</target>
       </trans-unit>
       <trans-unit id="onlyIcanEditTag">
         <source>Edición privada:</source>
@@ -3065,14 +3065,14 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       </trans-unit>
       <trans-unit id="whereDoWeBegin">
         <source>¿ Por dónde empezamos ?</source>
-        <target>Per on comencem?</target>
+        <target>Per on voleu començar?</target>
       </trans-unit>
 
       <!-- SECTION: FUNCIONALIDADES PENDIENTES DE EXTRACCIÓN (no están en messages.xlf, requiere ng extract-i18n) -->
 
       <trans-unit id="placeholderRelationName">
         <source>Nombre relación</source>
-        <target>Nom relació</target>
+        <target>Nom de la relació</target>
       </trans-unit>
       <trans-unit id="panelOptionsChangeChartType">
         <source>Cambiar tipo de gráfico</source>
@@ -3100,7 +3100,7 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       </trans-unit>
       <trans-unit id="DatePickerLast365">
         <source> Últimos 365 días </source>
-        <target>Últims 365 dies</target>
+        <target>Els últims 365 dies</target>
       </trans-unit>
       <trans-unit id="kpiSize">
         <source>Modificar el tamaño del KPI</source>
@@ -3136,11 +3136,11 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       </trans-unit>
       <trans-unit id="seeHideRepetitions">
         <source>Ver/ocultar valores repetidos</source>
-        <target>Veure/amagar valors repetits</target>
+        <target>Mostra/amaga els valors repetits</target>
       </trans-unit>
       <trans-unit id="hideRepetitions">
         <source>Ocultar valores repetidos</source>
-        <target>Amagar valors repetits</target>
+        <target>Amaga els valors repetits</target>
       </trans-unit>
       <trans-unit id="sendMailHeader">
         <source>Configuración de los envíos por email</source>
@@ -3152,7 +3152,7 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       </trans-unit>
       <trans-unit id="chartInfo18">
         <source>El sunburst necesita al menos una categoria y un campo numérico </source>
-        <target>El sunburst necesita almenys una categoria y un campo numèric</target>
+        <target>El sunburst necesita almenys una categoria i un camp numèric.</target>
       </trans-unit>
       <trans-unit id="trendTitleYear">
         <source>Año actual</source>
@@ -3220,15 +3220,15 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       </trans-unit>
       <trans-unit id="adminEmailSubtitle">
         <source>Configure los ajustes y credenciales de su servidor de correo electrónico</source>
-        <target>Configureu els ajustos i credencials del vostre servidor de correu electrònic</target>
+        <target>Configuració i credencials del servidor de correu electrònic</target>
       </trans-unit>
       <trans-unit id="alertsConfigSubtitle">
         <source>Administra tus configuraciones de alertas</source>
-        <target>Administreu les vostres configuracions d'alertes</target>
+        <target>Configuració de les alertes</target>
       </trans-unit>
       <trans-unit id="dashbaordsMailingSubtitle">
         <source>Administrar las configuraciones de correo electrónico del panel</source>
-        <target>Administrar les configuracions de correu electrònic del panell</target>
+        <target>Configuració dels enviaments d'informes per correu electrònic</target>
       </trans-unit>
       <trans-unit id="enableCache">
         <source>Habilitar caché </source>
@@ -3240,7 +3240,7 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       </trans-unit>
       <trans-unit id="DeleteGroupCancel">
         <source>Cancelar</source>
-        <target>Cancel·lar</target>
+        <target>Cancel·la</target>
       </trans-unit>
       <trans-unit id="setNewAlert">
         <source>Configurar nueva alerta</source>
