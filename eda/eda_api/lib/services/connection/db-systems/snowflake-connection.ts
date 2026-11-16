@@ -1,4 +1,4 @@
-import { SnowFlakeBuilderService } from './../../query-builder/qb-systems/snowflake-builder.service';
+import { SnowFlakeBuilderService } from '../../query-builder/qb-systems/snowflake-builder.service';
 import { Snowflake } from 'snowflake-promise';
 import { AbstractConnection } from '../abstract-connection';
 import { AggregationTypes } from '../../../module/global/model/aggregation-types';
@@ -145,7 +145,8 @@ export class SnowflakeConnection extends AbstractConnection {
         table_type: [],
         columns: getColumns,
         relations: [],
-        visible: true
+        visible: true,
+        ia_visibility: 'FULL'
       };
 
       return newTable;
@@ -169,7 +170,7 @@ export class SnowflakeConnection extends AbstractConnection {
 
     if (column.column_type === 'numeric') {
       column.aggregation_type = AggregationTypes.getValuesForNumbers();
-    } else if (column.column_type === 'text') {
+    } else if (column.column_type === 'text' || column.column_type === 'html') {
         column.aggregation_type = AggregationTypes.getValuesForText();
     } else {
         column.aggregation_type = AggregationTypes.getValuesForOthers();
@@ -180,6 +181,7 @@ export class SnowflakeConnection extends AbstractConnection {
     column.column_granted_roles = [];
     column.row_granted_roles = [];
     column.visible = true;
+    column.ia_visibility = 'FULL';
     column.tableCount = tableCount || 0;
 
     return column;

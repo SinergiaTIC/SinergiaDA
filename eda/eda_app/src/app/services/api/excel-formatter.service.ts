@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import * as XLSX from 'xlsx';
 import * as _ from 'lodash';
+import ExcelJS from 'exceljs/dist/exceljs.bare.min.js';
 import { Observable } from 'rxjs/internal/Observable';
 import { ApiService } from './api.service';
 import { HttpClient } from '@angular/common/http';
@@ -19,26 +19,65 @@ export class ExcelFormatterService extends ApiService {
      * Reads an Excel file and converts the data to JSON.
      * @param filePath The path to the Excel file.
      */
-    async readExcelToJson(file: File): Promise<JSON[]> {
-        if (!file.name.toString().toLowerCase().endsWith('.xls') && !file.name.toString().toLowerCase().endsWith('.xlsx')) return null;
+    async readExcelToJson(file: File): Promise<any[] | null> {
+        // Only accept xls/xlsx files
+        const ext = file.name.toLowerCase();
+        if (!ext.endsWith('.xls') && !ext.endsWith('.xlsx')) return null;
 
-        return new Promise<JSON[]>((resolve, reject) => {
-            const fileReader = new FileReader();
-            fileReader.onload = (event) => {
-                const data = event.target.result;
-                const workbook: XLSX.WorkBook = XLSX.read(data, { type: 'binary', cellDates: true });
+        return new Promise<any[]>((resolve, reject) => {
+            const reader = new FileReader();
 
-                const sheetName: string = workbook.SheetNames[0];
-                const sheet: XLSX.WorkSheet = workbook.Sheets[sheetName];
+            reader.onload = async (event: ProgressEvent<FileReader>) => {
+                try {
+                    const arrayBuffer = event.target?.result;
+                    if (!arrayBuffer) {
+                        reject('No file data');
+                        return;
+                    }
 
-                const jsonData: JSON[] = XLSX.utils.sheet_to_json(sheet, { raw:false, dateNF:'yyyy-mm-dd' });
-                resolve(jsonData);
+                    const workbook = new ExcelJS.Workbook();
+                    await workbook.xlsx.load(arrayBuffer as ArrayBuffer);
+
+                    // Take the first sheet
+                    const worksheet = workbook.worksheets[0];
+                    if (!worksheet) {
+                        resolve([]);
+                        return;
+                    }
+
+                    const jsonData: any[] = [];
+
+                    // Iterate each row
+                    worksheet.eachRow({ includeEmpty: false }, (row, rowNumber) => {
+                        const rowData: any = {};
+                        row.eachCell((cell, colNumber) => {
+                            // Use the first row as headers
+                            if (rowNumber === 1) {
+                                rowData[colNumber] = cell.text;
+                            } else {
+                                const header = worksheet.getRow(1).getCell(colNumber).text;
+                                rowData[header] = cell.text;
+                            }
+                        });
+                        // Skip the headers row in jsonData
+                        if (rowNumber !== 1) {
+                            jsonData.push(rowData);
+                        }
+                    });
+
+                    resolve(jsonData);
+                } catch (err) {
+                    console.error('Error reading Excel:', err);
+                    reject(err);
+                }
             };
-            fileReader.onerror = (error) => {
-                console.error('Error reading file', error);
+
+            reader.onerror = (error) => {
+                console.error('FileReader error', error);
                 reject(error);
             };
-            fileReader.readAsArrayBuffer(file);
+
+            reader.readAsArrayBuffer(file);
         });
     }
     /**
@@ -55,6 +94,14 @@ export class ExcelFormatterService extends ApiService {
      */
     checkExistenceFromJSON(nameData): Observable<any> {
         return this.post(`${this.globalExcelRoute}/existent-json-data-source`, nameData);
+    }
+
+    updateCollectionFromJSON(id: string, jsonData: any): Observable<any> {
+        return this.put(`${this.globalExcelRoute}/update-json-data-source/${id}`, jsonData);
+    }
+
+    addDuckDBDataSource(data: any): Observable<any> {
+        return this.post('/datasource/add-duckdb-data-source', data);
     }
 
 }

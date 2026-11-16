@@ -8,26 +8,12 @@ export const EbpUtils = {
         str = $localize`:@@chartInfo2:Un KPI necesita un único número`;
         description += `\n${str}`;
         break;
-      case 'kpibar':
-        str = $localize`:@@chartInfoKpibar:Un Kpi + gráfico de barras necesita una o más categorías y una serie numérica. Además, si existen más de una serie los datos numéricos deben agregarse.`;
-        description += `\n${str}`;
-        break;
-      case 'kpiline':
-        str = $localize`:@@chartInfoKpiline:Un KPI + gráfico de línea necesita una o más categorías y una série numérica. Además, si hay mas de una série los datos numéricos deben agregarse.`;
-        description += `\n${str}`;
-        break;
-      case 'kpiarea':
-        str = $localize`:@@chartInfoKpiarea:Un KPI + gráfico de area necesita una o más categorías y una série numérica. Además, si hay mas de una série los datos numéricos deben agregarse.`;
-        description += `\n${str}`;
-        break;
       case 'dynamicText':
         str = $localize`:@@chartInfoDynamicText:Un texto dinámicos requiere de un único valor NO numérico`;
         description += `\n${str}`;
         break;
       case 'barline':
-        // SDA CUSTOM - Use unified chartInfo3
-        str = $localize`:@@chartInfo3:Un gráfico de barras necesita una o más categorías y una serie numérica. Además, si hay mas de una serie los datos numéricos deben agregarse.`;
-        // END SDA CUSTOM
+        str = $localize`:@@chartInfo3:Un gráfico de barras necesita una o más categorías y una série numéricas. Además, si hay mas de una série los datos numéricos deben agregarse.`;
         description += `\n${str}`;
         break;
       case 'stackedbar':
@@ -47,17 +33,18 @@ export const EbpUtils = {
           description += `\n${str}`;
           break;
       case 'horizontalBar':
-        str = $localize`:@@chartInfo3:Un gráfico de barras necesita una o más categorías y una serie numérica. Además, si hay mas de una serie los datos numéricos deben agregarse.`;
+        str = $localize`:@@chartInfo6:Un gráfico de barras necesita una o más categorías y una série numérica. Además, si hay mas de una série los datos numéricos deben agregarse.`;
         description += `\n${str}`;
         break;
-      case 'bar':
-        str = $localize`:@@chartInfo3:Un gráfico de barras necesita una o más categorías y una serie numérica. Además, si hay mas de una serie los datos numéricos deben agregarse.`;
+      case 'bar': 
+        str = $localize`:@@chartInfo6:Un gráfico de barras necesita una o más categorías y una série numérica. Además, si hay mas de una série los datos numéricos deben agregarse.`;
         description += `\n${str}`;
         break;
       case 'bubblechart':
         str = $localize`:@@chartInfoBubble:Un gráfico de burbujas necesita una categorías y una série numérica.`;
         description += `\n${str}`;
         break;
+
       case 'polarArea':
         str = $localize`:@@chartInfo8:Un gráfico polar necesita una categoría y una série numérica`;
         description += `\n${str}`;
@@ -92,7 +79,11 @@ export const EbpUtils = {
         description += `\n${str}`;
         break;
       case 'knob':
-        str = $localize`:@@chartInfo17:El velocímetro necesita uno o dos valores numéricos, en caso de disponer de dos valores el segundo se interpretará como límite`;
+          str = $localize`:@@chartInfo17:El velocímetro necesita uno o dos valores numéricos, en caso de disponer de dos valores el segundo se interpretará como límite`;
+          description += `\n${str}`;
+          break;
+      case 'sunburst':
+        str = $localize`:@@chartInfo18:El sunburst necesita al menos una categoria y un campo numérico `;
         description += `\n${str}`;
         break;
       case 'histogram':
@@ -103,47 +94,25 @@ export const EbpUtils = {
         str = $localize`:@@chartInfoFunnel:Un embudo necesita una categoría y un valor numérico`;
         description += `\n${str}`;
         break;
-      case "treetable":
-        str = $localize`:@@chartInfoTreetable:Un Treetable necesita como mínimo una categoría y dos valores numéricos, en caso se inicie la consulta con dos valores numéricos, estos deberán ser ids con una relación hijo y padre, del cual el hijo deberá iniciar con 0.`;
-        description += `\n${str}`;
-        break;
-      case "radar":
-        str = $localize`:@@chartInfoRadar:Un radar necesita como mínimo una categoría y al menos un valor numérico.`;
-        description += `\n${str}`;
-        break;
       case 'pyramid':
         str = $localize`:@@chartInfoPyramid:Un gráfico de piramide necesita de dos categorías y un valor numérico`;
         description += `\n${str}`;
         break;
-      default:
-        // SDA CUSTOM - Reuse chartInfo1 instead of duplicated chartInfo13
-        description = $localize`:@@chartInfo1:Los datos seleccionados no permiten utilizar este gráfico.`;
-        // END SDA CUSTOM
+      case 'kpitrend':
+        str = $localize`:@@chartInfoKpiTrend:KPI Tendencia necesita una columna de fecha en formato mes y una columna numérica`;
+        description += `\n${str}`;
         break;
-    }
-
-    return description;
-  },
-
-  // text for available values
-  getOptionDescriptionValid: (value: string) => {
-    let description = '';
-    let str: string;
-    // let str2: string;
-    switch (value) {
-      case "treetable":
-        str = $localize`:@@chartInfoTreetableAvailable:Una tabla árbol se puede configurar de dos formas. Mediante campos que se van anidando por medio de agrupaciones o mediante la definición de dos columnas numéricas que definan una relación padre-hijo. Si las dos primeras columnas son numéricas, se asumirá que describen una relación padre hijo.`;
+      case 'kpideviation':
+        str = $localize`:@@chartInfoKpiDeviation:KPI Desviación necesita dos columnas numéricas: valor actual y valor de referencia`;
         description += `\n${str}`;
         break;
       default:
-        description ='';
+        description = $localize`:@@chartInfo1:Los datos seleccionados no permiten utilizar este gráfico.`;
         break;
     }
 
     return description;
   },
-
-
 
   /** ICONOS PARA LOS TIPOS DE GRÁCIFOS  ICON ICONS */
   getOptionIcon: (value: string): string => {
@@ -238,6 +207,12 @@ export const EbpUtils = {
         break;
       case 'treetable':
         description = 'account_tree';
+        break;
+      case 'kpitrend':
+        description = 'trending_up';
+        break;
+      case 'kpideviation':
+        description = 'linear_scale';
         break;
     }
 

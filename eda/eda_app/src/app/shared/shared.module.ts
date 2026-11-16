@@ -1,4 +1,4 @@
-import { NgModule } from '@angular/core';
+import { CUSTOM_ELEMENTS_SCHEMA, NgModule } from '@angular/core';
 
 // Module
 import { CoreModule } from '../core/core.module';
@@ -6,61 +6,49 @@ import { PipesModule } from './pipes/pipes.module';
 
 // Directives
 import { FocusOnShowDirective } from './directives/autofocus.directive';
-import { OnlySignsAndNumbersDirective } from './directives/only-signs-and-numbers.directive';
-
 
 // Components
 import {
     EdaPageDialogComponent,
-    EdaDialogComponent,
+    // EdaDialogComponent,
     EdaDialog2Component,
     NavbarComponent,
-    SidebarComponent,
-    EdaContextMenuComponent,
+    // EdaContextMenuComponent,
     EdaInputComponent,
-    EdaDatePickerComponent,
-    CreateDashboardComponent,
-    EdaFieldComponent,
-    /* SDA CUSTOM */ DateFormatDialogComponent,
+    EdaFieldComponent
 } from './components/shared-components.index';
+import { PrimengModule } from 'app/core/primeng.module';
+import { SweetAlert2Module } from '@sweetalert2/ngx-sweetalert2';
+import { EdaListComponent } from './components/eda-list/eda-list.component';
 
 @NgModule({
     declarations: [
         EdaPageDialogComponent,
         NavbarComponent,
-        SidebarComponent,
-        EdaDialogComponent,
-        EdaDialog2Component,
-        EdaContextMenuComponent,
+        // EdaDialogComponent,
+        // EdaContextMenuComponent,
         EdaInputComponent,
-        FocusOnShowDirective,
-        OnlySignsAndNumbersDirective,
-        EdaDatePickerComponent,
-        CreateDashboardComponent,
         EdaFieldComponent,
-        OnlySignsAndNumbersDirective,
-        /* SDA CUSTOM */DateFormatDialogComponent
     ],
     imports: [
+        PrimengModule,
         CoreModule,
+        FocusOnShowDirective,
+        EdaListComponent,
+        SweetAlert2Module.forRoot(),
         PipesModule
     ],
     exports: [
         EdaPageDialogComponent,
         NavbarComponent,
-        SidebarComponent,
-        EdaDialogComponent,
+        // EdaDialogComponent,
         PipesModule,
-        EdaDialogComponent,
-        EdaDialog2Component,
-        EdaContextMenuComponent,
+        // EdaDialogComponent,
+        // EdaContextMenuComponent,
         EdaInputComponent,
         FocusOnShowDirective,
-        OnlySignsAndNumbersDirective,
-        EdaDatePickerComponent,
-        CreateDashboardComponent,
         EdaFieldComponent,
-        /* SDA CUSTOM */DateFormatDialogComponent
-    ]
+    ],
+    schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
 export class SharedModule {}

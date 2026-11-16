@@ -4,13 +4,18 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ActivatedRoute, Router, NavigationEnd } from '@angular/router';
 import { AlertService, DataSourceService } from '@eda/services/service.index';
 import Swal, { SweetAlertOptions } from 'sweetalert2';
+import { DataSourceDetailComponent } from '../data-source-detail/data-source-detail.component';
+import { PrimengModule } from 'app/core/primeng.module';
+import { DatasourceSaveAsDialog } from '../data-source-save-as/datasource-save-as.dialog';
+import { PROTECTED_MODEL_DATA_SOURCES_ARRAY } from '@eda/configs/customizable/customizable_merged';
+
 import * as _ from 'lodash';
 
-
 @Component({
+    standalone: true,
     selector: 'app-data-source-list',
-    // SDA CUSTOM - Change default template
-    /*SDA CUSTOM*/ templateUrl: './sda-data-source-list.component.html',
+    templateUrl: './data-source-list.component.html',
+    imports: [ PrimengModule, DataSourceDetailComponent, DatasourceSaveAsDialog ],
     styleUrls: ['./data-source-list.component.css']
 })
 export class DataSourceListComponent implements OnInit, OnDestroy {
@@ -19,14 +24,38 @@ export class DataSourceListComponent implements OnInit, OnDestroy {
     public id: string;
     public navigationSubscription: any;
     public selectedNode : TreeNode;
+    public isSaveAsDialogVisible = false;
+    public searchTerm = '';
+
+    get filteredTreeData(): any[] {
+        if (!this.searchTerm.trim()) return this.treeData;
+        return this.filterNodes(this.treeData, this.searchTerm.toLowerCase());
+    }
+
+    private filterNodes(nodes: any[], term: string): any[] {
+        return nodes.reduce((acc: any[], node: any) => {
+            const filteredChildren = node.children ? this.filterNodes(node.children, term) : [];
+            if (node.label?.toLowerCase().includes(term) || filteredChildren.length) {
+                acc.push({ ...node, children: filteredChildren, expanded: filteredChildren.length > 0 });
+            }
+            return acc;
+        }, []);
+    }
+
 
     //Strings
     public refreshSTR = $localize`:@@Refresh:Volver a cargar el modelo de datos almacenado`;
     public saveModelSTR = $localize`:@@saveModel:Guardar modelo de datos`;
+    public saveAsModelSTR = $localize`:@@saveAsModel:Guardar como, para el modelo de datos`;
     public updateModelSTR = $localize`:@@updateModel:Actualizar modelo de datos desde la base de datos origen para buscar nuevas tablas y columnas`;
+    public updateModelXLCSV = $localize`:@@updateModelXLCSV:Actualizar el fichero origen para buscar nuevas tablas y columnas`;
     public deleteModelSTR = $localize`:@@deleteModel:Borrar modelo de datos`;
     public unsaved : string;
-    /*SDA CUSTOM*/ public isSda : Boolean ;
+    public connectionType: string;
+
+    isProtectedDataSource(): boolean {
+        return PROTECTED_MODEL_DATA_SOURCES_ARRAY.includes(this.id);
+    }
 
 
     constructor(public dataModelService: DataSourceService,
@@ -46,10 +75,13 @@ export class DataSourceListComponent implements OnInit, OnDestroy {
     }
 
     ngOnInit(): void {
-      /*SDA CUSTOM*/ this.isSda = (this.id == '111111111111111111111111');
       this.getDataSourceId();
         this.dataModelService.currentTreeData.subscribe(
-            (data) => this.treeData = data,
+            (data) => {
+                this.treeData = data;
+                // We retrieve the connection type to display it in the title
+                this.connectionType = this.dataModelService.getConnectionType();
+            },
             (err) => this.alertService.addError(err)
         );
         this.dataModelService.unsaved.subscribe(
@@ -83,8 +115,6 @@ export class DataSourceListComponent implements OnInit, OnDestroy {
             text: $localize`:@@SureInfo:Estás a punto de borrar el modelo de datos y todos los dashboards asociados, el cambio es irreversible`,
             icon: 'warning',
             showCancelButton: true,
-            confirmButtonColor: '#3085d6',
-            cancelButtonColor: '#d33',
             confirmButtonText: $localize`:@@ConfirmDeleteModel:Si, ¡Eliminalo!`
         } as SweetAlertOptions
         Swal.fire(options).then(borrado => {
@@ -94,7 +124,7 @@ export class DataSourceListComponent implements OnInit, OnDestroy {
                     () => {
                         Swal.fire($localize`:@@Deleted:¡Eliminado!`, $localize`:@@DeleteSuccess:Modelo eliminado correctamente.`, 'success');
                         this.dataModelService.cleanAll();
-                        this.router.navigate(['/home']);
+                        this.router.navigate(['', 'home']);
                         this.spinnerService.off();
                     }, err => {
                         this.alertService.addError(err);
@@ -149,6 +179,31 @@ export class DataSourceListComponent implements OnInit, OnDestroy {
                 this.alertService.addError(err);
                 this.spinnerService.off()},
         );
+    }
+
+    openUpdateFilePage(): void {
+        this.router.navigate(['/data-source', this.id, 'update-file']);
+    }
+
+    dataModelServiceSaveAs() {
+        this.isSaveAsDialogVisible = true;
+    }
+
+    saveDatasourceAs(result: { name: string } | null) {
+        this.isSaveAsDialogVisible = false;
+        if (!result?.name) return;
+        this.spinnerService.on();
+        this.dataModelService.copyDataSource(this.id, result.name).subscribe({
+            next: (res) => {
+                this.spinnerService.off();
+                this.alertService.addSuccess($localize`:@@ModelSaved:Modelo guardado correctamente`);
+                this.router.navigate(['/data-source', res.data_source_id]);
+            },
+            error: (err) => {
+                this.spinnerService.off();
+                this.alertService.addError(err);
+            }
+        });
     }
 
 }

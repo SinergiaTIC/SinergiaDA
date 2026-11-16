@@ -13,12 +13,10 @@ export * from './eda-map/eda-map.component';
 export * from './eda-map/eda-geoJsonMap.component';
 export * from './eda-funnel/eda-funnel.component';
 export * from './eda-d3-bubblechart/eda-bubblechart.component';
-export * from './eda-filter-and-or/eda-filter-and-or.component';
 
  // export * from './eda-d3/eda-d3.component';
 
 // Eda KPI
-export { EdaKpiComponent } from './eda-kpi/eda-kpi.component';
 
 // Eda dynamicText
 export { EdadynamicTextComponent } from './eda-dynamicText/eda-dynamicText.component';
@@ -33,11 +31,13 @@ export { EdaD3Component } from './eda-d3/eda-d3.component';
 // Eda Panels
 export { ColumnDialogComponent } from './eda-panels/eda-blank-panel/column-dialog/column-dialog.component';
 export { FilterDialogComponent } from './eda-panels/eda-blank-panel/filter-dialog/filter-dialog.component';
+export { GlobalFilterDialogComponent } from '../pages/dashboard/global-filter-dialog/global-filter-dialog.component';
 export { ChartDialogComponent } from './eda-panels/eda-blank-panel/chart-dialog/chart-dialog.component';
 export { TableDialogComponent } from './eda-panels/eda-blank-panel/table-dialog/table-dialog.component';
 export { TableGradientDialogComponent } from './eda-panels/eda-blank-panel/table-dialog/gradient-dialog/gradient-dialog.component';
 export { EdaDashboardPanelComponent } from './eda-panels/eda-dashboard-panel/eda-dashboard-panel.component';
 export { EdaTitlePanelComponent } from './eda-panels/eda-title-panel/eda-title-panel.component';
+export { EdaTabsPanelComponent } from './eda-panels/eda-tabs-panel/eda-tabs-panel.component';
 export { SafeHtmlPipe } from './eda-panels/eda-title-panel/htmlSanitizer.pipe'
 export { SafeUrlPipe } from './eda-panels/eda-title-panel/urlSanitizer.pipe'
 export { TitleDialogComponent } from './eda-panels/eda-title-panel/edit-title/quill-editor.component'
@@ -48,19 +48,18 @@ export { MapCoordDialogComponent } from './eda-panels/eda-blank-panel/mapcoord-d
 export { KpiEditDialogComponent } from './eda-panels/eda-blank-panel/kpi-dialog/kpi-dialog.component';
 export { dynamicTextDialogComponent } from './eda-panels/eda-blank-panel/dynamicText-dialog/dynamicText-dialog.component';
 export { SankeyDialog } from './eda-panels/eda-blank-panel/sankey-dialog/sankey-dialog.component';
-export { TreeMapDialog } from './eda-panels/eda-blank-panel/treeMapDialog/treeMap-dialog.component';
-export { ScatterPlotDialog } from './eda-panels/eda-blank-panel/scatterPlotDialog/scatterPlot-dialog.component';
+export { TreeMapDialog } from './eda-panels/eda-blank-panel/tree-map-dialog/tree-map-dialog.component';
+export { ScatterPlotDialog } from './eda-panels/eda-blank-panel/scatter-plot-dialog/scatter-plot-dialog.component';
 export { EdaScatter } from './eda-scatter/eda-scatter.component';
 export { LinkDashboardsComponent } from './eda-panels/eda-blank-panel/link-dashboards/link-dashboards.component';
 export { EdaTreeMap} from './eda-treemap/eda-treemap.component';
 export { EdaKnobComponent } from './eda-knob/eda-knob.component';
 export { KnobDialogComponent } from './eda-panels/eda-blank-panel/knob-dialog/knob-dialog.component';
-export { Knob } from './eda-knob/primengKnob/knob';
 export { FunnelDialog } from './eda-panels/eda-blank-panel/funnel-dialog/funnel-dialog.component';
 export { TreeTableDialogComponent } from './eda-panels/eda-blank-panel/tree-table-dialog/tree-table-dialog.component';
 export { BubblechartDialog } from './eda-panels/eda-blank-panel/bubblechart-dialog/bubblechart-dialog.component';
 export { EdaSunburstComponent } from './eda-sunburst/eda-sunburst.component';
 export { SunburstDialogComponent } from './eda-panels/eda-blank-panel/sunbrust-dialog/sunburst-dialog.component';
+export { WhatIfDialogComponent } from './eda-panels/eda-blank-panel/whatif-dialog/whatif-dialog.component';
 export { EdaTreeTable} from './eda-treetable/eda-treetable.component';
-export { FilterAndOrDialogComponent } from './eda-panels/eda-blank-panel/filter-and-or-dialog/filter-and-or-dialog.component';
 

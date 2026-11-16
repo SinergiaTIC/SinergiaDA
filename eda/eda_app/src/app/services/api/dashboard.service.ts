@@ -1,69 +1,96 @@
-import {Injectable, Output, EventEmitter} from '@angular/core';
-import {Observable, BehaviorSubject} from 'rxjs';
-import {ApiService} from './api.service';
+import { Injectable, Output, EventEmitter } from '@angular/core';
+import { Observable, BehaviorSubject } from 'rxjs';
+import { ApiService } from './api.service';
 
-@Injectable()
+@Injectable({
+    providedIn: 'root'
+})
 export class DashboardService extends ApiService {
 
     private route = '/dashboard/';
     private routeDataManager = '/database-manager';
 
-    public _notSaved = new BehaviorSubject<boolean>(false); // [{ display_name: { default: '' }, eda-columns: [] }] --> just in case
+    private _notSaved = new BehaviorSubject<boolean>(false); // [{ display_name: { default: '' }, eda-columns: [] }] --> just in case
     public notSaved = this._notSaved.asObservable();
 
+    private saveHandler?: () => Promise<any>;
+
+    setNotSaved(value: boolean): void {
+        this._notSaved.next(value);
+    }
+
+    /**
+     * The report page registers here how to save itself, so other components (e.g. the side menu)
+     * can save the open report before leaving it.
+     */
+    registerSaveHandler(handler: () => Promise<any>): void {
+        this.saveHandler = handler;
+    }
+
+    clearSaveHandler(): void {
+        this.saveHandler = undefined;
+    }
+
+    /** Saves the open report, when there is a report page able to do it. */
+    async requestSave(): Promise<void> {
+        if (this.saveHandler) {
+            await this.saveHandler();
+        }
+    }
+
     getDashboards(): Observable<any> {
-        return this.get( this.route );
+        return this.get(this.route);
     }
 
-    getDashboard( id ): Observable<any> {
-        return this.get( `${this.route}${id}` );
-    }
-/*SDA CUSTOM    // This function is used to check if a dashboard is public (shared) or not. It is used in the login guard to allow anonymous users to access public dashboards without needing to log in.
-                 It returns a boolean value indicating if the dashboard is public (shared) or not.*/
-/*SDA CUSTOM*/   getDashboardVisibility( id ): Observable<any> {
-/*SDA CUSTOM*/       return this.get( `${this.route}${id}/visibility` );
-/*SDA CUSTOM*/   }
-
-    addNewDashboard( dashboard ): Observable<any> {
-        return this.post( this.route,  dashboard);
+    getDashboard(id): Observable<any> {
+        return this.get(`${this.route}${id}`);
     }
 
-    updateDashboard( id, body ): Observable<any> {
-        return this.put( `${this.route}${id}`, body );
+    getDataSource(id): Observable<any> {
+        return this.get(`${this.route}datasource/${id}`);
     }
 
-    deleteDashboard( id ): Observable<any> {
-        return this.delete( `${this.route}${id}` );
+    getDashboardVisibility( id ): Observable<any> {
+        return this.get( `${this.route}${id}/visibility` );
+    }
+
+    addNewDashboard(dashboard): Observable<any> {
+        return this.post(this.route, dashboard);
+    }
+
+    updateDashboard(id, body): Observable<any> {
+        return this.put(`${this.route}${id}`, body);
+    }
+
+    deleteDashboard(id): Observable<any> {
+        return this.delete(`${this.route}${id}`);
     }
 
     executeQuery(body): Observable<any> {
-        return this.post( `${this.route}query`,  body );
+        return this.post(`${this.route}query`, body);
     }
 
     executeSqlQuery(body): Observable<any> {
-        return this.post( `${this.route}sql-query`,  body );
+        return this.post(`${this.route}sql-query`, body);
     }
-    executeView(body) : Observable<any>{
+    executeView(body): Observable<any> {
         return this.post(`${this.route}view-query`, body);
     }
 
-    getBuildedQuery(body) : Observable<any>{
+    getBuildedQuery(body): Observable<any> {
         return this.post(`${this.route}getQuery`, body);
     }
 
-    cleanCache(body):Observable<any>{
+    cleanCache(body): Observable<any> {
         return this.post(`${this.route}clean-refresh`, body);
     }
 
-    /*SDA CUSTOM*/ cloneDashboard(id: string): Observable<any> {
-    /*SDA CUSTOM*/  console.log(`Clonando dashboard con ID: ${id}`);
-    /*SDA CUSTOM*/  return this.post(`${this.route}${id}/clone`, {});
-    /*SDA CUSTOM*/ }
+    cloneDashboard(id: string): Observable<any> {
+        return this.post(`${this.route}${id}/clone`, {});
+    }
 
-    /*SDA CUSTOM*/ updateDashboardSpecific( id, body ): Observable<any> {
-    /*SDA CUSTOM*/   return this.put( `${this.route}${id}/updateSpecific`, body );
-    /*SDA CUSTOM*/ }
-
-
+    updateDashboardSpecific(id: string, body: any): Observable<any> {
+        return this.put(`${this.route}${id}/updateSpecific`, body);
+    }
 
 }

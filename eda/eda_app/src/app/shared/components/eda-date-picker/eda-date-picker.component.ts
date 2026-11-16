@@ -3,13 +3,26 @@ import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from
 import { SelectItem } from 'primeng/api';
 import { EdaDatePickerConfig } from './datePickerConfig';
 import { locales } from './date-locales';
+import { rangeDateFormats } from '../date-picker/date-picker.index';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { CalendarModule } from 'primeng/calendar';
+import { DropdownModule } from 'primeng/dropdown';
+import { ButtonModule } from 'primeng/button'; 
+import { RippleModule } from 'primeng/ripple'; 
 
 
 
 @Component({
+	standalone: true,
 	selector: 'eda-date-picker',
 	templateUrl: './eda-date-picker.component.html',
-	styleUrls: ['./eda-date-picker.component.css']
+	styleUrls: ['./eda-date-picker.component.css'], 
+	imports: [
+		CommonModule, FormsModule,
+		CalendarModule, DropdownModule,
+		ButtonModule, RippleModule, 
+  	],
 })
 
 export class EdaDatePickerComponent implements OnChanges {
@@ -17,10 +30,8 @@ export class EdaDatePickerComponent implements OnChanges {
 	@Input() inject: EdaDatePickerConfig;
 	@Input() autoRemove: boolean = false;
 	@Input() autoClear: boolean = false;
-	/* SDA CUSTOM */@Input() showSelector: boolean = true;
-	/* SDA CUSTOM */@Input() filterSelected: any = {};
-	/* SDA CUSTOM */@Input() selectionMode: string = "range";
-	/* SDA CUSTOM */@Input() appendTo: string = 'body';
+	@Input() filterSelected: any = {};
+	@Input() selectionMode: 'single' | 'multiple' | 'range' = 'range';
 	@Output() onDatesChanges = new EventEmitter<any>();
 	@Output() onRemove = new EventEmitter<void>();
 
@@ -28,72 +39,25 @@ export class EdaDatePickerComponent implements OnChanges {
 	public locale: {};
 	public firstDayOfWeek: number = 1;
 
-	public ranges: Array<SelectItem> = [
-		/* SDA CUSTOM */ //	{ label: $localize`:@@DatePickerAll:Todas`, value: 'all' },
-		// Days
-		{ label: $localize`:@@DatePickerBeforeYesterday:Antes de Ayer`, value: 'beforeYesterday' },
-		{ label: $localize`:@@DatePickerYesterday:Ayer`, value: 'yesterday' },
-		/* SDA CUSTOM */	{ label: $localize`:@@DatePickerToday:Hoy`, value: 'today' },
-		/* SDA CUSTOM */ 	{ label: $localize`:@@DatePickerTomorrow:Mañana`, value: 'tomorrow' },
-		/* SDA CUSTOM */ 	{ label: $localize`:@@DatePickerPastTomorrow:Pasado mañana`, value: 'pastTomorrow' },
-		// Weeks
-		{ label: $localize`:@@DatePickerLastWeekFull:La semana pasada completa`, value: 'pastWeekFull' },
-		{ label: $localize`:@@DatePickerLastWeek:La semana pasada (hasta equivalente a hoy)`, value: 'pastWeek' },
-		/* SDA CUSTOM */	{ label: $localize`:@@DatePickerWeekFull:Esta semana al completo`, value: 'weekStartFull' },
-		/* SDA CUSTOM */	{ label: $localize`:@@DatePickerWeek:Esta semana (hasta hoy)`, value: 'weekStart' },
-		/* SDA CUSTOM */ 	{ label: $localize`:@@DatePickerNextWeek:Próxima semana`, value: 'nextWeek' },
-
-    // Months
-		{ label: $localize`:@@DatePickerLastMonthFull:El mes pasado completo`, value: 'pastMonthFull' },
-		{ label: $localize`:@@DatePickerLastMonth:El mes pasado (hasta equivalente a hoy)`, value: 'pastMonth' },
-		/* SDA CUSTOM */	{ label: $localize`:@@DatePickerMonthFull:Este mes completo`, value: 'monthStartFull' },
-		/* SDA CUSTOM */	{ label: $localize`:@@DatePickerMonth:Este mes (hasta hoy)`, value: 'monthStart' },
-		/* SDA CUSTOM */ 	{ label: $localize`:@@DatePickerNextMonth:Próximo mes`, value: 'nextMonth' },
-		{ label: $localize`:@@DatePickerMonthPreviousYearFull:Éste mes al completo del año pasado`, value: 'monthFullPreviousYear' },
-		{ label: $localize`:@@DatePickerMonthPreviousYear:Este mes del año pasado (hasta equivalente a hoy)`, value: 'monthStartPreviousYear' },
-		{ label: $localize`:@@DatePickerLastQuarter:Último trimestre`, value: 'lastQuarter' },
-		/* SDA CUSTOM */  { label: $localize`:@@DatePickerThisQuarter:Este trimestre`, value: 'quarterStart' },
-		/* SDA CUSTOM */ 	{ label: $localize`:@@DatePickerNextQuarter:Próximo trimestre`, value: 'nextQuarter' },
-
-    // Years
-		{ label: $localize`:@@DatePickerYearPreviousYearFull:El año pasado, completo`, value: 'yearStartPreviousYearFull' },
-		/* SDA CUSTOM */	{ label: $localize`:@@DatePickerYearPreviousYear:El año pasado (hasta equivalente a hoy)`, value: 'yearStartPreviousYear' },
-		/* SDA CUSTOM */	{ label: $localize`:@@DatePickerYearFull:Este año al completo`, value: 'yearStartFull' },
-		/* SDA CUSTOM */	{ label: $localize`:@@DatePickerYear:Este año (hasta hoy)`, value: 'yearStart' },
-		/* SDA CUSTOM */ 	{ label: $localize`:@@DatePickerNextYear:Próximo año`, value: 'nextYear' },
-		// Last N days
-		{ label: $localize`:@@DatePickerLast3:Últimos 3 días`, value: 'last3' },
-		/* SDA CUSTOM */ 	{ label: $localize`:@@DatePickerNext3:Próximos 3 días`, value: 'next3' },
-		{ label: $localize`:@@DatePickerLast7:Últimos 7 días`, value: 'last7' },
-		/* SDA CUSTOM */	{ label: $localize`:@@DatePickerNext7:Próximos 7 días`, value: 'next7' },
-		{ label: $localize`:@@DatePickerLast15:Últimos 15 días`, value: 'last15' },
-		/* SDA CUSTOM */ 	{ label: $localize`:@@DatePickerNext15:Próximos 15 días`, value: 'next15' },
-		{ label: $localize`:@@DatePickerLast30:Últimos 30 días`, value: 'last30' },
-		/* SDA CUSTOM */ 	{ label: $localize`:@@DatePickerNext30:Próximos 30 días`, value: 'next30' },
-		{ label: $localize`:@@DatePickerLast60:Últimos 60 días`, value: 'last60' },
-		/* SDA CUSTOM */ 	{ label: $localize`:@@DatePickerNext60:Próximos 60 días`, value: 'next60' },
-		{ label: $localize`:@@DatePickerLast90:Últimos 90 días`, value: 'last90' },
-		/* SDA CUSTOM */ 	{ label: $localize`:@@DatePickerNext90:Próximos 90 días`, value: 'next90' },
-		{ label: $localize`:@@DatePickerLast120:Últimos 120 días`, value: 'last120' },
-		/* SDA CUSTOM */ 	{ label: $localize`:@@DatePickerNext120:Próximos 120 días`, value: 'next120' },
-		/* SDA CUSTOM */ 	{ label: $localize`:@@DatePickerBeforeTodayIncluded:Todo hasta hoy`, value: 'beforeTodayIncluded' },
-	];
+	// Shared with date-picker/'s rangeDateFormats, minus 'customDate': this component has no
+	// explicit-date-picking flow (its getRange() always calls dateUtilsService.getRange(value),
+	// which has no case for 'customDate' and would throw/emit garbage if it were selectable here.
+	public ranges: Array<SelectItem> = rangeDateFormats.filter(r => r.value !== 'customDate');
 
 	public selectedRange: SelectItem;
-	public rangePlaceholder: string = '';
+	public rangePlaceholder: string = $localize`:@@DateSelectRange:Selecciona un rango`;
 	public rangeDates: any;
-
-	/* SDA CUSTOM */ private _allRanges: Array<SelectItem>;
+	private _allRanges: Array<SelectItem>;
 
 	constructor(
 		private dateUtilsService: DateUtils) {
 		const url = window.location.href;
-		/* SDA CUSTOM */ let lan_gl = new RegExp('\/gl\/', 'i');
-		/* SDA CUSTOM */ let lan_ca = new RegExp('\/ca\/', 'i');
-		/* SDA CUSTOM */ let lan_es = new RegExp('\/es\/', 'i');
-		/* SDA CUSTOM */ this.locale = lan_ca.test(url) ? locales.ca : lan_gl.test(url) ? locales.gl : lan_es.test(url) ? locales.es : locales.en;
-		/* SDA CUSTOM */ this.firstDayOfWeek = 1;
-		/* SDA CUSTOM */this._allRanges = [...this.ranges];
+		let lan_ca = new RegExp('\/ca\/', 'i');
+		let lan_es = new RegExp('\/es\/', 'i');
+		this.locale = lan_ca.test(url) ? locales.ca : lan_es.test(url) ? locales.es : locales.en;
+		//this.firstDayOfWeek = lan_es.test(url) || lan_ca.test(url) ? 1 : 0;
+		this.firstDayOfWeek = lan_es.test(url) || lan_ca.test(url) ? 1 : 1;
+		this._allRanges = [...this.ranges];
 	}
 
 	ngOnChanges(changes: SimpleChanges): void {
@@ -107,16 +71,17 @@ export class EdaDatePickerComponent implements OnChanges {
 		}
 
 		// Control for single selection 
-		/* SDA CUSTOM */ this.ranges = [...this._allRanges];
-		/* SDA CUSTOM */ if(['=', '!=', '>', '<', '>=', '<='].includes(this.filterSelected?.value)) {
-		/* SDA CUSTOM */ 	this.ranges = this.ranges.filter(r => ['beforeYesterday', 'yesterday', 'today', 'pastTomorrow'].includes(r.value));
-		/* SDA CUSTOM */ }
+		this.ranges = [...this._allRanges];
+		if(['=', '!=', '>', '<', '>=', '<='].includes(this.filterSelected?.value)) {
+			this.ranges = this.ranges.filter(r => ['beforeYesterday', 'yesterday', 'today', 'pastTomorrow'].includes(r.value));
+		}
+
 	}
 
 	public emitChanges(): void {
-		/* SDA CUSTOM */ let dates = this.rangeDates;
-		/* SDA CUSTOM */ if (this.selectionMode === 'single' && dates && !Array.isArray(dates)) dates = [dates, dates];
-		/* SDA CUSTOM */ this.onDatesChanges.emit({ dates, range: this.selectedRange });
+		let dates = this.rangeDates;
+		if (this.selectionMode === 'single' && dates && !Array.isArray(dates)) dates = [dates, dates];
+		this.onDatesChanges.emit({ dates: this.rangeDates, range: this.selectedRange });
 		this.active = false;
 	}
 
@@ -140,8 +105,8 @@ export class EdaDatePickerComponent implements OnChanges {
 
 	public getRange() {
 		const value = <any>this.selectedRange;
-		/* SDA CUSTOM */ const dates = this.dateUtilsService.getRange(value);
-		/* SDA CUSTOM */ this.rangeDates = this.selectionMode === 'single' ? dates[0] : dates;
-		/* SDA CUSTOM */ this.emitChanges();
+		const dates = this.dateUtilsService.getRange(value);
+		this.rangeDates = this.selectionMode === 'single' ? dates[0] : dates;
+		this.emitChanges();
 	}
 }

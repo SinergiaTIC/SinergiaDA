@@ -1,6 +1,6 @@
 /**
  *
- * chart-utils.services.ts: Totes les utilitats dels gràfics.
+ * chart-utils.services.ts: All chart utilities.
  *
  */
 
@@ -14,6 +14,9 @@ import { EdaChartComponent } from '@eda/components/eda-chart/eda-chart.component
 import * as _ from 'lodash';
 import { StyleConfig } from './style-provider.service';
 import { KpiConfig } from '@eda/components/eda-panels/eda-blank-panel/panel-charts/chart-configuration-models/kpi-config';
+import { DEFAULT_PALETTE_COLOR } from '@eda/configs/customizable/customizable_merged';
+import { StyleProviderService } from '@eda/services/service.index';
+import { color } from 'd3';
 
 export interface EdaChartType {
     label: string;
@@ -29,6 +32,7 @@ export interface FilterType {
     value: string;
     typeof: string[];
 }
+
 export interface FilterTypeLabels {
     label: string;
     value: string;
@@ -46,19 +50,27 @@ export interface FormatDates {
     selected: boolean;
 }
 
+export interface AssignedColor {
+    value: string | number;
+    color: string;
+}
+
+
 
 @Injectable()
 export class ChartUtilsService {
 
     public chartTypes: EdaChartType[] = [
         { label: $localize`:@@chartTypes1:Tabla de Datos`, value: 'table', subValue: 'table', icon: 'pi pi-exclamation-triangle', ngIf: true, tooManyData: true },
-        { label: $localize`:@@chartTypesTableAnalized:Tabla DataQuality`, value: 'table', subValue: 'tableanalized', icon: 'pi pi-exclamation-triangle', ngIf: true, tooManyData: true },
         { label: $localize`:@@chartTypes2:Tabla Cruzada`, value: 'crosstable', subValue: 'crosstable', icon: 'pi pi-exclamation-triangle', ngIf: true, tooManyData: true },
         { label: $localize`:@@chartTypesTreeTable:Tabla Árbol`, value: 'treetable', subValue: 'treetable', icon: 'pi pi-exclamation-triangle', ngIf: true, tooManyData: true },
+        { label: $localize`:@@chartTypesTableAnalized:Tabla DataQuality`, value: 'table', subValue: 'tableanalized', icon: 'pi pi-exclamation-triangle', ngIf: true, tooManyData: true },
         { label: 'KPI', value: 'kpi', subValue: 'kpi', icon: 'pi pi-exclamation-triangle', ngIf: true, tooManyData: true },
         { label: $localize`:@@chartTypesKPIBAR:KPI + Gráfico de Barras`, value: 'kpibar', subValue: 'kpibar', icon: 'pi pi-exclamation-triangle', ngIf: true, tooManyData: true },
         { label: $localize`:@@chartTypesKPILINE:KPI + Gráfico de Lineas`, value: 'kpiline', subValue: 'kpiline', icon: 'pi pi-exclamation-triangle', ngIf: true, tooManyData: true },
         { label: $localize`:@@chartTypesKPIAREA:KPI + Gráfico de Áreas`, value: 'kpiline', subValue: 'kpiarea', icon: 'pi pi-exclamation-triangle', ngIf: true, tooManyData: true },
+        { label: $localize`:@@chartTypesKPITrend:KPI Tendencia`, value: 'kpitrend', subValue: 'kpitrend', icon: 'pi pi-exclamation-triangle', ngIf: true, tooManyData: true },
+        { label: $localize`:@@chartTypesKPIDeviation:KPI Desviación`, value: 'kpideviation', subValue: 'kpideviation', icon: 'pi pi-exclamation-triangle', ngIf: true, tooManyData: true },
         { label: $localize`:@@chartTypesDynamicText:Texto Dinámico`, value: 'dynamicText', subValue: 'dynamicText', icon: 'pi pi-exclamation-triangle', ngIf: true, tooManyData: true },
         { label: $localize`:@@chartTypes15:Velocímetro`, value: 'knob', subValue: 'knob', icon: 'pi pi-exclamation-triangle', ngIf: true, tooManyData: false },
         { label: $localize`:@@chartTypes3:Gráfico de Pastel`, value: 'doughnut', subValue: 'doughnut', icon: 'pi pi-exclamation-triangle', ngIf: true, tooManyData: true },
@@ -69,7 +81,7 @@ export class ChartUtilsService {
         { label: $localize`:@@chartTypes6:Gráfico de Barras Apiladas`, value: 'bar', subValue: 'stackedbar', icon: 'pi pi-exclamation-triangle', ngIf: true, tooManyData: true },
         { label: $localize`:@@chartTypes19:Gráfico de Barras Apiladas al 100%`, value: 'bar', subValue: 'stackedbar100', icon: 'pi pi-exclamation-triangle', ngIf: true, tooManyData: true },
         { label: $localize`:@@chartTypes7:Gráfico de Barras Horizontales`, value: 'bar', subValue: 'horizontalBar', icon: 'pi pi-exclamation-triangle', ngIf: true, tooManyData: true },
-        { label: $localize`:@@chartTypesPyramid:Gráfico de Barras Horizontales Contrapuestas`, value: 'bar', subValue: 'pyramid', icon: 'pi pi-exclamation-triangle', ngIf: true, tooManyData: true },
+        { label: $localize`:@@chartTypesPyramid:Gráfico de Piramide`, value: 'bar', subValue: 'pyramid', icon: 'pi pi-exclamation-triangle', ngIf: true, tooManyData: true },
         { label: $localize`:@@chartTypes8:Gráfico de Lineas`, value: 'line', subValue: 'line', icon: 'pi pi-exclamation-triangle', ngIf: true, tooManyData: true },
         { label: $localize`:@@chartTypes18:Gráfico de Áreas`, value: 'line', subValue: 'area', icon: 'pi pi-exclamation-triangle', ngIf: true, tooManyData: true },
         { label: $localize`:@@chartTypes9:Mixto: Barras y lineas`, value: 'bar', subValue: 'barline', icon: 'pi pi-exclamation-triangle', ngIf: true, tooManyData: true },
@@ -83,25 +95,25 @@ export class ChartUtilsService {
         { label: $localize`:@@chartTypesRadar:Radar`, value: 'radar', subValue: 'radar', icon: 'pi pi-exclamation-triangle', ngIf: true, tooManyData: false },
     ];
 
-/** SDA CUSTOM */    public filterTypesLabels: FilterTypeLabels[] = [
-/** SDA CUSTOM */        { label: $localize`:@@filtersLabel1:=`, value: '=' },
-/** SDA CUSTOM */        { label: $localize`:@@filtersLabel2:≠`, value: '!=' },
-/** SDA CUSTOM */        { label: $localize`:@@filtersLabel3:>`, value: '>' },
-/** SDA CUSTOM */        { label: $localize`:@@filtersLabel4:<`, value: '<' },
-/** SDA CUSTOM */        { label: $localize`:@@filtersLabel5:≥`, value: '>=' },
-/** SDA CUSTOM */        { label: $localize`:@@filtersLabel6:≤`, value: '<=' },
-/** SDA CUSTOM */        { label: $localize`:@@filtersLabel7:Entre`, value: 'between' },
-/** SDA CUSTOM */        { label: $localize`:@@filtersLabel8:Dentro de`, value: 'in' },
-/** SDA CUSTOM */        { label: $localize`:@@filtersLabel9:Fuera de`, value: 'not_in' },
-/** SDA CUSTOM */        { label: $localize`:@@filtersLabel10:Parecido a`, value: 'like' },
-/** SDA CUSTOM */        { label: $localize`:@@filtersLabel11:No parecido a`, value: 'not_like' },
-/** SDA CUSTOM */        { label: $localize`:@@filtersLabel12:No nulos`, value: 'not_null' },
-/** SDA CUSTOM */        { label: $localize`:@@filtersLabel13:No nulos ni vacíos`, value: 'not_null_nor_empty' },
-/** SDA CUSTOM */        { label: $localize`:@@filtersLabel14:Nulos o vacíos`, value: 'null_or_empty' },
-/** SDA CUSTOM */    ];
+    public filterTypesLabels: FilterTypeLabels[] = [
+        { label: $localize`:@@filtersLabel1:=`, value: '=' },
+        { label: $localize`:@@filtersLabel2:≠`, value: '!=' },
+        { label: $localize`:@@filtersLabel3:>`, value: '>' },
+        { label: $localize`:@@filtersLabel4:<`, value: '<' },
+        { label: $localize`:@@filtersLabel5:≥`, value: '>=' },
+        { label: $localize`:@@filtersLabel6:≤`, value: '<=' },
+        { label: $localize`:@@filtersLabel7:Entre`, value: 'between' },
+        { label: $localize`:@@filtersLabel8:Dentro de`, value: 'in' },
+        { label: $localize`:@@filtersLabel9:Fuera de`, value: 'not_in' },
+        { label: $localize`:@@filtersLabel10:Parecido a`, value: 'like' },
+        { label: $localize`:@@filtersLabel11:No parecido a`, value: 'not_like' },
+        { label: $localize`:@@filtersLabel12:No nulos`, value: 'not_null' },
+        { label: $localize`:@@filtersLabel13:No nulos ni vacíos`, value: 'not_null_nor_empty' },
+        { label: $localize`:@@filtersLabel14:Nulos o vacíos`, value: 'null_or_empty' },
+    ];
 
-    public filterTypes: any[] = [
-        { label: $localize`:@@filters1:IGUAL A (=)`, value: '='},
+    public filterTypes: FilterType[] = [
+        { label: $localize`:@@filters1:IGUAL A (=)`, value: '=', typeof: ['numeric', 'date', 'text'] },
         { label: $localize`:@@filters2:NO IGUAL A (!=)`, value: '!=', typeof: ['numeric', 'date', 'text'] },
         { label: $localize`:@@filters3:MAYOR A (>)`, value: '>', typeof: ['numeric', 'date'] },
         { label: $localize`:@@filters4:MENOR A (<)`, value: '<', typeof: ['numeric', 'date'] },
@@ -136,13 +148,11 @@ export class ChartUtilsService {
         { display_name: $localize`:@@dates4:NO`, value: 'No', selected: false }
     ];
 
-    // SDA CUSTOM - Replace eliminated duplicate ID histoGramRangesTxt with canonical rangeDescriptionB
-/* SDA CUSTOM */    public histoGramRangesTxt: string = $localize`:@@rangeDescriptionB:Rango`;
-    // END SDA CUSTOM
+    public histoGramRangesTxt: string = $localize`:@@histoGramRangesTxt:Rango`;
 
-
+    public MyPaletteColors: string[] = DEFAULT_PALETTE_COLOR;
     /*
-        Funció especifica per transformar les dades per el velocímetre (knob)
+        Specific function to transform data for the speedometer (knob)
     */
     public transformData4Knob(data: any, dataTypes: string[]): any {
         let values = [];
@@ -166,23 +176,23 @@ export class ChartUtilsService {
 
 
     /*
-        Aquesta funció manipula les dades per donar-los la forma que esperen els grafics ng-chart
-        numberOfColumns es el numero de columnes que farem servidr en el histograma
+        This function transforms data into the format expected by ng-chart charts.
+        numberOfColumns is the number of columns used in the histogram.
     */
     public transformDataQuery(type: string, subType: string,  values: any[], dataTypes: string[], dataDescription: any, isBarline: boolean, numberOfColumns: number) {
-        
-        /* SDA CUSTOM */ // If there is more than 1 column and all are numeric, convert the first one to text
-        /* SDA CUSTOM */ const allNumeric = dataTypes.length > 1 && !dataTypes.find(t => t !== 'numeric');
-        /* SDA CUSTOM */ if (allNumeric) {
-        /* SDA CUSTOM */     dataTypes[0] = "text";
-        /* SDA CUSTOM */     const columnaNumerica = dataDescription.numericColumns.shift();
-        /* SDA CUSTOM */     dataDescription.otherColumns.unshift(columnaNumerica);
-        /* SDA CUSTOM */ }
+
+        // If there is more than 1 column and all are numeric, convert the first one to text
+        const allNumeric = dataTypes.length > 1 && !dataTypes.find(t => t !== 'numeric');
+        if (allNumeric) {
+            dataTypes[0] = "text";
+            const columnaNumerica = dataDescription.numericColumns.shift();
+            dataDescription.otherColumns.unshift(columnaNumerica);
+        }
 
         dataTypes.forEach( (e,indice)=>{            
             if(e=='text'){
                 values.forEach( (v) => {
-                    v[indice] = (v[indice] == '' || v[indice] == ' ' || v[indice] === null ) ? '-' :  v[indice] ; //canviem les cadenes buides i els null de text per un '-';                   
+                    v[indice] = (v[indice] == '' || v[indice] == ' ' || v[indice] === null ) ? '-' :  v[indice] ; //replace empty strings and null text values with '-';                
                 })}
         })
         
@@ -202,7 +212,7 @@ export class ChartUtilsService {
             const _labels = values.map(v => v[label_idx]);
             const _values = values.map(v => v[number_idx]).filter(elem => elem != null);
 
-            // Faig push a l'array output, que sera retornat per l'inicialització del PieChart
+            // Push to the output array, which will be returned for the PieChart initialization
             const _output = [[], []];
             _output[0] =  _output[0] = values.map(v => v[label_idx]);
             _output[1] = [{ data: values.map(v => v[number_idx]) }];
@@ -219,7 +229,7 @@ export class ChartUtilsService {
             const _output = [[], []];
             _output[0] = l;
 
-            //necesitamos dos series de datos y uno numérico para hacer una pirámide
+            //we need two data series and one numeric to build a pyramid
             if (dataDescription.otherColumns.length === 2 && dataDescription.numericColumns.length === 1) {
                 let series = [];
                 s.forEach((s) => {
@@ -237,7 +247,7 @@ export class ChartUtilsService {
                 //If >1 numeric series
             }
 
-            //para el gráfico de pirámide, cogemos los valores del primer segmento y los multiplicamos por -1.
+            //For the pyramid chart, take the values from the first segment and multiply them by -1.
             let u = _.cloneDeep(_output[1])
             let inverData = []
             for (let i=0;i<u.length;i++) {
@@ -283,18 +293,18 @@ export class ChartUtilsService {
                     });
                 });
 
-                // calibrar los valores al 100%
+                // calibrate values to 100%
                 let totales = [];
-                for (var k = 0; k < l.length; k++) totales[k] = 0; // inicializando totales
+                for (var k = 0; k < l.length; k++) totales[k] = 0; // initializing totals
                 
-                // recolectando todas las sumas
+                // collecting all sums
                 _output[1].forEach((e:any) => {
                     e.data.forEach((v:any,j:number) => {
                         totales[j]=totales[j]+v;
                     })
                 })
 
-                // Agregando los valores de porcentaje
+                // Adding percentage values
                 const _outputTemporal = _output[1];
 
                 _outputTemporal.forEach((e:any, k:number) => {
@@ -322,7 +332,7 @@ export class ChartUtilsService {
                 }
 
                 let label_idx = idx.label;
-                let serie_idx = idx.label; // El unico valor de texto
+                let serie_idx = idx.label; // The only text value
 
                 s.forEach((s) => {
                     _output[1].push({ data: [], label: s , value: [],  mode: 'textOneNumericN' });
@@ -344,19 +354,19 @@ export class ChartUtilsService {
                     })
                 })
 
-                // calibrar los valores al 100%
-                // Calculando las sumas de cada campo
+                // calibrate values to 100%
+                // Calculating the sum of each field
                 _output[1].forEach((e) => {
                     e.data.forEach((v,j) => {
                         totalGenerico[j] = totalGenerico[j] + v
                     })
                 })
                 
-                // ejecutando el porcentaje 100%
+                // applying 100% percentage
                 _output[1].forEach((e) => {
                     for (var i = 0; i < l.length; i++) {
-                        e.value[i] = (e.data[i]); // Valor numérico
-                        e.data[i] = ((e.data[i] * 100)/totalGenerico[i]); // Valor numérico en porcetaje
+                        e.value[i] = (e.data[i]); // Numeric value
+                        e.data[i] = ((e.data[i] * 100)/totalGenerico[i]); // Numeric value as percentage
                     }
                 })
             }
@@ -439,7 +449,7 @@ export class ChartUtilsService {
             let new_data=[];
             let num_cols=0;
             let salto=0;
-            //Si hay nulos van a parte
+            //Nulls are handled separately
             const grupo_null =  values.map(v => v[number_idx]).filter(element => {
                 return element === null;
             });;
@@ -463,7 +473,7 @@ export class ChartUtilsService {
                 num_cols=50;
             }
 
-            //No me llega el numero de columnas fijo el numero de columnas
+            //Column count not received, setting default column count
             if(!isNaN(numberOfColumns) &&  numberOfColumns !== null ){
                 num_cols=numberOfColumns;
             }
@@ -483,7 +493,7 @@ export class ChartUtilsService {
                     num_cols=numberOfColumns;
                 }
                 new_data = this.generateNewDataRangeForHistogram(allNumbers,distinctNumbers,num_cols,min,max , salto);
-                /** array de un único elemento. Cuando tenga mas ya veré lo que hago */
+                /** single-element array. Will handle more when needed */
                 grupos =   this.generateGruposRangeForHistogram( num_cols,min,max , salto, this.esEntero(distinctNumbers) , dataDescription.query[0].minimumFractionDigits);
             }
             if(grupo_null.length > 0 ){
@@ -530,7 +540,7 @@ export class ChartUtilsService {
                 }else{
                     grupos.push( mi_min.toFixed(minimumFractionDigits)+" - "+max.toFixed( minimumFractionDigits ));
                 }
-                // Salgo del bucle
+                // Exit the loop
                 i = i+num_cols;
             }
 
@@ -573,7 +583,7 @@ export class ChartUtilsService {
            new_data.push( grupo.length);
            mi_min = mi_salto;
            if( mi_min >= max){
-            // Salgo
+            // Exit
             i = num_cols;
            }
 
@@ -611,7 +621,7 @@ export class ChartUtilsService {
     }
 
 
-/** Ajuda per saber si un númeor es enter o no.  */
+/** Helper to check if a number is an integer or not.  */
     private esEntero(numeros:number[]):boolean{
         let res = true;
         numeros.forEach(
@@ -666,7 +676,7 @@ export class ChartUtilsService {
                 'table', 'crosstable', 'kpi','dynamicText', 'geoJsonMap', 'coordinatesMap',
                 'doughnut', 'polarArea', 'line', 'kpiline', 'area', 'kpiarea', 'bar', 'kpibar', 'histogram',  'funnel', 'bubblechart',
                 'horizontalBar', 'barline', 'stackedbar', 'parallelSets', 'treeMap', 'scatterPlot', 'knob' ,
-/*SDA CUSTOM*/  'pyramid', 'radar', 'stackedbar100', 'treetable', 'sunburst'
+                'pyramid', 'radar', 'stackedbar100', 'treetable', 'sunburst', 'kpitrend', 'kpideviation'
             ];
 
         //table (at least one column)
@@ -682,15 +692,15 @@ export class ChartUtilsService {
             notAllowed.splice(notAllowed.indexOf('dynamicText'), 1);
         }
         // Pie && Polar (Only one numeric column and one char/date column)
-/* SDA CUSTOM */ if ((dataDescription.totalColumns === 2 && dataDescription.numericColumns.length === 1) ||
-/* SDA CUSTOM */    (dataDescription.totalColumns === 2 && dataDescription.numericColumns.length === 2))  {         
+        if (dataDescription.totalColumns === 2 && dataDescription.numericColumns.length === 1 || 
+            (dataDescription.totalColumns === 2 && dataDescription.numericColumns.length === 2))  {         
             notAllowed.splice(notAllowed.indexOf('doughnut'), 1);
             notAllowed.splice(notAllowed.indexOf('polarArea'), 1);
             notAllowed.splice(notAllowed.indexOf('kpibar'), 1);
             notAllowed.splice(notAllowed.indexOf('kpiline'), 1);
-/* SDA CUSTOM */notAllowed.splice(notAllowed.indexOf('kpiarea'), 1);
+            notAllowed.splice(notAllowed.indexOf('kpiarea',), 1);
         }
-        // barchart i horizontalbar  poden ser grafics normals o poden ser histograms....
+        // barchart and horizontalbar can be regular charts or histograms....
         if (dataDescription.numericColumns.length >= 1 && dataDescription.totalColumns > 1 && dataDescription.otherColumns.length < 2
             || dataDescription.numericColumns.length === 1 && dataDescription.totalColumns > 1 && dataDescription.totalColumns < 4  /* && aggregation */) {
                 notAllowed.splice(notAllowed.indexOf('bar'), 1);
@@ -703,7 +713,7 @@ export class ChartUtilsService {
         if(dataDescription.otherColumns.length===1 && dataDescription.numericColumns.length>=1 && dataDescription.totalColumns>=2 ){
             notAllowed.splice(notAllowed.indexOf('radar'), 1);
         }
-        // això es per els histogrames.....
+        // this is for histograms.....
         if (dataDescription.numericColumns.length == 1 && dataDescription.totalColumns == 1 ) {
             notAllowed.splice(notAllowed.indexOf('histogram'), 1);
         }
@@ -724,9 +734,8 @@ export class ChartUtilsService {
             notAllowed.splice(notAllowed.indexOf('crosstable'), 1);
         }
 
-        //Coordinates map (two coordinates, no field limit)
-        /* SDA CUSTOM if (dataDescription.coordinateColumns === 2 && dataDescription.totalColumns < 5) {
-        /* SDA CUSTOM*/ if (dataDescription.coordinateColumns === 2) {
+        //Coordinates map Map (two coordinates and two aditional fields at max)
+        if (dataDescription.coordinateColumns === 2) {
             notAllowed.splice(notAllowed.indexOf('coordinatesMap'), 1);
         }
 
@@ -767,8 +776,8 @@ export class ChartUtilsService {
         if ((dataDescription.numericColumns.length <= 2 && dataDescription.numericColumns.length > 0
             && dataDescription.otherColumns.length === 0)
             ||
-            // si sento un dataset cojo los dos primeros
-            // del estilo:
+            // if there is a single dataset take the first two
+            // like:
             //  var1 - 10
             //  var 2 - 100
             (dataDescription.numericColumns.length === 1 && dataDescription.otherColumns.length === 1)
@@ -782,17 +791,35 @@ export class ChartUtilsService {
             notAllowed.splice(notAllowed.indexOf('pyramid'), 1);
         }
 
-        //treetable  at least two  text columns or two numeric (parent-child) and one text
-        if(  dataDescription.totalColumns > 2 && dataDescription.otherColumns.length >= 1) {
+
+        // sunbrust two or more value columns and one numeric
+        if(  dataDescription.totalColumns > 2 && dataDescription.otherColumns.length >= 1 && dataDescription.numericColumns.length === 1  ) {
+            notAllowed.splice(notAllowed.indexOf('sunburst'), 1);
+        }
+
+        // treetable: works two ways.
+        // 1) father/child-ID hierarchy - first two columns numeric (ID pair), needs a 3rd column to display.
+        // 2) auto-detected dynamic hierarchy - groups by repeated-value columns, needs at least 2 columns.
+        const treetableIdPair = query.length >= 2 && query[0]?.column_type === 'numeric' && query[1]?.column_type === 'numeric';
+        const treetableAllowed = treetableIdPair ? dataDescription.totalColumns > 2 : dataDescription.totalColumns >= 2;
+        if (treetableAllowed) {
             notAllowed.splice(notAllowed.indexOf('treetable'), 1);
         }
 
+        // kpitrend: 2 columns - 1 date (year/month/week/day) + 1 numeric
+        const dateColForTrend = query.find((c: any) => c.column_type === 'date');
+        const kpiTrendFormats = ['year', 'month', 'week', 'day'];
+        if (dataDescription.totalColumns === 2 && dataDescription.numericColumns.length === 1
+            && dataDescription.otherColumns.length === 1
+            && dateColForTrend && kpiTrendFormats.includes(dateColForTrend.format)) {
+            notAllowed.splice(notAllowed.indexOf('kpitrend'), 1);
+        }
 
-/*SDA CUSTOM*/ // sunbrust two or more value columns and one numeric
-/*SDA CUSTOM*/ if(  dataDescription.totalColumns > 2 && dataDescription.otherColumns.length >= 1 && dataDescription.numericColumns.length === 1  ) {
-/*SDA CUSTOM*/     notAllowed.splice(notAllowed.indexOf('sunburst'), 1);
-/*SDA CUSTOM*/ }
-
+        // kpideviation: 2 numeric cols (no others), or 1 categorical + 1 numeric (like knob)
+        if ((dataDescription.numericColumns.length === 2 && dataDescription.otherColumns.length === 0)
+            || (dataDescription.numericColumns.length === 1 && dataDescription.otherColumns.length === 1)) {
+            notAllowed.splice(notAllowed.indexOf('kpideviation'), 1);
+        }
 
         return notAllowed;
 
@@ -806,7 +833,7 @@ export class ChartUtilsService {
      */
     public getTooManyDataForCharts(dataSize: number): any[] {
         let notAllowed =
-            ['table', 'crosstable', 'kpi', 'dynamicText', 'knob', 'doughnut', 'polarArea', 'line', 'kpiline', 'bar', 'kpibar','histogram',
+            ['table', 'crosstable', 'kpi', 'dynamicText', 'knob', 'kpideviation', 'doughnut', 'polarArea', 'line', 'kpiline', 'bar', 'kpibar','histogram',
                 'horizontalBar', 'barline', 'area', 'kpiarea', 'geoJsonMap', 'coordinateMap', 'radar'];
 
         //table (at least one column)
@@ -824,10 +851,10 @@ export class ChartUtilsService {
             notAllowed.splice(notAllowed.indexOf('kpi'), 1);
             notAllowed.splice(notAllowed.indexOf('dynamicText'), 1);
         }
-        // Knomb (only one or two  numeric column)
-        // only 2 values
+        // Knob / kpideviation: only 2 rows allowed
         if (dataSize <= 2) {
             notAllowed.splice(notAllowed.indexOf('knob'), 1);
+            notAllowed.splice(notAllowed.indexOf('kpideviation'), 1);
         }
         // Pie && Polar (Only one numeric column and one char/date column)
         if (dataSize < 100) {
@@ -855,64 +882,81 @@ export class ChartUtilsService {
         return notAllowed;
     }
 
-    /**
-     * Check if actual config is compatible with actual chart and returns a valid color configuration
-     * @param currentChartype
-     * @param layout
-     */
-    public recoverChartColors(currentChartype: string, layout: ChartConfig) {
-        let config = layout.getConfig();
 
-        if (config instanceof KpiConfig) {
-            config = config.edaChart;
+
+
+
+
+/**
+ * Generates chartColors in Chart.js format from assignedColors
+ * @param assignedColors - Array of {value, color}
+ * @param chartType - Chart type
+ * @returns chartColors in the format expected by Chart.js
+ */
+    public generateChartColorsFromAssignedColors(assignedColors: AssignedColor[], chartType: string): any[] {
+        
+        if (!assignedColors || assignedColors.length === 0) {
+            console.warn('generateChartColorsFromAssignedColors: No hay assignedColors');
+            return [];
         }
-
-        if (config && (<ChartJsConfig>config).chartType.includes(currentChartype)) {
-            return this.mergeColors(layout)
-        } else {
-            return this.generateColors(currentChartype);
-        }
-    }
-
-    public generateColors(type: string) {
-        type = type.replace('kpi', '');
-
+        
+        const type = chartType.replace('kpi', '');
+        
         switch (type) {
-            case 'doughnut': return EdaChartComponent.generatePiecolors();
-            case 'polarArea': return EdaChartComponent.generatePiecolors();
-            case 'bar': return EdaChartComponent.generateChartColors();
-            case 'radar': return EdaChartComponent.generateChartColors();
-            case 'line': return EdaChartComponent.generateChartColors();
-            case 'horizontalBar': return EdaChartComponent.generateChartColors();
-            case 'histogram': return EdaChartComponent.generateChartColors();
+            case 'doughnut':
+            case 'polarArea':
+                // Format: [{backgroundColor: [...], borderColor: [...]}]
+                return [{
+                    backgroundColor: assignedColors.map(c => c.color),
+                    borderColor: assignedColors.map(c => c.color)
+                }];
+                
+            case 'histogram':
+                // Histogram uses only the first color
+                return [{
+                    backgroundColor: assignedColors[0].color,
+                    borderColor: assignedColors[0].color
+                }];
+                
+            default:
+                // Bar, Line, Radar, Stacked, etc.
+                return assignedColors.map(c => ({
+                    backgroundColor: c.color,
+                    borderColor: c.color,
+                    pointBackgroundColor: c.color,
+                    pointBorderColor: c.color
+                }));
         }
+    }   
+
+    // Color code transformation functions
+    private toHex(c: number): string {
+        const hex = Math.max(0, Math.min(255, Math.round(c))).toString(16);
+        return hex.length === 1 ? '0' + hex : hex;
     }
 
-    public mergeColors(layout: ChartConfig) {
-        let config = layout.getConfig();
-
-        if (config instanceof KpiConfig) {
-            config = config.edaChart;
-        }
-
-        if (!(<ChartJsConfig>config).colors) {
-            return this.generateColors((<ChartJsConfig>config).chartType);
-        }
-
-        if ((<ChartJsConfig>config).chartType === 'doughnut' || (<ChartJsConfig>config).chartType === 'polarArea') {
-            let edaColors = EdaChartComponent.generatePiecolors();
-
-            (<ChartJsConfig>config).colors[0]['backgroundColor'].forEach((element, i) => {
-                edaColors[0].backgroundColor[i] = element;
-            });
-
-            (<ChartJsConfig>config).colors[0]['backgroundColor'] = edaColors[0].backgroundColor;
-
-        }
-
-        return (<ChartJsConfig>config).colors;
+    public hex2rgb(hex: string): [number, number, number] {
+        const cleanHex = hex.replace(/^#/, '');
+        const fullHex = cleanHex.length === 3 ?
+            cleanHex[0] + cleanHex[0] + cleanHex[1] + cleanHex[1] + cleanHex[2] + cleanHex[2] :
+            cleanHex;
+        if (fullHex.length !== 6) { return [0, 0, 0]; }
+        const bigint = parseInt(fullHex, 16);
+        const r = (bigint >> 16) & 255;
+        const g = (bigint >> 8) & 255;
+        const b = bigint & 255;
+        return [r, g, b];
     }
 
+    public hexToRgba(hex: string, opacity: number): string {
+        const [r, g, b] = this.hex2rgb(hex);
+        const a = Math.max(0, Math.min(100, opacity)) / 100;
+        return `rgba(${r}, ${g}, ${b}, ${a})`;
+    }
+
+    public rgbToHex(r: number, g: number, b: number): string {
+        return `#${this.toHex(r)}${this.toHex(g)}${this.toHex(b)}`;
+    }
 
     public describeData(currentQuery: any, labels: any) {
         let names = this.pretifyLabels(currentQuery, labels);
@@ -942,7 +986,6 @@ export class ChartUtilsService {
         });
         return out;
     }
-
 
     public pretifyLabels(columns: Array<Column>, labels: Array<string>) {
         let names = [];
@@ -1015,12 +1058,12 @@ export class ChartUtilsService {
 
 
 
-        // Metode original del pau que arodonia al seguent ordre de magnitud.
-        // Pero si el maxim es 10.000  estableix 20.000
-        // Ho intento ajustar una mica.
+        // Original method that rounds to the next order of magnitude.
+        // But if the max is 10,000 it sets 20,000
+        // Trying to adjust it a bit.
         //max = Math.ceil(max / max_om) * max_om;
 
-        // si estic a valors petit poso el max a 5 o a 10
+        // for small values set max to 5 or 10
         if(max_om == 1){
            if(max <1){
                 max = 1;
@@ -1032,14 +1075,14 @@ export class ChartUtilsService {
                max = 10;
            }
         }else{
-            // Ara ho arrodoneix a un mumero mes proper al maxim.al centenar per sobre de  la resta
+            // Now rounds to a number closer to the max, to the nearest hundred above the remainder
             if(  ( (max % max_om) /max_om) < 0.5 ){
 
-                // Si tinc motl marge fins a la seguent unitat de magnitut ho arrodoneixo mes paropor
+                // If there is a lot of margin to the next order of magnitude, round more precisely
                 max = max - ( max % max_om) +
             ( 2* (  Math.ceil(  ( max % max_om) / max_resto )  *  max_resto) );
             }else{
-                // Si no ho arodoneixo a la propera unitat de magnitu
+                // Otherwise round to the next order of magnitude
                 max = Math.ceil(max / max_om) * max_om;
             }
         }
@@ -1100,7 +1143,6 @@ export class ChartUtilsService {
     }
 
     public getTrend = (values: any) => {
-
         let x_values = values.data.map((v, y) => y);
         let y_values = this.findLineByLeastSquares(x_values, values.data)[1];
 
@@ -1175,7 +1217,7 @@ export class ChartUtilsService {
 
 
 
-    /** inicialitza les opcions dels gràfics. Aqui es on posem tots els detalls del gràfic. */
+    /** Initializes chart options. This is where all chart details are configured. */
     public initChartOptions(
         type: string,
         numericColumn: string,
@@ -1188,17 +1230,23 @@ export class ChartUtilsService {
         styles: StyleConfig,
         showLabels: boolean,
         showLabelsPercent: boolean,
+        showPointLines: boolean,
+        showPredictionLines: boolean,
         numberOfColumns: number,
         chartSubType: string,
         ticksOptions: any,
-        displayLegend: boolean = true
+        displayLegend: boolean = true,
+        showGridLines: boolean = true,
+        styleProviderService: StyleProviderService,
     ): { chartOptions: any } {
-
+        let colorStyle : any = styleProviderService.panelFontColor.source['value'];
+        let fontStyle : any = styleProviderService.panelFontFamily.source['value'];
+        let panelStyle : any = styleProviderService.panelColor.source['value'];
         const t = $localize`:@@linkedTo:Vinculado con`;
         const linked = linkedDashboard ? `${labelColum[0].name} ${t} ${linkedDashboard.dashboardName}` : '';
         let options = { chartOptions: {} };
 
-        // si la pantalla es petita faig la lletra mes petita
+        // if the screen is small make the font smaller
         let variador = 0;
         if (window.innerWidth < 1500) {
             variador = -2;
@@ -1223,7 +1271,7 @@ export class ChartUtilsService {
             }
         };
         const edaBarLineLegend = {
-            display: displayLegend,
+            display: true,
             fontSize: edaFontSize,
             fontStyle: edafontStyle,
             position: 'bottom',
@@ -1239,11 +1287,12 @@ export class ChartUtilsService {
             }
         };
 
-        const maxTicksLimit = ticksOptions.xTicksLimit !== null ? ticksOptions.xTicksLimit : (size.width < 200 ? 5 + variador : size.width < 400 ? 12 + variador : size.width < 600 ? 25 + variador : 40 + variador);
+        const maxTicksLimit = ticksOptions.hasOwnProperty("xTicksLimit") && ticksOptions.xTicksLimit !== null ? ticksOptions.xTicksLimit : (size.width < 200 ? 4 + variador : size.width < 450 ? 10 + variador : size.width < 600 ? 20 + variador : size.width < 800 ? 30 + variador : size.width < 1000 ? 40 + variador : 40 + variador);
         const maxTicksLimitHorizontal = size.height < 200 ? 5 + variador : size.height < 400 ? 12 + variador : size.height < 600 ? 25 + variador : 40 + variador;
-        const maxTicksLimitY = ticksOptions.yTicksLimit !== null ? ticksOptions.yTicksLimit : (size.height < 100 ? 1  : size.height < 150 ? 2 : size.height < 200 ? 4 :  size.height < 250 ? 5 :  size.height < 300 ? 6 :  size.height < 350 ? 8: 10);
+        const maxTicksLimitY =  ticksOptions.hasOwnProperty("yTicksLimit") && ticksOptions.yTicksLimit !== null ? ticksOptions.yTicksLimit : (size.height < 100 ? 1  : size.height < 150 ? 2 : size.height < 200 ? 3 :  size.height < 250 ? 4 :  size.height < 300 ? 5 :  size.height < 350 ? 6: 6);
+
         
-        /** Defineixo les propietats en funció del tipus de gràfic. */
+        /** Define properties based on chart type. */
         let dataLabelsObjt={}
         switch (type) {
             case 'doughnut':
@@ -1268,10 +1317,11 @@ export class ChartUtilsService {
                                     if( chartWidth < 200){
                                         return  percentage > 8 ;
                                     }else{
-                                        return  percentage > 3; /** Mostro la etiqueta si es mes que el 10 % del total  */
+                                        return  percentage > 3; /** Show the label if it is more than 10% of the total  */
                                     }
                               },
                                 font: {
+                                    family: fontStyle,
                                 weight: 'bold',
                                 size:  edaFontSize  ,
                                 },
@@ -1297,53 +1347,85 @@ export class ChartUtilsService {
                 }else{
                         dataLabelsObjt =   { display: false }
                 }
-                options.chartOptions = {
-                    animation: {
-                        duration: 2000,
-                        animateScale: true,
-                        animateRotate: true
-                    },
-
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    devicePixelRatio: 2,
-                   
-                    onHover: (event,chartElement ) => {
-                        //Canviem el cursor de normal a tipus link
-                        chartElement.length == 1 ? 
-                        event.native.target.style.cursor = "pointer" :
-                        event.native.target.style.cursor = "default";
-                    },
-                    plugins: {
-                        datalabels: dataLabelsObjt,
-                        tooltip: {
-                            callbacks: {
-                                title: (context) => {
-                                    return  context[0].dataset.label;
-                                },
-                                label: (context) => {
-                                    let label = context.label || '';
-                                    if (label) {
-                                        label += ': ';
-                                    }
-                                    label += parseFloat(context.raw).toLocaleString('de-DE', { maximumFractionDigits: 6 }) ;
-                                    const total = context.dataset.data.reduce((total, datapoint) => total + datapoint, 0)
-                                    const percentage = context.raw / total * 100;
-                                    label += ' ' + percentage.toLocaleString('de-DE', { maximumFractionDigits: 1 }) + ' %' ;
-                                    return label;
-                                },
-                                footer: () => { return linked },
-                                afterLabel: (t, d) => {  }
-                            }
-                        },
-                        legend: edaPieLegend
-                    },
+                // Reusable configs
+                const gridColorConfig = {
+                    color: colorStyle
                 };
-                break;
+
+                const tooltipCallbacks = {
+                title: (context) => context[0].dataset.label,
+                label: (context) => {
+                    let label = context.label || '';
+                    if (label) label += ': ';
+                    label += parseFloat(context.raw).toLocaleString('de-DE', { maximumFractionDigits: 6 });
+
+                    const total = context.dataset.data.reduce((sum, val) => sum + val, 0);
+                    const percentage = context.raw / total * 100;
+                    label += ' ' + percentage.toLocaleString('de-DE', { maximumFractionDigits: 1 }) + ' %';
+
+                    return label;
+                },
+                footer: () => linked,
+                afterLabel: () => {}
+                };
+
+                const legendLabelsFont = {
+                family: fontStyle,
+                size: 14,
+                weight: 'normal'
+                };
+
+                // Specific scales for polarArea
+                let scaleOptions;
+                if (type === 'polarArea') {
+                    scaleOptions =  {
+                        r: {
+                            grid: { ...gridColorConfig, display: showGridLines },
+                            ticks: {
+                                backdropColor: panelStyle,
+                                color: colorStyle
+                            }
+                        }
+                    }
+                }
+
+
+                // Final chart configuration
+                options.chartOptions = {
+                animation: {
+                    duration: 2000,
+                    animateScale: true,
+                    animateRotate: true
+                },
+                color: colorStyle,
+                font: {
+                    family: fontStyle
+                },
+                responsive: true,
+                maintainAspectRatio: false,
+                devicePixelRatio: 2,
+                onHover: (event, chartElement) => {
+                    event.native.target.style.cursor = chartElement.length === 1 ? 'pointer' : 'default';
+                },
+                scales: scaleOptions,
+                plugins: {
+                    datalabels: dataLabelsObjt,
+                    tooltip: {
+                    callbacks: tooltipCallbacks
+                    },
+                    legend: {
+                    ...edaPieLegend,
+                    labels: {
+                        ...(edaPieLegend?.labels || {}),
+                        font: legendLabelsFont
+                    }
+                    }
+                }
+            };
+            break;
             case 'bar':
                 if (!['horizontalBar', 'pyramid', 'stackedbar100'].includes(chartSubType)) {
-
-                    if (showLabels || showLabelsPercent ){ /** si mostro els datalabels els configuro */
+                    if (showLabels || showLabelsPercent ){ /** if showing data labels, configure them */
                         dataLabelsObjt =  {
                             anchor: size.height>150?'end':'center',
                             align:  size.height>150?'top':'center',
@@ -1386,12 +1468,15 @@ export class ChartUtilsService {
                         animation: {
                             duration: 3000
                         },
-
+                        color: colorStyle,
+                        font: {
+                            family: fontStyle,
+                        },
                         responsive: true,
                         maintainAspectRatio: false,
                         devicePixelRatio: 2,
                         onHover: (event,chartElement ) => {
-                            //Canviem el cursor de normal a tipus link
+                            //Change cursor from normal to pointer type
                             chartElement.length == 1 ? 
                             event.native.target.style.cursor = "pointer" :
                             event.native.target.style.cursor = "default";
@@ -1427,49 +1512,55 @@ export class ChartUtilsService {
                             x: {
                                 stacked: stacked || false,
                                 grid: { display: false },
-
                                 ticks: {
-                                    maxRotation: ticksOptions.maxRotation || 30,
-                                    minRotation: ticksOptions.minRotation || 0,
-                                    labelOffset:  ticksOptions.labelOffset || 0, 
-                                    padding: ticksOptions.padding ||0,
-                                    maxTicksLimit: maxTicksLimit,
-                                    fontSize: edaFontSize,
-                                    fontStyle: edafontStyle,
-                                    fontFamily: styles.fontFamily,
-                                    fontColor: styles.fontColor,
-                                    callback: function(val, index) {
-                                        if (this.getLabelForValue(val))
-                                            return  this.getLabelForValue(val).length > 20 ? (this.getLabelForValue(val).substr(0, 17) + '...') : this.getLabelForValue(val);
-                                    },
-                                    
-                                    autoSkip: true,
+                                maxRotation: ticksOptions.maxRotation || 30,
+                                minRotation: ticksOptions.minRotation || 0,
+                                labelOffset: ticksOptions.labelOffset || 0,
+                                padding: ticksOptions.padding || 0,
+                                maxTicksLimit: maxTicksLimit,
+                                font: {
+                                    size: edaFontSize,
+                                    family: fontStyle,
+                                    style: edafontStyle
+                                },
+                                    color: colorStyle,
+
+                                callback: function(val, index) {
+                                    const label = this.getLabelForValue(val);
+                                    return label?.length > 20 ? label.substr(0, 17) + '...' : label;
+                                },
+                                autoSkip: true
                                 }
                             },
 
                             y: {
+                                display: maxTicksLimitY !== 0,
                                 stacked: stacked || false,
                                 grid: {
+                                    display: showGridLines,
                                     drawBorder: false,
+                                    color: colorStyle
                                 },
-                                display: maxTicksLimitY !== 0,
                                 beginAtZero: true,
-                                grace: (showLabels || showLabelsPercent )?'1%': '0%',
+                                grace: (showLabels || showLabelsPercent) ? '3%' : '3%',
                                 ticks: {
-                                    autoSkip: true,
-                                    maxTicksLimit: maxTicksLimitY,
-                                    beginAtZero: true,
-                                    callback: (value) => {
-                                        if (value)
-                                            return isNaN(value) ? value : this.format10thPowers(parseFloat(value)) //.toLocaleString('de-DE', { maximumFractionDigits: 6 });
-                                    },
-                                    fontSize: edaFontSize,
-                                    fontFamily: styles.fontFamily,
-                                    fontColor: styles.fontColor,
+                                autoSkip: true,
+                                maxTicksLimit: maxTicksLimitY,
+                                beginAtZero: true,
+                                callback: (value) => {
+                                    if (value)
+                                    return isNaN(value) ? value : this.format10thPowers(parseFloat(value));
+                                },
+
+                                font: {
+                                    size: edaFontSize,
+                                    family: fontStyle,
+                                },
+                                color: colorStyle,
                                 }
                             }
+                            },
 
-                        },
 
                         plugins: {
                             datalabels: dataLabelsObjt,
@@ -1490,8 +1581,9 @@ export class ChartUtilsService {
                                 return size.height>150?context.dataset.backgroundColor:'#ffffff';
                                 },
                             font: {
-                            weight: 'bold',
-                            size:  edaFontSize  ,
+                                family: fontStyle,
+                                weight: 'bold',
+                                size:  edaFontSize  ,
                             },
                             padding: 2,
 
@@ -1527,6 +1619,11 @@ export class ChartUtilsService {
                         responsive: true,
                         maintainAspectRatio: false,
                         devicePixelRatio: 2,
+                        layout: {
+                            padding: {
+                                top: (showLabels || showLabelsPercent) ? 60 : 0
+                            }
+                        },
                         tooltips: {
                             enabled: true,
                             callbacks: {
@@ -1566,12 +1663,14 @@ export class ChartUtilsService {
                                     },
                                     maxRotation: ticksOptions.maxRotation || 30,
                                     minRotation: ticksOptions.minRotation || 0,
-                                    labelOffset:  ticksOptions.labelOffset || 0, 
+                                    labelOffset:  ticksOptions.labelOffset || 0,
                                     padding: ticksOptions.padding ||0,
-                                    fontSize: edaFontSize, 
-                                    fontStyle: edafontStyle,
-                                    fontFamily: styles.fontFamily,
-                                    fontColor: styles.fontColor,
+                                    color: colorStyle,
+                                    font: {
+                                        family: fontStyle,
+                                        size: edaFontSize,
+                                        style: edafontStyle
+                                    },
                                     maxTicksLimit: maxTicksLimit,
                                     autoSkip: true,
                                 }
@@ -1580,21 +1679,27 @@ export class ChartUtilsService {
                             y: {
                                 stacked: stacked || false,
                                 grid: {
+                                    display: showGridLines,
                                     drawBorder: false,
+                                    color: colorStyle
                                 },
-                                display: true,
                                 grace: (showLabels || showLabelsPercent )?'1%': '0%',
+                                min: 0,
+                                max: 100,
                                 ticks: {
                                     autoSkip: true,
+                                    color: colorStyle,
+                                    font: {
+                                        family: fontStyle,
+                                        size: edaFontSize,
+                                        style: edafontStyle
+                                    },
                                     maxTicksLimit: maxTicksLimitY,
                                     beginAtZero: true,
                                     callback: (value) => {
                                         if (value)
                                             return isNaN(value) ? value : this.format10thPowers(parseFloat(value)) //.toLocaleString('de-DE', { maximumFractionDigits: 6 });
                                     },
-                                    fontSize: edaFontSize,
-                                    fontFamily: styles.fontFamily,
-                                    fontColor: styles.fontColor,
                                 }
                             }
 
@@ -1636,7 +1741,7 @@ export class ChartUtilsService {
                     // horizontalBar Since chart.js 3 there is no more horizontal bar. Its just  barchart with horizonal axis
                     // buscar en chart.js las opciones
                     if (showLabels || showLabelsPercent ){
-                        /** si haig de mostrar les etiquetes ho configuro */
+                        /** if labels need to be shown, configure them */
                         dataLabelsObjt =  {
                             anchor: function(context) {
                                 return context.dataset.data.some(el => el < 0) ? 'center' : 'end';
@@ -1658,9 +1763,9 @@ export class ChartUtilsService {
                                 const percentage = Math.abs(elem / total * 100);
 
                                 if(chartWidth < 200){
-                                    return  percentage > 30 ; /** Mostro la etiqueta si es mes que el 30 % del total  */
+                                    return  percentage > 30 ; /** Show the label if it is more than the threshold % of the total  */
                                 }else{
-                                    return  percentage > 10 ; /** Mostro la etiqueta si es mes que el 30 % del total  */
+                                    return  percentage > 10 ; /** Show the label if it is more than the threshold % of the total  */
                                 }
                           },
                             color: 'white',
@@ -1700,7 +1805,7 @@ export class ChartUtilsService {
                         devicePixelRatio: 2,
                         legend: edaBarLineLegend,
                         onHover: (event,chartElement ) => {
-                            //Canviem el cursor de normal a tipus link
+                            //Change cursor from normal to pointer type
                             chartElement.length == 1 ? 
                             event.native.target.style.cursor = "pointer" :
                             event.native.target.style.cursor = "default";
@@ -1733,15 +1838,21 @@ export class ChartUtilsService {
                         scales: {
                             x: {
                                 grid: {
+                                    display: showGridLines,
                                     drawBorder: false,
-                                    display: true,
+                                    color: colorStyle,
                                     callback: function(val, index) {
                                         if (this.getLabelForValue(val))
                                         return  this.getLabelForValue(val).length > 20 ? (this.getLabelForValue(val).substr(0, 12) + '...') : this.getLabelForValue(val);
                                     }
-                                    
                                 },
                                 ticks: {
+                                    color: colorStyle,
+                                      font: {
+                                          family: fontStyle,
+                                          size: edaFontSize,
+                                          style: edafontStyle
+                                      },
                                     callback: (value) => {
 
                                         if (value)
@@ -1749,10 +1860,6 @@ export class ChartUtilsService {
                                     },
                                     autoSkip: true,
                                     maxTicksLimit: maxTicksLimitHorizontal,
-                                    fontSize: edaFontSize,
-                                    fontStyle: edafontStyle,
-                                    fontFamily: styles.fontFamily,
-                                    fontColor: styles.fontColor,
                                     beginAtZero: true
                                 }
                             },
@@ -1760,9 +1867,12 @@ export class ChartUtilsService {
                                 grid: { display: false },
                                 beginAtZero: true,
                                 ticks: {
-                                    fontSize: edaFontSize,
-                                    fontFamily: styles.fontFamily,
-                                    fontColor: styles.fontColor,
+                                    color: colorStyle,
+                                      font: {
+                                          family: fontStyle,
+                                          size: edaFontSize,
+                                          style: edafontStyle
+                                      },
                                     beginAtZero: true,
                                     autoSkip: true
                                 }
@@ -1777,7 +1887,7 @@ export class ChartUtilsService {
                     };
 
                     if (chartSubType=='pyramid') {
-                        //modificamos los valores del tooltip para que sea positivo.
+                        //modify tooltip values to show them as positive.
                         (<any>options.chartOptions).plugins.tooltip = {
                             callbacks :{
                                 label :  (context) =>{
@@ -1791,7 +1901,7 @@ export class ChartUtilsService {
                             },
                         };
 
-                        //modificamos los valores del eje x para que sean positivos a la vista
+                        //modify x-axis values to display as positive
                         (<any>options.chartOptions).scales.y.stacked = true;
                         (<any>options.chartOptions).scales.x.ticks.callback = (value, index, ticks) => {
 
@@ -1807,42 +1917,6 @@ export class ChartUtilsService {
             case 'radar':
                 if(showLabels || showLabelsPercent){
                     dataLabelsObjt =  {
-                        borderColor: 'white',
-                        borderRadius: 25,
-                        borderWidth: 2,
-                        color: 'white',
-                    }
-                } else {
-                    dataLabelsObjt = { display: false };
-                }
-
-                options.chartOptions = {
-                    animation: {
-                        duration: 1500,
-                    },
-                    elements: {
-                        line: {
-                            borderWidth: 1,
-                            borderColor: '#36A2EB',
-                            backgroundColor: '#9BD0F5',                    
-                        },
-                        point: {
-                            radius: 4, hitRadius: 4, hoverRadius: 3, hoverBorderWidth: 1, pointStyle: 'circle' }
-                    },
-                    maintainAspectRatio: false,
-                    plugins: {
-                        datalabels: dataLabelsObjt,
-                        legend: edaBarLineLegend
-                    },
-                };
-                break;      
-            case 'line':
-                if(showLabels || showLabelsPercent ){
-
-                    dataLabelsObjt = {
-                        backgroundColor: function(context) {
-                          return context.dataset.backgroundColor;
-                        },
                         anchor: 'end',
                         align: 'top',
                         display: function(context) {
@@ -1850,18 +1924,104 @@ export class ChartUtilsService {
                             const realData = context.dataset.data;
 
                             if (( (chartWidth/10)  / realData.length  ) < 0.6 ){
-                                return context.dataIndex%5==0  // devuelvo uno de cada 5
+                                return context.dataIndex%5==0  // return every 5th
                             }else if (( (chartWidth/10)  / realData.length  ) < 1.5 ){
-                                return context.dataIndex%2==0 // devuelvo uno de cada 2
+                                return context.dataIndex%2==0 // return every 2nd
                             }else{
-                                return true; // devuelvo todas
+                                return true; // return all
                             }
-
-
                       },
+                        color: colorStyle,
+                        font: {
+                          weight: 'bold',
+                            size: edaFontSize - 2,
+                        },
+                        formatter: (value,ctx) => {
+                            const datapoints = ctx.dataset.data.map( x => x===''?0:x).map( x => x===undefined?0:x);
+                            const total = datapoints.reduce((total, datapoint) => total + datapoint, 0)
+                            const percentage = value / total * 100
+                            let res = '';
+                            if( showLabels && showLabelsPercent){
+                                res = parseFloat(value).toLocaleString('de-DE', { maximumFractionDigits: 6 })  ;
+                                if(res == 'NaN'){ res = '';}
+                                res = res  + ' - ' + percentage.toLocaleString('de-DE', { maximumFractionDigits: 1 })    + ' %'  ;
+                            }else if(showLabels && !showLabelsPercent){
+                                res = parseFloat(value).toLocaleString('de-DE', { maximumFractionDigits: 6 })  ;
+                            }else if(!showLabels && showLabelsPercent){
+                                res = percentage.toLocaleString('de-DE', { maximumFractionDigits: 1 })    + ' %'   ;
+                            }
+                            return   res;
+                        }
+                       }
+                } else {
+                    dataLabelsObjt = { display: false };
+                }
 
-                        borderRadius: 4,
-                        color: 'white',
+                options.chartOptions = {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    animation: {
+                        duration: 1500,
+                    },
+                    color: colorStyle,
+                    font: {
+                        family: fontStyle,
+                    },
+                    elements: {
+                        line: {
+                            borderColor: '#000000',
+                            borderWidth: 2,
+                        },
+                        point: {
+                            borderColor: '#000000',
+                        }
+                    },
+                    scales: {
+                        r: {
+                            pointLabels: {
+                                color: 'transparent',
+                                font: {
+                                    family: fontStyle,
+                                }
+                            },
+                            ticks: {
+                                color: colorStyle,
+                                backdropColor: panelStyle,
+                            },
+                            angleLines: {
+                                color: colorStyle
+                            },
+                            grid: {
+                                color: colorStyle
+                            }
+                        }
+                    },
+                    plugins: {
+                        datalabels: dataLabelsObjt,
+                        legend: edaBarLineLegend
+                    },
+                }
+                break;      
+            case 'line':
+                if(showLabels || showLabelsPercent){
+                    dataLabelsObjt = {
+                        
+                        anchor: 'end',
+                        align: 'top',
+                        display: function(context) {
+                            const chartWidth = context.chart.width;
+                            const realData = context.dataset.data;
+
+                            if (( (chartWidth/10)  / realData.length  ) < 0.6 ){
+                                return context.dataIndex%5==0  // return every 5th
+                            }else if (( (chartWidth/10)  / realData.length  ) < 1.5 ){
+                                return context.dataIndex%2==0 // return every 2nd
+                            }else{
+                                return true; // return all
+                            }
+                        },
+
+
                         font: {
                           weight: 'bold',
                           size:  edaFontSize-2
@@ -1882,24 +2042,34 @@ export class ChartUtilsService {
                             }
                             return   res;
                         }
-
                       }
-
-
-
                 }else{
                         dataLabelsObjt =   { display: false }
-
                 }
 
+                let pointRadius = 0;
+                let pointHoverRadius = 3;
+                let pointColor = '';
+                if(showPointLines){
+                    pointRadius = 5;
+                    pointHoverRadius = 15;
+                }
                 options.chartOptions = {
                     animation: {
                         duration: 3000
                     },
                     showLines: true,
+                    pointRadius: pointRadius,
+                    pointHoverRadius: pointHoverRadius,
+                    pointBackgroundColor : (ctx) => ctx.dataset.borderColor,
+                    pointBorderColor :  (ctx) => ctx.dataset.borderColor, // review
                     spanGaps: true,
                     responsive: true,
                     maintainAspectRatio: false,
+                    color: colorStyle,
+                    font: {
+                        family: fontStyle,
+                    },
                     onHover: (event,chartElement ) => {
                         //Canviem el cursor de normal a tipus link
                         chartElement.length == 1 ? 
@@ -1941,7 +2111,7 @@ export class ChartUtilsService {
                             ticks: {
                                 maxRotation: ticksOptions.maxRotation || 30,
                                 minRotation: ticksOptions.minRotation || 0,
-                                labelOffset:  ticksOptions.labelOffset || 0, 
+                                labelOffset:  ticksOptions.labelOffset || 0,
                                 padding: ticksOptions.padding ||0,
                                 maxTicksLimit: maxTicksLimit,
                                 callback: function(val, index) {
@@ -1949,10 +2119,12 @@ export class ChartUtilsService {
                                         return  this.getLabelForValue(val).length > 20 ? (this.getLabelForValue(val).substr(0, 17) + '...') : this.getLabelForValue(val);
                                 },
                                 autoSkip: true,
-                                fontSize: edaFontSize,
-                                fontStyle: edafontStyle,
-                                fontFamily: styles.fontFamily,
-                                fontColor: styles.fontColor,
+                                color: colorStyle,
+                                font: {
+                                    family: fontStyle,
+                                    size: edaFontSize,
+                                    style: edafontStyle
+                                },
                                 includeBounds:true,
                                 beginAtZero: true
                             }
@@ -1960,8 +2132,10 @@ export class ChartUtilsService {
                         y: {
                             display: maxTicksLimitY !== 0,
                             grid: {
+                                display: showGridLines,
                                 drawBorder: false,
-                                display: true,
+                                color: this.suavizaColor(  colorStyle, 0.1 ),
+                                lineWidth:0.5,
                                 zeroLineWidth: 1
                             },
                             id: 'y-axis-0', position: 'left',
@@ -1977,10 +2151,12 @@ export class ChartUtilsService {
 
                                 autoSkip: true,
                                 maxTicksLimit: maxTicksLimitY,
-                                fontSize: edaFontSize,
-                                fontStyle: edafontStyle,
-                                fontFamily: styles.fontFamily,
-                                fontColor: styles.fontColor,
+                                color: colorStyle,
+                                font: {
+                                    family: fontStyle,
+                                    size: edaFontSize,
+                                    style: edafontStyle
+                                },
                                 beginAtZero: true,
                                 max: minMax.max,
                                 min: minMax.min
@@ -1992,7 +2168,7 @@ export class ChartUtilsService {
                     elements: {
                         point: { radius: 0, hitRadius: 4, hoverRadius: 3, hoverBorderWidth: 1, pointStyle: 'circle' },
                         line: {
-                                borderWidth: 1 + (size.width/800),
+                                borderWidth: 1 + Math.round(size.width/800),
                                 fill:  chartSubType=='area'?true:false,
                                 tension: 0.4 }
                     },
@@ -2003,9 +2179,281 @@ export class ChartUtilsService {
                 };
             break;
         }
-
-
         return options;
     }
+
+    // SECTION FOR D3
+    hex2rgbD3(hex, opacity = 100): string {
+        hex = hex.replace('#', '');
+        const r = parseInt(hex.substring(0, 2), 16);
+        const g = parseInt(hex.substring(2, 4), 16);
+        const b = parseInt(hex.substring(4, 6), 16);
+    
+        return 'rgba(' + r + ',' + g + ',' + b + ',' + opacity / 100 + ')';
+      }
+    
+    rgb2hexD3(rgb): string {
+        rgb = rgb.match(/^rgba?[\s+]?\([\s+]?(\d+)[\s+]?,[\s+]?(\d+)[\s+]?,[\s+]?(\d+)[\s+]?/i);
+        return (rgb && rgb.length === 4) ? '#' +
+            ('0' + parseInt(rgb[1], 10).toString(16)).slice(-2) +
+            ('0' + parseInt(rgb[2], 10).toString(16)).slice(-2) +
+            ('0' + parseInt(rgb[3], 10).toString(16)).slice(-2) : '';  
+    }
+
+    /**
+     * Reduces saturation of a HEX color
+     * @param {string} hex - Color in #RRGGBB format
+     * @param {number} factor - Value between 0 and 1 (e.g. 0.5 = half saturation)
+     * @returns {string} New hex color
+     */
+    private  suavizaColor(hex, factor) {
+    hex = hex.replace(/^#/, "");
+    let r = parseInt(hex.substring(0, 2), 16) / 255;
+    let g = parseInt(hex.substring(2, 4), 16) / 255;
+    let b = parseInt(hex.substring(4, 6), 16) / 255;
+
+    let max = Math.max(r, g, b),
+        min = Math.min(r, g, b);
+    let h, s, l = (max + min) / 2;
+
+    if (max === min) {
+        h = s = 0; // gray
+    } else {
+        let d = max - min;
+        s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+        switch (max) {
+        case r: h = (g - b) / d + (g < b ? 6 : 0); break;
+        case g: h = (b - r) / d + 2; break;
+        case b: h = (r - g) / d + 4; break;
+        }
+        h /= 6;
+    }
+
+    // Reduce saturation
+    s *= factor;
+
+    let q = l < 0.5 ? l * (1 + s) : l + s - l * s;
+    let p = 2 * l - q;
+
+    function hue2rgb(p, q, t) {
+        if (t < 0) t += 1;
+        if (t > 1) t -= 1;
+        if (t < 1 / 6) return p + (q - p) * 6 * t;
+        if (t < 1 / 2) return q;
+        if (t < 2 / 3) return p + (q - p) * (2 / 3 - t) * 6;
+        return p;
+    }
+
+    r = hue2rgb(p, q, h + 1 / 3);
+    g = hue2rgb(p, q, h);
+    b = hue2rgb(p, q, h - 1 / 3);
+
+        
+
+        
+    return "#" + 
+        [r, g, b]
+        .map(x => Math.round(x * 255).toString(16).padStart(2, "0"))
+        .join("");
+    }
+
+    public generateChartColorsFromPalette(numberOfColors: number, baseColors: string[]): 
+    Array<{ backgroundColor: string; borderColor: string }> {
+        if (numberOfColors === 1) {
+            const color = baseColors[0].toUpperCase();
+            return [{ backgroundColor: color, borderColor: color }];
+        }
+
+        const result: Array<{ backgroundColor: string; borderColor: string }> = [];
+        const numSegments = baseColors.length - 1;
+        const baseRgbColors = baseColors.map(hex => this.hex2rgbNumericD3(hex));
+
+        for (let i = 0; i < numberOfColors; i++) {
+            const globalFactor = i / (numberOfColors - 1);
+            let segmentIndex = Math.floor(globalFactor * numSegments);
+            if (segmentIndex >= numSegments) {
+                segmentIndex = numSegments - 1;
+            }
+
+            const [r1, g1, b1] = baseRgbColors[segmentIndex];
+            const [r2, g2, b2] = baseRgbColors[segmentIndex + 1];
+
+            const localFactor = globalFactor * numSegments - segmentIndex;
+            const t = (i === numberOfColors - 1) ? 1 : localFactor;
+
+            const r_interp = r1 + t * (r2 - r1);
+            const g_interp = g1 + t * (g2 - g1);
+            const b_interp = b1 + t * (b2 - b1);
+            const interpolatedColorHex = this.rgbToHex(r_interp, g_interp, b_interp).toUpperCase();
+
+            result.push({
+                backgroundColor: interpolatedColorHex,
+                borderColor: interpolatedColorHex
+            });
+        }
+
+        return result;
+    }
+
+    // Test method used in treemap
+    public resolveAssignedColors(categories: Array<string>, previous: AssignedColor[] = [], palette): AssignedColor[] {
+        const resolved: AssignedColor[] = [...previous];
+
+        categories.forEach((value, index) => {
+            const exists = resolved.find(c => c.value === value);
+            if (!exists) {
+                resolved.push({
+                    value,
+                    color: palette[index % palette.length]
+                });
+            }
+        });
+
+        return resolved;
+    }
+
+    /**
+     * Whether a value can be painted as a CSS colour. Legacy reports stored placeholders
+     * such as "r"/"g" in assignedColors (issue #651); those must not be used as colours.
+     */
+    public isValidCssColor(color: any): boolean {
+        if (typeof color !== 'string') return false;
+        const value = color.trim();
+        if (!value) return false;
+        return /^#([0-9a-f]{3,4}|[0-9a-f]{6}|[0-9a-f]{8})$/i.test(value)
+            || /^(rgb|hsl)a?\(/i.test(value)
+            || /^[a-z]{3,20}$/i.test(value); // CSS named colours (red, transparent…)
+    }
+
+    /**
+     * Centralises the filtering of assignedColors entries whose colour is not a valid
+     * CSS colour (issue #651). Avoids duplicating the same filter in several places.
+     */
+    public filterValidAssignedColors(colors: any): any[] {
+        return (Array.isArray(colors) ? colors : []).filter((ac: any) => this.isValidCssColor(ac?.color));
+    }
+
+    /**
+     * Recovers the colours that 2.x reports stored in `config.colors`, which 3.x no
+     * longer reads (issue #651). 2.x saved one entry per series for bar/line/area/
+     * radar/histogram (`{ backgroundColor: '#hex' }`) and a single entry holding one
+     * colour per category for doughnut/polarArea. The result uses the same shape as
+     * `assignedColors`: one colour per label returned by getLabelsForChartType().
+     */
+    public assignedColorsFromLegacyColors(cfg: any, labels: string[], chartType: string): Array<{ value: string; color: string }> {
+        const colors = cfg?.colors;
+        if (!Array.isArray(colors) || colors.length === 0 || !labels || labels.length === 0) return [];
+
+        const type = (chartType || '').replace('kpi', '');
+
+        if (type === 'doughnut' || type === 'polarArea') {
+            const perCategory = colors[0]?.backgroundColor;
+            if (!Array.isArray(perCategory)) return [];
+            return labels
+                .map((label, index) => {
+                    const color = perCategory[index] ?? perCategory[0];
+                    return color ? { value: label, color } : null;
+                })
+                .filter(c => !!c);
+        }
+
+        // One colour per series
+        return labels
+            .map((label, index) => {
+                const entry = colors[index];
+                const color = typeof entry === 'string' ? entry : entry?.backgroundColor;
+                return color && typeof color === 'string' ? { value: label, color } : null;
+            })
+            .filter(c => !!c);
+    }
+
+    /**
+     * 2.x saved the colours of the D3 charts (treeMap, parallelSets, bubblechart) as a
+     * plain array of colour strings in `config.colors`. Map them to the current
+     * categories so those reports keep their colours (issue #651). Returns [] when there
+     * is nothing usable, so the caller falls back to the palette.
+     */
+    public assignedColorsFromLegacyStringColors(cfg: any, categories: string[]): Array<{ value: string; color: string }> {
+        const colors = cfg?.colors;
+        if (!Array.isArray(colors) || colors.length === 0 || !categories || categories.length === 0) return [];
+
+        return categories
+            .map((category, index) => {
+                const entry = colors[index] ?? colors[index % colors.length];
+                const color = typeof entry === 'string' ? entry : entry?.backgroundColor;
+                return typeof color === 'string' && color ? { value: category, color } : null;
+            })
+            .filter(c => !!c);
+    }
+
+
+    // METHODS FOR GENERATING TREEMAP COLORS WITH PALETTE, CHECK IF CAN BE UNIFIED IN A SERVICE
+    public generateRGBColorGradientScaleD3(
+        numberOfColors: number,
+        baseColors: string[]
+      ): Array<{ color: string }> {
+        // Single-color charts
+        if (numberOfColors === 1) {
+            const color = baseColors[0].toUpperCase();
+            return [{ color: color }];
+        }
+        const colorList: Array<{ color: string }> = [];
+        const numSegments = baseColors.length - 1;
+        const baseRgbColors = baseColors.map(hex => this.hex2rgbNumericD3(hex));
+        //Generate list in rgb and convert to hex
+        for (let i = 0; i < numberOfColors; i++) {
+            const globalFactor = i / (numberOfColors - 1);
+            let segmentIndex = Math.floor(globalFactor * numSegments);
+            if (segmentIndex >= numSegments) {
+                segmentIndex = numSegments - 1;
+            }
+          
+            const [r1, g1, b1] = baseRgbColors[segmentIndex];
+            const [r2, g2, b2] = baseRgbColors[segmentIndex + 1];
+    
+            const localFactor = (globalFactor * numSegments) - segmentIndex;
+            const t = (i === numberOfColors - 1) ? 1 : localFactor;
+    
+            const r_interp = r1 + t * (r2 - r1);
+            const g_interp = g1 + t * (g2 - g1);
+            const b_interp = b1 + t * (b2 - b1);
+            const interpolatedColorHex = this.rgbToHex(r_interp, g_interp, b_interp).toUpperCase();
+            colorList.push({ color: interpolatedColorHex });
+          }
+        return colorList;
+      }
+      
+      public hex2rgbNumericD3(hex: string): [number, number, number] {
+        const cleanHex = hex.replace(/^#/, '');
+        const fullHex = cleanHex.length === 3 ?
+            cleanHex[0] + cleanHex[0] + cleanHex[1] + cleanHex[1] + cleanHex[2] + cleanHex[2] :
+            cleanHex;
+        if (fullHex.length !== 6) { return [0, 0, 0]; }
+        const bigint = parseInt(fullHex, 16);
+        const r = (bigint >> 16) & 255;
+        const g = (bigint >> 8) & 255;
+        const b = bigint & 255;
+        return [r, g, b];
+      }
+
+
+
+      // Function to unify all input types and output in HEX
+    public rgbOrRgbaToHex(color: string): string {
+        if(!color) return color;
+        // If already hex, return as-is
+        if (color.startsWith('#')) return color;
+
+        // Extract RGB or RGBA values
+        const match = color.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)/);
+
+        const r = parseInt(match[1], 10);
+        const g = parseInt(match[2], 10);
+        const b = parseInt(match[3], 10);
+
+        // Convert to hex
+        return '#' + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1).toUpperCase();
+    }
+    
 
 }

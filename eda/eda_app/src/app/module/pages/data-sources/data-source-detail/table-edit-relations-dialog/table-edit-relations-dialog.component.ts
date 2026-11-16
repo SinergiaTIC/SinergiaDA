@@ -1,16 +1,19 @@
 import {Component, Input} from '@angular/core';
+import { NgFor } from '@angular/common';
 import {SelectItem} from 'primeng/api';
 import {EdaDialog, EdaDialogCloseEvent, EdaDialogAbstract} from '@eda/shared/components/shared-components.index';
 import {Relation} from '@eda/models/data-source-model/data-source-models';
 import {DataSourceService} from '@eda/services/api/datasource.service';
-import { UntypedFormGroup, UntypedFormBuilder, Validators } from '@angular/forms';
+import { UntypedFormGroup, UntypedFormBuilder, Validators, ReactiveFormsModule } from '@angular/forms';
 import { AlertService } from '@eda/services/service.index';
-
-
+import { EdaDialog2Component } from '@eda/shared/components/shared-components.index';
+import { DropdownModule } from 'primeng/dropdown';
 @Component({
+    standalone: true,
     selector: 'app-table-edit-relations-dialog',
     templateUrl: './table-edit-relations-dialog.component.html',
-    styleUrls: ['./table-edit-relations-dialog.component.css']
+    styleUrls: ['./table-edit-relations-dialog.component.css'],
+    imports: [ReactiveFormsModule, EdaDialog2Component, DropdownModule, NgFor]
 })
 
 export class TableEditRelationsDialogComponent extends EdaDialogAbstract {
@@ -62,7 +65,7 @@ export class TableEditRelationsDialogComponent extends EdaDialogAbstract {
         this.targetTables = this.dataModelService.getModel().map(t => {
             const item: SelectItem = { label: t.display_name.default, value: t };
             return item;
-        });
+        }).sort((a, b) => a.label.localeCompare(b.label));
 
 
         this.updateRelation();
@@ -76,7 +79,7 @@ export class TableEditRelationsDialogComponent extends EdaDialogAbstract {
         this.form.get("sourceCol").setValue(this.sourceCols.find(option => option.column_name === this.relation.source_column[0]));
         this.getColumnsByTable();
         
-        //Carga de condiciones
+        // Load conditions
         for (let i = 0; i < this.relation.source_column.length; i++){
             this.selectedSourceCols.push(this.relation.source_column[i]);
             this.selectedTargetCols.push(this.relation.target_column[i]);

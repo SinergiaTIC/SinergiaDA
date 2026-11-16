@@ -1,17 +1,20 @@
-import { ChartUtilsService } from '@eda/services/service.index';
+import { ChartUtilsService, StyleProviderService } from '@eda/services/service.index';
 import { AfterViewInit, Component, ElementRef, EventEmitter, Input, Output, ViewChild, ViewEncapsulation } from "@angular/core";
-import { ChartsColors } from '@eda/configs/index';
 import * as d3 from 'd3';
 import { ScatterPlot } from "./eda-scatter";
 import * as _ from 'lodash';
 import * as dataUtils from '../../../services/utils/transform-data-utils';
 
+import { FormsModule } from '@angular/forms'; 
+import { CommonModule } from '@angular/common';
 
 @Component({
+  standalone: true,
   selector: 'eda-d3',
   templateUrl: './eda-scatter.component.html',
   styleUrls: ['./eda-scatter.component.css'],
-  encapsulation: ViewEncapsulation.Emulated
+  encapsulation: ViewEncapsulation.Emulated,
+  imports: [FormsModule, CommonModule]
 })
 
 
@@ -32,28 +35,48 @@ export class EdaScatter implements AfterViewInit {
   metricIndex: number;
   width: number;
   heigth: number;
+  resizeObserver!: ResizeObserver;
 
-  constructor(private chartUtilService : ChartUtilsService){
+  constructor(private chartUtilService : ChartUtilsService, private styleProviderService : StyleProviderService){
 
   }
 
   ngOnInit(): void {
     this.id = `scatterPlot_${this.inject.id}`;
     this.data = this.formatData(this.inject.data);
-    this.colors = this.inject.colors && this.inject.colors.length >= this.data.length ? 
-    this.inject.colors : this.getColors();
+    this.metricIndex = this.inject.dataDescription.numericColumns[0].index;
+    
     const firstNonNumericColIndex = this.inject.dataDescription.otherColumns[0].index;
     this.firstColLabels = this.inject.data.values.map(row => row[firstNonNumericColIndex]);
     this.firstColLabels = [...new Set(this.firstColLabels)];
-    this.assignedColors = this.inject.assignedColors || []; 
+    this.assignedColors = this.inject.assignedColors;
+
   }
   ngOnDestroy(): void {
     if (this.div)
       this.div.remove();
+    if (this.resizeObserver)
+      this.resizeObserver.disconnect();
   }
 
   ngAfterViewInit() {
+    // SVG CONTAINER
+    const container = this.svgContainer.nativeElement as HTMLElement;
 
+    // Create SVG
+    this.svg = d3.select(container).append('svg');
+
+    // Create ResizeObserver to resize the chart
+    this.resizeObserver = new ResizeObserver(entries => {
+      let id = `#${this.id}`;
+      this.svg = d3.select(id);
+      if (this.svg._groups[0][0] !== null && this.svgContainer.nativeElement.clientHeight > 0) {
+        this.draw();
+      }
+    });
+    this.resizeObserver.observe(container);
+
+    
     if (this.svg) this.svg.remove();
     let id = `#${this.id}`;
     this.svg = d3.select(id);
@@ -64,18 +87,20 @@ export class EdaScatter implements AfterViewInit {
 
 
   draw() {
-
+    // Initial cleanup of other charts
+    this.svg.selectAll('*').remove();
+    
     const svg = this.svg;
     const width = this.svgContainer.nativeElement.clientWidth - 20;
     const height = this.svgContainer.nativeElement.clientHeight - 20;
     const margin = ({ top: 50, right: 50, bottom: 35, left: 100 });
 
-    //Valores de assignedColors separados
+    // Separate assignedColors values
     const valuesScatter = this.assignedColors.map((item) => item.value);
     const colorsScatter = this.assignedColors[0].color ? this.assignedColors.map(item => item.color) : this.colors;
     
-    //Funcion de ordenación de colores de D3
-    const color = d3.scaleOrdinal(this.firstColLabels,  colorsScatter).unknown("#ccc");
+    // D3 color sorting function
+    const color = d3.scaleOrdinal(this.firstColLabels,  colorsScatter);
 
     const x_range: Array<any> = d3.extent(this.data, (d: any) => d.x);
     const y_range: Array<any> = d3.extent(this.data, (d: any) => d.y);
@@ -89,7 +114,7 @@ export class EdaScatter implements AfterViewInit {
       .range([height - margin.bottom, margin.top])
 
     const grid = g => g
-      .attr("stroke", "currentColor")
+      .attr("stroke", this.styleProviderService.panelFontColor.source['_value'])
       .attr("stroke-opacity", 0.1)
       .call(g => g.append("g")
         .selectAll("line")
@@ -115,8 +140,8 @@ export class EdaScatter implements AfterViewInit {
       .call(g => g.append("text")
         .attr("x", -margin.left )
         .attr("y", 30)
-        .attr("fill", "var(--panel-font-color)")
-        .attr("font-family", "var(--panel-font-family)")
+        .attr("fill", this.styleProviderService.panelFontColor.source['_value'])
+        .attr("font-family", this.styleProviderService.panelFontFamily.source['_value'])
         .attr("font-size", "var(--panel-big)")
         .attr("text-anchor", "start")
         .text(`↑ ${this.inject.dataDescription.numericColumns[1].name}`))
@@ -128,12 +153,13 @@ export class EdaScatter implements AfterViewInit {
       .call(g => g.append("text")
         .attr("x", width)
         .attr("y", margin.bottom )
-        .attr("fill", "var(--panel-font-color)")
-        .attr("font-family", "var(--panel-font-family)")
+        .attr("fill", this.styleProviderService.panelFontColor.source['_value'])
+        .attr("font-family", this.styleProviderService.panelFontFamily.source['_value'])
         .attr("font-size", "var(--panel-big)")
         .attr("text-anchor", "end")
         .text(`→ ${this.inject.dataDescription.numericColumns[0].name}`));
 
+    
     svg.append("g")
       .call(xAxis);
 
@@ -148,6 +174,7 @@ export class EdaScatter implements AfterViewInit {
       .attr("fill", "var(--panel-font-color)")
       .attr("font-family", "var(--panel-font-family)")
       .attr("font-size", 10)
+      .style("cursor", "pointer")
       .selectAll("circle")
       .data(this.data)
       .join("circle")
@@ -156,8 +183,8 @@ export class EdaScatter implements AfterViewInit {
       .attr("r", d => d.radius + 1)
       .attr("fill", d => { 
         while (d.depth > 1) d = d.parent;
-        //Devolvemos SOLO EL COLOR de assignedColors que comparte la data y colors de assignedColors
-        return colorsScatter[valuesScatter.findIndex((item) => d.label.includes(item))] || color(d.label);
+        // Return ONLY the COLOR from assignedColors that matches the data and assignedColors colors
+        return valuesScatter.findIndex((item) => d.label.includes(item)) !== -1 ? colorsScatter[valuesScatter.findIndex((item) => d.label.includes(item))] : color(d.label);
       })
       .on('click', (e, data) => {
         if (this.inject.linkedDashboard) {
@@ -169,7 +196,7 @@ export class EdaScatter implements AfterViewInit {
       })
       .on('mouseover', (d, data) => {
         
-        
+
         let categoryText = data.category ? `${this.inject.dataDescription.otherColumns[0].name} : ${data.category} ` : '';
         let serieText = data.category ? `${this.inject.dataDescription.otherColumns[1].name}  : ${data.label}`
         : `${this.inject.dataDescription.otherColumns[0].name} : ${data.label}`;
@@ -221,30 +248,17 @@ export class EdaScatter implements AfterViewInit {
           const url = window.location.href.substr(0, window.location.href.indexOf('/dashboard')) + `/dashboard/${props.dashboardID}?${props.table}.${props.col}=${value}`
           window.open(url, "_blank");
         }else {
-          //Passem aquestes dades
+          // Pass this data
           const label = data.label;
           const filterBy = this.inject.data.labels[this.inject.data.values[0].findIndex((element) => typeof element === 'string')]
           this.onClick.emit({label, filterBy});
         }
     
-      })
+    })
+    svg.selectAll(".tick text")
+      .attr("stroke", this.styleProviderService.panelFontColor.source['_value'])
+      .attr("font-family", this.styleProviderService.panelFontFamily.source['_value'])
   }
-
-getColors () {
-     let MAX_ITERATIONS = 1000;
-        let out = [];
-        let col = ChartsColors;
-
-        for (let i = 0; i < MAX_ITERATIONS; i += 50) {
-
-            for (let j = 0; j < col.length; j++) {
-                out.push(`rgba(${(col[j][0] + i) % 255}, ${(col[j][1] + i) % 255}, ${(Math.abs(col[j][2] + i)) % 255}, 0.8)`);
-            }
-        }
-        return out;
-  }
-
- 
 
   formatData(data) {
 

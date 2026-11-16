@@ -12,11 +12,14 @@ export interface QueryParams {
     config?: any;
     queryLimit? : number;
     joinType?:string;
-    /* SDA CUSTOM */ groupByEnabled?: boolean,
+    groupByEnabled?: boolean,
+    prediction?: string,
+    predictionConfig?: any,
     forSelector?: boolean;
     connectionProperties?: any;
     rootTable?: string;
     sortedFilters?: any[];
+    resultSortingColumns?: any[];
 }
 
 @Injectable()
@@ -68,8 +71,9 @@ export class QueryBuilderService extends ApiService {
                 queryMode: 'EDA',
                 SQLexpression : null,
                 queryLimit : null,
-                /* SDA CUSTOM */ groupByEnabled: true,
-                joinType: 'left', //puede que necesite el joinType
+                groupByEnabled: true,
+                prediction: 'None',
+                joinType: 'left', // May need joinType
                 rootTable: null,
                 sortedFilters: [],
             },
@@ -104,12 +108,16 @@ export class QueryBuilderService extends ApiService {
             col.tableCount = select[i].tableCount;
             col.minimumFractionDigits = select[i].minimumFractionDigits;
             col.cumulativeSum = select[i].cumulativeSum;
+            col.dateNav = select[i].dateNav || false;
             col.valueListSource = select[i].valueListSource;
             col.whatif_column = select[i].whatif_column || false;
             col.whatif = select[i].whatif;
             col.joins = select[i].joins || [];
             col.autorelation = select[i].autorelation;
             col.ranges = select[i].ranges || [];
+            col.ia_visibility = select[i].ia_visibility;
+            col.ia_medatada_permissions = select[i].ia_medatada_permissions;
+            col.downChild = select[i].downChild;
             queryColumns.push(col);
             labels.push(select[i].column_name);
         }
@@ -140,11 +148,14 @@ export class QueryBuilderService extends ApiService {
                 // modeSQL : modeSQL,
                 SQLexpression : SQLexpression,
                 queryLimit : params.queryLimit,
-                /* SDA CUSTOM */ groupByEnabled: params.groupByEnabled,
+                groupByEnabled: params.groupByEnabled,
+                prediction: params.prediction,
+                predictionConfig: params.predictionConfig,
                 joinType: params.joinType,
                 forSelector: params.forSelector,
                 rootTable: params.rootTable,
                 sortedFilters: params.sortedFilters,
+                resultSortingColumns: params.resultSortingColumns
             },
             output: {
                 labels,

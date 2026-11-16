@@ -1,72 +1,120 @@
-import { Component,  ViewChild } from "@angular/core";
-import { EdaDialog, EdaDialogAbstract, EdaDialogCloseEvent } from "@eda/shared/components/shared-components.index";
+import { Component, Input, OnInit, ViewChild } from "@angular/core";
+import { EdaDialogCloseEvent } from "@eda/shared/components/shared-components.index";
 import { PanelChart } from "../panel-charts/panel-chart";
 import { PanelChartComponent } from "../panel-charts/panel-chart.component";
+import { StyleProviderService } from '@eda/services/service.index';
+import { FormsModule } from '@angular/forms'; 
+import { CommonModule } from '@angular/common';
+import { EdaDialog2Component } from "@eda/shared/components/shared-components.index";
+import { ColorPickerModule } from "primeng/colorpicker";
 
 @Component({
-  selector: 'knob-dialog',
-  templateUrl: './knob-dialog.component.html'
+    standalone: true,
+    selector: 'knob-dialog',
+    templateUrl: './knob-dialog.component.html',
+    imports: [FormsModule, CommonModule, EdaDialog2Component, ColorPickerModule, PanelChartComponent],
 })
+export class KnobDialogComponent implements OnInit {
+    @Input() controller: any;
+    @ViewChild('PanelChartComponent', { static: false }) myPanelChartComponent: PanelChartComponent;
 
-export class KnobDialogComponent extends EdaDialogAbstract  {
+    public panelChartConfig: PanelChart = new PanelChart();
+    public assignedColors: { value: string; color: string }[] = [{ value: 'Color', color: '#000000' }];
+    public originalAssignedColors: Array<{ value: string, color: string }> = [];
+    public min: number;
+    public max: number;
+    public label: string;
+    public display: boolean = false;
+    public semaphoreColor: boolean = false;
+    public title: string = $localize`:@@ChartProps:PROPIEDADES DEL GRAFICO`;
 
-  @ViewChild('PanelChartComponent', { static: false }) myPanelChartComponent: PanelChartComponent;
+    constructor(private styleProviderService: StyleProviderService) {}
 
-  public dialog: EdaDialog;
-  public panelChartConfig: PanelChart = new PanelChart();
-  public color:string = '';
-  public min:number;
-  public max: number; 
-  public limitInQuery : boolean;
-  public display:boolean=false;
-
-  constructor(){
-    super();
-
-    this.dialog = new EdaDialog({
-      show: () => this.onShow(),
-      hide: () => this.onClose(EdaDialogCloseEvent.NONE),
-      title: $localize`:@@ChartProps:PROPIEDADES DEL GRAFICO`
-    });
-    this.dialog.style = { width: '80%', height: '70%', top:"-4em", left:'1em'};
-  }
-
-  onShow(): void {
-
+    ngOnInit(): void {
     this.panelChartConfig = this.controller.params.panelChart;
-    setTimeout(_=> {
-      this.color = this.myPanelChartComponent.componentRef.instance.color;
-      const limits = this.myPanelChartComponent.componentRef.instance.limits;
-      this.min = limits[0];
-      this.max = limits[1];
-    })
-    this.limitInQuery = this.controller.params.panelChart.data.labels.length === 2 ? true : false;
     this.display = true;
-  }
-  onClose(event: EdaDialogCloseEvent, response?: any): void {
-    return this.controller.close(event, response);
-  }
-
-  handleInputColor(){
-    if(this.color.length > 6){
-      this.myPanelChartComponent.componentRef.instance.color = this.color;
     }
-  }
 
-  saveChartConfig(){
+    ngAfterViewChecked(): void {
+        // Update only if the colors are still the default values
+        if (this.assignedColors[0].color === '#000000' && this.myPanelChartComponent?.componentRef) {
 
-    const properties = {
-      color:this.color,
-      limits:[this.min, this.max]
+            setTimeout(() => {
+                const chartAssignedColors = this.myPanelChartComponent.props.config.getConfig()['assignedColors'] || [];
+
+                /* Update with the actual chart colors */
+                if (chartAssignedColors.length >= 1) {
+                    this.assignedColors = [
+                        { value: 'Color', color: chartAssignedColors[0]?.color }
+                    ];
+                    this.originalAssignedColors = this.assignedColors.map(c => ({ ...c }));
+                }
+
+                this.label = this.panelChartConfig.data?.labels[0];
+                const currentColor = this.myPanelChartComponent.componentRef.instance.color;
+                const limits = this.myPanelChartComponent.componentRef.instance.limits;
+
+                this.min = limits[0];
+                this.max = limits[1];
+                this.semaphoreColor = !!this.myPanelChartComponent.componentRef.instance.inject?.semaphoreColor;
+
+                // Load assignedColors
+                this.loadChartColors(this.label, currentColor);
+            }, 100);
+        }
     }
-    this.onClose(EdaDialogCloseEvent.UPDATE,properties)
 
-  }
+    loadChartColors(label: string, currentColor: string) {
+        const existingColors = this.panelChartConfig.config.getConfig()['assignedColors'] || [];
+        
+        // Create assignedColors with the standard format
+        this.assignedColors = [{
+            value: label,
+            color: existingColors[0]?.color || currentColor
+        }];
+        
+        // Save a copy for cancellation
+        this.originalAssignedColors = this.assignedColors.map(c => ({ ...c }));
+        
+        // Apply color to the component
+        this.applyColorToChart();
+    }
 
-  closeChartConfig(){
-    this.onClose(EdaDialogCloseEvent.NONE);
-  }
+    applyColorToChart() {
+        if (this.assignedColors[0]) {
+            this.myPanelChartComponent.componentRef.instance.color = this.assignedColors[0].color;
+        }
+    }
 
+    handleInputColor() {
+        if (this.assignedColors[0]?.color?.length >= 6) {
+            this.applyColorToChart();
+        }
+    }
 
+    saveChartConfig() {
+        // Apply final colors
+        this.applyColorToChart();
+        
+        // Save assignedColors in config
+        this.panelChartConfig.config.getConfig()['assignedColors'] = [...this.assignedColors];
+        
+        // Save limits
+        const properties = {
+            limits: [this.min, this.max],
+            assignedColors: this.assignedColors,
+            semaphoreColor: this.semaphoreColor
+        };
+        
+        this.styleProviderService.palKnob = false;
+        this.onClose(EdaDialogCloseEvent.UPDATE, properties);
+    }
 
+    closeChartConfig() {
+        this.onClose(EdaDialogCloseEvent.NONE);
+    }
+
+    onClose(event: EdaDialogCloseEvent, response?: any): void {
+        return this.controller.close(event, response);
+    }
 }

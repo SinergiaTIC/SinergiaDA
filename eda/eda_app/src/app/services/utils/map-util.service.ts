@@ -7,6 +7,32 @@ import { ApiService } from '../api/api.service';
 import { shareReplay } from 'rxjs/operators';
 import { LatLngExpression } from 'leaflet';
 import { DomSanitizer } from '@angular/platform-browser';
+import { MAP_BASEMAP_PROVIDER } from '@eda/configs/customizable/customizable_merged';
+
+/** Basemap tile source per provider (see issue #615). Esri's World_Light_Gray_Base is the legacy
+ * ArcGIS Online service (grey, native up to z16, oversampled to z19) and its ToS may not cover
+ * unsubscribed third-party commercial use. OpenStreetMap's standard tiles are colored and native up
+ * to z19, but OSM's tile usage policy forbids heavy commercial use / bulk tile caching — fine for an
+ * internal dashboard, not for a mass-market deployment (self-hosting tiles is out of scope here). */
+const BASEMAP_CONFIG: Record<'esri' | 'osm', { url: string; options: L.TileLayerOptions; mapMaxZoom: number }> = {
+  esri: {
+    url: 'https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}',
+    options: {
+      maxZoom: 19,
+      maxNativeZoom: 16,
+      attribution: 'Tiles &copy; <a href="https://www.esri.com" target="_blank">Esri</a> &mdash; Esri, HERE, Garmin, &copy; OpenStreetMap contributors, and the GIS user community',
+    },
+    mapMaxZoom: 16,
+  },
+  osm: {
+    url: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+    options: {
+      maxZoom: 19,
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap</a> contributors',
+    },
+    mapMaxZoom: 19,
+  },
+};
 
 @Injectable({ providedIn: "root" })
 export class MapUtilsService extends ApiService {
@@ -17,6 +43,7 @@ export class MapUtilsService extends ApiService {
   private zoom: number = null;
   public auxZoom: number = null;
   public layerGroup = L.layerGroup([]);
+  private labelGroup = L.layerGroup([]);
   private isSmallestValue: boolean;
 
   constructor(protected http: HttpClient, private _sanitizer: DomSanitizer) {
@@ -33,6 +60,57 @@ export class MapUtilsService extends ApiService {
     return this.mapsObservables$[mapID];
   }
 
+  clusterData(map: L.Map, data: Array<any>, pixelRadius: number = 40): Array<any> {
+    if (!data || data.length === 0) return data;
+
+    let numIdx = -1;
+    for (const d of data) {
+      d.forEach((v: any, i: number) => {
+        if (typeof v === 'number' && i > 1 && numIdx === -1) numIdx = i;
+      });
+      if (numIdx > -1) break;
+    }
+
+    const assigned = new Set<number>();
+    const result: Array<any> = [];
+
+    for (let i = 0; i < data.length; i++) {
+      if (assigned.has(i)) continue;
+      const lat = parseFloat(data[i][0]);
+      const lon = parseFloat(data[i][1]);
+      if (isNaN(lat) || isNaN(lon)) { result.push(data[i]); assigned.add(i); continue; }
+
+      const pixelI = map.latLngToContainerPoint([lon, lat] as LatLngExpression);
+      const group: Array<any> = [data[i]];
+      assigned.add(i);
+
+      for (let j = i + 1; j < data.length; j++) {
+        if (assigned.has(j)) continue;
+        const lat2 = parseFloat(data[j][0]);
+        const lon2 = parseFloat(data[j][1]);
+        if (isNaN(lat2) || isNaN(lon2)) continue;
+        const pixelJ = map.latLngToContainerPoint([lon2, lat2] as LatLngExpression);
+        if (pixelI.distanceTo(pixelJ) <= pixelRadius) { group.push(data[j]); assigned.add(j); }
+      }
+
+      if (group.length === 1) {
+        result.push(data[i]);
+      } else {
+        const centLat = group.reduce((s: number, p: any) => s + parseFloat(p[0]), 0) / group.length;
+        const centLon = group.reduce((s: number, p: any) => s + parseFloat(p[1]), 0) / group.length;
+        const aggregated: any = [...group[0]];
+        aggregated[0] = centLat;
+        aggregated[1] = centLon;
+        if (numIdx > -1) {
+          aggregated[numIdx] = group.reduce((s: number, p: any) => s + (p[numIdx] || 0), 0);
+        }
+        aggregated._clusterCount = group.length;
+        result.push(aggregated);
+      }
+    }
+    return result;
+  }
+
   makeMarkers = (
     map: L.Map,
     data: Array<any>,
@@ -40,13 +118,17 @@ export class MapUtilsService extends ApiService {
     linkedDashboardProps: LinkedDashboardProps,
     mapActualConfig: any[],
   ): void => {
-    //Puede tener categoría o no  por lo que el set de datos es longitud, latitutd, [Categoria] , valor.
-    // por eso se pone el numericValue como un valor relativo.
-    //Cogemos el primer valor numérico encontrado posterior a latlng como radio
+    // It may or may not have a category, so the dataset is longitude, latitude, [category], value.
+    // Therefore, numericValue is used as a relative value.
+    // We take the first numeric value found after lat/lng as the radius.
     let numericValue: number;
     let smallestValue: number = Infinity;
     mapActualConfig["groups"] = mapActualConfig["groups"].reverse().map(function (v) {return v / 10;});
-    //Encontrar campo numerico y menor valor
+
+    this.layerGroup.clearLayers();
+    this.labelGroup.clearLayers();
+
+    // Find numeric field and minimum value
     for (const d of data) {
       let n = 0;
       d.forEach((label: any) => {
@@ -60,11 +142,11 @@ export class MapUtilsService extends ApiService {
 
 
     for (const d of data) {
-      //Caso de Valor menor
+      // Lower value case
       if (d[numericValue] === smallestValue) this.isSmallestValue = true;
       else this.isSmallestValue = false;
 
-      //Configuración del circulo
+      // Circle configuration
       const maxValue = Math.max(...data.map((x) => x[numericValue]), 0);
       const radius =
         typeof d[numericValue] === "number"
@@ -80,8 +162,8 @@ export class MapUtilsService extends ApiService {
       const lon = parseFloat(d[1]); // / 10000;
       const properties = {
         weight: 1,
-        radius: radius,
-        color: "black",
+        radius: d._clusterCount ? Math.min(radius * 1.4, 35) : radius,
+        color: d._clusterCount ? "white" : "black",
         fillColor: color,
         fillOpacity: 0.8,
       };
@@ -103,12 +185,19 @@ export class MapUtilsService extends ApiService {
         circle.on("click", () => {
           this.linkDashboard(d[2], linkedDashboardProps);
         });
-        circle.addTo(map)
-        //En vez de añadir cada circulo creamos un grupo de layers con todos los circulos.
-        // Facilita el tratamiento de estos.
+        if (d._clusterCount) {
+          const icon = L.divIcon({
+            className: '',
+            html: `<span style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);color:#fff;font-weight:bold;font-size:11px;pointer-events:none">${d._clusterCount}</span>`,
+            iconSize: [0, 0],
+          });
+          this.labelGroup.addLayer(L.marker([lon, lat] as LatLngExpression, { icon, interactive: false }));
+        }
         this.layerGroup.addLayer(circle);
       }
     }
+    this.layerGroup.addTo(map);
+    this.labelGroup.addTo(map);
   };
 
   private linkDashboard = (value, linkedDashboard: LinkedDashboardProps) => {
@@ -127,19 +216,21 @@ export class MapUtilsService extends ApiService {
   private makePopup = (data: any, labels: Array<string>): string => {
     const me = this;
     let div = "";
-    /* SDA CUSTOM*   for (let i = 2; i < 4; i++) {
-    /* SDA CUSTOM*/ for (let i = 2; i < data.length; i++) {
+    if (data._clusterCount) {
+      div += `<div><strong>${data._clusterCount} ${$localize`:@@mapClusteredPoints:puntos agrupados`}</strong></div>`;
+    }
+    for (let i = 2; i < 4; i++) {
       if (data[i] !== undefined) {
-        /* SDA CUSTOM*/ const label = labels[i] !== undefined ? labels[i] : `Field ${i-1}`;
+        const label = labels[i] !== undefined ? labels[i] : `Field ${i-1}`;
         div += `<div> ${me._sanitizer.sanitize(
           SecurityContext.HTML,
-          /* SDA CUSTOM*/ label
+          label
         )} :  ${data[i]} </div>`;
       }
     }
     return `` + div;
   };
-  // Esta función es para evitar los petes del los nulos de  row[labelIndex].toUpperCase().replace(/\s/g, '')
+  // This function is to prevent crashes caused by null values row[labelIndex].toUpperCase().replace(/\s/g, '')
   private labelProcessingHelper(val: any) {
     let res = "";
     try {
@@ -189,7 +280,7 @@ export class MapUtilsService extends ApiService {
   };
 
   public getColor = (radius: number, length: number, colorLimits: string[]) => {
-    //Generamos la array de colores dependiendo del número de datos y el init & final color. 
+    // Generate the color array based on the number of data points and the initial & final color.
     if (this.isSmallestValue) return colorLimits[0];
     let colorArray: string[];
     colorArray = this.generateColorArray(length, colorLimits);
@@ -197,15 +288,15 @@ export class MapUtilsService extends ApiService {
   };
 
   public getLogColor = (radius: number, colorLimits: string[], logScale: number[]) => {
-    //Generamos la array logaritmica de colores dependiendo del número de datos y el init & final color.
+    // Generate a logarithmic color array based on the number of data points and the initial & final color.
     const color: string = this.generateColorLogArray(colorLimits, radius, logScale);
     return color;
   };
 
   private generateColorLogArray(colors: string[], value: any, logScale: number[]) {    
-    //Creación de array gradiente
+    // Gradient array creation.
     const colorGradient: string[] = this.getArrayGradient(colors, logScale.length); 
-    //Asignación de colores por valores
+    // Color assignment by values
     const index = this.getLogRange(value, logScale);
     return colorGradient[index];
   }
@@ -231,24 +322,24 @@ export class MapUtilsService extends ApiService {
   }
 
   private generateColorArray(length: number, colors: string[]) {
-    //Transformamos a RGB para tener valores numéricos sobre los que dividir entre número de data.
-    //Tras dividir, el codigo rgb correspondiente se transforma a HEX y se retorna (se podría trabajar con rgb)
+    // We convert to RGB to obtain numeric values that can be divided by the number of data points.
+    // After dividing, the corresponding RGB code is converted to HEX and returned (RGB could also be used directly).
     let gradient = [];
 
     for (let i = 0; i < length - 1; i++) {
       const factor = i / length;
-      //Construcción codigo rgb con start color, final color y un múltiple
+      // RGB code construction using start color, end color, and a multiplier
       const r = this.interpolate(this.hexToRgb(colors[1]).r,this.hexToRgb(colors[0]).r,factor);
       const g = this.interpolate(this.hexToRgb(colors[1]).g,this.hexToRgb(colors[0]).g,factor);
       const b = this.interpolate(this.hexToRgb(colors[1]).b,this.hexToRgb(colors[0]).b,factor);
       //RGB to HEX
       gradient.push(this.rgbToHex(r, g, b));
     }
-    //Valor devuelto en codigo HEX
+    // Returned value in HEX format
     return gradient;
   }
 
-  //Funciones de conversión
+  // Conversion functions
   private hexToRgb(hex: string) {
     const bigint = parseInt(hex.slice(1), 16);
     return {
@@ -262,7 +353,7 @@ export class MapUtilsService extends ApiService {
     return "#" + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1);
   }
 
-  //Funcion para coger valor intermedio
+  // Function to get intermediate value
   private interpolate(start: number, end: number, factor: number) {
     return Math.round(start + (end - start) * factor);
   }
@@ -270,6 +361,17 @@ export class MapUtilsService extends ApiService {
   static scaledRadius = (val: number, maxVal: number): number => {
     return 20 * (val / maxVal) + 5;
   };
+
+  /** Basemap tile layer shared by eda-map and eda-geoJsonMap, picked via MAP_BASEMAP_PROVIDER (see issue #615) */
+  public getBaseLayer(): L.TileLayer {
+    const config = BASEMAP_CONFIG[MAP_BASEMAP_PROVIDER] ?? BASEMAP_CONFIG.esri;
+    return L.tileLayer(config.url, config.options);
+  }
+
+  /** Max zoom the map itself should allow for the active basemap provider (see issue #615) */
+  public getBasemapMaxZoom(): number {
+    return (BASEMAP_CONFIG[MAP_BASEMAP_PROVIDER] ?? BASEMAP_CONFIG.esri).mapMaxZoom;
+  }
 
   public setCoordinates(coordinates: Array<Array<number>>): void {
     this.coordinates = coordinates;
@@ -285,6 +387,7 @@ export class MapUtilsService extends ApiService {
   }
   public mapEditOpen(): void {
     this.auxCoordinates = this.coordinates;
+    this.auxZoom = this.zoom;
   }
   public mapEditClose(): void {
     this.auxCoordinates = null;

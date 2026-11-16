@@ -1,4 +1,4 @@
-import { PgBuilderService } from '../../query-builder/qb-systems/pg-builder-service';
+import { PgBuilderService } from '../../query-builder/qb-systems/pg-builder.service';
 import { AbstractConnection } from '../abstract-connection';
 import { AggregationTypes } from '../../../module/global/model/aggregation-types';
 import DataSource from '../../../module/datasource/model/datasource.model';
@@ -187,7 +187,8 @@ export class VerticaConnection extends AbstractConnection {
                 table_type: [],
                 columns: columns,
                 relations: [],
-                visible: true
+                visible: true,
+                ia_visibility: 'FULL'
             };
             return newTable
         } catch (err) {
@@ -210,7 +211,7 @@ export class VerticaConnection extends AbstractConnection {
 
         if (column.column_type === 'numeric') {
             column.aggregation_type = AggregationTypes.getValuesForNumbers();
-        } else if (column.column_type === 'text') {
+        } else if (column.column_type === 'text' || column.column_type === 'html') {
             column.aggregation_type = AggregationTypes.getValuesForText();
         } else {
             column.aggregation_type = AggregationTypes.getValuesForOthers();
@@ -219,6 +220,7 @@ export class VerticaConnection extends AbstractConnection {
         column.column_granted_roles = [];
         column.row_granted_roles = [];
         column.visible = true;
+        column.ia_visibility = 'FULL';
         column.tableCount = tableCount;
         return column;
     }

@@ -4,7 +4,7 @@ import { Observable, BehaviorSubject } from 'rxjs';
 
 
 @Injectable({
-    providedIn: 'root'
+  providedIn: 'root'
 })
 export class LogService extends ApiService{
 
@@ -18,10 +18,16 @@ export class LogService extends ApiService{
         return this.get(`${this.route}/log-error-file`);
     }
 
-    /* SDA CUSTOM */ // Fetch logs from the new SDA audit log endpoint
-    /* SDA CUSTOM */ getAppLogs(params?: any): Observable<any> {
-    /* SDA CUSTOM */    return this.getParams(`${this.route}/app-logs`, params);
-    /* SDA CUSTOM */ }
+    getAppLogs(params: any): Observable<any> {
+        return this.getParams(`${this.route}/app-logs`, params);
+    }
 
+    getLogTail(file: 'access' | 'error', offset: number): Observable<any> {
+        return this.getParams(`${this.route}/log-tail`, { file, offset });
+    }
+
+    getLogHistory(params: any): Observable<any> {
+        return this.getParams(`${this.route}/log-history`, params);
+    }
 
 }

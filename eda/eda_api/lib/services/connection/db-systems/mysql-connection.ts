@@ -2,10 +2,10 @@ import { createConnection, createPool, Connection as SqlConnection } from 'mysql
 import { MySqlBuilderService } from "../../query-builder/qb-systems/mySql-builder.service";
 import { AbstractConnection } from "../abstract-connection";
 import { AggregationTypes } from "../../../module/global/model/aggregation-types";
-import { ConnectionOptions, PoolOptions, Pool } from 'mysql2/typings/mysql';
+import { ConnectionOptions, PoolOptions } from 'mysql2/typings/mysql';
+import { Pool } from 'mysql2/promise';
 import { PoolManagerConnectionSingleton } from '../pool-manager-connection';
-const util = require('util');
-/*SDA CUSTOM*/const SCRMConfig=require('../../../../config/sinergiacrm.config.js');
+const EDA_API_CONFIG = require('../../../../config/eda_api_config');
 
 
 export class MysqlConnection extends AbstractConnection {
@@ -13,6 +13,7 @@ export class MysqlConnection extends AbstractConnection {
     private queryBuilder: MySqlBuilderService;
     private AggTypes: AggregationTypes;
     private pool: Pool;
+    private isMariaDB: boolean | null = null;
 
     public GetDefaultSchema(): string { return null; }
 
@@ -66,32 +67,27 @@ export class MysqlConnection extends AbstractConnection {
         return createConnection(mySqlConn);
     }
 
-
-        // SDA CUSTOM - Change tryConnection to use mysql2/promise
     async tryConnection(): Promise<any> {
         try {
-            let mySqlConn = {}
+            const mySqlConn: ConnectionOptions = {
+                host: this.config.host,
+                port: this.config.port,
+                database: this.config.database,
+                user: this.config.user,
+                password: this.config.password
+            };
             if (this.config.ssl && (this.config.ssl === 'true')) {
-                mySqlConn ={ "host": this.config.host,    "port": this.config.port,     "database": this.config.database, "user": this.config.user, "password": this.config.password, "ssl": { rejectUnauthorized: false }};
-            } else {
-                mySqlConn ={ "host": this.config.host,    "port": this.config.port,     "database": this.config.database, "user": this.config.user, "password": this.config.password };
+                mySqlConn.ssl = { rejectUnauthorized: false };
             }
-            this.client = await createConnection(mySqlConn);
             console.log('\x1b[32m%s\x1b[0m', 'Connecting to MySQL database...\n');
+            const connection = await createConnection(mySqlConn);
             this.itsConnected();
-
-            // Close connection
-            await this.client.end();
-
-            return this.client;
-    
+            await connection.end();
+            return connection;
         } catch (err) {
-            console.log('\x1b[31m%s\x1b[0m', 'Error connecting to MySQL database\n');
             throw err;
         }
     }
-    // END SDA CUSTOM
-
 
     async generateDataModel(optimize:number, filter:string): Promise<any> {
         try {
@@ -136,28 +132,30 @@ export class MysqlConnection extends AbstractConnection {
             this.client = await this.getclient();
             const foreignKeys = await this.execQuery(fkQuery);
             this.client = await this.getclient();
-            this.client.query = util.promisify(this.client.query);
-            for (let i = 0; i < tableNames.length; i++) {
-                let new_table = await this.setTable(tableNames[i]);
-                let count = 0;
-                if(optimize === 1){
-                    const dbCount = await this.countTable(tableNames[i]);
-                    count = dbCount[0].count;
+            try {
+                for (let i = 0; i < tableNames.length; i++) {
+                    let new_table = await this.setTable(tableNames[i]);
+                    let count = 0;
+                    if(optimize === 1){
+                        const dbCount = await this.countTable(tableNames[i]);
+                        count = dbCount[0].count;
+                    }
+                    new_table.tableCount = count;
+                    tables.push(new_table);
+                    if(i> 400){
+                        console.log('Un datasource no puede tener más de 400 tablas ');
+                        i = tableNames.length + 1;
+                    }
                 }
-                new_table.tableCount = count;
-                tables.push(new_table);
-                if(i> 400){
-                    console.log('Un datasource no puede tener más de 400 tablas ');
-                    i = tableNames.length + 1;
+                for (let i = 0; i < tables.length; i++) {
+                    for (let j = 0; j < tables[i].columns.length; j++) {
+                        tables[i].columns[j] = this.setColumns(tables[i].columns[j], tables[i].tableCount);
+                    }
                 }
+            } finally {
+                if (!this.pool) this.client.destroy();
             }
-            for (let i = 0; i < tables.length; i++) {
-                for (let j = 0; j < tables[i].columns.length; j++) {
-                    tables[i].columns[j] = this.setColumns(tables[i].columns[j], tables[i].tableCount);
-                }
-            }
-            // if (!this.pool && this.client.itsConnected()) this.client.end();
-            
+
             /**Return datamodel with foreign-keys-relations if exists or custom relations if not */
             if(foreignKeys.length > 0) return await this.setForeignKeys(tables, foreignKeys);
             else return await this.setRelations(tables);
@@ -167,47 +165,51 @@ export class MysqlConnection extends AbstractConnection {
         }
     }
 
-    // SDA CUSTOM JCH (add timeout to individual queries)
-    // https://github.com/SinergiaTIC/SinergiaDA/pull/256/files
-    /**
-    * Executes a MySQL query with a timeout constraint
-    * 
-    * @param query - The SQL query string to execute
-    * @returns Promise that resolves to the query results
-    * @throws Error if query execution fails or times out after 60 seconds
-    */
-
-    async execQuery(query: string): Promise<any> {
+async execQuery(query: string): Promise<any> {
         try {
-            this.client.query = util.promisify(this.client.query);
-
-            let maxStatementTime = SCRMConfig.sinergiaConn.maxStatementTime ?? 60;
+            let maxStatementTime = EDA_API_CONFIG.maxStatementTime ?? 900;
             console.log(`SET maxStatementTime=${maxStatementTime}`);
-            
-            // Add timeout constraint to the query
-            const queryWithTimeout = `SET STATEMENT max_statement_time=${maxStatementTime} FOR ${query}`;
 
-            // Create timeout promise that rejects after 60 seconds
+            // Detectar si es MariaDB (se cachea tras la primera consulta)
+            if (this.isMariaDB === null) {
+                const [[versionRow]] = await this.client.query('SELECT VERSION() as v') as any;
+                this.isMariaDB = String(versionRow.v).includes('MariaDB');
+                console.log(`DB engine detected: ${this.isMariaDB ? 'MariaDB' : 'MySQL'} (${versionRow.v})`);
+            }
+
+            // Añadir timeout según el motor
+            const trimmed = query.trimStart();
+            let queryWithTimeout: string;
+            if (this.isMariaDB) {
+                queryWithTimeout = `SET STATEMENT max_statement_time=${maxStatementTime} FOR ${trimmed}`;
+            } else {
+                const maxMs = maxStatementTime * 1000;
+                queryWithTimeout = /^SELECT/i.test(trimmed)
+                    ? trimmed.replace(/^SELECT/i, `SELECT /*+ MAX_EXECUTION_TIME(${maxMs}) */`)
+                    : trimmed;
+            }
+
+            // Crear promesa con timeout que se cancela a los 600 segundos
             const timeoutPromise = new Promise((_, reject) => {
                 setTimeout(() => {
                     reject(new Error(`Query execution timed out after ${maxStatementTime} seconds`));
-                }, (maxStatementTime * 1000));
+                }, (maxStatementTime * 100));
             });
-        
-            // Execute query with a race between actual query and timeout
-            const rows = await Promise.race([
+
+            // Ejecutar race based entre query y timeout (mysql2/promise devuelve [rows, fields])
+            const [rows] = await Promise.race([
                 this.client.query(queryWithTimeout),
                 timeoutPromise
-            ]);
+            ]) as any;
             return rows;
         } catch (err) {
             if (err.message === 'Query execution timed out after 60 seconds') {
-                // Log specific timeout errors
+                // Visualizar errores de timeout
                 console.error('Query timeout:', query);
             }
+            console.log(err);
             throw err;
         }
-
     }
 
     async execSqlQuery(query: string): Promise<any> {
@@ -215,7 +217,37 @@ export class MysqlConnection extends AbstractConnection {
     }
 
 
+    /**
+     * issue #667: value-list filters may carry the label (or nothing) in filter_codes — that is how
+     * 2.x kept them and how the old selector built them. When USE_VALUE_LIST_CODE_FOR_FILTERS is on the query must
+     * compare the internal `code` column against codes, so the selected values are translated to their codes here,
+     * before building the SQL (a small read per value-list table; never a subquery inside the panel query).
+     */
+    private async resolveValueListFilterCodes(query: any) {
+        if (!EDA_API_CONFIG.custom_behaviour?.USE_VALUE_LIST_CODE_FOR_FILTERS) return;
+        const maps = new Map<string, Map<string, string>>();
+        const resolve = async (filter: any) => {
+            const vls = filter?.valueListSource;
+            const elements = filter?.filter_elements?.[0]?.value1;
+            if (!vls?.target_table || !vls?.target_id_column || !Array.isArray(elements) || elements.length === 0) return;
+            let map = maps.get(vls.target_table);
+            if (!map) {
+                if (!this.client) this.client = await this.getclient();
+                const [rows] = await this.client.query(`SELECT code, value FROM \`${vls.target_table}\``) as any;
+                map = new Map((rows || []).map((r: any) => [String(r.value), String(r.code)]));
+                maps.set(vls.target_table, map);
+            }
+            filter.filter_codes = [{
+                ...(filter.filter_codes?.[0] || {}),
+                value1: elements.map((e: any) => map.has(String(e)) ? map.get(String(e)) : e)
+            }];
+        };
+        for (const filter of query?.filters || []) await resolve(filter);
+        for (const filter of query?.sortedFilters || []) await resolve(filter);
+    }
+
     async getQueryBuilded(queryData: any, dataModel: any, user: any) {
+        await this.resolveValueListFilterCodes(queryData);
         this.queryBuilder = new MySqlBuilderService(queryData, dataModel, user);
         return this.queryBuilder.builder();
     }
@@ -231,7 +263,7 @@ export class MysqlConnection extends AbstractConnection {
         `;
         return new Promise(async (resolve, reject) => {
             try {
-                const count = await this.client.query(query);
+                const [count] = await this.client.query(query) as any;
                 resolve(count);
             } catch (err) {
                 reject(err);
@@ -249,7 +281,7 @@ export class MysqlConnection extends AbstractConnection {
         return new Promise(async (resolve, reject) => {
             try {
                 //this.client = createConnection(this.config);
-                const getColumns = await this.client.query(query);
+                const [getColumns] = await this.client.query(query) as any;
                 const newTable = {
                     table_name: tableName,
                     display_name: {
@@ -264,7 +296,8 @@ export class MysqlConnection extends AbstractConnection {
                     table_type: [],
                     columns: getColumns,
                     relations: [],
-                    visible: true
+                    visible: true,
+                    ia_visibility: 'FULL'
                 };
                 resolve(newTable);
             } catch (err) {
@@ -286,7 +319,7 @@ export class MysqlConnection extends AbstractConnection {
 
         if (column.column_type === 'numeric') {
             column.aggregation_type = AggregationTypes.getValuesForNumbers();
-        } else if (column.column_type === 'text') {
+        } else if (column.column_type === 'text' || column.column_type === 'html') {
             column.aggregation_type = AggregationTypes.getValuesForText();
             if (column.column_name === 'CONTACTFIRSTNAME') {
                 console.log('set text aggregation type')
@@ -299,6 +332,7 @@ export class MysqlConnection extends AbstractConnection {
         column.column_granted_roles = [];
         column.row_granted_roles = [];
         column.visible = true;
+        column.ia_visibility = 'FULL';
         column.tableCount = tableCount || 0;
 
         return column;

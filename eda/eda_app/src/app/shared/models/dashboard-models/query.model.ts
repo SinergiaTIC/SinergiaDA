@@ -20,12 +20,19 @@ export interface Query {
         // modeSQL: boolean, Deprecated use queryMode instead
         SQLexpression : string,
         queryLimit : number,
-        /* SDA CUSTOM */ groupByEnabled: boolean,
+        groupByEnabled: boolean,
         joinType: string,
         forSelector?: boolean,
         rootTable: string,
-        sortedFilters: any[],
-
+        prediction?: string,
+        predictionConfig?: {
+            steps?: number,
+            targetColumn?: { column_name: string, table_id: string },
+            arimaParams?: { p: number, d: number, q: number },
+            tensorflowParams?: { epochs: number, lookback: number, learningRate: number },
+        },
+        sortedFilters?: any[],
+        resultSortingColumns?: any[],
     };
     output: {
         labels: any[],

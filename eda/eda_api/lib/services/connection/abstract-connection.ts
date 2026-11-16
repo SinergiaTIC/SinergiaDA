@@ -333,6 +333,7 @@ export abstract class AbstractConnection {
                     if (!visited.includes(data_model[j].table_name)) {
                         // Columnes
                         for (let i = 0; i < data_model[j].columns.length; i++) {
+                            //console.log(l, k, j, i)
                             let targetColumn = { target_column: data_model[j].columns[i].column_name, column_type: data_model[j].columns[i].column_type };
                             if ((sourceColumn.source_column.toLowerCase().includes('_id') ||
                                 sourceColumn.source_column.toLowerCase().includes('id_') ||
@@ -379,27 +380,36 @@ export abstract class AbstractConnection {
                 return acc;
               }, {});
             try {
-                return await DataSource.findOne({ $or : Object.entries(filter).map(([clave, valor]) => ({ [clave]: valor }))  }, (err, datasource) => {
-                if (err) {
-                    throw Error(err);
+                const orConditions = Object.entries(filter).map(([key, value]) => ({ [key]: value }));
+
+                const datasource = await DataSource.findOne({ $or: orConditions });
+
+                if (!datasource) {
+                    console.log('Datasource not found for filter:', filter);
+                    return null;
                 }
+
                 return datasource;
-            });
+
             } catch (err) {
-                console.log(err)
+                console.log('Error fetching datasource:', err);
+                return null;
             }
         } else {
             try {
-            return await DataSource.findOne({ _id: id }, (err, datasource) => {
-                if (err) {
-                    throw Error(err);
+                const datasource = await DataSource.findOne({ _id: id });
+
+                if (!datasource) {
+                    throw new Error(`Datasource not found with id ${id}`);
                 }
+
                 return datasource;
-            });
-        } catch (err) {
-            console.log(err);
-            throw err;
-        }
+
+            } catch (err) {
+                console.log(err);
+                throw err;
+            }
+
         }
         
     }

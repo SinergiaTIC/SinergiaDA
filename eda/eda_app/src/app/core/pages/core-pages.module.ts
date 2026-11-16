@@ -1,39 +1,39 @@
-import { NgModule } from '@angular/core';
+import { CUSTOM_ELEMENTS_SCHEMA, NgModule } from '@angular/core';
 
 // Modules
 import { CoreModule } from '../core.module';
 import { SharedModule } from '../../shared/shared.module';
 
 // Components
-import { LoginComponent } from './login/login.component';
 import { PageNotFoundComponent } from './404/page-not-found.component';
 import { LogoutComponent } from './logout/logout.component';
 import { RegisterComponent } from './register/register.component';
 import { ConditionsComponent } from './conditions/conditions.component';
 import { AnonymousLoginComponent } from '../../module/pages/anonimous-login/anonymous-login.component';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { PrimengModule } from '../primeng.module';
 
 
 
 @NgModule({
-    declarations: [
-        LoginComponent,
-        RegisterComponent,
-        LogoutComponent,
-        PageNotFoundComponent,
-        ConditionsComponent,
-        AnonymousLoginComponent
-    ],
     imports: [
+        CommonModule,
+        FormsModule,
+        PrimengModule,
         CoreModule,
         SharedModule,
     ],
-    exports: [
-        LoginComponent,
-        RegisterComponent,
+    declarations: [
         LogoutComponent,
         PageNotFoundComponent,
-        ConditionsComponent,
         AnonymousLoginComponent
-    ]
+    ],
+    exports: [
+        LogoutComponent,
+        PageNotFoundComponent,
+        AnonymousLoginComponent
+    ],
+    schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
 export class CorePagesModule {}

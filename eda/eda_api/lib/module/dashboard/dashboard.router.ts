@@ -32,9 +32,11 @@ const router = express.Router();
  *     tags:
  *       - Dashboard Routes
  */
-router.get('', authGuard,  DashboardController.getDashboards);
+router.get('', authGuard, DashboardController.getDashboards);
 
-router.post('/clean-refresh', authGuard, DashboardController.cleanDashboardCache)
+router.post('/clean-refresh', authGuard, DashboardController.cleanDashboardCache);
+
+router.get('/datasource/:id', authGuard, DashboardController.getDataSourceModel);
 
 /**
  * @openapi
@@ -336,10 +338,10 @@ router.put('/:id', authGuard, DashboardController.update);
  */
 router.delete('/:id', authGuard, DashboardController.delete);
 
-/*SDA CUSTOM*/ router.put('/:id/updateSpecific', authGuard, DashboardController.updateSpecific);
+router.put('/:id/updateSpecific', authGuard, DashboardController.updateSpecific);
 
-/*SDA CUSTOM*/ router.post('/:id/clone', authGuard, DashboardController.clone);
+router.post('/:id/clone', authGuard, DashboardController.clone);
 
-/*SDA CUSTOM*/ router.get('/:id/visibility', DashboardController.getIsPublic);
+router.get('/:id/visibility', DashboardController.getIsPublic);
 
 export default router;

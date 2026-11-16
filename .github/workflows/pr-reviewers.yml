@@ -1,0 +1,124 @@
+# SDA CUSTOM - Automatic PR reviewer assignment per PROTOCOLO_CONTRIBUCION.md (section 7)
+# Stage 1: on PR open -> internal validator (juanSTIC or PaulaaSTIC, the one who is not the assignee)
+# Stage 2: after internal approval -> jalbaiges if the PR touches language files,
+#          EDA members (jortilles, MarcCornejoJort, ronaldchavezjortilles) if labeled CORE EDA
+# Stage 3: on CORE EDA label, if internal approval already exists -> add EDA members
+name: PR Reviewers
+
+on:
+  pull_request:
+    types: [opened, labeled]
+  pull_request_review:
+    types: [submitted]
+
+permissions:
+  pull-requests: write
+
+jobs:
+  assign-reviewers:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Assign reviewers
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: SinergiaTIC/SinergiaDA
+          PR: ${{ github.event.pull_request.number }}
+          EVENT_NAME: ${{ github.event_name }}
+          EVENT_ACTION: ${{ github.event.action }}
+          PR_AUTHOR: ${{ github.event.pull_request.user.login }}
+          REVIEW_STATE: ${{ github.event.review.state }}
+          REVIEW_AUTHOR: ${{ github.event.review.user.login }}
+          LABEL_NAME: ${{ github.event.label.name }}
+        run: |
+          set -euo pipefail
+
+          INTERNAL_VALIDATORS=(juanSTIC PaulaaSTIC)
+          EDA_REVIEWERS=(jortilles MarcCornejoJort ronaldchavezjortilles)
+          LANG_REVIEWER=jalbaiges
+
+          # List of logins already requested as reviewers
+          already_requested() {
+            gh api "repos/$REPO/pulls/$PR/requested_reviewers" --jq '.users[].login' | grep -qx "$1"
+          }
+
+          # Unique logins with an APPROVED review on the PR
+          approvals() {
+            gh api "repos/$REPO/pulls/$PR/reviews" --paginate --jq '.[] | select(.state=="APPROVED") | .user.login' | sort -u
+          }
+
+          # True when juanSTIC or PaulaaSTIC has approved the PR (internal validation)
+          has_internal_approval() {
+            approvals | grep -qx "juanSTIC" || approvals | grep -qx "PaulaaSTIC"
+          }
+
+          # Add reviewers (idempotent); never adds the PR author
+          add_reviewers() {
+            local to_add=()
+            for r in "$@"; do
+              [ "$r" = "$PR_AUTHOR" ] && continue
+              already_requested "$r" && continue
+              to_add+=("$r")
+            done
+            if [ ${#to_add[@]} -gt 0 ]; then
+              printf '{"reviewers": %s}' "$(printf '%s\n' "${to_add[@]}" | jq -Rs 'split("\n") | map(select(length > 0))')" > payload.json
+              gh api -X POST "repos/$REPO/pulls/$PR/requested_reviewers" --input payload.json >/dev/null
+              echo "Requested reviewers: ${to_add[*]}"
+            fi
+          }
+
+          case "$EVENT_NAME" in
+
+            pull_request)
+              if [ "$EVENT_ACTION" = "opened" ]; then
+                # Stage 1: internal validator = the one who is not the assignee
+                # (fallback: the one who is not the PR author; default juanSTIC)
+                assignees=$(gh api "repos/$REPO/pulls/$PR" --jq '.assignees | map(.login) | join(" ")')
+                if echo "$assignees" | grep -qw "juanSTIC"; then
+                  candidate=PaulaaSTIC
+                elif echo "$assignees" | grep -qw "PaulaaSTIC"; then
+                  candidate=juanSTIC
+                elif [ "$PR_AUTHOR" = "juanSTIC" ]; then
+                  candidate=PaulaaSTIC
+                elif [ "$PR_AUTHOR" = "PaulaaSTIC" ]; then
+                  candidate=juanSTIC
+                else
+                  candidate=juanSTIC
+                fi
+                add_reviewers "$candidate"
+
+              elif [ "$EVENT_ACTION" = "labeled" ] && [ "$LABEL_NAME" = "CORE EDA" ]; then
+                # Stage 3: CORE EDA label applied after internal validation
+                if has_internal_approval; then
+                  add_reviewers "${EDA_REVIEWERS[@]}"
+                fi
+              fi
+              ;;
+
+            pull_request_review)
+              # Stage 2: react only to internal approvals (Juan or Paula)
+              if [ "$REVIEW_STATE" != "APPROVED" ]; then exit 0; fi
+              case "$REVIEW_AUTHOR" in
+                juanSTIC|PaulaaSTIC) ;;
+                *) exit 0 ;;
+              esac
+              if ! has_internal_approval; then exit 0; fi
+
+              files=$(gh api --paginate "repos/$REPO/pulls/$PR/files" --jq '.[].filename')
+              labels=$(gh api "repos/$REPO/issues/$PR/labels" --jq '.[].name')
+
+              reviewers=()
+              # Language files -> Jaume
+              if echo "$files" | grep -q '\.xlf$'; then
+                reviewers+=("$LANG_REVIEWER")
+              fi
+              # CORE EDA label -> EDA members
+              if echo "$labels" | grep -qx "CORE EDA"; then
+                reviewers+=("${EDA_REVIEWERS[@]}")
+              fi
+              if [ ${#reviewers[@]} -gt 0 ]; then
+                add_reviewers "${reviewers[@]}"
+              fi
+              ;;
+
+          esac
+# END SDA CUSTOM

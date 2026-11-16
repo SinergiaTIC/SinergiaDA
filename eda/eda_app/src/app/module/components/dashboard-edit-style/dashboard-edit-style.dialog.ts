@@ -1,0 +1,375 @@
+import { Component, EventEmitter, Input, OnInit, Output } from "@angular/core";
+import { FormsModule, ReactiveFormsModule, UntypedFormBuilder, UntypedFormGroup, Validators } from "@angular/forms";
+import { AlertService, GroupService, IGroup } from "@eda/services/service.index";
+import { EdaDialog, EdaDialog2Component, EdaDialogAbstract, EdaDialogCloseEvent } from "@eda/shared/components/shared-components.index";
+import { SharedModule } from "@eda/shared/shared.module";
+import { DashboardStyles, StyleProviderService } from "@eda/services/service.index";
+import { SelectItem } from "primeng/api";
+import { MultiSelectModule } from "primeng/multiselect";
+import { SelectButtonModule } from "primeng/selectbutton";
+import { FloatLabelModule } from 'primeng/floatlabel';
+import { SliderModule } from 'primeng/slider';
+import { ColorPickerModule } from 'primeng/colorpicker';
+import { RadioButtonModule } from 'primeng/radiobutton';
+import { DropdownModule } from 'primeng/dropdown';
+import { CommonModule } from '@angular/common';
+import { DashboardPage } from "../../pages/dashboard/dashboard.page";
+import { GLOBAL_FILTER_BUTTON_POSITION } from '@eda/configs/customizable/customizable_merged';
+
+
+@Component({
+  selector: 'app-dashboard-edit-style',
+  standalone: true,
+  styleUrls: ['./dashboard-edit-style.dialog.css'],
+  templateUrl: './dashboard-edit-style.dialog.html',
+  imports: [SharedModule, ReactiveFormsModule, FormsModule, SelectButtonModule,
+    MultiSelectModule, FloatLabelModule, SliderModule, ColorPickerModule, RadioButtonModule, DropdownModule, CommonModule, EdaDialog2Component]
+})
+export class DashboardEditStyleDialog {
+  @Output() close: EventEmitter<any> = new EventEmitter<any>();
+  @Output() apply: EventEmitter<any> = new EventEmitter<any>();
+  @Input() dashboard: DashboardPage;
+  public dialog: EdaDialog;
+  public form: UntypedFormGroup;
+  public visibleTypes: SelectItem[] = [];
+  
+
+  public display: boolean = false;
+  public backgroundColor: string = this.stylesProviderService.DEFAULT_BACKGROUND_COLOR;
+  public panelColor: string = this.stylesProviderService.DEFAULT_PANEL_COLOR;
+  public allPalettes: any = this.stylesProviderService.ChartsPalettes;
+  public selectedPalette = this.stylesProviderService.ActualChartPalette !== undefined ? this.allPalettes.find(p => p?.name === this.stylesProviderService?.ActualChartPalette['name']) : this.allPalettes[0];
+  public properties: boolean = true;
+  
+  public fonts: Array<any> =
+  [
+    { label: 'Montserrat', value: 'Montserrat' },
+    { label: 'Questrial', value: 'Questrial' },
+    { label: 'League Spartan', value: 'League Spartan' },
+    { label: 'Raleway', value: 'Raleway' },
+    { label: 'Bangers', value: 'Bangers' },
+    { label: 'Serif', value: 'Serif' },
+    { label: 'Sans-serif', value: 'Sans-serif' },
+    { label: 'Monospace', value: 'Monospace' },
+    { label: 'Cursive', value: 'Cursive' },
+    { label: 'Papyrus', value: 'Papyrus' },
+    { label: 'Courier New', value: 'Courier New' }
+    
+  ].sort((a, b) => a.label.localeCompare(b.label));
+
+  public dashBoardStyles: DashboardStyles;
+
+  public titleHeader: string = $localize`:@@samplePanelDBName:Título del informe`;
+  public filtersHeader: string = $localize`:@@filters:Filtros`;
+  public panelTitleHeader: string = $localize`:@@samplePanelName:Título del panel`;
+  public panelContentHeader: string = $localize`:@@panelContentEdit:Contenido del panel`;
+  public samplePanelTitle: string = $localize`:@@samplePanelTitle:Previsualización`;
+  public samplePanelDBName: string = $localize`:@@samplePanelDBName:Título del informe`;
+  public samplePanelName: string = $localize`:@@samplePanelName:Título del panel`;
+  public filtrar: string = $localize`:@@filtrarH4:Filtrar`;
+  public css: string;
+  public backgroundImage: string | null = null;  // base64 data URI
+
+  public left: string = $localize`:@@left:Izquierda`;
+  public center: string = $localize`:@@center:Centro`;
+  public right: string = $localize`:@@right:Derecha`;
+
+  /**Dashboard title */
+  public selectedTitleFont: any;
+  public titleFontSize: number = this.stylesProviderService.DEFAULT_FONT_SIZE;
+  public titleFontColor: string = this.stylesProviderService.DEFAULT_FONT_COLOR;
+  public alignDasboardTitle: string = this.stylesProviderService.DEFAULT_TITLE_ALIGN;
+
+  /**Filters */
+  public selectedFiltersFont: any;
+  public filtersFontSize: number = this.stylesProviderService.DEFAULT_FONT_SIZE;
+  public filtersFontColor: string = this.stylesProviderService.DEFAULT_FONT_COLOR;
+
+  /**Panel title */
+  public selectedPanelTitleFont: any;
+  public panelTitleFontSize: number = this.stylesProviderService.DEFAULT_FONT_SIZE;
+  public panelTitleFontColor: string = this.stylesProviderService.DEFAULT_FONT_COLOR;
+  public alignPanelTitle: string = this.stylesProviderService.DEFAULT_PANEL_TITLE_ALIGN;
+
+  /**Panel content */
+  public selectedPanelFont: any;
+  public panelFontSize: number = this.stylesProviderService.DEFAULT_FONT_SIZE;
+  public panelFontColor: string = this.stylesProviderService.DEFAULT_FONT_COLOR;
+
+
+
+  public sampleTextFont: string = this.stylesProviderService.DEFAULT_FONT_FAMILY;
+  public sampleTextStle: {} = {};
+
+  /**Sample panel */
+  public sampleGlobalStyle: {};
+  public sampleTitleStyle: {};
+  public sampleFiltersStyle: {};
+  public samplePanelTitleStyle: {};
+  public samplePanelContentStyle: {};
+  public panelBG: string;
+
+  globalFilterButtonPosition: any[] = [
+    { icon: 'pi pi-arrow-left', label: 'Left', positionType: 'left' },
+    { icon: 'pi pi-arrow-right', label: 'Right', positionType: 'right' }
+  ];  
+  
+  public positionType: string = GLOBAL_FILTER_BUTTON_POSITION;
+
+  constructor(private formBuilder: UntypedFormBuilder, private alertService: AlertService
+    , private stylesProviderService: StyleProviderService) {
+      this.dashBoardStyles = {} as DashboardStyles;
+  }
+
+    ngOnInit(): void {
+        this.dashBoardStyles = this.dashboard.dashboard.config.styles;
+        this.assignValues(this.dashBoardStyles);
+        this.setSampleTitleStyle();
+        this.setSampleFIltersStyle();
+        this.setSampleGlobalStyle();
+        this.setPanelTitleStyle();
+        this.setPanelContentStyle();
+      }
+
+  assignValues(styles: DashboardStyles): void {
+      /** Global colors */
+    this.backgroundColor = styles.backgroundColor;  
+    this.panelColor = styles.panelColor;
+
+      
+    /**Title */
+    this.selectedTitleFont = styles.filters.fontFamily;
+    this.titleFontColor = styles.title.fontColor;
+    this.titleFontSize = styles.title.fontSize;
+    this.alignDasboardTitle = styles.titleAlign;
+
+    /**Filters */
+    this.selectedFiltersFont = styles.filters.fontFamily
+    this.filtersFontColor = styles.filters.fontColor;
+    this.filtersFontSize = styles.filters.fontSize;
+
+    /**Panel title */
+    this.selectedPanelTitleFont = styles.panelTitle.fontFamily;
+    this.panelTitleFontColor = styles.panelTitle.fontColor;
+    this.panelTitleFontSize = styles.panelTitle.fontSize;
+    this.alignPanelTitle = styles.panelTitleAlign;
+
+    /**Panel content */
+    this.selectedPanelFont = styles.panelContent.fontFamily;
+    this.panelFontColor = styles.panelContent.fontColor;
+    this.panelFontSize = styles.panelContent.fontSize;
+
+    this.css = styles.customCss;
+    this.backgroundImage = styles.backgroundImage || null;
+    this.positionType = styles.filterButtonPosition ?? GLOBAL_FILTER_BUTTON_POSITION;
+    }
+
+    public setSampleGlobalStyle() {
+        this.sampleGlobalStyle = {
+            'background-color': this.backgroundColor,
+        }
+    }
+
+  public setSampleTitleStyle() {
+        this.sampleTitleStyle = {
+            'font-family': this.selectedTitleFont,
+            'color': this.titleFontColor,
+            'text-align': this.alignDasboardTitle === 'flex-start' ? 'left' : this.alignDasboardTitle === 'center' ? 'center' : 'right',
+            'font-size': `${this.titleFontSize / 10 + 1.8}rem`,
+            'margin-bottom': 'auto',
+            'font-weight': '600',
+            'white-space': 'nowrap',
+            'padding': '0.1em',
+        }
+    }
+
+    public setSampleFIltersStyle() {
+        this.sampleFiltersStyle = {
+            'font-family': this.selectedFiltersFont,
+            'color': this.filtersFontColor,
+            'font-size': `${this.filtersFontSize / 10 + 1.1}rem`,
+        }
+    }
+
+    public setPanelTitleStyle() {
+        this.samplePanelTitleStyle = {
+            'font-family': this.selectedPanelTitleFont,
+            'color': this.panelTitleFontColor,
+            'text-align': this.alignPanelTitle === 'flex-start' ? 'left' : this.alignPanelTitle === 'center' ? 'center' : 'right',
+            'font-size': `${this.panelTitleFontSize / 10 + 1.2}rem`,
+            'box-shadow': '0 2px 1px -1px rgb(0 0 0 / 20%), 0 1px 1px 0 rgb(0 0 0 / 14%), 0 1px 3px 0 rgb(0 0 0 / 12%)',
+            'background-color': this.panelColor,
+        }
+    }
+
+    public setPanelContentStyle() {
+        this.samplePanelContentStyle = {
+            'font-family': this.selectedPanelFont,
+            'color': this.panelFontColor,
+            'font-size': `${this.panelFontSize / 10 + 1}rem`,
+            'box-shadow': '0 2px 1px -1px rgb(0 0 0 / 20%), 0 1px 1px 0 rgb(0 0 0 / 14%), 0 1px 3px 0 rgb(0 0 0 / 12%)',
+            'background-color': this.panelColor,
+        };
+    }
+
+    private applyPaletteToAllCharts(): void {
+    if (!this.selectedPalette || !this.dashboard?.dashboard?.config?.panel) {
+        return;
+    }
+
+    const newPalette = this.selectedPalette.paleta;
+
+    // Iterate over all panels
+    this.dashboard.dashboard.config.panel.forEach(panel => {
+        const config = panel.content?.query?.output?.config;
+        if (!config) {
+            return;
+        }
+
+        // If it does NOT have assignedColors, we need to create them
+        if (!config.assignedColors || !Array.isArray(config.assignedColors) || config.assignedColors.length === 0) {
+            
+            // Determine how many colors are needed according to chart type
+            const chartType = panel.content?.chart;
+            let numColors = 1; // Default 1 color
+            
+            // For charts that need multiple colors, try to infer from the data
+            if (['bar', 'line', 'doughnut', 'treeMap', 'sunburst', 'funnel'].includes(chartType)) {
+                // Try to count from available data
+                const labels = panel.content?.query?.output?.labels || [];
+                const data = panel.content?.query?.output?.data?.values || [];
+                
+                if (data.length > 0 && Array.isArray(data[0])) {
+                    numColors = data.length; // Number of series
+                } else if (labels.length > 1) {
+                    numColors = labels.length;
+                }
+            }
+            
+            // Create assignedColors with generic values
+            config.assignedColors = Array.from({ length: Math.max(numColors, 1) }, (_, i) => ({
+                value: `Series ${i + 1}`,
+                color: newPalette[i % newPalette.length]
+            }));
+            
+            return; // New colors have been assigned already
+        }
+
+        // If it DOES have assignedColors, update them
+
+        config.assignedColors = config.assignedColors.map((item, index) => ({
+            value: item.value,
+            color: newPalette[index % newPalette.length]
+        }));
+
+        // If it has uniqueBarColors active, also apply the palette
+        if (config.showUniqueColors && Array.isArray(config.uniqueBarColors) && config.uniqueBarColors.length > 0) {
+            config.uniqueBarColors = config.uniqueBarColors.map((item, index) => ({
+                value: item.value,
+                color: newPalette[index % newPalette.length]
+            }));
+        }
+
+        const edaPanel = this.dashboard.edaPanels['_results'].find(p => p.panel.id === panel.id);
+        if (edaPanel?.panelChart?.props?.config) {
+            const internalConfig = edaPanel.panelChart.props.config.getConfig();
+            if (internalConfig) {
+                // Update assignedColors by reference
+                internalConfig['assignedColors'] = config.assignedColors;
+                if (config.showUniqueColors) {
+                    internalConfig['uniqueBarColors'] = config.uniqueBarColors;
+                }
+            }
+        }
+
+    });
+}
+
+public onBackgroundImageSelected(event: Event): void {
+  const input = event.target as HTMLInputElement;
+  const file = input?.files?.[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = () => { this.backgroundImage = reader.result as string; };
+  reader.readAsDataURL(file);
+}
+
+public removeBackgroundImage(): void {
+  this.backgroundImage = null;
+}
+
+public openImageInNewTab(): void {
+  const win = window.open('', '_blank');
+  win.document.write(`<html><body style="margin:0;background:#111;display:flex;align-items:center;justify-content:center;min-height:100vh"><img src="${this.backgroundImage}" style="max-width:100%;max-height:100vh"></body></html>`);
+  win.document.close();
+}
+
+public saveConfig(): void {
+    // Apply palette to all dashboard charts
+    this.applyPaletteToAllCharts();
+    
+    const response: DashboardStyles = {
+        stylesApplied: true,
+        backgroundColor: this.backgroundColor,
+        backgroundImage: this.backgroundImage || undefined,
+        panelColor: this.panelColor,
+        titleAlign: this.alignDasboardTitle,
+        panelTitleAlign: this.alignPanelTitle,
+        customCss: this.css,
+        title: {
+            fontFamily: this.selectedTitleFont,
+            fontSize: this.titleFontSize,
+            fontColor: this.titleFontColor
+        },
+        filters: {
+            fontFamily: this.selectedFiltersFont,
+            fontSize: this.filtersFontSize,
+            fontColor: this.filtersFontColor
+        },
+        panelTitle: {
+            fontFamily: this.selectedPanelTitleFont,
+            fontSize: this.panelTitleFontSize,
+            fontColor: this.panelTitleFontColor
+        },
+        panelContent: {
+            fontFamily: this.selectedPanelFont,
+            fontSize: this.panelFontSize,
+            fontColor: this.panelFontColor
+        },
+        palette: this.selectedPalette,
+        filterButtonPosition: this.positionType
+    }
+    
+    this.stylesProviderService.setStyles(response);
+    this.apply.emit(response);
+}
+
+    public resetStyles() {
+        this.assignValues(this.stylesProviderService.generateDefaultStyles());
+        this.setSampleFIltersStyle();
+        this.setSampleGlobalStyle();
+        this.setPanelTitleStyle();
+        this.setPanelContentStyle();
+        this.setSampleTitleStyle();
+    }
+
+public comparePalettes = (p1: any, p2: any) => p1 && p2 && p1?.name === p2?.name;
+
+    public onApply() {
+        this.display = false;
+        this.saveConfig();
+    }
+
+    public disableApply(): boolean {
+        return false;
+    }
+
+    public onClose(): void {
+        this.display = false;
+        this.close.emit();
+    }
+
+    onGlobalFilterButtonPositionChange(type?: any) {
+        this.positionType = type.positionType;
+    }
+}

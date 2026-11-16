@@ -1,197 +1,173 @@
 {
-    "$schema": "./node_modules/@angular/cli/lib/config/schema.json",
-    "cli": {
-      "analytics": "46e9bbd8-c110-4966-971a-36882e37582f"
-    },
-    "version": 1,
-    "newProjectRoot": "projects",
-    "projects": {
-        "app-eda": {
-            "i18n": {
-                "sourceLocale": "es-ES",
-                "locales": {
-                    "es": {
-                        "translation": "src/locale/prod_messages.es.xlf"
-                    },
-                    "en": {
-                        "translation": "src/locale/prod_messages.en.xlf"
-                    },
-                    "ca": {
-                        "translation": "src/locale/prod_messages.ca.xlf"
-                    },
-                    "gl": {
-                        "translation": "src/locale/prod_messages.gl.xlf"
-                    }
-                }
-            },
-            "root": "",
-            "sourceRoot": "src",
-            "projectType": "application",
-            "prefix": "app",
-            "schematics": {},
-            "architect": {
-                "build": {
-                    "builder": "@angular-devkit/build-angular:browser",
-                    "options": {
-                        "localize": true,
-                        "outputPath": "dist/app-eda",
-                        "index": "src/index.html",
-                        "main": "src/main.ts",
-                        "polyfills": "src/polyfills.ts",
-                        "tsConfig": "src/tsconfig.app.json",
-                        "assets": [
-                            "src/favicon.ico",
-                            "src/assets"
-                        ],
-                        "styles": [
-                            "node_modules/font-awesome/css/font-awesome.css",
-                            "node_modules/primeng/resources/primeng.min.css",
-                            "node_modules/quill/dist/quill.core.css", "node_modules/quill/dist/quill.snow.css",
-                            "src/assets/sass/prime-styles/custom.css",
-                            "src/assets/sass/css/style.css",
-                            "node_modules/primeflex/primeflex.css",
-                            "node_modules/primeicons/primeicons.css",
-                            "node_modules/leaflet/dist/leaflet.css"
-
-                        ],
-                        "scripts": [
-                            "node_modules/quill/dist/quill.js"
-                        ],
-                        "vendorChunk": true,
-                        "extractLicenses": false,
-                        "buildOptimizer": false,
-                        "sourceMap": true,
-                        "optimization": false,
-                        "namedChunks": true
-                    },
-                    "configurations": {
-                        "en": {
-                            "localize": [
-                                "en"
-                            ]
-                        },
-                        "es": {
-                            "localize": [
-                                "es"
-                            ]
-                        },
-                        "ca": {
-                            "localize": [
-                                "ca"
-                            ]
-                       },"gl": {
-                            "localize": [
-                                "gl"
-                            ]
-                        },"eda": {
-                            "localize": [
-                                "eda"
-                            ]
-                        },
-                        "production": {
-                            "fileReplacements": [
-                                {
-                                    "replace": "src/environments/environment.ts",
-                                    "with": "src/environments/environment.prod.ts"
-                                }
-                            ],
-                            "optimization": true,
-                            "outputHashing": "all",
-                            "sourceMap": false,
-                            "namedChunks": false,
-                            "extractLicenses": true,
-                            "vendorChunk": false,
-                            "buildOptimizer": true,
-                            "budgets": [
-                                {
-                                    "type": "initial",
-                                    "maximumWarning": "2mb",
-                                    "maximumError": "10mb"
-                                },
-                                {
-                                    "type": "anyComponentStyle",
-                                    "maximumWarning": "6kb"
-                                }
-                            ]
-                        }
-                    },
-                    "defaultConfiguration": ""
-                },
-                "serve": {
-                    "builder": "@angular-devkit/build-angular:dev-server",
-                    "options": {
-                        "browserTarget": "app-eda:build",
-                        "host": "0.0.0.0",
-                        "proxyConfig": "proxy.conf.json",
-                        "port": 4200
-                    },
-                    "configurations": {
-                        "production": {
-                            "browserTarget": "app-eda:build:production"
-                        },
-                        "es": {
-                            "browserTarget": "app-eda:build"
-                        },
-                        "en": {
-                            "browserTarget": "app-eda:build:en"
-                        },
-                        "ca": {
-                            "browserTarget": "app-eda:build:ca"
-                        },
-                        "gl": {
-                            "browserTarget": "app-eda:build:gl"
-                        },
-                        "es": {
-                            "browserTarget": "app-eda:build:es"
-                        },
-                        "eda": {
-                            "browserTarget": "app-eda:build:eda"
-                        }
-                    }
-                },
-                "extract-i18n": {
-                    "builder": "@angular-devkit/build-angular:extract-i18n",
-                    "options": {
-                        "browserTarget": "app-eda:build"
-                    }
-                },
-                "test": {
-                    "builder": "@angular-devkit/build-angular:karma",
-                    "options": {
-                        "main": "src/test.ts",
-                        "polyfills": "src/polyfills.ts",
-                        "tsConfig": "src/tsconfig.spec.json",
-                        "karmaConfig": "src/karma.conf.js",
-                        "styles": [
-                            "src/styles.css"
-                        ],
-                        "scripts": [],
-                        "assets": [
-                            "src/favicon.ico",
-                            "src/assets"
-                        ]
-                    }
-                }
-            }
-        },
-        "app-eda-e2e": {
-            "root": "e2e/",
-            "projectType": "application",
-            "prefix": "",
-            "architect": {
-                "e2e": {
-                    "builder": "@angular-devkit/build-angular:protractor",
-                    "options": {
-                        "protractorConfig": "e2e/protractor.conf.js",
-                        "devServerTarget": "app-eda:serve"
-                    },
-                    "configurations": {
-                        "production": {
-                            "devServerTarget": "app-eda:serve:production"
-                        }
-                    }
-                }
-            }
+  "$schema": "./node_modules/@angular/cli/lib/config/schema.json",
+  "version": 1,
+  "newProjectRoot": "projects",
+  "projects": {
+    "app-eda": {
+      "i18n": {
+        "locales": {
+          "es": {
+            "translation": [
+              "src/locale/merged/messages.es.xlf"
+            ]
+          },
+          "en": {
+            "translation": [
+              "src/locale/merged/messages.en.xlf"
+            ]
+          },
+          "ca": {
+            "translation": [
+              "src/locale/merged/messages.ca.xlf"
+            ]
+          },
+          "gl": {
+            "translation": [
+              "src/locale/merged/messages.gl.xlf"
+            ]
+          }
         }
+      },
+      "projectType": "application",
+      "schematics": {},
+      "root": "",
+      "sourceRoot": "src",
+      "prefix": "app",
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-angular:browser-esbuild",
+          "options": {
+            "outputPath": "dist/app-eda",
+            "index": "src/index.html",
+            "main": "src/main.ts",
+            "polyfills": [
+              "zone.js"
+            ],
+            "buildOptimizer": true,
+            "optimization": true,
+            "vendorChunk": true,
+            "extractLicenses": false,
+            "sourceMap": true,
+            "namedChunks": true,
+            "tsConfig": "tsconfig.app.json",
+            "assets": [
+              "src/favicon.ico",
+              "src/assets"
+            ],
+            "styles": [
+              "node_modules/font-awesome/css/font-awesome.css",
+              "node_modules/quill/dist/quill.core.css",
+              "node_modules/quill/dist/quill.snow.css",
+              "node_modules/primeicons/primeicons.css",
+              "node_modules/leaflet/dist/leaflet.css",
+              "src/assets/sass/css/style.css",
+              "src/app/config/customizable/custom_extended.css"
+            ],
+            "scripts": [
+              "node_modules/quill/dist/quill.js"
+            ],
+            "localize": [
+              "es",
+              "ca",
+              "en",
+              "gl"
+            ]
+          },
+          "configurations": {
+            "production": {
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "500kB",
+                  "maximumError": "10MB"
+                },
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "2kB",
+                  "maximumError": "1MB"
+                }
+              ],
+              "outputHashing": "all"
+            },
+            "development": {
+              "optimization": false,
+              "extractLicenses": false,
+              "sourceMap": true
+            },
+            "es": {
+              "localize": [
+                "es"
+              ]
+            },
+            "ca": {
+              "localize": [
+                "ca"
+              ]
+            },
+            "en": {
+              "localize": [
+                "en"
+              ]
+            },
+            "gl": {
+              "localize": [
+                "gl"
+              ]
+            }
+          },
+          "defaultConfiguration": "development"
+        },
+        "serve": {
+          "builder": "@angular-devkit/build-angular:dev-server",
+          "options": {
+            "proxyConfig": "proxy.conf.json",
+            "port": 4200
+          },
+          "configurations": {
+            "production": {
+              "buildTarget": "app-eda:build:production"
+            },
+            "development": {
+              "buildTarget": "app-eda:build:development"
+            },
+            "es": {
+              "buildTarget": "app-eda:build:es"
+            },
+            "ca": {
+              "buildTarget": "app-eda:build:ca"
+            },
+            "en": {
+              "buildTarget": "app-eda:build:en"
+            },
+            "gl": {
+              "buildTarget": "app-eda:build:gl"
+            }
+          },
+          "defaultConfiguration": "development"
+        },
+        "extract-i18n": {
+          "builder": "@angular-devkit/build-angular:extract-i18n",
+          "options": {
+            "buildTarget": "app-eda:build",
+            "outputPath": "src/locale"
+          }
+        },
+        "lint": {
+          "builder": "@angular-eslint/builder:lint",
+          "options": {
+            "lintFilePatterns": [
+              "src/**/*.ts",
+              "src/**/*.html"
+            ]
+          }
+        }
+      }
     }
+  },
+  "cli": {
+    "schematicCollections": [
+      "@angular-eslint/schematics"
+    ],
+    "analytics": "a1e80a97-5b94-49c0-80e3-4e44cc01ee45"
+  }
 }

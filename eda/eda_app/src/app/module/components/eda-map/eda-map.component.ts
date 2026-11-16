@@ -1,14 +1,19 @@
-import { OnInit, ChangeDetectorRef, Input, AfterViewChecked } from "@angular/core";
+import { OnInit, Input, AfterViewChecked } from "@angular/core";
 import { Component, AfterViewInit } from "@angular/core";
 import * as L from "leaflet";
-import { MapUtilsService } from "@eda/services/service.index";
+import { MapUtilsService, StyleProviderService } from "@eda/services/service.index";
 import { EdaMap } from "./eda-map";
 import { LatLngExpression } from "leaflet";
 
+import { FormsModule } from '@angular/forms'; 
+import { CommonModule } from '@angular/common';
+
 @Component({
+  standalone: true,
   selector: 'eda-map',
   templateUrl: './eda-map.component.html',
-  styleUrls: ['./eda-map.component.css']
+  styleUrls: ['./eda-map.component.css'],
+  imports: [FormsModule, CommonModule]
 })
 export class EdaMapComponent implements OnInit, AfterViewInit, AfterViewChecked {
 
@@ -16,92 +21,110 @@ export class EdaMapComponent implements OnInit, AfterViewInit, AfterViewChecked 
   public loading: boolean;
   private map: any;
   private logarithmicScale: boolean;
-  private initialColor: string = "#F4C501";
-  private finalColor: string = "#FA0F25";
+  public assignedColors: Array<{value: string, color: string}> = [];
   public draggable: boolean;
   private dataIndex: number;
   private groups: Array<number>;
   private mapActualConfig = null;
-
+  private paletaActual: string[];
+  private validData: Array<any> = [];
 
   constructor(
-    private mapUtilsService: MapUtilsService
-  ) {
-
-  }
+    private mapUtilsService: MapUtilsService, 
+    private styleProviderService: StyleProviderService
+  ) {}
+  
   ngOnInit(): void {
     this.loading = true;
+    this.paletaActual = this.styleProviderService.ActualChartPalette['paleta'];
+
     this.dataIndex = this.inject.query.findIndex((e) => e.column_type === "numeric");
-    this.initialColor = this.inject.initialColor ? this.inject.initialColor: this.initialColor;
-    this.finalColor = this.inject.finalColor ? this.inject.finalColor : this.finalColor;
+
+    // Load assignedColors
+    if (this.inject.assignedColors && Array.isArray(this.inject.assignedColors) && this.inject.assignedColors.length >= 2) {
+      this.assignedColors = this.inject.assignedColors;
+    } else {
+      // Create default colors
+      this.assignedColors = [
+        {value: 'start', color: this.paletaActual[this.paletaActual.length - 1]},
+        {value: 'end', color: this.paletaActual[0]}
+      ];
+    }
+
     this.logarithmicScale = this.inject.logarithmicScale ? this.inject.logarithmicScale : false;
     this.draggable = this.inject.draggable === undefined ? true : this.inject.draggable;
   }
 
   ngAfterViewInit(): void {
+    this.initMap();    
+  }
 
-  this.initMap();    
-}
   ngAfterViewChecked() {
     if (this.map) {
       this.map.invalidateSize();
     }
-
   }
 
   private initMap = (): void => {
-    let validData = []; // Faig això per treure els nulls i resta de bruticia del dataset
+    this.validData = [];
     for (let i = 0; i < this.inject.data.length; i++) {
       if (this.inject.data[i][0] !== null && this.inject.data[i][1] !== null) {
-        validData.push(this.inject.data[i]);
+        this.validData.push(this.inject.data[i]);
       }
     }
+
     if (L.DomUtil.get(this.inject.div_name) !== null) {
       this.map = L.map(this.inject.div_name, {
-        //center: [41.38879, 2.15899],
-        center:  this.mapUtilsService.getCoordinates() as unknown as LatLngExpression ??
-          this.getCenter(validData),
-
-        zoom: this.mapUtilsService.getZoom() ??
-          this.inject.zoom ??
-          12,
+        center: this.mapUtilsService.getCoordinates() as unknown as LatLngExpression ??
+                this.getCenter(this.validData),
+        zoom: this.mapUtilsService.getZoom() ?? this.inject.zoom ?? 12,
         dragging: this.draggable,
-        tap: !L.Browser.mobile,
         scrollWheelZoom: this.draggable,
       });
-      const tiles = L.tileLayer(
-// SDA CUSTOM - Use OpenStreetMap tiles so map labels render in the local language (CARTO raster tiles only exist in English)
-// SDA CUSTOM - For production with high tile volume, switch to CARTO (key is referer-restricted):
-// SDA CUSTOM - "https://basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png?key=cb1_3uwk_1_96856c39af318820049e5a33",
-        /* SDA CUSTOM */ "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
-        {
-          maxZoom: 19,
-          /* SDA CUSTOM */ attribution:
-            /* SDA CUSTOM */ '&copy; <a href="http://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap</a>',
-        }
-      );
-// END SDA CUSTOM
+
+      const tiles = this.mapUtilsService.getBaseLayer();
 
       tiles.addTo(this.map);
-      //Objeto que recoge datos para hacer mapa markers
-      this.mapActualConfig = { colors: [this.initialColor, this.finalColor], logarithmicScale : this.logarithmicScale, groups: this.groups ??  this.getLogarithmicGroups(this.inject.data.map((row) => row[this.dataIndex])) }
 
+      const colors = this.assignedColors.map(c => c.color);
+      this.mapActualConfig = {
+        colors: colors,
+        logarithmicScale: this.logarithmicScale,
+        groups: this.groups ?? this.getLogarithmicGroups(this.inject.data.map((row) => row[this.dataIndex]))
+      };
+
+      const clustered = this.mapUtilsService.clusterData(this.map, this.validData);
       this.mapUtilsService.makeMarkers(
         this.map,
-        validData,
+        clustered,
         this.inject.labels,
         this.inject.linkedDashboard,
         this.mapActualConfig
       );
-      // Check coords & zoom origin
+
+      const actualCenter = this.map.getCenter();
+      this.inject.coordinates = [actualCenter.lat, actualCenter.lng];
+      this.inject.zoom = this.map.getZoom();
+
       this.map.on("moveend", (event) => {
         let c = this.map.getCenter();
         this.inject.coordinates = [c.lat, c.lng];
         this.mapUtilsService.setCoordinates(this.inject.coordinates);
       });
+
       this.map.on("zoomend", (event) => {
         this.inject.zoom = this.map.getZoom();
-          this.mapUtilsService.setZoom(this.inject.zoom);
+        this.mapUtilsService.setZoom(this.inject.zoom);
+        const colors = this.assignedColors.map(c => c.color);
+        this.mapActualConfig = {
+          colors,
+          logarithmicScale: this.logarithmicScale,
+          groups: this.groups ?? this.getLogarithmicGroups(this.inject.data.map((row) => row[this.dataIndex]))
+        };
+        const reclustered = this.mapUtilsService.clusterData(this.map, this.validData);
+        this.mapUtilsService.makeMarkers(
+          this.map, reclustered, this.inject.labels, this.inject.linkedDashboard, this.mapActualConfig
+        );
       });
     }
   };
@@ -118,15 +141,9 @@ export class EdaMapComponent implements OnInit, AfterViewInit, AfterViewChecked 
     }
   }
 
-  /**
-   * Divide data in n groups by value, and returns values limits f.e.[0, 20, 40, 60, 80, 100]
-   * @param data
-   * @param n
-   */
   private getGroups = (data: any, n = 5) => {
     let max = data.reduce((a: number, b: number) => Math.max(a, b));
     let min = data.reduce((a: number, b: number) => Math.min(a, b));
-    // El primer rang comença amb el número mes petit
     let div = (max - min) / n;
     let groups = [max];
     while (groups.length < 5) {
@@ -151,20 +168,26 @@ export class EdaMapComponent implements OnInit, AfterViewInit, AfterViewChecked 
   public changeScale = (logarithmicScale: boolean) => {
     this.logarithmicScale = logarithmicScale;
     this.setGroups();
-    this.reDrawCircles([this.initialColor, this.finalColor]);
+    const colors = this.assignedColors.map(c => c.color);
+    this.reDrawCircles(colors);
   };
 
-  private reDrawCircles = (colors: string[]) => {
-    //Borrar actual layer
-    this.map.removeLayer(this.mapUtilsService.layerGroup);
-    //Guardar valores del colorPicker
-    this.initialColor = colors[0];
-    this.finalColor = colors[1];
-    //Objeto que recoge datos para hacer mapa markers
-    this.mapActualConfig = { colors: colors, logarithmicScale : this.logarithmicScale, groups: this.groups ??  this.getLogarithmicGroups(this.inject.data.map((row) => row[this.dataIndex]))}
+  public reDrawCircles = (colors: string[]) => {
+    this.assignedColors = [
+      {value: 'start', color: colors[0]},
+      {value: 'end', color: colors[1]}
+    ];
+
+    this.mapActualConfig = {
+      colors: colors,
+      logarithmicScale: this.logarithmicScale,
+      groups: this.groups ?? this.getLogarithmicGroups(this.inject.data.map((row) => row[this.dataIndex]))
+    };
+
+    const clustered = this.mapUtilsService.clusterData(this.map, this.validData);
     this.mapUtilsService.makeMarkers(
       this.map,
-      this.inject.data,
+      clustered,
       this.inject.labels,
       this.inject.linkedDashboard,
       this.mapActualConfig
@@ -195,6 +218,6 @@ export class EdaMapComponent implements OnInit, AfterViewInit, AfterViewChecked 
       y = minY + ((maxY - minY) / 2);
     }
     let coordinates = this.inject.coordinates ? this.inject.coordinates : [y, x];
-    return coordinates as LatLngExpression
+    return coordinates as LatLngExpression;
   }
 }

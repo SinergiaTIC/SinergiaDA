@@ -27,4 +27,20 @@ export class DateUtil {
 
     }
 
+    public static convertDashboardDate(date: string | Date | null | undefined) {
+
+        // Si no hay fecha, usar la actual (con hora)
+        if (!date) {
+            return new Date().toISOString();
+        }
+
+        // Si es un objeto Date, devolver el ISO completo
+        if (date instanceof Date) {
+            return date.toISOString();
+        }
+
+        // Ya es una cadena (ISO u otro formato existente): dejarla tal cual
+        return date;
+    }
+
 }

@@ -1,358 +1,739 @@
-import { EdaDialogAbstract, EdaDialogCloseEvent, EdaDialog } from '@eda/shared/components/shared-components.index';
-import { Component, ViewChild } from '@angular/core';
+import { EdaDialogCloseEvent, EdaDialog2Component } from '@eda/shared/components/shared-components.index';
+import { AfterViewChecked, AfterViewInit, Component, ElementRef, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { KpiMailConfigModal } from '@eda/components/kpi-mail-config/kpi-mail-config.modal';
 import { PanelChartComponent } from '../panel-charts/panel-chart.component';
 import { PanelChart } from '../panel-charts/panel-chart';
 import { UserService } from '@eda/services/service.index';
+import { StyleProviderService, ChartUtilsService } from '@eda/services/service.index';
 import * as _ from 'lodash';
-
+import { FormsModule } from '@angular/forms';
+import { CommonModule } from '@angular/common';
+import { ColorPickerModule } from 'primeng/colorpicker';
+import { DropdownModule } from 'primeng/dropdown';
+import { InputSwitchModule } from 'primeng/inputswitch';
+import { InputTextModule } from 'primeng/inputtext';
+import { KPI_CONFIG } from '@eda/configs/customizable/customizable_merged';
 
 @Component({
+    standalone: true,
     selector: 'app-kpi-dialog',
     templateUrl: './kpi-dialog.component.html',
-    styleUrls: ['./kpi-dialog.component.css']
+    styleUrls: ['./kpi-dialog.component.css'],
+    imports: [FormsModule, CommonModule, EdaDialog2Component, ColorPickerModule, PanelChartComponent, KpiMailConfigModal, DropdownModule, InputSwitchModule, InputTextModule]
 })
-
-export class KpiEditDialogComponent extends EdaDialogAbstract {
-
-    /* SDA CUSTOM */private static persistedSectionState: { appearance: boolean; axisScale: boolean; labelsValues: boolean } | null = null;
-
+export class KpiEditDialogComponent implements OnInit, AfterViewInit, AfterViewChecked, OnDestroy {
+    @Input() controller: any;
     @ViewChild('PanelChartComponent', { static: false }) panelChartComponent: PanelChartComponent;
     @ViewChild('mailConfig', { static: false }) mailConfig: any;
+    @ViewChild('previewContainer', { static: false }) previewContainer: ElementRef;
+    public mailConfigOpen: boolean = false;
 
-    public dialog: EdaDialog;
     public panelChartConfig: PanelChart = new PanelChart();
-    /* SDA CUSTOM */ public previewAspectRatio: string = '16 / 9';
+    
+    // Use assignedColors instead of series
+    public assignedColors: Array<{value: string, color: string}> = [];
+    private originalAssignedColors: Array<{value: string, color: string}> = [];
 
     public value: number;
     public operand: string;
     public color: string = '#ff0000';
     public alerts: Array<any> = [];
+    private originalAlerts: Array<any> = [];
     public alertInfo: string = $localize`:@@alertsInfo: Cuando el valor del kpi sea (=, <,>) que el valor definido cambiará el color del texto`;
     public ptooltipViewAlerts: string = $localize`:@@ptooltipViewAlerts:Configurar alertas`;
-    /* SDA CUSTOM */ public kpiColor: string = '';
-    /* SDA CUSTOM */ public lineWidth: number = 2;
-    /* SDA CUSTOM */ public lineStyle: string = 'solid';
-    /* SDA CUSTOM */ public showLineSettings: boolean = false;
-    /* SDA CUSTOM */ public showAxisSettings: boolean = false;
-    /* SDA CUSTOM */ public showXAxis: boolean = true;
-    /* SDA CUSTOM */ public showXAxisLabels: boolean = true;
-    /* SDA CUSTOM */ public showAllXAxisLabels: boolean = true;
-    /* SDA CUSTOM */ public xAxisLabelCount: number = 0;
-    /* SDA CUSTOM */ // SDA CUSTOM - KPI chart label settings
-    /* SDA CUSTOM */ public showLabelSettings: boolean = false;
-    /* SDA CUSTOM */ public showLabels: boolean = false;
-    /* SDA CUSTOM */ public showLabelsPercent: boolean = false;
-    /* SDA CUSTOM */ public labelColor: string = '#000000';
-    /* SDA CUSTOM */ public labelBackgroundColor: string = '';
-    /* SDA CUSTOM */ public valueLabelsTooltip: string = $localize`:@@valueLabelsTooltip:Mostrar u ocultar los valores en el gráfico`;
-    /* SDA CUSTOM */ public valueLabelsPercentTooltip: string = $localize`:@@valueLabelsPercentTooltip:Mostrar u ocultar los valores en porcentaje en el gráfico`;
-    /* SDA CUSTOM */ // END SDA CUSTOM
-    /* SDA CUSTOM */ public lineStyleOptions = [
-        /* SDA CUSTOM */ { label: $localize`:@@lineStyleSolid:Sólida`, value: 'solid' },
-        /* SDA CUSTOM */ { label: $localize`:@@lineStyleDashed:Discontinua`, value: 'dashed' },
-        /* SDA CUSTOM */ { label: $localize`:@@lineStyleDotted:Punteada`, value: 'dotted' }
-    /* SDA CUSTOM */ ];
 
-    public units: string;
-    public quantity: number;
-    public hours: any;
-    public hoursSTR = $localize`:@@hours:Hora/s`;
-    public daysSTR = $localize`:@@days:Día/s`;
-    public mailMessage = '';
+    public modifiedFontPoints: number = 0;
+    /** true → Edalitics mode (numeric input below) | false → forks mode (hover +/- buttons on the KPI itself) */
+    public readonly useHoverResize: boolean = !KPI_CONFIG.USE_EDALITICS_SIZE_LOGIC;
+    /** Edalitics mode only (plain kpi / kpi+chart, not kpitrend/kpideviation): image-vs-text and independent value/suffix scales. */
+    public imageScale: number = KPI_CONFIG.IMAGE_DEFAULT_SCALE;
+    public valueFontScale: number = KPI_CONFIG.DEFAULT_FONT_SCALE;
+    public sufixFontScale: number = KPI_CONFIG.DEFAULT_FONT_SCALE;
+    private readonly imageScaleMin = KPI_CONFIG.IMAGE_MIN_SCALE;
+    private readonly imageScaleMax = KPI_CONFIG.IMAGE_MAX_SCALE;
+    private readonly fontScaleMin = KPI_CONFIG.MIN_FONT_SCALE;
+    private readonly fontScaleMax = KPI_CONFIG.MAX_FONT_SCALE;
+    private readonly scaleStep = 0.1;
+    public panelBaseResultSize: number = 0;
+    public previewAspectRatio: string = '4/3';
+    public previewBoxStyle: any = {};
+    public panelTitle: string = '';
+    private panelWidth: number = 400;
+    private panelHeight: number = 300;
+    private resizeObserver: ResizeObserver;
+
+    public kpiBackgroundColor: string = '';
+    public kpiTextColor: string = '';
+    public prefixImage: string = '';
+    /** Snapshot for the "Apariencia" section "Restaurar" button. */
+    private initialAppearanceState: { kpiBackgroundColor: string, kpiTextColor: string, prefixImage: string } = null;
+
+    // --- KPI+chart options (kpibar/kpiline/kpiarea only) ---
+    public lineWidth: number = 2;
+    public lineStyle: 'solid' | 'dashed' | 'dotted' = 'solid';
+    public lineStyleOptions = [
+        { label: $localize`:@@lineStyleSolid:Sólida`, value: 'solid' },
+        { label: $localize`:@@lineStyleDashed:Discontinua`, value: 'dashed' },
+        { label: $localize`:@@lineStyleDotted:Punteada`, value: 'dotted' }
+    ];
+    public showXAxis: boolean = true;
+    public showXAxisLabels: boolean = true;
+    public xAxisLabelCount: number = 0;
+    public showAllXAxisLabels: boolean = true;
+    private axisTicksOverrideWasActive: boolean = false;
+    public showLabels: boolean = false;
+    public showLabelsPercent: boolean = false;
+    public labelColor: string = '#000000';
+    public labelBackgroundColor: string = '';
+    public showLineSettings: boolean = false;
+    public showAxisAndLabelSettings: boolean = false;
+    /** Independent border color for kpibar/kpiarea, on top of "Color de la serie". */
+    public chartLineColor: string = '';
+    public showChartLineColor: boolean = false;
+    /** Independent fill color for kpiarea, on top of the border color. */
+    public chartFillColor: string = '';
+    public showChartFillColor: boolean = false;
+    private initialLineState: { lineWidth: number, lineStyle: 'solid' | 'dashed' | 'dotted', chartLineColor: string, chartFillColor: string } = null;
+    private initialAxisState: { showXAxis: boolean, showXAxisLabels: boolean, showAllXAxisLabels: boolean, xAxisLabelCount: number } = null;
+    private initialLabelsState: { showLabels: boolean, showLabelsPercent: boolean, labelColor: string, labelBackgroundColor: string } = null;
+    // --- END KPI+chart options ---
+
     public currentAlert = null;
-    public users: any;
-    public selectedUsers: any;
-    public enabled: boolean;
     public canIRunAlerts: boolean = false;
-    public series: any[] = [];
     public edaChart: any;
+    public chartContent: any;
     public display: boolean = false;
-    /* SDA CUSTOM */ public isAppearanceExpanded: boolean = true;
-    /* SDA CUSTOM */ public isAxisScaleExpanded: boolean = false;
-    /* SDA CUSTOM */ public isLabelsValuesExpanded: boolean = false;
-    /* SDA CUSTOM */ private previewRefreshTimer: any = null;
-    /* SDA CUSTOM */ // SDA CUSTOM - KPI chart line color settings
-    /* SDA CUSTOM */ public showChartLineColor: boolean = false;
-    /* SDA CUSTOM */ public chartLineColor: string = '';
-    /* SDA CUSTOM */ // END SDA CUSTOM
-    /* SDA CUSTOM */ // SDA CUSTOM - KPI area fill color settings
-    /* SDA CUSTOM */ public showChartFillColor: boolean = false;
-    /* SDA CUSTOM */ public chartFillColor: string = '';
-    /* SDA CUSTOM */ // END SDA CUSTOM
-    /* SDA CUSTOM */ private initialAppearanceState: any = null;
-    /* SDA CUSTOM */ private initialAxisScaleState: any = null;
-    /* SDA CUSTOM */ private initialLabelsValuesState: any = null;
-    /* SDA CUSTOM */ private initialChartStyleState: any = null;
+    public activeTab: "aspecto" | "alerts" = "aspecto";
+    public isKpiTrend: boolean = false;
+    public isKpiDeviation: boolean = false;
+    /** Collapsible "Aspecto" sections — same behavior as the develop KPI dialog. */
+    public isSizeExpanded: boolean = false;
+    public isAppearanceExpanded: boolean = true;
+    public isAxisScaleExpanded: boolean = false;
+    public isLabelsValuesExpanded: boolean = false;
+    public selectedPalette: { name: string; paleta: any } | null = null;
+    public allPalettes: any = this.stylesProviderService.ChartsPalettes;
+    public title: string = $localize`:@@ChartProps:PROPIEDADES DEL GRAFICO`;
+    private colorsLoaded: boolean = false;
 
-    constructor(private userService: UserService,) {
+    // Getter for template compatibility (keep series to avoid breaking the HTML)
+    get series() {
+        return this.assignedColors;
+    }
 
-        super();
+    /** Image + suffix size: plain kpi / kpi+chart, both modes — always adjusted from the dialog. */
+    get showImageSufixSizeControls(): boolean {
+        return !this.isKpiTrend && !this.isKpiDeviation;
+    }
 
-        this.dialog = new EdaDialog({
-            show: () => this.onShow(),
-            hide: () => this.onClose(EdaDialogCloseEvent.NONE),
-            title: $localize`:@@ChartProps:PROPIEDADES DEL GRAFICO`
-        });
+    /** Value size: plain kpi / kpi+chart, Edalitics mode only — forks adjusts it via the hover +/- on the KPI itself instead. */
+    get showValueSizeControl(): boolean {
+        return !this.useHoverResize && !this.isKpiTrend && !this.isKpiDeviation;
+    }
 
-        this.dialog.style = { width: '80%', height: '70%', top: "-4em", left: '1em' };
+    /** Old single numeric "Tamaño" input: kpitrend/kpideviation only, Edalitics mode only (unchanged). */
+    get showLegacySizeControl(): boolean {
+        return !this.useHoverResize && (this.isKpiTrend || this.isKpiDeviation);
+    }
 
-        if (this.userService.user.name == "edaanonim") {
-            this.canIRunAlerts = false;
-        } else {
-            this.canIRunAlerts = true;
+    constructor(
+        private userService: UserService,
+        private stylesProviderService: StyleProviderService,
+        private ChartUtilsService: ChartUtilsService
+    ) {
+        this.canIRunAlerts = this.userService.user.name !== "edaanonim";
+    }
+
+    ngAfterViewInit(): void {
+        setTimeout(() => this.computePreviewBox(), 50);
+        this.resizeObserver = new ResizeObserver(() => this.computePreviewBox());
+        if (this.previewContainer) {
+            this.resizeObserver.observe(this.previewContainer.nativeElement);
+        }
+    }
+
+    ngOnDestroy(): void {
+        this.resizeObserver?.disconnect();
+    }
+
+    private computePreviewBox(): void {
+        if (!this.previewContainer) return;
+        const el = this.previewContainer.nativeElement;
+        const padding = 48; // 1.5rem * 2 sides * 16px
+        const cw = el.offsetWidth - padding;
+        const ch = el.offsetHeight - padding;
+        if (cw <= 0 || ch <= 0) return;
+        const scale = Math.min(cw / this.panelWidth, ch / this.panelHeight);
+        this.previewBoxStyle = {
+            width: `${Math.round(this.panelWidth * scale)}px`,
+            height: `${Math.round(this.panelHeight * scale)}px`,
+        };
+    }
+
+    ngAfterViewChecked(): void {
+        if (!this.colorsLoaded && this.panelChartComponent?.componentRef?.instance?.inject?.edaChart.chartType) {
+            this.chartContent = this.panelChartComponent.componentRef.instance.inject.edaChart;
+            if (this.assignedColors.length === 0) {
+                setTimeout(() => {
+                    this.loadChartColors();
+                    this.colorsLoaded = true;
+                }, 0);
+            }
+        }
+    }
+
+    ngOnInit(): void {
+        this.panelChartConfig = this.controller.params.panelChart;
+        this.edaChart = this.controller.params.panelChart.edaChart;
+        this.panelBaseResultSize = this.controller.params.panelBaseResultSize || 0;
+        this.panelWidth = this.controller.params.panelWidth || 400;
+        this.panelHeight = this.controller.params.panelHeight || 300;
+        this.panelTitle = this.controller.params.panelTitle || '';
+        this.previewAspectRatio = `${this.panelWidth} / ${this.panelHeight}`;
+        const config: any = this.panelChartConfig.config.getConfig();
+
+        this.originalAlerts = [...(config.alertLimits || [])];
+        this.alerts = [...this.originalAlerts];
+        this.modifiedFontPoints = config.modifiedFontPoints || 0;
+        this.imageScale = typeof config.imageScale === 'number' ? config.imageScale : KPI_CONFIG.IMAGE_DEFAULT_SCALE;
+        this.valueFontScale = typeof config.valueFontScale === 'number' ? config.valueFontScale : KPI_CONFIG.DEFAULT_FONT_SCALE;
+        this.sufixFontScale = typeof config.sufixFontScale === 'number' ? config.sufixFontScale : KPI_CONFIG.DEFAULT_FONT_SCALE;
+        // Pre-fill with the KPI's current color, falling back to the panel style defaults.
+        this.kpiBackgroundColor = config.backgroundColor
+            || this.normalizeHexColor(this.getStyleProviderValue('panelColor'), '#ffffff');
+        this.kpiTextColor = config.kpiColor
+            || this.normalizeHexColor(this.getStyleProviderValue('panelFontColor'), '#67757c');
+        this.prefixImage = config.prefixImage || '';
+        this.isKpiTrend = this.panelChartConfig.chartType === 'kpitrend';
+        this.isKpiDeviation = this.panelChartConfig.chartType === 'kpideviation';
+        this.activeTab = 'aspecto';
+
+        // --- KPI+chart options (kpibar/kpiline/kpiarea only) ---
+        this.showLineSettings = ['kpiline', 'kpiarea'].includes(this.panelChartConfig.chartType);
+        this.showAxisAndLabelSettings = !['kpi', 'kpitrend', 'kpideviation'].includes(this.panelChartConfig.chartType);
+        this.lineWidth = config.edaChart?.lineWidth ?? 2;
+        this.lineStyle = config.edaChart?.lineStyle || 'solid';
+        this.showXAxis = config.edaChart?.showXAxis ?? true;
+        this.showXAxisLabels = config.edaChart?.showXAxisLabels ?? true;
+        this.xAxisLabelCount = config.edaChart?.xAxisLabelCount || 0;
+        this.showAllXAxisLabels = config.edaChart?.showAllXAxisLabels ?? true;
+        this.axisTicksOverrideWasActive = this.showAllXAxisLabels || this.xAxisLabelCount > 0;
+        this.showLabels = config.edaChart?.showLabels ?? false;
+        this.showLabelsPercent = config.edaChart?.showLabelsPercent ?? false;
+        this.labelColor = config.edaChart?.labelColor || '#000000';
+        // Never blank: fall back to the KPI background instead of "no box".
+        this.labelBackgroundColor = config.edaChart?.labelBackgroundColor || this.kpiBackgroundColor || '#ffffff';
+        this.showChartLineColor = ['kpibar', 'kpiarea'].includes(this.panelChartConfig.chartType);
+        this.chartLineColor = config.edaChart?.chartLineColor || this.getKpiChartLineColor();
+        this.showChartFillColor = this.panelChartConfig.chartType === 'kpiarea';
+        this.chartFillColor = config.edaChart?.chartFillColor || this.getKpiChartFillColor();
+
+        // Snapshot for the per-section "Restaurar" buttons
+        this.initialAppearanceState = { kpiBackgroundColor: this.kpiBackgroundColor, kpiTextColor: this.kpiTextColor, prefixImage: this.prefixImage };
+        this.initialLineState = { lineWidth: this.lineWidth, lineStyle: this.lineStyle, chartLineColor: this.chartLineColor, chartFillColor: this.chartFillColor };
+        this.initialAxisState = { showXAxis: this.showXAxis, showXAxisLabels: this.showXAxisLabels, showAllXAxisLabels: this.showAllXAxisLabels, xAxisLabelCount: this.xAxisLabelCount };
+        this.initialLabelsState = { showLabels: this.showLabels, showLabelsPercent: this.showLabelsPercent, labelColor: this.labelColor, labelBackgroundColor: this.labelBackgroundColor };
+        // --- END KPI+chart options ---
+
+        if (this.panelBaseResultSize > 0) {
+        setTimeout(() => {
+            const kpiInstance = this.panelChartComponent?.componentRef?.instance;
+                if (kpiInstance) {
+                    kpiInstance.baseResultSize = this.panelBaseResultSize;
+                    this.panelChartComponent.componentRef.changeDetectorRef.detectChanges();
+                }
+            }, 100);
         }
 
+        // Once the preview renders, refine the pre-filled colors from the live chart and resync the "Restaurar" snapshots.
+        setTimeout(() => {
+            const instance: any = this.panelChartComponent?.componentRef?.instance;
+            if (!instance) return;
+            const live: any = instance.inject?.edaChart || this.chartContent;
+
+            if (!config.kpiColor && instance.color) {
+                this.kpiTextColor = this.normalizeHexColor(instance.color, this.kpiTextColor);
+            }
+            if (!config.backgroundColor && instance.inject?.backgroundColor) {
+                this.kpiBackgroundColor = this.normalizeHexColor(instance.inject.backgroundColor, this.kpiBackgroundColor);
+            }
+            if (!config.edaChart?.chartLineColor) {
+                this.chartLineColor = this.getKpiChartLineColor() || this.chartLineColor || this.kpiTextColor;
+            }
+            if (!config.edaChart?.chartFillColor) {
+                this.chartFillColor = this.getKpiChartFillColor() || this.chartFillColor || this.kpiBackgroundColor;
+            }
+            const datalabels = live?.chartOptions?.plugins?.datalabels;
+            if (!config.edaChart?.labelColor) {
+                this.labelColor = this.normalizeHexColor(datalabels?.color, this.labelColor || '#000000');
+            }
+            if (!config.edaChart?.labelBackgroundColor) {
+                this.labelBackgroundColor = this.normalizeHexColor(datalabels?.backgroundColor, this.labelBackgroundColor || '#ffffff');
+            }
+
+            if (this.initialAppearanceState) {
+                this.initialAppearanceState.kpiTextColor = this.kpiTextColor;
+                this.initialAppearanceState.kpiBackgroundColor = this.kpiBackgroundColor;
+            }
+            this.initialLineState = { ...this.initialLineState, chartLineColor: this.chartLineColor, chartFillColor: this.chartFillColor };
+            this.initialLabelsState = { ...this.initialLabelsState, labelColor: this.labelColor, labelBackgroundColor: this.labelBackgroundColor };
+        }, 120);
+    }
+
+    /** Current value of a StyleProviderService BehaviorSubject-backed observable, read synchronously. */
+    private getStyleProviderValue(key: 'panelColor' | 'panelFontColor'): string {
+        return (this.stylesProviderService as any)?.[key]?.source?.['_value'] || '';
+    }
+
+    setActiveTab(tab: "aspecto" | "alerts"): void {
+        this.activeTab = tab;
+    }
+
+    toggleSection(section: 'size' | 'appearance' | 'axisScale' | 'labelsValues'): void {
+        switch (section) {
+            case 'size': this.isSizeExpanded = !this.isSizeExpanded; break;
+            case 'appearance': this.isAppearanceExpanded = !this.isAppearanceExpanded; break;
+            case 'axisScale': this.isAxisScaleExpanded = !this.isAxisScaleExpanded; break;
+            case 'labelsValues': this.isLabelsValuesExpanded = !this.isLabelsValuesExpanded; break;
+        }
     }
 
     saveChartConfig() {
-        /* SDA CUSTOM */ const kpiInject = this.panelChartComponent?.componentRef?.instance?.inject;
-        /* SDA CUSTOM */ const config: any = this.panelChartConfig?.config?.getConfig?.() || {};
-        /* SDA CUSTOM */ const sufix = kpiInject?.sufix ?? config.sufix ?? '';
-        /* SDA CUSTOM */ const fontScale = kpiInject?.fontScale ?? config.fontScale ?? 1;
-        /* SDA CUSTOM */ const chartType = this.panelChartConfig?.chartType || 'kpi';
-        /* SDA CUSTOM */ const chartSubType = this.panelChartConfig?.edaChart;
+        // Save assignedColors in the chart
+        if (this.chartContent && this.assignedColors.length > 0) {
+            this.applyColorsToChart();
+        }
 
-        this.onClose(EdaDialogCloseEvent.UPDATE,
-            {
-                alerts: this.alerts,
-                /* SDA CUSTOM */ sufix,
-                /* SDA CUSTOM */ fontScale,
-                /* SDA CUSTOM */ color: this.kpiColor,
-                /* SDA CUSTOM */ lineWidth: this.lineWidth,
-                /* SDA CUSTOM */ lineStyle: this.lineStyle,
-                /* SDA CUSTOM */ showXAxis: this.showXAxis,
-                /* SDA CUSTOM */ showXAxisLabels: this.showXAxisLabels,
-                /* SDA CUSTOM */ xAxisLabelCount: this.xAxisLabelCount,
-                /* SDA CUSTOM */ // SDA CUSTOM - KPI chart label settings
-                /* SDA CUSTOM */ labelColor: this.labelColor,
-                /* SDA CUSTOM */ labelBackgroundColor: this.labelBackgroundColor,
-                /* SDA CUSTOM */ showLabels: this.showLabels,
-                /* SDA CUSTOM */ showLabelsPercent: this.showLabelsPercent,
-                /* SDA CUSTOM */ // END SDA CUSTOM
-                edaChart: this.edaChart,
-                /* SDA CUSTOM */ chartType,
-                /* SDA CUSTOM */ chartSubType
-            });
+        const kpiInject = this.panelChartComponent?.componentRef?.instance?.inject;
+        const savedConfig: any = this.panelChartConfig?.config?.getConfig?.() || {};
+        const fontScale = kpiInject?.fontScale ?? savedConfig.fontScale ?? KPI_CONFIG.DEFAULT_FONT_SCALE;
+
+        this.onClose(EdaDialogCloseEvent.UPDATE, {
+            alerts: this.alerts,
+            sufix: this.panelChartComponent.componentRef.instance.inject.sufix || '',
+            // Bug fix: this used to emit `this.edaChart` (the chart subtype string, e.g. 'bar'),
+            // but the close handler (onCloseKpiProperties) expects an object with chartColors/chartType/etc.
+            // `this.chartContent` is the real chart-options object (inject.edaChart).
+            edaChart: this.chartContent,
+            chartType: this.panelChartConfig.chartType,
+            chartSubType: this.panelChartConfig.edaChart,
+            assignedColors: [...this.assignedColors],
+            modifiedFontPoints: this.modifiedFontPoints,
+            fontScale,
+            imageScale: this.imageScale,
+            valueFontScale: this.valueFontScale,
+            sufixFontScale: this.sufixFontScale,
+            backgroundColor: this.kpiBackgroundColor,
+            kpiColor: this.kpiTextColor,
+            prefixImage: this.prefixImage,
+        });
     }
 
     closeChartConfig() {
+        this.alerts = [...this.originalAlerts];
+
+        try {
+            this.assignedColors = this.originalAssignedColors.map(c => ({ ...c }));
+            this.applyColorsToChart();
+        } catch (_) {}
+
         this.onClose(EdaDialogCloseEvent.NONE);
     }
 
-    onShow(): void {
-        /* SDA CUSTOM*/ this.panelChartConfig = _.cloneDeep(this.controller.params.panelChart);
-        /* SDA CUSTOM*/ this.panelChartConfig.canEdit = false;
-        /* SDA CUSTOM*/ this.panelChartConfig.canSave = false;
-        /* SDA CUSTOM*/ this.panelChartConfig.locked = true;
-        this.edaChart = this.controller.params.edaChart;
-        /* SDA CUSTOM */ this.setPreviewAspectRatio();
+    loadChartColors() {
+        if (!this.chartContent) return;
 
-        const config: any = this.panelChartConfig.config.getConfig();
+        const existingColors = this.panelChartConfig.config.getConfig()['assignedColors'] || [];
+        const dataset = this.chartContent.chartDataset;
 
-        this.loadChartColors();
-        this.alerts = config.alertLimits || []; //deepcopy
-        /* SDA CUSTOM */ this.kpiColor = this.normalizeHexColor(config.color || this.panelChartComponent?.componentRef?.instance?.color || '', '#67757c');
-        /* SDA CUSTOM */ this.lineWidth = config.lineWidth ?? 2;
-        /* SDA CUSTOM */ this.lineStyle = config.lineStyle ?? 'solid';
-        /* SDA CUSTOM */ this.showLineSettings = ['kpiline', 'kpiarea'].includes(this.panelChartConfig?.chartType);
-        /* SDA CUSTOM */ this.showAxisSettings = this.panelChartConfig?.chartType !== 'kpi';
-        /* SDA CUSTOM */ this.showXAxis = config.showXAxis ?? true;
-        /* SDA CUSTOM */ this.showXAxisLabels = config.showXAxisLabels ?? true;
-        /* SDA CUSTOM */ this.xAxisLabelCount = config.xAxisLabelCount ?? 0;
-        /* SDA CUSTOM */ this.showAllXAxisLabels = !this.xAxisLabelCount || this.xAxisLabelCount <= 0;
-        /* SDA CUSTOM */ // SDA CUSTOM - KPI chart label settings
-        /* SDA CUSTOM */ this.showLabelSettings = this.panelChartConfig?.chartType !== 'kpi';
-        /* SDA CUSTOM */ this.showLabels = config.showLabels ?? config?.edaChart?.showLabels ?? false;
-        /* SDA CUSTOM */ this.showLabelsPercent = config.showLabelsPercent ?? config?.edaChart?.showLabelsPercent ?? false;
-        /* SDA CUSTOM */ this.labelColor = config.labelColor ?? this.getKpiLabelColor();
-        /* SDA CUSTOM */ this.labelBackgroundColor = config.labelBackgroundColor ?? this.getKpiLabelBackgroundColor();
-        /* SDA CUSTOM */ // END SDA CUSTOM
-        /* SDA CUSTOM */ // SDA CUSTOM - KPI chart line color settings
-        /* SDA CUSTOM */ this.showChartLineColor = ['kpibar', 'kpiarea'].includes(this.panelChartConfig?.chartType);
-        /* SDA CUSTOM */ this.chartLineColor = this.getKpiChartLineColor();
-        /* SDA CUSTOM */ // END SDA CUSTOM
-        /* SDA CUSTOM */ // SDA CUSTOM - KPI area fill color settings
-        /* SDA CUSTOM */ this.showChartFillColor = this.isKpiAreaChart();
-        /* SDA CUSTOM */ this.chartFillColor = this.getKpiChartFillColor();
-        /* SDA CUSTOM */ // END SDA CUSTOM
-        /* SDA CUSTOM */ this.applyKpiColor();
-        /* SDA CUSTOM */ this.applyLineStyle();
-        /* SDA CUSTOM */ this.applyXAxisSettings();
-        /* SDA CUSTOM */ this.applyKpiLabelColor();
-        /* SDA CUSTOM */ this.captureInitialSectionState();
-        /* SDA CUSTOM */ const persistedState = KpiEditDialogComponent.persistedSectionState;
-        /* SDA CUSTOM */ if (persistedState) {
-        /* SDA CUSTOM */     this.isAppearanceExpanded = persistedState.appearance;
-        /* SDA CUSTOM */     this.isAxisScaleExpanded = persistedState.axisScale;
-        /* SDA CUSTOM */     this.isLabelsValuesExpanded = persistedState.labelsValues;
-        /* SDA CUSTOM */ } else {
-        /* SDA CUSTOM */     this.isAppearanceExpanded = true;
-        /* SDA CUSTOM */     this.isAxisScaleExpanded = false;
-        /* SDA CUSTOM */     this.isLabelsValuesExpanded = false;
-        /* SDA CUSTOM */ }
-        this.display = true;
+        // Create assignedColors from the dataset
+        this.assignedColors = dataset.map((ds, index) => {
+            const existingColor = existingColors.find(c => c.value === ds.label);
+            const backgroundColor = this.rgb2hex(ds.backgroundColor) || ds.backgroundColor;
+            
+            return {
+                value: ds.label,
+                color: existingColor?.color || backgroundColor
+            };
+        });
+
+        this.originalAssignedColors = this.assignedColors.map(c => ({ ...c }));
     }
 
-    /* SDA CUSTOM */ toggleSection(section: 'appearance' | 'axisScale' | 'labelsValues'): void {
-    /* SDA CUSTOM */     switch (section) {
-    /* SDA CUSTOM */         case 'appearance':
-    /* SDA CUSTOM */             this.isAppearanceExpanded = !this.isAppearanceExpanded;
-    /* SDA CUSTOM */             break;
-    /* SDA CUSTOM */         case 'axisScale':
-    /* SDA CUSTOM */             this.isAxisScaleExpanded = !this.isAxisScaleExpanded;
-    /* SDA CUSTOM */             break;
-    /* SDA CUSTOM */         case 'labelsValues':
-    /* SDA CUSTOM */             this.isLabelsValuesExpanded = !this.isLabelsValuesExpanded;
-    /* SDA CUSTOM */             break;
-    /* SDA CUSTOM */     }
-    /* SDA CUSTOM */     KpiEditDialogComponent.persistedSectionState = {
-    /* SDA CUSTOM */         appearance: this.isAppearanceExpanded,
-    /* SDA CUSTOM */         axisScale: this.isAxisScaleExpanded,
-    /* SDA CUSTOM */         labelsValues: this.isLabelsValuesExpanded
-    /* SDA CUSTOM */     };
-    /* SDA CUSTOM */ }
+    applyColorsToChart() {
+        const chartContent = this.getLiveChartContent();
+        if (!chartContent) return;
 
-    /* SDA CUSTOM */ private captureInitialSectionState(): void {
-        /* SDA CUSTOM */ this.initialAppearanceState = {
-            /* SDA CUSTOM */ kpiColor: this.kpiColor,
-            /* SDA CUSTOM */ lineWidth: this.lineWidth,
-            /* SDA CUSTOM */ lineStyle: this.lineStyle,
-            /* SDA CUSTOM */ chartLineColor: this.chartLineColor,
-            /* SDA CUSTOM */ chartFillColor: this.chartFillColor
-        /* SDA CUSTOM */ };
-        /* SDA CUSTOM */ this.initialAxisScaleState = {
-            /* SDA CUSTOM */ showXAxis: this.showXAxis,
-            /* SDA CUSTOM */ showXAxisLabels: this.showXAxisLabels,
-            /* SDA CUSTOM */ showAllXAxisLabels: this.showAllXAxisLabels,
-            /* SDA CUSTOM */ xAxisLabelCount: this.xAxisLabelCount
-        /* SDA CUSTOM */ };
-        /* SDA CUSTOM */ this.initialLabelsValuesState = {
-            /* SDA CUSTOM */ showLabels: this.showLabels,
-            /* SDA CUSTOM */ showLabelsPercent: this.showLabelsPercent,
-            /* SDA CUSTOM */ labelColor: this.labelColor,
-            /* SDA CUSTOM */ labelBackgroundColor: this.labelBackgroundColor
-        /* SDA CUSTOM */ };
-        /* SDA CUSTOM */ this.initialChartStyleState = {
-            /* SDA CUSTOM */ chartDataset: _.cloneDeep(this.edaChart?.chartDataset || []),
-            /* SDA CUSTOM */ chartColors: _.cloneDeep(this.edaChart?.chartColors || [])
-        /* SDA CUSTOM */ };
-    /* SDA CUSTOM */ }
+        const dataset = chartContent.chartDataset;
 
-    /* SDA CUSTOM */ resetAppearanceSection(): void {
-        /* SDA CUSTOM */ if (!this.initialAppearanceState) {
-            /* SDA CUSTOM */ return;
-        /* SDA CUSTOM */ }
-        /* SDA CUSTOM */ this.kpiColor = this.initialAppearanceState.kpiColor;
-        /* SDA CUSTOM */ this.lineWidth = this.initialAppearanceState.lineWidth;
-        /* SDA CUSTOM */ this.lineStyle = this.initialAppearanceState.lineStyle;
-        /* SDA CUSTOM */ this.chartLineColor = this.initialAppearanceState.chartLineColor;
-        /* SDA CUSTOM */ this.chartFillColor = this.initialAppearanceState.chartFillColor;
+        for (let i = 0; i < dataset.length; i++) {
+            const colorConfig = this.assignedColors.find(c => c.value === dataset[i].label);
 
-        /* SDA CUSTOM */ if (this.initialChartStyleState) {
-            /* SDA CUSTOM */ this.edaChart.chartDataset = _.cloneDeep(this.initialChartStyleState.chartDataset);
-            /* SDA CUSTOM */ this.edaChart.chartColors = _.cloneDeep(this.initialChartStyleState.chartColors);
-            /* SDA CUSTOM */ this.loadChartColors();
-        /* SDA CUSTOM */ }
+            if (colorConfig) {
+                dataset[i].backgroundColor = this.hex2rgb(colorConfig.color, 90);
+                dataset[i].borderColor = this.hex2rgb(colorConfig.color, 100);
+                chartContent.chartColors[i] = {
+                    backgroundColor: dataset[i].backgroundColor,
+                    borderColor: dataset[i].borderColor
+                };
+            }
+        }
 
-        /* SDA CUSTOM */ this.applyKpiColor();
-        /* SDA CUSTOM */ if (this.showLineSettings) {
-            /* SDA CUSTOM */ this.applyLineStyle();
-        /* SDA CUSTOM */ }
-        /* SDA CUSTOM */ if (this.showChartLineColor) {
-            /* SDA CUSTOM */ this.applyChartLineColor();
-        /* SDA CUSTOM */ }
-        /* SDA CUSTOM */ if (this.showChartFillColor) {
-            /* SDA CUSTOM */ this.applyChartFillColor();
-        /* SDA CUSTOM */ }
-        /* SDA CUSTOM */ this.syncKpiLiveConfig();
-        /* SDA CUSTOM */ this.schedulePreviewRefresh(false, 0);
-    /* SDA CUSTOM */ }
+        chartContent.chartDataset = [...dataset];
+        this.commitChartContentChange();
+    }
 
-    /* SDA CUSTOM */ resetAxisScaleSection(): void {
-        /* SDA CUSTOM */ if (!this.initialAxisScaleState) {
-            /* SDA CUSTOM */ return;
-        /* SDA CUSTOM */ }
-        /* SDA CUSTOM */ this.showXAxis = this.initialAxisScaleState.showXAxis;
-        /* SDA CUSTOM */ this.showXAxisLabels = this.initialAxisScaleState.showXAxisLabels;
-        /* SDA CUSTOM */ this.showAllXAxisLabels = this.initialAxisScaleState.showAllXAxisLabels;
-        /* SDA CUSTOM */ this.xAxisLabelCount = this.initialAxisScaleState.xAxisLabelCount;
-        /* SDA CUSTOM */ this.applyXAxisSettings();
-    /* SDA CUSTOM */ }
+    // --- KPI+chart options (kpibar/kpiline/kpiarea only) ---
 
-    /* SDA CUSTOM */ resetLabelsValuesSection(): void {
-        /* SDA CUSTOM */ if (!this.initialLabelsValuesState) {
-            /* SDA CUSTOM */ return;
-        /* SDA CUSTOM */ }
-        /* SDA CUSTOM */ this.showLabels = this.initialLabelsValuesState.showLabels;
-        /* SDA CUSTOM */ this.showLabelsPercent = this.initialLabelsValuesState.showLabelsPercent;
-        /* SDA CUSTOM */ this.labelColor = this.initialLabelsValuesState.labelColor;
-        /* SDA CUSTOM */ this.labelBackgroundColor = this.initialLabelsValuesState.labelBackgroundColor;
-        /* SDA CUSTOM */ this.updateKpiChartLabels();
-        /* SDA CUSTOM */ this.applyKpiLabelColor();
-    /* SDA CUSTOM */ }
+    /**
+     * `this.chartContent` is only captured once (in ngAfterViewChecked) and can end up stale —
+     * always re-fetch the actually-rendered instance's chart object before mutating it, or edits
+     * can silently land on a disconnected/no-longer-rendered object (invisible in the preview,
+     * but still correctly picked up on "Confirmar" since that always does a full fresh re-render).
+     */
+    private getLiveChartContent(): any {
+        const live = this.panelChartComponent?.componentRef?.instance?.inject?.edaChart;
+        if (live) {
+            this.chartContent = live;
+        }
+        return this.chartContent;
+    }
 
-    /* SDA CUSTOM */ private setPreviewAspectRatio(): void {
-        /* SDA CUSTOM */ const sizeX = this.panelChartConfig?.size?.x;
-        /* SDA CUSTOM */ const sizeY = this.panelChartConfig?.size?.y;
-        /* SDA CUSTOM */ if (sizeX && sizeY && sizeX > 0 && sizeY > 0) {
-            /* SDA CUSTOM */ this.previewAspectRatio = `${sizeX} / ${sizeY}`;
-        /* SDA CUSTOM */ } else {
-            /* SDA CUSTOM */ this.previewAspectRatio = '16 / 9';
-        /* SDA CUSTOM */ }
-    /* SDA CUSTOM */ }
+    /**
+     * Reassigns inject.edaChart to a new top-level object reference (not just mutating nested
+     * properties in place) so Angular's Input binding — and ng2-charts' own change-driven sync —
+     * actually notices the change, in addition to the direct Chart.js update() call below.
+     */
+    private commitChartContentChange(): void {
+        const instance = this.panelChartComponent?.componentRef?.instance;
+        if (!instance?.inject || !this.chartContent) return;
+        instance.inject.edaChart = { ...this.chartContent };
+        this.chartContent = instance.inject.edaChart;
+        instance.updateChart?.();
+    }
 
-    loadChartColors() {
-        if (this.edaChart) {
+    applyLineStyle(): void {
+        const chartContent = this.getLiveChartContent();
+        if (!chartContent?.chartDataset) return;
+        const dash = this.getLineDash(this.lineStyle);
+        chartContent.chartDataset.forEach(dataset => {
+            dataset.borderWidth = this.lineWidth;
+            dataset.borderDash = dash;
+        });
+        chartContent.lineWidth = this.lineWidth;
+        chartContent.lineStyle = this.lineStyle;
+        this.commitChartContentChange();
+    }
 
-            /* SDA CUSTOM */ this.series = this.edaChart.chartDataset.map((dataset, index) => {
-            /* SDA CUSTOM */     const chartColor = this.edaChart?.chartColors?.[index] || {};
-            /* SDA CUSTOM */     const bg = this.normalizeHexColor(dataset.backgroundColor, this.normalizeHexColor(chartColor.backgroundColor, '#67757c'));
-            /* SDA CUSTOM */     const border = this.normalizeHexColor(dataset.borderColor, this.normalizeHexColor(chartColor.borderColor, bg));
-            /* SDA CUSTOM */     return {
-            /* SDA CUSTOM */         label: dataset.label,
-            /* SDA CUSTOM */         bg,
-            /* SDA CUSTOM */         border
-            /* SDA CUSTOM */     };
-            /* SDA CUSTOM */ });
-
-            /* SDA CUSTOM */ this.edaChart.chartColors = this.series.map(s => ({
-            /* SDA CUSTOM */     backgroundColor: this.hex2rgb(s.bg, 90),
-            /* SDA CUSTOM */     borderColor: this.hex2rgb(s.border || s.bg, 100)
-            /* SDA CUSTOM */ }));
+    private getLineDash(style: string): number[] {
+        switch (style) {
+            case 'dashed': return [8, 4];
+            case 'dotted': return [2, 4];
+            case 'solid':
+            default: return [];
         }
     }
 
+    toggleAllXAxisLabels(): void {
+        if (this.showAllXAxisLabels) {
+            this.xAxisLabelCount = 0;
+        } else if (!this.xAxisLabelCount || this.xAxisLabelCount <= 0) {
+            this.xAxisLabelCount = Math.min(5, this.chartContent?.chartLabels?.length || 5);
+        }
+        this.applyXAxisSettings();
+    }
+
+    handleXAxisLabelCountInput(): void {
+        if (this.xAxisLabelCount && this.xAxisLabelCount > 0) {
+            this.showAllXAxisLabels = false;
+        }
+        this.applyXAxisSettings();
+    }
+
+    applyXAxisSettings(): void {
+        const chartContent = this.getLiveChartContent();
+        if (!chartContent?.chartOptions) return;
+        const chartLabels = chartContent.chartLabels || [];
+        const labelsLength = chartLabels.length || 0;
+
+        // Shallow-clone chartOptions too (not just the top-level edaChart object committed below)
+        // so Chart.js's own scale-recalculation reliably picks up the change.
+        const opts = { ...chartContent.chartOptions, scales: { ...chartContent.chartOptions.scales } };
+        opts.scales.x = { ...opts.scales.x, ticks: { ...opts.scales.x?.ticks }, grid: { ...opts.scales.x?.grid } };
+        // Y axis is never shown for KPI+chart (matches develop), regardless of X axis settings.
+        opts.scales.y = { ...opts.scales.y, display: false };
+
+        opts.scales.x.display = this.showXAxis || this.showXAxisLabels;
+        // grid.display = vertical gridlines, kept off (matches develop); "mostrar eje X" only toggles drawBorder, which Chart.js 3 draws independently.
+        opts.scales.x.grid.display = false;
+        opts.scales.x.grid.drawBorder = this.showXAxis;
+        opts.scales.x.ticks.display = this.showXAxisLabels;
+
+        if (this.showAllXAxisLabels) {
+            // Explicit "mostrar todas las etiquetas" (like develop) — force every label to render
+            // unskipped, even if that overlaps with many categories. Off by default.
+            opts.scales.x.ticks.maxTicksLimit = labelsLength;
+            opts.scales.x.ticks.autoSkip = false;
+            opts.scales.x.ticks.callback = this.buildXAxisTickCallback(true, labelsLength, this.xAxisLabelCount, chartLabels);
+            this.axisTicksOverrideWasActive = true;
+        } else if (this.xAxisLabelCount > 0) {
+            // Explicit label count — take over tick selection ourselves.
+            opts.scales.x.ticks.maxTicksLimit = this.xAxisLabelCount;
+            opts.scales.x.ticks.autoSkip = false;
+            opts.scales.x.ticks.callback = this.buildXAxisTickCallback(false, labelsLength, this.xAxisLabelCount, chartLabels);
+            this.axisTicksOverrideWasActive = true;
+        } else if (this.axisTicksOverrideWasActive) {
+            // Neither flag set now — only reset back to Chart.js's smart defaults if an override
+            // was actually active before, otherwise leave whatever initChartOptions() set alone.
+            opts.scales.x.ticks.maxTicksLimit = undefined;
+            opts.scales.x.ticks.autoSkip = true;
+            opts.scales.x.ticks.callback = undefined;
+            this.axisTicksOverrideWasActive = false;
+        }
+
+        chartContent.chartOptions = opts;
+        chartContent.showXAxis = this.showXAxis;
+        chartContent.showXAxisLabels = this.showXAxisLabels;
+        chartContent.xAxisLabelCount = this.xAxisLabelCount;
+        chartContent.showAllXAxisLabels = this.showAllXAxisLabels;
+        this.commitChartContentChange();
+    }
+
+    private buildXAxisTickCallback(useAll: boolean, labelsLength: number, labelCount: number, chartLabels: any[]): ((value: any, index: number) => string) | undefined {
+        if (labelsLength === 0) return undefined;
+        if (useAll || !labelCount || labelCount <= 0) {
+            return (value, index) => {
+                const label = Array.isArray(chartLabels) ? (chartLabels[index] ?? chartLabels[value]) : value;
+                return `${label ?? ''}`;
+            };
+        }
+        const maxCount = Math.min(labelCount, labelsLength);
+        if (maxCount <= 1) {
+            return (value, index) => {
+                if (index !== 0) return '';
+                const label = Array.isArray(chartLabels) ? (chartLabels[index] ?? chartLabels[value]) : value;
+                return `${label ?? ''}`;
+            };
+        }
+        const indices = this.getXAxisLabelIndices(labelsLength, maxCount);
+        return (value, index) => {
+            if (!indices.has(index)) return '';
+            const label = Array.isArray(chartLabels) ? (chartLabels[index] ?? chartLabels[value]) : value;
+            return `${label ?? ''}`;
+        };
+    }
+
+    private getXAxisLabelIndices(labelsLength: number, labelCount: number): Set<number> {
+        const indices = new Set<number>();
+        if (labelsLength <= 0) return indices;
+        if (labelCount <= 1) {
+            indices.add(0);
+            return indices;
+        }
+        const steps = labelCount - 1;
+        for (let i = 0; i < labelCount; i += 1) {
+            const index = Math.round((i * (labelsLength - 1)) / steps);
+            indices.add(index);
+        }
+        indices.add(0);
+        indices.add(labelsLength - 1);
+        return indices;
+    }
+
+    applyLabelStyle(): void {
+        const chartContent = this.getLiveChartContent();
+        if (!chartContent?.chartOptions) return;
+        const opts = { ...chartContent.chartOptions, plugins: { ...chartContent.chartOptions.plugins, datalabels: { ...chartContent.chartOptions.plugins?.datalabels } } };
+        opts.plugins.datalabels.color = this.labelColor;
+        opts.plugins.datalabels.backgroundColor = this.labelBackgroundColor || null;
+        chartContent.chartOptions = opts;
+        chartContent.labelColor = this.labelColor;
+        chartContent.labelBackgroundColor = this.labelBackgroundColor;
+        this.commitChartContentChange();
+    }
+
+    applyChartLineColor(): void {
+        const chartContent = this.getLiveChartContent();
+        if (!this.showChartLineColor || !chartContent?.chartDataset) return;
+        const borderColor = this.hex2rgb(this.chartLineColor, 100);
+        chartContent.chartDataset = chartContent.chartDataset.map(dataset => ({
+            ...dataset,
+            borderColor,
+            borderWidth: dataset.borderWidth ?? 2,
+        }));
+        if (Array.isArray(chartContent.chartColors)) {
+            chartContent.chartColors = chartContent.chartColors.map(c => ({ backgroundColor: c.backgroundColor, borderColor }));
+        }
+        chartContent.chartLineColor = this.chartLineColor;
+        this.commitChartContentChange();
+    }
+
+    applyChartFillColor(): void {
+        const chartContent = this.getLiveChartContent();
+        if (!this.showChartFillColor || !chartContent?.chartDataset) return;
+        const fillColor = this.hex2rgb(this.chartFillColor, 90);
+        chartContent.chartDataset = chartContent.chartDataset.map(dataset => ({
+            ...dataset,
+            backgroundColor: fillColor,
+            fill: true,
+        }));
+        if (Array.isArray(chartContent.chartColors)) {
+            chartContent.chartColors = chartContent.chartColors.map(c => ({ backgroundColor: fillColor, borderColor: c.borderColor }));
+        }
+        chartContent.chartFillColor = this.chartFillColor;
+        this.commitChartContentChange();
+    }
+
+    private getKpiChartLineColor(): string {
+        const chartColors = this.chartContent?.chartColors || this.controller?.params?.edaChart?.chartColors || [];
+        const border = chartColors[0]?.borderColor || this.chartContent?.chartDataset?.[0]?.borderColor || this.controller?.params?.edaChart?.chartDataset?.[0]?.borderColor;
+        return this.normalizeHexColor(border, '');
+    }
+
+    private getKpiChartFillColor(): string {
+        const chartColors = this.chartContent?.chartColors || this.controller?.params?.edaChart?.chartColors || [];
+        const background = chartColors[0]?.backgroundColor || this.chartContent?.chartDataset?.[0]?.backgroundColor || this.controller?.params?.edaChart?.chartDataset?.[0]?.backgroundColor;
+        return this.normalizeHexColor(background, '');
+    }
+
+    private normalizeHexColor(color: any, fallback: string = ''): string {
+        const resolvedColor = Array.isArray(color) ? color[0] : color;
+        if (typeof resolvedColor !== 'string') return fallback;
+        const trimmed = resolvedColor.trim();
+        const shortHexMatch = /^#([0-9a-fA-F]{3})$/.exec(trimmed);
+        if (shortHexMatch) {
+            const [r, g, b] = shortHexMatch[1].split('');
+            return `#${r}${r}${g}${g}${b}${b}`;
+        }
+        if (/^#([0-9a-fA-F]{6})$/.test(trimmed)) return trimmed;
+        if (/^rgba?\(/i.test(trimmed)) return this.rgb2hex(trimmed) || fallback;
+        return fallback;
+    }
+
+    /**
+     * showLabels/showLabelsPercent change which datalabels formatter Chart.js uses (not just a
+     * display flag), so unlike the other KPI+chart options this needs a full rebuild of the
+     * preview chart instead of an in-place mutation.
+     */
+    setShowLabels(): void {
+        this.rebuildChartPreview();
+    }
+
+    setShowLabelsPercent(): void {
+        this.rebuildChartPreview();
+    }
+
+    private rebuildChartPreview(): void {
+        const config: any = this.panelChartConfig?.config?.getConfig?.();
+        if (!config) return;
+        if (!config.edaChart) config.edaChart = {};
+        config.edaChart.lineWidth = this.lineWidth;
+        config.edaChart.lineStyle = this.lineStyle;
+        config.edaChart.showXAxis = this.showXAxis;
+        config.edaChart.showXAxisLabels = this.showXAxisLabels;
+        config.edaChart.xAxisLabelCount = this.xAxisLabelCount;
+        config.edaChart.showAllXAxisLabels = this.showAllXAxisLabels;
+        config.edaChart.labelColor = this.labelColor;
+        config.edaChart.labelBackgroundColor = this.labelBackgroundColor;
+        config.edaChart.showLabels = this.showLabels;
+        config.edaChart.showLabelsPercent = this.showLabelsPercent;
+        config.edaChart.chartLineColor = this.chartLineColor;
+        config.edaChart.chartFillColor = this.chartFillColor;
+        // Preserve any color edits made in this dialog session that haven't been saved yet,
+        // so the rebuild doesn't visually revert them.
+        if (this.assignedColors.length > 0) {
+            config['assignedColors'] = [...this.assignedColors];
+        }
+        this.panelChartComponent?.changeChartType();
+        const nextEdaChart = this.panelChartComponent?.componentRef?.instance?.inject?.edaChart;
+        if (nextEdaChart) {
+            this.chartContent = nextEdaChart;
+        }
+    }
+
+    /** Restores KPI colors, series colors and (for KPI+chart) line style/colors all at once. */
+    resetAppearanceSection(): void {
+        if (this.initialAppearanceState) {
+            this.kpiBackgroundColor = this.initialAppearanceState.kpiBackgroundColor;
+            this.kpiTextColor = this.initialAppearanceState.kpiTextColor;
+            this.prefixImage = this.initialAppearanceState.prefixImage;
+            this.updateKpiBackground();
+            this.updateKpiTextColor();
+            this.updatePrefixImage();
+        }
+
+        if (this.originalAssignedColors.length > 0) {
+            this.selectedPalette = null;
+            this.assignedColors = this.originalAssignedColors.map(c => ({ ...c }));
+            this.applyColorsToChart();
+        }
+
+        // Line width/style + independent line/fill colors also live in this section now.
+        this.resetLineSection();
+    }
+
+    resetLineSection(): void {
+        if (!this.initialLineState) return;
+        this.lineWidth = this.initialLineState.lineWidth;
+        this.lineStyle = this.initialLineState.lineStyle;
+        this.chartLineColor = this.initialLineState.chartLineColor;
+        this.chartFillColor = this.initialLineState.chartFillColor;
+        this.applyLineStyle();
+        if (this.showChartLineColor) this.applyChartLineColor();
+        if (this.showChartFillColor) this.applyChartFillColor();
+    }
+
+    resetAxisSection(): void {
+        if (!this.initialAxisState) return;
+        this.showXAxis = this.initialAxisState.showXAxis;
+        this.showXAxisLabels = this.initialAxisState.showXAxisLabels;
+        this.showAllXAxisLabels = this.initialAxisState.showAllXAxisLabels;
+        this.xAxisLabelCount = this.initialAxisState.xAxisLabelCount;
+        this.applyXAxisSettings();
+    }
+
+    resetLabelsSection(): void {
+        if (!this.initialLabelsState) return;
+        const labelsChanged = this.showLabels !== this.initialLabelsState.showLabels || this.showLabelsPercent !== this.initialLabelsState.showLabelsPercent;
+        this.showLabels = this.initialLabelsState.showLabels;
+        this.showLabelsPercent = this.initialLabelsState.showLabelsPercent;
+        this.labelColor = this.initialLabelsState.labelColor;
+        this.labelBackgroundColor = this.initialLabelsState.labelBackgroundColor;
+        if (labelsChanged) {
+            this.rebuildChartPreview();
+        } else {
+            this.applyLabelStyle();
+        }
+    }
+
+    // --- END KPI+chart options ---
+
     onClose(event: EdaDialogCloseEvent, response?: any): void {
-        /* SDA CUSTOM */ if (this.previewRefreshTimer) {
-            /* SDA CUSTOM */ clearTimeout(this.previewRefreshTimer);
-            /* SDA CUSTOM */ this.previewRefreshTimer = null;
-        /* SDA CUSTOM */ }
         return this.controller.close(event, response);
     }
 
     addAlert() {
-        this.alerts.push(
-            {
-                value: this.value ? this.value : 0,
-                operand: this.operand,
-                color: this.color,
-                mailing: { units: null, quantity: null, hours: null, minutes: null, users: [], mailMessage: null, enabled: false }
-            });
+        this.alerts.push({
+            value: this.value ? this.value : 0,
+            operand: this.operand,
+            color: this.color,
+            mailing: { units: null, quantity: null, hours: null, minutes: null, users: [], mailMessage: null, enabled: false }
+        });
     }
 
     deleteAlert(item) {
-        this.alerts = this.alerts.filter(alert => {
-            return alert.operand !== item.operand || alert.value !== item.value || alert.color !== item.color
-        });
+        this.alerts = this.alerts.filter(alert =>
+            alert.operand !== item.operand || alert.value !== item.value || alert.color !== item.color
+        );
     }
 
     rgb2hex(rgb): string {
         if (rgb) {
             rgb = rgb.match(/^rgba?[\s+]?\([\s+]?(\d+)[\s+]?,[\s+]?(\d+)[\s+]?,[\s+]?(\d+)[\s+]?/i);
             return (rgb && rgb.length === 4) ? '#' +
-            ('0' + parseInt(rgb[1], 10).toString(16)).slice(-2) +
-            ('0' + parseInt(rgb[2], 10).toString(16)).slice(-2) +
-            ('0' + parseInt(rgb[3], 10).toString(16)).slice(-2) : '';
+                ('0' + parseInt(rgb[1], 10).toString(16)).slice(-2) +
+                ('0' + parseInt(rgb[2], 10).toString(16)).slice(-2) +
+                ('0' + parseInt(rgb[3], 10).toString(16)).slice(-2) : '';
         }
     }
 
@@ -367,571 +748,218 @@ export class KpiEditDialogComponent extends EdaDialogAbstract {
         }
     }
 
-    /* SDA CUSTOM */ handleInputColor(event, debounceMs: number = 0, softPreview: boolean = false) {
-        /* SDA CUSTOM */ const isAreaBorderMode = this.showChartFillColor;
-        if (this.edaChart.chartDataset) {
-            const newDatasets = [];
-            const dataset = this.edaChart.chartDataset;
-
-
-            for (let i = 0, n = dataset.length; i < n; i += 1) {
-                if (dataset[i].label === event.label) {
-                    /* SDA CUSTOM */ if (!isAreaBorderMode) {
-                        /* SDA CUSTOM */ dataset[i].backgroundColor = this.hex2rgb(event.bg, 90);
-                    /* SDA CUSTOM */ }
-                    dataset[i].borderColor = this.hex2rgb(event.bg, 100);
-                    this.edaChart.chartColors[i] = _.pick(dataset[i], [ 'backgroundColor', 'borderColor']);
-                } else {
-                    if (!_.isArray(dataset[i].backgroundColor)) {
-                        dataset[i].backgroundColor = this.edaChart.chartColors[i].backgroundColor;
-                        /* SDA CUSTOM */ dataset[i].borderColor = this.edaChart.chartColors[i].borderColor || this.edaChart.chartColors[i].backgroundColor;
-                        this.edaChart.chartColors[i] = _.pick(dataset[i], [  'backgroundColor', 'borderColor']);
-                    } else {
-                        if (this.edaChart.chartLabels) {
-                            const labels = this.edaChart.chartLabels;
-                            for (let label of labels) {
-                                let inx = labels.indexOf(label);
-                                if (label === event.label && inx > -1) {
-                                    dataset[i].backgroundColor[inx] = this.hex2rgb(event.bg, 90);
-                                    this.edaChart.chartColors[0].backgroundColor[inx] = this.hex2rgb(event.bg, 90);
-                                }
-                            }
-                        }
-                    }
-                }
-
-                newDatasets.push(dataset[i]);
-            }
-
-        } else {
-            if (this.edaChart.chartLabels) {
-                const labels = this.edaChart.chartLabels;
-                for (let i = 0, n = labels.length; i < n; i += 1) {
-                    if (labels[i] === event.label) {
-                        this.edaChart.chartColors[0].backgroundColor[i] = this.hex2rgb(event.bg, 90);
-                    }
-                }
-            }
+    handleInputColor(item) {
+        // Update the color in assignedColors
+        const colorConfig = this.assignedColors.find(c => c.value === item.value);
+        if (colorConfig) {
+            colorConfig.color = item.color;
         }
 
-        /* SDA CUSTOM */ this.syncKpiLiveConfig();
-        /* SDA CUSTOM */ if (softPreview) {
-            /* SDA CUSTOM */ this.schedulePreviewUpdate(debounceMs);
-        /* SDA CUSTOM */ } else {
-            /* SDA CUSTOM */ this.schedulePreviewRefresh(false, debounceMs);
-        /* SDA CUSTOM */ }
-    /* SDA CUSTOM */ }
-
-    /* SDA CUSTOM */ applyKpiColor(debounceMs: number = 0, softPreview: boolean = false) {
-        /* SDA CUSTOM */ if (!this.panelChartComponent?.componentRef?.instance?.inject) {
-            /* SDA CUSTOM */ return;
-        /* SDA CUSTOM */ }
-        /* SDA CUSTOM */ this.kpiColor = this.normalizeHexColor(this.kpiColor, this.kpiColor);
-        /* SDA CUSTOM */ this.panelChartComponent.componentRef.instance.inject.color = this.kpiColor;
-        /* SDA CUSTOM */ if (typeof this.panelChartComponent.componentRef.instance.setBaseColor === 'function') {
-            /* SDA CUSTOM */ this.panelChartComponent.componentRef.instance.setBaseColor(this.kpiColor);
-            /* SDA CUSTOM */ this.panelChartComponent.componentRef.instance.applyAlertColors?.();
-        /* SDA CUSTOM */ }
-        this.panelChartComponent.componentRef.instance.inject.edaChart = this.edaChart;
-        /* SDA CUSTOM */ this.syncKpiLiveConfig();
-        /* SDA CUSTOM */ if (softPreview) {
-            /* SDA CUSTOM */ this.schedulePreviewUpdate(debounceMs);
-        /* SDA CUSTOM */ } else {
-            /* SDA CUSTOM */ this.schedulePreviewRefresh(false, debounceMs);
-        /* SDA CUSTOM */ }
-    /* SDA CUSTOM */ }
-
-    /* SDA CUSTOM */ applyLineStyle(debounceMs: number = 0) {
-        /* SDA CUSTOM */ if (!this.showLineSettings || !this.edaChart?.chartDataset) {
-            /* SDA CUSTOM */ return;
-        /* SDA CUSTOM */ }
-        /* SDA CUSTOM */ if (this.panelChartComponent?.componentRef?.instance?.inject) {
-            /* SDA CUSTOM */ this.panelChartComponent.componentRef.instance.inject.lineWidth = this.lineWidth;
-            /* SDA CUSTOM */ this.panelChartComponent.componentRef.instance.inject.lineStyle = this.lineStyle;
-            /* SDA CUSTOM */ this.panelChartComponent.componentRef.instance.inject.edaChart = this.edaChart;
-        /* SDA CUSTOM */ }
-        /* SDA CUSTOM */ this.updateLineDatasets(this.edaChart.chartDataset);
-        /* SDA CUSTOM */ this.syncKpiLiveConfig();
-        /* SDA CUSTOM */ this.schedulePreviewRefresh(false, debounceMs);
-    /* SDA CUSTOM */ }
-
-    /* SDA CUSTOM */ toggleAllXAxisLabels() {
-        /* SDA CUSTOM */ if (this.showAllXAxisLabels) {
-            /* SDA CUSTOM */ this.xAxisLabelCount = 0;
-        /* SDA CUSTOM */ } else if (!this.xAxisLabelCount || this.xAxisLabelCount <= 0) {
-            /* SDA CUSTOM */ this.xAxisLabelCount = this.getDefaultXAxisLabelCount();
-        /* SDA CUSTOM */ }
-        /* SDA CUSTOM */ this.applyXAxisSettings();
-    /* SDA CUSTOM */ }
-
-    /* SDA CUSTOM */ handleXAxisLabelCountInput(debounceMs: number = 0) {
-        /* SDA CUSTOM */ if (this.xAxisLabelCount && this.xAxisLabelCount > 0) {
-            /* SDA CUSTOM */ this.showAllXAxisLabels = false;
-        /* SDA CUSTOM */ }
-        /* SDA CUSTOM */ this.applyXAxisSettings(debounceMs);
-    /* SDA CUSTOM */ }
-
-    /* SDA CUSTOM */ applyXAxisSettings(debounceMs: number = 0) {
-        /* SDA CUSTOM */ if (!this.showAxisSettings || !this.edaChart?.chartOptions) {
-            /* SDA CUSTOM */ return;
-        /* SDA CUSTOM */ }
-        /* SDA CUSTOM */ if (this.panelChartComponent?.componentRef?.instance?.inject) {
-            /* SDA CUSTOM */ this.panelChartComponent.componentRef.instance.inject.showXAxis = this.showXAxis;
-            /* SDA CUSTOM */ this.panelChartComponent.componentRef.instance.inject.showXAxisLabels = this.showXAxisLabels;
-            /* SDA CUSTOM */ this.panelChartComponent.componentRef.instance.inject.xAxisLabelCount = this.xAxisLabelCount;
-            /* SDA CUSTOM */ this.panelChartComponent.componentRef.instance.inject.edaChart = this.edaChart;
-        /* SDA CUSTOM */ }
-        /* SDA CUSTOM */ this.updateXAxisOptions();
-        /* SDA CUSTOM */ this.syncKpiLiveConfig();
-        /* SDA CUSTOM */ this.schedulePreviewRefresh(false, debounceMs);
-    /* SDA CUSTOM */ }
-
-    /* SDA CUSTOM */ // SDA CUSTOM - KPI chart label handlers
-    /* SDA CUSTOM */ setShowLabels() {
-    /* SDA CUSTOM */     this.updateKpiChartLabels();
-    /* SDA CUSTOM */ }
-
-    /* SDA CUSTOM */ setShowLabelsPercent() {
-    /* SDA CUSTOM */     this.updateKpiChartLabels();
-    /* SDA CUSTOM */ }
-
-    /* SDA CUSTOM */ setLabelColor(debounceMs: number = 0, softPreview: boolean = false) {
-    /* SDA CUSTOM */     this.applyKpiLabelColor(debounceMs, softPreview);
-    /* SDA CUSTOM */ }
-
-    /* SDA CUSTOM */ setLabelBackgroundColor(debounceMs: number = 0, softPreview: boolean = false) {
-    /* SDA CUSTOM */     this.applyKpiLabelColor(debounceMs, softPreview);
-    /* SDA CUSTOM */ }
-
-    /* SDA CUSTOM */ private updateKpiChartLabels() {
-    /* SDA CUSTOM */     if (!this.panelChartConfig?.config) {
-    /* SDA CUSTOM */         return;
-    /* SDA CUSTOM */     }
-    /* SDA CUSTOM */     const config: any = this.panelChartConfig.config.getConfig();
-    /* SDA CUSTOM */     config.showLabels = this.showLabels;
-    /* SDA CUSTOM */     config.showLabelsPercent = this.showLabelsPercent;
-    /* SDA CUSTOM */     if (config?.edaChart) {
-    /* SDA CUSTOM */         config.edaChart.showLabels = this.showLabels;
-    /* SDA CUSTOM */         config.edaChart.showLabelsPercent = this.showLabelsPercent;
-    /* SDA CUSTOM */     }
-    /* SDA CUSTOM */     if (this.edaChart) {
-    /* SDA CUSTOM */         this.edaChart.showLabels = this.showLabels;
-    /* SDA CUSTOM */         this.edaChart.showLabelsPercent = this.showLabelsPercent;
-    /* SDA CUSTOM */     }
-    /* SDA CUSTOM */     this.syncKpiLiveConfig();
-    /* SDA CUSTOM */     this.refreshKpiPreview(true);
-    /* SDA CUSTOM */ }
-
-    /* SDA CUSTOM */ private applyKpiLabelColor(debounceMs: number = 0, softPreview: boolean = false): void {
-    /* SDA CUSTOM */     if (!this.edaChart?.chartOptions) {
-    /* SDA CUSTOM */         return;
-    /* SDA CUSTOM */     }
-    /* SDA CUSTOM */     if (!this.edaChart.chartOptions.plugins) {
-    /* SDA CUSTOM */         this.edaChart.chartOptions.plugins = {};
-    /* SDA CUSTOM */     }
-    /* SDA CUSTOM */     if (!this.edaChart.chartOptions.plugins.datalabels) {
-    /* SDA CUSTOM */         this.edaChart.chartOptions.plugins.datalabels = {};
-    /* SDA CUSTOM */     }
-    /* SDA CUSTOM */     this.labelBackgroundColor = this.normalizeHexColor(this.labelBackgroundColor, '');
-    /* SDA CUSTOM */     this.edaChart.chartOptions.plugins.datalabels.color = this.labelColor;
-    /* SDA CUSTOM */     this.edaChart.chartOptions.plugins.datalabels.backgroundColor = this.labelBackgroundColor || null;
-    /* SDA CUSTOM */     if (this.panelChartConfig?.chartType === 'kpibar') {
-    /* SDA CUSTOM */         this.edaChart.chartOptions.plugins.datalabels.borderRadius = 4;
-    /* SDA CUSTOM */     }
-    /* SDA CUSTOM */     this.syncKpiLiveConfig();
-    /* SDA CUSTOM */     if (softPreview) {
-    /* SDA CUSTOM */         this.schedulePreviewUpdate(debounceMs);
-    /* SDA CUSTOM */     } else {
-    /* SDA CUSTOM */         this.schedulePreviewRefresh(false, debounceMs);
-    /* SDA CUSTOM */     }
-    /* SDA CUSTOM */ }
-
-    /* SDA CUSTOM */ private getKpiLabelColor(): string {
-    /* SDA CUSTOM */     return this.normalizeHexColor(this.edaChart?.chartOptions?.plugins?.datalabels?.color, '#000000');
-    /* SDA CUSTOM */ }
-
-    /* SDA CUSTOM */ private getKpiLabelBackgroundColor(): string {
-    /* SDA CUSTOM */     return this.normalizeHexColor(this.edaChart?.chartOptions?.plugins?.datalabels?.backgroundColor, '');
-    /* SDA CUSTOM */ }
-    /* SDA CUSTOM */ // END SDA CUSTOM
-
-    /* SDA CUSTOM */ private updateXAxisOptions(): void {
-        /* SDA CUSTOM */ const labelsLength = this.edaChart?.chartLabels?.length || 0;
-        /* SDA CUSTOM */ const useAll = !this.xAxisLabelCount || this.xAxisLabelCount <= 0 || this.showAllXAxisLabels;
-        /* SDA CUSTOM */ const maxTicksLimit = useAll ? labelsLength : this.xAxisLabelCount;
-
-        /* SDA CUSTOM */ if (!this.edaChart.chartOptions.scales) {
-            /* SDA CUSTOM */ this.edaChart.chartOptions.scales = {};
-        /* SDA CUSTOM */ }
-        /* SDA CUSTOM */ if (!this.edaChart.chartOptions.scales.x) {
-            /* SDA CUSTOM */ this.edaChart.chartOptions.scales.x = {};
-        /* SDA CUSTOM */ }
-        /* SDA CUSTOM */ if (!this.edaChart.chartOptions.scales.x.ticks) {
-            /* SDA CUSTOM */ this.edaChart.chartOptions.scales.x.ticks = {};
-        /* SDA CUSTOM */ }
-        /* SDA CUSTOM */ if (!this.edaChart.chartOptions.scales.x.grid) {
-            /* SDA CUSTOM */ this.edaChart.chartOptions.scales.x.grid = {};
-        /* SDA CUSTOM */ }
-        /* SDA CUSTOM */ if (!this.edaChart.chartOptions.scales.x.border) {
-            /* SDA CUSTOM */ this.edaChart.chartOptions.scales.x.border = {};
-        /* SDA CUSTOM */ }
-
-        /* SDA CUSTOM */ this.edaChart.chartOptions.scales.x.display = this.showXAxis || this.showXAxisLabels;
-        /* SDA CUSTOM */ this.edaChart.chartOptions.scales.x.grid.drawBorder = this.showXAxis;
-        /* SDA CUSTOM */ this.edaChart.chartOptions.scales.x.ticks.display = this.showXAxisLabels;
-        /* SDA CUSTOM */ this.edaChart.chartOptions.scales.x.ticks.maxTicksLimit = maxTicksLimit || undefined;
-        /* SDA CUSTOM */ this.edaChart.chartOptions.scales.x.ticks.autoSkip = false;
-        /* SDA CUSTOM */ this.edaChart.chartOptions.scales.x.ticks.callback = this.buildXAxisTickCallback(
-            /* SDA CUSTOM */ useAll,
-            /* SDA CUSTOM */ labelsLength,
-            /* SDA CUSTOM */ this.xAxisLabelCount,
-            /* SDA CUSTOM */ this.edaChart.chartLabels
-        /* SDA CUSTOM */ );
-    /* SDA CUSTOM */ }
-
-    /* SDA CUSTOM */ private buildXAxisTickCallback(
-        /* SDA CUSTOM */ useAll: boolean,
-        /* SDA CUSTOM */ labelsLength: number,
-        /* SDA CUSTOM */ labelCount: number,
-        /* SDA CUSTOM */ chartLabels: any[]
-    /* SDA CUSTOM */ ): ((value: any, index: number) => string) | undefined {
-        /* SDA CUSTOM */ if (labelsLength === 0) {
-            /* SDA CUSTOM */ return undefined;
-        /* SDA CUSTOM */ }
-        /* SDA CUSTOM */ if (useAll || !labelCount || labelCount <= 0) {
-            /* SDA CUSTOM */ return (value, index) => {
-                /* SDA CUSTOM */ const label = Array.isArray(chartLabels)
-                    /* SDA CUSTOM */ ? (chartLabels[index] ?? chartLabels[value])
-                    /* SDA CUSTOM */ : value;
-                /* SDA CUSTOM */ return `${label ?? ''}`;
-            /* SDA CUSTOM */ };
-        /* SDA CUSTOM */ }
-        /* SDA CUSTOM */ const maxCount = Math.min(labelCount, labelsLength);
-        /* SDA CUSTOM */ if (maxCount <= 1) {
-            /* SDA CUSTOM */ return (value, index) => {
-                /* SDA CUSTOM */ if (index !== 0) {
-                    /* SDA CUSTOM */ return '';
-                /* SDA CUSTOM */ }
-                /* SDA CUSTOM */ const label = Array.isArray(chartLabels)
-                    /* SDA CUSTOM */ ? (chartLabels[index] ?? chartLabels[value])
-                    /* SDA CUSTOM */ : value;
-                /* SDA CUSTOM */ return `${label ?? ''}`;
-            /* SDA CUSTOM */ };
-        /* SDA CUSTOM */ }
-        /* SDA CUSTOM */ const indices = this.getAxisLabelIndices(labelsLength, maxCount);
-        /* SDA CUSTOM */ return (value, index) => {
-            /* SDA CUSTOM */ if (!indices.has(index)) {
-                /* SDA CUSTOM */ return '';
-            /* SDA CUSTOM */ }
-            /* SDA CUSTOM */ const label = Array.isArray(chartLabels)
-                /* SDA CUSTOM */ ? (chartLabels[index] ?? chartLabels[value])
-                /* SDA CUSTOM */ : value;
-            /* SDA CUSTOM */ return `${label ?? ''}`;
-        /* SDA CUSTOM */ };
-    /* SDA CUSTOM */ }
-
-    /* SDA CUSTOM */ private getAxisLabelIndices(labelsLength: number, labelCount: number): Set<number> {
-        /* SDA CUSTOM */ const indices = new Set<number>();
-        /* SDA CUSTOM */ if (labelsLength <= 0) {
-            /* SDA CUSTOM */ return indices;
-        /* SDA CUSTOM */ }
-        /* SDA CUSTOM */ if (labelCount <= 1) {
-            /* SDA CUSTOM */ indices.add(0);
-            /* SDA CUSTOM */ return indices;
-        /* SDA CUSTOM */ }
-        /* SDA CUSTOM */ const steps = labelCount - 1;
-        /* SDA CUSTOM */ for (let i = 0; i < labelCount; i += 1) {
-            /* SDA CUSTOM */ const index = Math.round((i * (labelsLength - 1)) / steps);
-            /* SDA CUSTOM */ indices.add(index);
-        /* SDA CUSTOM */ }
-        /* SDA CUSTOM */ indices.add(0);
-        /* SDA CUSTOM */ indices.add(labelsLength - 1);
-        /* SDA CUSTOM */ return indices;
-    /* SDA CUSTOM */ }
-
-    /* SDA CUSTOM */ private getDefaultXAxisLabelCount(): number {
-        /* SDA CUSTOM */ const labelsLength = this.edaChart?.chartLabels?.length || 0;
-        /* SDA CUSTOM */ if (labelsLength === 0) {
-            /* SDA CUSTOM */ return 5;
-        /* SDA CUSTOM */ }
-        /* SDA CUSTOM */ return Math.min(5, labelsLength);
-    /* SDA CUSTOM */ }
-
-    /* SDA CUSTOM */ private updateLineDatasets(datasets: any[]): void {
-        /* SDA CUSTOM */ const dash = this.getLineDash(this.lineStyle);
-        /* SDA CUSTOM */ datasets.forEach(dataset => {
-            /* SDA CUSTOM */ dataset.borderWidth = this.lineWidth;
-            /* SDA CUSTOM */ dataset.borderDash = dash;
-        /* SDA CUSTOM */ });
-    /* SDA CUSTOM */ }
-
-    /* SDA CUSTOM */ // SDA CUSTOM - KPI chart line color handlers
-    /* SDA CUSTOM */ applyChartLineColor(debounceMs: number = 0, softPreview: boolean = false) {
-    /* SDA CUSTOM */     if (!this.showChartLineColor || !this.edaChart?.chartDataset) {
-    /* SDA CUSTOM */         return;
-    /* SDA CUSTOM */     }
-    /* SDA CUSTOM */     const borderColor = this.hex2rgb(this.chartLineColor, 100);
-    /* SDA CUSTOM */     const borderWidth = 2;
-    /* SDA CUSTOM */     this.edaChart.chartDataset.forEach(dataset => {
-    /* SDA CUSTOM */         dataset.borderColor = borderColor;
-    /* SDA CUSTOM */         dataset.borderWidth = dataset.borderWidth ?? borderWidth;
-    /* SDA CUSTOM */     });
-    /* SDA CUSTOM */     if (Array.isArray(this.edaChart.chartColors)) {
-    /* SDA CUSTOM */         this.edaChart.chartColors = this.edaChart.chartColors.map(color => ({
-    /* SDA CUSTOM */             backgroundColor: color.backgroundColor,
-    /* SDA CUSTOM */             borderColor
-    /* SDA CUSTOM */         }));
-    /* SDA CUSTOM */     }
-    /* SDA CUSTOM */     if (this.panelChartComponent?.componentRef?.instance?.inject) {
-    /* SDA CUSTOM */         this.panelChartComponent.componentRef.instance.inject.edaChart = this.edaChart;
-    /* SDA CUSTOM */     }
-    /* SDA CUSTOM */     this.syncKpiLiveConfig();
-    /* SDA CUSTOM */     if (softPreview) {
-    /* SDA CUSTOM */         this.schedulePreviewUpdate(debounceMs);
-    /* SDA CUSTOM */     } else {
-    /* SDA CUSTOM */         this.schedulePreviewRefresh(false, debounceMs);
-    /* SDA CUSTOM */     }
-    /* SDA CUSTOM */ }
-
-    /* SDA CUSTOM */ private getKpiChartLineColor(): string {
-    /* SDA CUSTOM */     const chartColors = this.edaChart?.chartColors || [];
-    /* SDA CUSTOM */     const border = chartColors[0]?.borderColor || this.edaChart?.chartDataset?.[0]?.borderColor;
-    /* SDA CUSTOM */     return this.normalizeHexColor(border, '');
-    /* SDA CUSTOM */ }
-    /* SDA CUSTOM */ // END SDA CUSTOM
-
-    /* SDA CUSTOM */ // SDA CUSTOM - KPI area fill color handlers
-    /* SDA CUSTOM */ applyChartFillColor(debounceMs: number = 0, softPreview: boolean = false) {
-    /* SDA CUSTOM */     if (!this.showChartFillColor || !this.edaChart?.chartDataset) {
-    /* SDA CUSTOM */         return;
-    /* SDA CUSTOM */     }
-    /* SDA CUSTOM */     const fillColor = this.hex2rgb(this.chartFillColor, 90);
-    /* SDA CUSTOM */     this.edaChart.chartDataset.forEach(dataset => {
-    /* SDA CUSTOM */         dataset.backgroundColor = fillColor;
-    /* SDA CUSTOM */         dataset.fill = true;
-    /* SDA CUSTOM */     });
-    /* SDA CUSTOM */     if (Array.isArray(this.edaChart.chartColors)) {
-    /* SDA CUSTOM */         this.edaChart.chartColors = this.edaChart.chartColors.map(color => ({
-    /* SDA CUSTOM */             backgroundColor: fillColor,
-    /* SDA CUSTOM */             borderColor: color.borderColor
-    /* SDA CUSTOM */         }));
-    /* SDA CUSTOM */     }
-    /* SDA CUSTOM */     if (this.panelChartComponent?.componentRef?.instance?.inject) {
-    /* SDA CUSTOM */         this.panelChartComponent.componentRef.instance.inject.edaChart = this.edaChart;
-    /* SDA CUSTOM */     }
-    /* SDA CUSTOM */     this.syncKpiLiveConfig();
-    /* SDA CUSTOM */     if (softPreview) {
-    /* SDA CUSTOM */         this.schedulePreviewUpdate(debounceMs);
-    /* SDA CUSTOM */     } else {
-    /* SDA CUSTOM */         this.schedulePreviewRefresh(false, debounceMs);
-    /* SDA CUSTOM */     }
-    /* SDA CUSTOM */ }
-
-    /* SDA CUSTOM */ private getKpiChartFillColor(): string {
-    /* SDA CUSTOM */     const chartColors = this.edaChart?.chartColors || [];
-    /* SDA CUSTOM */     const background = chartColors[0]?.backgroundColor || this.edaChart?.chartDataset?.[0]?.backgroundColor;
-    /* SDA CUSTOM */     return this.normalizeHexColor(background, '');
-    /* SDA CUSTOM */ }
-
-    /* SDA CUSTOM */ private isKpiAreaChart(): boolean {
-    /* SDA CUSTOM */     const panelType = this.panelChartConfig?.chartType;
-    /* SDA CUSTOM */     const panelSubType = this.panelChartConfig?.edaChart;
-    /* SDA CUSTOM */     const edaChartType = this.edaChart?.chartType;
-    /* SDA CUSTOM */     const kpiType = this.edaChart?.kpiChart;
-    /* SDA CUSTOM */     return panelType === 'kpiarea' || panelSubType === 'kpiarea' || edaChartType === 'area' || kpiType === 'kpiarea';
-    /* SDA CUSTOM */ }
-
-    /* SDA CUSTOM */ private syncKpiLiveConfig(): void {
-    /* SDA CUSTOM */     if (!this.panelChartConfig?.config) {
-    /* SDA CUSTOM */         return;
-    /* SDA CUSTOM */     }
-    /* SDA CUSTOM */     const config: any = this.panelChartConfig.config.getConfig();
-    /* SDA CUSTOM */     config.lineWidth = this.lineWidth;
-    /* SDA CUSTOM */     config.lineStyle = this.lineStyle;
-    /* SDA CUSTOM */     config.color = this.kpiColor;
-    /* SDA CUSTOM */     config.showXAxis = this.showXAxis;
-    /* SDA CUSTOM */     config.showXAxisLabels = this.showXAxisLabels;
-    /* SDA CUSTOM */     config.xAxisLabelCount = this.xAxisLabelCount;
-    /* SDA CUSTOM */     config.labelColor = this.labelColor;
-    /* SDA CUSTOM */     config.labelBackgroundColor = this.labelBackgroundColor;
-    /* SDA CUSTOM */     config.showLabels = this.showLabels;
-    /* SDA CUSTOM */     config.showLabelsPercent = this.showLabelsPercent;
-    /* SDA CUSTOM */     if (this.edaChart?.chartColors) {
-    /* SDA CUSTOM */         config.colors = this.edaChart.chartColors;
-    /* SDA CUSTOM */     }
-    /* SDA CUSTOM */     if (config?.edaChart) {
-    /* SDA CUSTOM */         config.edaChart.showLabels = this.showLabels;
-    /* SDA CUSTOM */         config.edaChart.showLabelsPercent = this.showLabelsPercent;
-    /* SDA CUSTOM */         config.edaChart.labelBackgroundColor = this.labelBackgroundColor;
-    /* SDA CUSTOM */         if (this.edaChart?.chartColors) {
-    /* SDA CUSTOM */             config.edaChart.colors = this.edaChart.chartColors;
-    /* SDA CUSTOM */         }
-    /* SDA CUSTOM */     }
-    /* SDA CUSTOM */ }
-
-    /* SDA CUSTOM */ private refreshKpiPreview(forceRebuild: boolean = false): void {
-    /* SDA CUSTOM */     const refreshFromPanel = () => {
-    /* SDA CUSTOM */         if (!this.panelChartComponent) {
-    /* SDA CUSTOM */             return;
-    /* SDA CUSTOM */         }
-    /* SDA CUSTOM */         // Rebuild current chart in preview so every option change is reflected immediately.
-    /* SDA CUSTOM */         this.panelChartComponent.changeChartType();
-    /* SDA CUSTOM */         const nextEdaChart = this.panelChartComponent?.componentRef?.instance?.inject?.edaChart;
-    /* SDA CUSTOM */         if (nextEdaChart) {
-    /* SDA CUSTOM */             this.edaChart = nextEdaChart;
-    /* SDA CUSTOM */             if (Array.isArray(this.edaChart?.chartDataset)) {
-    /* SDA CUSTOM */                 this.loadChartColors();
-    /* SDA CUSTOM */             }
-    /* SDA CUSTOM */         }
-    /* SDA CUSTOM */         this.panelChartComponent.updateComponent?.();
-    /* SDA CUSTOM */     };
-
-    /* SDA CUSTOM */     if (forceRebuild) {
-    /* SDA CUSTOM */         this.panelChartConfig = new PanelChart(this.panelChartConfig);
-    /* SDA CUSTOM */         setTimeout(_ => {
-    /* SDA CUSTOM */             refreshFromPanel();
-    /* SDA CUSTOM */         });
-    /* SDA CUSTOM */         return;
-    /* SDA CUSTOM */     }
-    /* SDA CUSTOM */     refreshFromPanel();
-    /* SDA CUSTOM */ }
-
-    /* SDA CUSTOM */ private schedulePreviewRefresh(forceRebuild: boolean = false, debounceMs: number = 0): void {
-    /* SDA CUSTOM */     if (debounceMs <= 0) {
-    /* SDA CUSTOM */         this.refreshKpiPreview(forceRebuild);
-    /* SDA CUSTOM */         return;
-    /* SDA CUSTOM */     }
-    /* SDA CUSTOM */     if (this.previewRefreshTimer) {
-    /* SDA CUSTOM */         clearTimeout(this.previewRefreshTimer);
-    /* SDA CUSTOM */     }
-    /* SDA CUSTOM */     this.previewRefreshTimer = setTimeout(() => {
-    /* SDA CUSTOM */         this.previewRefreshTimer = null;
-    /* SDA CUSTOM */         this.refreshKpiPreview(forceRebuild);
-    /* SDA CUSTOM */     }, debounceMs);
-    /* SDA CUSTOM */ }
-
-    /* SDA CUSTOM */ // SDA CUSTOM - Soft preview update to keep color pickers opened while selecting
-    /* SDA CUSTOM */ private schedulePreviewUpdate(debounceMs: number = 0): void {
-    /* SDA CUSTOM */     const updateFromPanel = () => {
-    /* SDA CUSTOM */         if (!this.panelChartComponent?.componentRef?.instance) {
-    /* SDA CUSTOM */             return;
-    /* SDA CUSTOM */         }
-    /* SDA CUSTOM */         this.panelChartComponent.componentRef.instance.inject.edaChart = this.edaChart;
-    /* SDA CUSTOM */         this.panelChartComponent.updateComponent?.();
-    /* SDA CUSTOM */     };
-
-    /* SDA CUSTOM */     if (debounceMs <= 0) {
-    /* SDA CUSTOM */         updateFromPanel();
-    /* SDA CUSTOM */         return;
-    /* SDA CUSTOM */     }
-    /* SDA CUSTOM */     if (this.previewRefreshTimer) {
-    /* SDA CUSTOM */         clearTimeout(this.previewRefreshTimer);
-    /* SDA CUSTOM */     }
-    /* SDA CUSTOM */     this.previewRefreshTimer = setTimeout(() => {
-    /* SDA CUSTOM */         this.previewRefreshTimer = null;
-    /* SDA CUSTOM */         updateFromPanel();
-    /* SDA CUSTOM */     }, debounceMs);
-    /* SDA CUSTOM */ }
-    /* SDA CUSTOM */ // END SDA CUSTOM
-    /* SDA CUSTOM */ // END SDA CUSTOM
-
-    /* SDA CUSTOM */ // SDA CUSTOM - Normalize color values for dialog inputs
-    /* SDA CUSTOM */ private normalizeHexColor(color: any, fallback: string = ''): string {
-    /* SDA CUSTOM */     const resolvedColor = Array.isArray(color) ? color[0] : color;
-    /* SDA CUSTOM */     if (typeof resolvedColor !== 'string') {
-    /* SDA CUSTOM */         return fallback;
-    /* SDA CUSTOM */     }
-    /* SDA CUSTOM */     const trimmed = resolvedColor.trim();
-    /* SDA CUSTOM */     const shortHexMatch = /^#([0-9a-fA-F]{3})$/.exec(trimmed);
-    /* SDA CUSTOM */     if (shortHexMatch) {
-    /* SDA CUSTOM */         const [r, g, b] = shortHexMatch[1].split('');
-    /* SDA CUSTOM */         return `#${r}${r}${g}${g}${b}${b}`;
-    /* SDA CUSTOM */     }
-    /* SDA CUSTOM */     if (/^#([0-9a-fA-F]{6})$/.test(trimmed)) {
-    /* SDA CUSTOM */         return trimmed;
-    /* SDA CUSTOM */     }
-    /* SDA CUSTOM */     if (/^rgba?\(/i.test(trimmed)) {
-    /* SDA CUSTOM */         return this.rgb2hex(trimmed) || fallback;
-    /* SDA CUSTOM */     }
-    /* SDA CUSTOM */     return fallback;
-    /* SDA CUSTOM */ }
-    /* SDA CUSTOM */ // END SDA CUSTOM
-
-    /* SDA CUSTOM */ private getLineDash(style: string): number[] {
-        /* SDA CUSTOM */ switch (style) {
-            /* SDA CUSTOM */ case 'dashed':
-                /* SDA CUSTOM */ return [8, 4];
-            /* SDA CUSTOM */ case 'dotted':
-                /* SDA CUSTOM */ return [2, 4];
-            /* SDA CUSTOM */ case 'solid':
-            /* SDA CUSTOM */ default:
-                /* SDA CUSTOM */ return [];
-        /* SDA CUSTOM */ }
+        // Apply to the chart
+        this.applyColorsToChart();
     }
 
-    openConfigDialog($event, alert) {
+    setColor(hex: string) {
+        this.color = hex;
+    }
 
-        this.userService.getUsers().subscribe(
-            res => this.users = res.map(user => ({ label: user.name, value: user })),
-            err => console.log(err)
-        );
-
-
-        this.enabled = alert.mailing.enabled;
-        this.hours = `${alert.mailing.hours || '00'}:${alert.mailing.minutes || '00'}`;
-        this.units = alert.mailing.units;
-        this.quantity = alert.mailing.quantity;
-        this.selectedUsers = alert.mailing.users;
-        this.mailMessage = alert.mailing.mailMessage;
+    openConfigDialog(alert) {
         this.currentAlert = alert;
-        this.mailConfig.toggle($event);
+        this.mailConfigOpen = true;
     }
 
-    saveMailingConfig() {
-
-        const hours = this.hours && typeof this.hours === 'string' ? this.hours.slice(0, 2) :
-            this.hours ? this.fillWithZeros(this.hours.getHours()) : null;
-        const minutes = this.hours && typeof this.hours === 'string' ? this.hours.slice(3, 5) :
-            this.hours ? this.fillWithZeros(this.hours.getMinutes()) : null;
-
-
-        this.currentAlert.mailing = {
-            units: this.units,
-            quantity: this.quantity,
-            hours: hours,
-            minutes: minutes,
-            users: this.selectedUsers,
-            mailMessage: this.mailMessage,
-            lastUpdated: '2000-01-01T00:00:01.000',
-            enabled: this.enabled
+    onMailConfigApply(mailingConfig: any) {
+        if (this.currentAlert) {
+            this.currentAlert.mailing = mailingConfig;
         }
-
+        this.mailConfigOpen = false;
         this.currentAlert = null;
-        this.units = null;
-        this.quantity = null;
-        this.hours = null;
-        this.mailMessage = null;
-        this.selectedUsers = [];
-        this.mailConfig.hide();
     }
 
     closeMailingConfig() {
         this.currentAlert = null;
-        this.units = null;
-        this.quantity = null;
-        this.hours = null;
-        this.mailMessage = null;
-        this.selectedUsers = [];
-        this.mailConfig.hide();
+        this.mailConfigOpen = false;
     }
 
-    fillWithZeros(n: number) {
-        if (n < 10) return `0${n}`
-        else return `${n}`;
+    onPaletteSelected() {
+        if (!this.selectedPalette || !this.selectedPalette.paleta || !this.chartContent) return;
+
+        const dataset = this.chartContent.chartDataset;
+        const paletteColors = this.selectedPalette.paleta;
+        let numColors = dataset.length;
+
+        if (dataset.length > 0 && Array.isArray(dataset[0].backgroundColor)) {
+            numColors = dataset[0].backgroundColor.length;
+        }
+
+        const interpolatedColors = this.ChartUtilsService.generateRGBColorGradientScaleD3(numColors, paletteColors);
+
+        // Update assignedColors with the new colors
+        this.assignedColors = dataset.map((d, i) => ({
+            value: d.label,
+            color: interpolatedColors[i % interpolatedColors.length].color
+        }));
+
+        // Apply colors
+        this.applyColorsToChart();
     }
 
-    disableMailConfirm() {
-        return (!this.quantity || !this.units || !(this.selectedUsers.length > 0) || !this.mailMessage)
+    updateKpiBackground() {
+        const instance = this.panelChartComponent?.componentRef?.instance;
+        if (instance) {
+            instance.inject.backgroundColor = this.kpiBackgroundColor;
+            this.panelChartComponent.componentRef.changeDetectorRef.detectChanges();
+        }
     }
 
+    updateKpiTextColor() {
+        const instance = this.panelChartComponent?.componentRef?.instance;
+        if (instance) {
+            instance.inject.kpiColor = this.kpiTextColor;
+            if (this.isKpiDeviation) {
+                instance.updateChart?.();
+            } else {
+                instance.color = this.kpiTextColor || instance.defaultColor;
+                this.panelChartComponent.componentRef.changeDetectorRef.detectChanges();
+            }
+        }
+    }
+
+    openPrefixImageInNewTab(): void {
+        const win = window.open('', '_blank');
+        win.document.write(`<html><body style="margin:0;background:#111;display:flex;align-items:center;justify-content:center;min-height:100vh"><img src="${this.prefixImage}" style="max-width:100%;max-height:100vh"></body></html>`);
+        win.document.close();
+    }
+
+    onPrefixImageSelected(event: Event): void {
+        const input = event.target as HTMLInputElement;
+        const file = input?.files?.[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = () => {
+            this.prefixImage = reader.result as string;
+            this.updatePrefixImage();
+        };
+        reader.readAsDataURL(file);
+    }
+
+    updatePrefixImage() {
+        const instance = this.panelChartComponent?.componentRef?.instance;
+        if (instance) {
+            instance.inject.prefixImage = this.prefixImage;
+            if (this.isKpiDeviation) {
+                instance.updateChart?.();
+            } else {
+                this.panelChartComponent.componentRef.changeDetectorRef.detectChanges();
+            }
+        }
+    }
+
+    modifyKpiSize(newValue?: number) {
+        const min = -90;
+        const max = 300;
+        if (newValue !== undefined) {
+            this.modifiedFontPoints = Math.min(max, Math.max(min, newValue || 0));
+        } else {
+            this.modifiedFontPoints = Math.min(max, Math.max(min, this.modifiedFontPoints));
+        }
+        const instance = this.panelChartComponent.componentRef.instance;
+        instance.inject.modifiedFontPoints = this.modifiedFontPoints;
+        this.panelChartComponent.componentRef.changeDetectorRef.detectChanges();
+    }
+
+    // --- Edalitics size controls: image/value/suffix independent scales (plain kpi / kpi+chart only) ---
+
+    /**
+     * Displayed as a percentage of each control's real default (not of the raw stored fraction):
+     * 100% always means "as it is by default" — image at its default width share, value/suffix at
+     * their default fit scale — and e.g. 200% means twice that real value, whatever it numerically
+     * is. The stored value (inject.imageScale/valueFontScale/sufixFontScale) stays the actual
+     * fraction the renderer uses; only this display/edit layer is relative.
+     */
+    get imageScalePercent(): number {
+        return Math.round((this.imageScale / KPI_CONFIG.IMAGE_DEFAULT_SCALE) * 100);
+    }
+
+    get valueFontScalePercent(): number {
+        return Math.round((this.valueFontScale / KPI_CONFIG.DEFAULT_FONT_SCALE) * 100);
+    }
+
+    get sufixFontScalePercent(): number {
+        return Math.round((this.sufixFontScale / KPI_CONFIG.DEFAULT_FONT_SCALE) * 100);
+    }
+
+    canDecreaseImageScale(): boolean {
+        return this.imageScale > this.imageScaleMin + 1e-9;
+    }
+
+    canIncreaseImageScale(): boolean {
+        return this.imageScale < this.imageScaleMax - 1e-9;
+    }
+
+    canDecreaseValueScale(): boolean {
+        return this.valueFontScale > this.fontScaleMin + 1e-9;
+    }
+
+    canIncreaseValueScale(): boolean {
+        return this.valueFontScale < this.fontScaleMax - 1e-9;
+    }
+
+    canDecreaseSufixScale(): boolean {
+        return this.sufixFontScale > this.fontScaleMin + 1e-9;
+    }
+
+    canIncreaseSufixScale(): boolean {
+        return this.sufixFontScale < this.fontScaleMax - 1e-9;
+    }
+
+    increaseImageScale(): void {
+        this.setImageScale(this.imageScale + KPI_CONFIG.IMAGE_DEFAULT_SCALE * this.scaleStep);
+    }
+
+    decreaseImageScale(): void {
+        this.setImageScale(this.imageScale - KPI_CONFIG.IMAGE_DEFAULT_SCALE * this.scaleStep);
+    }
+
+    increaseValueScale(): void {
+        this.setValueScale(this.valueFontScale + KPI_CONFIG.DEFAULT_FONT_SCALE * this.scaleStep);
+    }
+
+    decreaseValueScale(): void {
+        this.setValueScale(this.valueFontScale - KPI_CONFIG.DEFAULT_FONT_SCALE * this.scaleStep);
+    }
+
+    increaseSufixScale(): void {
+        this.setSufixScale(this.sufixFontScale + KPI_CONFIG.DEFAULT_FONT_SCALE * this.scaleStep);
+    }
+
+    decreaseSufixScale(): void {
+        this.setSufixScale(this.sufixFontScale - KPI_CONFIG.DEFAULT_FONT_SCALE * this.scaleStep);
+    }
+
+    private setImageScale(value: number): void {
+        this.imageScale = +Math.min(this.imageScaleMax, Math.max(this.imageScaleMin, value)).toFixed(2);
+        this.applyEdaSizeToInstance();
+    }
+
+    private setValueScale(value: number): void {
+        this.valueFontScale = +Math.min(this.fontScaleMax, Math.max(this.fontScaleMin, value)).toFixed(2);
+        this.applyEdaSizeToInstance();
+    }
+
+    private setSufixScale(value: number): void {
+        this.sufixFontScale = +Math.min(this.fontScaleMax, Math.max(this.fontScaleMin, value)).toFixed(2);
+        this.applyEdaSizeToInstance();
+    }
+
+    private applyEdaSizeToInstance(): void {
+        const instance = this.panelChartComponent?.componentRef?.instance;
+        if (!instance?.inject) return;
+        instance.inject.imageScale = this.imageScale;
+        instance.inject.valueFontScale = this.valueFontScale;
+        instance.inject.sufixFontScale = this.sufixFontScale;
+        this.panelChartComponent.componentRef.changeDetectorRef.detectChanges();
+    }
+
+    // --- END Edalitics size controls ---
 }

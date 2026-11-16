@@ -1,8 +1,6 @@
 export class TreeMapConfig {
   colors: Array<string>;
-  assignedColors: any[];
-  constructor(colors: Array<string>, assignedColors: any[]) {
-    this.colors = colors;
-    this.assignedColors = assignedColors || [];
+  constructor(colors: Array<string>) {
+    this.colors = colors || [];
   }
 }

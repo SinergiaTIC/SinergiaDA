@@ -1,23 +1,34 @@
 import { EdaDialogController } from './../../../../../shared/components/eda-dialogs/eda-dialog/eda-dialog-controller';
 import { TableConfig } from '../panel-charts/chart-configuration-models/table-config';
-import { Component, ViewChild, AfterViewInit, Inject } from '@angular/core';
+import { Component, ViewChild, Input } from '@angular/core';
 import { EdaDialog, EdaDialogCloseEvent } from '@eda/shared/components/eda-dialogs/eda-dialog/eda-dialog';
-import { EdaDialogAbstract } from '@eda/shared/components/eda-dialogs/eda-dialog/eda-dialog-abstract';
 import { MenuItem } from 'primeng/api';
 import * as _ from 'lodash';
 import { PanelChart } from '../panel-charts/panel-chart';
 import { PanelChartComponent } from '../panel-charts/panel-chart.component';
 import { ChartConfig } from '../panel-charts/chart-configuration-models/chart-config';
-
+import { StyleProviderService, SpinnerService } from '@eda/services/service.index';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { EdaDialog2Component } from '@eda/shared/components/shared-components.index';
+import { MenubarModule } from 'primeng/menubar';
+import { TableGradientDialogComponent } from './gradient-dialog/gradient-dialog.component';
+import { PredictionDialogComponent, PredictionConfig, QueryColumn } from '../prediction-dialog/prediction-dialog.component';
+import { QueryUtils } from '../panel-utils/query-utils';
+import { DEFAULT_TABLE_HEADER_COLOR, DEFAULT_TABLE_BANDING_COLOR } from '@eda/configs/customizable/customizable_merged';
+import { ColorPickerModule } from 'primeng/colorpicker';
 
 @Component({
+  standalone: true,
   selector: 'app-table-dialog',
   templateUrl: './table-dialog.component.html',
-  styleUrls: ['../../../../../../assets/sass/eda-styles/components/table-dialog.component.css']
+  styleUrls: ['../../../../../../assets/sass/eda-styles/components/table-dialog.component.css'],
+  imports: [CommonModule, FormsModule, EdaDialog2Component, MenubarModule, TableGradientDialogComponent, PanelChartComponent, PredictionDialogComponent, ColorPickerModule]
 })
 
-export class TableDialogComponent extends EdaDialogAbstract implements AfterViewInit {
-
+export class TableDialogComponent{
+  @Input() controller: any;
+  @Input() dashboard: any;
   @ViewChild('PanelChartComponent', { static: false }) myPanelChartComponent: PanelChartComponent;
 
   public dialog: EdaDialog;
@@ -25,7 +36,7 @@ export class TableDialogComponent extends EdaDialogAbstract implements AfterView
   public items: MenuItem[];
 
   public gradientMenuController: EdaDialogController;
-
+  // TODO REVIEW THE CONTROLLER WHEN IT STARTS
 
   public row_totals;
   public col_totals;
@@ -40,6 +51,11 @@ export class TableDialogComponent extends EdaDialogAbstract implements AfterView
   public noRepetitions : boolean = false;
   public negativeNumbers : boolean = false;
   public ordering: Array<any> = [];
+  public crossSortOrder: string = 'alphabetical';
+
+  public headerColor: string = '';
+  public bandingColor: string = '';
+  public colorEnabled: boolean = true;
 
   /**Strings */
   public addTotals: string = $localize`:@@addTotals:Totales`;
@@ -56,34 +72,40 @@ export class TableDialogComponent extends EdaDialogAbstract implements AfterView
   public addValuesPercentages: string = $localize`:@@addValuesPercentages:Valores y Porcentajes`;
   public addTrend: string = $localize`:@@addtrend:Tendencia`;
   public removeTrend: string = $localize`:@@removetrend:Quitar tendencia`;
-  public seeRepetitions: string = $localize`:@@seeRepetitions: ver/ocultar valores repetidos`;
+  public seeRepetitions: string = $localize`:@@seeHideRepetitions: ver/ocultar valores repetidos`;
   public withRepetitions: string = $localize`:@@seeRepetitions: ver valores repetidos`;
-  public withNoRepetitions: string = $localize`:@@seeRepetitions: ocultar valores repetidos`;
+  public withNoRepetitions: string = $localize`:@@hideRepetitions: ocultar valores repetidos`;
   public withNegativeNumbers: string = $localize`:@@withNegativeNumbers: Con números negativos`;
   public withoutNegativeNumbers: string = $localize`:@@withoutNegativeNumbers: Sin números negativos`;
   public seeNegativeNumbers: string = $localize`:@@seeNegativeNumbers: Números negativos`;
+  public addCrossSorting: string = $localize`:@@addCrossSorting:Ordenación`;
+  public sortByValueLabel: string = $localize`:@@sortByValue:Por valor descendente`;
+  public sortByValueAscLabel: string = $localize`:@@sortByValueAsc:Por valor ascendente`;
+  public sortAlphabeticalLabel: string = $localize`:@@sortAlphabetical:Alfabética`;
 
   public tableTitleDialog = $localize`:@@tableTitleDialog:Propiedades de la tabla`;
+  public display: boolean = false;
+  public title: string = this.tableTitleDialog;
 
-  constructor() {
-    super();
+  public showPredictionDialog: boolean = false;
+  public showPredictionCol: boolean = false;
+  public predictionMethod: string = 'Arima';
 
-    this.dialog = new EdaDialog({
-      show: () => this.onShow(),
-      hide: () => this.onClose(EdaDialogCloseEvent.NONE),
-      title: this.tableTitleDialog
-    });
-    this.dialog.style = { width: '80%', height: '70%', top:"-4em", left:'1em'};
-  }
-  ngAfterViewInit(): void {
+  private originalPrediction: string;
+  private pendingPrediction: PredictionConfig | null = null;
 
-  }
+  public addPrediction: string = $localize`:@@showLinesPrediction:Mostrar Predicción`;
+  public removePrediction: string = $localize`:@@removePrediction:Quitar Predicción`;
+
+  constructor(private styleProviderService: StyleProviderService, private spinnerService: SpinnerService) {}
 
   setChartProperties() {
     this.setCols();
-    this.styles = this.myPanelChartComponent.componentRef.instance.inject.styles || []; // si es null regresa vacio
+    const inject = this.myPanelChartComponent.componentRef.instance.inject;
+    this.styles = inject.styles || [];
   }
-  onShow(): void {
+  ngOnInit(): void {
+    
     this.panelChartConfig = this.controller.params.panelChart;
     if (this.panelChartConfig && this.panelChartConfig.config) {
       const config = (<TableConfig>this.panelChartConfig.config.getConfig());
@@ -98,17 +120,78 @@ export class TableDialogComponent extends EdaDialogAbstract implements AfterView
       this.noRepetitions = config.noRepetitions;
       this.ordering = config.ordering;
       this.negativeNumbers = config.negativeNumbers;
+      this.crossSortOrder = config.crossSortOrder || 'alphabetical';
+      this.headerColor = config.headerColor || DEFAULT_TABLE_HEADER_COLOR;
+      this.bandingColor = config.bandingColor || DEFAULT_TABLE_BANDING_COLOR;
+      this.colorEnabled = config.colorEnabled !== false;
     } else {
       this.panelChartConfig.config = new ChartConfig(
         new TableConfig(false, false, 5, false, false, false, false, null, null, null, false, false, [])
       )
+      this.headerColor = DEFAULT_TABLE_HEADER_COLOR;
+      this.bandingColor = DEFAULT_TABLE_BANDING_COLOR;
+      this.colorEnabled = true;
     }
-
+    // Read the current prediction state of the panel
+    const panelID = this.controller?.params?.panelId;
+    const dashboardPanel = this.dashboard?.edaPanels?.toArray().find((cmp: any) => cmp.panel.id === panelID);
+    const existingPrediction = dashboardPanel?.panel?.content?.query?.query?.prediction;
+    this.showPredictionCol = !!(existingPrediction && existingPrediction !== 'None');
+    if (this.showPredictionCol) {
+      this.predictionMethod = existingPrediction;
+    }
+    this.originalPrediction = dashboardPanel?.panel?.content?.query?.query?.prediction;
     this.setItems();
   }
 
 
-  private rowTotals() {
+  get chartType(): string {
+    return this.controller?.params?.panelChart?.chartType || 'table';
+  }
+
+  get percentageMode(): 'none' | 'both' | 'only' {
+    if (this.onlyPercentages) return 'only';
+    if (this.resultAsPecentage) return 'both';
+    return 'none';
+  }
+
+  setPercentageMode(mode: 'none' | 'both' | 'only') {
+    const currentConfig = this.myPanelChartComponent.currentConfig;
+    if (mode === 'none') {
+      currentConfig.resultAsPecentage = false;
+      currentConfig.onlyPercentages = false;
+    } else if (mode === 'both') {
+      currentConfig.resultAsPecentage = true;
+      currentConfig.onlyPercentages = false;
+    } else {
+      currentConfig.resultAsPecentage = true;
+      currentConfig.onlyPercentages = true;
+      currentConfig.withColSubTotals = false;
+      this.col_subtotals = false;
+      currentConfig.withColTotals = false;
+      this.col_totals = false;
+    }
+    this.myPanelChartComponent.componentRef.instance.inject.checkTotals(null);
+    this.resultAsPecentage = currentConfig.resultAsPecentage;
+    this.onlyPercentages = currentConfig.onlyPercentages;
+    this.setCols();
+    this.setItems();
+  }
+
+  get sortOptions() {
+    return [
+      { label: this.sortAlphabeticalLabel, value: 'alphabetical' },
+      { label: this.sortByValueLabel, value: 'value' },
+      { label: this.sortByValueAscLabel, value: 'valueAsc' },
+    ];
+  }
+
+  public togglePrediction() {
+    this.showPredictionCol = !this.showPredictionCol;
+    this.setPredictionCol();
+  }
+
+  public rowTotals() {
     const currentConfig = this.myPanelChartComponent.currentConfig;
     currentConfig.withTrend = false;
     currentConfig.withRowTotals = !currentConfig.withRowTotals;
@@ -117,7 +200,7 @@ export class TableDialogComponent extends EdaDialogAbstract implements AfterView
     this.setItems();
   }
 
-  private rowTrend() {
+  public rowTrend() {
     const currentConfig = this.myPanelChartComponent.currentConfig;
     currentConfig.withRowTotals = false;
     currentConfig.withTrend = !currentConfig.withTrend;
@@ -126,7 +209,7 @@ export class TableDialogComponent extends EdaDialogAbstract implements AfterView
     this.setItems();
   }
 
-  private colSubTotals() {
+  public colSubTotals() {
 
     const currentConfig = this.myPanelChartComponent.currentConfig;
 
@@ -137,7 +220,7 @@ export class TableDialogComponent extends EdaDialogAbstract implements AfterView
     this.setItems();
   }
 
-  private colTotals() {
+  public colTotals() {
 
     const currentConfig = this.myPanelChartComponent.currentConfig;
 
@@ -150,7 +233,7 @@ export class TableDialogComponent extends EdaDialogAbstract implements AfterView
     this.setItems();
   }
 
-  private noRepeat() {
+  public noRepeat() {
 
     const currentConfig = this.myPanelChartComponent.currentConfig;
     currentConfig.noRepetitions = !currentConfig.noRepetitions;
@@ -163,7 +246,7 @@ export class TableDialogComponent extends EdaDialogAbstract implements AfterView
     this.setItems();
   }
 
-  private noNegativeNumbers() {
+  public noNegativeNumbers() {
 
     const currentConfig = this.myPanelChartComponent.currentConfig;
 
@@ -199,13 +282,13 @@ export class TableDialogComponent extends EdaDialogAbstract implements AfterView
   }
 
   private setOnlyPercentages() {
-    
+
     const currentConfig = this.myPanelChartComponent.currentConfig;
 
     currentConfig.resultAsPecentage = !currentConfig.onlyPercentages;
     currentConfig.onlyPercentages = !currentConfig.onlyPercentages;
 
-    //no totals
+    // no totals
     currentConfig.withColSubTotals = false;
     this.col_subtotals = currentConfig.withColSubTotals;
 
@@ -220,12 +303,13 @@ export class TableDialogComponent extends EdaDialogAbstract implements AfterView
 
   }
 
-  private setStyle(col) {
-
+  public setStyle(col) {
     if (this.controller.params.panelChart.chartType === 'table') {
+      const queryCol = this.queryNumericColumns.find(q => q.display_name === col.header || q.column_name === col.field);
       this.gradientMenuController = new EdaDialogController({
         params: {
           col: col,
+          tableOrigin: queryCol?.table_id,
           style: this.styles.filter(style => style.col === col.field)[0]
         },
         close: (event, response) => this.onCloseGradientController(event, response)
@@ -238,14 +322,12 @@ export class TableDialogComponent extends EdaDialogAbstract implements AfterView
         },
         close: (event, response) => this.onCloseGradientController(event, response, col)
       })
-
     }
   }
 
-  private setCols() {    
+  private setCols() {
 
     if (this.controller.params.panelChart.chartType === 'table') {
-      
       if (this.onlyPercentages) {
         this.cols = this.myPanelChartComponent.componentRef.instance.inject.cols.filter(col => col.type === "EdaColumnPercentage");
       }
@@ -253,12 +335,13 @@ export class TableDialogComponent extends EdaDialogAbstract implements AfterView
         this.cols = this.myPanelChartComponent.componentRef.instance.inject.cols.filter(col => col.type === "EdaColumnNumber" || col.type === "EdaColumnPercentage");
       }
     } else {
-      // El codigo de color solo aplica a un nivel de crosstab
+      // The color code only applies to one crosstab level
       this.cols = [];
 
       let series = this.myPanelChartComponent.componentRef.instance.inject.series;
+
       let cols = new Map();
-      
+
       series[series.length - 1].labels.forEach(serie => {
         if (!cols.has(serie.metric)) {
           cols.set(serie.metric, [serie.column])
@@ -279,14 +362,112 @@ export class TableDialogComponent extends EdaDialogAbstract implements AfterView
 
       if (this.onlyPercentages) this.cols = [];
     }
-    this.setItems(); // Aqui se busca la modificación de colores
+    this.setItems(); // This is where color modification is requested
+  }
+
+  get queryNumericColumns(): QueryColumn[] {
+    const panelID = this.controller?.params?.panelId;
+    if (!panelID || !this.dashboard) return [];
+    const dashboardPanel = this.dashboard.edaPanels?.toArray().find((cmp: any) => cmp.panel.id === panelID);
+    const fields: any[] = dashboardPanel?.panel?.content?.query?.query?.fields;
+    if (!fields) return [];
+    return fields
+      .filter((f: any) => f.column_type === 'numeric')
+      .map((f: any) => ({
+        column_name: f.column_name,
+        table_id: f.table_id,
+        display_name: f.display_name?.default || f.column_name
+      }));
+  }
+
+  setPredictionCol() {
+    if (this.showPredictionCol) {
+      this.showPredictionDialog = true;
+    } else {
+      this.pendingPrediction = null;
+      // If there was an active prediction, reload the preview without prediction
+      if (this.originalPrediction && this.originalPrediction !== 'None') {
+        this.runPreviewQuery(null);
+      }
+      this.setItems();
+    }
+  }
+
+  async confirmPrediction(predictionConfig: PredictionConfig) {
+    this.showPredictionDialog = false;
+    this.predictionMethod = predictionConfig.method;
+    this.pendingPrediction = predictionConfig;
+    await this.runPreviewQuery(predictionConfig);
+    this.setItems();
+  }
+
+  private async runPreviewQuery(pred: PredictionConfig | null) {
+    const panelID = this.controller?.params?.panelId;
+    const dashboardPanel = this.dashboard?.edaPanels?.toArray().find((cmp: any) => cmp.panel.id === panelID);
+    if (!dashboardPanel) return;
+
+    this.spinnerService.on();
+    try {
+      // Temporarily set the prediction to build the query
+      const origPred = dashboardPanel.panel.content.query.query.prediction;
+      const origPredConfig = dashboardPanel.panel.content.query.query.predictionConfig;
+
+      dashboardPanel.panel.content.query.query.prediction = pred ? pred.method : 'None';
+      dashboardPanel.panel.content.query.query.predictionConfig = pred ? {
+        steps: pred.steps,
+        targetColumn: pred.targetColumn,
+        arimaParams: pred.arimaParams,
+        tensorflowParams: pred.tensorflowParams,
+      } : null;
+
+      const query = QueryUtils.switchAndBuildQuery(dashboardPanel);
+
+      // Revert immediately (synchronously, before the await)
+      dashboardPanel.panel.content.query.query.prediction = origPred;
+      dashboardPanel.panel.content.query.query.predictionConfig = origPredConfig;
+
+      // Execute the query directly without going through runQueryFromDashboard
+      const response = await dashboardPanel.dashboardService.executeQuery(query).toPromise();
+      const chartLabels = dashboardPanel.chartUtils.uniqueLabels(response[0]);
+      const chartData = response[1];
+
+      // Update only the dialog preview
+      this.panelChartConfig = new PanelChart({
+        ...this.panelChartConfig,
+        data: { labels: chartLabels, values: chartData },
+      });
+    } finally {
+      this.spinnerService.off();
+    }
+  }
+
+  cancelPrediction() {
+    this.showPredictionDialog = false;
+    this.showPredictionCol = false;
+  }
+
+  public toggleColorEnabled() {
+    this.colorEnabled = !this.colorEnabled;
+    this.applyBandingPreview();
+  }
+
+  public applyBandingPreview() {
+    const tableComponent = this.myPanelChartComponent?.componentRef?.instance;
+    if (tableComponent && typeof tableComponent.applyBandingColors === 'function') {
+      tableComponent.applyBandingColors(
+        this.colorEnabled ? (this.headerColor || '') : undefined,
+        this.colorEnabled ? (this.bandingColor || '') : undefined,
+        this.colorEnabled
+      );
+    }
   }
 
   onClose(event: EdaDialogCloseEvent, response?: any): void {
+    this.myPanelChartComponent.componentRef.instance.inject.styles = this.styles;
     return this.controller.close(event, response);
   }
 
-  saveChartConfig() {
+  async saveChartConfig() {
     const config = (<TableConfig>this.panelChartConfig.config.getConfig());
     const rows = config.visibleRows;
     const sortedSerie = config.sortedSerie;
@@ -294,8 +475,37 @@ export class TableDialogComponent extends EdaDialogAbstract implements AfterView
     const styles = this.styles;
 
     const properties = new TableConfig(this.onlyPercentages, this.resultAsPecentage, rows,
-      this.col_subtotals, this.col_totals, this.row_totals, this.trend, sortedSerie, sortedColumn, styles, 
-      this.noRepetitions,this.negativeNumbers, this.ordering);
+      this.col_subtotals, this.col_totals, this.row_totals, this.trend, sortedSerie, sortedColumn, styles,
+      this.noRepetitions, this.negativeNumbers, this.ordering, this.crossSortOrder,
+      this.headerColor, this.bandingColor, this.colorEnabled);
+
+    // Apply prediction changes to the dashboard only on confirm
+    const panelID = this.controller?.params?.panelId;
+    const dashboardPanel = this.dashboard?.edaPanels?.toArray().find((cmp: any) => cmp.panel.id === panelID);
+    const hadPrediction = !!(this.originalPrediction && this.originalPrediction !== 'None');
+    const predictionChanged = (this.showPredictionCol && this.pendingPrediction !== null) ||
+                              (!this.showPredictionCol && hadPrediction);
+
+    if (dashboardPanel && predictionChanged) {
+      if (this.showPredictionCol && this.pendingPrediction) {
+        dashboardPanel.panel.content.query.query.prediction = this.pendingPrediction.method;
+        dashboardPanel.panel.content.query.query.predictionConfig = {
+          steps: this.pendingPrediction.steps,
+          targetColumn: this.pendingPrediction.targetColumn,
+          arimaParams: this.pendingPrediction.arimaParams,
+          tensorflowParams: this.pendingPrediction.tensorflowParams,
+        };
+      } else {
+        dashboardPanel.panel.content.query.query.prediction = 'None';
+        dashboardPanel.panel.content.query.query.predictionConfig = null;
+      }
+      this.spinnerService.on();
+      try {
+        await dashboardPanel.runQueryFromDashboard(true);
+      } finally {
+        this.spinnerService.off();
+      }
+    }
 
     this.onClose(EdaDialogCloseEvent.UPDATE, properties);
   }
@@ -305,35 +515,53 @@ export class TableDialogComponent extends EdaDialogAbstract implements AfterView
   }
 
   private onCloseGradientController(event, response, col?) {
+    try {
+      if (!_.isEqual(event, EdaDialogCloseEvent.NONE)) {
+        this.styles = this.styles.filter(style => style.col !== response.col);
 
-    if (!_.isEqual(event, EdaDialogCloseEvent.NONE)) {
-
-      this.styles = this.styles.filter(style => style.col !== response.col);      
-
-      if (!response.noStyle) {
-        if (this.controller.params.panelChart.chartType === 'table') {
-          this.styles.push(response);
-        } else {
-          response.col = col.header;
-          response.cols = col.col
-          this.styles.push(response);
+        if (!response.noStyle) {
+          if (this.controller.params.panelChart.chartType === 'table') {
+            this.styles.push(response);
+          } else {
+            response.col = col.header;
+            response.cols = col.col
+            this.styles.push(response);
+          }
         }
       }
+      if (!this.myPanelChartComponent.componentRef.instance.inject.pivot) {
+
+        this.myPanelChartComponent.componentRef.instance.applyStyles(this.styles, this.queryNumericColumns);
+
+      } else {
+
+        this.myPanelChartComponent.componentRef.instance.applyPivotSyles(this.styles);
+      }
+    } finally {
+      this.gradientMenuController = undefined;
     }
-    if (!this.myPanelChartComponent.componentRef.instance.inject.pivot) {
+  }
 
-      this.myPanelChartComponent.componentRef.instance.applyStyles(this.styles);
-
-    } else {
-
-      this.myPanelChartComponent.componentRef.instance.applyPivotSyles(this.styles);
-
-    }
-    this.gradientMenuController = undefined;
+  /**
+   * Applies a new sort mode to the cross table preview without closing the dialog.
+   * The EdaTable keeps the raw pre-pivot rows in origValues.  Clearing origValues and
+   * re-assigning the data forces the value setter to rebuild the pivot from scratch
+   * using the updated crossSortOrder, while also restoring the original column
+   * definitions (oldcols) so generateCrossParams can resolve axis columns correctly.
+   */
+  public setCrossSortOrder(value: string) {
+    this.crossSortOrder = value;
+    const inject = this.myPanelChartComponent.componentRef.instance.inject;
+    inject.crossSortOrder = value;
+    // Clone before clearing so origValues is not wiped before we can read it.
+    const origData = _.cloneDeep(inject.origValues);
+    inject.origValues = [];
+    inject.value = origData;
+    inject.checkTotals(null);
+    this.setItems();
   }
 
   private setItems() {
-
     if (this.controller.params.panelChart.chartType === 'table') {
       this.items = [
         {
@@ -393,14 +621,21 @@ export class TableDialogComponent extends EdaDialogAbstract implements AfterView
           icon: "pi pi-list",
           items: [
             {
-              label: this.negativeNumbers !== true ? this.withoutNegativeNumbers : this.withNegativeNumbers,   
+              label: this.negativeNumbers !== true ? this.withoutNegativeNumbers : this.withNegativeNumbers,
               command: () => this.noNegativeNumbers()
             }
           ]
+        },
+        {
+          label: this.showPredictionCol ? this.removePrediction : this.addPrediction,
+          icon: "pi pi-chart-line",
+          command: () => {
+            this.showPredictionCol = !this.showPredictionCol;
+            this.setPredictionCol();
+          }
         }
       ]
     } else {
-
       this.items = [
         {
           label: this.addTotals,
@@ -454,11 +689,31 @@ export class TableDialogComponent extends EdaDialogAbstract implements AfterView
             }
           }),
           disabled: this.onlyPercentages
+        },
+        {
+          label: this.addCrossSorting,
+          icon: "pi pi-sort-amount-down",
+          items: [
+            {
+              label: this.sortAlphabeticalLabel,
+              icon: this.crossSortOrder === 'alphabetical' ? 'pi pi-check' : 'pi pi-sort-alpha-down',
+              command: () => this.setCrossSortOrder('alphabetical')
+            },
+            {
+              label: this.sortByValueLabel,
+              icon: this.crossSortOrder === 'value' ? 'pi pi-check' : 'pi pi-sort-amount-down',
+              command: () => this.setCrossSortOrder('value')
+            },
+            {
+              label: this.sortByValueAscLabel,
+              icon: this.crossSortOrder === 'valueAsc' ? 'pi pi-check' : 'pi pi-sort-amount-up',
+              command: () => this.setCrossSortOrder('valueAsc')
+            }
+          ]
         }
-      ];
 
+      ];
     }
   }
 
 }
-

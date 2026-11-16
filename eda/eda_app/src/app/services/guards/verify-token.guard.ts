@@ -1,11 +1,11 @@
 import { Injectable } from '@angular/core';
-import { CanActivate, Router } from '@angular/router';
+import { Router } from '@angular/router';
 import { UserService } from '../api/user.service';
 
 @Injectable({
   providedIn: 'root'
 })
-export class VerifyTokenGuard implements CanActivate {
+export class VerifyTokenGuard  {
 
   constructor(
     public userService: UserService,
@@ -14,14 +14,26 @@ export class VerifyTokenGuard implements CanActivate {
 
   canActivate(): Promise<boolean> | boolean {
     const token = this.userService.getToken();
-    const payload = JSON.parse(atob(token.split('.')[1]));
+
+    if (!token) {
+      this.router.navigate(['/login']);
+      return false;
+    }
+
+    let payload: any;
+    try {
+      payload = JSON.parse(atob(token.split('.')[1]));
+    } catch (e) {
+      this.router.navigate(['/login']);
+      return false;
+    }
+
     const expired = this.expired(payload.exp);
 
     if (expired) {
       this.router.navigate(['/login']);
       return false;
     }
-
 
     return this.verifyRenove(payload.exp);
   }

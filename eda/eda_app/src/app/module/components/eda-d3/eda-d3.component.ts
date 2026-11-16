@@ -2,16 +2,19 @@ import { Component, Input, AfterViewInit, ElementRef, ViewChild, OnInit, Output,
 import * as d3 from 'd3';
 import { sankeyLinkHorizontal } from 'd3-sankey'
 import { sankey as Sankey } from 'd3-sankey';
-import { ChartsColors } from '@eda/configs/index';
 import { EdaD3 } from './eda-d3';
 import * as dataUtils from '../../../services/utils/transform-data-utils';
-import { ChartUtilsService } from '@eda/services/service.index';
+import { ChartUtilsService, StyleProviderService } from '@eda/services/service.index';
 
+import { FormsModule } from '@angular/forms'; 
+import { CommonModule } from '@angular/common';
 
 @Component({
+  standalone: true,
   selector: 'eda-d3',
   templateUrl: './eda-d3.component.html',
-  styleUrls: ['./eda-d3.component.css']
+  styleUrls: ['./eda-d3.component.css'],
+  imports: [FormsModule, CommonModule]
 })
 
 export class EdaD3Component implements AfterViewInit, OnInit {
@@ -31,9 +34,10 @@ export class EdaD3Component implements AfterViewInit, OnInit {
   width: number;
   heigth: number;
   div = null;
+  resizeObserver!: ResizeObserver;
 
 
-  constructor(private chartUtilService : ChartUtilsService) {
+  constructor(private chartUtilService : ChartUtilsService, private styleProviderService : StyleProviderService) {
   }
 
 
@@ -41,32 +45,58 @@ export class EdaD3Component implements AfterViewInit, OnInit {
   ngOnInit(): void {
     this.id = `sankey_${this.inject.id}`;
     this.data = this.inject.data;
-    this.colors = this.inject.colors.length > 0 ? this.inject.colors : ChartsColors.map(color => `rgb(${color[0]}, ${color[1]}, ${color[2]} )`);
     this.metricIndex = this.inject.dataDescription.numericColumns[0].index;
     const firstNonNumericColIndex = this.inject.dataDescription.otherColumns[0].index;
-    this.firstColLabels = this.data.values.map(row => row[firstNonNumericColIndex]);
+    this.firstColLabels = this.inject.data.values.map(row => row[firstNonNumericColIndex]);
     this.firstColLabels = [...new Set(this.firstColLabels)];
-    this.assignedColors = this.inject.assignedColors || []; 
+    this.assignedColors = this.inject.assignedColors;
+
   }
 
   ngAfterViewInit() {
+    const container = this.svgContainer.nativeElement as HTMLElement;
 
-    if (this.svg) this.svg.remove();
-    let id = `#${this.id}`;
-    this.svg = d3.select(id);
-    if (this.svg._groups[0][0] !== null && this.svgContainer.nativeElement.clientHeight > 0) {
+    // Create SVG
+    if (!this.svg)
+      this.svg = d3.select(container).append('svg');
+
+    // ResizeObserver to resize the chart
+    this.resizeObserver = new ResizeObserver(entries => {
+      const { width: w, height: h } = entries[0].contentRect;
+      if (w > 0 && h > 0) {
+        this.svg
+          .attr('width', w)
+          .attr('height', h);
+        this.draw();
+      }
+    });
+    this.resizeObserver.observe(container);
+
+    // First draw
+    const w = container.clientWidth;
+    const h = container.clientHeight;
+    if (w > 0 && h > 0) {
+      this.svg
+        .attr('width', w)
+        .attr('height', h);
       this.draw();
     }
 
   }
 
   ngOnDestroy(): void {
+    // Remove container
     if (this.div)
       this.div.remove();
+    // Disconnect resize observer
+    if (this.resizeObserver)
+      this.resizeObserver.disconnect();
   }
 
 
   draw() {
+    // Initial removal of other charts 
+    this.svg.selectAll('*').remove();
     const width = this.svgContainer.nativeElement.clientWidth - 20, height = this.svgContainer.nativeElement.clientHeight - 20;
     let values = this.data.values;
     let labels = this.data.labels;
@@ -82,12 +112,12 @@ export class EdaD3Component implements AfterViewInit, OnInit {
     //Remove metric key and assign value
     const metricKey = keys.splice(this.metricIndex, 1)[0];
 
-    //Valores de assignedColors separados
-    const valuesTree = this.assignedColors.map((item) => item.value);
-    const colorsTree = this.assignedColors[0].color ? this.assignedColors.map(item => item.color) : this.colors;
-    
-    //Funcion de ordenación de colores de D3
-    const color = d3.scaleOrdinal(this.firstColLabels,  colorsTree).unknown("#ccc");
+    // Values of assignedColors separated
+    const valuesTree = this.assignedColors?.length > 0 ? this.assignedColors.map((item) => item.value) : this.firstColLabels;
+    const colorsTree = this.assignedColors?.length > 0 ? this.assignedColors.map(item => item.color) : this.colors;
+
+    // Color ordering function for D3
+    const color = d3.scaleOrdinal(this.firstColLabels, colorsTree);
 
     let { _nodes, _links } = this.graph(keys, data, metricKey);
 
@@ -120,13 +150,16 @@ export class EdaD3Component implements AfterViewInit, OnInit {
       .attr("width", d => d.x1 - d.x0)
       .attr("fill", "#242a33")
       
-      
-      svg.append("g")
+
+
+    svg.append("g")
       .attr("fill", "none")
       .selectAll("g")
       .data(links)
       .join("path")
       .attr("d", sankeyLinkHorizontal())
+      .style("cursor", "pointer")
+
       .on('click', (mouseevent, data) => {
         if (this.inject.linkedDashboard) {
           const props = this.inject.linkedDashboard;
@@ -140,9 +173,9 @@ export class EdaD3Component implements AfterViewInit, OnInit {
 
           const url = window.location.href.substr(0, window.location.href.indexOf('/dashboard')) + `/dashboard/${props.dashboardID}?${props.table}.${props.col}=${value}`
           window.open(url, "_blank");
-          
+
         } else {
-          //Passem aquestes dades
+          // Emit these data
           const label = data.source.name;
           const filterBy = this.inject.data.labels[this.inject.data.values[0].findIndex((element) => typeof element === 'string')]
           this.onClick.emit({ label, filterBy });
@@ -150,13 +183,14 @@ export class EdaD3Component implements AfterViewInit, OnInit {
       })
       .on('mouseover', this.showLinks)
       .on('mouseout', this.hideLinks)
-        .attr("stroke", d => { 
-          //Devolvemos SOLO EL COLOR de assignedColors que comparte la data y colors de assignedColors
-          return  colorsTree[valuesTree.findIndex((item) => d.names.includes(item))] || color(d.names[0]);
-        })
-        
+      .attr("stroke", d => {
+        // Return ONLY THE COLOR from assignedColors that matches the data, otherwise use color scale
+        return colorsTree[valuesTree.findIndex((item) => d.names.includes(item))] || color(d.names[0]);
+      })
+
       .attr("stroke-width", d => d.width)
-      .style("mix-blend-mode", "multiply")
+      // REVIEW THIS
+      //.style("mix-blend-mode", "multiply")
       .on('mouseover', (d, data) => {
 
         this.showLinks(d, data);
@@ -187,8 +221,8 @@ export class EdaD3Component implements AfterViewInit, OnInit {
         this.div.html(text)
           .style('left', (d.pageX - 50 - width) + 'px')
           .style('top', (d.pageY - 80) + 'px')
-          // .style('width', width)
-          // .style('height', height);
+        // .style('width', width)
+        // .style('height', height);
 
       })
       .on('mouseout', (d) => {
@@ -208,7 +242,7 @@ export class EdaD3Component implements AfterViewInit, OnInit {
 
 
     svg.append("g")
-      .style("font", "14px")
+      .style("font", '14px')
       .style("font-weight", 700)
       .selectAll("text")
       .data(nodes)
@@ -217,10 +251,11 @@ export class EdaD3Component implements AfterViewInit, OnInit {
       .attr("y", d => (d.y1 + d.y0) / 2)
       .attr("dy", "0.35em")
       .attr("text-anchor", d => d.x0 < width / 2 ? "start" : "end")
-      .style("font-family", "var(--panel-font-family)")
-      .attr("fill", "var(--panel-font-color)")
+      .style("font-family", this.styleProviderService.panelFontFamily.source['_value'])
+      //.attr("fill", "var(--panel-font-color)")
       .style("pointer-events", "none")
-      .style("font-size", "var(--panel-big)")
+      .attr("fill", this.styleProviderService.panelFontColor.source['_value'])
+      .style("font-size", (12 + this.styleProviderService.panelFontSize.source['_value'] * 2) + 'px')
       .text(d => d.name)
       .append("tspan")
       .attr("fill-opacity", 0.7)
@@ -301,4 +336,3 @@ export class EdaD3Component implements AfterViewInit, OnInit {
   }
 
 }
-

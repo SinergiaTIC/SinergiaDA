@@ -1,10 +1,13 @@
-import {Component, Input, ViewChild, AfterViewInit, DoCheck, NgZone} from '@angular/core';
+import {Component, Input, ViewChild, AfterViewInit, NgZone} from '@angular/core';
 import {EdaDialog} from './eda-dialog';
 import {Dialog} from 'primeng/dialog';
+import { DialogModule } from 'primeng/dialog';
 
 @Component({
+    standalone: true,
     selector: 'eda-dialog',
     templateUrl: './eda-dialog.component.html',
+    imports: [DialogModule]
 })
 export class EdaDialogComponent implements AfterViewInit {
     display = false;
@@ -25,20 +28,4 @@ export class EdaDialogComponent implements AfterViewInit {
             }, 0);
         });
     }
-
-    // ngDoCheck() {
-    //     this.ngZone.runOutsideAngular(() => {
-    //         setTimeout(() => {
-    //             if (this.dialog !== undefined && this.dialog.container !== undefined) {
-    //                 if (this.height != null && this.dialog.container.offsetHeight !== this.height ||
-    //                     this.width != null && this.dialog.container.offsetWidth !== this.width) {
-    //                     this.dialog.center();
-    //                 }
-    //
-    //                 this.height = this.dialog.container.offsetHeight;
-    //                 this.width = this.dialog.container.offsetWidth;
-    //             }
-    //         }, 10);
-    //     });
-    // }
 }

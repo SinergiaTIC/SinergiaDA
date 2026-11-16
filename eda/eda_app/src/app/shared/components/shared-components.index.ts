@@ -19,15 +19,13 @@ export * from './eda-context-menu/eda-context-menu-item';
 //eda date picker
 export * from './eda-date-picker/eda-date-picker.component'
 
+// date picker
+export * from './date-picker/date-picker.component'
+
 // Inputs
 export * from './eda-field/eda-field.component';
 export * from './eda-input/eda-input.component';
 
 // Eda Nav && Side
 export { NavbarComponent } from './navbar/navbar.component';
-export { SidebarComponent } from './sidebar/sidebar.component';
 
-export { CreateDashboardComponent } from './create-dashboard/create-dashboard.component';
-
-/* SDA CUSTOM */ // Date Format Dialog
-/* SDA CUSTOM */ export { DateFormatDialogComponent } from './date-dialog/date-format-dialog.component';

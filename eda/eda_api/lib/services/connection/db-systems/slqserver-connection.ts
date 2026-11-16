@@ -1,6 +1,6 @@
 import { AbstractConnection } from '../abstract-connection';
 import { AggregationTypes } from '../../../module/global/model/aggregation-types';
-import { SQLserviceBuilderService } from '../../query-builder/qb-systems/sqlserver-builder-service';
+import { SQLserviceBuilderService } from '../../query-builder/qb-systems/sqlserver-builder.service';
 import DataSource from '../../../module/datasource/model/datasource.model';
 
 const SQLservice = require('mssql')
@@ -225,7 +225,8 @@ export class SQLserverConnection extends AbstractConnection {
                 table_type: [],
                 columns: columns,
                 relations: [],
-                visible: true
+                visible: true,
+                ia_visibility: 'FULL'
             };
             return newTable
         } catch (err) {
@@ -247,7 +248,7 @@ export class SQLserverConnection extends AbstractConnection {
 
         if (column.column_type === 'numeric') {
             column.aggregation_type = AggregationTypes.getValuesForNumbers();
-        } else if (column.column_type === 'text') {
+        } else if (column.column_type === 'text' || column.column_type === 'html') {
             column.aggregation_type = AggregationTypes.getValuesForText();
         } else {
             column.aggregation_type = AggregationTypes.getValuesForOthers();
@@ -256,6 +257,7 @@ export class SQLserverConnection extends AbstractConnection {
         column.column_granted_roles = [];
         column.row_granted_roles = [];
         column.visible = true;
+        column.ia_visibility = 'FULL';
         column.tableCount = tableCount;
         return column;
     }

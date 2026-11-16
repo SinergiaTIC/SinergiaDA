@@ -1,0 +1,217 @@
+// app/components/user-management/user-management.component.ts
+import { CommonModule } from '@angular/common';
+import { Component, inject, OnInit } from '@angular/core';
+import { FormsModule } from '@angular/forms';
+import { GroupService, UserService } from '@eda/services/service.index';
+import { IconComponent } from '@eda/shared/components/icon/icon.component';
+import { SharedModule } from '@eda/shared/shared.module';
+import { lastValueFrom } from 'rxjs';
+import { IGroup } from '@eda/services/service.index';
+import * as _ from 'lodash';
+import Swal from 'sweetalert2';
+import { DropdownModule } from 'primeng/dropdown';
+import { PickListModule } from "primeng/picklist";
+import { EdaDialog2Component } from '@eda/shared/components/shared-components.index';
+
+type Group = {
+  _id?: string;
+  name?: string;
+  role?: { label: string; value: string; };
+  users?: any[];
+  img?: any;
+  isnew?: any;
+};
+
+@Component({
+  selector: 'app-group-list',
+  templateUrl: './group-list.page.html',
+  standalone: true,
+  imports: [SharedModule, CommonModule, FormsModule, IconComponent, DropdownModule, PickListModule, EdaDialog2Component],
+  styleUrls: ['./group-list.page.css']
+})
+export class GroupListPage implements OnInit {
+  private groupService = inject(GroupService);
+  private userService = inject(UserService);
+
+  readonly PROTECTED_GROUP_IDS = new Set([
+    '135792467811111111111110',
+    '135792467811111111111113',
+    '135792467811111111111115',
+  ]);
+
+  groups: any[] = [];
+
+  searchTerm: string = '';
+  sortConfig: { key: any; direction: 'asc' | 'desc' } | null = null;
+  selectedGroup: any = {};
+  users: any = {};
+  availableUsers: any = {};
+  showGroupDetail: boolean = false;
+
+  currentPage: number = 1;
+  itemsPerPage: number = 10;
+  readonly pageSizeOptions = [5, 10, 25, 50, 100];
+
+  public addGroupTitle = $localize`:@@newGroup:Crear Nuevo Grupo`;
+  public updateGroupTitle = $localize`:@@editGroup:Editar Grupo`;
+
+  get filteredGroups() {
+    return [...this.groups]
+      .sort((a, b) => {
+        if (!this.sortConfig) return 0;
+        return this.sortConfig.direction === 'asc'
+          ? a[this.sortConfig.key].localeCompare(b[this.sortConfig.key])
+          : b[this.sortConfig.key].localeCompare(a[this.sortConfig.key]);
+      })
+      .filter(group =>
+        group.name.toLowerCase().includes(this.searchTerm.toLowerCase())
+      );
+  }
+
+  get paginatedGroups() {
+    const start = (this.currentPage - 1) * this.itemsPerPage;
+    return this.filteredGroups.slice(start, start + this.itemsPerPage);
+  }
+
+  ngOnInit(): void {
+    this.loadGroups();
+    this.loadUserList();
+  }
+
+
+  // Load all groups
+  async loadGroups() {
+    this.groups = await lastValueFrom(this.groupService.getGroups());
+    this.groups.sort((a, b) => a.name.localeCompare(b.name));
+    }
+  
+  // Load all users
+  async loadUserList() {
+    const users = await lastValueFrom(this.userService.getUsers());
+
+    for (const user of users) {
+      const stringGroups = [];
+      stringGroups.push(_.map(user.role, 'name'));
+      user.role = stringGroups.join(', ');
+    }
+
+    this.users = users;
+
+    // Remove empty users
+    this.users = this.users.filter(u => u.name && u.name.trim() !== '');
+  }
+
+  handleSort(key: any) {
+    this.sortConfig = this.sortConfig?.key === key && this.sortConfig.direction === 'asc'
+      ? { key, direction: 'desc' }
+      : { key, direction: 'asc' };
+  }
+
+  totalPages() {
+    return Math.ceil(this.filteredGroups.length / this.itemsPerPage);
+  }
+
+  get pageNumbers(): number[] {
+    return Array.from({ length: this.totalPages() }, (_, i) => i + 1);
+  }
+
+  setPage(page: number) {
+    this.currentPage = page;
+  }
+
+  // Edit users
+handleEditGroup(group: Group) {
+  this.selectedGroup = { ...group };
+
+  // Clone the full list of available users
+  this.availableUsers = [...this.users];
+
+  // Convert selectedGroup IDs to user objects
+  const selectedUsers = this.users.filter(user =>
+    group.users.includes(user._id)
+  ).map(user => ({ ...user }));
+
+  this.selectedGroup.users = selectedUsers;
+
+  // Remove selected users from availableUsers
+  this.availableUsers = this.availableUsers.filter(user =>
+    !this.selectedGroup.users.some(u => u._id === user._id)
+  );
+
+  this.showGroupDetail = true;
+}
+
+
+  handleCreateGroup() {
+    this.availableUsers = this.users;
+    this.selectedGroup = {
+      isnew: true,
+      users: this.selectedGroup?.users || []
+    };      this.showGroupDetail = true;
+  }
+
+  handleDeleteGroup(groupId: string) {
+    // Confirm group deletion
+    let title = $localize`:@@DeleteGroupText:Eliminarás todos los elementos relacionados con este grupo. `
+    Swal.fire({
+        title: $localize`:@@Sure:¿Estás seguro?`,
+        text: `${title} `,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: $localize`:@@ConfirmDeleteModel:Si, ¡Eliminalo!`
+    }).then(deleted => {
+      if (deleted.value === true) { 
+        this.groupService.deleteGroup(groupId).subscribe(
+        res => {
+            Swal.fire($localize`:@@GroupDeletedOk:El grupo a sido eliminado correctamente`, res.email, 'success');
+            this.loadGroups();
+        }, err => {
+          Swal.fire($localize`:@@ErrorMessage:Ha ocurrido un error`, err.text, 'error');
+        }
+      );
+      }
+    });
+  }
+
+  onApplyGroupDetail() {
+    this.showGroupDetail = false;
+
+    // Default role is EDA_USER_ROLE
+    this.selectedGroup.role = 'EDA_USER_ROLE';
+
+    // Re-convert to save only user IDs
+    if (this.selectedGroup.isnew) { // Creating a new group
+      let group: IGroup = {
+        name: this.selectedGroup.name,
+        role: { label: this.selectedGroup.name, value: this.selectedGroup.role },
+        users: this.selectedGroup.users,
+        source: "EDA", // Used to distinguish groups created by EDA from those coming via SSO (OAUTH, SAML, GOOGLE, MICROSOFT, etc.)
+      }
+
+      this.groupService.insertGroup(group).subscribe(
+        res => {
+          Swal.fire($localize`:@@GroupCreated:Grupo creado`, res.name, 'success');
+          this.loadGroups();
+        }, err => {
+          Swal.fire($localize`:@@ErrorMessage:Ha ocurrido un error `, err.text, 'error');
+        }
+      );   
+    }
+    else { // Modifying an existing group
+      this.selectedGroup.users = this.selectedGroup.users.map(user => user._id );
+      let groupToModify = this.groups.find(group => group._id === this.selectedGroup._id);
+      groupToModify.name = this.selectedGroup.name; 
+      groupToModify.role =  this.selectedGroup.role,
+      groupToModify.users = this.selectedGroup.users; 
+      this.groupService.updateGroup(this.selectedGroup._id, groupToModify).subscribe(
+        res => {
+          Swal.fire($localize`:@@GroupUpdated:Grupo actualizado`, res.email, 'success');
+          this.loadGroups();
+        }, err => {
+          Swal.fire($localize`:@@UpdatedGroupError:El grupo no se ha podido actualizar`, err.text, 'error');
+        }
+      );       
+    }
+
+  }
+}

@@ -1,47 +1,68 @@
-/* SDA CUSTOM */ import { Component, EventEmitter, Output, ViewChild, Input } from '@angular/core';
+import { Component, Input, Output, EventEmitter } from '@angular/core';
+import { NgClass } from '@angular/common';
+import { Column } from '@eda/models/model.index';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { MultiSelectModule } from 'primeng/multiselect';
+import { ScrollPanelModule } from 'primeng/scrollpanel';
+import { CommonModule } from '@angular/common';
+import { TooltipModule } from 'primeng/tooltip'; 
 import { SelectItem } from 'primeng/api';
-import { EdaDialog, EdaDialogCloseEvent, EdaDialogAbstract, EdaDatePickerComponent } from '@eda/shared/components/shared-components.index';
-import {
-    DashboardService,
-    FilterType,
-    ChartUtilsService,
-    AlertService,
-    OrdenationType,
-    ColumnUtilsService, FormatDates, QueryBuilderService
-} from '@eda/services/service.index';
-/* SDA CUSTOM */ import { DateUtils } from '@eda/services/utils/date-utils.service';
-/* SDA CUSTOM */ import { rangeDateFormats } from '@eda/shared/components/date-dialog/date-format-dialog.index';
-import { Column, Query } from '@eda/models/model.index';
+import { DropdownModule } from 'primeng/dropdown';
+import { InputSwitchModule } from 'primeng/inputswitch';
+import { DashboardService, FilterType, ChartUtilsService, AlertService, OrdenationType, ColumnUtilsService, FormatDates, QueryBuilderService} from '@eda/services/service.index';
+import { EdaDialog, EdaDialogCloseEvent, EdaDialog2Component, EdaDialogAbstract, DatePickerComponent } from '@eda/shared/components/shared-components.index';
+import { getDynamicRangeLabel } from '@eda/shared/components/date-picker/date-filter-display.util';
+import { AGG_TYPES } from '@eda/configs/customizable/customizable_merged';
 import * as _ from 'lodash';
+import { firstValueFrom } from 'rxjs';
+import { InputTextModule } from 'primeng/inputtext';
+import { IconComponent } from '@eda/shared/components/icon/icon.component';
+import { FocusOnShowDirective } from '@eda/shared/directives/autofocus.directive';
 
-import { aggTypes } from 'app/config/aggretation-types';
+const ANGULAR_MODULES = [
+    FormsModule,
+    ReactiveFormsModule,
+    CommonModule,
+    NgClass,
+    MultiSelectModule,
+    ScrollPanelModule
+];
 
+const PRIMENG_MODULES = [
+    DropdownModule,
+    InputSwitchModule,
+    TooltipModule,
+    InputTextModule
+];
+
+const STANDALONE_COMPONENTS = [
+    EdaDialog2Component,
+    DatePickerComponent,
+    IconComponent,
+    FocusOnShowDirective
+];
 
 @Component({
+    standalone: true,
+    imports: [STANDALONE_COMPONENTS, ANGULAR_MODULES, PRIMENG_MODULES],
     selector: 'app-column-dialog',
     templateUrl: './column-dialog.component.html',
-    styleUrls: ['./column-dialog.component.css']
+    styleUrls: ['../eda-blank-panel.component.css', './column-dialog.component.css']
 })
 
-export class ColumnDialogComponent extends EdaDialogAbstract {
+export class ColumnDialogComponent {
+    public displayWindow: boolean = false;
+    @Input() controller: any;
 
-    @ViewChild('myCalendar', { static: false }) datePicker: EdaDatePickerComponent;
-/* SDA CUSTOM */    @Input() groupByEnabled: boolean;
-/* SDA CUSTOM */    @Output() groupByEnabledChange: EventEmitter<boolean> = new EventEmitter<boolean>();
     @Output() updateSortedFiltersColumnDialog: EventEmitter<any> = new EventEmitter<any>();
 
     public dialog: EdaDialog;
     public selectedColumn: Column;
     public duplicatedColumnName: string;
-/* SDA CUSTOM */    public originalName: string;
-/* SDA CUSTOM */    public backupName: string;
-/* SDA CUSTOM */    public sourceFieldName: string;
-/* SDA CUSTOM */    public tableLabel: string;
-/* SDA CUSTOM */    public isValueListSource: boolean = false;
-
-
+    public loading: boolean = true;
+    
     public display = {
-        calendar: false, // calendars inputs
+        calendar: false, // calendar inputs
         between: false, // between inputs
         filterValue: false,
         filterButton: true,
@@ -57,6 +78,7 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
     };
     public filterSelected: FilterType;
     public filterValue: any = {};
+    public showFormatDateSection: boolean = false;
 
     public ordenationTypes: OrdenationType[];
     public formatDates: FormatDates[];
@@ -64,14 +86,33 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
     public aggregationsTypes: any[] = [];
     public aggregationSelected: any;
     public inputType: string;
-    public dropDownFields: any[] = [];
+    // Each item also carries the value-list internal code (item[1] of the selector response) so that
+    // columnUtils.setFilter() can build filter_codes from the code instead of the label (issue #667).
+    public dropDownFields: (SelectItem & { id?: any })[] = [];
     public limitSelectionFields: number;
     public cumulativeSum: boolean;
-    public cumulativeSumTooltip: string = $localize`:@@cumulativeSumTooltip:Si activas ésta función se calculará la suma acumulativa
+    public dateNavEnabled: boolean = false;
+    public cumulativeSumTooltip: string = $localize`:@@cumulativeSumTooltip:Si activas ésta función se calculará la suma acumulativa 
                                             para los campos numéricos que eligas. Sólo se puede activar si la fecha está agregada por mes, semana o dia.`
+    public title: string;
+    public editingTitle: boolean = false;
+    public editableTitle: string = '';
 
+    public ranges: number[] = [];
+    public rangeString: string;
+    public selectedRange: string = '';
+    public showRange: boolean = false;
+    public availableRange: boolean = true;
+    public allowedAggregations: boolean = true;
+
+    public childOptions: {label: string, value: any}[] = [];
+    public selectedParent: any = null;
+    public ptooltipViewTextRanges: string = $localize`:@@ptooltipViewTextRanges:Al configurar un Rango las agregaciones quedarán bloqueadas, Ejemplo de un rango válido - 12:18:50:100 `;
+    public ptooltipNotAvailableRanges: string = $localize`:@@ptooltipNotAvailableRanges:No es posible crear un rango nuevo por que ya existe uno configurado`;
+    public rangeDescriptionNumberError: string = $localize`:@@rangeDescriptionNumberError:El correcto orden de los límites del rango van de menor a mayor`;
+    public rangeDescriptionCharacterError: string = $localize`:@@rangeDescriptionCharacterError:El último caracter del rango debe ser un número`;
     public filterBeforeAfter = {
-        filterBeforeGrouping: true, // valor por defecto true ==> WHERE / valor false ==> HAVING
+        filterBeforeGrouping: true, // default value true ==> WHERE / false value ==> HAVING
         elements: [
             { label: $localize`:@@whereMessageLabel:Aplicar el filtro sobre todos los registros`, value: true },
             { label: $localize`:@@havingMessageLabel:Aplicar el filtro sobre los resultados`, value: false },
@@ -85,86 +126,32 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
     public havingMessage: string = $localize`:@@havingMessage: Filtro sobre los resultados`;
     public textBetween: string = $localize`:@@textBetween:Entre`
 
-
-    public ranges: number[] = [];
-    public rangeString: string;
-    public selectedRange: string = '';
-    public showRange: boolean = false;
-    public availableRange: boolean = true;
-    public allowedAggregations: boolean = true;
-    public ptooltipViewTextRanges: string = $localize`:@@ptooltipViewTextRanges:Al configurar un Rango las agregaciones quedarán bloqueadas, Ejemplo de un rango válido - 12:18:50:100 `;
-    public ptooltipNotAvailableRanges: string = $localize`:@@ptooltipNotAvailableRanges:No es posible crear un rango nuevo por que ya existe uno configurado`;
-    public rangeDescriptionNumberError: string = $localize`:@@rangeDescriptionNumberError:El correcto orden de los límites del rango van de menor a mayor`;
-    public rangeDescriptionCharacterError: string = $localize`:@@rangeDescriptionCharacterError:El último caracter del rango debe ser un número`;
-
-    /* SDA CUSTOM */ public displayDateFormat: boolean = false;
-    /* SDA CUSTOM */ private _pendingDynamicValue: string = null;
-
-    /* SDA CUSTOM */ public datePickerConfig: any;
-    /* SDA CUSTOM */ public dateFormatSelected: any;
-    /* SDA CUSTOM */ public showDateFormatSelecter: boolean = true;
-    /* SDA CUSTOM */ public showEdaDatePicker: boolean = false;
-    /* SDA CUSTOM */ public showEdaDatePickerSingleSelection: boolean = false;
-    /* SDA CUSTOM */ public showEdaDatePickerMultipleSelection: boolean = false;
-    /* SDA CUSTOM */ public isDateFormatAvailable: boolean = false;
-    /* SDA CUSTOM */ public rangeDateFormat: Array<SelectItem> = [];
-    /* SDA CUSTOM */ public dateFilterOperators: FilterType[] = [];
-
     constructor(
         private dashboardService: DashboardService,
         private chartUtils: ChartUtilsService,
         private columnUtils: ColumnUtilsService,
         private queryBuilder: QueryBuilderService,
-        private alertService: AlertService,
-        /* SDA CUSTOM */ private dateUtils: DateUtils) {
-        super();
+        private alertService: AlertService) {
 
         this.filter.types = this.chartUtils.filterTypes;
         this.ordenationTypes = this.chartUtils.ordenationTypes;
         this.formatDates = this.chartUtils.formatDates;
-
-        this.dialog = new EdaDialog({
-            show: () => this.onShow(),
-            hide: () => this.onClose(EdaDialogCloseEvent.NONE),
-            title: $localize`:@@col:Atributo`
-        });
-        this.dialog.style = { width: '85%', height: '75%', top: "-4em", left: '1em' };
-
-        // Inicializando el valor del WHERE / HAVING
-        this.filterBeforeAfterSelected = this.filterBeforeAfter.elements[0]
     }
 
-    onShow(): void {
+    ngOnInit(): void {
         this.selectedColumn = this.controller.params.selectedColumn;
-/* SDA CUSTOM */        this.originalName = this.selectedColumn.display_name.default;
-/* SDA CUSTOM */        this.backupName = this.selectedColumn.display_name.default;
-
-/* SDA CUSTOM */        const table_id = this.selectedColumn.table_id.split('.')[0];
-/* SDA CUSTOM */        const modelTable = this.controller.params.inject.dataSource.model.tables.find(t => t.table_name === table_id);
-/* SDA CUSTOM */        const modelColumn = modelTable?.columns.find(c => c.column_name === this.selectedColumn.column_name);
-/* SDA CUSTOM */        this.sourceFieldName = modelColumn?.display_name?.default || this.selectedColumn.column_name;
-
-/* SDA CUSTOM */        this.tableLabel = this.controller.params.table;
         const allowed = [];
-        const title = this.selectedColumn.display_name.default;
-        const col = $localize`:@@col:Atributo`, from = $localize`:@@table:de la entidad`;
-        this.dialog.title = `${col} ${title} ${from} ${this.controller.params.table}`;
-        
+        const col = $localize`:@@atributoLabel:Atributo`, from = $localize`:@@table:de la entidad`;
+        this.title = `${col} ${this.selectedColumn.display_name.default} ${from} ${this.controller.params.table}`;
+
         this.carregarValidacions();
         this.verifyRange();
-
-        /* SDA CUSTOM */ if (this.selectedColumn.column_type === 'date') {
-        /* SDA CUSTOM */     this.initDateFilterConfig();
-        /* SDA CUSTOM */ }
+        this.initParentOption();
 
         const columnType = this.selectedColumn.column_type;
 
-        for (const type of this.chartUtils.filterTypes) {
-            /* SDA CUSTOM */ if (!type.typeof) {
-            /* SDA CUSTOM */     allowed.push(type);
-            /* SDA CUSTOM */     continue;
-            /* SDA CUSTOM */ }
-            /* SDA CUSTOM */ type.typeof.forEach(columnTypeOf => {
+        for (const type of this.filter.types) {
+            type.typeof.forEach(columnTypeOf => {
                 if (columnTypeOf === columnType) {
                     allowed.push(type);
                 }
@@ -175,12 +162,8 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
             this.filter.types = allowed;
         }
 
-        // Buscando el valor inicial de agregacion de la columna seleccionada
-        for(let agg of this.selectedColumn.aggregation_type) {
-            if(agg.selected){
-                this.aggregationSelected = _.cloneDeep(agg);
-            }
-        }        
+        this.showFormatDateSection = columnType == 'date';
+
         if(this.controller.params.currentQuery.find( elemento => elemento.hasOwnProperty('ranges') &&  elemento.ranges.length!==0)) {
             if(this.selectedColumn.hasOwnProperty('ranges') && this.selectedColumn.ranges.length!==0) {
                 this.availableRange = true;
@@ -190,8 +173,46 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
         } else {
             this.availableRange = true;
         }
+        
+        // Find the initial aggregation value of the selected column
+        for(let agg of this.selectedColumn.aggregation_type) {
+            if(agg.selected){
+                this.aggregationSelected = _.cloneDeep(agg);
+            }
+        } 
+    }
 
-        /* SDA CUSTOM */ if(this.selectedColumn.valueListSource) this.isValueListSource = true; 
+
+
+    // Edit mode change methods
+    // Input switches to editable mode
+    public startEditTitle(): void {
+        this.editableTitle = this.selectedColumn.display_name.default;
+        this.editingTitle = true;
+    }
+
+    // Save changes
+    public saveTitle(): void {
+        if (this.editableTitle?.trim()) {
+            this.updateDisplayName(this.editableTitle.trim());
+        }
+        this.editingTitle = false;
+    }
+
+    // Cancel changes
+    public cancelEditTitle(): void {
+        this.editingTitle = false;
+    }
+
+    // Update the name in the column dialog and current query
+    public updateDisplayName(name: string): void {
+        const col = $localize`:@@atributoLabel:Atributo`, from = $localize`:@@table:de la entidad`;
+        const foundInQuery = this.findColumn(this.selectedColumn, this.controller.params.currentQuery);
+        if (foundInQuery) {
+            foundInQuery.display_name.default = name;
+        }
+        this.selectedColumn.display_name.default = name;
+        this.title = `${col} ${name} ${from} ${this.controller.params.table}`;
     }
 
     private carregarValidacions(): void {
@@ -205,6 +226,7 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
         }
 
         this.handleInputTypes();
+        
     }
 
     public addFilter(): void {
@@ -213,18 +235,14 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
         const column_type = this.selectedColumn.column_type;
         const type = this.filterSelected.value;
         const selectedRange = this.filter.range;
-        /* SDA CUSTOM */ let dynamicValue = this._pendingDynamicValue;
-        /* SDA CUSTOM */ if (!dynamicValue && this.dateFormatSelected && this.dateFormatSelected.value !== 'customDate' && this.selectedColumn.column_type === 'date') {
-        /* SDA CUSTOM */     dynamicValue = this.dateFormatSelected.value;
-        /* SDA CUSTOM */ }
         const valueListSource = this.selectedColumn.valueListSource;
         const joins = this.selectedColumn.joins;
         const autorelation = this.selectedColumn.autorelation;
-        const filterBeforeGrouping = this.filterBeforeAfter.filterBeforeGrouping;
-        const aggregation_type = this.aggregationSelected ? this.aggregationSelected.value : null;
         const data = this.dropDownFields;
         const computed_column = this.selectedColumn.computed_column;
         const SQLexpression = this.selectedColumn.SQLexpression;
+        const filterBeforeGrouping = this.filterBeforeAfter.filterBeforeGrouping;
+        const aggregation_type = this.aggregationSelected ? this.aggregationSelected.value : null;
 
         const filter = this.columnUtils.setFilter({
             obj: this.filterValue,
@@ -233,59 +251,38 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
             column_type,
             type,
             selectedRange,
-            /* SDA CUSTOM */ dynamicValue,
             valueListSource,
             autorelation,
             joins,
-            filterBeforeGrouping,
-            aggregation_type,
             data,
             computed_column,
-            SQLexpression
+            SQLexpression,
+            filterBeforeGrouping,
+            aggregation_type,
         });
 
         this.filter.selecteds.push(filter);        
         this.carregarFilters();
 
-        /* Reset Filter Form */
+        /* Reset filter form */
         this.resetDisplay();
-        this.filterSelected = undefined; // filtre seleccionat cap
-        this.filterValue = {}; // filtre ningun
+        this.filterSelected = undefined; // no selected filter
+        this.filterValue = {}; // no filter
         this.filter.range = null;
-        /* SDA CUSTOM */ if (this.selectedColumn?.column_type === 'date') {
-        /* SDA CUSTOM */     this.resetDateFilterUI();
-        /* SDA CUSTOM */ }
 
-        // Regresando al valor inicial el WHERE / HAVING
+        // Control adding only the filter in the Where section
+        const addToSortedFilters = { add: true, filter: filter };
+        if(filter['filterBeforeGrouping']) this.updateSortedFiltersColumnDialog.emit(addToSortedFilters);        
         this.filterBeforeAfter.filterBeforeGrouping = true;
         this.filterBeforeAfterSelected = this.filterBeforeAfter.elements[0]
-
-        const addToSortedFilters = {
-            add: true,
-            filter: filter
-        };
-
-        // Control of adding just filter in the where section
-        if(filter['filterBeforeGrouping']) {
-            this.updateSortedFiltersColumnDialog.emit(addToSortedFilters); // Emitting an event to the eda-blank-panel component
-        }
-        
-       this.dropDownFields = [];
     }
 
     removeFilter(item: any) {
 
-        const addToSortedFilters = {
-            add: false,
-            filter: item
-        };
+        const addToSortedFilters = { add: false, filter: item };
+        this.updateSortedFiltersColumnDialog.emit(addToSortedFilters);
 
-        this.updateSortedFiltersColumnDialog.emit(addToSortedFilters); // Emitting an event to the eda-blank-panel component
-
-        /* SDA CUSTOM */ const matched = this.filter.selecteds.find(f => _.startsWith(f.filter_id, item.filter_id));
-        /* SDA CUSTOM */ if (matched) {
-        /* SDA CUSTOM */     matched.removed = true;
-        /* SDA CUSTOM */ }
+        this.filter.selecteds.find(f => _.startsWith(f.filter_id, item.filter_id)).removed = true;
 
         this.filter.forDisplay = this.filter.selecteds.filter(f => {
             return _.startsWith(f.filter_table, this.selectedColumn.table_id) &&
@@ -295,8 +292,7 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
 
     }
 
-    addAggregation(type: any) {    
-        
+    addAggregation(type: any) {
         this.aggregationsTypes.find((ag: any) => ag.value === type.value).selected = true;
 
         for (let ag of this.aggregationsTypes) {
@@ -305,66 +301,51 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
             }
         }
 
-        // Recarguem les agregacions d'aquella columna + la seleccionada
+        // Reload the aggregations for that column and the selected one
         this.selectedColumn.aggregation_type = JSON.parse(JSON.stringify(this.aggregationsTypes));
 
-        // Introduim l'agregació a la Select
+        // Add the aggregation to Select
         const addAggr = this.findColumn(this.selectedColumn, this.controller.params.currentQuery);
 
         if (addAggr) {
             addAggr.aggregation_type = JSON.parse(JSON.stringify(this.selectedColumn.aggregation_type));
         }
 
-        // Seteo de aggregationSelected dependiendo de la selección realizada por el usuario
+        // For computed columns with 3 aggregation options (text/date type): change column_type based on aggregation
+        if (this.aggregationsTypes.length === 3 && type.value !== 'none') {
+            this.selectedColumn.column_type = 'numeric';
+            const allowed = [];
+            for (const ft of this.chartUtils.filterTypes) {
+                ft.typeof.forEach((columnTypeOf: string) => {
+                    if (columnTypeOf === 'numeric') allowed.push(ft);
+                });
+            }
+            if (allowed.length > 0) this.filter.types = allowed;
+        }
+
+        if (this.aggregationsTypes.length === 3 && type.value === 'none') {
+            this.selectedColumn.column_type = 'text';
+            const allowed = [];
+            for (const ft of this.chartUtils.filterTypes) {
+                ft.typeof.forEach((columnTypeOf: string) => {
+                    if (columnTypeOf === 'text') allowed.push(ft);
+                });
+            }
+            if (allowed.length > 0) this.filter.types = allowed;
+        }
+        
+        // Set aggregationSelected based on the user's selection
         this.aggregationSelected = _.cloneDeep(type);
 
-        // En caso no tengamos agregación el selected Where/Having se establece en Where
+        // If there is no aggregation, the selected Where/Having is set to Where
         if(this.aggregationSelected.value==='none') {
             this.whereHavingSwitch({
                 label: 'WHERE',
                 value: true,
             })
         }
-
-        // Changing to numeric type
-        if(this.aggregationsTypes.length === 3 && type.value !== 'none') {
-            this.selectedColumn.column_type = 'numeric';
-            const columnType = 'numeric';
-            const allowed = [];
-
-            for (const type of this.chartUtils.filterTypes) {
-                type.typeof.forEach(columnTypeOf => {
-                    if (columnTypeOf === columnType) {
-                        allowed.push(type);
-                    }
-                });
-            }
-
-            if (allowed.length > 0) {
-                this.filter.types = allowed;
-            }
-        } 
-
-        // Changing to text type
-        if(this.aggregationsTypes.length === 3 && type.value === 'none') {
-            this.selectedColumn.column_type = 'text';
-            const columnType = 'text';
-            const allowed = [];
-
-            for (const type of this.chartUtils.filterTypes) {
-                type.typeof.forEach(columnTypeOf => {
-                    if (columnTypeOf === columnType) {
-                        allowed.push(type);
-                    }
-                });
-            }
-
-            if (allowed.length > 0) {
-                this.filter.types = allowed;
-            }
-        } 
-
     }
+
 
     addOrdenation(ord: any) {
 
@@ -419,6 +400,11 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
     public addCumulativeSum(): void {
         const newCol = this.findColumn(this.selectedColumn, this.controller.params.currentQuery);
         this.cumulativeSum = newCol?.cumulativeSum;
+        this.dateNavEnabled = !!newCol?.dateNav;
+        // If the column already has dateNav enabled, restrict the format options
+        if (this.dateNavEnabled) {
+            this.formatDates = this.chartUtils.formatDates.filter(f => ['year', 'month', 'day'].includes(f.value));
+        }
     }
 
     handleCumulativeSum() {
@@ -443,6 +429,24 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
         return ['month', 'week', 'day'].includes(current.value);
     }
 
+    handleDateNavEnabled() {
+        const newCol = this.findColumn(this.selectedColumn, this.controller.params.currentQuery);
+        if (!newCol) return;
+        newCol.dateNav = this.dateNavEnabled;
+        if (this.dateNavEnabled) {
+            this.selectedParent = null;
+            // dateNav and downChild are mutually exclusive: if the date column becomes
+            // navigable by date, its child must lose the parent link
+            delete newCol.downChild;
+            // Restrict the format selector to only year/month/day and force 'day' as the default
+            this.formatDates = this.chartUtils.formatDates.filter(f => ['year', 'month', 'day'].includes(f.value));
+            this.formatDate = this.formatDates.find(f => f.value === 'day');
+            this.addFormatDate();
+        } else {
+            // Restore all format options when dateNav is disabled
+            this.formatDates = this.chartUtils.formatDates;
+        }
+    }
 
     handleFilterChange(filter: FilterType) {
         if (filter) {
@@ -450,31 +454,19 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
             this.display.between = handler.between;
             this.display.filterValue = !_.isEqual(this.selectedColumn.column_type, 'date') ? handler.value : false;
             this.display.calendar = _.isEqual(this.selectedColumn.column_type, 'date') ? handler.value : false;
-            this.display.switchButton = _.isEqual(filter.value, 'not_null') || _.isEqual(filter.value, 'not_null_nor_empty') || _.isEqual(filter.value, 'null_or_empty'); // se usa para deshabilitar el boton que da las opciones en el selector.
+            this.display.switchButton = _.isEqual(filter.value, 'not_null') || _.isEqual(filter.value, 'not_null_nor_empty') || _.isEqual(filter.value, 'null_or_empty');
             this.display.filterButton = filter.value == 'not_null' || filter.value == 'not_null_nor_empty' || filter.value == 'null_or_empty' ? false : true ;
             this.limitSelectionFields = handler.limitFields === 1 ? 1 : 50;
-            /* SDA CUSTOM */ if(['in', 'not_in'].includes(filter.value) && this.selectedColumn.column_type === 'date') {
-            /* SDA CUSTOM */     this.filter.switch = false;
-            /* SDA CUSTOM */ } else {
-            /* SDA CUSTOM */     this.filter.switch = handler.switchBtn;
-            /* SDA CUSTOM */ }
+            this.filter.switch = handler.switchBtn;
 
             if (handler.switchBtn) {
                 this.loadDropDrownData();
                 this.display.switchButton = true;
-            } /* SDA CUSTOM */ else {
-              /* SDA CUSTOM */  this.dropDownFields = [];
             }
 
             if (!_.isEqual(filter.value, 'between')) {
                 this.filterValue = {};
             }
-
-            /* SDA CUSTOM */ if(filter.value === "=" || filter.value === "!=") {
-            /* SDA CUSTOM */     this.loadDropDrownData();
-            /* SDA CUSTOM */     this.filter.switch = handler.switchBtn || this.isValueListSource;
-            /* SDA CUSTOM */ }
-
         } else {
             this.resetDisplay();
         }
@@ -494,17 +486,15 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
 
     }
 
-    /**Gestiona las agregaciones de la columna seleccionada */
+    /** Manages the aggregations of the selected column */
     public handleAggregationType(): void {
-
         const column = this.selectedColumn;
-
         const matchingQuery = this.controller.params.currentQuery.find((c: any) =>
             c.table_id === column.table_id &&
             c.column_name === column.column_name &&
             c.display_name.default === column.display_name.default
         );
-        
+
         if (this.controller.params.panel.content) {
             const tmpAggTypes = [];
             
@@ -512,20 +502,18 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
                 ? matchingQuery.aggregation_type.find((agg: any) => agg.selected === true)
                 : undefined;
 
-            // Si ja s'ha carregat el panell i tenim dades a this.select
+            // If the panel has already loaded and there is data in this.select
             if (selectedAggregation) {
-                
                 tmpAggTypes.push(...column.aggregation_type);
-                
+
                 if (matchingQuery) {
                     this.aggregationsTypes = JSON.parse(JSON.stringify(matchingQuery.aggregation_type));
                 }
 
                 return;
-            } else{
+            } else {
                 this.aggregationsTypes = JSON.parse(JSON.stringify(this.controller.params.selectedColumn.aggregation_type));
             }
-
         } else {
             if (!matchingQuery) {
                 const tmpAggTypes = column.aggregation_type.map(agg => ({
@@ -543,7 +531,6 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
         if (matchingQuery) {
             matchingQuery.aggregation_type = JSON.parse(JSON.stringify(this.aggregationsTypes));
         }
-
     }
 
     public findColumn(column: Column, columns: any[]) {
@@ -570,7 +557,7 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
                 this.addFormatDate();
                 foundColumn.format = foundFormat;
             } else {
-                // Si encara no hem carregat les dades a this.select
+                // If the data has not been loaded into this.select yet
                 const queryFromServer = this.controller.params.panel.content.query.query.fields;
                 const dateFormat = this.findColumn(column, queryFromServer)?.format;
                 tmpDateFormat = dateFormat || 'No';
@@ -671,7 +658,7 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
             if (!column.ordenation_type) {
                 column.ordenation_type = 'No';
             }
-    
+
             const ordenation = queryFromServer.find(c =>
                 c.column_name === column.column_name &&
                 c.table_id === column.table_id &&
@@ -687,10 +674,11 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
                 ord.selected = true;
             }
         } else {
+            const defaultOrd = column.ordenation_type || (column.column_type === 'date' ? 'Asc' : 'No');
             this.ordenationTypes = [
-                { display_name: 'Asc', value: 'Asc', selected: false },
-                { display_name: 'Desc', value: 'Desc', selected: false },
-                { display_name: 'No', value: 'No', selected: true }
+                { display_name: 'Asc', value: 'Asc', selected: defaultOrd === 'Asc' },
+                { display_name: 'Desc', value: 'Desc', selected: defaultOrd === 'Desc' },
+                { display_name: 'No', value: 'No', selected: defaultOrd === 'No' }
             ];
         }
     
@@ -710,151 +698,164 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
     
 
     handleInputTypes() {
-
         const type = this.selectedColumn.column_type;
         this.inputType = this.columnUtils.handleInputTypes(type);
     }
 
     carregarFilters() {
-        this.filter.selecteds = this.controller.params.filters;
-        /* SDA CUSTOM */ this.filter.forDisplay = this.filter.selecteds.filter(f => {
+        this.controller.params.filters.forEach(filter => {
+            this.filter.selecteds.push(filter);
+        });
+        this.filter.selecteds = _.uniqBy(this.filter.selecteds, (e) => {
+            return e.filter_id;
+        });
+        this.filter.forDisplay = this.filter.selecteds.filter(f => {
             return f.filter_table === this.selectedColumn.table_id &&
                 f.filter_column === this.selectedColumn.column_name &&
                 !f.removed;
         });
-
     }
 
     resetDisplay() {
-        this.display.filterButton = true; // btn add filter
-        this.display.between = false; // inputs between
-        this.display.filterValue = false; // input de valor
-        this.display.calendar = false; // input calendar
+        this.display.filterButton = true; // add filter button
+        this.display.between = false; // between inputs
+        this.display.filterValue = false; // value input
+        this.display.calendar = false; // calendar input
         this.display.switchButton = true;
         this.filter.switch = false; // options switch
-        /* SDA CUSTOM*/ this.dropDownFields = [];
     }
 
-    /** Query per dropdown  */
+    /** Query for dropdown */
     async loadDropDrownData() {
-        this.filterValue.value1 = null;
-        this.filterValue.value2 = null;
-        /* SDA CUSTOM*/ this.dropDownFields = [];
-        if (this.filter.switch || this.isValueListSource) {  // SDA CUSTOM => this.isValueListSource
-            const column = _.cloneDeep(this.selectedColumn);
-            column.table_id = column.table_id.split('.')[0];
-            column.ordenation_type = 'Asc';
 
-            const params = {
-                table: column.table_id,
-                dataSource: this.controller.params.inject.dataSource._id,
-                dashboard: this.controller.params.inject.dashboard_id,
-                panel: this.controller.params.panel._id,
-                connectionProperties: this.controller.params.connectionProperties,
-                forSelector: true,
-                filters: []
-            };
+    this.filterValue.value1 = null;
+    this.filterValue.value2 = null;
+    this.dropDownFields = [];
+    this.loading = true;
 
-            try {
-                const res = await this.dashboardService.executeQuery(this.queryBuilder.normalQuery([column], params)).toPromise();
+    if (!this.filter.switch) {
+        this.loading = false;
+        return;
+    }
 
-                if (res.length > 1) {
-                    for (const item of res[1]) {
-                        if (item[0] === '' || item[0] ) {
-                            if(column.valueListSource !== undefined) {
-                                this.dropDownFields.push({ label : item[0], value: item[0], id : item[1] });
-                            } else {
-                                this.dropDownFields.push({ label : item[0], value: item[0], id : item[0] });
-                            }
-                        }
-                    }
+    const column = _.cloneDeep(this.selectedColumn);
+    column.table_id = column.table_id.split('.')[0];
+    column.ordenation_type = 'Asc';
+
+    const params = {
+        table: column.table_id,
+        dataSource: this.controller.params.inject.dataSource._id,
+        dashboard: this.controller.params.inject.dashboard_id,
+        panel: this.controller.params.panel._id,
+        connectionProperties: this.controller.params.connectionProperties,
+        forSelector: true,
+        filters: []
+    };
+
+    try {
+        const res = await firstValueFrom(
+            this.dashboardService.executeQuery(
+                this.queryBuilder.normalQuery([column], params)
+            )
+        );
+
+        if (Array.isArray(res) && res.length > 1) {
+            for (const item of res[1]) {
+                if (item[0] != null && item[0] !== '') {
+                    this.dropDownFields.push({
+                        label: item[0],
+                        value: item[0],
+                        // item[1] is the value-list internal code used to build filter_codes (issue #667)
+                        id: item[1]
+                    });
                 }
-            } catch (err) {
-                this.alertService.addError(err);
-                throw err;
             }
         }
+    } catch (err) {
+        this.alertService.addError(err);
+        throw err;
+    } finally {
+        this.loading = false;
     }
+}
+
 
     getAggName(value: string) {
-        return aggTypes.filter(agg => agg.value === value)[0].label;
+        return AGG_TYPES.find(agg => agg.value === value)?.label;
     }
 
     getAggregationText(value: any) {
-        if(!value.aggregation_type){
-            return 'none'; // if there isn`t aggregation, none is added
-        } else {
-            const label = aggTypes.filter(agg => {
-                return (agg.value === value.aggregation_type);
-            })[0].label;
-            return label;
-        }
+        const label = AGG_TYPES.filter(agg => {
+            return (agg.value === value.aggregation_type);
+        })[0].label;
+        return label;
     }
 
-/* SDA CUSTOM */    getFilterText(value) {
-/* SDA CUSTOM */        if(value.filter_type === 'between') return this.chartUtils.filterTypesLabels.find((value: any) => value.value === 'between').label;
-/* SDA CUSTOM */        if(value.filter_type === 'in') return this.chartUtils.filterTypesLabels.find((value: any) => value.value === 'in').label;
-/* SDA CUSTOM */        if(value.filter_type === 'not_in') return this.chartUtils.filterTypesLabels.find((value: any) => value.value === 'not_in').label;
-/* SDA CUSTOM */        if(value.filter_type === 'not_null') return this.chartUtils.filterTypesLabels.find((value: any) => value.value === 'not_null').label;
-/* SDA CUSTOM */        if(value.filter_type === 'not_null_nor_empty') return this.chartUtils.filterTypesLabels.find((value: any) => value.value === 'not_null_nor_empty').label;
-/* SDA CUSTOM */        if(value.filter_type === 'null_or_empty') return this.chartUtils.filterTypesLabels.find((value: any) => value.value === 'null_or_empty').label;
-/* SDA CUSTOM */        return value.filter_type;
-/* SDA CUSTOM */    }
+    getFilterText(value) {
+        if(value.filter_type === 'between') return this.textBetween;
+        return value.filter_type;
+    }
+
+    whereHavingSwitch(selected) {
+
+        if(selected.value) {
+            this.filterBeforeAfter.filterBeforeGrouping = true;
+            return true
+        } else {
+            this.filterBeforeAfter.filterBeforeGrouping = false;
+            return false
+        }
+
+    }
 
     processPickerEvent(event) {
-        /* SDA CUSTOM */ this.dropDownFields = [];
+        // date-picker owns its operator dropdown internally for date columns (no external
+        // filter.types dropdown for them) — pick up the confirmed operator from the event.
+        if (event.operator) {
+            this.filterSelected = this.filter.types.find(t => t.value === event.operator) ?? this.filterSelected;
+        } else if (event.operator === null) {
+            // Operator was cleared in the date-picker itself (inline mode's own clear button)
+            this.filterSelected = undefined;
+        }
+
+        this.filter.range = event.range;
+
         if (event.dates) {
             const dtf = new Intl.DateTimeFormat('en', { year: 'numeric', month: '2-digit', day: '2-digit' });
-            const dates = Array.isArray(event.dates) ? event.dates : [event.dates, event.dates];
-            /* SDA CUSTOM */ if (!dates[1]) {
-            /* SDA CUSTOM */     dates[1] = dates[0];
-            /* SDA CUSTOM */ }
+            const toDateString = (date: any) => {
+                let [{ value: mo }, , { value: da }, , { value: ye }] = dtf.formatToParts(date);
+                return `${ye}-${mo}-${da}`;
+            };
+            const singleValueOperators = ['=', '!=', '>', '<', '>=', '<='];
+            const isSingleDate = singleValueOperators.includes(this.filterSelected?.value);
+            const isStaticInNotIn = ['in', 'not_in'].includes(this.filterSelected?.value) && !event.range;
 
-            /* SDA CUSTOM */ this.filter.range = event.range;
+            if (isStaticInNotIn) {
+                // Discretely picked dates for a static in/not_in: all of them belong together
+                // under value1 (the backend only ever reads value1 for in/not_in), not split
+                // into a value1/value2 pair that silently drops everything past the second date.
+                const dates = Array.isArray(event.dates) ? event.dates : [event.dates];
+                this.filterValue = { value1: dates.filter(date => date != null).map(toDateString) };
+            } else {
+                const dates = Array.isArray(event.dates) ? event.dates : [event.dates, event.dates];
+                if (!dates[1]) dates[1] = dates[0];
 
-            /* SDA CUSTOM */ const isInFilter = this.filterSelected?.value === 'in' || this.filterSelected?.value === 'not_in';
-            /* SDA CUSTOM */ if (isInFilter) {
-            /* SDA CUSTOM */     const allDates = [];
-            /* SDA CUSTOM */     const start = new Date(dates[0]);
-            /* SDA CUSTOM */     const end = new Date(dates[1]);
-            /* SDA CUSTOM */     start.setHours(0, 0, 0, 0);
-            /* SDA CUSTOM */     end.setHours(0, 0, 0, 0);
-            /* SDA CUSTOM */     for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
-            /* SDA CUSTOM */         const [{ value: mo }, , { value: da }, , { value: ye }] = dtf.formatToParts(new Date(d));
-            /* SDA CUSTOM */         allDates.push(`${ye}-${mo}-${da}`);
-            /* SDA CUSTOM */     }
-            /* SDA CUSTOM */     this.filterValue.value1 = allDates;
-            /* SDA CUSTOM */ } else {
-            /* SDA CUSTOM */     const stringRange = [dates[0], dates[1]].map(date => {
-            /* SDA CUSTOM */         const [{ value: mo }, , { value: da }, , { value: ye }] = dtf.formatToParts(date);
-            /* SDA CUSTOM */         return `${ye}-${mo}-${da}`;
-            /* SDA CUSTOM */     });
-            /* SDA CUSTOM */     this.filterValue.value1 = stringRange[0];
-            /* SDA CUSTOM */     if (this.display.between) {
-            /* SDA CUSTOM */         this.filterValue.value2 = stringRange[1];
-            /* SDA CUSTOM */     }
-            /* SDA CUSTOM */ }
-            /* SDA CUSTOM */ this.display.filterButton = false;
+                let stringRange = [dates[0], dates[1]].map(toDateString);
+
+                this.filterValue.value1 = stringRange[0];
+                this.filterValue.value2 = isSingleDate ? null : stringRange[1];
+            }
+        } else {
+            this.filterValue = {};
         }
+
+        this.display.filterButton = event.operator === null ? true : false;
     }
-                    // Function to rename the column in the query when the user changes the name in the dialog, also updates the title of the dialog
-/* SDA CUSTOM */    public renameColumn(newName: string) {
-/* SDA CUSTOM */        if (_.isNil(newName) || _.isEmpty(newName)) return;
-/* SDA CUSTOM */
-/* SDA CUSTOM */        const colInQuery = this.controller.params.currentQuery.find((c: any) =>
-/* SDA CUSTOM */            this.selectedColumn.table_id === c.table_id &&
-/* SDA CUSTOM */            this.selectedColumn.column_name === c.column_name &&
-/* SDA CUSTOM */            this.originalName === c.display_name.default
-/* SDA CUSTOM */        );
-/* SDA CUSTOM */
-/* SDA CUSTOM */        if (colInQuery) {
-/* SDA CUSTOM */            colInQuery.display_name.default = newName;
-/* SDA CUSTOM */            this.originalName = newName;
-/* SDA CUSTOM */        }
-/* SDA CUSTOM */
-/* SDA CUSTOM */        const col = $localize`:@@col:Atributo`, from = $localize`:@@table:de la entidad`;
-/* SDA CUSTOM */        this.dialog.title = `${col} ${newName} ${from} ${this.controller.params.table}`;
-/* SDA CUSTOM */      }
+
+    /** Label for an already-added filter's dynamic range (e.g. "Avui"), used in the "Filtros activos" list */
+    public getRangeLabelForFilter(rangeValue: string): string {
+        return getDynamicRangeLabel(rangeValue);
+    }
 
     public onCancelDuplicateColumn(): void {
         this.display.duplicateColumn = false;
@@ -874,27 +875,9 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
         this.onClose(EdaDialogCloseEvent.NEW, { duplicated: true, column: newColumn});
     }
 
-    /* Close functions */
-/* SDA CUSTOM */    cancelDialog() {
-/* SDA CUSTOM */        const colInQuery = this.controller.params.currentQuery.find((c: any) =>
-/* SDA CUSTOM */            this.selectedColumn.table_id === c.table_id &&
-/* SDA CUSTOM */            this.selectedColumn.column_name === c.column_name &&
-/* SDA CUSTOM */            this.originalName === c.display_name.default
-/* SDA CUSTOM */);
-/* SDA CUSTOM */
-/* SDA CUSTOM */        if (colInQuery) {
-/* SDA CUSTOM */            colInQuery.display_name.default = this.backupName;
-/* SDA CUSTOM */            this.selectedColumn.display_name.default = this.backupName;
-            /* SDA CUSTOM */
-}
-/* SDA CUSTOM */
-/* SDA CUSTOM */        this.filter.switch = false;
-/* SDA CUSTOM */        this.filterSelected = undefined;
-/* SDA CUSTOM */        this.filterValue = {};
-/* SDA CUSTOM */        this.onClose(EdaDialogCloseEvent.NONE, []);
-}
-
+    /* Close methods */
     closeDialog() {
+        this.displayWindow = false;
         this.filter.switch = false;
         this.filterSelected = undefined;
         this.filterValue = {};
@@ -905,20 +888,18 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
         return this.controller.close(event, response);
     }
 
-    whereHavingSwitch(selected) {
-
-        if(selected.value) {
-            this.filterBeforeAfter.filterBeforeGrouping = true;
-            return true
-        } else {
-            this.filterBeforeAfter.filterBeforeGrouping = false;
-            return false
-        }
-
+    onApply(){
+        this.onParentChange(this.selectedParent);
+        this.closeDialog();
     }
 
-    addRange(rangeString: string) {
+    onDuplicate(){
+        this.display.duplicateColumn = true;
+        this.duplicatedColumnName = this.selectedColumn.display_name.default + ' (Copy)';    
+    }
 
+
+    addRange(rangeString: string) {
         const regexNumber = /^[0-9]/;
 
         if(regexNumber.test(rangeString[rangeString.length-1])){
@@ -927,7 +908,7 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
                 .map(item => parseFloat(item.replace(",", ".")));
 
             for (let i = 0; i < ranges.length-1; i++) {
-                // Verificar si el número actual es menor o igual al anterior
+                // Check whether the current number is less than or equal to the previous one
                 if (ranges[i] >= ranges[i + 1]) {
                     this.ranges=[];
                     this.alertService.addError('El correcto orden de los límites del rango van de menor a mayor');
@@ -937,15 +918,15 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
 
             this.ranges = ranges
             this.showRange = true;
-            this.selectedRange = this.generarStringRango(this.ranges); // extraemos el rango seleccionado
+            this.selectedRange = this.generarStringRango(this.ranges); // extract the selected range
             this.rangeString = '';
             this.allowedAggregations = false;
 
-            // Selección de Rango, genera que la agregación sea 'none'
+            // Range selection sets the aggregation to 'none'
             const selectionAggregationRange = { value: 'none', display_name: 'No', selected: 'true' };
             this.addAggregation(selectionAggregationRange);
 
-            // Encuentra la columna de turno y agrega el rango
+            // Find the current column and add the range
             const addAggr = this.findColumn(this.selectedColumn, this.controller.params.currentQuery);
             addAggr.column_type = 'text';
             addAggr.ranges = this.ranges;
@@ -971,18 +952,113 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
     generarStringRango(rango: number[]): string {
         let resultado = "";
 
-        // Agregamos la primera condición
+        // Add the first condition
         resultado += `< ${rango[0]}<br>`;
 
-        // Creamos las condiciones intermedias
+        // Create the intermediate conditions
         for (let i = 0; i < rango.length - 1; i++) {
             resultado += `${rango[i]} - ${rango[i + 1] - 1}<br>`;
         }
 
-        // Agregamos la última condición
+        // Add the last condition
         resultado += `>= ${rango[rango.length - 1]}`;
 
         return resultado;
+    }
+
+    /** Returns the "table_id.column_name" keys for all descendants of col following downChild. */
+    private getDescendantKeys(col: any, currentQuery: any[]): Set<string> {
+        const keys = new Set<string>();
+        let current = col;
+        while (current?.downChild) {
+            const key = `${current.downChild.table_id}.${current.downChild.column_name}`;
+            if (keys.has(key)) break; // safety check for existing cycles
+            keys.add(key);
+            current = currentQuery.find(c =>
+                c.table_id === current.downChild.table_id &&
+                c.column_name === current.downChild.column_name
+            );
+        }
+        return keys;
+    }
+
+    private initParentOption(): void {
+        const currentQuery: any[] = this.controller.params.currentQuery;
+
+        // All descendants of the current column cannot be its parent (prevents cycles)
+        const descendantKeys = this.getDescendantKeys(this.selectedColumn, currentQuery);
+
+        this.childOptions = currentQuery
+            .filter(col => {
+                if (col.column_type === 'numeric') return false;
+                if (col.column_type === 'date' && col.dateNav) return false;
+                if (col.table_id === this.selectedColumn.table_id &&
+                    col.column_name === this.selectedColumn.column_name) return false;
+                // Exclude descendants to avoid circular references
+                if (descendantKeys.has(`${col.table_id}.${col.column_name}`)) return false;
+                if (col.downChild &&
+                    !(col.downChild.table_id === this.selectedColumn.table_id &&
+                      col.downChild.column_name === this.selectedColumn.column_name)) return false;
+                return true;
+            })
+            .map(col => ({ label: col.display_name.default, value: col }));
+
+        this.selectedParent = currentQuery.find(col =>
+            col.downChild &&
+            col.downChild.table_id === this.selectedColumn.table_id &&
+            col.downChild.column_name === this.selectedColumn.column_name
+        ) || null;
+    }
+
+    public onParentChange(parentCol: any): void {
+        const currentQuery: any[] = this.controller.params.currentQuery;
+
+        // Remove any existing parent link pointing to selectedColumn, track former parent
+        let formerParentInQuery: any = null;
+        for (const col of currentQuery) {
+            if (col.downChild &&
+                col.downChild.table_id === this.selectedColumn.table_id &&
+                col.downChild.column_name === this.selectedColumn.column_name) {
+                delete col.downChild;
+                formerParentInQuery = col;
+                break;
+            }
+        }
+
+        if (parentCol) {
+            const parentInQuery = this.findColumn(parentCol, currentQuery);
+            if (parentInQuery) {
+                parentInQuery.downChild = {
+                    table_id: this.selectedColumn.table_id,
+                    column_name: this.selectedColumn.column_name,
+                    display_name: this.selectedColumn.display_name.default
+                };
+            }
+        } else if (formerParentInQuery) {
+            // This column had a parent and now has none - behavior depends on chart type.
+            const chartSubType: string = this.controller.params.chartSubType || '';
+            const isCrossTable = chartSubType === 'crosstable';
+
+            if (isCrossTable) {
+                // In cross table: keep child in currentQuery but force both parent and child
+                // to itemX (vertical axis) so the child doesn't land in itemY and cause OOM pivots.
+                formerParentInQuery._forceItemX = true;
+                const childInQuery = currentQuery.find(
+                    (c: any) => c.table_id === this.selectedColumn.table_id &&
+                                c.column_name === this.selectedColumn.column_name
+                );
+                if (childInQuery) childInQuery._forceItemX = true;
+            } else {
+                // Non-cross-table: remove child and its entire downChild chain.
+                const keysToRemove = new Set<string>();
+                keysToRemove.add(`${this.selectedColumn.table_id}.${this.selectedColumn.column_name}`);
+                this.getDescendantKeys(this.selectedColumn, currentQuery).forEach(k => keysToRemove.add(k));
+                this.controller.params.currentQuery = currentQuery.filter(
+                    (col: any) => !keysToRemove.has(`${col.table_id}.${col.column_name}`)
+                );
+            }
+        }
+        // else: column was never a nav-child (no formerParentInQuery) - do nothing
     }
 
     verifyRange() {
@@ -998,262 +1074,13 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
         }
     }
 
-    /* SDA CUSTOM */ private initDateFilterConfig(): void {
-    /* SDA CUSTOM */     this.dateFilterOperators = this.chartUtils.filterTypes.filter((ft: any) => ft.value !== 'like' && ft.value !== 'not_like');
-    /* SDA CUSTOM */     this.rangeDateFormat = [...rangeDateFormats];
-    /* SDA CUSTOM */     this.resetDateFilterUI();
-    /* SDA CUSTOM */ }
-
-    /* SDA CUSTOM */ private resetDateFilterUI(): void {
-    /* SDA CUSTOM */     this.showDateFormatSelecter = true;
-    /* SDA CUSTOM */     this.showEdaDatePicker = false;
-    /* SDA CUSTOM */     this.showEdaDatePickerSingleSelection = false;
-    /* SDA CUSTOM */     this.showEdaDatePickerMultipleSelection = false;
-    /* SDA CUSTOM */     this.isDateFormatAvailable = false;
-    /* SDA CUSTOM */     this.dateFormatSelected = null;
-    /* SDA CUSTOM */     this.filterSelected = null;
-    /* SDA CUSTOM */ }
-
-/* SDA CUSTOM */ public handleDateFilterOperatorChange(operator: FilterType): void {
-    /* SDA CUSTOM */     this.showDateFormatSelecter = true;
-    /* SDA CUSTOM */     this.showEdaDatePicker = false;
-    /* SDA CUSTOM */     this.showEdaDatePickerSingleSelection = false;
-    /* SDA CUSTOM */     this.showEdaDatePickerMultipleSelection = false;
-
-    /* SDA CUSTOM */     if (operator !== undefined && operator !== null) {
-    /* SDA CUSTOM */         this.isDateFormatAvailable = true;
-    /* SDA CUSTOM */     } else {
-    /* SDA CUSTOM */         this.dateFormatSelected = null;
-    /* SDA CUSTOM */         this.isDateFormatAvailable = false;
-    /* SDA CUSTOM */         this.rangeDateFormat = [];
-    /* SDA CUSTOM */         this.display.filterButton = true;
-    /* SDA CUSTOM */         return;
-    /* SDA CUSTOM */     }
-
-    /* SDA CUSTOM */     const noDateNeeded = ['not_null', 'not_null_nor_empty', 'null_or_empty'];
-    /* SDA CUSTOM */     if (noDateNeeded.includes(operator.value)) {
-    /* SDA CUSTOM */         this.display.filterButton = false;
-    /* SDA CUSTOM */         this.showDateFormatSelecter = false;
-    /* SDA CUSTOM */         this.isDateFormatAvailable = false;
-    /* SDA CUSTOM */         return;
-    /* SDA CUSTOM */     }
-
-    /* SDA CUSTOM */     if(['=', '!=', '>', '<', '>=', '<='].includes(operator.value)) {
-    /* SDA CUSTOM */         this.dateFormatSelected = null;
-    /* SDA CUSTOM */         this.rangeDateFormat = rangeDateFormats.filter((ft: any, index: number) => index < 5);
-    /* SDA CUSTOM */         this.rangeDateFormat.push(rangeDateFormats[rangeDateFormats.length - 1]);
-    /* SDA CUSTOM */         return;
-    /* SDA CUSTOM */     }
-
-    /* SDA CUSTOM */     if(['in', 'not_in'].includes(operator.value)) {
-    /* SDA CUSTOM */         this.dateFormatSelected = null;
-    /* SDA CUSTOM */         this.rangeDateFormat = rangeDateFormats.filter((ft: any, index: number) => index >= 5);
-    /* SDA CUSTOM */         return;
-    /* SDA CUSTOM */     }
-
-    /* SDA CUSTOM */     if(['between', 'not_between'].includes(operator.value)) {
-    /* SDA CUSTOM */         this.dateFormatSelected = { label: $localize`:@@DatePickerCustomDate:Seleccionar fecha`, value: 'customDate' };
-    /* SDA CUSTOM */         this.showDateFormatSelecter = false;
-    /* SDA CUSTOM */         this.showEdaDatePicker = true;
-    /* SDA CUSTOM */         this.initInlineDatePickerConfig();
-    /* SDA CUSTOM */         return;
-    /* SDA CUSTOM */     }
-    /* SDA CUSTOM */ }
-
-    /* SDA CUSTOM */ public handleDateFilterFormatChange(format: any): void {
-    /* SDA CUSTOM */     this.showEdaDatePickerSingleSelection = false;
-    /* SDA CUSTOM */     this.showEdaDatePickerMultipleSelection = false;
-
-    /* SDA CUSTOM */     if (!format) {
-    /* SDA CUSTOM */         this.display.filterButton = true;
-    /* SDA CUSTOM */         this.filter.range = null;
-    /* SDA CUSTOM */         return;
-    /* SDA CUSTOM */     }
-
-    /* SDA CUSTOM */     if(['=', '!=', '>', '<', '>=', '<='].includes(this.filterSelected?.value) && format.value === 'customDate') {
-    /* SDA CUSTOM */         this.showEdaDatePickerSingleSelection = true;
-    /* SDA CUSTOM */         this.initInlineDatePickerConfig();
-    /* SDA CUSTOM */         return;
-    /* SDA CUSTOM */     }
-
-    /* SDA CUSTOM */     if(['in', 'not_in'].includes(this.filterSelected?.value) && format.value === 'customDate') {
-    /* SDA CUSTOM */         this.showEdaDatePickerMultipleSelection = true;
-    /* SDA CUSTOM */         this.initInlineDatePickerConfig();
-    /* SDA CUSTOM */         return;
-    /* SDA CUSTOM */     }
-
-    /* SDA CUSTOM */     this.filter.range = format.value;
-    /* SDA CUSTOM */     this.display.filterButton = false;
-
-    /* SDA CUSTOM */     // When selecting a predefined range, calculate the dates for filterValue
-    /* SDA CUSTOM */     if (format.value !== 'customDate') {
-    /* SDA CUSTOM */         const dates = this.dateUtils.getRange(format.value);
-    /* SDA CUSTOM */         const dtf = new Intl.DateTimeFormat('en', { year: 'numeric', month: '2-digit', day: '2-digit' });
-    /* SDA CUSTOM */         const toStr = (d: Date): string => {
-    /* SDA CUSTOM */             const [{ value: mo }, , { value: da }, , { value: ye }] = dtf.formatToParts(d);
-    /* SDA CUSTOM */             return `${ye}-${mo}-${da}`;
-    /* SDA CUSTOM */         };
-    /* SDA CUSTOM */         this.filterValue = { value1: toStr(dates[0]) };
-    /* SDA CUSTOM */         if (this.filterSelected?.value === 'in' || this.filterSelected?.value === 'not_in') {
-    /* SDA CUSTOM */             this.filterValue.value2 = toStr(dates[1]);
-    /* SDA CUSTOM */         }
-    /* SDA CUSTOM */     }
-    /* SDA CUSTOM */ }
-
-    /* SDA CUSTOM */ private initInlineDatePickerConfig(): void {
-    /* SDA CUSTOM */     if (!this.datePickerConfig) {
-    /* SDA CUSTOM */         this.datePickerConfig = {};
-    /* SDA CUSTOM */     }
-    /* SDA CUSTOM */     this.datePickerConfig.dateRange = [];
-    /* SDA CUSTOM */     this.datePickerConfig.range = null;
-
-    /* SDA CUSTOM */     if (this.filterValue?.value1) {
-    /* SDA CUSTOM */         const v1 = this.filterValue.value1;
-    /* SDA CUSTOM */         if (Array.isArray(v1)) {
-    /* SDA CUSTOM */             this.datePickerConfig.dateRange = v1.map((d: string) => new Date(d.replace(/-/g, '/')));
-    /* SDA CUSTOM */         } else {
-    /* SDA CUSTOM */             this.datePickerConfig.dateRange.push(new Date(v1.replace(/-/g, '/')));
-    /* SDA CUSTOM */             if (this.filterValue.value2) {
-    /* SDA CUSTOM */                 this.datePickerConfig.dateRange.push(new Date(this.filterValue.value2.replace(/-/g, '/')));
-    /* SDA CUSTOM */             }
-    /* SDA CUSTOM */         }
-    /* SDA CUSTOM */     }
-    /* SDA CUSTOM */ }
-
-    /* SDA CUSTOM */ public processInlineDatePickerEvent(event: any): void {
-    /* SDA CUSTOM */     if (!event.dates) return;
-
-    /* SDA CUSTOM */     const dtf = new Intl.DateTimeFormat('en', { year: 'numeric', month: '2-digit', day: '2-digit' });
-    /* SDA CUSTOM */     const dates = Array.isArray(event.dates) ? event.dates : [event.dates, event.dates];
-
-    /* SDA CUSTOM */     if (!dates[1]) {
-    /* SDA CUSTOM */         dates[1] = dates[0];
-    /* SDA CUSTOM */     }
-
-    /* SDA CUSTOM */     this.filter.range = event.range;
-
-    /* SDA CUSTOM */     const isInFilter = this.filterSelected?.value === 'in' || this.filterSelected?.value === 'not_in';
-    /* SDA CUSTOM */     if (isInFilter) {
-    /* SDA CUSTOM */         this.filterValue.value1 = dates
-    /* SDA CUSTOM */             .filter((d: any) => d != null)
-    /* SDA CUSTOM */             .map((date: any) => {
-    /* SDA CUSTOM */                 const [{ value: mo }, , { value: da }, , { value: ye }] = dtf.formatToParts(new Date(date));
-    /* SDA CUSTOM */                 return `${ye}-${mo}-${da}`;
-    /* SDA CUSTOM */             });
-    /* SDA CUSTOM */     } else {
-    /* SDA CUSTOM */         const stringRange = [dates[0], dates[1]].map(date => {
-    /* SDA CUSTOM */             const [{ value: mo }, , { value: da }, , { value: ye }] = dtf.formatToParts(date);
-    /* SDA CUSTOM */             return `${ye}-${mo}-${da}`;
-    /* SDA CUSTOM */         });
-    /* SDA CUSTOM */         this.filterValue.value1 = stringRange[0];
-    /* SDA CUSTOM */         if (this.filterSelected?.value === 'between') {
-    /* SDA CUSTOM */             this.filterValue.value2 = stringRange[1];
-    /* SDA CUSTOM */         }
-    /* SDA CUSTOM */     }
-    /* SDA CUSTOM */     this.display.filterButton = false;
-    /* SDA CUSTOM */ }
-
-    /* SDA CUSTOM */ public getDateFilterDisplayLabel(filtre: any): string {
-    /* SDA CUSTOM */     if (!filtre) return '';
-
-    /* SDA CUSTOM */     const dynamicValue = filtre.dynamicValue || filtre.selectedRange;
-    /* SDA CUSTOM */     if (dynamicValue && dynamicValue !== 'customDate') {
-    /* SDA CUSTOM */         return this.getRangeLabel(dynamicValue);  // Only return the value, operator is shown separately
-    /* SDA CUSTOM */     }
-
-    /* SDA CUSTOM */     if (!filtre.filter_elements || filtre.filter_elements.length === 0) {
-    /* SDA CUSTOM */         return '';  // No value to display
-    /* SDA CUSTOM */     }
-
-    /* SDA CUSTOM */     const fmt = (s: string) => {
-    /* SDA CUSTOM */         if (!s) return '';
-    /* SDA CUSTOM */         const [ye, mo, da] = s.split('-');
-    /* SDA CUSTOM */         return `${da}-${mo}-${ye.slice(2)}`;
-    /* SDA CUSTOM */     };
-
-    /* SDA CUSTOM */     const items = filtre.filter_elements;
-    /* SDA CUSTOM */     if (items.length === 1 || !items[1]) {
-    /* SDA CUSTOM */         const val = items[0].value1;
-    /* SDA CUSTOM */         if (Array.isArray(val)) {
-    /* SDA CUSTOM */             return val.map((v: string) => fmt(v)).join(', ');
-    /* SDA CUSTOM */         }
-    /* SDA CUSTOM */         return fmt(val);
-    /* SDA CUSTOM */     }
-    /* SDA CUSTOM */     const v1 = items[0].value1;
-    /* SDA CUSTOM */     const v2 = items[1].value2;
-    /* SDA CUSTOM */     const s1 = Array.isArray(v1) ? fmt(v1[0]) : fmt(v1);
-    /* SDA CUSTOM */     const s2 = Array.isArray(v2) ? fmt(v2[0]) : fmt(v2);
-    /* SDA CUSTOM */     return `${s1} - ${s2}`;
-    /* SDA CUSTOM */ }
-
-    /* SDA CUSTOM */ public getRangeLabel(value: string): string {
-    /* SDA CUSTOM */     return rangeDateFormats.find((r: any) => r.value === value)?.label || value;
-    /* SDA CUSTOM */ }
-
-    /* SDA CUSTOM */ public isDateFilter(filtre: any): boolean {
-    /* SDA CUSTOM */     if (!filtre || !filtre.filter_type) return false;
-    /* SDA CUSTOM */     return ['between', 'in', 'not_in', 'not_null', 'not_null_nor_empty', 'null_or_empty'].includes(filtre.filter_type);
-    /* SDA CUSTOM */ }
-
-    /* SDA CUSTOM */ public get isReadyForDateFilter(): boolean {
-    /* SDA CUSTOM */     if (this.filterSelected == null) return true;
-    /* SDA CUSTOM */     const noDateNeeded = ['not_null', 'not_null_nor_empty', 'null_or_empty'];
-    /* SDA CUSTOM */     if (noDateNeeded.includes(this.filterSelected.value)) return false;
-    /* SDA CUSTOM */     if (this.dateFormatSelected == null) return true;
-    /* SDA CUSTOM */     if (this.dateFormatSelected?.value === 'customDate') {
-    /* SDA CUSTOM */         const hasValue1 = !this.filterValue?.value1;
-    /* SDA CUSTOM */         const isBetween = this.filterSelected?.value === 'between';
-    /* SDA CUSTOM */         return isBetween ? (hasValue1 || !this.filterValue?.value2) : hasValue1;
-    /* SDA CUSTOM */     }
-    /* SDA CUSTOM */     return false;
-    /* SDA CUSTOM */ }
-
     validateInput(event: Event): void {
         const inputElement = event.target as HTMLInputElement;
         const validCharacters = /[1234567890.,:-]*/g;
         inputElement.value = inputElement.value.match(validCharacters)?.join('') || '';
-        // Si el input inicia con (. , :) no se habilitara el botón del rango ni se agregará el signo en el input. Se debe empezar con un número o con un signo (-) y un número para los negativos.
+        // If the input starts with (. , :), the range button is not enabled and the sign is not added to the input. It must start with a number or with a sign (-) followed by a number for negatives.
         if(inputElement.value=== '.' || inputElement.value===',' || inputElement.value===':') inputElement.value = '';
-        this.rangeString = inputElement.value; // Se actualiza ngModel
+        this.rangeString = inputElement.value; // ngModel is updated
     }
-
-    /* SDA CUSTOM */ onOpenDateFormatDialog() {
-    /* SDA CUSTOM */     this.displayDateFormat = true;
-    /* SDA CUSTOM */ }
-    
-    /* SDA CUSTOM */onCloseDateFormatDialog(event: any) {
-    /* SDA CUSTOM */    this.displayDateFormat = false;
-    /* SDA CUSTOM */
-    /* SDA CUSTOM */    if (event) {
-    /* SDA CUSTOM */        const { dateFormatSet, filterSelected }: any = event;
-    /* SDA CUSTOM */        this.filterSelected = JSON.parse(JSON.stringify(filterSelected));
-    /* SDA CUSTOM */
-    /* SDA CUSTOM */        if (dateFormatSet.dynamic) {
-    /* SDA CUSTOM */            const dates = this.dateUtils.getRange(dateFormatSet.dynamicValue);
-    /* SDA CUSTOM */            const dtf = new Intl.DateTimeFormat('en', { year: 'numeric', month: '2-digit', day: '2-digit' });
-    /* SDA CUSTOM */            const toStr = (d: Date): string => {
-    /* SDA CUSTOM */                const [{ value: mo }, , { value: da }, , { value: ye }] = dtf.formatToParts(d);
-    /* SDA CUSTOM */                return `${ye}-${mo}-${da}`;
-    /* SDA CUSTOM */            };
-    /* SDA CUSTOM */
-    /* SDA CUSTOM */            if (filterSelected.value === 'in' || filterSelected.value === 'not_in') {
-    /* SDA CUSTOM */                /* SDA CUSTOM: store boundary dates; dynamicValue signals BETWEEN semantics to the backend */
-    /* SDA CUSTOM */                this.filterValue = { value1: toStr(dates[0]), value2: toStr(dates[1]) };
-    /* SDA CUSTOM */            } else {
-    /* SDA CUSTOM */                this.filterValue = { value1: toStr(dates[0]) };
-    /* SDA CUSTOM */            }
-    /* SDA CUSTOM */
-    /* SDA CUSTOM */            this.filter.range = dateFormatSet.dynamicValue;
-    /* SDA CUSTOM */            this._pendingDynamicValue = dateFormatSet.dynamicLabel;
-    /* SDA CUSTOM */        } else {
-    /* SDA CUSTOM */            this.filterValue = JSON.parse(JSON.stringify(dateFormatSet.dateValue));
-    /* SDA CUSTOM */            this.filter.range = null;
-    /* SDA CUSTOM */            this._pendingDynamicValue = null;
-    /* SDA CUSTOM */        }
-    /* SDA CUSTOM */
-    /* SDA CUSTOM */        this.addFilter();
-    /* SDA CUSTOM */        this._pendingDynamicValue = null;
-    /* SDA CUSTOM */    }
-    /* SDA CUSTOM */}
 
 }

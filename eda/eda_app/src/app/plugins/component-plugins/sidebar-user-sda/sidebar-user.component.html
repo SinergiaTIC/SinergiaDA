@@ -1,0 +1,10 @@
+@if (hasUser) {
+  <a
+    [routerLink]="'/profile'"
+    class="sidebar-user-badge w-10 h-10 rounded-full flex items-center justify-center text-xs font-semibold select-none cursor-pointer"
+    [title]="displayName"
+    [attr.aria-label]="displayName"
+  >
+    {{ initials }}
+  </a>
+}

@@ -1,8 +1,6 @@
 export class SankeyConfig {
   colors: Array<string>;
-  assignedColors: any[];
-  constructor(colors: Array<string>, assignedColors: any[]) {
+  constructor(colors: Array<string>) {
     this.colors = colors;
-    this.assignedColors = assignedColors || [];
   }
 }

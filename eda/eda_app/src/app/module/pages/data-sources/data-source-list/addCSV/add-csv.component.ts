@@ -1,22 +1,39 @@
 import { AlertService } from './../../../../../services/alerts/alert.service';
 import { SpinnerService } from './../../../../../services/shared/spinner.service';
-import { SelectItem } from 'primeng/api';
-import { Component, ViewChild } from '@angular/core';
-import { EdaDialogAbstract, EdaDialog, EdaDialogCloseEvent } from '@eda/shared/components/shared-components.index';
+import { SelectItem, SharedModule } from 'primeng/api';
+import { Component, ElementRef, EventEmitter, Input, OnInit, Output, signal, ViewChild } from '@angular/core';
+import { EdaDialog } from '@eda/shared/components/shared-components.index';
 import { NgxCsvParser } from 'ngx-csv-parser';
 import { AddTableService } from '@eda/services/api/createTable.service';
-
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { EdaDialog2Component } from '@eda/shared/components/shared-components.index';
+import { DropdownModule } from 'primeng/dropdown';
+import { CommonModule } from '@angular/common';
+import { IconComponent } from '@eda/shared/components/icon/icon.component';
 
 @Component({
+  standalone: true,
   selector: 'app-add-csv-dialog',
   templateUrl: './add-csv.component.html',
-  styleUrls: ['./add-csv.component.css']
+  styleUrls: ['./add-csv.component.css'],
+  imports: [SharedModule, CommonModule, FormsModule, ReactiveFormsModule, IconComponent, DropdownModule, EdaDialog2Component]
 })
 
-export class AddCsvComponent extends EdaDialogAbstract {
+export class AddCsvComponent implements OnInit {
+  public display: boolean = false;
+  @Input() config: any;
+  @Input() model_id: any;
+  @Output() close: EventEmitter<any> = new EventEmitter<any>();
 
+
+  public title = $localize`:@@addTableTitle:Añadir Tabla`;
   @ViewChild('file', { static: false }) file: { nativeElement: { files: { [key: string]: File; }; value: string; click: () => void; }; };
+  @ViewChild('file') fileInput!: ElementRef<HTMLInputElement>;
 
+  _csvFile = signal<File | null>(null);
+  _csvFileName = signal<string>('');
+  isDraggingExcelFile = signal<boolean>(false);
+  isDraggingCsvFile = signal<boolean>(false);
   public dialog: EdaDialog;
   public csvRecords: any;
   public csvHeaders: any;
@@ -30,7 +47,6 @@ export class AddCsvComponent extends EdaDialogAbstract {
   public decSeparators : SelectItem[];
   public editFieldsHeaders: Array<string>;
   public names: Array<string>;
-  private model_id: string;
   public tableAdded: boolean = false;
 
   constructor(
@@ -39,14 +55,13 @@ export class AddCsvComponent extends EdaDialogAbstract {
     private spinnerService: SpinnerService,
     private alertService: AlertService
   ) {
-    super();
 
-    this.dialog = new EdaDialog({
-      show: () => this.onShow(),
-      hide: () => this.onClose(EdaDialogCloseEvent.NONE),
-      title: $localize`:@@addTableTitle:Añadir Tabla`
-    });
-    this.dialog.style = { width: '80%', height: '65%', top:"-4em", left:'1em' };
+    // this.dialog = new EdaDialog({
+    //   show: () => this.onShow(),
+    //   hide: () => this.onClose(EdaDialogCloseEvent.NONE),
+    //   title: $localize`:@@addTableTitle:Añadir Tabla`
+    // });
+    // this.dialog.style = { width: '80%', height: '65%', top:"-4em", left:'1em' };
 
     this.names = ['type', 'format', 'separator'];
 
@@ -54,14 +69,16 @@ export class AddCsvComponent extends EdaDialogAbstract {
       { label: 'text', value: 'text' },
       { label: 'integer', value: "integer" },
       { label: 'numeric', value: "numeric" },
+      { label: 'coordinate', value: "coordinate" },
+      { label: 'html', value: "html" },
       { label: 'boolean', value: "boolean" },
       { label: 'date', value: "timestamp" },
     ];
 
-    this.editFieldsHeaders = [$localize`:@@csvField:Campo`, $localize`:@@csvType:Tipo`, $localize`:@@csvFormat:Formato`, $localize`:@@csvSep:Separador Decimal`];
+    this.editFieldsHeaders = [$localize`:@@csvField:Campo`, $localize`:@@type:Tipo`, $localize`:@@dateFormatH4:Formato`, $localize`:@@csvSep:Separador Decimal`];
 
     this.dataFormats = [
-      { label: '', value: '' },
+      { label: 'Sin formato', value: '' },
       { label: '#,###.##', value: '.' },
       { label: '#.###,##', value: ',' },
       { label: 'DD-MM-YYYY', value: 'DD-MM-YYYY' },
@@ -78,26 +95,29 @@ export class AddCsvComponent extends EdaDialogAbstract {
       { label: ',', value: ',' },
       { label: '.', value: "." }
     ];
+  }
 
-  }
-  onShow(): void {
-    this.model_id = this.controller.params.model_id;
-  }
-  onClose(event: EdaDialogCloseEvent, response?: any): void {
-    return this.controller.close(event, response);
+  ngOnInit(): void { }
+  
+  onClose(response?: any): void {
+    this.display = false;
+    this.close.emit(response);
   }
 
   closeDialog() {
-    this.onClose(EdaDialogCloseEvent.NEW, this.tableAdded);
+    this.onClose(this.tableAdded);
   }
 
   async onFilesAdded() {
+    if(!this.delimiter)
+        this.delimiter = ';';
     const file = this.file.nativeElement.files[0];
     try {
       this.csvRecords = await this.ngxCsvParser.parse(file, { header: this.header, delimiter: this.delimiter })
         .pipe().toPromise();
       this.csvHeaders = Object.keys(this.csvRecords[0]);
       const types = this.getTypes(this.csvHeaders, this.csvRecords);
+      this.csvColumns = [];
       this.csvHeaders.forEach((header, h) => {
         let row = { field: header };
         for (let i = 0; i < 3; i++) {
@@ -159,9 +179,10 @@ export class AddCsvComponent extends EdaDialogAbstract {
     try {
       await this.createTableService.createTable(createBody).toPromise();
       let start = 0;
+
       for (let i = 0; i < batches; i++) {
         const rows = this.csvRecords.slice(start, start + BATCH_SIZE);
-        start = start + BATCH_SIZE + 1;
+        start = start + BATCH_SIZE;
         const insertBody = {
           query: {
             tableName: `from_csv_${this.tableName.replace(/[^\w\s]/gi, '').replace(/ /gi, '_')}`,
@@ -170,6 +191,7 @@ export class AddCsvComponent extends EdaDialogAbstract {
           },
           model_id: this.model_id
         }
+
         await this.createTableService.insertData(insertBody).toPromise();
       }
       this.spinnerService.off();
@@ -181,5 +203,99 @@ export class AddCsvComponent extends EdaDialogAbstract {
       this.spinnerService.off();
       this.alertService.addError(err.text.routine)
     }
+  }
+
+  retryCsvWithNewSeparator() {
+    const file = this._csvFile();
+    if (!file) return;
+    this.parseCsv(file);
+  }
+  // Drag & drop event handling methods
+  handleDrag(e: DragEvent) {
+    e.preventDefault();
+    e.stopPropagation();
+  }
+
+  handleDragIn(e: DragEvent, type: 'csv') {
+    e.preventDefault();
+    e.stopPropagation();
+    this.isDraggingCsvFile.set(true);
+  }
+
+  handleDragOut(e: DragEvent, type: 'csv') {
+    e.preventDefault();
+    e.stopPropagation();
+    this.isDraggingCsvFile.set(false);
+  }
+
+  handleDrop(e: DragEvent, type: 'csv') {
+    e.preventDefault();
+    e.stopPropagation();
+    this.isDraggingCsvFile.set(false);
+
+    const files = e.dataTransfer?.files;
+    if (files && files.length > 0) {
+      const file = files[0];
+      this._csvFileName.set(file.name);
+      this._csvFile.set(file);
+      if (!this.delimiter) this.delimiter = ';';
+      this.parseCsv(file);
+    }
+  }
+
+  handleFileSelect(e: Event, type:'csv') {
+    const input = e.target as HTMLInputElement;
+    const files = input.files;
+    if (files && files.length > 0) {
+      this.handleFiles(files[0], type);
+    }
+  }
+
+    handleFiles(file: File, type:'csv') {
+      this._csvFileName.set(file.name);
+      this._csvFile.set(file);
+  }
+
+
+  parseCsv(file: File) {
+    const reader = new FileReader();
+
+    reader.onload = () => {
+      const text = reader.result as string;
+      const lines = text.split('\n').map(l => l.trim()).filter(l => l.length > 0);
+
+      if (!this.delimiter) return;
+
+      // Extract headers; if any are empty, assign a generic name
+      const headers = lines[0].split(this.delimiter).map((h, i) => h.trim() || `column_${i + 1}`);
+
+      // Parse all data rows as objects {header: value}
+      // so that csvRecords is updated with the new delimiter
+      const records = lines.slice(1).map(line => {
+        const values = line.split(this.delimiter);
+        const record: any = {};
+        headers.forEach((header, i) => { record[header] = values[i]?.trim() ?? ''; });
+        return record;
+      });
+
+      this.csvRecords = records;
+      this.csvHeaders = headers;
+      const types = this.getTypes(headers, records);
+
+      this.csvColumns = [];
+      headers.forEach((header, h) => {
+        let row = { field: header };
+        for (let i = 0; i < 3; i++) {
+          row[this.names[i]] = i === 0 ? types[h] : '';
+        }
+        this.csvColumns.push(row);
+      });
+    };
+
+    reader.onerror = () => {
+      this.csvColumns = [];
+    };
+
+    reader.readAsText(file);
   }
 }

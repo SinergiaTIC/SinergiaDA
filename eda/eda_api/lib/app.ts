@@ -4,13 +4,11 @@ import fileUpload from 'express-fileupload';
 import { NextFunction, Request, Response } from 'express';
 import { callInterceptor } from './services/call-interceptor';
 import errorMiddleware from './middleware/error.middleware';
-
+import cluster from 'cluster';
 
 import Router from './router';
 
 const path = require('path');
-/* SDA CUSTOM*/ // Show current node_modules folder 
-/* SDA CUSTOM*/ console.log("NODE MODULES PATH",require.resolve('lodash'));
 const database = require('../config/database.config');
 const mongoose = require('mongoose');
 const compression = require('compression');
@@ -51,8 +49,10 @@ class App {
         // File Upload
         this.app.use(fileUpload());
 
-        //jobs
-        EdaScheduler.initJobs();
+        // Jobs: solo en el primer worker para evitar ejecuciones duplicadas en cluster
+        if (cluster.isMaster || (cluster.worker && cluster.worker.id === 1)) {
+            EdaScheduler.initJobs();
+        }
     }
 
     private mongoSetup(): void {
@@ -66,7 +66,6 @@ class App {
             console.log('\n\x1b[34m=====\x1b[0m \x1b[31mCould not connect to the database. Exiting now... \x1b[0m \x1b[34m=====\x1b[0m\n', err);
             process.exit();
         });
-        mongoose.set('useCreateIndex', true);
     }
 }
 

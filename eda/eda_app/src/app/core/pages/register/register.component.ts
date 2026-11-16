@@ -11,7 +11,6 @@ declare function init_plugins();
 @Component({
     selector: 'app-register',
     templateUrl: './register.component.html',
-    styleUrls: ['../login/login.component.css']
 })
 export class RegisterComponent implements OnInit {
 
@@ -33,7 +32,7 @@ export class RegisterComponent implements OnInit {
     }
 
     ngOnInit() {
-        init_plugins();
+        // init_plugins();
     }
 
     isMatch(value1: string, value2: string) {

@@ -1,90 +1,129 @@
-import { SankeyConfig } from './../panel-charts/chart-configuration-models/sankey-config';
-import { Component, ViewChild, AfterViewChecked } from '@angular/core';
-import { EdaDialog, EdaDialogAbstract, EdaDialogCloseEvent } from '@eda/shared/components/shared-components.index';
+import { Component, ViewChild, AfterViewChecked, OnInit, Input } from '@angular/core';
+import { EdaDialog, EdaDialogCloseEvent } from '@eda/shared/components/shared-components.index';
 import { PanelChart } from '../panel-charts/panel-chart';
 import { PanelChartComponent } from '../panel-charts/panel-chart.component';
-
+import { SankeyConfig } from './../panel-charts/chart-configuration-models/sankey-config';
+import { StyleProviderService, ChartUtilsService } from '@eda/services/service.index';
+import { FormsModule } from '@angular/forms';
+import { CommonModule } from '@angular/common';
+import { EdaDialog2Component } from '@eda/shared/components/shared-components.index';
+import { ColorPickerModule } from 'primeng/colorpicker';
+import { DropdownModule } from 'primeng/dropdown';
 
 @Component({
+  standalone: true,
   selector: 'app-sankey-dialog',
-  templateUrl: './sankey-dialog.component.html'
+  templateUrl: './sankey-dialog.component.html',
+  imports: [FormsModule, CommonModule, EdaDialog2Component, PanelChartComponent, ColorPickerModule, DropdownModule]
 })
+export class SankeyDialog implements OnInit, AfterViewChecked {
 
-export class SankeyDialog extends EdaDialogAbstract implements AfterViewChecked {
-
+  @Input() controller: any;
   @ViewChild('PanelChartComponent', { static: false }) myPanelChartComponent: PanelChartComponent;
 
-  public dialog: EdaDialog;
   public panelChartConfig: PanelChart = new PanelChart();
-  public colors: Array<string>;
-  public originalColors: string[];
-  public labels: Array<string>;
-  public display:boolean=false;
 
-  constructor() {
+  /* single source of truth */
+  public assignedColors: { value: string; color: string }[] = [];
+  private originalAssignedColors: { value: string; color: string }[] = [];
 
-    super();
+  public labels: string[] = [];
+  public values: any[] = [];
 
-    this.dialog = new EdaDialog({
-      show: () => this.onShow(),
-      hide: () => this.onClose(EdaDialogCloseEvent.NONE),
-      title: $localize`:@@ChartProps:PROPIEDADES DEL GRAFICO`
-    });
-    this.dialog.style = { width: '80%', height: '70%', top:"-4em", left:'1em'};
+  public display = false;
+  public selectedPalette: { name: string; paleta: string[] } | null = null;
+  public allPalettes = this.stylesProviderService.ChartsPalettes;
+  public title = $localize`:@@ChartProps:PROPIEDADES DEL GRAFICO`;
+
+  constructor(
+    private stylesProviderService: StyleProviderService,
+    private chartUtils: ChartUtilsService
+  ) {}
+
+  ngOnInit(): void {
+    this.panelChartConfig = this.controller.params.panelChart;
+    this.display = true;
   }
+
   ngAfterViewChecked(): void {
-    if (!this.colors && this.myPanelChartComponent?.componentRef) {
-      //To avoid "Expression has changed after it was checked" warning
+    if (!this.assignedColors.length && this.myPanelChartComponent?.componentRef) {
       setTimeout(() => {
-        this.colors = this.myPanelChartComponent.componentRef.instance.colors.map(c => this.rgb2hex(c));
-        this.originalColors = [...this.colors]; // Guardamos copia original
-        this.labels = this.myPanelChartComponent.componentRef.instance.firstColLabels;
+
+        this.values = this.myPanelChartComponent.componentRef.instance.data.values;
+
+        // real unique labels
+        this.labels = [...new Set<string>(this.values.map(v => v[0] as string))];
+
+        const chartAssignedColors =
+          this.myPanelChartComponent.props.config.getConfig()['assignedColors'] || [];
+
+        this.assignedColors = this.labels.map(label => {
+          const match = chartAssignedColors.find(c => c.value === label);
+          return {
+            value: label,
+            color: match?.color
+          };
+        });
+
+        // preview cancel
+        this.originalAssignedColors = this.assignedColors.map(c => ({ ...c }));
+
       }, 0);
     }
   }
 
-  onShow(): void {
-    this.panelChartConfig = this.controller.params.panelChart;
-    this.display = true;
-
-  }
   onClose(event: EdaDialogCloseEvent, response?: any): void {
-    return this.controller.close(event, response);
+    this.controller.close(event, response);
   }
 
-  saveChartConfig() {
-    this.onClose(EdaDialogCloseEvent.UPDATE, {colors : this.colors.map(color => this.hex2rgb(color))});
+  /** SAVE */
+  saveChartConfig(): void {
+    this.syncChart();
+    this.onClose(EdaDialogCloseEvent.UPDATE, {colors: this.assignedColors.map(c => c.color)});
   }
 
-  closeChartConfig() {
+  /** CANCEL */
+  closeChartConfig(): void {
+    this.assignedColors = this.originalAssignedColors.map(c => ({ ...c }));
+    this.syncChart();
     this.onClose(EdaDialogCloseEvent.NONE);
   }
 
+  /** COLOR PICKER */
   handleInputColor(): void {
-    this.myPanelChartComponent.props.config.setConfig(new SankeyConfig(this.colors.map(c => this.hex2rgb(c)), []));
+    this.syncChart();
+  }
+
+  /** PALETTE */
+  onPaletteSelected(): void {
+    if (!this.selectedPalette) return;
+
+    const palette = this.selectedPalette.paleta;
+    const length = this.labels.length;
+
+    const colors: string[] = [];
+    for (let i = 0; i < length; i++) {
+      colors.push(palette[i % palette.length]);
+    }
+
+    this.assignedColors = this.labels.map((label, i) => ({
+      value: label,
+      color: colors[i]
+    }));
+
+    this.syncChart();
+  }
+
+  /* syncs everything */
+  private syncChart(): void {
+    const labelColorMap: Record<string, string> = {};
+    this.assignedColors.forEach(c => {labelColorMap[c.value] = c.color;});
+
+    // Sankey needs colors according to data.values
+    const colorsForChart = this.values.map(v => labelColorMap[v[0] as string]);
+
+    this.myPanelChartComponent.props.config.setConfig(new SankeyConfig([...new Set(colorsForChart)]));
+    this.myPanelChartComponent.props.config.getConfig()['assignedColors'] = [...this.assignedColors];
     this.myPanelChartComponent.changeChartType();
-
-    // Restauramos internamente el config original a la version anterior
-    setTimeout(() => {
-      this.myPanelChartComponent.props.config.setConfig(new SankeyConfig(this.originalColors.map(c => this.hex2rgb(c)), []));
-    }, 0);
   }
-
-  hex2rgb(hex, opacity = 100): string {
-    hex = hex.replace('#', '');
-    const r = parseInt(hex.substring(0, 2), 16);
-    const g = parseInt(hex.substring(2, 4), 16);
-    const b = parseInt(hex.substring(4, 6), 16);
-
-    return 'rgba(' + r + ',' + g + ',' + b + ',' + opacity / 100 + ')';
-  }
-
-  rgb2hex(rgb): string {
-    rgb = rgb.match(/^rgba?[\s+]?\([\s+]?(\d+)[\s+]?,[\s+]?(\d+)[\s+]?,[\s+]?(\d+)[\s+]?/i);
-    return (rgb && rgb.length === 4) ? '#' +
-      ('0' + parseInt(rgb[1], 10).toString(16)).slice(-2) +
-      ('0' + parseInt(rgb[2], 10).toString(16)).slice(-2) +
-      ('0' + parseInt(rgb[3], 10).toString(16)).slice(-2) : '';
-  }
-
 }

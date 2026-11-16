@@ -1,30 +1,38 @@
 {
-  "compileOnSave": false,
-  "compilerOptions": {
-    "allowSyntheticDefaultImports": true,
-    "baseUrl": "./src",
-    "paths": {
-      "@eda/components/*": ["app/module/components/*"],
-      "@eda/services/*": ["app/services/*"],
-      "@eda/models/*": ["app/shared/models/*"],
-      "@eda/pipes/*": ["app/shared/pipes/*"],
-      "@eda/shared/*": ["app/shared/*"],
-      "@eda/configs/*": ["app/config/*"]
+    "compileOnSave": false,
+    "compilerOptions": {
+      "allowSyntheticDefaultImports": true,
+      "baseUrl": "./src",
+      "paths": {
+        "@eda/components/*": ["app/module/components/*"],
+        "@eda/services/*": ["app/services/*"],
+        "@eda/models/*": ["app/shared/models/*"],
+        "@eda/pipes/*": ["app/shared/pipes/*"],
+        "@eda/shared/*": ["app/shared/*"],
+        "@eda/configs/*": ["app/config/*"]
+      },
+      "outDir": "./dist/out-tsc",
+      "sourceMap": true,
+      "declaration": false,
+      "moduleResolution": "bundler",
+      "experimentalDecorators": true,
+      "emitDecoratorMetadata": true,
+      "importHelpers": true,
+      "module": "es2022", // 🔄 Cambiado a "esnext" para soporte completo en Angular 17
+      "target": "es2022", // ✅ Es válido, pero "esnext" podría ser una opción si planeas usar lo más reciente
+      "typeRoots": ["node_modules/@types"],
+      "types": ["node"],
+      "lib": ["es2022", "dom"],
+      "useDefineForClassFields": false,
+      "strict": false,
+      "strictPropertyInitialization": false,
+      "skipLibCheck": true
     },
-    "outDir": "./dist/out-tsc",
-    "sourceMap": true,
-    "declaration": false,
-    "module": "es2020",
-    "moduleResolution": "node",
-    "experimentalDecorators": true,
-    "importHelpers": true,
-    "target": "es2020",
-    "typeRoots": [
-      "node_modules/@types"
-    ],
-    "lib": [
-      "es2018",
-      "dom"
-    ]
-  }
+    "angularCompilerOptions": {
+      "strictTemplates": true,
+      "strictInjectionParameters": true,
+      "strictDomEventTypes": false, // Disable DOM Types
+      "enableI18nLegacyMessageIdFormat": false, // ✅ Angular moderno no necesita IDs legados para i18n
+      "i18nInLocale": "es-ES" // ✅ Cambia esto si quieres otro idioma predeterminado
+    }
 }
