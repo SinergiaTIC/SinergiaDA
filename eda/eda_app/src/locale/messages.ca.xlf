@@ -3348,7 +3348,7 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       </trans-unit>
       <trans-unit id="filteredReportMessage">
         <source>Por favor, espera un momento mientras procesamos la selección.</source>
-        <target>Espereu un moment mentre processem la vostra selecció.</target>
+        <target>Espereu un moment mentre es processa la selecció.</target>
       </trans-unit>
       <trans-unit id="GroupCreated">
         <source>Grupo creado</source>
@@ -3360,11 +3360,11 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       </trans-unit>
       <trans-unit id="GroupDeletedOk">
         <source>El grupo a sido eliminado correctamente</source>
-        <target>El grup ha estat eliminat correctament</target>
+        <target>El grup ha estat eliminat correctament.</target>
       </trans-unit>
       <trans-unit id="UpdatedGroupError">
         <source>El grupo no se ha podido actualizar</source>
-        <target>El grup no s'ha pogut actualitzar</target>
+        <target>El grup no s'ha pogut actualitzar.</target>
       </trans-unit>
       <trans-unit id="loginTitle">
         <source>Inicio de sesión</source>
@@ -3376,7 +3376,7 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       </trans-unit>
       <trans-unit id="permissionTypeDescription">
         <source>Selecciona cómo quieres gestionar los permisos</source>
-        <target>Selecciona com vols gestionar els permisos</target>
+        <target>Seleccioneu com voleu gestionar els permisos.</target>
       </trans-unit>
       <trans-unit id="permissionTypeUser">
         <source>Permisos por Usuario</source>
@@ -3388,11 +3388,11 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       </trans-unit>
       <trans-unit id="permissionTypeUserDescription">
         <source>Asignar permisos individualmente a usuarios específicos</source>
-        <target>Assignar permisos individualment a usuaris específics</target>
+        <target>Assigna permisos individualment a usuaris específics</target>
       </trans-unit>
       <trans-unit id="permissionTypeGroupDescription">
         <source>Asignar permisos a grupos de usuarios</source>
-        <target>Assignar permisos a grups d'usuaris</target>
+        <target>Assigna permisos a grups d'usuaris</target>
       </trans-unit>
       <trans-unit id="selectUsers">
         <source>Seleccionar Usuarios</source>
@@ -3408,7 +3408,7 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       </trans-unit>
       <trans-unit id="newDataSourceDescription">
         <source>Conéctese a su base de datos para comenzar a consultar y visualizar sus datos</source>
-        <target>Connecteu-vos a la vostra base de dades per començar a consultar i visualitzar les vostres dades</target>
+        <target>Connecteu-vos a la base de dades per consultar i visualitzar les vostres dades.</target>
       </trans-unit>
       <trans-unit id="name">
         <source>Nombre</source>
@@ -3416,11 +3416,11 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       </trans-unit>
       <trans-unit id="nameRequired">
         <source>El nombre es obligatorio</source>
-        <target>El nom és obligatori</target>
+        <target>El nom és obligatori.</target>
       </trans-unit>
       <trans-unit id="separatorRequired">
         <source>El separador es obligatorio</source>
-        <target>El separador és obligatori</target>
+        <target>El separador és obligatori.</target>
       </trans-unit>
       <trans-unit id="type">
         <source>Tipo</source>
@@ -3428,11 +3428,11 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       </trans-unit>
       <trans-unit id="updateFileTitle">
         <source>Actualizar fichero de datos</source>
-        <target>Actualitza el fitxer de dades</target>
+        <target>Actualitza el fitxer de dades.</target>
       </trans-unit>
       <trans-unit id="updateFileDescription">
         <source> Sube un nuevo fichero para reemplazar los datos de esta fuente </source>
-        <target>Puja un nou fitxer per substituir les dades d'aquesta font</target>
+        <target>Puja un nou fitxer per substituir les dades d'aquesta font.</target>
       </trans-unit>
       <trans-unit id="goBack">
         <source>Volver</source>
@@ -3452,11 +3452,11 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       </trans-unit>
       <trans-unit id="serverRequired">
         <source>Url del servidor es obligatorio</source>
-        <target>L'URL del servidor és obligatòria</target>
+        <target>La URL del servidor és obligatòria.</target>
       </trans-unit>
       <trans-unit id="accountRequired">
         <source>El nombre de cuenta es obligatorio</source>
-        <target>El nom del compte és obligatori</target>
+        <target>El nom del compte és obligatori.</target>
       </trans-unit>
       <trans-unit id="port">
         <source>Puerto</source>
@@ -3464,11 +3464,11 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       </trans-unit>
       <trans-unit id="portRequired">
         <source>El puerto es obligatorio</source>
-        <target>El port és obligatori</target>
+        <target>El port és obligatori.</target>
       </trans-unit>
       <trans-unit id="databaseRequired">
         <source>Base de datos es obligatorio</source>
-        <target>La base de dades és obligatòria</target>
+        <target>La base de dades és obligatòria.</target>
       </trans-unit>
       <trans-unit id="schema">
         <source>Esquema</source>
@@ -3476,7 +3476,7 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       </trans-unit>
       <trans-unit id="usernameRequired">
         <source>El usuario es obligatorio</source>
-        <target>L'usuari és obligatori</target>
+        <target>L'usuari és obligatori.</target>
       </trans-unit>
       <trans-unit id="password">
         <source>Contraseña</source>
@@ -3484,11 +3484,11 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       </trans-unit>
       <trans-unit id="passwordRequired">
         <source>La contraseña es obligatorio</source>
-        <target>La contrasenya és obligatòria</target>
+        <target>La contrasenya és obligatòria.</target>
       </trans-unit>
       <trans-unit id="bigqueryKeyDragDrop">
         <source>Sube un archivo de claves</source>
-        <target>Pugeu un fitxer de claus</target>
+        <target>Pugeu un fitxer de claus.</target>
       </trans-unit>
       <trans-unit id="filters">
         <source>Filtros</source>
@@ -3496,7 +3496,7 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       </trans-unit>
       <trans-unit id="optionalFilterDescription">
         <source>Optional filters to limit the scope of your connection</source>
-        <target>Filtres opcionals per limitar l'abast de la vostra connexió</target>
+        <target>Filtres opcionals per limitar l'abast de la connexió.</target>
       </trans-unit>
       <trans-unit id="connectionOptions">
         <source>Opciones de conexión</source>
@@ -3508,19 +3508,19 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       </trans-unit>
       <trans-unit id="optimizedQueriesTooltipDescription">
         <source>Optimice automáticamente las consultas para un mejor rendimiento</source>
-        <target>Optimitza automàticament les consultes per millorar el rendiment</target>
+        <target>Optimitza automàticament les consultes per millorar el rendiment.</target>
       </trans-unit>
       <trans-unit id="optimizedQueriesDescription">
         <source>Mejore el rendimiento de las consultas con la optimización automática</source>
-        <target>Milloreu el rendiment de les consultes amb l'optimització automàtica</target>
+        <target>Milloreu el rendiment de les consultes amb l'optimització automàtica.</target>
       </trans-unit>
       <trans-unit id="allowCacheTooltipDescription">
         <source>Almacenar en caché los resultados de las consultas para mejorar el rendimiento de los datos a los que se accede con frecuencia</source>
-        <target>Emmagatzema en memòria cau els resultats de les consultes per millorar el rendiment de les dades accedides amb freqüència</target>
+        <target>Emmagatzema en memòria cau els resultats de les consultes per millorar el rendiment de les dades emprades amb freqüència.</target>
       </trans-unit>
       <trans-unit id="allowCacheDescription">
         <source>Almacenar en caché los resultados de las consultas para una recuperación de datos más rápida</source>
-        <target>Emmagatzema en memòria cau els resultats de les consultes per a una recuperació de dades més ràpida</target>
+        <target>Emmagatzema en memòria cau els resultats de les consultes per a una recuperació de dades més ràpida.</target>
       </trans-unit>
       <trans-unit id="sslConnection">
         <source>Conexión SSL</source>
@@ -3528,11 +3528,11 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       </trans-unit>
       <trans-unit id="sslConnectionTooltipDescription">
         <source>Utilice SSL para cifrar la conexión a su base de datos para una mayor seguridad</source>
-        <target>Utilitzeu SSL per xifrar la connexió a la base de dades i augmentar-ne la seguretat</target>
+        <target>Utilitzeu SSL per xifrar la connexió a la base de dades i augmentar-ne la seguretat.</target>
       </trans-unit>
       <trans-unit id="sslConnectionDescription">
         <source>Proteja su conexión con encriptación SSL</source>
-        <target>Protegiu la vostra connexió amb encriptació SSL</target>
+        <target>Protegiu la connexió amb encriptació SSL.</target>
       </trans-unit>
       <trans-unit id="testConnection">
         <source>Probar conexión</source>
@@ -3548,7 +3548,7 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       </trans-unit>
       <trans-unit id="noCacheDescription">
         <source>Desactiva el sistema de caché para obtener datos en tiempo real</source>
-        <target>Desactiva el sistema de memòria cau per obtenir dades en temps real</target>
+        <target>Desactiva el sistema de memòria cau per obtenir dades en temps real.</target>
       </trans-unit>
       <trans-unit id="atTime">
         <source>A las:</source>
@@ -3556,27 +3556,27 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       </trans-unit>
       <trans-unit id="mapDescription">
         <source>Configurar las propiedades básicas de la visualización de su mapa</source>
-        <target>Configura les propietats bàsiques de la visualització del vostre mapa</target>
+        <target>Configura les propietats bàsiques de la visualització del mapa.</target>
       </trans-unit>
       <trans-unit id="selectField">
         <source>Selecciona un campo</source>
-        <target>Selecciona un camp</target>
+        <target>Seleccioneu un camp.</target>
       </trans-unit>
       <trans-unit id="linkMapColumnsDescription">
         <source>Conecte sus columnas de datos a la visualización geográfica</source>
-        <target>Connecteu les vostres columnes de dades amb la visualització geogràfica</target>
+        <target>Connecteu les vostres columnes de dades amb la visualització geogràfica.</target>
       </trans-unit>
       <trans-unit id="selectTable">
         <source>Selecciona una tabla</source>
-        <target>Selecciona una taula</target>
+        <target>Seleccioneu una taula.</target>
       </trans-unit>
       <trans-unit id="selectColumn">
         <source>Selecciona una columna</source>
-        <target>Selecciona una columna</target>
+        <target>Seleccioneu una columna.</target>
       </trans-unit>
       <trans-unit id="linkColumn">
         <source>Vincular columna</source>
-        <target>Vincular columna</target>
+        <target>Vinculeu la columna.</target>
       </trans-unit>
       <trans-unit id="mapsAvailableDescription">
         <source>Mapas que están actualmente configurados y disponibles para su uso</source>
@@ -3584,11 +3584,11 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       </trans-unit>
       <trans-unit id="noMapsAvailable">
         <source>No hay mapas disponibles</source>
-        <target>No hi ha mapes disponibles</target>
+        <target>No hi ha mapes disponibles.</target>
       </trans-unit>
       <trans-unit id="noMapsAvailableDescription">
         <source>Configurar un mapa en la pestaña Propiedades del mapa</source>
-        <target>Configura un mapa a la pestanya Propietats del mapa</target>
+        <target>Configura un mapa a la pestanya Propietats del mapa.</target>
       </trans-unit>
       <trans-unit id="filterReports">
         <source>FILTRAR INFORMES:</source>
@@ -3628,7 +3628,7 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       </trans-unit>
       <trans-unit id="addGroup">
         <source>Crear Grupo</source>
-        <target>Crear Grup</target>
+        <target>Crea un grup</target>
       </trans-unit>
       <trans-unit id="foundGroups">
         <source>grupos encontrados</source>
@@ -3644,7 +3644,7 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       </trans-unit>
       <trans-unit id="editUser">
         <source>Editar Usuario</source>
-        <target>Edita Usuari</target>
+        <target>Edita l'usuari</target>
       </trans-unit>
       <trans-unit id="adminUsers">
         <source>Gestión de Usuarios</source>
@@ -3652,7 +3652,7 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       </trans-unit>
       <trans-unit id="addUser">
         <source>Crear Usuario</source>
-        <target>Crear Usuari</target>
+        <target>Crea un usuari</target>
       </trans-unit>
       <trans-unit id="searchUsers">
         <source>Buscar usuarios...</source>
@@ -3672,7 +3672,7 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       </trans-unit>
       <trans-unit id="addDatasource">
         <source>Crear fuente de datos</source>
-        <target>Crear font de dades</target>
+        <target>Crea una font de dades</target>
       </trans-unit>
       <trans-unit id="foundDatasource">
         <source>fuentes de datos encontradas</source>
@@ -3680,7 +3680,7 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       </trans-unit>
       <trans-unit id="profileSubtitle">
         <source>Administra tu información personal y preferencias de cuenta</source>
-        <target>Administreu la vostra informació personal i preferències del compte</target>
+        <target>Administració de la informació personal i de les preferències del compte.</target>
       </trans-unit>
       <trans-unit id="profileInfoTitle">
         <source>Información Personal</source>
@@ -3688,7 +3688,7 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       </trans-unit>
       <trans-unit id="profileInfoSubtitle">
         <source>Actualiza tu información básica de perfil</source>
-        <target>Actualitzeu la vostra informació bàsica del perfil</target>
+        <target>Administració de la informació bàsica del perfil.</target>
       </trans-unit>
       <trans-unit id="usernameLengthValidation">
         <source>El nombre de usuario debe tener al menos 2 caracteres.</source>
@@ -3712,7 +3712,7 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       </trans-unit>
       <trans-unit id="passwordValidation">
         <source>Las contraseñas no coinciden</source>
-        <target>Les contrasenyes no coincideixen</target>
+        <target>Les contrasenyes no coincideixen.</target>
       </trans-unit>
       <trans-unit id="saveChanges">
         <source>Guardar cambios</source>
@@ -3720,11 +3720,11 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       </trans-unit>
       <trans-unit id="profileImage">
         <source>Foto de perfil</source>
-        <target>Foto de perfil</target>
+        <target>Fotografia de perfil</target>
       </trans-unit>
       <trans-unit id="profileImageSubtitle">
         <source>Actualiza tu foto de perfil</source>
-        <target>Actualitzeu la vostra foto de perfil</target>
+        <target>Actualitzeu la vostra fotografia de perfil</target>
       </trans-unit>
       <trans-unit id="uploadImage">
         <source>Subir imagen</source>
@@ -3780,11 +3780,11 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       </trans-unit>
       <trans-unit id="tooltipBlockedByComparative">
         <source>Bloqueado porque comparativa está activa</source>
-        <target>Blocat perquè la comparativa està activa</target>
+        <target>Blocat perquè la comparativa està activa.</target>
       </trans-unit>
       <trans-unit id="tooltipBlockedByTrendOrPrediction">
         <source>Bloqueado porque tendencia o predicción está activa</source>
-        <target>Blocat perquè la tendència o la predicció està activa</target>
+        <target>Blocat perquè la tendència o la predicció està activa.</target>
       </trans-unit>
       <trans-unit id="RemovePredictionTitle">
         <source>¿Quieres quitar la predicción?</source>
@@ -3796,11 +3796,11 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       </trans-unit>
       <trans-unit id="RemovePredictionYes">
         <source>Sí, quitar</source>
-        <target>Sí, treu-la</target>
+        <target>Sí, treu-la.</target>
       </trans-unit>
       <trans-unit id="RemovePredictionNo">
         <source>No, mantener</source>
-        <target>No, mantén-la</target>
+        <target>No, mantén-la.</target>
       </trans-unit>
       <trans-unit id="chartLabelOption">
         <source>Muestra las etiquetas de cada segmento</source>
@@ -3820,11 +3820,11 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       </trans-unit>
       <trans-unit id="aboutEdaP2">
         <source>EDA es una aplicación que se puede instalar en tus propios servidores o disfrutar en su versión SaaS Edalitics.</source>
-        <target>EDA és una aplicació que es pot instal·lar als vostres propis servidors o gaudir a la seva versió SaaS Edalitics.</target>
+        <target>EDA és una aplicació que es pot instal·lar als vostres propis servidors i també en podeu gaudir mitjançant Edalitics, la seva versió SaaS.</target>
       </trans-unit>
       <trans-unit id="aboutEdaA1">
         <source>Ver en Github</source>
-        <target>Veure a Github</target>
+        <target>Mostra a Github</target>
       </trans-unit>
       <trans-unit id="aboutEdaH2">
         <source>Documentación</source>
@@ -3836,7 +3836,7 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       </trans-unit>
       <trans-unit id="aboutEdaA2">
         <source>Ver Documentación</source>
-        <target>Veure Documentació</target>
+        <target>Mostra la documentació</target>
       </trans-unit>
       <trans-unit id="aboutEdaH3">
         <source>Comunidad</source>
@@ -3844,27 +3844,27 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       </trans-unit>
       <trans-unit id="aboutEdaP4">
         <source>Únete a nuestra comunidad para compartir experiencias y obtener ayuda.</source>
-        <target>Uneix-te a la nostra comunitat per compartir experiències i obtenir ajuda.</target>
+        <target>Uniu-vos a la nostra comunitat per compartir experiències i obtenir ajuda.</target>
       </trans-unit>
       <trans-unit id="aboutEdaA3">
         <source>Ir al Foro</source>
-        <target>Anar al Fòrum</target>
+        <target>Ves al fòrum</target>
       </trans-unit>
       <trans-unit id="aboutEdaP5">
         <source>Aprende a usar EDA con nuestros tutoriales paso a paso.</source>
-        <target>Aprèn a fer servir EDA amb els nostres tutorials pas a pas.</target>
+        <target>Apreneu a fer servir EDA amb els tutorials pas a pas.</target>
       </trans-unit>
       <trans-unit id="aboutEdaB1">
         <source>Crear Modelo de Datos</source>
-        <target>Crear Model de Dades</target>
+        <target>Crea un model de dades</target>
       </trans-unit>
       <trans-unit id="aboutEdaB2">
         <source>Crear Informe</source>
-        <target>Crear informe</target>
+        <target>Crea un informe</target>
       </trans-unit>
       <trans-unit id="aboutEdaH4">
         <source>¿Quieres probar EDA en el cloud?</source>
-        <target>Vols provar EDA al cloud?</target>
+        <target>Voleu provar EDA al núvol?</target>
       </trans-unit>
       <trans-unit id="aboutEdaP6">
         <source>Edalitics te permitirá estar siempre a la última sin preocuparte por nada.</source>
@@ -3876,7 +3876,7 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       </trans-unit>
       <trans-unit id="aboutEdaA4">
         <source>Prueba Edalitics gratis </source>
-        <target>Prova Edalitics gratis</target>
+        <target>Proveu Edalitics gratis</target>
       </trans-unit>
       <trans-unit id="aboutEdaP7">
         <source>Si necesita soporte empresarial o desea solicitar nuevas funcionalidades, no dude en contactar con nosotros.</source>
@@ -3888,11 +3888,11 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       </trans-unit>
       <trans-unit id="allElementsConnected">
         <source>Todos los elementos están conectados</source>
-        <target>Tots els elements estan connectats</target>
+        <target>Tots els elements estan connectats.</target>
       </trans-unit>
       <trans-unit id="dashboardFiltersMin">
         <source>Filtros del dashboard</source>
-        <target>Filtres del dashboard</target>
+        <target>Filtres de l'informe</target>
       </trans-unit>
       <trans-unit id="noConnection">
         <source>No hay conexiones activas</source>
@@ -3908,7 +3908,7 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       </trans-unit>
       <trans-unit id="mapFilters">
         <source>Mapear Filtros</source>
-        <target>Mapejar filtres</target>
+        <target>Mapa els filtres</target>
       </trans-unit>
       <trans-unit id="searcherInput">
         <source>Buscador</source>
@@ -3920,19 +3920,19 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       </trans-unit>
       <trans-unit id="SelectModelToExport">
         <source>Selecciona una fuente de datos para exportar</source>
-        <target>Selecciona una font de dades per exportar</target>
+        <target>Seleccioneu una font de dades per exportar</target>
       </trans-unit>
       <trans-unit id="SelectDashboardToExport">
         <source>Selecciona un dashboard para exportar</source>
-        <target>Seleccioneu un dashboard per exportar</target>
+        <target>Seleccioneu un informe per exportar</target>
       </trans-unit>
       <trans-unit id="SelectModel">
         <source>Selecciona una fuente de datos</source>
-        <target>Selecciona una font de dades</target>
+        <target>Seleccioneu una font de dades</target>
       </trans-unit>
       <trans-unit id="SelectDashboard">
         <source>Selecciona un dashboard</source>
-        <target>Selecciona un dashboard</target>
+        <target>Seleccioneu un informe</target>
       </trans-unit>
       <trans-unit id="UploadModel">
         <source>Sube un archivo de modelo</source>
@@ -3940,7 +3940,7 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       </trans-unit>
       <trans-unit id="UploadDashboard">
         <source>Sube un archivo de dashboard</source>
-        <target>Puja un fitxer de dashboard</target>
+        <target>Puja un fitxer d'informe</target>
       </trans-unit>
       <trans-unit id="export">
         <source>Exportar</source>
@@ -3948,11 +3948,11 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       </trans-unit>
       <trans-unit id="clickToUpload">
         <source>Click para subir</source>
-        <target>Fes clic per pujar</target>
+        <target>Feu clic per pujar</target>
       </trans-unit>
       <trans-unit id="dragDrop">
         <source> o arrastra y suelta</source>
-        <target>o arrossega i deixa anar</target>
+        <target>o arrossegueu i deixeu anar</target>
       </trans-unit>
       <trans-unit id="addDuckdbTableTitle">
         <source>Añadir tabla CSV a DuckDB</source>
@@ -3960,27 +3960,27 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       </trans-unit>
       <trans-unit id="manageDashboards">
         <source>Gestiona la importación y exportación de dashboards</source>
-        <target>Gestiona la importació i exportació de dashboards</target>
+        <target>Gestiona la importació i exportació d'informes</target>
       </trans-unit>
       <trans-unit id="askPanelData">
         <source>Pregunta sobre los datos de tu panel ...</source>
-        <target>Pregunta sobre les dades del vostre panell ...</target>
+        <target>Pregunteu sobre les dades del panell</target>
       </trans-unit>
       <trans-unit id="askEdaliticsText">
         <source>Pregúntale a Edalitics</source>
-        <target>Pregunta-li a Edalitics</target>
+        <target>Pregunteu a Edalitics</target>
       </trans-unit>
       <trans-unit id="escribeMensaje">
         <source>Escribe tu mensaje...</source>
-        <target>Escriviu el vostre missatge...</target>
+        <target>Escriviu un missatge</target>
       </trans-unit>
       <trans-unit id="viewName">
         <source>Introduzca el nombre de la vista</source>
-        <target>Introdueix el nom de la vista</target>
+        <target>Introduïu el nom de la vista</target>
       </trans-unit>
       <trans-unit id="viewDescription">
         <source>Introduce una breve descripción</source>
-        <target>Introdueix una breu descripció</target>
+        <target>Introduïu una breu descripció</target>
       </trans-unit>
       <trans-unit id="viewTNameP">
         <source>Introduzca el identificador técnico</source>
@@ -3988,7 +3988,7 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       </trans-unit>
       <trans-unit id="enterSQLExpression">
         <source>Ingrese su consulta SQL aquí</source>
-        <target>Introduïu la vostra consulta SQL aquí</target>
+        <target>Introduïu la consulta SQL aquí</target>
       </trans-unit>
       <trans-unit id="generating">
         <source>Generando...</source>
@@ -4032,7 +4032,7 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       </trans-unit>
       <trans-unit id="DashboardUpdatedInfo">
         <source>El dashboard ha sido actualizado correctamente.</source>
-        <target>El dashboard ha estat actualitzat correctament.</target>
+        <target>L'informe s'ha actualitzat correctament.</target>
       </trans-unit>
       <trans-unit id="dsConnectionRefused">
         <source>No se ha podido conectar a la base de datos.</source>
@@ -4040,7 +4040,7 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       </trans-unit>
       <trans-unit id="searchDatasource">
         <source>Buscar fuente de datos</source>
-        <target>Buscar font de dades</target>
+        <target>Busca una font de dades</target>
       </trans-unit>
       <trans-unit id="selectPalette">
         <source>-- Seleccione una paleta --</source>
@@ -4108,7 +4108,7 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       </trans-unit>
       <trans-unit id="useFormAlertConfigure">
         <source>Configure una alerta usando el formulario de arriba para visualizar cambios en el gráfico.</source>
-        <target>Configureu una alerta usant el formulari de dalt per visualitzar canvis al gràfic.</target>
+        <target>Configureu una alerta fent servir el formulari de dalt per visualitzar canvis al gràfic.</target>
       </trans-unit>
       <trans-unit id="dashboardSidebarNewText">
         <source>Nuevo texto</source>
@@ -4124,7 +4124,7 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       </trans-unit>
       <trans-unit id="dashboardSidebarImportPanel">
         <source>Importar panel</source>
-        <target>Importar panell</target>
+        <target>Importa un panell</target>
       </trans-unit>
       <trans-unit id="dashboardSidebarRefreshDashboard">
         <source>Recargar informe</source>
@@ -4132,11 +4132,11 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       </trans-unit>
       <trans-unit id="dashboardSidebarDashboardPrivacity">
         <source>Privacidad informe</source>
-        <target>Privacitat informe</target>
+        <target>Privacitat de l'informe</target>
       </trans-unit>
       <trans-unit id="dashboardSidebarLiveDashboard">
         <source>Live Dashboard</source>
-        <target>Refresc automàtic</target>
+        <target>Refresc automàtic de l'informe</target>
       </trans-unit>
       <trans-unit id="secondsToRefresh">
         <source>Segundos para refrescar</source>
@@ -4160,19 +4160,19 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       </trans-unit>
       <trans-unit id="dashboardSidebarEditStyles">
         <source>Editar estilos</source>
-        <target>Editar estils</target>
+        <target>Edita els estils</target>
       </trans-unit>
       <trans-unit id="dashboardSidebarDownloadPDF">
         <source>Descargar PDF</source>
-        <target>Descarregar PDF</target>
+        <target>Descarrega el PDF</target>
       </trans-unit>
       <trans-unit id="dashboardSidebarDownloadImage">
         <source>Descargar imagen</source>
-        <target>Descarregar imatge</target>
+        <target>Descarrega la imatge</target>
       </trans-unit>
       <trans-unit id="dashboardSidebarDownloadExcel">
         <source>Descargar Excel</source>
-        <target>Descarregar Excel</target>
+        <target>Descarrega el fitxer Excel</target>
       </trans-unit>
       <trans-unit id="dashboardSidebarDownload">
         <source>Descargar</source>
@@ -4236,7 +4236,7 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       </trans-unit>
       <trans-unit id="layerColor">
         <source>Color de capa</source>
-        <target>Color de capa</target>
+        <target>Color de la capa</target>
       </trans-unit>
       <trans-unit id="topleftPosition">
         <source>Superior izquierda</source>
@@ -4296,7 +4296,7 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       </trans-unit>
       <trans-unit id="selectRecipients">
         <source>Selecciona los destinatarios *</source>
-        <target>Selecciona els destinataris *</target>
+        <target>Seleccioneu els destinataris *</target>
       </trans-unit>
       <trans-unit id="kpiMailConfigTitle">
         <source>Configuración de envío por email</source>
@@ -4364,7 +4364,7 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       </trans-unit>
       <trans-unit id="ErrorCopyingURL">
         <source>Error al copiar URL: </source>
-        <target>Error en copiar l'URL:</target>
+        <target>Error en copiar la URL:</target>
       </trans-unit>
       <trans-unit id="DashboardTitleUpdated">
         <source>Título del informe actualizado correctamente.</source>
@@ -4384,11 +4384,11 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       </trans-unit>
       <trans-unit id="deactivatePublicDashboardWarning">
         <source>Si desactiva este informe público, la URL pública dejará de estar disponible y el informe ya no podrá visualizarse.</source>
-        <target>Si desactiveu aquest informe públic, l'URL pública deixarà d'estar disponible i l'informe ja no es podrà visualitzar.</target>
+        <target>Si desactiveu aquest informe públic, la URL pública deixarà d'estar disponible i l'informe ja no es podrà visualitzar.</target>
       </trans-unit>
       <trans-unit id="ConfirmDeactivate">
         <source>Yes, deactivate it!</source>
-        <target>Sí, desactiva'l!</target>
+        <target>Sí, desactiva'l.</target>
       </trans-unit>
       <trans-unit id="Cancel">
         <source>Cancelar</source>
@@ -4408,11 +4408,11 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       </trans-unit>
       <trans-unit id="searchEntities">
         <source>Buscar entidades...</source>
-        <target>Buscar entitats...</target>
+        <target>Cerca entitats...</target>
       </trans-unit>
       <trans-unit id="searchAttributes">
         <source>Buscar atributos...</source>
-        <target>Buscar atributs...</target>
+        <target>Cerca atributs...</target>
       </trans-unit>
       <trans-unit id="groupSelect">
         <source>Selecciona...</source>
@@ -4428,7 +4428,7 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       </trans-unit>
       <trans-unit id="importPanelsTitle">
         <source>Importar paneles</source>
-        <target>Importar panells</target>
+        <target>Importa els panells</target>
       </trans-unit>
       <trans-unit id="selectPanels">
         <source>Selecciona los paneles</source>
@@ -4436,39 +4436,39 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       </trans-unit>
       <trans-unit id="searchPanels">
         <source>Buscar paneles...</source>
-        <target>Buscar panells...</target>
+        <target>Cerca panells...</target>
       </trans-unit>
       <trans-unit id="dashboardExportedSuccessfully">
         <source>Dashboard exportado correctamente</source>
-        <target>Dashboard exportat correctament</target>
+        <target>Informe exportat correctament.</target>
       </trans-unit>
       <trans-unit id="selectDashboardToExport">
         <source>Por favor selecciona un dashboard para exportar</source>
-        <target>Seleccioneu un informe per exportar</target>
+        <target>Seleccioneu un informe per exportar.</target>
       </trans-unit>
       <trans-unit id="problemExportingModel">
         <source>Ocurrió un problema al exportar el modelo</source>
-        <target>Ha passat un problema en exportar el model</target>
+        <target>Hi ha hagut un problema en exportar el model.</target>
       </trans-unit>
       <trans-unit id="modelExportedSucessfully">
         <source>Modelo exportado correctamente</source>
-        <target>Model exportat correctament</target>
+        <target>Model exportat correctament.</target>
       </trans-unit>
       <trans-unit id="selectModelToExport">
         <source>Por favor selecciona un modelo para exportar</source>
-        <target>Seleccioneu un model per exportar</target>
+        <target>Seleccioneu un model per exportar.</target>
       </trans-unit>
       <trans-unit id="dashboardUpdatedSuccessfully">
         <source>Dashboard actualizado correctamente</source>
-        <target>Dashboard actualitzat correctament</target>
+        <target>Informe actualitzat correctament.</target>
       </trans-unit>
       <trans-unit id="dashboardCreatedSuccessfully">
         <source>Dashboard creado correctamente</source>
-        <target>Dashboard creat correctament</target>
+        <target>Informe creat correctament.</target>
       </trans-unit>
       <trans-unit id="notPossibleImportDashboard">
         <source>No se pudo importar el dashboard</source>
-        <target>No s'ha pogut importar el dashboard</target>
+        <target>No s'ha pogut importar l'informe.</target>
       </trans-unit>
       <trans-unit id="noValidJsonFormat">
         <source>El archivo no tiene un formato JSON válido:</source>
@@ -4476,27 +4476,27 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       </trans-unit>
       <trans-unit id="notPossibleReadFile">
         <source>No se pudo leer el archivo seleccionado</source>
-        <target>No s'ha pogut llegir el fitxer seleccionat</target>
+        <target>No s'ha pogut llegir el fitxer seleccionat.</target>
       </trans-unit>
       <trans-unit id="noCorrectJsonFormat">
         <source>El archivo no tiene un formato JSON válido</source>
-        <target>El fitxer no té un format JSON vàlid</target>
+        <target>El fitxer no té un format JSON vàlid.</target>
       </trans-unit>
       <trans-unit id="errorImportModel">
         <source>Ha ocurrido un error al importar el modelo</source>
-        <target>S'ha produït un error en importar el model</target>
+        <target>S'ha produït un error en importar el model.</target>
       </trans-unit>
       <trans-unit id="modelImportedSuccessfully">
         <source>Modelo importado correctamente</source>
-        <target>Model importat correctament</target>
+        <target>Model importat correctament.</target>
       </trans-unit>
       <trans-unit id="errorVerifyingModelIntegrity">
         <source>Error al verificar integridad del modelo</source>
-        <target>Error en verificar integritat del model</target>
+        <target>Error en verificar la integritat del model.</target>
       </trans-unit>
       <trans-unit id="fillRequiredFields">
         <source>Recuerde llenar los campos obligatorios</source>
-        <target>Recordeu omplir els camps obligatoris</target>
+        <target>Recordeu omplir els camps obligatoris.</target>
       </trans-unit>
       <trans-unit id="connectedWithServer">
         <source>Conectado con el servidor</source>
@@ -4548,11 +4548,11 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       </trans-unit>
       <trans-unit id="newFilterAddToDF">
         <source>Se agregó un nuevo filtro a la relación de filtros dependientes</source>
-        <target>S'ha afegit un nou filtre a la relació de filtres dependents</target>
+        <target>S'ha afegit un nou filtre a la relació de filtres dependents.</target>
       </trans-unit>
       <trans-unit id="DFSettingsRestarted">
         <source>Se ha reiniciado la configuración de los filtros dependientes</source>
-        <target>S'ha reiniciat la configuració dels filtres dependents</target>
+        <target>S'ha reiniciat la configuració dels filtres dependents.</target>
       </trans-unit>
       <trans-unit id="showField">
         <source>Mostrar campo de origen</source>
@@ -4572,11 +4572,11 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       </trans-unit>
       <trans-unit id="panelOptionsMapFilters">
         <source>Mapear filtros</source>
-        <target>Mapejar filtres</target>
+        <target>Mapa els filtres</target>
       </trans-unit>
       <trans-unit id="dataExportImport">
         <source>Data Export/Import</source>
-        <target>Exportació/Importació de dades</target>
+        <target>Exportació i importació de dades</target>
       </trans-unit>
       <trans-unit id="AllTagsDescription">
         <source>Acceso a todos los elementos sin restricciones</source>
@@ -4584,7 +4584,7 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       </trans-unit>
       <trans-unit id="NoneTagsDescription">
         <source>No se muestra ningún elemento para este usuario/grupo</source>
-        <target>No es mostra cap element per a aquest usuari/grup</target>
+        <target>No es mostra cap element per a aquest usuari/grup.</target>
       </trans-unit>
       <trans-unit id="DynamicTagsDescription">
         <source>Filtrado avanzado mediante una consulta personalizada</source>
@@ -4592,7 +4592,7 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       </trans-unit>
       <trans-unit id="placeholderConsultaDinamica">
         <source>Introduzca la expresión dinámica…</source>
-        <target>Introduïu l'expressió dinàmica…</target>
+        <target>Introduïu l'expressió dinàmica</target>
       </trans-unit>
       <trans-unit id="showLinesPrediction">
         <source>Mostrar Predicción</source>
@@ -4616,7 +4616,7 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       </trans-unit>
       <trans-unit id="selectEditTabs">
         <source>Seleccionar...</source>
-        <target>Seleccionar...</target>
+        <target>Selecciona...</target>
       </trans-unit>
       <trans-unit id="searchTag">
         <source>Buscar tag...</source>
@@ -4624,19 +4624,19 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       </trans-unit>
       <trans-unit id="dashboardsSelected">
         <source>Dashboards seleccionados</source>
-        <target>Dashboards seleccionats</target>
+        <target>Informes seleccionats</target>
       </trans-unit>
       <trans-unit id="dashboardsAvailable">
         <source>Dashboards disponibles</source>
-        <target>Dashboards disponibles</target>
+        <target>Informes disponibles</target>
       </trans-unit>
       <trans-unit id="filterSearchDashboards">
         <source>Usa los filtros para buscar dashboards</source>
-        <target>Fes servir els filtres per cercar dashboards</target>
+        <target>Fes servir els filtres per cercar informes</target>
       </trans-unit>
       <trans-unit id="noCoincidenceDashFilters">
         <source>No hay dashboards que coincidan con los filtros</source>
-        <target>No hi ha dashboards que coincideixin amb els filtres</target>
+        <target>No hi ha informes que coincideixin amb els filtres.</target>
       </trans-unit>
       <trans-unit id="addDashListAvailable">
         <source>Añade dashboards desde la lista de disponibles</source>
@@ -4652,7 +4652,7 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       </trans-unit>
       <trans-unit id="ModelRestrictionAccessMessageOption">
         <source>Desactivar para habilitar el acceso a todos los usuarios</source>
-        <target>Desactivar per habilitar l'accés a tots els usuaris</target>
+        <target>Desactiva per habilitar l'accés a tots els usuaris</target>
       </trans-unit>
       <trans-unit id="ModelActivationAccess">
         <source>Modelo con acceso para todos los usuarios</source>
@@ -4660,27 +4660,27 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       </trans-unit>
       <trans-unit id="ModelActivationAccessMessageOption">
         <source>Activar para limitar el acceso solo a usuarios o grupos autorizados</source>
-        <target>Activar per limitar l'accés només a usuaris o grups autoritzats</target>
+        <target>Activa per limitar l'accés només a usuaris o grups autoritzats</target>
       </trans-unit>
       <trans-unit id="tableActivationAccessMessageOption">
         <source>Activar para habilitar un acceso restringido</source>
-        <target>Activar per habilitar un accés restringit</target>
+        <target>Activa per habilitar un accés restringit</target>
       </trans-unit>
       <trans-unit id="CheckExpression">
         <source>Comprobar expresión</source>
-        <target>Comprovar expressió</target>
+        <target>Comprova l'expressió</target>
       </trans-unit>
       <trans-unit id="panelOptionsExportTo">
         <source>Exportar a </source>
-        <target>Exportar a</target>
+        <target>Exporta a</target>
       </trans-unit>
       <trans-unit id="DatePickerNext365">
         <source>Próximos 365 días</source>
-        <target>Propers 365 dies</target>
+        <target>Els propers 365 dies</target>
       </trans-unit>
       <trans-unit id="DatePickerCustomDate">
         <source>Seleccionar fecha</source>
-        <target>Selecciona una data</target>
+        <target>Seleccioneu una data</target>
       </trans-unit>
       <trans-unit id="filterOperatorSelectionText">
         <source>Selección de operador del filtro:</source>
@@ -4688,7 +4688,7 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       </trans-unit>
       <trans-unit id="dateSelectionText">
         <source>Selección de fecha:</source>
-        <target>Selecció de data:</target>
+        <target>Selecció de la data:</target>
       </trans-unit>
       <trans-unit id="datePickerCleanBtn">
         <source>Limpiar</source>
@@ -4696,15 +4696,15 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       </trans-unit>
       <trans-unit id="filterOperatorPlaceholder">
         <source>Selecciona un operador</source>
-        <target>Selecciona un operador</target>
+        <target>Seleccioneu un operador</target>
       </trans-unit>
       <trans-unit id="noNameProvided">
         <source>Debe proporcionar un nombre para el datasource</source>
-        <target>Heu de proporcionar un nom per al datasource</target>
+        <target>Heu de proporcionar un nom per a la font de dades.</target>
       </trans-unit>
       <trans-unit id="noCsvData">
         <source>Debe cargar un archivo CSV primero</source>
-        <target>Heu de carregar un fitxer CSV primer</target>
+        <target>Primer heu de carregar un fitxer CSV.</target>
       </trans-unit>
       <trans-unit id="noCsvColumns">
         <source>No se detectaron columnas en el archivo CSV. Verifique el separador.</source>
@@ -4712,27 +4712,27 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       </trans-unit>
       <trans-unit id="emptyCsvFile">
         <source>El archivo CSV está vacío o no se pudo leer con este separador</source>
-        <target>El fitxer CSV és buit o no s'ha pogut llegir amb aquest separador</target>
+        <target>El fitxer CSV és buit o no s'ha pogut llegir amb aquest separador.</target>
       </trans-unit>
       <trans-unit id="emptyCsvFile2">
         <source>El archivo CSV está vacío o no se pudo leer</source>
-        <target>El fitxer CSV és buit o no s'ha pogut llegir</target>
+        <target>El fitxer CSV és buit o no s'ha pogut llegir.</target>
       </trans-unit>
       <trans-unit id="errorParseCsv">
         <source>Error al parsear el archivo CSV con el separador especificado</source>
-        <target>Error en parsejar el fitxer CSV amb el separador especificat</target>
+        <target>Error en parsejar el fitxer CSV amb el separador especificat.</target>
       </trans-unit>
       <trans-unit id="errorParseCsv2">
         <source>Error al parsear el archivo CSV. Verifica el separador.</source>
-        <target>Error en parsejar el fitxer CSV. Verifica el separador.</target>
+        <target>Error en parsejar el fitxer CSV. Verifiqueu el separador.</target>
       </trans-unit>
       <trans-unit id="noExcelFile">
         <source>Debe cargar un archivo Excel primero</source>
-        <target>Primer heu de carregar un fitxer Excel</target>
+        <target>Primer heu de carregar un fitxer Excel.</target>
       </trans-unit>
       <trans-unit id="errorParseCsv3">
         <source>Error al parsear el archivo CSV. Verifique el separador y formato del archivo.</source>
-        <target>Error en parsejar el fitxer CSV. Verifiqueu el separador i format del fitxer.</target>
+        <target>Error en parsejar el fitxer CSV. Verifiqueu el separador i el format del fitxer.</target>
       </trans-unit>
       <trans-unit id="dashboardSidebarNewTabs">
         <source>Nuevo navegador</source>
@@ -4778,11 +4778,11 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       </trans-unit>
       <trans-unit id="betweenThresholds2">
         <source>y menor que</source>
-        <target>i menor que</target>
+        <target>i més petit que</target>
       </trans-unit>
       <trans-unit id="belowThreshold">
         <source>es menor que:</source>
-        <target>és menor que:</target>
+        <target>és més petit que:</target>
       </trans-unit>
       <trans-unit id="opacityLabel">
         <source>Opacidad</source>
@@ -4794,7 +4794,7 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       </trans-unit>
       <trans-unit id="gradientMin">
         <source>Min</source>
-        <target>Min</target>
+        <target>Mín</target>
       </trans-unit>
       <trans-unit id="gradientMax">
         <source>Max</source>
@@ -4814,11 +4814,11 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       </trans-unit>
       <trans-unit id="openInNewTabBtn">
         <source>Abrir en NUEVA pestaña</source>
-        <target>Obre en una pestanya NOVA</target>
+        <target>Obre en una pestanya nova</target>
       </trans-unit>
       <trans-unit id="openInSameTabBtn">
         <source>Abrir en MISMA pestaña</source>
-        <target>Obre a la MATEIXA pestanya</target>
+        <target>Obre a la mateixa pestanya</target>
       </trans-unit>
       <trans-unit id="predictionDialogTitle">
         <source>Configuración de Predicción</source>
@@ -4830,7 +4830,7 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       </trans-unit>
       <trans-unit id="predictionMethodNone">
         <source>-- Selecciona el método de predicción --</source>
-        <target>-- Selecciona el mètode de predicció --</target>
+        <target>-- Seleccioneu el mètode de predicció --</target>
       </trans-unit>
       <trans-unit id="predictionStepsLabel">
         <source>Pasos a predecir</source>
@@ -4894,7 +4894,7 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       </trans-unit>
       <trans-unit id="tfLookbackTooltip">
         <source>Número de pasos de tiempo pasados que el modelo usa como entrada para predecir el siguiente valor. Un valor mayor captura más contexto histórico.</source>
-        <target>Nombre de passos de temps passats que el model usa com a entrada per predir el valor següent. Un valor més gran captura més context històric.</target>
+        <target>Nombre de passos de temps passats que el model fa servir com a entrada per predir el valor següent. Un valor més gran captura més context històric.</target>
       </trans-unit>
       <trans-unit id="tfLrLabel">
         <source>Learning rate</source>
@@ -4966,7 +4966,7 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       </trans-unit>
       <trans-unit id="assistantSubtitle">
         <source>Construye tu consulta en lenguaje natural</source>
-        <target>Construïu la vostra consulta en llenguatge natural</target>
+        <target>Construïu la consulta en llenguatge natural.</target>
       </trans-unit>
       <trans-unit id="AIManagement">
         <source>Gestión del asistente</source>
@@ -4998,7 +4998,7 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       </trans-unit>
       <trans-unit id="datasourceFilterPlaceholder">
         <source>postgres, mysql...</source>
-        <target>postgres, mysql...</target>
+        <target>Postgres, MySQL...</target>
       </trans-unit>
       <trans-unit id="createdFilterLabel">
         <source>Creado en</source>
@@ -5014,7 +5014,7 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       </trans-unit>
       <trans-unit id="tagsFilterPlaceholder">
         <source>Selecciona tags...</source>
-        <target>Selecciona etiquetes...</target>
+        <target>Seleccioneu les etiquetes...</target>
       </trans-unit>
       <trans-unit id="tagsTooltipLabel">
         <source>Tags:</source>
@@ -5034,7 +5034,7 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       </trans-unit>
       <trans-unit id="configureInitialDashboard">
         <source>Edita el portal para seleccionar uno.</source>
-        <target>Edita el portal per seleccionar-ne un.</target>
+        <target>Editeu el portal per seleccionar-ne un.</target>
       </trans-unit>
       <trans-unit id="initialDashboardLabel">
         <source> Dashboard inicial: </source>
@@ -5066,11 +5066,11 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       </trans-unit>
       <trans-unit id="mcpVisibilityTooltipTableModel">
         <source>Controla si el agente de IA tiene acceso a esta información: Full permite acceso completo, None lo excluye totalmente.</source>
-        <target>Controla si l'agent d'IA té accés a aquesta informació: Full permet accés complet, None l'exclou totalment.</target>
+        <target>Controla si l'agent d'IA té accés a aquesta informació: "Full" permet l'accés complet, "None" l'exclou totalment.</target>
       </trans-unit>
       <trans-unit id="mcpVisibilityTooltipCol">
         <source>Controla si el agente de IA tiene acceso a esta información: Full permite acceso completo, Declaration expone solo nombre y tipo, None lo excluye totalmente.</source>
-        <target>Controla si l'agent d'IA té accés a aquesta informació: Full permet accés complet, Declaration exposa només nom i tipus, None l'exclou totalment.</target>
+        <target>Controla si l'agent d'IA té accés a aquesta informació: "Full" permet l'accés complet, "Declaration" exposa només nom i tipus, "None" l'exclou totalment.</target>
       </trans-unit>
       <trans-unit id="protectedDataSourceNotice">
         <source>Algunas áreas de la configuración de esta fuente de datos se encuentran desactivadas porque es una fuente de datos protegida.</source>
@@ -5130,7 +5130,7 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       </trans-unit>
       <trans-unit id="chatAssistantSubtitle">
         <source>Asistente IA para facilitar tu trabajo</source>
-        <target>Assistent IA per facilitar la vostra feina</target>
+        <target>Assistent IA per facilitar-vos la feina</target>
       </trans-unit>
       <trans-unit id="chatCloseBtn">
         <source>Cerrar</source>
@@ -5142,7 +5142,7 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       </trans-unit>
       <trans-unit id="chatEmptySubtitle">
         <source>Consulta dashboards, datasources y datos</source>
-        <target>Consulta dashboards, datasources i dades</target>
+        <target>Consulta informes, fonts de dades i dades</target>
       </trans-unit>
       <trans-unit id="chatSuggestion2">
         <source>¿Qué fuentes de datos hay?</source>
@@ -5150,11 +5150,11 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       </trans-unit>
       <trans-unit id="chatSuggestion4">
         <source>¿Qué informes tengo disponibles?</source>
-        <target>Quins informes tinc disponibles?</target>
+        <target>Quins informes hi ha disponibles?</target>
       </trans-unit>
       <trans-unit id="chatInputPlaceholder">
         <source>Escribe un mensaje...</source>
-        <target>Escriu un missatge...</target>
+        <target>Escriviu un missatge...</target>
       </trans-unit>
       <trans-unit id="chatFabTitle">
         <source>Asistente IA</source>
@@ -5190,11 +5190,11 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       </trans-unit>
       <trans-unit id="chatFallbackSearchIn">
         <source>Buscar en...</source>
-        <target>Cercar a...</target>
+        <target>Cerca a...</target>
       </trans-unit>
       <trans-unit id="chatFallbackSearchInPrefix">
         <source>Buscar en: </source>
-        <target>Cercar a:</target>
+        <target>Cerca a:</target>
       </trans-unit>
       <trans-unit id="chatStatusConnecting">
         <source>Conectando con las fuentes de datos...</source>
@@ -5202,7 +5202,7 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       </trans-unit>
       <trans-unit id="chatStatusAnalyzing">
         <source>Analizando tu pregunta...</source>
-        <target>Analitzant la vostra pregunta...</target>
+        <target>Analitzant la pregunta...</target>
       </trans-unit>
       <trans-unit id="chatStatusSearching">
         <source>Buscando datos...</source>
@@ -5210,7 +5210,7 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       </trans-unit>
       <trans-unit id="chatStatusProcessing">
         <source>Procesando resultados...</source>
-        <target>Processant resultats...</target>
+        <target>Processant els resultats...</target>
       </trans-unit>
       <trans-unit id="chatStatusPreparing">
         <source>Preparando respuesta...</source>
@@ -5218,7 +5218,7 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       </trans-unit>
       <trans-unit id="analyzingTheScheme">
         <source>Analizando el esquema</source>
-        <target>Analitzant l'esquema</target>
+        <target>Analitzant l'esquema...</target>
       </trans-unit>
       <trans-unit id="aiManagementTitle">
         <source>Gestión de IA</source>
@@ -5234,7 +5234,7 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       </trans-unit>
       <trans-unit id="aiApiKey">
         <source>API KEY</source>
-        <target>API key</target>
+        <target>Clau API</target>
       </trans-unit>
       <trans-unit id="aiAwsAccessKey">
         <source>CLAVE DE ACCESO DE AWS</source>
@@ -5258,15 +5258,15 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       </trans-unit>
       <trans-unit id="aiEDAApp">
         <source>EDA APP URL</source>
-        <target>EDA APP URL</target>
+        <target>URL de l'APP EDA</target>
       </trans-unit>
       <trans-unit id="aiMCPURL">
         <source>MCP URL</source>
-        <target>MCP URL</target>
+        <target>URL del MCP</target>
       </trans-unit>
       <trans-unit id="aiLimit">
         <source>LÍMITE</source>
-        <target>Limit</target>
+        <target>Límit</target>
       </trans-unit>
       <trans-unit id="aiAvailable">
         <source>DISPONIBLE</source>
@@ -5318,7 +5318,7 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       </trans-unit>
       <trans-unit id="askEdaliticsPrefix">
         <source>Pregúntale a </source>
-        <target>Pregunta a</target>
+        <target>Pregunteu a</target>
       </trans-unit>
       <trans-unit id="askEdaliticsSubtitle">
         <source>Análisis de datos con IA</source>
@@ -5330,7 +5330,7 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       </trans-unit>
       <trans-unit id="navegar">
         <source>Navegar</source>
-        <target>Navegar</target>
+        <target>Navega</target>
       </trans-unit>
       <trans-unit id="resultSortingText">
         <source>Ordenar los resultados por:</source>
@@ -5338,27 +5338,27 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       </trans-unit>
       <trans-unit id="draggResultSorting">
         <source>Arrastre aquí los atributos sobre los que quiere ordenar</source>
-        <target>Arrossegueu aquí els atributs pels quals voleu ordenar</target>
+        <target>Arrossegueu aquí els atributs pels quals voleu ordenar.</target>
       </trans-unit>
       <trans-unit id="ptooltipOrderByControl">
         <source>Arrastra aquí los atributos por los que quieres ordenar los resultados y colócalos en el orden que prefieras. En cada uno puedes elegir ascendente (ASC), descendente (DESC) o dejarlo sin indicar.</source>
-        <target>Arrossega aquí els atributs pels quals voleu ordenar els resultats i col·loqueu-los en l'ordre que preferiu. En cadascun podeu triar ascendent (ASC), descendent (DESC) o deixar-ho sense indicar.</target>
+        <target>Arrossegueu aquí els atributs pels quals voleu ordenar els resultats i col·loqueu-los en l'ordre que preferiu. En cadascun podeu triar ascendent (ASC), descendent (DESC) o deixar-ho sense indicar.</target>
       </trans-unit>
       <trans-unit id="noDuckDbFile">
         <source>Debe cargar un archivo CSV primero</source>
-        <target>Cal carregar un arxiu CSV primer</target>
+        <target>Primer heu de carregar un fitxer CSV.</target>
       </trans-unit>
       <trans-unit id="noFolderName">
         <source>Debe proporcionar el nombre de la carpeta</source>
-        <target>Cal proporcionar el nom de la carpeta</target>
+        <target>Cal indicar el nom de la carpeta.</target>
       </trans-unit>
       <trans-unit id="duckdbCreated">
         <source>Fuente de datos DuckDB creada correctamente</source>
-        <target>Font de dades DuckDB creada correctament</target>
+        <target>Font de dades DuckDB creada correctament.</target>
       </trans-unit>
       <trans-unit id="errorParseDuckDb">
         <source>Error al parsear el archivo CSV. Verifica el separador.</source>
-        <target>Error en analitzar l&apos;arxiu CSV. Verifica el separador.</target>
+        <target>Error en analitzar el fitxer CSV. Verifiqueu el separador.</target>
       </trans-unit>
       <trans-unit id="duckdbTableAdded">
         <source>Tabla añadida correctamente</source>
@@ -5370,23 +5370,23 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       </trans-unit>
       <trans-unit id="duckdbAddAnotherCsv">
         <source>Añadir otro CSV</source>
-        <target>Afegir un altre CSV</target>
+        <target>Afegeix un altre CSV</target>
       </trans-unit>
       <trans-unit id="duckdbFolderExistsError">
         <source>Este nombre ya existe. Escribe un nombre diferente.</source>
-        <target>Aquest nom ja existeix. Escriu un nom diferent.</target>
+        <target>Aquest nom ja existeix. Escriviu un nom diferent.</target>
       </trans-unit>
       <trans-unit id="odooInfoMessage">
         <source>Al confirmar se descargarán las facturas, líneas, clientes, productos y vendedores de Odoo y se crearán como tablas en un datasource DuckDB. La descarga puede tardar unos segundos dependiendo del volumen de datos.</source>
-        <target>En confirmar es descarregaran les factures, línies, clients, productes i venedors d'Odoo i es crearan com a taules en un datasource DuckDB. La descàrrega pot trigar uns segons depenent del volum de dades.</target>
+        <target>En confirmar es descarregaran factures, línies, clients, productes i venedors d'Odoo i es crearan com a taules en una font de dades DuckDB. La descàrrega pot trigar una estona depenent del volum de dades.</target>
       </trans-unit>
       <trans-unit id="odooCreated">
         <source>Fuente de datos Odoo creada correctamente</source>
-        <target>Font de dades Odoo creada correctament</target>
+        <target>Font de dades Odoo creada correctament.</target>
       </trans-unit>
       <trans-unit id="ga4PropertyIdHint">
         <source>Puedes encontrarlo en Google Analytics → Administrar → Información de la propiedad</source>
-        <target>Pots trobar-lo a Google Analytics → Administrar → Informació de la propietat</target>
+        <target>Podeu trobar-lo a Google Analytics → Administra → Informació de la propietat</target>
       </trans-unit>
       <trans-unit id="ga4FolderNameHint">
         <source>Se creará la carpeta duckdb/&lt;nombre&gt;/ con los CSV de métricas</source>
@@ -5402,11 +5402,11 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       </trans-unit>
       <trans-unit id="ga4AuthWaiting">
         <source>Esperando autorización en la ventana emergente...</source>
-        <target>Esperant autorització a la finestra emergent...</target>
+        <target>Esperant l'autorització a la finestra emergent...</target>
       </trans-unit>
       <trans-unit id="ga4AuthSuccess">
         <source>Cuenta de Google Analytics autorizada correctamente</source>
-        <target>Compte de Google Analytics autoritzat correctament</target>
+        <target>Compte de Google Analytics autoritzat correctament.</target>
       </trans-unit>
       <trans-unit id="ga4AuthRevoke">
         <source>Cambiar cuenta</source>
@@ -5414,39 +5414,39 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       </trans-unit>
       <trans-unit id="ga4AuthError">
         <source>Error durante la autorización. Inténtalo de nuevo.</source>
-        <target>Error durant l'autorització. Torna-ho a intentar.</target>
+        <target>Error durant l'autorització. Torneu-ho a provar.</target>
       </trans-unit>
       <trans-unit id="ga4InfoMessage">
         <source>Al confirmar se descargarán los datos de los últimos 365 días de Google Analytics 4: sesiones por canal, páginas vistas, eventos, dispositivos y datos geográficos. La descarga puede tardar según el volumen de datos de la propiedad.</source>
-        <target>En confirmar es descarregaran les dades dels últims 365 dies de Google Analytics 4: sessions per canal, pàgines vistes, esdeveniments, dispositius i dades geogràfiques. La descàrrega pot trigar segons el volum de dades de la propietat.</target>
+        <target>En confirmar es descarregaran les dades dels últims 365 dies de Google Analytics 4: sessions per canal, pàgines vistes, esdeveniments, dispositius i dades geogràfiques. La descàrrega pot trigar una estona depenent del volum de dades de la propietat.</target>
       </trans-unit>
       <trans-unit id="ga4Created">
         <source>Fuente de datos Google Analytics 4 creada correctamente</source>
-        <target>Font de dades Google Analytics 4 creada correctament</target>
+        <target>Font de dades Google Analytics 4 creada correctament.</target>
       </trans-unit>
       <trans-unit id="ga4PropertyIdRequired">
         <source>Debe indicar el ID de propiedad de Google Analytics 4</source>
-        <target>Cal indicar l'ID de propietat de Google Analytics 4</target>
+        <target>Cal indicar l'ID de propietat de Google Analytics 4.</target>
       </trans-unit>
       <trans-unit id="ga4AuthRequired">
         <source>Debes autorizar el acceso a Google Analytics primero</source>
-        <target>Cal autoritzar l'accés a Google Analytics primer</target>
+        <target>Primer heu d'autoritzar l'accés a Google Analytics.</target>
       </trans-unit>
       <trans-unit id="holdedInfoMessage">
         <source>Al confirmar se descargarán las facturas, líneas, contactos, productos y asientos contables de Holded y se crearán como tablas en un datasource DuckDB. La descarga puede tardar unos minutos dependiendo del volumen de datos.</source>
-        <target>En confirmar es descarregaran les factures, línies, contactes, productes i assentaments comptables de Holded i es crearan com a taules en un datasource DuckDB. La descàrrega pot trigar uns minuts depenent del volum de dades.</target>
+        <target>En confirmar es descarregaran factures, línies, contactes, productes i assentaments comptables de Holded i es crearan com a taules en una font de dades DuckDB. La descàrrega pot trigar una estona depenent del volum de dades.</target>
       </trans-unit>
       <trans-unit id="holdedCreated">
         <source>Fuente de datos Holded creada correctamente</source>
-        <target>Font de dades Holded creada correctament</target>
+        <target>Font de dades Holded creada correctament.</target>
       </trans-unit>
       <trans-unit id="holdedFolderRequired">
         <source>Debe indicar el nombre de la carpeta</source>
-        <target>Heu d'indicar el nom de la carpeta</target>
+        <target>Heu d'indicar el nom de la carpeta.</target>
       </trans-unit>
       <trans-unit id="holdedApiKeyRequired">
         <source>Debe proporcionar la API Key de Holded</source>
-        <target>Heu de proporcionar l'API Key de Holded</target>
+        <target>Heu de proporcionar la clau API de Holded.</target>
       </trans-unit>
       <trans-unit id="multipleSelectionText">
         <source>Selección múltiple</source>
@@ -5474,11 +5474,11 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       </trans-unit>
       <trans-unit id="enablePanelLockButton">
         <source>Bloquear los paneles</source>
-        <target>Bloquejar els panells</target>
+        <target>Bloqueja els panells</target>
       </trans-unit>
       <trans-unit id="disablePanelLockButton">
         <source>Desbloquear los paneles</source>
-        <target>Desbloquejar els panells</target>
+        <target>Desbloqueja els panells</target>
       </trans-unit>
       <trans-unit id="dashboardSidebarReportAdd">
         <source>Añadir</source>
@@ -5490,7 +5490,7 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       </trans-unit>
       <trans-unit id="dashboardMenuViewMode">
         <source>Ver</source>
-        <target>Veure</target>
+        <target>Mostra</target>
       </trans-unit>
       <trans-unit id="dashboardMenuViewModeTooltip">
         <source>Pasar a modo ver (oculta la edición)</source>
@@ -5590,7 +5590,7 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       </trans-unit>
       <trans-unit id="aboutPageSinergiaDAVersion">
         <source>Versión de SinergiaDA</source>
-        <target>Versió de SinergiaDA</target>
+        <target>Versió de Sinergia Data Analytics</target>
       </trans-unit>
       <trans-unit id="aboutPageEdaVersionAPI">
         <source>Puerto / Versión de EDA (API)</source>
@@ -5622,7 +5622,7 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       </trans-unit>
       <trans-unit id="colorLabelArea">
         <source>Color de área</source>
-        <target>Color d'àrea</target>
+        <target>Color de l'àrea</target>
       </trans-unit>
       <trans-unit id="resetSectionButton">
         <source>Restaurar</source>
@@ -5706,11 +5706,11 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       </trans-unit>
       <trans-unit id="kpiDecreaseFontSize">
         <source>Reducir tamaño</source>
-        <target>Reduir mida</target>
+        <target>Redueix la mida</target>
       </trans-unit>
       <trans-unit id="kpiIncreaseFontSize">
         <source>Aumentar tamaño</source>
-        <target>Augmentar mida</target>
+        <target>Augmenta la mida</target>
       </trans-unit>
       <trans-unit id="removeRowTotals">
         <source>Quitar totales de fila</source>
