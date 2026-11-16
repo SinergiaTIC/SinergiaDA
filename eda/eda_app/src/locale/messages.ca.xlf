@@ -29,11 +29,11 @@
       </trans-unit>
       <trans-unit id="labelUsuarioEmail">
         <source>Correo de usuario</source>
-        <target>Correu de l'usuari</target>
+        <target>Adreça de correu electrònic</target>
       </trans-unit>
       <trans-unit id="labelImagenUsuario">
         <source>Fotografía del usuario</source>
-        <target>Fotografia de l'usuari</target>
+        <target>Imatge</target>
       </trans-unit>
       <trans-unit id="button">
         <source>Actualizar Foto</source>
@@ -81,7 +81,7 @@
       </trans-unit>
       <trans-unit id="labelRepeatPass">
         <source>Repite la nueva contraseña</source>
-        <target>Repetiu la nova contrassenya</target>
+        <target>Repetiu la nova contrasenya</target>
       </trans-unit>
       <trans-unit id="nameNewPass">
         <source>newPassword</source>
@@ -231,7 +231,7 @@
       </trans-unit>
       <trans-unit id="buscarPorNombre">
         <source>Buscar por nombre del informe</source>
-        <target>Cercar per nom de l'informe</target>
+        <target>Cerca per nom de l'informe</target>
       </trans-unit>
       <trans-unit id="buscar">
         <source>Buscar</source>
@@ -311,7 +311,7 @@
       </trans-unit>
       <trans-unit id="dahsboardSaved">
         <source>Informe guardado correctamente</source>
-        <target>Informe guardat correctament</target>
+        <target>Informe desat correctament</target>
       </trans-unit>
       <trans-unit id="newTag">
         <source> Nueva etiqueta </source>
@@ -319,7 +319,7 @@
       </trans-unit>
       <trans-unit id="urlEditSave">
         <source>URL editado correctamente</source>
-        <target>URL editat correctament</target>
+        <target>URL editada correctament</target>
       </trans-unit>
       <trans-unit id="urlEditSaveError">
         <source>Formulario incompleto, rellene todos los campos</source>
@@ -327,28 +327,28 @@
       </trans-unit>
       <trans-unit id="addUrlDashboardUndefined">
         <source>Faltan rellenar algunos campos</source>
-        <target>Valors no definits o falta completar camps</target>
+        <target>Valors no definits o camps pendents de completar</target>
       </trans-unit>
       <trans-unit id="urlAddedSuccessfully">
         <source>URL agregado correctamente</source>
-        <target>URL agregat correctament</target>
+        <target>URL afegida correctament</target>
       </trans-unit>
       <trans-unit id="urlAddedIncomplete">
         <source>Formulario incompleto</source>
-        <target>Formulari d'agregat URL incomplet</target>
+        <target>Formulari incomplet</target>
       </trans-unit>
       <trans-unit id="urlSuccessfulConnection">
         <source>Llamada EXITOSA</source>
-        <target>Crida EXITOSA</target>
+        <target>La connexió s'ha fet correctament.</target>
       </trans-unit>
       <trans-unit id="urlConnectionError">
         <source>ERROR en la llamada</source>
-        <target>ERROR a la crida</target>
+        <target>La connexió no ha funcionat.</target>
       </trans-unit>
       <trans-unit id="resumeTextConfiguration">
         <source> Puedes configurar una acción personalizada que quieras ejecutar. Te permite llamar a una URL que haga una acción que quieras invocar. Puede ser una llamada a una api, a un endpoint de una app
 o incluso invocar procesos de carga desde una llamada http. Una vez configurado podrás invocarlo siempre que que quieras desde el botón. </source>
-        <target>Podeu configurar una acció personalitzada que voleu executar. Et permet trucar a un URL que faci una acció que vulguis invocar. Pot ser una trucada a una api, a un endpoint d'una app o fins i tot invocar processos de càrrega des d'una trucada http. Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
+        <target>Una acció personalitzada permet invocar una URL qualsevol. Pot ser una crida a una API, a un endpoint d'una app o una crida http convencional. Un cop configurada podreu invocar-la des del botó sempre que us calgui.</target>
       </trans-unit>
       <trans-unit id="urlString">
         <source>URL: </source>
@@ -364,7 +364,7 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       </trans-unit>
       <trans-unit id="textLabelUrl">
         <source>Agregar url</source>
-        <target>Afegeix un URL</target>
+        <target>Afegeix una URL</target>
       </trans-unit>
 
       <!-- SECTION: DISEÑO Y ESTILOS DEL INFORME -->
@@ -714,11 +714,11 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       </trans-unit>
       <trans-unit id="seeRepetitions">
         <source> ver/ocultar valores repetidos</source>
-        <target>Veure valors repetits</target>
+        <target>Mostra els valors repetits</target>
       </trans-unit>
       <trans-unit id="seeNegativeNumbers">
         <source> Números negativos</source>
-        <target>Números negatius</target>
+        <target>Nombres negatius</target>
       </trans-unit>
       <trans-unit id="addCrossSorting">
         <source>Ordenación</source>
@@ -738,11 +738,11 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       </trans-unit>
       <trans-unit id="withNegativeNumbers">
         <source> Con números negativos</source>
-        <target>Amb números negatius</target>
+        <target>Amb nombres negatius</target>
       </trans-unit>
       <trans-unit id="withoutNegativeNumbers">
         <source> Sin números negativos</source>
-        <target>Sense números negatius</target>
+        <target>Sense nombres negatius</target>
       </trans-unit>
       <trans-unit id="tableColors">
         <source>Colores de tabla</source>
@@ -766,15 +766,15 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       </trans-unit>
       <trans-unit id="operationLabel">
         <source>Operación:</source>
-        <target>Operació</target>
+        <target>Operació:</target>
       </trans-unit>
       <trans-unit id="numericalValueLabel">
         <source>Valor numérico:</source>
-        <target>Valor numèric</target>
+        <target>Valor numèric:</target>
       </trans-unit>
       <trans-unit id="newNameLabel">
         <source>Nuevo nombre:</source>
-        <target>Nou nom</target>
+        <target>Nou nom:</target>
       </trans-unit>
       <trans-unit id="selectMeasure">
         <source>Seleccionar mesura</source>
@@ -885,7 +885,7 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       </trans-unit>
       <trans-unit id="chartInfo2">
         <source>Un KPI necesita un único número.</source>
-        <target>Un KPI necessita un únic número.</target>
+        <target>Un KPI necessita un únic nombre.</target>
       </trans-unit>
       <trans-unit id="chartInfo3">
         <source>Un gráfico de barras necesita una o más categorías y una serie numérica.</source>
@@ -941,11 +941,11 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       </trans-unit>
       <trans-unit id="tooManyValuestext">
         <source>Hay demasiados valores para este gráfico. Agrega o filtra los datos para poder visualizarlos mejor.</source>
-        <target>Hi ha massa valors per a aquest gràfic. Agregueu o filtreu les dades per poder visualitzar-los millor.</target>
+        <target>Hi ha massa valors per a aquest gràfic. Agregueu o filtreu les dades per poder visualitzar-les millor.</target>
       </trans-unit>
       <trans-unit id="notSavedChanges">
         <source>Hay cambios sin guardar...</source>
-        <target>Hi ha canvis sense desar</target>
+        <target>Hi ha canvis sense desar.</target>
       </trans-unit>
       <trans-unit id="NoTag">
         <source>Sin Etiqueta</source>
@@ -977,7 +977,7 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       </trans-unit>
       <trans-unit id="chartInfo14">
         <source>Un Parallel Set necesita dos o más categorias y un campo numérico</source>
-        <target>un Parallel Set necessita dos o més categories i un camp numèric.</target>
+        <target>un Parallel Set necessita dues o més categories i un camp numèric.</target>
       </trans-unit>
       <trans-unit id="chartInfo15">
         <source>Un Tree Map necesita un campo numérico y una o más categorias</source>
@@ -989,7 +989,7 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       </trans-unit>
       <trans-unit id="chartInfo17">
         <source>El velocímetro necesita uno o dos valores numéricos. En caso de disponer de dos valores el segundo se interpretará como límite</source>
-        <target>El velocímetre necessita un o dos valors numèrics, en cas de disposar de dos valors, el segon s'interpretarà com a límit.</target>
+        <target>El velocímetre necessita un o dos valors numèrics. En cas de disposar de dos valors, el segon s'interpretarà com a límit.</target>
       </trans-unit>
       <trans-unit id="chartInfoHistogram">
         <source>Un histograma requiere una única columna de valores numericos de los que se calculará la frecuencia</source>
@@ -1045,7 +1045,7 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       </trans-unit>
       <trans-unit id="chartInfoTreetableAvailable">
         <source>Una tabla árbol se puede configurar de dos formas. Mediante campos que se van anidando por medio de agrupaciones o mediante la definición de dos columnas numéricas que definan una relación padre-hijo. Si las dos primeras columnas son numéricas, se asumirá que describen una relación padre hijo.</source>
-        <target>Una taula arbre es pot configurar de dues maneres: mitjançant camps que es van aniuant per mitjà d'agrupacions o mitjançant la definició de dues columnes numèriques que defineixin una relació pare-fill. Si les dues primeres columnes són numèriques, cal assumir que descriuen una relació pare-fill.</target>
+        <target>Una taula arbre es pot configurar de dues maneres: mitjançant camps que es van aniuant per mitjà d'agrupacions o mitjançant la definició de dues columnes numèriques que defineixin una relació pare-fill. Si les dues primeres columnes són numèriques, s'assumeix que descriuen una relació pare-fill.</target>
       </trans-unit>
       <trans-unit id="chartTypes19">
         <source>Gráfico de Barras Apiladas al 100%</source>
@@ -1081,15 +1081,15 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       </trans-unit>
       <trans-unit id="chartInfoKpiTrend">
         <source>KPI Tendencia necesita una columna de fecha en formato mes y una columna numérica</source>
-        <target>KPI Tendència necessita una columna de data en format mes i una columna numèrica</target>
+        <target>Un KPI Tendència necessita una columna de data en format mes i una columna numèrica.</target>
       </trans-unit>
       <trans-unit id="chartInfoKpiDeviation">
         <source>KPI Desviación necesita dos columnas numéricas: valor actual y valor de referencia</source>
-        <target>KPI Desviació necessita dues columnes numèriques: valor actual i valor de referència</target>
+        <target>Un KPI Desviació necessita dues columnes numèriques: valor actual i valor de referència.</target>
       </trans-unit>
       <trans-unit id="showUniqueColors">
         <source>Activar Colores Únicos</source>
-        <target>Activa colors únics</target>
+        <target>Activa els colors únics</target>
       </trans-unit>
       <trans-unit id="histoGramRangesTxt">
         <source>Rango</source>
@@ -1184,7 +1184,7 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       </trans-unit>
       <trans-unit id="indicaciones1">
         <source>Puedes realizar consultas SQL sobre el esquema definido en tu modelo. Para ello introduce la consulta en el cuadro de texto y selecciona la tabla principal (puede ser cualquiera de las que aparecen en la consulta). Usaremos esta tabla para vincular la consulta a los filtros del informe.</source>
-        <target>Podeu fer consultes SQL sobre l'esquema definit en el vostre model. Per fer-ho introduïu la consulta al quadre de text i seleccioneu la taula principal (pot ser qualsevol de les que apareixen a la consulta). Es farà servir aquesta taula per vincular la consulta amb els filtres de l'informe.</target>
+        <target>Podeu fer consultes SQL sobre l'esquema definit al model. Per fer-ho introduïu la consulta al quadre de text i seleccioneu la taula principal (pot ser qualsevol de les que apareixen a la consulta). Es farà servir aquesta taula per vincular la consulta amb els filtres de l'informe.</target>
       </trans-unit>
       <trans-unit id="indicaciones2">
         <source>Limitaciones:</source>
@@ -1252,7 +1252,7 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       </trans-unit>
       <trans-unit id="limitRowsInfo">
         <source>Establece un Top n para la consulta</source>
-        <target>Estableix un Top n per la consulta</target>
+        <target>Estableix un Top n per a la consulta</target>
       </trans-unit>
       <trans-unit id="Limits">
         <source>Límites</source>
@@ -1268,7 +1268,7 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       </trans-unit>
       <trans-unit id="sqlTooltip">
         <source>Al cambiar de modo perderás la configuración de la consulta actual</source>
-        <target>En canviar de mode es perdrà la configuració de la consulta actual</target>
+        <target>En canviar de mode es perdrà la configuració de la consulta actual.</target>
       </trans-unit>
       <trans-unit id="ptooltipViewQuery">
         <source>Ver consulta SQL</source>
@@ -1276,7 +1276,7 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       </trans-unit>
       <trans-unit id="entidadesTitle">
         <source>Clique sobre un entidad para ver sus atributos.</source>
-        <target>Cliqueu sobre una entitat per veure els seus atributs</target>
+        <target>Cliqueu sobre una entitat per veure els seus atributs.</target>
       </trans-unit>
       <trans-unit id="atributsTitle">
         <source>Atributos de una entidad. Arrastre los atrubutos a la selección o los filtros para consultarlos. Haciendo click sobre el atributo se accede a sus propiedaes.</source>
@@ -1284,7 +1284,7 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       </trans-unit>
       <trans-unit id="seleccionTitle">
         <source>Para lanzar una consulta. Seleccione los atributos que desea ver, Clique sobre ellos para configurarlos y ejecute la consulta. Siempre podrá volver a esta vista.</source>
-        <target>Per llançar una consulta, seleccioneu els atributs que voleu veure, feu-hi clic per configurar-los i executeu la consulta. Sempre podreu tornar a aquesta vista.</target>
+        <target>Seleccioneu els atributs que voleu veure, feu-hi clic per configurar-los i executeu la consulta. Sempre podreu tornar a aquesta vista.</target>
       </trans-unit>
       <trans-unit id="inputFilter">
         <source>Filtros</source>
@@ -1324,19 +1324,19 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       </trans-unit>
       <trans-unit id="count_emptyLabel">
         <source>Total cadenas vacías</source>
-        <target>Total cadenes buides</target>
+        <target>Total de cadenes buides</target>
       </trans-unit>
       <trans-unit id="count_distinctLabel">
         <source>Total valores distintos</source>
-        <target>Total valors distints</target>
+        <target>Total de valors diferents</target>
       </trans-unit>
       <trans-unit id="most_duplicatedLabel">
         <source>Más repetido</source>
-        <target>Més repetit</target>
+        <target>El més repetit</target>
       </trans-unit>
       <trans-unit id="least_duplicatedLabel">
         <source>Menos duplicado</source>
-        <target>Menys repetit</target>
+        <target>El menys repetit</target>
       </trans-unit>
       <trans-unit id="maxLabel">
         <source>Valor máximo</source>
@@ -1427,7 +1427,7 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       </trans-unit>
       <trans-unit id="metadata">
         <source>Metadata</source>
-        <target>Metadata</target>
+        <target>Metadades</target>
       </trans-unit>
       <trans-unit id="placeholderSourceColumns">
         <source>Columna origen</source>
@@ -1531,7 +1531,7 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       </trans-unit>
       <trans-unit id="aggTmean">
         <source>Media</source>
-        <target>Mitja</target>
+        <target>Mitjana</target>
       </trans-unit>
       <trans-unit id="aggTmax">
         <source>Máximo</source>
@@ -1575,11 +1575,11 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       </trans-unit>
       <trans-unit id="SureInfo">
         <source>Estás a punto de borrar el modelo de datos y todos los dashboards asociados, el cambio es irreversible</source>
-        <target>Sou a punt d'esborrar el model de dades i tots els informes associats, el canvi serà irreversible</target>
+        <target>Sou a punt d'esborrar el model de dades i tots els informes associats, el canvi serà irreversible.</target>
       </trans-unit>
       <trans-unit id="ConfirmDeleteModel">
         <source>Si, ¡Eliminalo!</source>
-        <target>Sí, elimina'l</target>
+        <target>Sí, elimina'l.</target>
       </trans-unit>
       <trans-unit id="DeleteSuccess">
         <source>Modelo eliminado correctamente.</source>
@@ -1635,11 +1635,11 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       </trans-unit>
       <trans-unit id="CacheDeletedOK">
         <source>Caché eliminada correctamente</source>
-        <target>Memòria cau eliminada correctament</target>
+        <target>Memòria cau eliminada correctament.</target>
       </trans-unit>
       <trans-unit id="IncorrectCacheDelete">
         <source>No ha sido posible eliminar la caché</source>
-        <target>No ha estat possible eliminar la memòria cau</target>
+        <target>No ha estat possible eliminar la memòria cau.</target>
       </trans-unit>
       <trans-unit id="RefreshCacheTitle">
         <source>Actualizar los datos del modelo cada:</source>
@@ -1675,19 +1675,19 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       </trans-unit>
       <trans-unit id="tablePermissionNO">
         <source>No tiene permiso para ver esta tabla</source>
-        <target>No teniu permís per veure aquesta taula</target>
+        <target>No teniu permís per veure aquesta taula.</target>
       </trans-unit>
       <trans-unit id="tablePpermissionYES">
         <source>SI tiene permiso para ver esta tabla</source>
-        <target>Teniu permís per veure aquesta taula</target>
+        <target>Teniu permís per veure aquesta taula.</target>
       </trans-unit>
       <trans-unit id="modelPermissionNO">
         <source>No tiene permiso para ver este modelo</source>
-        <target>No teniu permís per veure aquest model</target>
+        <target>No teniu permís per veure aquest model.</target>
       </trans-unit>
       <trans-unit id="modelPermissionYES">
         <source>SI tiene permiso para ver este modelo</source>
-        <target>Teniu permís per veure aquest model</target>
+        <target>Teniu permís per veure aquest model.</target>
       </trans-unit>
       <trans-unit id="anyCanSeeNO">
         <source>Los usuarios y grupos que pueden ver el modelo son SOLO los definidos explícitamente.</source>
@@ -1759,7 +1759,7 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       </trans-unit>
       <trans-unit id="textCalculatedColumnEditMessage">
         <source>IMPORTANTE: Al modificar un campo calculado ya existente los paneles que lo utilizan no se actualizan automáticamente, es necesario entra en la configuración de cada uno de ellos, pulsar en Ejecutar y guardar el informe</source>
-        <target>IMPORTANT: En modificar un camp calculat ja existent els panells que l'utilitzen no s'actualitzen automàticament, cal entrar a la configuració de cadascun d'ells, fer clic a Executa i desar l'informe.</target>
+        <target>Important! En modificar un camp calculat ja existent els panells que l'utilitzen no s'actualitzen automàticament, cal entrar a la configuració de cadascun d'ells, fer clic a Executa i desar l'informe.</target>
       </trans-unit>
       <trans-unit id="noFormatsAvailable">
         <source>Esta es una columna calculada y no tiene formatos disponibles</source>
@@ -1918,7 +1918,7 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       </trans-unit>
       <trans-unit id="addValueList">
         <source>Añadir lista de valores posibles</source>
-        <target>Afegir llista de valors possibles</target>
+        <target>Afegeix una llista de valors possibles</target>
       </trans-unit>
 
       <!-- SECTION: FILTROS, AGREGACIONES Y RANGOS -->
@@ -2001,43 +2001,43 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       </trans-unit>
       <trans-unit id="filters3">
         <source>MAYOR A (&gt;)</source>
-        <target>Major que (&gt;)</target>
+        <target>Més gran que (&gt;)</target>
       </trans-unit>
       <trans-unit id="filters4">
         <source>MENOR A (&lt;)</source>
-        <target>Menor que (&lt;)</target>
+        <target>Més petit que (&lt;)</target>
       </trans-unit>
       <trans-unit id="filters5">
         <source>MAYOR o IGUAL A (&gt;=)</source>
-        <target>MAJOR o IGUAL QUE (&gt;=)</target>
+        <target>Més gran o igual que (&gt;=)</target>
       </trans-unit>
       <trans-unit id="filters6">
         <source>MENOR o IGUAL A (&lt;=)</source>
-        <target>MENOR o IGUAL QUE (&lt;=)</target>
+        <target>Més petit o igual que (&lt;=)</target>
       </trans-unit>
       <trans-unit id="filters7">
         <source>ENTRE (between)</source>
-        <target>ENTRE (between)</target>
+        <target>Entre (between)</target>
       </trans-unit>
       <trans-unit id="filters8">
         <source>DENTRO DE (in)</source>
-        <target>DINS DE (in)</target>
+        <target>Dins de (in)</target>
       </trans-unit>
       <trans-unit id="filters9">
         <source>FUERA DE (not in)</source>
-        <target>FORA DE (not in)</target>
+        <target>Fora de (not in)</target>
       </trans-unit>
       <trans-unit id="filters10">
         <source>PARECIDO A (like)</source>
-        <target>SEMBLANT A (like)</target>
+        <target>Semblant a (like)</target>
       </trans-unit>
       <trans-unit id="filters11">
         <source>NO PARECIDO A (not like)</source>
-        <target>NO SEMBLANT A (not like)</target>
+        <target>No semblant a (not like)</target>
       </trans-unit>
       <trans-unit id="filters12">
         <source>VALORES NO NULOS (not null)</source>
-        <target>VALORS NO NULS (not null)</target>
+        <target>Valors no nuls (not null)</target>
       </trans-unit>
       <trans-unit id="DashboardFilters">
         <source>FILTROS DEL INFORME</source>
@@ -2057,11 +2057,11 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       </trans-unit>
       <trans-unit id="filters13">
         <source>VALORES NO NULOS NI VACÍOS (not null and != '')</source>
-        <target>VALORS NO NULS NI BUITS (not null and != '')</target>
+        <target>Valors no nuls ni buits (not null and != '')</target>
       </trans-unit>
       <trans-unit id="filters14">
         <source>VALORES NULOS O VACÍOS (null or = '')</source>
-        <target>VALORS NULS O BUITS (null or = '')</target>
+        <target>Valors nuls o buits (null or = '')</target>
       </trans-unit>
       <trans-unit id="aliasValuePh">
         <source>Alias del filtro (opcional)</source>
@@ -2105,15 +2105,15 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       </trans-unit>
       <trans-unit id="rangeDescriptionNumberError">
         <source>El correcto orden de los límites del rango van de menor a mayor</source>
-        <target>L'ordre correcte dels límits del rang és de més petit a més gran</target>
+        <target>L'ordre correcte dels límits del rang és de més petit a més gran.</target>
       </trans-unit>
       <trans-unit id="rangeDescriptionCharacterError">
         <source>El último caracter del rango debe ser un número</source>
-        <target>El darrer caràcter del rang ha de ser numèric</target>
+        <target>El darrer caràcter del rang ha de ser numèric.</target>
       </trans-unit>
       <trans-unit id="ptooltipNotAvailableRanges">
         <source>No es posible crear un rango nuevo por que ya existe uno configurado</source>
-        <target>No és possible crear un rang nou perquè ja n'hi ha un de configurat</target>
+        <target>No és possible crear un rang nou perquè ja n'hi ha un de configurat.</target>
       </trans-unit>
       <trans-unit id="textBetween">
         <source>Entre</source>
@@ -2129,7 +2129,7 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       </trans-unit>
       <trans-unit id="filterSettingsReboot">
         <source>La configuración de filtros se ha reiniciado</source>
-        <target>La configuració de filtres s'ha restablert</target>
+        <target>La configuració de filtres s'ha restablert.</target>
       </trans-unit>
       <trans-unit id="globalFilterSettingsReboot">
         <source>La configuración de filtros del panel involucrado se ha reiniciado</source>
@@ -2153,7 +2153,7 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       </trans-unit>
       <trans-unit id="draggFilters">
         <source>Arrastre aquí los atributos sobre los que quiera filtrar</source>
-        <target>Arrossega aquí els atributs sobre els que vols filtrar</target>
+        <target>Arrossegueu aquí els atributs sobre els quals vulgueu filtrar</target>
       </trans-unit>
       <trans-unit id="canIfilter">
         <source> Visiblidad del filtro</source>
@@ -2589,7 +2589,7 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       </trans-unit>
       <trans-unit id="conditionsP3">
         <source>Usala bajo tu responsabilidad.</source>
-        <target>Fes-la servir sota la teva responsabilitat.</target>
+        <target>Feu-la servir sota la vostra responsabilitat.</target>
       </trans-unit>
       <trans-unit id="cerrarBtn">
         <source>Cerrar</source>
@@ -2669,7 +2669,7 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       </trans-unit>
       <trans-unit id="inputxDescription">
         <source>Si desconoces las coordenadas del centro las calcularemos automáticamente</source>
-        <target>Si desconeixeu les coordenades del centre es calcularan automàticament</target>
+        <target>Si desconeixeu les coordenades del centre es calcularan automàticament.</target>
       </trans-unit>
       <trans-unit id="sqlExp">
         <source>Expresión SQL</source>
@@ -2709,11 +2709,11 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       </trans-unit>
       <trans-unit id="NoRecords">
         <source>No se pudo obtener ningún registro</source>
-        <target>No s'ha pogut obtenir cap registre</target>
+        <target>No s'ha pogut obtenir cap registre.</target>
       </trans-unit>
       <trans-unit id="mandatoryFields">
         <source>Recuerde rellenar los campos obligatorios</source>
-        <target>Recordeu-vos d'omplir els camps obligatoris</target>
+        <target>Recordeu-vos d'omplir els camps obligatoris.</target>
       </trans-unit>
       <trans-unit id="IncorrectForm">
         <source>Formulario incorrecto. Revise los campos obligatorios.</source>
@@ -2725,15 +2725,15 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       </trans-unit>
       <trans-unit id="AcceptConditions">
         <source>Debe de aceptar las condiciones</source>
-        <target>Heu d'acceptar les condicions</target>
+        <target>Heu d'acceptar les condicions.</target>
       </trans-unit>
       <trans-unit id="AddFiltersWarningTittle">
         <source>Solo puedes añadir filtros cuando todos los paneles están configurados</source>
-        <target>Només podreu afegir filtres quan tots els panells estiguin configurats</target>
+        <target>Només podreu afegir filtres quan tots els panells estiguin configurats.</target>
       </trans-unit>
       <trans-unit id="AddFiltersWarningText">
         <source>Puedes borrar los paneles en blanco o configurarlos</source>
-        <target>Podeu esborrar els panells en blanc o configurar-los</target>
+        <target>Podeu esborrar els panells en blanc o configurar-los.</target>
       </trans-unit>
       <trans-unit id="AddFiltersWarningButton">
         <source>Entendido</source>
