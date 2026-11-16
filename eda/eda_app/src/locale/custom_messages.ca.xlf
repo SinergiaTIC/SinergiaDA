@@ -1077,7 +1077,7 @@
   </trans-unit>
   <trans-unit id="labelUsuarioLogin" datatype="html">
     <source>Usuario de acceso</source>
-    <target>Usuari d'accés</target>
+    <target>Nom d'usuari</target>
   </trans-unit>
   <trans-unit id="profileAccountTitle" datatype="html">
     <source>Mi cuenta</source>
