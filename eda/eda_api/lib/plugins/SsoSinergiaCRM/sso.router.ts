@@ -5,7 +5,7 @@ const router = express.Router();
 
 /**
  * @openapi
- * /auth/sso/status:
+ * /sso/status:
  *   get:
  *     description: Reports whether the SinergiaCRM single sign-on integration is configured in this instance.
  *     responses:
@@ -18,7 +18,7 @@ router.get('/status', SsoController.status);
 
 /**
  * @openapi
- * /auth/sso/login:
+ * /sso/login:
  *   post:
  *     description: Exchanges a short-lived token signed by SinergiaCRM for a SinergiaDA session token. The token is single-use and only accepted for users managed by SinergiaCRM.
  *     parameters:
@@ -47,7 +47,7 @@ router.post('/login', SsoController.login);
 
 /**
  * @openapi
- * /auth/sso/redirect:
+ * /sso/redirect:
  *   get:
  *     description: Redirects the browser to SinergiaCRM so it can start the single sign-on flow for the current session.
  *     parameters:
