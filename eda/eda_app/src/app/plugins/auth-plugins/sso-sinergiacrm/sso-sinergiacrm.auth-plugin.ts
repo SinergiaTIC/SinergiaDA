@@ -1,9 +1,14 @@
 import { ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
 import { lastValueFrom } from 'rxjs';
+import { jwtDecode } from 'jwt-decode';
 import { URL_SERVICES } from '@eda/configs/config';
 import { AuthPluginResult, IAuthPlugin, IAuthPluginContext } from '../auth-plugin.interface';
 
 const SSO_QUERY_PARAM = 't';
+const SSO_CHECK_PARAM = 'sso_check';
+
+/** Set once the CRM session has been verified in this page load (a reload verifies again). */
+let crmSessionChecked = false;
 const PARENT_REQUEST_MESSAGE = 'sda-sso-request';
 const PARENT_RESPONSE_MESSAGE = 'sda-sso-token';
 const PARENT_HANDSHAKE_TIMEOUT_MS = 4000;
@@ -32,9 +37,18 @@ export class SsoSinergiaCrmAuthPlugin implements IAuthPlugin {
         ctx: IAuthPluginContext
     ): Promise<AuthPluginResult> {
 
+        const ssoCheck = this.readSsoCheckResult();
+        if (ssoCheck) {
+            this.stripSsoCheckFromUrl();
+            if (ssoCheck === 'inactive') {
+                ctx.userService.logout();
+                return 'redirecting';
+            }
+        }
+
         // do not treat a logged-in user as a bounce; only the redirect round-trip sets the bounce
         if (ctx.userService.isLogged()) {
-            return 'not-handled';
+            return ssoCheck ? 'not-handled' : this.verifyCrmSession(state, ctx);
         }
 
         const tokenFromUrl = this.readTokenFromUrl(route);
@@ -49,15 +63,20 @@ export class SsoSinergiaCrmAuthPlugin implements IAuthPlugin {
             return 'not-handled';
         }
 
-        if (this.isEmbedded()) {
-            const tokenFromParent = await this.requestTokenFromParent();
+        // SDA CUSTOM - fetch SSO status up front so the iframe handshake can validate
+        // the parent origin against ALLOWED_ORIGINS (returned by /sso/status).
+        const status = await this.fetchSsoStatus(ctx);
+        const ssoEnabled = !!status?.enabled;
+
+        if (ssoEnabled && this.isEmbedded()) {
+            const allowedOrigins = this.resolveAllowedOrigins(status);
+            const tokenFromParent = await this.requestTokenFromParent(allowedOrigins);
             if (tokenFromParent) {
                 return this.completeLogin(tokenFromParent, state, ctx);
             }
         }
 
-        const status = await this.fetchSsoStatus(ctx);
-        if (status?.enabled) {
+        if (ssoEnabled) {
             this.rememberBounce();
             const returnUrl = encodeURIComponent(state.url);
             // SDA CUSTOM - bounce to the CRM without Referer: SinergiaCRM (SuiteCRM
@@ -92,6 +111,53 @@ export class SsoSinergiaCrmAuthPlugin implements IAuthPlugin {
         /* SDA CUSTOM */ document.body.removeChild(anchor);
     }
 
+    /**
+     * For a session opened from SinergiaCRM, asks the CRM (top-level navigation, so its
+     * own cookie is used) whether that CRM session is still open for the same user.
+     */
+    private async verifyCrmSession(state: RouterStateSnapshot, ctx: IAuthPluginContext): Promise<AuthPluginResult> {
+        if (crmSessionChecked || !this.isSsoSession()) {
+            return 'not-handled';
+        }
+        crmSessionChecked = true;
+
+        const status = await this.fetchSsoStatus(ctx);
+        if (!status?.enabled || !status.crmUrl) {
+            return 'not-handled';
+        }
+
+        const crmUrl = String(status.crmUrl).replace(/\/+$/, '');
+        const email = encodeURIComponent(this.currentEmail());
+        const returnUrl = encodeURIComponent(state.url.split('?')[0]);
+        this.startSsoBounceWithoutReferer(
+            `${crmUrl}/index.php?module=Users&action=sdaSilentCheck&user=${email}&return=${returnUrl}`
+        );
+        return 'redirecting';
+    }
+
+    private isSsoSession(): boolean {
+        const token = localStorage.getItem('token');
+        if (!token) {
+            return false;
+        }
+        try {
+            return (jwtDecode(token) as any)?.sso === true;
+        } catch (error) {
+            return false;
+        }
+    }
+
+    private readSsoCheckResult(): 'active' | 'inactive' | null {
+        const value = new URLSearchParams(window.location.search).get(SSO_CHECK_PARAM);
+        return value === 'active' || value === 'inactive' ? value : null;
+    }
+
+    private stripSsoCheckFromUrl(): void {
+        const url = new URL(window.location.href);
+        url.searchParams.delete(SSO_CHECK_PARAM);
+        window.history.replaceState(null, '', url.pathname + url.search + url.hash);
+    }
+
     private readTokenFromUrl(route: ActivatedRouteSnapshot): string | null {
         const fromRouter = route?.queryParams?.[SSO_QUERY_PARAM];
         if (typeof fromRouter === 'string' && fromRouter.length > 0) {
@@ -106,11 +172,18 @@ export class SsoSinergiaCrmAuthPlugin implements IAuthPlugin {
         return typeof window !== 'undefined' && !!window.parent && window.parent !== window;
     }
 
-    private requestTokenFromParent(): Promise<string | null> {
+    private requestTokenFromParent(allowedOrigins: string[]): Promise<string | null> {
         return new Promise((resolve) => {
             let timer: number;
 
             const onMessage = (event: MessageEvent) => {
+                // SDA CUSTOM - only accept tokens delivered by an allowed parent origin.
+                if (allowedOrigins.length > 0 && !allowedOrigins.includes(event.origin)) {
+                    /* SDA CUSTOM */ return;
+                }
+                if (event.source !== window.parent) {
+                    /* SDA CUSTOM */ return;
+                }
                 const data: any = event?.data;
                 if (data && data.type === PARENT_RESPONSE_MESSAGE
                     && typeof data.token === 'string' && data.token.length > 0) {
@@ -130,7 +203,11 @@ export class SsoSinergiaCrmAuthPlugin implements IAuthPlugin {
             }, PARENT_HANDSHAKE_TIMEOUT_MS);
 
             window.addEventListener('message', onMessage);
-            window.parent.postMessage({ type: PARENT_REQUEST_MESSAGE }, '*');
+            // SDA CUSTOM - target the allowed parent origin when known; '*' keeps the
+            // request working when ALLOWED_ORIGINS is not configured (the request carries
+            // no secret, only a "please send token" ping).
+            const requestTargetOrigin = allowedOrigins.length === 1 ? allowedOrigins[0] : '*';
+            window.parent.postMessage({ type: PARENT_REQUEST_MESSAGE }, requestTargetOrigin);
         });
     }
 
@@ -199,6 +276,28 @@ export class SsoSinergiaCrmAuthPlugin implements IAuthPlugin {
 
     private clearBounce(): void {
         window.sessionStorage.removeItem(SSO_BOUNCE_KEY);
+    }
+
+    /**
+     * SDA CUSTOM - Resolves the list of origins allowed to deliver an SSO token
+     * through the iframe handshake. Falls back to the CRM origin derived from
+     * `crmUrl` when ALLOWED_ORIGINS is not configured, so existing deployments
+     * that embed SDA without configuring ALLOWED_ORIGINS keep working.
+     */
+    private resolveAllowedOrigins(status: any): string[] {
+        const configured: string[] = Array.isArray(status?.allowedOrigins) ? status.allowedOrigins : [];
+        if (configured.length > 0) {
+            return configured;
+        }
+        const crmUrl = status?.crmUrl;
+        if (typeof crmUrl === 'string' && crmUrl.length > 0) {
+            try {
+                return [new URL(crmUrl).origin];
+            } catch {
+                return [];
+            }
+        }
+        return [];
     }
 
     private async fetchSsoStatus(ctx: IAuthPluginContext): Promise<any | null> {
