@@ -1812,7 +1812,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         const config = this.props.config.getConfig();
         const assignedColors = config['assignedColors'];
 
-        this.props.config.setConfig(new KpiTrendConfig({ assignedColors }));
+        this.props.config.setConfig(new KpiTrendConfig({ ...config, assignedColors }));
         this.renderEdaKpiTrend();
     }
 
