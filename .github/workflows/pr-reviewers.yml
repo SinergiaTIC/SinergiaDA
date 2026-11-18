@@ -96,7 +96,9 @@ jobs:
 
             pull_request_review)
               # Stage 2: react only to internal approvals (Juan or Paula)
-              if [ "$REVIEW_STATE" != "APPROVED" ]; then exit 0; fi
+              # NOTE: GitHub delivers review.state in lowercase ("approved"), so compare
+              # case-insensitively.
+              if [ "$(printf '%s' "$REVIEW_STATE" | tr '[:upper:]' '[:lower:]')" != "approved" ]; then exit 0; fi
               case "$REVIEW_AUTHOR" in
                 juanSTIC|PaulaaSTIC) ;;
                 *) exit 0 ;;
