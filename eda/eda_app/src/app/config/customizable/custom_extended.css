@@ -697,6 +697,17 @@ app-main-left-sidebar ul > li:has(> .sidebar-submenu-link eda-icon svg path[d*="
   display: none !important;
 }
 
+/* ─── Side menu: hide the "Gestión de email" entry ────────────────────────
+   SinergiaDA does not expose the core SMTP/Gmail settings section: the route
+   itself is neutralized by the email-settings-sda page plugin, which replaces
+   admin/email-settings with a redirect to /home. The submenu items are
+   rendered as buttons (not links), so the entry is targeted through its
+   at-symbol icon's SVG path, which is language-independent (the icon is used
+   nowhere else in the app). */
+app-main-left-sidebar ul > li:has(> .sidebar-submenu-link eda-icon svg path[d*="M16.5 12a4.5"]) {
+  display: none !important;
+}
+
 /* ─── Profile: hide "Guardar cambios" for SinergiaCRM-managed users ───────
    When the account is managed by SinergiaCRM the page shows the amber locked
    banner (border-amber-300) and the profile is read-only, so the save button
