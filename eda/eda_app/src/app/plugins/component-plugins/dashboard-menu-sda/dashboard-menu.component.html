@@ -95,7 +95,7 @@
   }
 
 
-  @if (!viewMode || !isEditable) {
+  @if (!viewMode) {
     <button type="button" class="dsm-btn dsm-btn-ghost" [pTooltip]="moreLabel" tooltipPosition="bottom"
       (click)="openMoreMenu($event)">
       <i class="pi pi-ellipsis-h dsm-btn-icon"></i>
