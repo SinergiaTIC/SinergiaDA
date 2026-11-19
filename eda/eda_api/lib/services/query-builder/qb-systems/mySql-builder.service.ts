@@ -1154,11 +1154,7 @@ export class MySqlBuilderService extends QueryBuilderService {
 
     }else{
       if(column.column_type == 'numeric'){
-        if(column.aggregation_type === 'count_distinct') {
-          colname = `CAST( count( distinct (${column.SQLexpression})) as decimal(32,${column.minimumFractionDigits}))`;
-        } else {
-          colname = `CAST( ${column.aggregation_type}(${column.SQLexpression}) as decimal(32,${column.minimumFractionDigits}))`;
-        }
+        colname = `CAST( ${column.SQLexpression} as decimal(32,${column.minimumFractionDigits}))`;
       }else{
         colname = `  ${column.SQLexpression}  `;
       }
@@ -1240,7 +1236,11 @@ public getHavingColname(column: any){
     }
   }else{
     if(column.column_type == 'numeric'){
-      colname = `CAST( ${column.SQLexpression} as decimal(32,${column.minimumFractionDigits}))`;
+      if(column.aggregation_type === 'count_distinct') {
+        colname = `CAST( count( distinct (${column.SQLexpression})) as decimal(32,${column.minimumFractionDigits}))`;
+      } else {
+        colname = `CAST( ${column.aggregation_type}(${column.SQLexpression}) as decimal(32,${column.minimumFractionDigits}))`;
+      }
     }else{
       colname = `  ${column.SQLexpression}  `;
     }
