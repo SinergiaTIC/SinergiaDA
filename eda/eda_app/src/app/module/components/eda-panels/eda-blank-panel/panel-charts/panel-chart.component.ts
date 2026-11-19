@@ -1167,6 +1167,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         chartConfig.periodTitle = this._periodTitle(dateFormat);
         chartConfig.comparisonLabel = compLabel;
         chartConfig.decimals = decimals;
+        chartConfig.prefixImage = cfg?.prefixImage || '';
 
         // --- Style config – same pattern as renderEdaKpiChart ---
         const propsConfig: any = this.props.config;
@@ -1811,7 +1812,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         const config = this.props.config.getConfig();
         const assignedColors = config['assignedColors'];
 
-        this.props.config.setConfig(new KpiTrendConfig({ assignedColors }));
+        this.props.config.setConfig(new KpiTrendConfig({ ...config, assignedColors }));
         this.renderEdaKpiTrend();
     }
 
