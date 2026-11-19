@@ -1131,7 +1131,7 @@ export abstract class QueryBuilderService {
          *  every related table's permission would be joined into one subquery and exceed
          *  MariaDB's limit of 61 tables per join. */
         const permissions = this.getRecursivePermissions(modelPermissions, this.tables, origin, this.queryTODO)
-            .filter((p: any) => p.filter_table == table);
+            .filter((p: any) => p.filter_table == this.cleanOriginTable(table));
         
         const joinType = 'inner'; // es per els permisos. Ha de ser així.
         const valueListJoins = []; // anulat
