@@ -2000,7 +2000,7 @@ static  convertColumnToForbiddenColumn(columns: any[], sample: any): any[] {
       })
       if (notAllowedQuery) {
         console.log('Not allowed table in query')
-        return res.status(200).json([['noDataAllowed'], [[]]])
+        return res.status(200).json([['noDataAllowed'], []])
       }
 
       if (!req.body.query?.forSelector) {
@@ -2011,7 +2011,7 @@ static  convertColumnToForbiddenColumn(columns: any[], sample: any): any[] {
         );
         if (mandatoryFilterMissing) {
           console.log('a mandatory global filter has no value, query blocked')
-          return res.status(200).json([['mandatoryFilterMissing'], [[]]])
+          return res.status(200).json([['mandatoryFilterMissing'], []])
         }
       }
 
