@@ -106,6 +106,8 @@ export class DashboardMenuSdaComponent implements OnInit, OnDestroy, DoCheck {
    */
   public viewMode: boolean = true;
   private viewModeInit = false;
+  /** True when a panel of this report shows a "no permissions" message: the whole report opens read-only. */
+  private permissionRestricted = false;
   private viewModeTouched = false;
   private viewModeBackup = new Map<string, any>();
   private gridsterBackup: { draggable?: boolean; resizable?: boolean } = {};
@@ -203,6 +205,7 @@ export class DashboardMenuSdaComponent implements OnInit, OnDestroy, DoCheck {
       }
     }
     if (!this.viewModeInit) return; // never touch panels before knowing the report mode
+    this.syncPermissionRestriction();
     this.syncTitleAffordance();
     this.syncFilterEditAffordances();
     if (!this.isLayoutLocked) return;
@@ -1020,12 +1023,32 @@ styleClass: "text-gray-500 italic",
     return !this.dashboard.dashboard.config.onlyIcanEdit || imProperty || isAdmin;
   }
 
+  /**
+   * Opens the report read-only when a panel shows a "no permissions" message
+   * (NO_DATA_ALLOWED / NO_FILTER_ALLOWED). Only reads core state; the lock goes
+   * through the shared inject object that every panel already checks (isObserver),
+   * so core files are not touched. Latches once detected.
+   */
+  private syncPermissionRestriction(): void {
+    if (this.permissionRestricted) return;
+    const restricted = (this.dashboard?.edaPanels?.toArray?.() || []).some((c: any) => {
+      const chart = c?.panelChart;
+      return !!(chart?.NO_DATA_ALLOWED || chart?.NO_FILTER_ALLOWED);
+    });
+    if (!restricted) return;
+    this.permissionRestricted = true;
+    if (this.dashboard?.injectEdaPanel) this.dashboard.injectEdaPanel.isObserver = true;
+    this.isEditable = false;
+    this.buildAddMenu();
+    this.buildMoreMenu();
+  }
+
   public canIedit(): boolean {
     // EDA_RO (observer) never edits, not even when the report is theirs or when
     // the report is editable by everyone: core already renders their panels
     // read-only (EdaBlankPanel.isEditable checks inject.isObserver), so letting
     // the toolbar edit would be inconsistent (and would fail on save anyway).
-    if (this.isObserver()) return false;
+    if (this.isObserver() || this.permissionRestricted) return false;
     return this.dashboard?.canIedit() ?? false;
   }
 
