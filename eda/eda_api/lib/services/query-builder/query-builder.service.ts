@@ -1123,12 +1123,15 @@ export abstract class QueryBuilderService {
         const modelPermissions = this.dataModel.ds.metadata.model_granted_roles;
 
 
-        /** Check the permissions behaviour. If they are recursive get recursive permissions*/
-        const permissions =
-            eda_api_config.custom_behaviour.USE_RECURSIVE_PERMISSIONS?
-            this.getRecursivePermissions(modelPermissions, this.tables, origin, this.queryTODO):
-            this.getFlatPermissions(modelPermissions, this.queryTODO)
-            ;
+        /** SQL panels always use related-tables permissions (like 2.12.0), regardless of the
+         *  USE_RECURSIVE_PERMISSIONS flag, which only governs TREE/EDA mode (builder). Using
+         *  flat (column-based) permissions here returns nothing for SQL panels because their
+         *  fields are empty, so security would never be injected.
+         *  Only keep the permissions of the table being replaced (like 2.12.0 did), otherwise
+         *  every related table's permission would be joined into one subquery and exceed
+         *  MariaDB's limit of 61 tables per join. */
+        const permissions = this.getRecursivePermissions(modelPermissions, this.tables, origin, this.queryTODO)
+            .filter((p: any) => p.filter_table == table);
         
         const joinType = 'inner'; // es per els permisos. Ha de ser així.
         const valueListJoins = []; // anulat
