@@ -846,7 +846,9 @@ styleClass: "text-gray-500 italic",
       ]
     ];
 
-    this.moreMenuItems = this.joinSections(sections);
+    this.moreMenuItems = this.permissionRestricted
+      ? [{ id: 'downloadGroup' }]
+      : this.joinSections(sections);
   }
 
   /**
