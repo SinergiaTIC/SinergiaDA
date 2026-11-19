@@ -1408,6 +1408,8 @@ static  convertColumnToForbiddenColumn(columns: any[], sample: any): any[] {
     // puedo ver todas las tablas menos las que tengo explicitamente prohibidas
     allowedTablesBySecurityForMe = allowedTablesBySecurityForMe.filter(t => !forbiddenTables.includes(t));
     forbiddenTables = allTables.filter(t => !allowedTablesBySecurityForMe.includes(t));
+    // Filters values starting with: 'sda_l_' in tables & values containing '__' in tables (restored from 2.12.0).
+    forbiddenTables = forbiddenTables.filter(table => !table.startsWith('sda_l_') && !table.includes('__'));
     return forbiddenTables;
   }
 
