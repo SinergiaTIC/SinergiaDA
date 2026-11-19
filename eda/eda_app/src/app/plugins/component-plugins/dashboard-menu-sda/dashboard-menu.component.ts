@@ -1031,6 +1031,9 @@ styleClass: "text-gray-500 italic",
    */
   private syncPermissionRestriction(): void {
     if (this.permissionRestricted) return;
+    // Admins never get the no-permission panel message (the backend skips the
+    // security stripping for them), so the lock is only meant for regular users.
+    if (this.isAdmin()) return;
     const restricted = (this.dashboard?.edaPanels?.toArray?.() || []).some((c: any) => {
       const chart = c?.panelChart;
       return !!(chart?.NO_DATA_ALLOWED || chart?.NO_FILTER_ALLOWED);
