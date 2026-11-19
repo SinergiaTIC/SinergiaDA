@@ -86,7 +86,8 @@ export abstract class QueryBuilderService {
 
         let graph = this.buildGraph();
         /* Agafem els noms de les taules, origen i destí (és arbitrari), les columnes i el tipus d'agregació per construïr la consulta */
-        let origin = this.queryTODO.rootTable || this.queryTODO.fields.find(x => x.order === 0).table_id;
+        const rootTable: any = this.queryTODO.rootTable;
+        let origin = (typeof rootTable === 'object' ? rootTable?.table_name : rootTable) || this.queryTODO.fields.find(x => x.order === 0).table_id;
         let view = this.tables.filter(table => table.table_name.trim() === origin.trim()).map(table => { return table.query ? true: false })[0];
         let dest = [];
         const valueListList = [];
