@@ -166,8 +166,9 @@ export class MysqlConnection extends AbstractConnection {
     }
 
 async execQuery(query: string): Promise<any> {
+        let maxStatementTime = EDA_API_CONFIG.maxStatementTime ?? 900;
+        let timeoutHandle: NodeJS.Timeout | undefined;
         try {
-            let maxStatementTime = EDA_API_CONFIG.maxStatementTime ?? 900;
             console.log(`SET maxStatementTime=${maxStatementTime}`);
 
             // Detectar si es MariaDB (se cachea tras la primera consulta)
@@ -189,11 +190,11 @@ async execQuery(query: string): Promise<any> {
                     : trimmed;
             }
 
-            // Crear promesa con timeout que se cancela a los 600 segundos
+            // Timeout del lado cliente: corta a los maxStatementTime segundos, coherente con el límite del servidor
             const timeoutPromise = new Promise((_, reject) => {
-                setTimeout(() => {
+                timeoutHandle = setTimeout(() => {
                     reject(new Error(`Query execution timed out after ${maxStatementTime} seconds`));
-                }, (maxStatementTime * 100));
+                }, (maxStatementTime * 1000));
             });
 
             // Ejecutar race based entre query y timeout (mysql2/promise devuelve [rows, fields])
@@ -203,12 +204,14 @@ async execQuery(query: string): Promise<any> {
             ]) as any;
             return rows;
         } catch (err) {
-            if (err.message === 'Query execution timed out after 60 seconds') {
+            if (err.message === `Query execution timed out after ${maxStatementTime} seconds`) {
                 // Visualizar errores de timeout
                 console.error('Query timeout:', query);
             }
             console.log(err);
             throw err;
+        } finally {
+            clearTimeout(timeoutHandle);
         }
     }
 

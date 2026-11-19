@@ -1408,6 +1408,8 @@ static  convertColumnToForbiddenColumn(columns: any[], sample: any): any[] {
     // puedo ver todas las tablas menos las que tengo explicitamente prohibidas
     allowedTablesBySecurityForMe = allowedTablesBySecurityForMe.filter(t => !forbiddenTables.includes(t));
     forbiddenTables = allTables.filter(t => !allowedTablesBySecurityForMe.includes(t));
+    // Filters values starting with: 'sda_l_' in tables & values containing '__' in tables (restored from 2.12.0).
+    forbiddenTables = forbiddenTables.filter(table => !table.startsWith('sda_l_') && !table.includes('__'));
     return forbiddenTables;
   }
 
@@ -2000,7 +2002,7 @@ static  convertColumnToForbiddenColumn(columns: any[], sample: any): any[] {
       })
       if (notAllowedQuery) {
         console.log('Not allowed table in query')
-        return res.status(200).json("[['noDataAllowed'],[]]")
+        return res.status(200).json([['noDataAllowed'], []])
       }
 
       if (!req.body.query?.forSelector) {
@@ -2011,7 +2013,7 @@ static  convertColumnToForbiddenColumn(columns: any[], sample: any): any[] {
         );
         if (mandatoryFilterMissing) {
           console.log('a mandatory global filter has no value, query blocked')
-          return res.status(200).json("[['mandatoryFilterMissing'],[]]")
+          return res.status(200).json([['mandatoryFilterMissing'], []])
         }
       }
 
