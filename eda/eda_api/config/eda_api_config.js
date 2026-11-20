@@ -24,7 +24,9 @@ module.exports = applyConfigOverwrite('eda_api_config', {
       USE_VALUE_LIST_CODE_FOR_FILTERS: false, // true -> For using the filters with code values.
       USE_RECURSIVE_PERMISSIONS: false, // true -> QueryBuilderService.builder() getRecursivePermissions (EDA). false -> with getFlatPermissions (SDA).
       RESTRICT_TABLE_TO_GRANTED_COLUMN: false, // true -> closed model: granting permission on one column hides the rest of the table's columns (EDA). false -> row-level permissions never hide sibling columns (SDA).
-      SHOW_EMPTY_VALUE_IN_FILTERS: true // true -> selector queries for global filters always include an empty/null row (UNION SELECT '').
+      SHOW_EMPTY_VALUE_IN_FILTERS: true, // true -> selector queries for global filters always include an empty/null row (UNION SELECT '').
+      ENFORCE_PERMISSIONS_ON_LINK_TABLES: true, // true -> closed model strictly follows model_granted_roles, no exceptions (EDA). false -> table names matching CLOSED_MODEL_EXEMPT_TABLE_REGEX are never forbidden, regardless of granted roles (SDA).
+      CLOSED_MODEL_EXEMPT_TABLE_REGEX: null, // regular expression (as a string) used when ENFORCE_PERMISSIONS_ON_LINK_TABLES is false.
       
     }
   });
