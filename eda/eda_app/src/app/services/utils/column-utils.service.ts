@@ -74,7 +74,9 @@ export class ColumnUtilsService {
     
         let valuesIds
         // Adding the values Codes
-        if(data.length !== 0) {
+        // SDA CUSTOM - Only build code-mapped ids for value-list columns (those with a valueListSource).
+        // Plain columns keep the raw values in filter_codes to avoid null codes being used in code-mode.
+        if (valueListSource && data.length !== 0) {
             valuesIds = [{value1: _.cloneDeep(values)[0].value1.map((e: any) => data.find((d: any) => d.value === e)?.id ?? e)}];
         } else {
             valuesIds = _.cloneDeep(values);
