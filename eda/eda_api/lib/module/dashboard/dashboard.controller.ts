@@ -1408,6 +1408,13 @@ static  convertColumnToForbiddenColumn(columns: any[], sample: any): any[] {
     // puedo ver todas las tablas menos las que tengo explicitamente prohibidas
     allowedTablesBySecurityForMe = allowedTablesBySecurityForMe.filter(t => !forbiddenTables.includes(t));
     forbiddenTables = allTables.filter(t => !allowedTablesBySecurityForMe.includes(t));
+    // custom_behaviour.ENFORCE_PERMISSIONS_ON_LINK_TABLES true (EDA) -> no exceptions.
+    // false (SDA) -> tables matching CLOSED_MODEL_EXEMPT_TABLE_REGEX are never forbidden.
+    const exemptTablePattern: string = eda_api_config.custom_behaviour.CLOSED_MODEL_EXEMPT_TABLE_REGEX;
+    if (!eda_api_config.custom_behaviour.ENFORCE_PERMISSIONS_ON_LINK_TABLES && exemptTablePattern) {
+      const exemptTableRegex = new RegExp(exemptTablePattern);
+      forbiddenTables = forbiddenTables.filter(table => !exemptTableRegex.test(table));
+    }
     return forbiddenTables;
   }
 
@@ -2000,7 +2007,7 @@ static  convertColumnToForbiddenColumn(columns: any[], sample: any): any[] {
       })
       if (notAllowedQuery) {
         console.log('Not allowed table in query')
-        return res.status(200).json("[['noDataAllowed'],[]]")
+        return res.status(200).json([['noDataAllowed'], []])
       }
 
       if (!req.body.query?.forSelector) {
@@ -2011,7 +2018,7 @@ static  convertColumnToForbiddenColumn(columns: any[], sample: any): any[] {
         );
         if (mandatoryFilterMissing) {
           console.log('a mandatory global filter has no value, query blocked')
-          return res.status(200).json("[['mandatoryFilterMissing'],[]]")
+          return res.status(200).json([['mandatoryFilterMissing'], []])
         }
       }
 

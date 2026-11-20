@@ -825,7 +825,7 @@ public tableNodeExpand(event: any): void {
 
         if (this.panel?.content) {
             this.panel.content.query.query.queryMode = this.selectedQueryMode;
-            this.panel.content.query.query.rootTable = this.rootTable;
+            this.panel.content.query.query.rootTable = typeof this.rootTable === 'string' ? this.rootTable : this.rootTable?.table_name;
         }
 
         if (!_.isEmpty(this.graficos) || this.selectedQueryMode == 'SQL') {

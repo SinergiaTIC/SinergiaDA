@@ -777,14 +777,13 @@ export class MySqlBuilderService extends QueryBuilderService {
           }
 
           // Security: If the joined table has permissions, they are added as an extra condition for ON.
-          // (Just like getFilters() applies them when the table is the source: each rule with AND)
+          // (Just like getFilters() applies them when the table is the source: OR within the table, AND across tables)
           let agregadoPermisos: any = '';
           if (destLongitud > 0) {
-            this.permissions.forEach((p: any) => {
-              if (p.filter_table == e[j]) {
-                agregadoPermisos += ` and (${this.filterToString(p)})`;
-              }
-            });
+            const permisosTabla = this.permissions.filter((p: any) => p.filter_table == e[j]);
+            if (permisosTabla.length) {
+              agregadoPermisos += ` and ${this.buildPermissionsSqlExpresion(permisosTabla)}`;
+            }
           }
 
           //Version compatibility string//array
@@ -907,12 +906,14 @@ export class MySqlBuilderService extends QueryBuilderService {
                 targetTableJoin.push(aliasTargetTable || targetTable);
 
                 if (destLongitud > 0) {
-                  // The permissions of the destination table of this join are added to the ON (with AND, just like getFilters());
+                  // The permissions of the destination table of this join are added to the ON (OR within the table, AND across tables, just like getFilters());
                   // The rest are marked toBeUsed so that they are applied by another method (getSqlPermissionsExpression)
+                  const permisosTabla = this.permissions.filter((p: any) => p.filter_table == targetTable);
+                  if (permisosTabla.length) {
+                    joinStr += ` and ${this.buildPermissionsSqlExpresion(permisosTabla)}`;
+                  }
                   this.permissions.forEach((p: any) => {
-                    if (p.filter_table == targetTable) {
-                      joinStr += ` and (${this.filterToString(p)})`;
-                    } else {
+                    if (p.filter_table != targetTable) {
                       p.toBeUsed = true;
                     }
                   });
@@ -1382,11 +1383,8 @@ public getHavingColname(column: any){
   buildPermissionJoin(origin: string, joinStrings: string[], permissions: any[]) {
 
     let joinString = `( SELECT ${origin}.* from ${origin} `;
-    joinString += joinStrings.join(' ') + ' where ';
-    permissions.forEach(permission => {
-      joinString += ` ${this.filterToString(permission )} and `
-    });
-    return `${joinString.slice(0, joinString.lastIndexOf(' and '))} )`;
+    joinString += joinStrings.join(' ') + ' where ' + this.buildPermissionsSqlExpresion(permissions);
+    return `${joinString} )`;
   }
 
   sqlQuery(query: string, filters: any[], filterMarks: string[]): string {
