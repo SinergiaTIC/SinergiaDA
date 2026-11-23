@@ -693,9 +693,34 @@ export class ClickHouseBuilderService extends QueryBuilderService {
         if (filterObject.filter_type === 'not_like') {
           return `${colname} NOT ILIKE '%${filterObject.filter_elements[0].value1}%' `;
         }
+        // Date columns: treat the selected day as the whole day (00:00:00..23:59:59).
+        if (colType === 'date') {
+          const op = filterObject.filter_type;
+          if (op === '=') {
+            return `${colname} >= ${this.processFilter(filterObject.filter_elements[0].value1, colType)} and ${colname} <= ${this.processFilterEndRange(filterObject.filter_elements[0].value1, colType)} `;
+          }
+          if (op === '!=' || op === '<>') {
+            return `(${colname} < ${this.processFilter(filterObject.filter_elements[0].value1, colType)} or ${colname} > ${this.processFilterEndRange(filterObject.filter_elements[0].value1, colType)}) `;
+          }
+          if (op === '>') {
+            return `${colname} > ${this.processFilterEndRange(filterObject.filter_elements[0].value1, colType)} `;
+          }
+          if (op === '<=') {
+            return `${colname} <= ${this.processFilterEndRange(filterObject.filter_elements[0].value1, colType)} `;
+          }
+        }
         return `${colname} ${filterObject.filter_type} ${this.processFilter(filterObject.filter_elements[0].value1, colType)} `;
       case 1:
         if (filterObject.filter_type === 'not_in') filterObject.filter_type = 'NOT IN';
+        // Date columns: expand 'in'/'not in' to whole-day ranges.
+        if (colType === 'date' && (filterObject.filter_type === 'in' || filterObject.filter_type === 'not in' || filterObject.filter_type === 'not_in')) {
+          const vals = filterObject.filter_elements[0].value1;
+          const ranges = vals.map((v: any) => `(${colname} >= ${this.processFilter([v], colType)} and ${colname} <= ${this.processFilterEndRange([v], colType)})`).join(' or ');
+          if (filterObject.filter_type === 'not in' || filterObject.filter_type === 'not_in') {
+            return `not ( ${ranges} ) `;
+          }
+          return `( ${ranges} ) `;
+        }
         return `${colname} ${filterObject.filter_type} (${this.processFilter(filterObject.filter_elements[0].value1, colType)}) `;
       case 2:
         return `${colname} ${filterObject.filter_type}
@@ -777,9 +802,34 @@ export class ClickHouseBuilderService extends QueryBuilderService {
         if (filterObject.filter_type === 'not_like') {
           return `${colname} NOT ILIKE '%${filterObject.filter_elements[0].value1}%' `;
         }
+        // Date columns: treat the selected day as the whole day (00:00:00..23:59:59).
+        if (colType === 'date') {
+          const op = filterObject.filter_type;
+          if (op === '=') {
+            return `${colname} >= ${this.processFilter(filterObject.filter_elements[0].value1, colType)} and ${colname} <= ${this.processFilterEndRange(filterObject.filter_elements[0].value1, colType)} `;
+          }
+          if (op === '!=' || op === '<>') {
+            return `(${colname} < ${this.processFilter(filterObject.filter_elements[0].value1, colType)} or ${colname} > ${this.processFilterEndRange(filterObject.filter_elements[0].value1, colType)}) `;
+          }
+          if (op === '>') {
+            return `${colname} > ${this.processFilterEndRange(filterObject.filter_elements[0].value1, colType)} `;
+          }
+          if (op === '<=') {
+            return `${colname} <= ${this.processFilterEndRange(filterObject.filter_elements[0].value1, colType)} `;
+          }
+        }
         return `${colname} ${filterObject.filter_type} ${this.processFilter(filterObject.filter_elements[0].value1, colType)} `;
       case 1:
         if (filterObject.filter_type === 'not_in') filterObject.filter_type = 'NOT IN';
+        // Date columns: expand 'in'/'not in' to whole-day ranges.
+        if (colType === 'date' && (filterObject.filter_type === 'in' || filterObject.filter_type === 'not in' || filterObject.filter_type === 'not_in')) {
+          const vals = filterObject.filter_elements[0].value1;
+          const ranges = vals.map((v: any) => `(${colname} >= ${this.processFilter([v], colType)} and ${colname} <= ${this.processFilterEndRange([v], colType)})`).join(' or ');
+          if (filterObject.filter_type === 'not in' || filterObject.filter_type === 'not_in') {
+            return `not ( ${ranges} ) `;
+          }
+          return `( ${ranges} ) `;
+        }
         return `${colname} ${filterObject.filter_type} (${this.processFilter(filterObject.filter_elements[0].value1, colType)}) `;
       case 2:
         return `${colname} ${filterObject.filter_type}
