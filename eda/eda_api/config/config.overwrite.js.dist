@@ -16,6 +16,7 @@ module.exports = {
     //         AVG_DECIMALS: 2,
     //         ENFORCE_PERMISSIONS_ON_LINK_TABLES: false,
     //         CLOSED_MODEL_EXEMPT_TABLE_REGEX: '^sda_l_|__',
+    //         AND_PERMISSIONS_WITHIN_TABLE: false,
     //     },
     // },
     // cache_config: {

@@ -27,6 +27,7 @@ module.exports = applyConfigOverwrite('eda_api_config', {
       SHOW_EMPTY_VALUE_IN_FILTERS: true, // true -> selector queries for global filters always include an empty/null row (UNION SELECT '').
       ENFORCE_PERMISSIONS_ON_LINK_TABLES: true, // true -> closed model strictly follows model_granted_roles, no exceptions (EDA). false -> table names matching CLOSED_MODEL_EXEMPT_TABLE_REGEX are never forbidden, regardless of granted roles (SDA).
       CLOSED_MODEL_EXEMPT_TABLE_REGEX: null, // regular expression (as a string) used when ENFORCE_PERMISSIONS_ON_LINK_TABLES is false.
+      AND_PERMISSIONS_WITHIN_TABLE: true, // true -> each permission rule on the same table is ANDed individually (Edalitics). false -> permissions are grouped by table: OR within table, AND across tables (SDA).
       
     }
   });

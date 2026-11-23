@@ -421,6 +421,12 @@ export class MySqlBuilderService extends QueryBuilderService {
    * are combined into a WHERE clause.
    */
   public buildPermissionsSqlExpresion(permissions: any) {
+    // custom_behaviour.AND_PERMISSIONS_WITHIN_TABLE true (Edalitics) -> all permission rules on the same table are ANDed.
+    // false (SDA) -> permissions are grouped by table: OR within table, AND across tables.
+    if (eda_api_config.custom_behaviour?.AND_PERMISSIONS_WITHIN_TABLE) {
+      return permissions.map((filtro: any) => this.filterToString(filtro)).join(' AND ');
+    }
+
     const grupos = {};
 
     for (const filtro of permissions) {
