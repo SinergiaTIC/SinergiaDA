@@ -1398,7 +1398,7 @@ public getHavingColname(column: any){
       // Prefer the column name carried by the formatted filter; fall back to parsing the SQL fragment.
       let col = filter.col;
       if (!col) {
-        const m = (filter.string || '').match(/`[^`]+`\\s*\\.\\s*`([^`]+)`/);
+        const m = (filter.string || '').match(/`[^`]+`\s*\.\s*`([^`]+)`/);
         if (m) col = m[1];
       }
       colsInFilters.push({ col: col, index: i });
