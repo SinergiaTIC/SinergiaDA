@@ -73,7 +73,7 @@
       </trans-unit>
       <trans-unit id="labelnewPass">
         <source>Nueva Contraseña (Si no quieres modificar tu contraseña actual deja el campo en blanco)</source>
-        <target>Nueva Contraseña (Si no quiere modificar su contraseña actual deje el campo en blanco)</target>
+        <target>Nueva contraseña (si no desea modificar su contraseña actual deje el campo en blanco)</target>
       </trans-unit>
       <trans-unit id="namePass">
         <source>password</source>
@@ -226,7 +226,7 @@
       </trans-unit>
       <trans-unit id="labelDameNombre">
         <source>Dame un nombre *</source>
-        <target>Deme un nombre *</target>
+        <target>Indique un nombre *</target>
       </trans-unit>
       <trans-unit id="buscarPorNombre">
         <source>Buscar por nombre del informe</source>
@@ -1195,7 +1195,7 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       </trans-unit>
       <trans-unit id="indicaciones8">
         <source>Si la tabla por la que filtramos no está en la consulta, recuerda que debes añadir las cláusulas JOIN necesarias para poder vincular la tabla del filtro con tu consulta</source>
-        <target>Si la tabla por la que filtramos no está en la consulta, recuerde que debe añadir las cláusulas JOIN necesarias para poder vincular la tabla del filtro con su consulta.</target>
+        <target>Si la tabla por la que se filtra no está en la consulta, recuerde que debe añadir las cláusulas JOIN necesarias para poder vincular la tabla del filtro con su consulta.</target>
       </trans-unit>
       <trans-unit id="indicaciones9">
         <source>Consulta simple</source>
@@ -1275,7 +1275,7 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       </trans-unit>
       <trans-unit id="seleccionTitle">
         <source>Para lanzar una consulta. Seleccione los atributos que desea ver, Clique sobre ellos para configurarlos y ejecute la consulta. Siempre podrá volver a esta vista.</source>
-        <target>Para lanzar una consulta. Seleccione las columnas que desea ver, haga clic sobre ellas para configurarlos y ejecute la consulta. Siempre podrá volver a esta vista.</target>
+        <target>Seleccione las columnas que desea ver, haga clic en ellas para configurarlas y ejecute la consulta. Siempre podrá volver a esta vista.</target>
       </trans-unit>
       <trans-unit id="inputFilter">
         <source>Filtros</source>
@@ -1566,11 +1566,11 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       </trans-unit>
       <trans-unit id="SureInfo">
         <source>Estás a punto de borrar el modelo de datos y todos los dashboards asociados, el cambio es irreversible</source>
-        <target>Está a punto de borrar el modelo de datos y todos los dashboards asociados, el cambio es irreversible.</target>
+        <target>Está a punto de borrar el modelo de datos y todos los informes asociados, el cambio es irreversible.</target>
       </trans-unit>
       <trans-unit id="ConfirmDeleteModel">
         <source>Si, ¡Eliminalo!</source>
-        <target>Sí, ¡Elimínelo!</target>
+        <target>Sí, elimínalo.</target>
       </trans-unit>
       <trans-unit id="DeleteSuccess">
         <source>Modelo eliminado correctamente.</source>
@@ -1582,7 +1582,7 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       </trans-unit>
       <trans-unit id="ViewDatamodel">
         <source>Añadir Vista</source>
-        <target>Añadir Vista</target>
+        <target>Añadir vista</target>
       </trans-unit>
       <trans-unit id="DataModelHeader">
         <source>Configurar nuevo origen de datos</source>
@@ -1598,11 +1598,11 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       </trans-unit>
       <trans-unit id="ExportModel">
         <source>Exportar Modelo</source>
-        <target>Exportar Modelo</target>
+        <target>Exportar modelo</target>
       </trans-unit>
       <trans-unit id="importModel">
         <source>Importar Modelo</source>
-        <target>Importar Modelo</target>
+        <target>Importar modelo</target>
       </trans-unit>
       <trans-unit id="DBInconsistencies">
         <source>Se han encontrado inconsistencias en el informe, los siguientes elementos no existen en el modelo:</source>
@@ -1670,7 +1670,7 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       </trans-unit>
       <trans-unit id="tablePpermissionYES">
         <source>SI tiene permiso para ver esta tabla</source>
-        <target>SI tiene permiso para ver esta tabla.</target>
+        <target>Tiene permiso para ver esta tabla.</target>
       </trans-unit>
       <trans-unit id="modelPermissionNO">
         <source>No tiene permiso para ver este modelo</source>
@@ -1678,11 +1678,11 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       </trans-unit>
       <trans-unit id="modelPermissionYES">
         <source>SI tiene permiso para ver este modelo</source>
-        <target>SI tiene permiso para ver este modelo.</target>
+        <target>Tiene permiso para ver este modelo.</target>
       </trans-unit>
       <trans-unit id="anyCanSeeNO">
         <source>Los usuarios y grupos que pueden ver el modelo son SOLO los definidos explícitamente.</source>
-        <target>Los usuarios y grupos que pueden ver el modelo son SOLO los definidos explícitamente.</target>
+        <target>Los usuarios y grupos que pueden ver el modelo son solo los definidos explícitamente.</target>
       </trans-unit>
       <trans-unit id="anyCanSeeYES">
         <source>Cualquier usuario puede ver el modelo. Los filtros de seguridad se definen a nivel de tabla y columna concreta.</source>
@@ -1738,7 +1738,7 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       </trans-unit>
       <trans-unit id="deleteCalculatedColumn">
         <source>Si, Eliminar el campo calculado!</source>
-        <target>Sí, elimine el campo calculado.</target>
+        <target>Sí, elimina el campo calculado.</target>
       </trans-unit>
       <trans-unit id="deleteCalculatedColumnConfirmation">
         <source>Campo calculado eliminado correctamente. Debera guardar cambios en el modelo de datos para que la eliminación sea permanente</source>
@@ -1750,7 +1750,7 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       </trans-unit>
       <trans-unit id="textCalculatedColumnEditMessage">
         <source>IMPORTANTE: Al modificar un campo calculado ya existente los paneles que lo utilizan no se actualizan automáticamente, es necesario entra en la configuración de cada uno de ellos, pulsar en Ejecutar y guardar el informe</source>
-        <target>IMPORTANTE: Al modificar un campo calculado ya existente los paneles que lo utilizan no se actualizan automáticamente, es necesario entrar en la configuración de cada uno de ellos, pulsar en Ejecutar y guardar el informe.</target>
+        <target>¡Importante! Al modificar un campo calculado ya existente los paneles que lo utilizan no se actualizan automáticamente, es necesario entrar en la configuración de cada uno de ellos, pulsar en Ejecutar y guardar el informe.</target>
       </trans-unit>
       <trans-unit id="noFormatsAvailable">
         <source>Esta es una columna calculada y no tiene formatos disponibles</source>
@@ -1849,7 +1849,7 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       </trans-unit>
       <trans-unit id="confirmationExcelMessage">
         <source>¿Estás seguro de que quieres sobreescribir este modelo de datos?</source>
-        <target>¿Está seguro de que quiere sobreescribir este modelo de datos?</target>
+        <target>¿Está seguro de que desea sobreescribir este modelo de datos?</target>
       </trans-unit>
       <trans-unit id="emptyTag">
         <source>Este tag esta vacío</source>
@@ -2251,7 +2251,7 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       </trans-unit>
       <trans-unit id="DatePickerWeekFull">
         <source>Esta semana al completo</source>
-        <target>Esta semana al completo</target>
+        <target>Esta semana</target>
       </trans-unit>
       <trans-unit id="DatePickerLastWeek">
         <source>La semana pasada (hasta equivalente a hoy)</source>
@@ -2259,7 +2259,7 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       </trans-unit>
       <trans-unit id="DatePickerLastWeekFull">
         <source>La semana pasada completa</source>
-        <target>La semana pasada al completo</target>
+        <target>La semana pasada</target>
       </trans-unit>
       <trans-unit id="DatePickerMonth">
         <source>Este mes (hasta hoy)</source>
@@ -2267,7 +2267,7 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       </trans-unit>
       <trans-unit id="DatePickerMonthFull">
         <source>Este mes al completo</source>
-        <target>Este mes al completo</target>
+        <target>Este mes</target>
       </trans-unit>
       <trans-unit id="DatePickerLastMonth">
         <source>El mes pasado (hasta equivalente a hoy)</source>
@@ -2275,7 +2275,7 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       </trans-unit>
       <trans-unit id="DatePickerLastMonthFull">
         <source>El mes pasado completo</source>
-        <target>El mes pasado al completo</target>
+        <target>El mes pasado</target>
       </trans-unit>
       <trans-unit id="DatePickerMonthPreviousYear">
         <source>Este mes del año pasado (hasta equivalente a hoy)</source>
@@ -2283,7 +2283,7 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       </trans-unit>
       <trans-unit id="DatePickerMonthPreviousYearFull">
         <source>Este mes al completo del año pasado</source>
-        <target>El mismo mes del año pasado al completo</target>
+        <target>El mismo mes del año pasado</target>
       </trans-unit>
       <trans-unit id="DatePickerYear">
         <source>Este año (hasta hoy)</source>
@@ -2291,7 +2291,7 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       </trans-unit>
       <trans-unit id="DatePickerYearFull">
         <source>Este año al completo</source>
-        <target>Este año al completo</target>
+        <target>Este año</target>
       </trans-unit>
       <trans-unit id="DatePickerYearPreviousYear">
         <source>El año pasado (hasta equivalente a hoy)</source>
@@ -2299,7 +2299,7 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       </trans-unit>
       <trans-unit id="DatePickerYearPreviousYearFull">
         <source>El año pasado, completo</source>
-        <target>El año pasado al completo</target>
+        <target>El año pasado</target>
       </trans-unit>
       <trans-unit id="DatePickerLast3">
         <source>Últimos 3 días</source>
@@ -2660,7 +2660,7 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       </trans-unit>
       <trans-unit id="inputxDescription">
         <source>Si desconoces las coordenadas del centro las calcularemos automáticamente</source>
-        <target>Si desconoces las coordenadas del centro las calcularemos automáticamente.</target>
+        <target>Si desconoce las coordenadas del centro se calcularán automáticamente.</target>
       </trans-unit>
       <trans-unit id="sqlExp">
         <source>Expresión SQL</source>
@@ -2692,7 +2692,7 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       </trans-unit>
       <trans-unit id="Deleted">
         <source>¡Eliminado!</source>
-        <target>¡Eliminado!</target>
+        <target>Eliminado</target>
       </trans-unit>
       <trans-unit id="DeletedUser">
         <source>Usuario borrado</source>
@@ -2736,11 +2736,11 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       </trans-unit>
       <trans-unit id="DeleteGroupText">
         <source>Eliminarás todos los elementos relacionados con este grupo, ¿Deseas continuar?</source>
-        <target>Eliminará todos los elementos relacionados con este grupo, ¿Desea continuar?</target>
+        <target>Eliminará todos los elementos relacionados con este grupo, ¿desea continuar?</target>
       </trans-unit>
       <trans-unit id="DeleteGroupButton">
         <source>Si, ¡Eliminalo!</source>
-        <target>Sí, ¡Elimínelo!</target>
+        <target>Sí, elimínalo.</target>
       </trans-unit>
       <trans-unit id="cantDeleteUser">
         <source>No se puede borrar el usuario</source>
@@ -2756,7 +2756,7 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       </trans-unit>
       <trans-unit id="DeleteUser">
         <source>Si, ¡Bórralo!</source>
-        <target>Sí, ¡Bórrelo!</target>
+        <target>Sí, bórralo.</target>
       </trans-unit>
       <trans-unit id="rowOptions">
         <source>OPCIONES DE LA FILA</source>
@@ -3367,7 +3367,7 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       </trans-unit>
       <trans-unit id="permissionTypeDescription">
         <source>Selecciona cómo quieres gestionar los permisos</source>
-        <target>Seleccione cómo quiere gestionar los permisos.</target>
+        <target>Seleccione cómo desea gestionar los permisos.</target>
       </trans-unit>
       <trans-unit id="permissionTypeUser">
         <source>Permisos por Usuario</source>
@@ -3459,7 +3459,7 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       </trans-unit>
       <trans-unit id="databaseRequired">
         <source>Base de datos es obligatorio</source>
-        <target>Base de datos es obligatoria.</target>
+        <target>La base de datos es obligatoria.</target>
       </trans-unit>
       <trans-unit id="schema">
         <source>Esquema</source>
@@ -3475,7 +3475,7 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       </trans-unit>
       <trans-unit id="passwordRequired">
         <source>La contraseña es obligatorio</source>
-        <target>La contraseña es obligatorio.</target>
+        <target>La contraseña es obligatoria.</target>
       </trans-unit>
       <trans-unit id="bigqueryKeyDragDrop">
         <source>Sube un archivo de claves</source>
@@ -3671,7 +3671,7 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       </trans-unit>
       <trans-unit id="profileSubtitle">
         <source>Administra tu información personal y preferencias de cuenta</source>
-        <target>Administre su información personal y preferencias de cuenta.</target>
+        <target>Administre su información personal y las preferencias de la cuenta.</target>
       </trans-unit>
       <trans-unit id="profileInfoTitle">
         <source>Información Personal</source>
@@ -3779,7 +3779,7 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       </trans-unit>
       <trans-unit id="RemovePredictionTitle">
         <source>¿Quieres quitar la predicción?</source>
-        <target>¿Quiere quitar la predicción?</target>
+        <target>¿Desea quitar la predicción?</target>
       </trans-unit>
       <trans-unit id="RemovePredictionText">
         <source>Se quitará la predicción y se ejecutará la consulta del gráfico.</source>
@@ -3855,7 +3855,7 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       </trans-unit>
       <trans-unit id="aboutEdaH4">
         <source>¿Quieres probar EDA en el cloud?</source>
-        <target>¿Quiere probar EDA en la nube?</target>
+        <target>¿Desea probar EDA en la nube?</target>
       </trans-unit>
       <trans-unit id="aboutEdaP6">
         <source>Edalitics te permitirá estar siempre a la última sin preocuparte por nada.</source>
@@ -3895,7 +3895,7 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       </trans-unit>
       <trans-unit id="connectDashboardPanel">
         <source>Conecta los filtros entre el dashboard y el panel, (los únicos filtros de panel que se visualizan son aquellos cuyo tipo de filtro es IN)</source>
-        <target>Conecte los filtros entre el dashboard y el panel, (los únicos filtros de panel que se visualizan son aquellos cuyo tipo de filtro es IN)</target>
+        <target>Conecte los filtros entre el informe y el panel, (los únicos filtros de panel que se visualizan son aquellos cuyo tipo de filtro es IN)</target>
       </trans-unit>
       <trans-unit id="mapFilters">
         <source>Mapear Filtros</source>
@@ -3931,7 +3931,7 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       </trans-unit>
       <trans-unit id="UploadDashboard">
         <source>Sube un archivo de dashboard</source>
-        <target>Suba un archivo de dashboard</target>
+        <target>Suba un archivo de informe</target>
       </trans-unit>
       <trans-unit id="export">
         <source>Exportar</source>
@@ -3951,11 +3951,11 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       </trans-unit>
       <trans-unit id="manageDashboards">
         <source>Gestiona la importación y exportación de dashboards</source>
-        <target>Gestione la importación y exportación de dashboards.</target>
+        <target>Gestione la importación y exportación de informes.</target>
       </trans-unit>
       <trans-unit id="askPanelData">
         <source>Pregunta sobre los datos de tu panel ...</source>
-        <target>Pregunta sobre los datos de su panel ...</target>
+        <target>Pregunte sobre los datos de su panel ...</target>
       </trans-unit>
       <trans-unit id="askEdaliticsText">
         <source>Pregúntale a Edalitics</source>
@@ -4023,7 +4023,7 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       </trans-unit>
       <trans-unit id="DashboardUpdatedInfo">
         <source>El dashboard ha sido actualizado correctamente.</source>
-        <target>El dashboard ha sido actualizado correctamente.</target>
+        <target>El informe ha sido actualizado correctamente.</target>
       </trans-unit>
       <trans-unit id="dsConnectionRefused">
         <source>No se ha podido conectar a la base de datos.</source>
@@ -4127,7 +4127,7 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       </trans-unit>
       <trans-unit id="dashboardSidebarLiveDashboard">
         <source>Live Dashboard</source>
-        <target>Live Dashboard</target>
+        <target>Informe en vivo</target>
       </trans-unit>
       <trans-unit id="secondsToRefresh">
         <source>Segundos para refrescar</source>
@@ -4343,7 +4343,7 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       </trans-unit>
       <trans-unit id="ErrorCloningDashboard">
         <source>Error al clonar el dashboard:</source>
-        <target>Error al clonar el dashboard:</target>
+        <target>Error al clonar el informe:</target>
       </trans-unit>
       <trans-unit id="Error">
         <source>Error</source>
@@ -4379,7 +4379,7 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       </trans-unit>
       <trans-unit id="ConfirmDeactivate">
         <source>Yes, deactivate it!</source>
-        <target>Sí, ¡desactívelo!</target>
+        <target>Sí, desactívalo.</target>
       </trans-unit>
       <trans-unit id="Cancel">
         <source>Cancelar</source>
@@ -4431,7 +4431,7 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       </trans-unit>
       <trans-unit id="dashboardExportedSuccessfully">
         <source>Dashboard exportado correctamente</source>
-        <target>Dashboard exportado correctamente.</target>
+        <target>Informe exportado correctamente.</target>
       </trans-unit>
       <trans-unit id="selectDashboardToExport">
         <source>Por favor selecciona un dashboard para exportar</source>
@@ -4451,15 +4451,15 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       </trans-unit>
       <trans-unit id="dashboardUpdatedSuccessfully">
         <source>Dashboard actualizado correctamente</source>
-        <target>Dashboard actualizado correctamente.</target>
+        <target>Informe actualizado correctamente.</target>
       </trans-unit>
       <trans-unit id="dashboardCreatedSuccessfully">
         <source>Dashboard creado correctamente</source>
-        <target>Dashboard creado correctamente.</target>
+        <target>Informe creado correctamente.</target>
       </trans-unit>
       <trans-unit id="notPossibleImportDashboard">
         <source>No se pudo importar el dashboard</source>
-        <target>No se pudo importar el dashboard.</target>
+        <target>No se pudo importar el informe.</target>
       </trans-unit>
       <trans-unit id="noValidJsonFormat">
         <source>El archivo no tiene un formato JSON válido:</source>
@@ -4615,11 +4615,11 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       </trans-unit>
       <trans-unit id="dashboardsSelected">
         <source>Dashboards seleccionados</source>
-        <target>Dashboards seleccionados</target>
+        <target>Informes seleccionados</target>
       </trans-unit>
       <trans-unit id="dashboardsAvailable">
         <source>Dashboards disponibles</source>
-        <target>Dashboards disponibles</target>
+        <target>Informes disponibles</target>
       </trans-unit>
       <trans-unit id="filterSearchDashboards">
         <source>Usa los filtros para buscar dashboards</source>
@@ -4627,7 +4627,7 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       </trans-unit>
       <trans-unit id="noCoincidenceDashFilters">
         <source>No hay dashboards que coincidan con los filtros</source>
-        <target>No hay dashboards que coincidan con los filtros.</target>
+        <target>No hay informes que coincidan con los filtros.</target>
       </trans-unit>
       <trans-unit id="addDashListAvailable">
         <source>Añade dashboards desde la lista de disponibles</source>
@@ -4691,7 +4691,7 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       </trans-unit>
       <trans-unit id="noNameProvided">
         <source>Debe proporcionar un nombre para el datasource</source>
-        <target>Debe proporcionar un nombre para el datasource.</target>
+        <target>Debe proporcionar un nombre para la fuente de datos.</target>
       </trans-unit>
       <trans-unit id="noCsvData">
         <source>Debe cargar un archivo CSV primero</source>
@@ -5021,7 +5021,7 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       </trans-unit>
       <trans-unit id="noInitialDashboard">
         <source>No hay ningún dashboard inicial configurado.</source>
-        <target>No hay ningún dashboard inicial configurado.</target>
+        <target>No hay ningún informe inicial configurado.</target>
       </trans-unit>
       <trans-unit id="configureInitialDashboard">
         <source>Edita el portal para seleccionar uno.</source>
@@ -5029,7 +5029,7 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       </trans-unit>
       <trans-unit id="initialDashboardLabel">
         <source> Dashboard inicial: </source>
-        <target> Dashboard inicial: </target>
+        <target> Informe inicial: </target>
       </trans-unit>
       <trans-unit id="noneOption">
         <source>— Ninguno —</source>
@@ -5037,7 +5037,7 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       </trans-unit>
       <trans-unit id="noPublicDashboards">
         <source>No hay dashboards públicos disponibles.</source>
-        <target>No hay dashboards públicos disponibles.</target>
+        <target>No hay informes públicos disponibles.</target>
       </trans-unit>
       <trans-unit id="adminPortal">
         <source>Portal de datos</source>
@@ -5329,11 +5329,11 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       </trans-unit>
       <trans-unit id="draggResultSorting">
         <source>Arrastre aquí los atributos sobre los que quiere ordenar</source>
-        <target>Arrastre aquí los atributos sobre los que quiere ordenar.</target>
+        <target>Arrastre aquí los atributos por los que desee ordenar.</target>
       </trans-unit>
       <trans-unit id="ptooltipOrderByControl">
         <source>Arrastra aquí los atributos por los que quieres ordenar los resultados y colócalos en el orden que prefieras. En cada uno puedes elegir ascendente (ASC), descendente (DESC) o dejarlo sin indicar.</source>
-        <target>Arrastre aquí los atributos por los que quiere ordenar los resultados y colócalos en el orden que prefiera. En cada uno puede elegir ascendente (ASC), descendente (DESC) o dejarlo sin indicar.</target>
+        <target>Arrastre aquí los atributos por los que desee ordenar los resultados y colócalos en el orden que prefiera. En cada uno puede elegir ascendente (ASC), descendente (DESC) o dejarlo sin indicar.</target>
       </trans-unit>
       <trans-unit id="noDuckDbFile">
         <source>Debe cargar un archivo CSV primero</source>
