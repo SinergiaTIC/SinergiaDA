@@ -409,7 +409,7 @@
   </trans-unit>
   <trans-unit id="ConfirmDeactivate" datatype="html">
     <source>Sí, desactivarlo</source>
-    <target>Sí, desactiva'l</target>
+    <target>Sí, desactiva'l.</target>
   </trans-unit>
   <trans-unit id="Cancel" datatype="html">
     <source>Cancelar</source>
@@ -1057,7 +1057,7 @@
   </trans-unit>
   <trans-unit id="profileSubtitle" datatype="html">
     <source>Administra tu información personal y preferencias de cuenta</source>
-    <target>Administració de la informació personal i de les preferències del compte</target>
+    <target>Administració de la informació personal i de les preferències del compte.</target>
   </trans-unit>
   <trans-unit id="saveChanges" datatype="html">
     <source>Guardar cambios</source>
@@ -1101,7 +1101,7 @@
   </trans-unit>
   <trans-unit id="profileInfoSubtitle" datatype="html">
     <source>Actualiza tu información básica de perfil</source>
-    <target>Actualitzeu la informació bàsica del perfil</target>
+    <target>Actualitzeu la informació bàsica del perfil.</target>
   </trans-unit>
   <trans-unit id="usernamePlaceholder" datatype="html">
     <source>Tu nombre</source>
@@ -1125,7 +1125,7 @@
   </trans-unit>
   <trans-unit id="changePasswordSubtitle" datatype="html">
     <source>Deja los campos vacíos si no quieres cambiarla</source>
-    <target>Deixeu els camps buits si no voleu canviar-la</target>
+    <target>Deixeu els camps buits si no voleu canviar-la.</target>
   </trans-unit>
   <trans-unit id="newPassword" datatype="html">
     <source>Nueva contraseña</source>
@@ -1137,7 +1137,7 @@
   </trans-unit>
   <trans-unit id="passwordValidation" datatype="html">
     <source>Las contraseñas no coinciden</source>
-    <target>Les contrasenyes no coincideixen</target>
+    <target>Les contrasenyes no coincideixen.</target>
   </trans-unit>
     <trans-unit id="dashboardSidebarLiveDashboard" datatype="html">
       <source>Live Dashboard</source>

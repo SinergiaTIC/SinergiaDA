@@ -17,7 +17,7 @@
       </trans-unit>
       <trans-unit id="inputRepitePassword" datatype="html">
         <source>Repite la contraseña</source>
-        <target>Repite la contraseña</target>
+        <target>Repita la contraseña</target>
       </trans-unit>
       <trans-unit id="saveModel" datatype="html">
         <source>Guardar modelo de datos</source>
@@ -25,7 +25,7 @@
       </trans-unit>
       <trans-unit id="labelnewPass" datatype="html">
         <source>Nueva Contraseña (Si no quieres modificar tu contraseña actual deja el campo en blanco)</source>
-        <target>Nueva Contraseña (Si no quieres modificar tu contraseña actual deja el campo en blanco)</target>
+        <target>Nueva Contraseña (Si no quiere modificar su contraseña actual deje el campo en blanco)</target>
       </trans-unit>
       <trans-unit id="namePass" datatype="html">
         <source>password</source>
@@ -33,7 +33,7 @@
       </trans-unit>
       <trans-unit id="labelRepeatPass" datatype="html">
         <source>Repite la nueva contraseña </source>
-        <target>Repite la nueva contraseña </target>
+        <target>Repita la nueva contraseña </target>
       </trans-unit>
       <trans-unit id="nameNewPass" datatype="html">
         <source>newPassword</source>
@@ -41,7 +41,7 @@
       </trans-unit>
       <trans-unit id="newPassPlaceholderProfile" datatype="html">
         <source>Repite la contraseña</source>
-        <target>Repite la contraseña</target>
+        <target>Repita la contraseña</target>
       </trans-unit>
       <trans-unit id="direccionMail" datatype="html">
         <source>Dirección Email</source>
@@ -89,7 +89,7 @@
   </trans-unit>
   <trans-unit id="filterVisibleScope">
     <source>Definir la visibilidad del filtro. Público: todos pueden usarlo. Deshabilitado: El resto de usuarios pueden ver el filtro pero no pueden modificarlo. Oculto: El resto de usuario no pueden ver el filtro. pero se les aplica</source>
-    <target>Definir la visibilidad del filtro.  Público: todos pueden usarlo.  Deshabilitado: los demás usuarios pueden ver el filtro pero no pueden modificarlo.  Oculto: los demás usuarios no pueden ver el filtro pero les aplica.</target>
+    <target>Definir la visibilidad del filtro. Público: todos pueden usarlo. Deshabilitado: los demás usuarios pueden ver el filtro pero no pueden modificarlo.  Oculto: los demás usuarios no pueden ver el filtro pero les aplica.</target>
   </trans-unit>  <!-- ABOUT PAGE -->
   <trans-unit id="aboutPageTitle" datatype="html">
     <source>Acerca de</source>
@@ -309,7 +309,7 @@
   </trans-unit>
   <trans-unit id="clickToEditName" datatype="html">
     <source>Pulse para editar el nombre</source>
-    <target>Clic para editar el nombre</target>
+    <target>Clic para editar el nombre.</target>
   </trans-unit>
   <trans-unit id="goToDashboard" datatype="html">
     <source>Abrir informe</source>
@@ -405,11 +405,11 @@
   </trans-unit>
   <trans-unit id="deactivatePublicDashboardWarning" datatype="html">
     <source>Si desactiva este informe público, la URL pública dejará de estar disponible y el informe ya no podrá visualizarse.</source>
-    <source>Si desactiva este informe público, la URL pública dejará de estar disponible y el informe ya no podrá visualizarse.</source>
+    <target>Si desactiva este informe público, la URL pública dejará de estar disponible y el informe ya no podrá visualizarse.</target>
   </trans-unit>
   <trans-unit id="ConfirmDeactivate" datatype="html">
     <source>Sí, desactivarlo</source>
-    <target>Sí, desactivarlo</target>
+    <target>Sí, desactivarlo.</target>
   </trans-unit>
   <trans-unit id="Cancel" datatype="html">
     <source>Cancelar</source>
@@ -561,7 +561,7 @@
   </trans-unit>
   <trans-unit id="SelectPeriodPlaceholder" datatype="html">
     <source>Selecciona periodo</source>
-    <target>Selecciona periodo</target>
+    <target>Seleccione periodo</target>
   </trans-unit>
   <trans-unit id="Today" datatype="html">
     <source>Hoy</source>
@@ -617,7 +617,7 @@
   </trans-unit>
   <trans-unit id="NoLogsFound" datatype="html">
     <source>No se encontraron logs para esta fecha.</source>
-    <target>No se encontraron logs para esta fecha.</target>
+    <target>No se encontraron registros para esta fecha.</target>
   </trans-unit>
   <trans-unit id="LogsQueryFailureTitle" datatype="html">
     <source>Detalles del error de consulta</source>
@@ -917,7 +917,7 @@
   </trans-unit>
   <trans-unit id="opcionTitulo">
     <source>NUEVO TEXTO</source>
-    <target>NUEVO PANEL DE TEXTO</target>
+    <target>Nuevo panel de texto</target>
   </trans-unit>
   <trans-unit id="titlePanelOptions">
     <source>Opciones del panel</source>
@@ -1057,7 +1057,7 @@
   </trans-unit>
   <trans-unit id="profileSubtitle" datatype="html">
     <source>Administra tu información personal y preferencias de cuenta</source>
-    <target>Administración de la información personal y de las preferencias de la cuenta</target>
+    <target>Administración de la información personal y de las preferencias de la cuenta.</target>
   </trans-unit>
   <trans-unit id="saveChanges" datatype="html">
     <source>Guardar cambios</source>
@@ -1101,7 +1101,7 @@
   </trans-unit>
   <trans-unit id="profileInfoSubtitle" datatype="html">
     <source>Actualiza tu información básica de perfil</source>
-    <target>Actualiza la información básica del perfil</target>
+    <target>Actualice la información básica del perfil.</target>
   </trans-unit>
   <trans-unit id="usernamePlaceholder" datatype="html">
     <source>Tu nombre</source>
@@ -1125,7 +1125,7 @@
   </trans-unit>
   <trans-unit id="changePasswordSubtitle" datatype="html">
     <source>Deja los campos vacíos si no quieres cambiarla</source>
-    <target>Deje los campos vacíos si no desea cambiarla</target>
+    <target>Deje los campos vacíos si no desea cambiarla.</target>
   </trans-unit>
   <trans-unit id="newPassword" datatype="html">
     <source>Nueva contraseña</source>
@@ -1137,7 +1137,7 @@
   </trans-unit>
   <trans-unit id="passwordValidation" datatype="html">
     <source>Las contraseñas no coinciden</source>
-    <target>Las contraseñas no coinciden</target>
+    <target>Las contraseñas no coinciden.</target>
   </trans-unit>
     <trans-unit id="dashboardSidebarLiveDashboard" datatype="html">
       <source>Live Dashboard</source>
@@ -1165,7 +1165,7 @@
     </trans-unit>
     <trans-unit id="tooltipPanelLock" datatype="html">
       <source>Bloquear o desbloquear el movimiento y redimensionado de los paneles</source>
-      <target>Permitir mover o redimensionar los paneles</target>
+      <target>Bloquear o desbloquear el movimiento y redimensionado de los paneles</target>
     </trans-unit>
     <trans-unit id="tooltipPrivateEdition" datatype="html">
       <source>Permitir que solo el propietario edite el informe</source>

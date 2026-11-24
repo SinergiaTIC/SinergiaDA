@@ -37,7 +37,7 @@
       </trans-unit>
       <trans-unit id="nameNewPass" datatype="html">
         <source>newPassword</source>
-        <target>new Password</target>
+        <target>New password</target>
       </trans-unit>
       <trans-unit id="newPassPlaceholderProfile" datatype="html">
         <source>Repite la contraseña</source>
@@ -309,7 +309,7 @@
   </trans-unit>
   <trans-unit id="clickToEditName" datatype="html">
     <source>Pulse para editar el nombre</source>
-    <target>Click to edit name</target>
+    <target>Click to edit name.</target>
   </trans-unit>
   <trans-unit id="goToDashboard" datatype="html">
     <source>Abrir informe</source>
@@ -409,7 +409,7 @@
   </trans-unit>
   <trans-unit id="ConfirmDeactivate" datatype="html">
     <source>Sí, desactivarlo</source>
-    <target>Yes, deactivate it</target>
+    <target>Yes, deactivate it.</target>
   </trans-unit>
   <trans-unit id="Cancel" datatype="html">
     <source>Cancelar</source>
@@ -1057,7 +1057,7 @@
   </trans-unit>
   <trans-unit id="profileSubtitle" datatype="html">
     <source>Administra tu información personal y preferencias de cuenta</source>
-    <target>Manage personal information and account preferences</target>
+    <target>Manage personal information and account preferences.</target>
   </trans-unit>
   <trans-unit id="saveChanges" datatype="html">
     <source>Guardar cambios</source>
@@ -1101,7 +1101,7 @@
   </trans-unit>
   <trans-unit id="profileInfoSubtitle" datatype="html">
     <source>Actualiza tu información básica de perfil</source>
-    <target>Update your basic profile information</target>
+    <target>Update your basic profile information.</target>
   </trans-unit>
   <trans-unit id="usernamePlaceholder" datatype="html">
     <source>Tu nombre</source>
@@ -1125,7 +1125,7 @@
   </trans-unit>
   <trans-unit id="changePasswordSubtitle" datatype="html">
     <source>Deja los campos vacíos si no quieres cambiarla</source>
-    <target>Leave the fields empty if you don't want to change it</target>
+    <target>Leave the fields empty if you don't want to change it.</target>
   </trans-unit>
   <trans-unit id="newPassword" datatype="html">
     <source>Nueva contraseña</source>
@@ -1137,7 +1137,7 @@
   </trans-unit>
   <trans-unit id="passwordValidation" datatype="html">
     <source>Las contraseñas no coinciden</source>
-    <target>The passwords do not match</target>
+    <target>The passwords do not match.</target>
   </trans-unit>
     <trans-unit id="dashboardSidebarLiveDashboard" datatype="html">
       <source>Live Dashboard</source>

@@ -105,7 +105,7 @@
       </trans-unit>
       <trans-unit id="UserDeletedOk">
         <source>El usuario ha sido eliminado correctamente</source>
-        <target>Usuari eliminat correctament</target>
+        <target>Usuari eliminat correctament.</target>
       </trans-unit>
       <trans-unit id="picUpdated">
         <source>Imagen Actualizada</source>
@@ -129,7 +129,7 @@
       </trans-unit>
       <trans-unit id="PasswordsNotEqual">
         <source>Las contraseñas no coinciden</source>
-        <target>Les contrasenyes no coincideixen</target>
+        <target>Les contrasenyes no coincideixen.</target>
       </trans-unit>
       <trans-unit id="fileNotPicture">
         <source>El archivo seleccionado no es una imagen</source>
@@ -259,7 +259,7 @@
       </trans-unit>
       <trans-unit id="DashboardDeletedInfo">
         <source>Informe eliminado correctamente.</source>
-        <target>Informe eliminat correctament</target>
+        <target>Informe eliminat correctament.</target>
       </trans-unit>
       <trans-unit id="LinkDashboardDbFilter">
         <source>Informe a vincular</source>
@@ -549,57 +549,49 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
         <source>Título 2</source>
         <target>Títol 2</target>
       </trans-unit>
-      <trans-unit id="functionalities">
-        <source>Extender el modelo</source>
-        <target>Estén el model</target>
+      <trans-unit id="qlTooltipQuote">
+        <source>Cita</source>
+        <target>Cita</target>
       </trans-unit>
-      <trans-unit id="utilities">
-        <source>Utilidades</source>
-        <target>Utilitats</target>
+      <trans-unit id="qlTooltipOrderedList">
+        <source>Lista numerada</source>
+        <target>Llista numerada</target>
       </trans-unit>
-      <trans-unit id="hideTables">
-        <source>Ocultar todas las tablas</source>
-        <target>Oculta totes les taules</target>
+      <trans-unit id="qlTooltipBulletList">
+        <source>Lista con viñetas</source>
+        <target>Llista amb vinyetes</target>
       </trans-unit>
-      <trans-unit id="hideColumns">
-        <source>Ocultar todas las columnas</source>
-        <target>Oculta totes les columnes</target>
+      <trans-unit id="qlTooltipAlignLeft">
+        <source>Alinear a la izquierda</source>
+        <target>Alinea a l'esquerra</target>
       </trans-unit>
-      <trans-unit id="hideAllRelations">
-        <source>Ocultar todas las relaciones</source>
-        <target>Oculta totes les relacions</target>
+      <trans-unit id="qlTooltipAlignCenter">
+        <source>Centrar</source>
+        <target>Centra</target>
       </trans-unit>
-      <trans-unit id="addFile">
-        <source>Subir archivo</source>
-        <target>Puja un arxiu</target>
+      <trans-unit id="qlTooltipAlignRight">
+        <source>Alinear a la derecha</source>
+        <target>Alinea a la dreta</target>
       </trans-unit>
-      <trans-unit id="import">
-        <source>Importar</source>
-        <target>Importa</target>
+      <trans-unit id="qlTooltipLink">
+        <source>Insertar enlace</source>
+        <target>Insereix un enllaç</target>
       </trans-unit>
-      <trans-unit id="NotSavedWarning">
-        <source>Hay cambios sin guardar. ¿Qué deseas hacer?</source>
-        <target>Hi ha canvis sense desar. Què voleu fer?</target>
+      <trans-unit id="qlTooltipImage">
+        <source>Insertar imagen desde un archivo</source>
+        <target>Insereix una imatge des d'un fitxer</target>
       </trans-unit>
-      <trans-unit id="SaveAndExitButton">
-        <source>Guardar y salir</source>
-        <target>Desa i surt</target>
+      <trans-unit id="qlTooltipVideo">
+        <source>Insertar vídeo</source>
+        <target>Insereix un vídeo</target>
       </trans-unit>
-      <trans-unit id="ExitWithoutSavingButton">
-        <source>Salir sin guardar</source>
-        <target>Surt sense desar</target>
+      <trans-unit id="qlTooltipUrlImage">
+        <source>Insertar imagen desde una URL</source>
+        <target>Insereix una imatge des d'un URL</target>
       </trans-unit>
-      <trans-unit id="csvSep">
-        <source>Separador Decimal</source>
-        <target>Separador de decimals</target>
-      </trans-unit>
-      <trans-unit id="viewOk">
-        <source>Vista generada correctamente</source>
-        <target>Vista generada correctament</target>
-      </trans-unit>
-      <trans-unit id="groupsPermissions">
-        <source>Permisos de grupo</source>
-        <target>Permisos de grup</target>
+      <trans-unit id="qlTooltipClean">
+        <source>Quitar formato</source>
+        <target>Treu el format</target>
       </trans-unit>
       <trans-unit id="qlLabelClearColor">
         <source>Quitar</source>
@@ -710,7 +702,7 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       </trans-unit>
       <trans-unit id="mandatoryFilterMissing">
         <source>Este panel no está disponible: falta asignar un valor a un filtro obligatorio</source>
-        <target>Aquest panell no està disponible: falta assignar un valor a un filtre obligatori</target>
+        <target>Aquest panell no està disponible: falta assignar un valor a un filtre obligatori.</target>
       </trans-unit>
       <trans-unit id="seeRepetitions">
         <source> ver/ocultar valores repetidos</source>
@@ -1121,7 +1113,7 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       </trans-unit>
       <trans-unit id="chartUniqueColorsOption">
         <source>Asigna un color único a cada barra o elemento</source>
-        <target>Assigna un color únic a cada barra o element</target>
+        <target>Assigna un color únic a cada barra o element.</target>
       </trans-unit>
       <trans-unit id="addComparative">
         <source> Comparativa </source>
@@ -1200,7 +1192,7 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       </trans-unit>
       <trans-unit id="indicaciones5">
         <source>Puedes vincular los filtros del informe con la consulta</source>
-        <target>Podeu vincular els filtres de l'informe amb la consulta</target>
+        <target>Podeu vincular els filtres de l'informe amb la consulta.</target>
       </trans-unit>
       <trans-unit id="indicaciones8">
         <source>Si la tabla por la que filtramos no está en la consulta, recuerda que debes añadir las cláusulas JOIN necesarias para poder vincular la tabla del filtro con tu consulta</source>
@@ -1248,7 +1240,7 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       </trans-unit>
       <trans-unit id="dragFields">
         <source>Arrastre aquí los atributos que quiera ver en su panel</source>
-        <target>Arrossegueu aquí els atributs que vulgueu veure al panell</target>
+        <target>Arrossegueu aquí els atributs que vulgueu veure al panell.</target>
       </trans-unit>
       <trans-unit id="limitRowsInfo">
         <source>Establece un Top n para la consulta</source>
@@ -1583,7 +1575,7 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       </trans-unit>
       <trans-unit id="DeleteSuccess">
         <source>Modelo eliminado correctamente.</source>
-        <target>Model eliminat correctament</target>
+        <target>Model eliminat correctament.</target>
       </trans-unit>
       <trans-unit id="UpdateModelSucess">
         <source>Modelo actualizado correctamente</source>
@@ -1906,7 +1898,7 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       </trans-unit>
       <trans-unit id="ErrorExcel">
         <source>Cargue un archivo .xls o .xlsx</source>
-        <target>Carregueu un fitxer .xls o .xlsx</target>
+        <target>Carregueu un fitxer .xls o .xlsx.</target>
       </trans-unit>
       <trans-unit id="DynamicTags">
         <source>Dinámico</source>
@@ -2133,7 +2125,7 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       </trans-unit>
       <trans-unit id="globalFilterSettingsReboot">
         <source>La configuración de filtros del panel involucrado se ha reiniciado</source>
-        <target>La configuració de filtres del panell s'ha restablert</target>
+        <target>La configuració de filtres del panell s'ha restablert.</target>
       </trans-unit>
       <trans-unit id="withoutFilters">
         <source>Aún no has configurado filtros. Usa el panel de filtros o los filtros globales</source>
@@ -2153,7 +2145,7 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       </trans-unit>
       <trans-unit id="draggFilters">
         <source>Arrastre aquí los atributos sobre los que quiera filtrar</source>
-        <target>Arrossegueu aquí els atributs sobre els quals vulgueu filtrar</target>
+        <target>Arrossegueu aquí els atributs sobre els quals vulgueu filtrar.</target>
       </trans-unit>
       <trans-unit id="canIfilter">
         <source> Visiblidad del filtro</source>
@@ -2173,7 +2165,7 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       </trans-unit>
       <trans-unit id="tooltipAdvancedFilters">
         <source>Combina los filtros del panel con operadores AND u OR</source>
-        <target>Combina els filtres del panell amb operadors AND o OR</target>
+        <target>Combina els filtres del panell amb operadors AND o OR.</target>
       </trans-unit>
       <trans-unit id="tooltipDynamicFilters">
         <source>Permitir que el click en cualquier panel filtre este panel</source>
@@ -2617,7 +2609,7 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       </trans-unit>
       <trans-unit id="dangerQueryText2">
         <source>Puedes añadir filtros o agregaciones para reducir el número de registros</source>
-        <target>Podeu afegir filtres o agregacions per reduir el nombre de registres</target>
+        <target>Podeu afegir filtres o agregacions per reduir el nombre de registres.</target>
       </trans-unit>
       <trans-unit id="dangerQueryText3">
         <source>¿Deseas continuar?</source>
@@ -2681,7 +2673,7 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       </trans-unit>
       <trans-unit id="ErrorMessage">
         <source>Ha ocurrido un error</source>
-        <target>Hi ha hagut un error</target>
+        <target>Hi ha hagut un error.</target>
       </trans-unit>
       <trans-unit id="CorrectQuery">
         <source>Consulta correcta</source>
@@ -2749,15 +2741,15 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       </trans-unit>
       <trans-unit id="DeleteGroupButton">
         <source>Si, ¡Eliminalo!</source>
-        <target>Si, elimina'l</target>
+        <target>Sí, elimina'l.</target>
       </trans-unit>
       <trans-unit id="cantDeleteUser">
         <source>No se puede borrar el usuario</source>
-        <target>No es pot esborrar l'usuari</target>
+        <target>No es pot esborrar l'usuari.</target>
       </trans-unit>
       <trans-unit id="cantSelfDelete">
         <source>No se puede borrar a sí mismo</source>
-        <target>No us podeu esborrar a vos mateix</target>
+        <target>No us podeu esborrar a vos mateix.</target>
       </trans-unit>
       <trans-unit id="DeleteUserMessage">
         <source>Estás a punto de borrar el usuario</source>
@@ -2765,7 +2757,7 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       </trans-unit>
       <trans-unit id="DeleteUser">
         <source>Si, ¡Bórralo!</source>
-        <target>Si, esborra'l</target>
+        <target>Sí, esborra'l.</target>
       </trans-unit>
       <trans-unit id="rowOptions">
         <source>OPCIONES DE LA FILA</source>
@@ -3017,7 +3009,7 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       </trans-unit>
       <trans-unit id="removeColumnGlobalFilter">
         <source>No se puede eliminar la columna porque hay vinculado un Filtro</source>
-        <target>No es pot eliminar la columna perquè hi ha un filtre vinculat</target>
+        <target>No es pot eliminar la columna perquè hi ha un filtre vinculat.</target>
       </trans-unit>
       <trans-unit id="invalidPathForm">
         <source>Ruta incorrecta para el filtro seleccionado</source>
@@ -3053,7 +3045,7 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       </trans-unit>
       <trans-unit id="errorSavingDashboardPannels">
         <source>Error al guardar el informe. Error en el panel:</source>
-        <target>S'ha produït un error al desar l'informe. L'error és al panell</target>
+        <target>S'ha produït un error al desar l'informe. L'error és al panell.</target>
       </trans-unit>
       <trans-unit id="guardarBtn">
         <source>Confirmar</source>
@@ -3220,7 +3212,7 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       </trans-unit>
       <trans-unit id="adminEmailSubtitle">
         <source>Configure los ajustes y credenciales de su servidor de correo electrónico</source>
-        <target>Configuració i credencials del servidor de correu electrònic</target>
+        <target>Configuració i credencials del servidor de correu electrònic.</target>
       </trans-unit>
       <trans-unit id="alertsConfigSubtitle">
         <source>Administra tus configuraciones de alertas</source>
@@ -3756,7 +3748,7 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       </trans-unit>
       <trans-unit id="chartComparationOption">
         <source>Habilita la comparación con períodos anteriores</source>
-        <target>Habilita la comparació amb períodes anteriors</target>
+        <target>Habilita la comparació amb períodes anteriors.</target>
       </trans-unit>
       <trans-unit id="showLegend">
         <source>Mostrar Leyenda</source>
@@ -3916,11 +3908,11 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       </trans-unit>
       <trans-unit id="manageDBModels">
         <source>Gestiona la importación y exportación de fuentes de datos</source>
-        <target>Gestiona la importació i exportació de fonts de dades</target>
+        <target>Gestiona la importació i exportació de fonts de dades.</target>
       </trans-unit>
       <trans-unit id="SelectModelToExport">
         <source>Selecciona una fuente de datos para exportar</source>
-        <target>Seleccioneu una font de dades per exportar</target>
+        <target>Seleccioneu una font de dades per exportar.</target>
       </trans-unit>
       <trans-unit id="SelectDashboardToExport">
         <source>Selecciona un dashboard para exportar</source>
@@ -3960,11 +3952,11 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       </trans-unit>
       <trans-unit id="manageDashboards">
         <source>Gestiona la importación y exportación de dashboards</source>
-        <target>Gestiona la importació i exportació d'informes</target>
+        <target>Gestiona la importació i exportació d'informes.</target>
       </trans-unit>
       <trans-unit id="askPanelData">
         <source>Pregunta sobre los datos de tu panel ...</source>
-        <target>Pregunteu sobre les dades del panell</target>
+        <target>Pregunteu sobre les dades del panell.</target>
       </trans-unit>
       <trans-unit id="askEdaliticsText">
         <source>Pregúntale a Edalitics</source>
@@ -3972,11 +3964,11 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       </trans-unit>
       <trans-unit id="escribeMensaje">
         <source>Escribe tu mensaje...</source>
-        <target>Escriviu un missatge</target>
+        <target>Escriviu un missatge.</target>
       </trans-unit>
       <trans-unit id="viewName">
         <source>Introduzca el nombre de la vista</source>
-        <target>Introduïu el nom de la vista</target>
+        <target>Introduïu el nom de la vista.</target>
       </trans-unit>
       <trans-unit id="viewDescription">
         <source>Introduce una breve descripción</source>
@@ -3996,7 +3988,7 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       </trans-unit>
       <trans-unit id="emptyMessageTags">
         <source>No se encontraron resultados</source>
-        <target>No s'ha trobat cap resultat</target>
+        <target>No s'ha trobat cap resultat.</target>
       </trans-unit>
       <trans-unit id="dimensionLabel">
         <source>Dimension</source>
@@ -4064,7 +4056,7 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       </trans-unit>
       <trans-unit id="noAlertsConfigured">
         <source>No hay alertas configuradas </source>
-        <target>No hi ha alertes configurades</target>
+        <target>No hi ha alertes configurades.</target>
       </trans-unit>
       <trans-unit id="alertsConfigured">
         <source>Alertas configuradas </source>
@@ -4204,7 +4196,7 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       </trans-unit>
       <trans-unit id="selectFileImport">
         <source>Por favor selecciona un archivo para importar</source>
-        <target>Seleccioneu un fitxer per importar</target>
+        <target>Seleccioneu un fitxer per importar.</target>
       </trans-unit>
       <trans-unit id="logarithmicScale">
         <source>Escala logarítmica</source>
@@ -4308,15 +4300,15 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       </trans-unit>
       <trans-unit id="noContentToExport">
         <source>No tienes contenido para exportar</source>
-        <target>No teniu contingut per exportar</target>
+        <target>No teniu contingut per exportar.</target>
       </trans-unit>
       <trans-unit id="REPORTCloned">
         <source>Informe clonado correctamente</source>
-        <target>Informe clonat correctament</target>
+        <target>Informe clonat correctament.</target>
       </trans-unit>
       <trans-unit id="InvalidServerResponse">
         <source>Respuesta inválida del servidor</source>
-        <target>Resposta invàlida del servidor</target>
+        <target>Resposta invàlida del servidor.</target>
       </trans-unit>
       <trans-unit id="CouldNotCloneReport">
         <source>No se pudo clonar el informe. Por favor, inténtalo de nuevo.</source>
@@ -4360,7 +4352,7 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       </trans-unit>
       <trans-unit id="URLCopied">
         <source>URL copiada al portapapeles</source>
-        <target>URL copiada al porta-retalls</target>
+        <target>URL copiada al porta-retalls.</target>
       </trans-unit>
       <trans-unit id="ErrorCopyingURL">
         <source>Error al copiar URL: </source>
@@ -4632,7 +4624,7 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       </trans-unit>
       <trans-unit id="filterSearchDashboards">
         <source>Usa los filtros para buscar dashboards</source>
-        <target>Fes servir els filtres per cercar informes</target>
+        <target>Fes servir els filtres per cercar informes.</target>
       </trans-unit>
       <trans-unit id="noCoincidenceDashFilters">
         <source>No hay dashboards que coincidan con los filtros</source>
@@ -4640,7 +4632,7 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       </trans-unit>
       <trans-unit id="addDashListAvailable">
         <source>Añade dashboards desde la lista de disponibles</source>
-        <target>Afegeix dashboards des de la llista de disponibles</target>
+        <target>Afegeix dashboards des de la llista de disponibles.</target>
       </trans-unit>
       <trans-unit id="filterOptions">
         <source>Opciones del filtro:</source>
@@ -5106,11 +5098,11 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       </trans-unit>
       <trans-unit id="mustConfigureAtLeastOneAttribute">
         <source>Debe configurar un atributo como mínimo para habilitar esta opción</source>
-        <target>Cal configurar com a mínim un atribut per habilitar aquesta opció</target>
+        <target>Cal configurar com a mínim un atribut per habilitar aquesta opció.</target>
       </trans-unit>
       <trans-unit id="mustAddTheGroupingsToRunWithAggregations">
         <source>Debe activar las agrupaciones para ejecutar con agregaciones configuradas en los atributos</source>
-        <target>Cal activar les agrupacions per executar amb agregacions configurades als atributs</target>
+        <target>Cal activar les agrupacions per executar amb agregacions configurades als atributs.</target>
       </trans-unit>
       <trans-unit id="filterSettingsHeader">
         <source>Configuración de filtros</source>
@@ -5226,7 +5218,7 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       </trans-unit>
       <trans-unit id="aiManagementSubtitle">
         <source>Configura los parámetros del asistente de inteligencia artificial</source>
-        <target>Configura els paràmetres de l'assistent d'intel·ligència artificial</target>
+        <target>Configura els paràmetres de l'assistent d'intel·ligència artificial.</target>
       </trans-unit>
       <trans-unit id="aiProvider">
         <source>PROVEEDOR</source>
@@ -5286,7 +5278,7 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       </trans-unit>
       <trans-unit id="noParentAttributes">
         <source>Añade más atributos para activar la navegación</source>
-        <target>Afegeix més atributs per activar la navegació</target>
+        <target>Afegeix més atributs per activar la navegació.</target>
       </trans-unit>
       <trans-unit id="noParentText">
         <source>Sin padre</source>
@@ -5386,7 +5378,7 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       </trans-unit>
       <trans-unit id="ga4PropertyIdHint">
         <source>Puedes encontrarlo en Google Analytics → Administrar → Información de la propiedad</source>
-        <target>Podeu trobar-lo a Google Analytics → Administra → Informació de la propietat</target>
+        <target>Podeu trobar-lo a Google Analytics → Administra → Informació de la propietat.</target>
       </trans-unit>
       <trans-unit id="ga4FolderNameHint">
         <source>Se creará la carpeta duckdb/&lt;nombre&gt;/ con los CSV de métricas</source>
@@ -5712,57 +5704,57 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
         <source>Aumentar tamaño</source>
         <target>Augmenta la mida</target>
       </trans-unit>
-      <trans-unit id="removeRowTotals">
-        <source>Quitar totales de fila</source>
-        <target>Elimina els totals de fila</target>
+      <trans-unit id="LogsActionNewLogin">
+        <source>Login</source>
+        <target>Inici de sessió</target>
       </trans-unit>
-      <trans-unit id="removeColSubtotals">
-        <source>Quitar subtotales de columna</source>
-        <target>Elimina els subtotals de columna</target>
+      <trans-unit id="LogsActionDashboardAccessed">
+        <source>Dashboard Accessed</source>
+        <target>Accés a informe</target>
       </trans-unit>
-      <trans-unit id="addRowTotals">
-        <source>Totales de fila</source>
-        <target>Totals de fila</target>
+      <trans-unit id="LogsActionDashboardCreated">
+        <source>Dashboard Created</source>
+        <target>Creació d'informe</target>
       </trans-unit>
-      <trans-unit id="addColSubtotals">
-        <source>Subtotales de columna</source>
-        <target>Subtotals de columna</target>
+      <trans-unit id="LogsActionDashboardUpdated">
+        <source>Dashboard Updated</source>
+        <target>Actualització d'informe</target>
       </trans-unit>
-      <trans-unit id="addColTotals">
-        <source>Totales de columna</source>
-        <target>Totals de columna</target>
+      <trans-unit id="LogsActionDashboardRenamed">
+        <source>Dashboard Renamed</source>
+        <target>Canvi de nom d'informe</target>
       </trans-unit>
-      <trans-unit id="removeColTotals">
-        <source>Quitar totales de columna</source>
-        <target>Elimina els totals de columna</target>
+      <trans-unit id="LogsActionDashboardVisibilityChanged">
+        <source>Dashboard Visibility Changed</source>
+        <target>Canvi de visibilitat de l'informe</target>
       </trans-unit>
-      <trans-unit id="addOnlyPercentages">
-        <source>Sólo porcentajes</source>
-        <target>Només percentatges</target>
+      <trans-unit id="LogsActionDashboardDeleted">
+        <source>Dashboard Deleted</source>
+        <target>Eliminació d'informe</target>
       </trans-unit>
-      <trans-unit id="addOnlyValues">
-        <source>Solo valores</source>
-        <target>Només valors</target>
+      <trans-unit id="LogsActionPanelQueryFailed">
+        <source>Panel Query Failed</source>
+        <target>Error de consulta del panell</target>
       </trans-unit>
-      <trans-unit id="addValuesPercentages">
-        <source>Valores y porcentajes</source>
-        <target>Valors i percentatges</target>
+      <trans-unit id="LogsActionUserCreated">
+        <source>User Created</source>
+        <target>Creació d'usuari</target>
       </trans-unit>
-      <trans-unit id="addTotals">
-        <source>Totales</source>
-        <target>Totals</target>
+      <trans-unit id="LogsActionUserUpdated">
+        <source>User Updated</source>
+        <target>Actualització d'usuari</target>
       </trans-unit>
-      <trans-unit id="addPercentages">
-        <source>Porcentajes</source>
-        <target>Percentatges</target>
+      <trans-unit id="LogsActionUserDeleted">
+        <source>User Deleted</source>
+        <target>Eliminació d'usuari</target>
       </trans-unit>
-      <trans-unit id="addStyles">
-        <source>Código de color</source>
-        <target>Codi de color</target>
+      <trans-unit id="LogsActionUserRolesChanged">
+        <source>User Roles Changed</source>
+        <target>Canvi de rols d'usuari</target>
       </trans-unit>
-      <trans-unit id="tableTitleDialog">
-        <source>Propiedades de la tabla</source>
-        <target>Propietats de la taula</target>
+      <trans-unit id="LogsActionUserPasswordChanged">
+        <source>User Password Changed</source>
+        <target>Canvi de contrasenya d'usuari</target>
       </trans-unit>
       <trans-unit id="LogsActionGroupCreated">
         <source>Group Created</source>
@@ -5830,7 +5822,7 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       </trans-unit>
       <trans-unit id="ServerConsoleEmpty">
         <source>Sin contenido.</source>
-        <target>Sense contingut</target>
+        <target>Sense contingut.</target>
       </trans-unit>
       <trans-unit id="LogsAuditTab">
         <source>Auditoría</source>
@@ -6130,7 +6122,7 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       </trans-unit>
       <trans-unit id="nameFilter">
         <source>Filtrar por nombre del informe</source>
-        <target>Filtra pel nom de l'informe</target>
+        <target>Filtra pel nom de l'informe.</target>
       </trans-unit>
       <trans-unit id="clearAllFilters">
         <source>Eliminar todos los filtros</source>
@@ -6138,7 +6130,7 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       </trans-unit>
       <trans-unit id="clickToEditName">
         <source>Pulse para editar el nombre</source>
-        <target>Fes clic per editar el nom</target>
+        <target>Fes clic per editar el nom.</target>
       </trans-unit>
       <trans-unit id="goToDashboard">
         <source>Abrir informe</source>
@@ -6199,7 +6191,7 @@ Ingresa ahora<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;" />
         <target>Per fer-ho només heu d'afegir: <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span&gt;"/>
  AND <x id="INTERPOLATION" equiv-text="{{&apos; ${alias_taula.columna_filtrada} &apos;}}"/>
 <x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/>
- a la clàusula &apos;WHERE&apos; de la consulta on voleu injectar el filtre</target>
+ a la clàusula &apos;WHERE&apos; de la consulta on voleu injectar el filtre.</target>
       </trans-unit>
       <trans-unit datatype="html" id="indicaciones7">
         <source>Si no has añadido ninguna cláusula WHERE, añádela a la consulta y haz los joins necesarios, junto con el filtro en el formato <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span&gt;" />
@@ -6287,7 +6279,7 @@ Ingresa ahora<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;" />
       </trans-unit>
       <trans-unit datatype="html" id="tabsDashboardSettings">
         <source><x id="START_ITALIC_TEXT" ctype="x-i" equiv-text="&lt;i class=&quot;pi pi-info-circle mr-2&quot;&gt;"/><x id="CLOSE_ITALIC_TEXT" ctype="x-i" equiv-text="&lt;/i&gt;"/> Configura las pestañas para mostrar dashboards</source>
-        <target><x id="START_ITALIC_TEXT" ctype="x-i" equiv-text="&lt;i class=&quot;pi pi-info-circle mr-2&quot;&gt;"/><x id="CLOSE_ITALIC_TEXT" ctype="x-i" equiv-text="&lt;/i&gt;"/> Configura les pestanyes per mostrar dashboards</target>
+        <target><x id="START_ITALIC_TEXT" ctype="x-i" equiv-text="&lt;i class=&quot;pi pi-info-circle mr-2&quot;&gt;"/><x id="CLOSE_ITALIC_TEXT" ctype="x-i" equiv-text="&lt;/i&gt;"/> Configura les pestanyes per mostrar dashboards.</target>
       </trans-unit>
       <trans-unit datatype="html" id="filterByPrivacy">
         <source><x id="START_ITALIC_TEXT" ctype="x-i" equiv-text="&lt;i class=&quot;pi pi-lock mr-2&quot;&gt;"/><x id="CLOSE_ITALIC_TEXT" ctype="x-i" equiv-text="&lt;/i&gt;"/> Filtrar por Privacidad</source>
