@@ -699,11 +699,11 @@ export class ClickHouseBuilderService extends QueryBuilderService {
         }
         return `${colname} ${filterObject.filter_type} ${this.processFilter(filterObject.filter_elements[0].value1, colType)} `;
       case 1:
-        if (filterObject.filter_type === 'not_in') filterObject.filter_type = 'NOT IN';
         if (colType === 'date') {
           const dateFilter = this.dateFilterToString(filterObject, colname, colType);
           if (dateFilter !== undefined) return dateFilter;
         }
+        if (filterObject.filter_type === 'not_in') filterObject.filter_type = 'NOT IN';
         return `${colname} ${filterObject.filter_type} (${this.processFilter(filterObject.filter_elements[0].value1, colType)}) `;
       case 2:
         return `${colname} ${filterObject.filter_type}
@@ -791,11 +791,11 @@ export class ClickHouseBuilderService extends QueryBuilderService {
         }
         return `${colname} ${filterObject.filter_type} ${this.processFilter(filterObject.filter_elements[0].value1, colType)} `;
       case 1:
-        if (filterObject.filter_type === 'not_in') filterObject.filter_type = 'NOT IN';
         if (colType === 'date') {
           const dateFilter = this.dateFilterToString(filterObject, colname, colType);
           if (dateFilter !== undefined) return dateFilter;
         }
+        if (filterObject.filter_type === 'not_in') filterObject.filter_type = 'NOT IN';
         return `${colname} ${filterObject.filter_type} (${this.processFilter(filterObject.filter_elements[0].value1, colType)}) `;
       case 2:
         return `${colname} ${filterObject.filter_type}
