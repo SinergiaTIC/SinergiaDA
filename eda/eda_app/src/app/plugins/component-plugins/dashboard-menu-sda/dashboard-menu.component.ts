@@ -106,6 +106,11 @@ export class DashboardMenuSdaComponent implements OnInit, OnDestroy, DoCheck {
    */
   public viewMode: boolean = true;
   private viewModeInit = false;
+  /** True once view/edit mode has been resolved for this report; until then we
+   *  never suppress unsaved-change marking (avoids dropping edits on new reports). */
+  private viewModeResolved = false;
+  /** Checker consulted by the patched DashboardService.setNotSaved(). */
+  private viewModeCheckerFn: (() => boolean) | null = null;
   /** True when a panel of this report shows a "no permissions" message: the whole report opens read-only. */
   private permissionRestricted = false;
   private viewModeTouched = false;
@@ -121,6 +126,7 @@ export class DashboardMenuSdaComponent implements OnInit, OnDestroy, DoCheck {
   ngOnInit(): void {
     this.isEditable = this.canIedit();
     this.isReadOnly = this.isReadOnlyCheck();
+    this.patchNotSavedService();
     this.notSavedSub = this.dashboardService.notSaved.subscribe(v => this.hasUnsavedChanges = !!v);
     this.buildAddMenu();
     this.buildMoreMenu();
@@ -154,6 +160,10 @@ export class DashboardMenuSdaComponent implements OnInit, OnDestroy, DoCheck {
     this.teardownTitleAffordance();
     this.teardownFilterAffordances();
     if (this.isLayoutLocked) this.restoreEditMode();
+    const ds: any = this.dashboardService;
+    if (ds?.viewModeChecker === this.viewModeCheckerFn) {
+      ds.viewModeChecker = null;
+    }
   }
 
   private scrollHandler: () => void = () => {};
@@ -188,6 +198,9 @@ export class DashboardMenuSdaComponent implements OnInit, OnDestroy, DoCheck {
       }
       this.buildAddMenu();
       this.buildMoreMenu();
+      this.viewModeResolved = true;
+      // Re-publish the checker so it reflects the resolved mode.
+      this.patchNotSavedService();
     }
     // Keep the sticky header's background in sync with the report background color.
     const headerEl = document.querySelector<HTMLElement>(
@@ -1021,6 +1034,32 @@ styleClass: "text-gray-500 italic",
     const isAdmin = (user.role || []).includes(this.ADMIN_ID);
     const imProperty = userId === this.dashboard.dashboard.user;
     return !this.dashboard.dashboard.config.onlyIcanEdit || imProperty || isAdmin;
+  }
+
+  /**
+   * Patches the shared DashboardService so that, while the report is being viewed
+   * (view mode or read-only user), applying filters never marks it as having
+   * unsaved changes. This is a NO CORE runtime patch: no core files are touched.
+   */
+  private patchNotSavedService(): void {
+    const ds: any = this.dashboardService;
+    if (!ds || typeof ds.setNotSaved !== 'function') return;
+    if (!ds.__sdaNotSavedPatched) {
+      ds.__sdaNotSavedPatched = true;
+      const original = ds.setNotSaved.bind(ds);
+      ds.setNotSaved = (value: boolean) => {
+        if (value === true) {
+          try {
+            if (ds.viewModeChecker?.()) return;
+          } catch {
+            /* ignore */
+          }
+        }
+        original(value);
+      };
+    }
+    this.viewModeCheckerFn = () => this.viewModeResolved && (this.viewMode || !this.isEditable);
+    ds.viewModeChecker = this.viewModeCheckerFn;
   }
 
   /**
