@@ -1245,9 +1245,10 @@ export class DashboardPage implements OnInit {
     }
   }
 
-  refreshPanels() {
+  // panelIds: refresh only those; omit to refresh all, as before.
+  refreshPanels(panelIds?: Set<string>) {
     this.edaPanels.forEach(async (panel) => {
-      if (panel.currentQuery.length > 0) {
+      if ((!panelIds || panelIds.has(panel.panel.id)) && panel.currentQuery.length > 0) {
         panel.display_v.chart = '';
         await panel.runQueryFromDashboard(true);
         setTimeout(() => panel.panelChart?.updateComponent(), 100);
