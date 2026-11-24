@@ -1408,8 +1408,8 @@ static  convertColumnToForbiddenColumn(columns: any[], sample: any): any[] {
     // puedo ver todas las tablas menos las que tengo explicitamente prohibidas
     allowedTablesBySecurityForMe = allowedTablesBySecurityForMe.filter(t => !forbiddenTables.includes(t));
     forbiddenTables = allTables.filter(t => !allowedTablesBySecurityForMe.includes(t));
-    // custom_behaviour.ENFORCE_PERMISSIONS_ON_LINK_TABLES true (EDA) -> no exceptions.
-    // false (SDA) -> tables matching CLOSED_MODEL_EXEMPT_TABLE_REGEX are never forbidden.
+    // custom_behaviour.ENFORCE_PERMISSIONS_ON_LINK_TABLES true (Edalitics) -> no exceptions.
+    // false (Alternative) -> tables matching CLOSED_MODEL_EXEMPT_TABLE_REGEX are never forbidden.
     const exemptTablePattern: string = eda_api_config.custom_behaviour.CLOSED_MODEL_EXEMPT_TABLE_REGEX;
     if (!eda_api_config.custom_behaviour.ENFORCE_PERMISSIONS_ON_LINK_TABLES && exemptTablePattern) {
       const exemptTableRegex = new RegExp(exemptTablePattern);

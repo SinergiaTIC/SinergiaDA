@@ -1124,7 +1124,7 @@ export abstract class QueryBuilderService {
 
 
         /** SQL panels always use related-tables permissions (like 2.12.0), regardless of the
-         *  USE_RECURSIVE_PERMISSIONS flag, which only governs TREE/EDA mode (builder). Using
+         *  USE_RECURSIVE_PERMISSIONS flag, which only governs TREE/Edalitics mode (builder). Using
          *  flat (column-based) permissions here returns nothing for SQL panels because their
          *  fields are empty, so security would never be injected.
          *  Only keep the permissions of the table being replaced (like 2.12.0 did), otherwise

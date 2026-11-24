@@ -193,7 +193,7 @@ export class GlobalFilterComponent implements OnInit {
             });
         }
 
-        // Resetear antes de recalcular: si ningún filtro queda visible, el botón no debe mostrarse.
+        // Reset before recalculating: if no filter remains visible, the button must not be shown.
         this.filterButtonVisibility.public = false;
         this.filterButtonVisibility.readOnly = false;
         myFilters.forEach(a => {
@@ -897,7 +897,7 @@ export class GlobalFilterComponent implements OnInit {
                 if (restrictedFilter) {
                     restrictedFilter.visible = 'hidden';
                     restrictedFilter.data = false;
-                    // Recalcular la visibilidad del botón por si este era el último filtro visible
+                    // Recalculate button visibility in case this was the last visible filter
                     this.setFilterButtonVisibilty();
                 }
             }

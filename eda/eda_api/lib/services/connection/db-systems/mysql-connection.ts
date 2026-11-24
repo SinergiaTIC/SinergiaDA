@@ -190,7 +190,7 @@ async execQuery(query: string): Promise<any> {
                     : trimmed;
             }
 
-            // Timeout del lado cliente: corta a los maxStatementTime segundos, coherente con el límite del servidor
+            // Client-side timeout: aborts after maxStatementTime seconds, consistent with the server limit
             const timeoutPromise = new Promise((_, reject) => {
                 timeoutHandle = setTimeout(() => {
                     reject(new Error(`Query execution timed out after ${maxStatementTime} seconds`));
