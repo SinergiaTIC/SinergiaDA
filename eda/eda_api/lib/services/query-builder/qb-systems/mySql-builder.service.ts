@@ -544,9 +544,8 @@ export class MySqlBuilderService extends QueryBuilderService {
       const filterTableName = filter_table?.split('.')[0];
 
       // false (default) -> compare against the raw selected values | true (alternative) -> compare against the internal codes
-      // SDA CUSTOM - Only use filter_codes when the filter is a value-list filter (has valueListSource.target_id_column);
-      // plain columns carry stale/null codes in filter_codes, which would otherwise compare against 'null'.
-      // Also reject codes that contain null/undefined/'null' values (legacy data) to avoid 'null' comparisons.
+      // Use internal codes only for value-list filters with a configured ID column and valid codes.
+      // Otherwise use the selected values to avoid comparisons against stale or null codes.
       const codesHaveNull = Array.isArray(filter_codes) && filter_codes.some((fc: any) => Array.isArray(fc?.value1) && fc.value1.some((v: any) => v == null || v === 'null'));
       const codesOrElements = (useCodeForFilters && valueListSource?.target_id_column && Array.isArray(filter_codes) && filter_codes.length > 0 && !codesHaveNull)
         ? filter_codes
