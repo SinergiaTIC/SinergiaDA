@@ -254,11 +254,11 @@
       </trans-unit>
       <trans-unit id="deleteDashboardWarning">
         <source>Estás a punto de borrar el informe:</source>
-        <target>You are gonna delete dashboard:</target>
+        <target>You are about to delete the dashboard:</target>
       </trans-unit>
       <trans-unit id="DashboardDeletedInfo">
         <source>Informe eliminado correctamente.</source>
-        <target>Dashboard correctly deleted.</target>
+        <target>Dashboard deleted successfully.</target>
       </trans-unit>
       <trans-unit id="LinkDashboardDbFilter">
         <source>Informe a vincular</source>
@@ -2736,11 +2736,11 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       </trans-unit>
       <trans-unit id="DeleteGroupText">
         <source>Eliminarás todos los elementos relacionados con este grupo, ¿Deseas continuar?</source>
-        <target>You are gonna delete all elements related to this group. Do you want to continue?</target>
+        <target>You are about to delete all elements related to this group. Do you want to continue?</target>
       </trans-unit>
       <trans-unit id="DeleteGroupButton">
         <source>Si, ¡Eliminalo!</source>
-        <target>Yes, delete it!</target>
+        <target>Yes, delete it.</target>
       </trans-unit>
       <trans-unit id="cantDeleteUser">
         <source>No se puede borrar el usuario</source>
@@ -2748,15 +2748,15 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       </trans-unit>
       <trans-unit id="cantSelfDelete">
         <source>No se puede borrar a sí mismo</source>
-        <target>Can't delete himself.</target>
+        <target>Can't delete yourself.</target>
       </trans-unit>
       <trans-unit id="DeleteUserMessage">
         <source>Estás a punto de borrar el usuario</source>
-        <target>You are gonna delete user</target>
+        <target>You are about to delete a user</target>
       </trans-unit>
       <trans-unit id="DeleteUser">
         <source>Si, ¡Bórralo!</source>
-        <target>Yes, delete it!</target>
+        <target>Yes, delete it.</target>
       </trans-unit>
       <trans-unit id="rowOptions">
         <source>OPCIONES DE LA FILA</source>
@@ -3787,11 +3787,11 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       </trans-unit>
       <trans-unit id="RemovePredictionYes">
         <source>Sí, quitar</source>
-        <target>Yes, remove.</target>
+        <target>Yes, remove it.</target>
       </trans-unit>
       <trans-unit id="RemovePredictionNo">
         <source>No, mantener</source>
-        <target>No, keep.</target>
+        <target>No, keep it.</target>
       </trans-unit>
       <trans-unit id="chartLabelOption">
         <source>Muestra las etiquetas de cada segmento</source>
@@ -3827,7 +3827,7 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       </trans-unit>
       <trans-unit id="aboutEdaA2">
         <source>Ver Documentación</source>
-        <target>See Documentation</target>
+        <target>See documentation</target>
       </trans-unit>
       <trans-unit id="aboutEdaH3">
         <source>Comunidad</source>
@@ -3839,7 +3839,7 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       </trans-unit>
       <trans-unit id="aboutEdaA3">
         <source>Ir al Foro</source>
-        <target>Go to the Forum</target>
+        <target>Go to the forum</target>
       </trans-unit>
       <trans-unit id="aboutEdaP5">
         <source>Aprende a usar EDA con nuestros tutoriales paso a paso.</source>
@@ -3847,11 +3847,11 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       </trans-unit>
       <trans-unit id="aboutEdaB1">
         <source>Crear Modelo de Datos</source>
-        <target>Create Data Model</target>
+        <target>Create data model</target>
       </trans-unit>
       <trans-unit id="aboutEdaB2">
         <source>Crear Informe</source>
-        <target>Create Report</target>
+        <target>Create report</target>
       </trans-unit>
       <trans-unit id="aboutEdaH4">
         <source>¿Quieres probar EDA en el cloud?</source>
@@ -4303,7 +4303,7 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       </trans-unit>
       <trans-unit id="REPORTCloned">
         <source>Informe clonado correctamente</source>
-        <target>Report successfully cloned.</target>
+        <target>Report cloned successfully.</target>
       </trans-unit>
       <trans-unit id="InvalidServerResponse">
         <source>Respuesta inválida del servidor</source>
