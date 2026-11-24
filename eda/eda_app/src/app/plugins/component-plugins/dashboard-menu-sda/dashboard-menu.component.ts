@@ -106,6 +106,13 @@ export class DashboardMenuSdaComponent implements OnInit, OnDestroy, DoCheck {
    */
   public viewMode: boolean = true;
   private viewModeInit = false;
+  /** True once view/edit mode has been resolved for this report; until then we
+   *  never suppress unsaved-change marking (avoids dropping edits on new reports). */
+  private viewModeResolved = false;
+  /** Checker consulted by the patched DashboardService.setNotSaved(). */
+  private viewModeCheckerFn: (() => boolean) | null = null;
+  /** True when a panel of this report shows a "no permissions" message: the whole report opens read-only. */
+  private permissionRestricted = false;
   private viewModeTouched = false;
   private viewModeBackup = new Map<string, any>();
   private gridsterBackup: { draggable?: boolean; resizable?: boolean } = {};
@@ -119,6 +126,7 @@ export class DashboardMenuSdaComponent implements OnInit, OnDestroy, DoCheck {
   ngOnInit(): void {
     this.isEditable = this.canIedit();
     this.isReadOnly = this.isReadOnlyCheck();
+    this.patchNotSavedService();
     this.notSavedSub = this.dashboardService.notSaved.subscribe(v => this.hasUnsavedChanges = !!v);
     this.buildAddMenu();
     this.buildMoreMenu();
@@ -152,6 +160,10 @@ export class DashboardMenuSdaComponent implements OnInit, OnDestroy, DoCheck {
     this.teardownTitleAffordance();
     this.teardownFilterAffordances();
     if (this.isLayoutLocked) this.restoreEditMode();
+    const ds: any = this.dashboardService;
+    if (ds?.viewModeChecker === this.viewModeCheckerFn) {
+      ds.viewModeChecker = null;
+    }
   }
 
   private scrollHandler: () => void = () => {};
@@ -186,6 +198,9 @@ export class DashboardMenuSdaComponent implements OnInit, OnDestroy, DoCheck {
       }
       this.buildAddMenu();
       this.buildMoreMenu();
+      this.viewModeResolved = true;
+      // Re-publish the checker so it reflects the resolved mode.
+      this.patchNotSavedService();
     }
     // Keep the sticky header's background in sync with the report background color.
     const headerEl = document.querySelector<HTMLElement>(
@@ -203,6 +218,7 @@ export class DashboardMenuSdaComponent implements OnInit, OnDestroy, DoCheck {
       }
     }
     if (!this.viewModeInit) return; // never touch panels before knowing the report mode
+    this.syncPermissionRestriction();
     this.syncTitleAffordance();
     this.syncFilterEditAffordances();
     if (!this.isLayoutLocked) return;
@@ -1020,12 +1036,61 @@ styleClass: "text-gray-500 italic",
     return !this.dashboard.dashboard.config.onlyIcanEdit || imProperty || isAdmin;
   }
 
+  /**
+   * Patches the shared DashboardService so that, while the report is being viewed
+   * (view mode or read-only user), applying filters never marks it as having
+   * unsaved changes. This is a NO CORE runtime patch: no core files are touched.
+   */
+  private patchNotSavedService(): void {
+    const ds: any = this.dashboardService;
+    if (!ds || typeof ds.setNotSaved !== 'function') return;
+    if (!ds.__sdaNotSavedPatched) {
+      ds.__sdaNotSavedPatched = true;
+      const original = ds.setNotSaved.bind(ds);
+      ds.setNotSaved = (value: boolean) => {
+        if (value === true) {
+          try {
+            if (ds.viewModeChecker?.()) return;
+          } catch {
+            /* ignore */
+          }
+        }
+        original(value);
+      };
+    }
+    this.viewModeCheckerFn = () => this.viewModeResolved && (this.viewMode || !this.isEditable);
+    ds.viewModeChecker = this.viewModeCheckerFn;
+  }
+
+  /**
+   * Opens the report read-only when a panel shows a "no permissions" message
+   * (NO_DATA_ALLOWED / NO_FILTER_ALLOWED). Only reads core state; the lock goes
+   * through the shared inject object that every panel already checks (isObserver),
+   * so core files are not touched. Latches once detected.
+   */
+  private syncPermissionRestriction(): void {
+    if (this.permissionRestricted) return;
+    // Admins never get the no-permission panel message (the backend skips the
+    // security stripping for them), so the lock is only meant for regular users.
+    if (this.isAdmin()) return;
+    const restricted = (this.dashboard?.edaPanels?.toArray?.() || []).some((c: any) => {
+      const chart = c?.panelChart;
+      return !!(chart?.NO_DATA_ALLOWED || chart?.NO_FILTER_ALLOWED);
+    });
+    if (!restricted) return;
+    this.permissionRestricted = true;
+    if (this.dashboard?.injectEdaPanel) this.dashboard.injectEdaPanel.isObserver = true;
+    this.isEditable = false;
+    this.buildAddMenu();
+    this.buildMoreMenu();
+  }
+
   public canIedit(): boolean {
     // EDA_RO (observer) never edits, not even when the report is theirs or when
     // the report is editable by everyone: core already renders their panels
     // read-only (EdaBlankPanel.isEditable checks inject.isObserver), so letting
     // the toolbar edit would be inconsistent (and would fail on save anyway).
-    if (this.isObserver()) return false;
+    if (this.isObserver() || this.permissionRestricted) return false;
     return this.dashboard?.canIedit() ?? false;
   }
 

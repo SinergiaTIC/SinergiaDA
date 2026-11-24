@@ -10,7 +10,8 @@ export interface Query {
     dashboard: {
         dashboard_id: string,
         panel_id: string,
-        connectionProperties: any
+        connectionProperties: any,
+        liveFilters?: { id: string; isMandatory: boolean; panelList: string[] }[]
     };
     query: {
         fields: Column[]

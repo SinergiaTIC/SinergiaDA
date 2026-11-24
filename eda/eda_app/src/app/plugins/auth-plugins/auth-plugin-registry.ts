@@ -4,4 +4,7 @@
 // `npm start` / `npm run build:prod`.
 import { IAuthPluginCtor } from './auth-plugin.interface';
 
-export const AUTH_PLUGINS: IAuthPluginCtor[] = [];
+
+export const AUTH_PLUGINS: IAuthPluginCtor[] = [
+
+];

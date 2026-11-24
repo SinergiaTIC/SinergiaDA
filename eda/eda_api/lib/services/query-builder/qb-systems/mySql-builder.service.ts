@@ -316,6 +316,9 @@ export class MySqlBuilderService extends QueryBuilderService {
             (f: any) => f.table_id === col.table_id && f.column_name === col.column_name
           );
           if (matchingField) {
+            if (matchingField.rangesOrderExpression && matchingField.rangesOrderExpression !== undefined && col.ordenation_type !== 'No') {
+              return `${matchingField.rangesOrderExpression} ${col.ordenation_type}`;
+            }
             return `\`${matchingField.display_name}\` ${col.ordenation_type}`;
           } else {
             return `\`${col.table_id}\`.\`${col.column_name}\` ${col.ordenation_type}`;
@@ -325,6 +328,9 @@ export class MySqlBuilderService extends QueryBuilderService {
       orderColumns = this.queryTODO.fields
         .map((col: any) => {
           if (col.ordenation_type !== 'No' && col.ordenation_type !== undefined) {
+            if (col.rangesOrderExpression && col.rangesOrderExpression !== undefined) {
+              return `${col.rangesOrderExpression} ${col.ordenation_type}`;
+            }
             return `\`${col.display_name}\` ${col.ordenation_type}`;
           }
           return false;
@@ -351,8 +357,23 @@ export class MySqlBuilderService extends QueryBuilderService {
       }
     }
 
+    myQuery = this.queryAddedRange(this.queryTODO.fields, myQuery);
+
     return myQuery;
   };
+
+  public queryAddedRange(fields: any[], myQuery: string): string {
+    if (fields.find(field => field.ranges?.length > 0)) {
+      if (fields.find(field => field.aggregation_type === 'count_distinct' || field.aggregation_type === 'sum' || field.aggregation_type === 'count')) {
+        const fieldRango = fields.find(field => field.ranges?.length > 0);
+        if (fieldRango?.withRanges && fieldRango?.orderRanges) {
+          myQuery = fieldRango.withRanges + myQuery + fieldRango.orderRanges;
+          return myQuery;
+        }
+      }
+    }
+    return myQuery;
+  }
 
   public getFilters(filters, destLongitud, pTable): any {
 
@@ -1219,11 +1240,7 @@ export class MySqlBuilderService extends QueryBuilderService {
 
     }else{
       if(column.column_type == 'numeric'){
-        if(column.aggregation_type === 'count_distinct') {
-          colname = `CAST( count( distinct (${column.SQLexpression})) as decimal(32,${column.minimumFractionDigits}))`;
-        } else {
-          colname = `CAST( ${column.aggregation_type}(${column.SQLexpression}) as decimal(32,${column.minimumFractionDigits}))`;
-        }
+        colname = `CAST( ${column.SQLexpression} as decimal(32,${column.minimumFractionDigits}))`;
       }else{
         colname = `  ${column.SQLexpression}  `;
       }
@@ -1305,7 +1322,11 @@ public getHavingColname(column: any){
     }
   }else{
     if(column.column_type == 'numeric'){
-      colname = `CAST( ${column.SQLexpression} as decimal(32,${column.minimumFractionDigits}))`;
+      if(column.aggregation_type === 'count_distinct') {
+        colname = `CAST( count( distinct (${column.SQLexpression})) as decimal(32,${column.minimumFractionDigits}))`;
+      } else {
+        colname = `CAST( ${column.aggregation_type}(${column.SQLexpression}) as decimal(32,${column.minimumFractionDigits}))`;
+      }
     }else{
       colname = `  ${column.SQLexpression}  `;
     }
