@@ -587,11 +587,11 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       </trans-unit>
       <trans-unit id="qlTooltipUrlImage">
         <source>Insertar imagen desde una URL</source>
-        <target>Insereix una imatge des d'un URL</target>
+        <target>Insereix una imatge des d'una URL</target>
       </trans-unit>
       <trans-unit id="qlTooltipClean">
         <source>Quitar formato</source>
-        <target>Treu el format</target>
+        <target>Esborra el format</target>
       </trans-unit>
       <trans-unit id="qlLabelClearColor">
         <source>Quitar</source>
@@ -4632,7 +4632,7 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       </trans-unit>
       <trans-unit id="addDashListAvailable">
         <source>Añade dashboards desde la lista de disponibles</source>
-        <target>Afegeix dashboards des de la llista de disponibles.</target>
+        <target>Afegeix informes des de la llista de disponibles.</target>
       </trans-unit>
       <trans-unit id="filterOptions">
         <source>Opciones del filtro:</source>
