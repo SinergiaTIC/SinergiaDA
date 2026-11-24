@@ -256,7 +256,7 @@ export const QueryUtils = {
       // Execute query
       const response = await QueryUtils.switchAndRun(ebp, query);
       ebp.chartLabels = ebp.chartUtils.uniqueLabels(response[0]);   // Chart labels
-      ebp.chartData = response[1].map(item => item.map(a => {
+      ebp.chartData = ebp.chartUtils.sortByRangeOrder(response[1].map(item => item.map(a => {
 
         if(a === null  && NULL_VALUE != 'LEAVE_THE_NULL'){
           return NULL_VALUE;
@@ -267,7 +267,7 @@ export const QueryUtils = {
 
         return a;
 
-      })); // replace nulls and '' with customizable values
+      })), ebp.currentQuery); // replace nulls and '' with customizable values
        
       // ebp.chartData = response[1];       // Chart data
       ebp.ableBtnSave();                 // Button save
