@@ -1941,6 +1941,7 @@ public tableNodeExpand(event: any): void {
             backgroundColor: response.backgroundColor || '',
             kpiColor: response.kpiColor || '',
             prefixImage: response.prefixImage || '',
+            roundedBars: response.roundedBars ?? true,
         };
 
         let layout: any;
@@ -1989,6 +1990,7 @@ public tableNodeExpand(event: any): void {
                 backgroundColor: response.backgroundColor || '',
                 kpiColor: response.kpiColor || '',
                 prefixImage: response.prefixImage || '',
+                roundedBars: response.roundedBars ?? true,
             })
         );
 

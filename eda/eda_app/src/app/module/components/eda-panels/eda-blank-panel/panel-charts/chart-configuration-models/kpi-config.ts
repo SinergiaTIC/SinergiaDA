@@ -12,6 +12,8 @@ export class KpiConfig {
     backgroundColor: string = '';
     kpiColor: string = '';
     prefixImage: string = '';
+    /** kpitrend only: there's no dedicated branch for it in onCloseKpiProperties, so it's persisted through this generic config too. */
+    roundedBars: boolean = true;
     /** Edalitics mode only (KPI_CONFIG.USE_EDALITICS_SIZE_LOGIC true) */
     imageScale: number = KPI_CONFIG.IMAGE_DEFAULT_SCALE;
     valueFontScale: number = KPI_CONFIG.DEFAULT_FONT_SCALE;

@@ -131,16 +131,17 @@ export class EdaKpiTrendComponent implements OnInit, OnChanges, AfterViewInit, O
         const c0 = this.displayCurrentColor;
         const c1 = this.displayPreviousColor;
         const compLabel = this.displayComparisonLabel;
+        const showDatalabels = (this.inject?.edaChart?.showLabels ?? false) || (this.inject?.edaChart?.showLabelsPercent ?? false);
 
         const newDatasets: any[] = [{
             label: this.inject.header,
             data: result.currentSeries,
             type: 'bar',
-            borderRadius: 2,
+            borderRadius: (this.inject?.roundedBars ?? true) ? 6 : 0,
             order: 2,
             backgroundColor: c0,
             borderColor: c0,
-            datalabels: { display: false }
+            datalabels: { display: showDatalabels }
         }];
         if (compGroup) {
             newDatasets.push({
@@ -155,7 +156,7 @@ export class EdaKpiTrendComponent implements OnInit, OnChanges, AfterViewInit, O
                 order: 1,
                 backgroundColor: c1,
                 borderColor: c1,
-                datalabels: { display: false }
+                datalabels: { display: showDatalabels }
             });
         }
 
@@ -218,9 +219,31 @@ export class EdaKpiTrendComponent implements OnInit, OnChanges, AfterViewInit, O
 
     getValueStyle(): any {
         return {
-            color: this.color,
+            color: this._alertColor() || this.color,
             'font-family': this.family,
             'font-size': this._computeValueFontSize()
+        };
+    }
+
+    /** Alert threshold color override, checked against vsPercent (the "vs anterior" %) - same pattern as eda-kpi-deviation. */
+    private _alertColor(): string | null {
+        const limits: any[] = this.inject?.alertLimits;
+        if (!limits?.length || this.displayVsPercent === null) return null;
+        const pct = this.displayVsPercent;
+        for (const a of limits) {
+            const thr = Number(a.value);
+            if (a.operand === '<' && pct < thr) return a.color;
+            if (a.operand === '=' && pct === thr) return a.color;
+            if (a.operand === '>' && pct > thr) return a.color;
+        }
+        return null;
+    }
+
+    /** Style for the secondary (comparison period) value: same color/family as the main KPI, fixed smaller size */
+    getSpyValueStyle(): any {
+        return {
+            color: this.color,
+            'font-family': this.family
         };
     }
 

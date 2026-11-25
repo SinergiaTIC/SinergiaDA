@@ -65,8 +65,10 @@ export class KpiEditDialogComponent implements OnInit, AfterViewInit, AfterViewC
     public kpiBackgroundColor: string = '';
     public kpiTextColor: string = '';
     public prefixImage: string = '';
+    /** kpitrend only: corner roundness of the bars. */
+    public roundedBars: boolean = true;
     /** Snapshot for the "Apariencia" section "Restaurar" button. */
-    private initialAppearanceState: { kpiBackgroundColor: string, kpiTextColor: string, prefixImage: string } = null;
+    private initialAppearanceState: { kpiBackgroundColor: string, kpiTextColor: string, prefixImage: string, roundedBars: boolean } = null;
 
     // --- KPI+chart options (kpibar/kpiline/kpiarea only) ---
     public lineWidth: number = 2;
@@ -134,6 +136,11 @@ export class KpiEditDialogComponent implements OnInit, AfterViewInit, AfterViewC
     /** Old single numeric "Tamaño" input: kpitrend/kpideviation only, Edalitics mode only (unchanged). */
     get showLegacySizeControl(): boolean {
         return !this.useHoverResize && (this.isKpiTrend || this.isKpiDeviation);
+    }
+
+    /** Alerts: kpitrend and kpideviation both threshold a percentage (vsPercent), not a plain value. */
+    get isPercentThreshold(): boolean {
+        return this.isKpiTrend || this.isKpiDeviation;
     }
 
     constructor(
@@ -204,6 +211,7 @@ export class KpiEditDialogComponent implements OnInit, AfterViewInit, AfterViewC
         this.kpiTextColor = config.kpiColor
             || this.normalizeHexColor(this.getStyleProviderValue('panelFontColor'), '#67757c');
         this.prefixImage = config.prefixImage || '';
+        this.roundedBars = config.roundedBars ?? true;
         this.isKpiTrend = this.panelChartConfig.chartType === 'kpitrend';
         this.isKpiDeviation = this.panelChartConfig.chartType === 'kpideviation';
         this.activeTab = 'aspecto';
@@ -229,7 +237,7 @@ export class KpiEditDialogComponent implements OnInit, AfterViewInit, AfterViewC
         this.chartFillColor = config.edaChart?.chartFillColor || this.getKpiChartFillColor();
 
         // Snapshot for the per-section "Restaurar" buttons
-        this.initialAppearanceState = { kpiBackgroundColor: this.kpiBackgroundColor, kpiTextColor: this.kpiTextColor, prefixImage: this.prefixImage };
+        this.initialAppearanceState = { kpiBackgroundColor: this.kpiBackgroundColor, kpiTextColor: this.kpiTextColor, prefixImage: this.prefixImage, roundedBars: this.roundedBars };
         this.initialLineState = { lineWidth: this.lineWidth, lineStyle: this.lineStyle, chartLineColor: this.chartLineColor, chartFillColor: this.chartFillColor };
         this.initialAxisState = { showXAxis: this.showXAxis, showXAxisLabels: this.showXAxisLabels, showAllXAxisLabels: this.showAllXAxisLabels, xAxisLabelCount: this.xAxisLabelCount };
         this.initialLabelsState = { showLabels: this.showLabels, showLabelsPercent: this.showLabelsPercent, labelColor: this.labelColor, labelBackgroundColor: this.labelBackgroundColor };
@@ -326,6 +334,7 @@ export class KpiEditDialogComponent implements OnInit, AfterViewInit, AfterViewC
             backgroundColor: this.kpiBackgroundColor,
             kpiColor: this.kpiTextColor,
             prefixImage: this.prefixImage,
+            roundedBars: this.roundedBars,
         });
     }
 
@@ -422,6 +431,15 @@ export class KpiEditDialogComponent implements OnInit, AfterViewInit, AfterViewC
         });
         chartContent.lineWidth = this.lineWidth;
         chartContent.lineStyle = this.lineStyle;
+        this.commitChartContentChange();
+    }
+
+    /** kpitrend only: live-updates the bar dataset's corner roundness in the preview. */
+    applyRoundedBars(): void {
+        const chartContent = this.getLiveChartContent();
+        if (!chartContent?.chartDataset) return;
+        const bar = chartContent.chartDataset.find((d: any) => d.type === 'bar');
+        if (bar) bar.borderRadius = this.roundedBars ? 6 : 0;
         this.commitChartContentChange();
     }
 
@@ -657,9 +675,11 @@ export class KpiEditDialogComponent implements OnInit, AfterViewInit, AfterViewC
             this.kpiBackgroundColor = this.initialAppearanceState.kpiBackgroundColor;
             this.kpiTextColor = this.initialAppearanceState.kpiTextColor;
             this.prefixImage = this.initialAppearanceState.prefixImage;
+            this.roundedBars = this.initialAppearanceState.roundedBars;
             this.updateKpiBackground();
             this.updateKpiTextColor();
             this.updatePrefixImage();
+            if (this.isKpiTrend) this.applyRoundedBars();
         }
 
         if (this.originalAssignedColors.length > 0) {

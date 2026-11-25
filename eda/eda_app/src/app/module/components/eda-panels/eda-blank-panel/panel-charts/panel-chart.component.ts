@@ -1101,15 +1101,18 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
 
         // --- Build datasets (label = column name for bars, comparison label for line) ---
         const compLabel = this._comparisonLabel(dateFormat);
+        const showLabels = cfg.edaChart?.showLabels ?? false;
+        const showLabelsPercent = cfg.edaChart?.showLabelsPercent ?? false;
+        const showDatalabels = showLabels || showLabelsPercent;
         const rawDatasets: any[] = [{
             label: header,
             data: currentSeries,
             type: 'bar',
-            borderRadius: 2,
+            borderRadius: (cfg?.roundedBars ?? true) ? 6 : 0,
             order: 2,
             backgroundColor: color0,
             borderColor: color0,
-            datalabels: { display: false }
+            datalabels: { display: showDatalabels }
         }];
         if (hasTwoSeries) {
             rawDatasets.push({
@@ -1124,7 +1127,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
                 order: 1,
                 backgroundColor: color1,
                 borderColor: color1,
-                datalabels: { display: false }
+                datalabels: { display: showDatalabels }
             });
         }
 
@@ -1139,10 +1142,18 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         const chartOptions = this.chartUtils.initChartOptions(
             'bar', dataDescription.numericColumns[0]?.name,
             dataDescription.otherColumns, false, false, dimensions, null,
-            { min: null, max: null }, styles, false, false, false, false,
+            { min: null, max: null }, styles, showLabels, showLabelsPercent, false, false,
             cfg.numberOfColumns, 'barline', ticksOptions, false, cfg.showGridLines ?? true,
             this.styleProviderService
         );
+
+        const labelColor = cfg.edaChart?.labelColor || '#000000';
+        const labelBackgroundColor = cfg.edaChart?.labelBackgroundColor || '';
+        const chartOpts: any = chartOptions.chartOptions;
+        if (!chartOpts.plugins) chartOpts.plugins = {};
+        if (!chartOpts.plugins.datalabels) chartOpts.plugins.datalabels = {};
+        chartOpts.plugins.datalabels.color = labelColor;
+        chartOpts.plugins.datalabels.backgroundColor = labelBackgroundColor || null;
 
         // --- Build chartConfig – same pattern as renderEdaKpiChart ---
         const chartConfig: any = {};
@@ -1157,6 +1168,24 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
             chartLegend: false
         };
 
+        // --- X axis options - same pattern as renderEdaKpiChart ---
+        const showXAxis = cfg.edaChart?.showXAxis ?? true;
+        const showXAxisLabels = cfg.edaChart?.showXAxisLabels ?? true;
+        const xAxisLabelCount = cfg.edaChart?.xAxisLabelCount || 0;
+        // Unlike kpibar/kpiline/kpiarea, this defaults to false: kpitrend's chart area is much
+        // smaller (shares width with the KPI value column), so the existing xTicksLimit:3 smart-skip
+        // (left alone when neither override flag is set) stays the out-of-the-box behavior.
+        const showAllXAxisLabels = cfg.edaChart?.showAllXAxisLabels ?? false;
+        this.applyKpiXAxisOptions(chartConfig.edaChart.chartOptions, showXAxis, showXAxisLabels, xAxisLabelCount, labels, showAllXAxisLabels);
+        chartConfig.edaChart.showXAxis = showXAxis;
+        chartConfig.edaChart.showXAxisLabels = showXAxisLabels;
+        chartConfig.edaChart.xAxisLabelCount = xAxisLabelCount;
+        chartConfig.edaChart.showAllXAxisLabels = showAllXAxisLabels;
+        chartConfig.edaChart.showLabels = showLabels;
+        chartConfig.edaChart.showLabelsPercent = showLabelsPercent;
+        chartConfig.edaChart.labelColor = labelColor;
+        chartConfig.edaChart.labelBackgroundColor = labelBackgroundColor;
+
         // --- KPI values ---
         chartConfig.header = header;
         chartConfig.kpiValue = kpiValue;
@@ -1168,6 +1197,8 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         chartConfig.comparisonLabel = compLabel;
         chartConfig.decimals = decimals;
         chartConfig.prefixImage = cfg?.prefixImage || '';
+        chartConfig.roundedBars = cfg?.roundedBars ?? true;
+        chartConfig.alertLimits = cfg?.alertLimits || [];
 
         // --- Style config – same pattern as renderEdaKpiChart ---
         const propsConfig: any = this.props.config;

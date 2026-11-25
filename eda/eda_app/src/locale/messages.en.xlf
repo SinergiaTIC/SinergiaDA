@@ -5635,6 +5635,10 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
         <source>Grosor de línea</source>
         <target>Line thickness</target>
       </trans-unit>
+      <trans-unit id="kpiBarRadiusLabel">
+        <source>Bordes redondeados</source>
+        <target>Rounded corners</target>
+      </trans-unit>
       <trans-unit id="lineStyleLabel">
         <source>Tipo de línea</source>
         <target>Line type</target>

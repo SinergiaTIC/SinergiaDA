@@ -15,21 +15,19 @@
     <div class="flex-1 flex flex-col h-[77vh] overflow-auto">
 
       <!-- Tab buttons: always visible -->
-      <div class="px-6 pt-6 pb-4 grid gap-4" [class.grid-cols-2]="!isKpiTrend" [class.grid-cols-1]="isKpiTrend">
+      <div class="px-6 pt-6 pb-4 grid grid-cols-2 gap-4">
         <button
           class="kpi-tab-btn"
           [class.kpi-tab-btn--active]="activeTab === 'aspecto'"
           (click)="setActiveTab('aspecto')" i18n="@@kpiAspecto">
           Aspecto
         </button>
-        @if (!isKpiTrend) {
         <button
           class="kpi-tab-btn"
           [class.kpi-tab-btn--active]="activeTab === 'alerts'"
           (click)="setActiveTab('alerts')" i18n="@@kpiAlerts">
           Alertas
         </button>
-        }
       </div>
 
       <!-- Tab content scrollable -->
@@ -212,6 +210,15 @@
                       </div>
                     }
 
+                    @if (isKpiTrend) {
+                      <div class="chart-color-row chart-color-row--spaced">
+                        <span class="chart-color-label" i18n="@@kpiBarRadiusLabel">Bordes redondeados</span>
+                        <span class="chart-color-controls">
+                          <p-inputSwitch [(ngModel)]="roundedBars" (onChange)="applyRoundedBars()"></p-inputSwitch>
+                        </span>
+                      </div>
+                    }
+
                     <!-- Imagen prefijo -->
                     <div class="chart-color-row chart-color-row--spaced">
                       <span class="chart-color-label" i18n="@@kpiPrefixImage">Imagen prefijo</span>
@@ -234,7 +241,7 @@
               </div>
 
               <!-- Ejes y escala -->
-              @if (showAxisAndLabelSettings) {
+              @if (showAxisAndLabelSettings || isKpiTrend) {
                 <div class="kpi-config-section" [class.is-expanded]="isAxisScaleExpanded">
                   <div class="kpi-section-head" role="button" tabindex="0"
                     (click)="toggleSection('axisScale')"
@@ -280,7 +287,7 @@
               }
 
               <!-- Etiquetas y valores -->
-              @if (showAxisAndLabelSettings) {
+              @if (showAxisAndLabelSettings || isKpiTrend) {
                 <div class="kpi-config-section" [class.is-expanded]="isLabelsValuesExpanded">
                   <div class="kpi-section-head" role="button" tabindex="0"
                     (click)="toggleSection('labelsValues')"
@@ -337,7 +344,7 @@
       }
 
       <!-- TAB: Alerts -->
-      @if (activeTab === 'alerts' && !isKpiTrend) {
+      @if (activeTab === 'alerts') {
         <div class="space-y-6">
           <div class="grid gap-6">
 
@@ -379,17 +386,17 @@
 
                   <div class="space-y-3">
                     <label for="value" class="text-sm font-medium">
-                      @if (isKpiDeviation) {
+                      @if (isPercentThreshold) {
                         <span i18n="@@thresholdValuePercent">Valor umbral (%)</span>
                       } @else {
                         <span i18n="@@thresholdValue">Valor umbral</span>
                       }
                     </label>
                     <input id="value" type="text"
-                      [placeholder]="isKpiDeviation ? 'Ej: -10' : 'Ej: 50.5'"
+                      [placeholder]="isPercentThreshold ? 'Ej: -10' : 'Ej: 50.5'"
                       [(ngModel)]="value" class="w-full px-3 py-2 border rounded-md bg-white" />
                     <p class="text-xs text-slate-500 italic">
-                      @if (isKpiDeviation) {
+                      @if (isPercentThreshold) {
                         <span i18n="@@deviationPercTrigAlert">% de desviación que activará la alerta (ej: -10 = cuando la desviación sea inferior al -10%)</span>
                       } @else {
                         <span i18n="@@numValTrigAlert">Valor numérico que activará la alerta</span>
@@ -421,13 +428,13 @@
                 <div class="mt-4 flex items-center justify-between">
                   <div class="text-sm text-slate-600">
                     <span class="font-medium" i18n="@@alertsPreview">Vista previa: </span>
-                    @if (isKpiDeviation) {
+                    @if (isPercentThreshold) {
                       <span i18n="@@whenKpiDeviationIs">Cuando el % es</span>
                     } @else {
                       <span i18n="@@valueKPI">Cuando el valor KPI es</span>
                     }
                     <span class="font-mono">{{operand}}</span> que
-                    <span class="font-mono">{{value || "X"}}{{ isKpiDeviation ? '%' : '' }}</span>,
+                    <span class="font-mono">{{value || "X"}}{{ isPercentThreshold ? '%' : '' }}</span>,
                     <span class="ml-1 font-medium" [style.color]="color" i18n="@@textChangeColor">el texto cambiará a este color</span>
                   </div>
                   <button (click)="addAlert()"

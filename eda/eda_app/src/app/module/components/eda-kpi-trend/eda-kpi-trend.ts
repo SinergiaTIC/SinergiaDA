@@ -20,6 +20,8 @@ export class EdaKpiTrend {
     backgroundColor: string = '';
     kpiColor: string = '';
     prefixImage: string = '';
+    roundedBars: boolean = true;
+    alertLimits: any[] = [];
     currentYearColor: string = '';
     previousYearColor: string = '';
     // Dropdown / recalculation data
