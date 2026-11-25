@@ -2,6 +2,7 @@
 <p-dialog #dialogRef
     class="eda-dialog2" [header]="header"
     [(visible)]="display"
+    (onHide)="onDialogHidden()"
     [modal]="true"
     [closable]="false"
     [draggable]="draggable"
