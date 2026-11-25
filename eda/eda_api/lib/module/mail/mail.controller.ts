@@ -3,7 +3,6 @@ import { HttpException } from '../global/model/index';
 import { MailingService } from '../../services/mailingService/mailing.service'; //borrar
 const fs = require('fs');
 const path = require("path");
-let nodemailer = require('nodemailer');
 
 const CONFIG_PATH = path.resolve(__dirname, '../../../config/SMPT.config.json');
 
@@ -32,6 +31,7 @@ export class MailController {
       }
 
       const senderEmail = config.auth?.user;
+      const nodemailer = require('nodemailer');
       const transporter = nodemailer.createTransport(config);
 
       transporter.verify((error: any) => {
@@ -132,11 +132,12 @@ export class MailController {
 
   private static sendConfigConfirmationEmail(config: any) {
     try {
-      const transporter = nodemailer.createTransport({ ...config, family: 4 });
       const recipientEmail = config.auth?.user;
 
       if (!recipientEmail) return;
 
+      const nodemailer = require('nodemailer');
+      const transporter = nodemailer.createTransport({ ...config, family: 4 });
       transporter.verify((error: any) => {
         if (error) return;
 

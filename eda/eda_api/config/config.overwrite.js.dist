@@ -25,6 +25,8 @@ module.exports = {
     // ai_config: {
     //     AVAILABLE: true,
     // },
+    // Enable only datasource plugins used by this instance: googleanalytics, holded, odoo.
+    // plugins_config: { ENABLED_PLUGINS: ['googleanalytics'] },
     // saml_config: {
     //     issuer: 'https://your-idp.example.com',
     // },

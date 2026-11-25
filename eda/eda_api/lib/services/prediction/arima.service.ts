@@ -1,4 +1,9 @@
-import ARIMA from 'arima';
+let arimaModule: any;
+
+function loadArima(): any {
+    if (!arimaModule) arimaModule = require('arima');
+    return arimaModule;
+}
 
 export class ArimaService {
 
@@ -111,6 +116,8 @@ export class ArimaService {
             let minError = Infinity;
 
             if (!arimaParams) console.log('\n[4] EVALUACIÓN DE CONFIGS:');
+
+            const ARIMA = loadArima();
 
             for (const config of configs) {
                 try {

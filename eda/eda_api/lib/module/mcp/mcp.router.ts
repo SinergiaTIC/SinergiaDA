@@ -1,14 +1,10 @@
 import express, { Request, Response } from 'express';
-import { StreamableHTTPServerTransport } from '@modelcontextprotocol/sdk/server/streamableHttp.js';
-import { Client } from '@modelcontextprotocol/sdk/client/index.js';
-import { StreamableHTTPClientTransport } from '@modelcontextprotocol/sdk/client/streamableHttp.js';
 import { MCPAIProviderFactory } from '../../services/prompt/providers/mcp/mcp-ai-provider.factory';
 import { MCPHistoryMessage } from '../../services/prompt/providers/mcp/mcp-ai-provider.interface';
 import { NormalizedTool } from '../../services/prompt/providers/ai-provider.interface';
 import { authGuard } from '../../guards/auth-guard';
 import { buildEnhancedSystemPrompt, CHAT_MAIN_SYSTEM_PROMPT } from './mcp.prompts';
 import * as MCPUtils from './mcp.helpers';
-import * as mcpServer from './mcp.server';
 import { isFirstWorker } from '../../utils/cluster.util';
 
 const jwt    = require('jsonwebtoken');
@@ -97,6 +93,8 @@ McpRouter.post('/', async (req: Request, res: Response) => {
     }
 
     try {
+        const { StreamableHTTPServerTransport } = require('@modelcontextprotocol/sdk/server/streamableHttp.js');
+        const mcpServer = require('./mcp.server');
         const server = mcpServer.createMcpServer(requestUser);
         const transport = new StreamableHTTPServerTransport({ sessionIdGenerator: undefined });
         res.on('close', () => transport.close());
@@ -189,9 +187,12 @@ McpRouter.post('/chat', authGuard, async (req: Request, res: Response) => {
     console.log('[CHAT] POST /ia/chat — mensajes:', messages.length, '| user:', userId);
     console.log('[CHAT] Config — MODEL:', MODEL, '| MAX_TOKENS:', MAX_TOKENS, '| EDA_APP_URL:', EDA_APP_URL || '(no configurado)');
 
-    const mcpClient = new Client({ name: 'eda-chat', version: '1.0.0' });
+    let mcpClient: any;
 
     try {
+        const { Client } = require('@modelcontextprotocol/sdk/client/index.js');
+        const { StreamableHTTPClientTransport } = require('@modelcontextprotocol/sdk/client/streamableHttp.js');
+        mcpClient = new Client({ name: 'eda-chat', version: '1.0.0' });
         sendStatus('connecting');
         console.log('[CHAT] Conectando a MCP:', MCP_URL || '(no configurado)');
         const reqUser = (req as any).user;
