@@ -193,7 +193,7 @@ export class GlobalFilterComponent implements OnInit {
             });
         }
 
-        // Resetear antes de recalcular: si ningún filtro queda visible, el botón no debe mostrarse.
+        // Reset before recalculating: if no filter remains visible, the button must not be shown.
         this.filterButtonVisibility.public = false;
         this.filterButtonVisibility.readOnly = false;
         myFilters.forEach(a => {
@@ -291,7 +291,7 @@ export class GlobalFilterComponent implements OnInit {
     }
 
     async recursiveFilters(filter: any, globalFilters: any, _id: any, dashboardId: any, filterCollection: any) {
-        
+
         if(filter.children.length !==0) {
 
             for(let i=0; i<filter.children.length; i++) {
@@ -311,7 +311,7 @@ export class GlobalFilterComponent implements OnInit {
 
                 // Parent filters are added
                 for(let r=0; r<globalFilters.length; r++) {
-                    if(globalFilters[r].id !==filter.id && globalFilters[r].id !==filterItem.id) {  
+                    if(globalFilters[r].id !==filter.id && globalFilters[r].id !==filterItem.id) {
                         this.filterCollectionRecursive(globalFilters[r].children, filterItem.id, globalFilters[r], filterCollection)
                     }
                 }
@@ -332,7 +332,7 @@ export class GlobalFilterComponent implements OnInit {
                 };
 
                 // EXECUTE THE QUERY
-                
+
                 this.loading = true;
                 const query = this.queryBuilderService.normalQuery([filterItem.selectedColumn], queryParams);
                 const res = await this.dashboardService.executeQuery(query).toPromise();
@@ -372,7 +372,7 @@ export class GlobalFilterComponent implements OnInit {
     }
 
     filterCollectionRecursive( children: any[] | undefined, id: string, globalFilter: any, filterCollection: any[] ): boolean {
-        
+
         if (!children || children.length === 0) return false;
 
         for (const child of children) {
@@ -451,7 +451,7 @@ export class GlobalFilterComponent implements OnInit {
                 }
             }
 
-            
+
             this.globalFilter = globalFilter;
         }
     }
@@ -498,7 +498,7 @@ export class GlobalFilterComponent implements OnInit {
     })
 }
     validateFilter(){
-        const mandatoryFilters: {value :boolean, items: any} = this.checkAllMandatoryFilters(); 
+        const mandatoryFilters: {value :boolean, items: any} = this.checkAllMandatoryFilters();
         if(mandatoryFilters.value){
             // Applying the report filters changes the report (same as reloadOnGlobalFilter did)
             this.dashboardService.setNotSaved(true);
@@ -647,7 +647,7 @@ export class GlobalFilterComponent implements OnInit {
                 this.globalFilters.forEach((gf: any) => {
                     gf.children = [];
                 });
-    
+
                 this.alertService.addWarning($localize`:@@DFSettingsRestarted:Se ha reiniciado la configuración de los filtros dependientes`);
                 this.initGlobalFilters(this.globalFilters)
             }
@@ -755,7 +755,7 @@ export class GlobalFilterComponent implements OnInit {
 
         // Update fileterList and clean panels' filters
         this.globalFilters = this.globalFilters.filter((f: any) => f.id !== filter.id);
-        
+
         this.dashboard.edaPanels.forEach(panel => {
             panel.globalFilters = panel.globalFilters.filter((f: any) => f.filter_id !== filter.id);
         });
@@ -802,7 +802,7 @@ export class GlobalFilterComponent implements OnInit {
     /**
      * Process data from date picker and apply filter
      * @param event dates and range(week, month, year, all) if any
-     * @param filter 
+     * @param filter
      */
     public processPickerEvent(event: any, filter: any): void {
         filter.dateFilterType = event.operator;
@@ -844,7 +844,7 @@ export class GlobalFilterComponent implements OnInit {
 
     /**
      * Set datePicker's configuration
-     * @param filter 
+     * @param filter
      */
     private loadDatesFromFilter(filter) {
         this.datePickerConfigs[filter.id] = new DatePickerConfig();
@@ -898,24 +898,24 @@ export class GlobalFilterComponent implements OnInit {
         };
 
         try {
-            
+
             const query = this.queryBuilderService.normalQuery([targetColumn], queryParams);
             query.query.forSelector = true;
 
-            
+
             const res = await this.dashboardService.executeQuery(query).toPromise();
             const message = res[0][0];
-            
+
             if (['noDataAllowed', 'noFilterAllowed'].includes(message)) {
                 const restrictedFilter = this.globalFilters.find((gf: any) => gf.id == globalFilter.id);
                 if (restrictedFilter) {
                     restrictedFilter.visible = 'hidden';
                     restrictedFilter.data = false;
-                    // Recalcular la visibilidad del botón por si este era el último filtro visible
+                    // Recalculate button visibility in case this was the last visible filter
                     this.setFilterButtonVisibilty();
                 }
             }
-            
+
             const data = res[1].filter(item => !!item[0]).map(item => ({ label: item[0], value: item[0] }));
 
             // If I have empty values I replace them with the empty string text — equivalent to IS NULL OR EMPTY
@@ -1098,7 +1098,7 @@ export class GlobalFilterComponent implements OnInit {
             };
         const query = this.queryBuilderService.normalQuery([targetColumn], queryParams);
         const res = await this.dashboardService.executeQuery(query).toPromise();
-        
+
         const data = res[1].filter(item => !!item[0] || item[0] == '').map(item => ({ label: item[0], value: item[0] }));
         this.globalFilters.find((gf: any) => gf.id == filtro.id).data = data;
 
@@ -1134,7 +1134,7 @@ export class GlobalFilterComponent implements OnInit {
             this.itemJustSelected = false; // reset
             return;
         }
-        event.preventDefault(); 
+        event.preventDefault();
 
         if (this.autoCompleteValues && this.autoCompleteValues.length > 0) {
             const selected = filter.selectedItems || [];
@@ -1206,7 +1206,7 @@ export class GlobalFilterComponent implements OnInit {
     // filter configured with a no-value operator (not_null, not_null_nor_empty, null_or_empty),
     // where selectedItems is always empty even though the filter is meaningfully set.
         if (filter && (!filter.selectedItems || filter.selectedItems.length === 0) && !filter.dateFilterType) return;
-    // If there is some active timeout to hide the tooltip, it will be cleared 
+    // If there is some active timeout to hide the tooltip, it will be cleared
         if (this.tooltipHideTimeout && this.lastPanel === filter.id) {
            clearTimeout(this.tooltipHideTimeout);
            this.tooltipHideTimeout = null;

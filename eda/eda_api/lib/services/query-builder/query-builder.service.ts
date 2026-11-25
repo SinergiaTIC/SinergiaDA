@@ -87,7 +87,8 @@ export abstract class QueryBuilderService {
 
         let graph = this.buildGraph();
         /* Agafem els noms de les taules, origen i destí (és arbitrari), les columnes i el tipus d'agregació per construïr la consulta */
-        let origin = this.queryTODO.rootTable || this.queryTODO.fields.find(x => x.order === 0).table_id;
+        const rootTable: any = this.queryTODO.rootTable;
+        let origin = (typeof rootTable === 'object' ? rootTable?.table_name : rootTable) || this.queryTODO.fields.find(x => x.order === 0).table_id;
         let view = this.tables.filter(table => table.table_name.trim() === origin.trim()).map(table => { return table.query ? true: false })[0];
         let dest = [];
         const valueListList = [];
@@ -1148,12 +1149,15 @@ export abstract class QueryBuilderService {
         const modelPermissions = this.dataModel.ds.metadata.model_granted_roles;
 
 
-        /** Check the permissions behaviour. If they are recursive get recursive permissions*/
-        const permissions =
-            eda_api_config.custom_behaviour.USE_RECURSIVE_PERMISSIONS?
-            this.getRecursivePermissions(modelPermissions, this.tables, origin, this.queryTODO):
-            this.getFlatPermissions(modelPermissions, this.queryTODO)
-            ;
+        /** SQL panels always use related-tables permissions (like 2.12.0), regardless of the
+         *  USE_RECURSIVE_PERMISSIONS flag, which only governs TREE/Edalitics mode (builder). Using
+         *  flat (column-based) permissions here returns nothing for SQL panels because their
+         *  fields are empty, so security would never be injected.
+         *  Only keep the permissions of the table being replaced (like 2.12.0 did), otherwise
+         *  every related table's permission would be joined into one subquery and exceed
+         *  MariaDB's limit of 61 tables per join. */
+        const permissions = this.getRecursivePermissions(modelPermissions, this.tables, origin, this.queryTODO)
+            .filter((p: any) => p.filter_table == this.cleanOriginTable(table));
         
         const joinType = 'inner'; // es per els permisos. Ha de ser així.
         const valueListJoins = []; // anulat
