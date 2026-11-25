@@ -61,6 +61,10 @@ export class EdaDialog2Component extends EdaDialog2 implements OnInit, OnChanges
 
 
     private resizeObserver!: ResizeObserver;
+    // Armed when Apply/Close is requested; fired from onDialogHidden() once
+    // PrimeNG's hide animation has actually run, so its scroll-lock cleanup
+    // executes and the page scrollbar is restored.
+    public pendingEmit: (() => void) | null = null;
     public ifShowApply: boolean;
     public ifShowClose: boolean;
     public ifShowReset: boolean;
@@ -121,15 +125,35 @@ export class EdaDialog2Component extends EdaDialog2 implements OnInit, OnChanges
         }
     }
 
+    // Arms the emit so it fires from onDialogHidden(), confirming the close
+    // animation actually ran instead of destroying the dialog mid-animation.
+    public override onApply(): void {
+        this.display = false;
+        this.pendingEmit = () => super.onApply();
+    }
+
+    public override onClose(): void {
+        this.display = false;
+        this.pendingEmit = () => super.onClose();
+    }
+
+    public onDialogHidden(): void {
+        const emit = this.pendingEmit;
+        this.pendingEmit = null;
+        emit?.();
+    }
+
     public ngOnDestroy(): void {
         this.display = false;
         this.resizeObserver?.disconnect();
-        // When the host destroys this dialog in the same change-detection cycle
-        // as Apply/Close, PrimeNG's hide animation never runs, so the scroll
-        // lock it placed on <body> (p-overflow-hidden) is never released and
-        // the page loses its scrollbar. Re-check after the current destroy
-        // cycle: if no dialog mask is left in the DOM, restore the body scroll.
-        // A dialog still open keeps its mask, so it is not affected.
+        // Fallback in case onHide never fired: release any armed emit so the
+        // host is not left waiting, and restore the body scroll if no dialog
+        // mask remains in the DOM.
+        if (this.pendingEmit) {
+            const emit = this.pendingEmit;
+            this.pendingEmit = null;
+            setTimeout(() => emit());
+        }
         setTimeout(() => {
             if (document.querySelectorAll('.p-dialog-mask').length === 0) {
                 document.body.classList.remove('p-overflow-hidden');
