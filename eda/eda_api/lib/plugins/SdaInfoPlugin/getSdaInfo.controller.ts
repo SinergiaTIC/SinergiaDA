@@ -1,7 +1,6 @@
 import { Request, Response } from 'express';
 import * as fs from 'fs';
 import * as path from 'path';
-import { createConnection } from 'mysql2/promise';
 import mongoose from 'mongoose';
 import Group from '../../module/admin/groups/model/group.model';
 import { updateModel } from '../updateModel/updateModel.controller';
@@ -9,6 +8,11 @@ import { userAndGroupsToMongo } from '../updateModel/service/usersAndGroupsToMon
 import { insertServerLog } from '../../services/server-log/server-log.service';
 
 const sinergiaDatabase = require('../../../config/sinergiacrm.config');
+
+function createSinergiaConnection(config: any) {
+  const { createConnection } = require('mysql2/promise');
+  return createConnection(config);
+}
 
 // The shared date-format.service.ts doesn't zero-pad hours/minutes/seconds,
 // which doesn't match the "YYYY-MM-DD HH:mm:ss" format the old app used (via moment).
@@ -71,7 +75,7 @@ export class GetSdaInfoController {
 
     // Last rebuild date, read from SinergiaCRM's own config table.
     try {
-      const connection = await createConnection({
+      const connection = await createSinergiaConnection({
         host: sinergiaDatabase.sinergiaConn.host,
         port: sinergiaDatabase.sinergiaConn.port,
         user: sinergiaDatabase.sinergiaConn.user,
@@ -261,7 +265,7 @@ export class GetSdaInfoController {
         return res.status(403).json({ ok: false, error: 'admin-required' });
       }
 
-      const connection = await createConnection({
+      const connection = await createSinergiaConnection({
         host: sinergiaDatabase.sinergiaConn.host,
         port: sinergiaDatabase.sinergiaConn.port,
         user: sinergiaDatabase.sinergiaConn.user,
@@ -325,7 +329,7 @@ export class GetSdaInfoController {
       // 1. SinergiaCRM connection (latency + server version).
       const startedAt = Date.now();
       try {
-        const connection = await createConnection({
+        const connection = await createSinergiaConnection({
           host: sinergiaDatabase.sinergiaConn.host,
           port: sinergiaDatabase.sinergiaConn.port,
           user: sinergiaDatabase.sinergiaConn.user,
