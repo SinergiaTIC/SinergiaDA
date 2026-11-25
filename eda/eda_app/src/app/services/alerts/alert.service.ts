@@ -35,7 +35,11 @@ export class AlertService {
             if (err.text) {
                 message = err.text;
             } else {
-                message = ' - Server Error';
+                if (err?.message) {
+                    message = err.message;
+                } else {
+                    message = ' - Server Error';
+                }
             }
         }
 
