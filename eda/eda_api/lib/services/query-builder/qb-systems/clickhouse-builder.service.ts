@@ -693,8 +693,16 @@ export class ClickHouseBuilderService extends QueryBuilderService {
         if (filterObject.filter_type === 'not_like') {
           return `${colname} NOT ILIKE '%${filterObject.filter_elements[0].value1}%' `;
         }
+        if (colType === 'date') {
+          const dateFilter = this.dateFilterToString(filterObject, colname, colType);
+          if (dateFilter !== undefined) return dateFilter;
+        }
         return `${colname} ${filterObject.filter_type} ${this.processFilter(filterObject.filter_elements[0].value1, colType)} `;
       case 1:
+        if (colType === 'date') {
+          const dateFilter = this.dateFilterToString(filterObject, colname, colType);
+          if (dateFilter !== undefined) return dateFilter;
+        }
         if (filterObject.filter_type === 'not_in') filterObject.filter_type = 'NOT IN';
         return `${colname} ${filterObject.filter_type} (${this.processFilter(filterObject.filter_elements[0].value1, colType)}) `;
       case 2:
@@ -777,8 +785,16 @@ export class ClickHouseBuilderService extends QueryBuilderService {
         if (filterObject.filter_type === 'not_like') {
           return `${colname} NOT ILIKE '%${filterObject.filter_elements[0].value1}%' `;
         }
+        if (colType === 'date') {
+          const dateFilter = this.dateFilterToString(filterObject, colname, colType);
+          if (dateFilter !== undefined) return dateFilter;
+        }
         return `${colname} ${filterObject.filter_type} ${this.processFilter(filterObject.filter_elements[0].value1, colType)} `;
       case 1:
+        if (colType === 'date') {
+          const dateFilter = this.dateFilterToString(filterObject, colname, colType);
+          if (dateFilter !== undefined) return dateFilter;
+        }
         if (filterObject.filter_type === 'not_in') filterObject.filter_type = 'NOT IN';
         return `${colname} ${filterObject.filter_type} (${this.processFilter(filterObject.filter_elements[0].value1, colType)}) `;
       case 2:

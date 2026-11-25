@@ -67,6 +67,7 @@ export abstract class QueryBuilderService {
     abstract filterToString(filterObject: any);
     abstract havingToString(filterObject: any);
     abstract processFilter(filter: any, columnType: string);
+    abstract processFilterEndRange(filter: any, columnType: string);
     abstract normalQuery(columns: string[], origin: string, dest: any[], joinTree: any[],
         grouping: any[], filters: any[], havingFilters: any[], tables: Array<any>, limit: number, 
         joinType: string,groupByEnabled:boolean, valueListJoins:any[], Schema?: string, database?: string, forSelector?: any, sortedFilters?: any[]  );
@@ -1048,6 +1049,29 @@ export abstract class QueryBuilderService {
         else if (filter === 'is_null') return 4;
         else if (filter === 'not_null_nor_empty') return 5;
         else if (filter === 'null_or_empty') return 6;
+    }
+
+    public dateFilterToString(filterObject: any, colname: any, colType: string): string | undefined {
+        if (colType !== 'date') return undefined;
+        const op = filterObject.filter_type;
+        const value = filterObject.filter_elements[0].value1;
+        if (op === 'in' || op === 'not in' || op === 'not_in') {
+            const ranges = value.map((v: any) => `(${colname} >= ${this.processFilter([v], colType)} and ${colname} <= ${this.processFilterEndRange([v], colType)})`).join(' or ');
+            return op === 'in' ? `( ${ranges} ) ` : `not ( ${ranges} ) `;
+        }
+        if (op === '=') {
+            return `${colname} >= ${this.processFilter(value, colType)} and ${colname} <= ${this.processFilterEndRange(value, colType)} `;
+        }
+        if (op === '!=' || op === '<>') {
+            return `(${colname} < ${this.processFilter(value, colType)} or ${colname} > ${this.processFilterEndRange(value, colType)}) `;
+        }
+        if (op === '>') {
+            return `${colname} > ${this.processFilterEndRange(value, colType)} `;
+        }
+        if (op === '<=') {
+            return `${colname} <= ${this.processFilterEndRange(value, colType)} `;
+        }
+        return undefined;
     }
 
 
