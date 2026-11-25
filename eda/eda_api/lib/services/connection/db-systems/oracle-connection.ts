@@ -1,4 +1,5 @@
-import oracledb, { Connection } from 'oracledb';
+import type { Connection } from 'oracledb';
+import { getOracleClient } from './oracle-client';
 import { AbstractConnection } from '../abstract-connection';
 import { AggregationTypes } from '../../../module/global/model/aggregation-types';
 import { OracleBuilderService } from '../../query-builder/qb-systems/oracle-builder.service';
@@ -24,6 +25,7 @@ export class OracleConnection extends AbstractConnection {
     }
 
     async getclient() {
+        const oracledb = getOracleClient();
         const connectString = parseInt(this.config.sid) === 1 ?
             `(DESCRIPTION =
                 (ADDRESS = (PROTOCOL = TCP)(HOST = ${this.config.host})(PORT = ${this.config.port}))

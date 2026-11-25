@@ -1,4 +1,3 @@
-import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { z } from 'zod';
 import DataSource from '../datasource/model/datasource.model';
 import Dashboard from '../dashboard/model/dashboard.model';
@@ -74,6 +73,7 @@ function generateBarChart(columnas: string[], filas: any[][]): BarChartPayload |
 // ============================================================
 
 export function createMcpServer(requestUser?: any) {
+    const { McpServer } = require('@modelcontextprotocol/sdk/server/mcp.js');
     console.log('[MCP] createMcpServer - registrando tools...');
     const server = new McpServer({ name: 'eda-mcp', version: '1.0.0' });
 

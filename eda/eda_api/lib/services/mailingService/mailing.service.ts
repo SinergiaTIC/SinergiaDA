@@ -3,7 +3,6 @@ import { UserController } from './../../module/admin/users/user.controller';
 import { ManagerConnectionService } from '../../services/connection/manager-connection.service';
 import Dashboard from '../../module/dashboard/model/dashboard.model';
 const mailConfig = require('../../../config/mailing.config')
-let nodemailer = require('nodemailer');
 import { SchedulerFunctions } from './../scheduler/schedulerFunctions';
 import { MailDashboardsController } from '../dashboardToPDFService/mail-dashboards.controller';
 const fs = require('fs');
@@ -34,6 +33,7 @@ export class MailingService {
 
     const config = { ...smtpConfig, family: 4 };
     const senderEmail = smtpConfig.auth?.user;
+    const nodemailer = require('nodemailer');
     const transporter = nodemailer.createTransport(config);
     transporter.verify(async (error: any) => {
       if (error) {
