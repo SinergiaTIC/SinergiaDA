@@ -1,8 +1,9 @@
-import { Component, OnInit, OnChanges, SimpleChanges, Input, HostBinding,
+import { Component, OnInit, OnChanges, SimpleChanges, Input, Output, EventEmitter, HostBinding,
          ChangeDetectorRef, AfterViewInit, Self, ElementRef, Inject, LOCALE_ID } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { EdaKpiDeviation } from './eda-kpi-deviation';
 import { StyleProviderService } from '@eda/services/service.index';
+import { KPI_CONFIG } from '@eda/configs/customizable/customizable_merged';
 
 @Component({
     standalone: true,
@@ -13,6 +14,7 @@ import { StyleProviderService } from '@eda/services/service.index';
 })
 export class EdaKpiDeviationComponent implements OnInit, OnChanges, AfterViewInit {
     @Input() inject: EdaKpiDeviation;
+    @Output() onNotify: EventEmitter<any> = new EventEmitter();
 
     @HostBinding('style.display') readonly hostDisplay = 'block';
     @HostBinding('style.position') readonly hostPosition = 'relative';
@@ -22,6 +24,7 @@ export class EdaKpiDeviationComponent implements OnInit, OnChanges, AfterViewIni
     displayValue: number = 0;
     displayVsPercent: number | null = null;
     displayHeader: string = '';
+    displayReferenceLabel: string = '';
     positiveColor: string = '#22a55b';
     negativeColor: string = '#e53e3e';
 
@@ -34,6 +37,13 @@ export class EdaKpiDeviationComponent implements OnInit, OnChanges, AfterViewIni
     color: string = '#67757c';
     family: string = 'inherit';
 
+    /** true → forks mode: hover +/- buttons on the value itself (Edalitics adjusts the same field from the dialog instead). */
+    public readonly useHoverResize: boolean = !KPI_CONFIG.USE_EDALITICS_SIZE_LOGIC;
+    public isHovered: boolean = false;
+    private readonly fontPointsStep = 2;
+    private readonly fontPointsMin = -90;
+    private readonly fontPointsMax = 300;
+
     constructor(
         private styleProviderService: StyleProviderService,
         private cdr: ChangeDetectorRef,
@@ -42,6 +52,17 @@ export class EdaKpiDeviationComponent implements OnInit, OnChanges, AfterViewIni
     ) {
         this.color = this.styleProviderService.panelFontColor.source['_value'] || '#67757c';
         this.family = this.styleProviderService.panelFontFamily.source['_value'] || 'inherit';
+
+        this.styleProviderService.panelFontColor.subscribe(color => {
+            this.color = this.inject?.kpiColor
+                || color
+                || ((this.displayVsPercent ?? 0) >= 0 ? this.positiveColor : this.negativeColor);
+            this.cdr.detectChanges();
+        });
+        this.styleProviderService.panelFontFamily.subscribe(family => {
+            this.family = family || 'inherit';
+            this.cdr.detectChanges();
+        });
     }
 
     ngOnChanges(changes: SimpleChanges): void {
@@ -64,6 +85,7 @@ export class EdaKpiDeviationComponent implements OnInit, OnChanges, AfterViewIni
         this.displayValue = this.inject.value ?? 0;
         this.displayVsPercent = this.inject.vsPercent ?? null;
         this.displayHeader = this.inject.header || '';
+        this.displayReferenceLabel = this.inject.referenceLabel || '';
         this.positiveColor = this.inject.positiveColor || '#22a55b';
         this.negativeColor = this.inject.negativeColor || '#e53e3e';
 
@@ -73,28 +95,30 @@ export class EdaKpiDeviationComponent implements OnInit, OnChanges, AfterViewIni
         this._computeBar();
     }
 
+    /**
+     * Fixed center at 50% (the "0" reference point never moves), filling right for a positive
+     * deviation or left for a negative one - unlike a sliding 0/scale layout, the scale at both
+     * ends stays comparable (-barScale% .. +barScale%) regardless of the value's sign.
+     */
     private _computeBar(): void {
         if (this.displayVsPercent === null) {
-            this.barFillLeft = 0;
+            this.barFillLeft = 50;
             this.barFillWidth = 0;
-            this.markerLeft = 0;
+            this.markerLeft = 50;
             this.barScale = 100;
             return;
         }
-        // Dynamic scale: increases in steps of 100 (minimum 100)
         this.barScale = Math.max(100, Math.ceil(Math.abs(this.displayVsPercent) / 100) * 100);
-        const ratio = Math.min(Math.abs(this.displayVsPercent) / this.barScale, 1);
+        const half = Math.min(Math.abs(this.displayVsPercent) / this.barScale, 1) * 50;
 
         if (this.displayVsPercent >= 0) {
-            // 0 on the left, +barScale on the right
-            this.barFillLeft = 0;
-            this.barFillWidth = ratio * 100;
-            this.markerLeft = ratio * 100;
+            this.barFillLeft = 50;
+            this.barFillWidth = half;
+            this.markerLeft = 50 + half;
         } else {
-            // -barScale on the left, 0 on the right
-            this.barFillLeft = (1 - ratio) * 100;
-            this.barFillWidth = ratio * 100;
-            this.markerLeft = (1 - ratio) * 100;
+            this.barFillLeft = 50 - half;
+            this.barFillWidth = half;
+            this.markerLeft = 50 - half;
         }
     }
 
@@ -109,6 +133,11 @@ export class EdaKpiDeviationComponent implements OnInit, OnChanges, AfterViewIni
 
     get isPositive(): boolean {
         return (this.displayVsPercent ?? 0) >= 0;
+    }
+
+    /** Deviation bar corner roundness: on/off, same as kpitrend's "Bordes redondeados". */
+    get barRadius(): string {
+        return (this.inject?.roundedBars ?? true) ? '3px' : '0px';
     }
 
     getContainerStyle(): any {
@@ -133,6 +162,28 @@ export class EdaKpiDeviationComponent implements OnInit, OnChanges, AfterViewIni
             if (a.operand === '>' && pct > thr) return a.color;
         }
         return null;
+    }
+
+    /** Auxiliary texts: header label + bar scale labels (-%, 0, +%), independently resizable */
+    getAuxLabelStyle(): any {
+        return { 'font-size': this._auxFontSize(11) + 'px' };
+    }
+
+    getAuxScaleLabelStyle(): any {
+        return { 'font-size': this._auxFontSize(12) + 'px' };
+    }
+
+    /** Increment/decrement row ("Vs. <ref> ▲ XX%"), independently resizable */
+    getDeltaStyle(): any {
+        return { 'font-size': this._deltaFontSize(12) + 'px' };
+    }
+
+    private _auxFontSize(base: number): number {
+        return Math.max(6, base + (this.inject?.auxFontPoints || 0));
+    }
+
+    private _deltaFontSize(base: number): number {
+        return Math.max(6, base + (this.inject?.deltaFontPoints || 0));
     }
 
     private _computeValueFontSize(): string {
@@ -163,5 +214,40 @@ export class EdaKpiDeviationComponent implements OnInit, OnChanges, AfterViewIni
     public updateChart(): void {
         this._syncFromInject();
         this.cdr.detectChanges();
+    }
+
+    onMouseEnter(): void {
+        this.isHovered = true;
+    }
+
+    onMouseLeave(): void {
+        this.isHovered = false;
+    }
+
+    shouldShowControls(): boolean {
+        return this.useHoverResize && !!this.inject?.showResizeControls && this.isHovered;
+    }
+
+    increaseFont(): void {
+        this._applyFontPoints((this.inject?.modifiedFontPoints || 0) + this.fontPointsStep);
+    }
+
+    decreaseFont(): void {
+        this._applyFontPoints((this.inject?.modifiedFontPoints || 0) - this.fontPointsStep);
+    }
+
+    canIncreaseFont(): boolean {
+        return (this.inject?.modifiedFontPoints || 0) < this.fontPointsMax;
+    }
+
+    canDecreaseFont(): boolean {
+        return (this.inject?.modifiedFontPoints || 0) > this.fontPointsMin;
+    }
+
+    private _applyFontPoints(value: number): void {
+        const clamped = Math.min(this.fontPointsMax, Math.max(this.fontPointsMin, value));
+        if (this.inject) this.inject.modifiedFontPoints = clamped;
+        this.cdr.detectChanges();
+        this.onNotify.emit({ modifiedFontPoints: clamped });
     }
 }

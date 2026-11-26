@@ -14,6 +14,9 @@ export class KpiConfig {
     prefixImage: string = '';
     /** kpitrend only: there's no dedicated branch for it in onCloseKpiProperties, so it's persisted through this generic config too. */
     roundedBars: boolean = true;
+    /** kpitrend only: independent size offsets (points) for auxiliary texts and the increment/decrement row. */
+    auxFontPoints: number = 0;
+    deltaFontPoints: number = 0;
     /** Edalitics mode only (KPI_CONFIG.USE_EDALITICS_SIZE_LOGIC true) */
     imageScale: number = KPI_CONFIG.IMAGE_DEFAULT_SCALE;
     valueFontScale: number = KPI_CONFIG.DEFAULT_FONT_SCALE;

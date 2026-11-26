@@ -68,6 +68,41 @@
                 </div>
               }
 
+              <!-- Aux text / delta size: kpitrend/kpideviation, both modes (no hover equivalent for these small texts) -->
+              @if (isKpiTrend || isKpiDeviation) {
+                <div class="kpi-config-section" [class.is-expanded]="isAuxDeltaSizeExpanded">
+                  <div class="kpi-section-head" role="button" tabindex="0"
+                    (click)="toggleSection('auxDeltaSize')"
+                    (keydown.enter)="toggleSection('auxDeltaSize')"
+                    (keydown.space)="toggleSection('auxDeltaSize')">
+                    <h6 class="custom-border-b1" i18n="@@kpiAuxDeltaSize">Tamaño de textos auxiliares e incremento/decremento</h6>
+                    <div class="kpi-section-actions">
+                      <i class="pi" [ngClass]="isAuxDeltaSizeExpanded ? 'pi-chevron-up' : 'pi-chevron-down'"></i>
+                    </div>
+                  </div>
+                  @if (isAuxDeltaSizeExpanded) {
+                    <div class="chart-color-selection">
+                      <div class="chart-color-row">
+                        <span class="chart-color-label" i18n="@@kpiAuxTextSize">Tamaño de textos auxiliares</span>
+                        <span class="chart-color-controls kpi-size-controls">
+                          <button type="button" class="kpi-size-btn" (click)="decreaseAuxFont()" [disabled]="!canDecreaseAuxFont()">-</button>
+                          <button type="button" class="kpi-size-btn" (click)="increaseAuxFont()" [disabled]="!canIncreaseAuxFont()">+</button>
+                          <span class="kpi-size-percent">{{ auxFontPoints }}</span>
+                        </span>
+                      </div>
+                      <div class="chart-color-row chart-color-row--spaced">
+                        <span class="chart-color-label" i18n="@@kpiDeltaTextSize">Tamaño de incremento/decremento</span>
+                        <span class="chart-color-controls kpi-size-controls">
+                          <button type="button" class="kpi-size-btn" (click)="decreaseDeltaFont()" [disabled]="!canDecreaseDeltaFont()">-</button>
+                          <button type="button" class="kpi-size-btn" (click)="increaseDeltaFont()" [disabled]="!canIncreaseDeltaFont()">+</button>
+                          <span class="kpi-size-percent">{{ deltaFontPoints }}</span>
+                        </span>
+                      </div>
+                    </div>
+                  }
+                </div>
+              }
+
               <!-- Size: plain kpi and kpi+chart — image and suffix are always adjusted here (both modes); the number only in Edalitics mode (in forks it is adjusted via the hover +/- on the KPI itself) -->
               @if (showImageSufixSizeControls) {
                 <div class="kpi-config-section" [class.is-expanded]="isSizeExpanded">
@@ -210,7 +245,7 @@
                       </div>
                     }
 
-                    @if (isKpiTrend) {
+                    @if (isKpiTrend || isKpiDeviation) {
                       <div class="chart-color-row chart-color-row--spaced">
                         <span class="chart-color-label" i18n="@@kpiBarRadiusLabel">Bordes redondeados</span>
                         <span class="chart-color-controls">

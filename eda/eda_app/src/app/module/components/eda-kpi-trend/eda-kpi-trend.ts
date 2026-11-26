@@ -35,4 +35,9 @@ export class EdaKpiTrend {
     edaChart: any;
     // Font size offset (from kpi-dialog)
     modifiedFontPoints: number = 0;
+    // Independent size offsets (points) for auxiliary texts (period title, spy value, comparison label) and the increment/decrement row
+    auxFontPoints: number = 0;
+    deltaFontPoints: number = 0;
+    // forks mode only: show the hover +/- resize buttons (driven by eda-blank-panel's editable/lock state)
+    showResizeControls: boolean = false;
 }

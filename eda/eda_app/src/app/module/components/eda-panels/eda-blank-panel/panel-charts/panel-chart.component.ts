@@ -1208,11 +1208,15 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
             chartConfig.backgroundColor = trendCfg?.backgroundColor || '';
             chartConfig.kpiColor = trendCfg?.kpiColor || '';
             chartConfig.modifiedFontPoints = trendCfg?.modifiedFontPoints || 0;
+            chartConfig.auxFontPoints = trendCfg?.auxFontPoints || 0;
+            chartConfig.deltaFontPoints = trendCfg?.deltaFontPoints || 0;
         } else {
             chartConfig.sufix = '';
             chartConfig.backgroundColor = '';
             chartConfig.kpiColor = '';
             chartConfig.modifiedFontPoints = 0;
+            chartConfig.auxFontPoints = 0;
+            chartConfig.deltaFontPoints = 0;
         }
         chartConfig.currentYearColor = color0;
         chartConfig.previousYearColor = color1;
@@ -1404,6 +1408,14 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         this.entry.clear();
         this.componentRef = this.entry.createComponent(EdaKpiTrendComponent);
         this.componentRef.instance.inject = inject;
+        this.componentRef.instance.onNotify.subscribe(data => {
+            const cfg: any = this.props.config.getConfig();
+            if (cfg) {
+                cfg.modifiedFontPoints = data.modifiedFontPoints ?? 0;
+                this.props.config.setConfig(cfg);
+                this.dashboardService.setNotSaved(true);
+            }
+        });
         this.currentConfig = inject;
         this.configUpdated.emit(this.currentConfig);
     }
@@ -1435,6 +1447,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
 
         const value = this._roundDecimals(Number(data.values[0][numIdx]) || 0, decimals);
         const refValue = this._roundDecimals(Number(data.values[1][numIdx]) || 0, decimals);
+        const referenceLabel: string = catIdx !== -1 ? String(data.values[1][catIdx]) : '';
 
         const vsPercent = (refValue !== null && refValue !== 0)
             ? Math.round(((value - refValue) / refValue) * 1000) / 10
@@ -1446,6 +1459,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         chartConfig.header = header;
         chartConfig.value = value;
         chartConfig.referenceValue = refValue;
+        chartConfig.referenceLabel = referenceLabel;
         chartConfig.vsPercent = vsPercent;
         chartConfig.decimals = decimals;
         chartConfig.backgroundColor = cfg.backgroundColor || '';
@@ -1454,7 +1468,10 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         chartConfig.negativeColor = cfg.negativeColor || '';
         chartConfig.prefixImage = cfg.prefixImage || '';
         chartConfig.modifiedFontPoints = cfg.modifiedFontPoints || 0;
+        chartConfig.auxFontPoints = cfg.auxFontPoints || 0;
+        chartConfig.deltaFontPoints = cfg.deltaFontPoints || 0;
         chartConfig.alertLimits = cfg.alertLimits || [];
+        chartConfig.roundedBars = cfg.roundedBars ?? true;
 
         this.createEdaKpiDeviationComponent(chartConfig);
     }
@@ -1463,6 +1480,14 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         this.entry.clear();
         this.componentRef = this.entry.createComponent(EdaKpiDeviationComponent);
         this.componentRef.instance.inject = inject;
+        this.componentRef.instance.onNotify.subscribe(data => {
+            const cfg: any = this.props.config.getConfig();
+            if (cfg) {
+                cfg.modifiedFontPoints = data.modifiedFontPoints ?? 0;
+                this.props.config.setConfig(cfg);
+                this.dashboardService.setNotSaved(true);
+            }
+        });
         this.currentConfig = inject;
         this.configUpdated.emit(this.currentConfig);
     }
