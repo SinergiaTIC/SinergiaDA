@@ -48,8 +48,6 @@ function parseArgs(argv) {
     compareRoot: null,
     runs: 3,
     scenarios: ['startup'],
-    plugins: '',
-    sinergiaAuth: false,
     worker: false,
     help: false,
   };
@@ -73,12 +71,6 @@ function parseArgs(argv) {
         break;
       case '--scenarios':
         options.scenarios = takeValue().split(',').filter(Boolean);
-        break;
-      case '--plugins':
-        options.plugins = inlineValue !== null ? inlineValue : (argv[i + 1] && !argv[i + 1].startsWith('--') ? argv[++i] : '');
-        break;
-      case '--sinergia-auth':
-        options.sinergiaAuth = true;
         break;
       case '--worker':
         options.worker = true;
@@ -113,8 +105,6 @@ Opciones:
   --runs <n>                 Procesos nuevos por escenario (por defecto: 3).
   --scenarios <lista>        startup,arima,tensorflow,duckdb,pdf,mail,mcp,ai,
                              driver:<tipo> (por defecto: startup).
-  --plugins <lista>          Allowlist separada por comas, p. ej. googleanalytics.
-  --sinergia-auth            Simula presente la configuración de SinergiaAuth.
   -h, --help                 Muestra esta ayuda.
 
 Ejemplo A/B:
@@ -152,7 +142,7 @@ function megabytes(bytes) {
   return Math.round(bytes / 1024 / 1024 * 10) / 10;
 }
 
-function instrumentModules(apiRoot, plugins, sinergiaAuth) {
+function instrumentModules(apiRoot) {
   const originalLoad = Module._load;
   const loadedPackages = new Set();
   const configRoot = path.join(apiRoot, 'config');
@@ -187,18 +177,6 @@ function instrumentModules(apiRoot, plugins, sinergiaAuth) {
     if (parentFile && request.startsWith('.')) {
       const configStub = stubInstanceConfig(parentFile, request);
       if (configStub) return configStub;
-    }
-
-    if (request === '../../config/plugins.config' && parentFile.includes(`${path.sep}plugins${path.sep}index.`)) {
-      return { ENABLED_PLUGINS: plugins.split(',').map(value => value.trim()).filter(Boolean) };
-    }
-
-    if (request === 'fs' && parentFile.includes(`${path.sep}plugins${path.sep}index.`)) {
-      const realFs = originalLoad.apply(this, arguments);
-      return safeFs(realFs, (targetPath) => {
-        if (path.basename(targetPath) === 'sinergiacrm.config.js') return sinergiaAuth;
-        return realFs.existsSync(targetPath);
-      });
     }
 
     if (request === 'fs' && parentFile.endsWith(`${path.sep}apply-config-overwrite.js`)) {
@@ -292,7 +270,7 @@ async function runWorker(options) {
     throw new Error(`No encuentro el build en ${options.apiRoot}. Ejecute npm run build en ese checkout.`);
   }
 
-  const loadedPackages = instrumentModules(options.apiRoot, options.plugins, options.sinergiaAuth);
+  const loadedPackages = instrumentModules(options.apiRoot);
   if (global.gc) global.gc();
   const before = memorySnapshot();
 
@@ -305,15 +283,11 @@ async function runWorker(options) {
   await runScenario(options.apiRoot, options.scenarios[0]);
   if (global.gc) global.gc();
   const afterScenario = memorySnapshot();
-  const registryPath = path.join(options.apiRoot, 'dist/plugins');
-  const registeredPlugins = require(registryPath).PluginRegistry.getAll().map(plugin => plugin.type).sort();
 
   console.log(`SDA_MEMORY_BENCHMARK:${JSON.stringify({
     node: process.version,
     apiRoot: options.apiRoot,
     scenario: options.scenarios[0],
-    plugins: options.plugins,
-    registeredPlugins,
     rssBeforeBytes: before.rssBytes,
     rssIdleBytes: idle.rssBytes,
     rssAfterScenarioBytes: afterScenario.rssBytes,
@@ -340,8 +314,6 @@ function runSamples(apiRoot, options, label) {
       SDA_MEMORY_BENCH_WORKER: '1',
       SDA_MEMORY_BENCH_API_ROOT: apiRoot,
       SDA_MEMORY_BENCH_SCENARIO: options.scenarios[0],
-      SDA_MEMORY_BENCH_PLUGINS: options.plugins,
-      SDA_MEMORY_BENCH_SINERGIA_AUTH: options.sinergiaAuth ? '1' : '0',
     };
     const result = childProcess.spawnSync(process.execPath, ['--expose-gc', __filename, '--worker'], {
       cwd: apiRoot,
@@ -373,7 +345,6 @@ function summarize(samples) {
     externalAfterScenarioMB: megabytes(median(samples.map(sample => sample.externalAfterScenarioBytes))),
     loadedAtIdle: Array.from(new Set(samples.flatMap(sample => sample.loadedAtIdle))).sort(),
     loadedAfterScenario: Array.from(new Set(samples.flatMap(sample => sample.loadedAfterScenario))).sort(),
-    registeredPlugins: samples[0].registeredPlugins,
   };
 }
 
@@ -404,7 +375,6 @@ function runParent(options) {
       node: current.node,
       loadedAtIdle: current.loadedAtIdle,
       loadedAfterScenario: current.loadedAfterScenario,
-      plugins: current.registeredPlugins,
     });
   }
 
@@ -419,8 +389,6 @@ async function main() {
   if (options.worker || process.env.SDA_MEMORY_BENCH_WORKER === '1') {
     options.apiRoot = path.resolve(process.env.SDA_MEMORY_BENCH_API_ROOT || options.apiRoot);
     options.scenarios = [process.env.SDA_MEMORY_BENCH_SCENARIO || 'startup'];
-    options.plugins = process.env.SDA_MEMORY_BENCH_PLUGINS || '';
-    options.sinergiaAuth = process.env.SDA_MEMORY_BENCH_SINERGIA_AUTH === '1';
     await runWorker(options);
     process.exit(0);
   }
