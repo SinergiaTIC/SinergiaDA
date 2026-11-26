@@ -21,8 +21,10 @@ function isPluginMetadata(value: any): value is IPluginMetadata {
         && typeof value.type === 'string';
 }
 
-// Each plugin exposes activation metadata in plugin.meta.ts and its definition in index.ts.
-// Optional plugin code is loaded only after the metadata matches the instance configuration.
+// First-party plugins expose activation metadata in plugin.meta.ts. Custom SinergiaDA
+// plugins provide their metadata in a separate NO CORE layer; until then they keep the
+// legacy behavior so the CORE layer is usable on its own.
+const legacyCustomPluginDirs = new Set(['SdaInfoPlugin', 'SinergiaAuthPlugin', 'updateModel']);
 const pluginConfig = require('../../config/plugins.config');
 const enabledPluginTypes = new Set(
     Array.isArray(pluginConfig.ENABLED_PLUGINS)
@@ -37,33 +39,38 @@ const pluginDirs = fs
 for (const dir of pluginDirs) {
     try {
         const metadataPath = path.join(__dirname, dir, 'plugin.meta');
-        if (!fs.existsSync(`${metadataPath}.js`) && !fs.existsSync(`${metadataPath}.ts`)) {
+        const hasMetadata = fs.existsSync(`${metadataPath}.js`) || fs.existsSync(`${metadataPath}.ts`);
+        let expectedType: string | null = null;
+
+        if (!hasMetadata && !legacyCustomPluginDirs.has(dir)) {
             if (isFirstWorker()) console.warn(`[PluginRegistry] La carpeta "${dir}" no tiene metadatos, se omite.`);
             continue;
         }
 
-        const metadataModule = require(metadataPath);
-        const metadata = metadataModule.pluginMetadata;
+        if (hasMetadata) {
+            const metadata = require(metadataPath).pluginMetadata;
 
-        if (!isPluginMetadata(metadata)) {
-            if (isFirstWorker()) console.warn(`[PluginRegistry] La carpeta "${dir}" no exporta metadatos válidos, se omite.`);
-            continue;
+            if (!isPluginMetadata(metadata)) {
+                if (isFirstWorker()) console.warn(`[PluginRegistry] La carpeta "${dir}" no exporta metadatos válidos, se omite.`);
+                continue;
+            }
+
+            expectedType = metadata.type;
+            const requiredConfigPath = metadata.requiredConfigFile
+                ? path.resolve(__dirname, '../../config', metadata.requiredConfigFile)
+                : null;
+            const isEnabled = metadata.alwaysEnabled
+                || (requiredConfigPath && fs.existsSync(requiredConfigPath))
+                || enabledPluginTypes.has(metadata.type.toLowerCase());
+
+            if (!isEnabled) continue;
         }
-
-        const requiredConfigPath = metadata.requiredConfigFile
-            ? path.resolve(__dirname, '../../config', metadata.requiredConfigFile)
-            : null;
-        const isEnabled = metadata.alwaysEnabled
-            || (requiredConfigPath && fs.existsSync(requiredConfigPath))
-            || enabledPluginTypes.has(metadata.type.toLowerCase());
-
-        if (!isEnabled) continue;
 
         const pluginModule = require(path.join(__dirname, dir));
         const plugin = Object.values(pluginModule).find(isEDAPlugin) as IEDAPlugin | undefined;
 
         if (plugin) {
-            if (plugin.type !== metadata.type) {
+            if (expectedType && plugin.type !== expectedType) {
                 if (isFirstWorker()) console.warn(`[PluginRegistry] El tipo de "${dir}" no coincide con sus metadatos, se omite.`);
             } else {
                 PluginRegistry.register(plugin);
