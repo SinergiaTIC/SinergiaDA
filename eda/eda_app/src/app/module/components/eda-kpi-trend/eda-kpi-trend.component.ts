@@ -49,8 +49,6 @@ export class EdaKpiTrendComponent implements OnInit, OnChanges, AfterViewInit, O
     color: string = '#67757c';
     family: string = 'inherit';
     modifiedFontPoints: number = 0;
-    auxFontPoints: number = 0;
-    deltaFontPoints: number = 0;
 
     /** true → forks mode: hover +/- buttons on the value itself (Edalitics adjusts the same field from the dialog instead). */
     public readonly useHoverResize: boolean = !KPI_CONFIG.USE_EDALITICS_SIZE_LOGIC;
@@ -102,8 +100,6 @@ export class EdaKpiTrendComponent implements OnInit, OnChanges, AfterViewInit, O
 
         if (this.inject.kpiColor) this.color = this.inject.kpiColor;
         this.modifiedFontPoints = this.inject.modifiedFontPoints ?? 0;
-        this.auxFontPoints = this.inject.auxFontPoints ?? 0;
-        this.deltaFontPoints = this.inject.deltaFontPoints ?? 0;
 
         this.displayKpiValue = this.inject.kpiValue ?? 0;
         this.displaySpyValue = this.inject.spyValue ?? null;
@@ -271,12 +267,18 @@ export class EdaKpiTrendComponent implements OnInit, OnChanges, AfterViewInit, O
         return { 'font-size': this._deltaFontSize(11) + 'px' };
     }
 
+    /** Same percentage-scale mechanism as plain KPI's image/value/suffix scales (10% steps, KPI_CONFIG-bounded). */
+    private _scale(raw: any): number {
+        const value = typeof raw === 'number' ? raw : KPI_CONFIG.DEFAULT_FONT_SCALE;
+        return Math.min(KPI_CONFIG.MAX_FONT_SCALE, Math.max(KPI_CONFIG.MIN_FONT_SCALE, value));
+    }
+
     private _auxFontSize(base: number): number {
-        return Math.max(6, base + (this.inject?.auxFontPoints ?? this.auxFontPoints));
+        return Math.max(6, Math.round(base * this._scale(this.inject?.auxFontScale)));
     }
 
     private _deltaFontSize(base: number): number {
-        return Math.max(6, base + (this.inject?.deltaFontPoints ?? this.deltaFontPoints));
+        return Math.max(6, Math.round(base * this._scale(this.inject?.deltaFontScale)));
     }
 
     private _computeValueFontSize(): string {

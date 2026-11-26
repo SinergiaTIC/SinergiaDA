@@ -12,12 +12,15 @@ export class KpiConfig {
     backgroundColor: string = '';
     kpiColor: string = '';
     prefixImage: string = '';
-    /** kpitrend only: there's no dedicated branch for it in onCloseKpiProperties, so it's persisted through this generic config too. */
+    /** kpideviation only */
+    positiveColor: string = '';
+    negativeColor: string = '';
+    /** kpitrend/kpideviation only: there's no dedicated config class for them, this is the single shared KPI config. */
     roundedBars: boolean = true;
-    /** kpitrend only: independent size offsets (points) for auxiliary texts and the increment/decrement row. */
-    auxFontPoints: number = 0;
-    deltaFontPoints: number = 0;
-    /** Edalitics mode only (KPI_CONFIG.USE_EDALITICS_SIZE_LOGIC true) */
+    /** kpitrend/kpideviation only: independent percentage scales (10% steps) for auxiliary texts and the increment/decrement row - same mechanism as plain kpi's image/value/suffix scales below. */
+    auxFontScale: number = KPI_CONFIG.DEFAULT_FONT_SCALE;
+    deltaFontScale: number = KPI_CONFIG.DEFAULT_FONT_SCALE;
+    /** Edalitics mode only (KPI_CONFIG.USE_EDALITICS_SIZE_LOGIC true) for plain kpi, where it's a width-share; also reused as-is by kpideviation (both modes), where it instead scales the image's own fill fraction within its fixed-width column. */
     imageScale: number = KPI_CONFIG.IMAGE_DEFAULT_SCALE;
     valueFontScale: number = KPI_CONFIG.DEFAULT_FONT_SCALE;
     sufixFontScale: number = KPI_CONFIG.DEFAULT_FONT_SCALE;

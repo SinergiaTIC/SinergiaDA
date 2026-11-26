@@ -49,9 +49,7 @@ import { MapConfig } from './chart-configuration-models/map-config';
 import { ChartJsConfig } from './chart-configuration-models/chart-js-config';
 import { Subscription } from 'rxjs';
 import { EdaKpiTrendComponent } from '@eda/components/eda-kpi-trend/eda-kpi-trend.component';
-import { KpiTrendConfig } from './chart-configuration-models/kpi-trend-config';
 import { EdaKpiDeviationComponent } from '@eda/components/eda-kpi-deviation/eda-kpi-deviation.component';
-import { KpiDeviationConfig } from './chart-configuration-models/kpi-deviation-config';
 
 @Component({
     standalone: true,
@@ -1203,20 +1201,20 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         // --- Style config – same pattern as renderEdaKpiChart ---
         const propsConfig: any = this.props.config;
         if (propsConfig) {
-            const trendCfg = <KpiTrendConfig>propsConfig.getConfig();
+            const trendCfg = <KpiConfig>propsConfig.getConfig();
             chartConfig.sufix = trendCfg?.sufix || '';
             chartConfig.backgroundColor = trendCfg?.backgroundColor || '';
             chartConfig.kpiColor = trendCfg?.kpiColor || '';
             chartConfig.modifiedFontPoints = trendCfg?.modifiedFontPoints || 0;
-            chartConfig.auxFontPoints = trendCfg?.auxFontPoints || 0;
-            chartConfig.deltaFontPoints = trendCfg?.deltaFontPoints || 0;
+            chartConfig.auxFontScale = trendCfg?.auxFontScale ?? KPI_CONFIG.DEFAULT_FONT_SCALE;
+            chartConfig.deltaFontScale = trendCfg?.deltaFontScale ?? KPI_CONFIG.DEFAULT_FONT_SCALE;
         } else {
             chartConfig.sufix = '';
             chartConfig.backgroundColor = '';
             chartConfig.kpiColor = '';
             chartConfig.modifiedFontPoints = 0;
-            chartConfig.auxFontPoints = 0;
-            chartConfig.deltaFontPoints = 0;
+            chartConfig.auxFontScale = KPI_CONFIG.DEFAULT_FONT_SCALE;
+            chartConfig.deltaFontScale = KPI_CONFIG.DEFAULT_FONT_SCALE;
         }
         chartConfig.currentYearColor = color0;
         chartConfig.previousYearColor = color1;
@@ -1411,7 +1409,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         this.componentRef.instance.onNotify.subscribe(data => {
             const cfg: any = this.props.config.getConfig();
             if (cfg) {
-                cfg.modifiedFontPoints = data.modifiedFontPoints ?? 0;
+                if (data.modifiedFontPoints !== undefined) cfg.modifiedFontPoints = data.modifiedFontPoints;
                 this.props.config.setConfig(cfg);
                 this.dashboardService.setNotSaved(true);
             }
@@ -1467,9 +1465,12 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         chartConfig.positiveColor = cfg.positiveColor || '';
         chartConfig.negativeColor = cfg.negativeColor || '';
         chartConfig.prefixImage = cfg.prefixImage || '';
-        chartConfig.modifiedFontPoints = cfg.modifiedFontPoints || 0;
-        chartConfig.auxFontPoints = cfg.auxFontPoints || 0;
-        chartConfig.deltaFontPoints = cfg.deltaFontPoints || 0;
+        chartConfig.sufix = cfg.sufix || '';
+        chartConfig.valueFontScale = cfg.valueFontScale ?? KPI_CONFIG.DEFAULT_FONT_SCALE;
+        chartConfig.auxFontScale = cfg.auxFontScale ?? KPI_CONFIG.DEFAULT_FONT_SCALE;
+        chartConfig.deltaFontScale = cfg.deltaFontScale ?? KPI_CONFIG.DEFAULT_FONT_SCALE;
+        chartConfig.sufixFontScale = cfg.sufixFontScale ?? KPI_CONFIG.DEFAULT_FONT_SCALE;
+        chartConfig.imageScale = cfg.imageScale ?? KPI_CONFIG.IMAGE_DEFAULT_SCALE;
         chartConfig.alertLimits = cfg.alertLimits || [];
         chartConfig.roundedBars = cfg.roundedBars ?? true;
 
@@ -1483,7 +1484,8 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         this.componentRef.instance.onNotify.subscribe(data => {
             const cfg: any = this.props.config.getConfig();
             if (cfg) {
-                cfg.modifiedFontPoints = data.modifiedFontPoints ?? 0;
+                if (data.valueFontScale !== undefined) cfg.valueFontScale = data.valueFontScale;
+                if (data.sufix !== undefined) cfg.sufix = data.sufix;
                 this.props.config.setConfig(cfg);
                 this.dashboardService.setNotSaved(true);
             }
@@ -1868,7 +1870,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         const config = this.props.config.getConfig();
         const assignedColors = config['assignedColors'];
 
-        this.props.config.setConfig(new KpiTrendConfig({ ...config, assignedColors }));
+        this.props.config.setConfig(new KpiConfig({ ...config, assignedColors }));
         this.renderEdaKpiTrend();
     }
 

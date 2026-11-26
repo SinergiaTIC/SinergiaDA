@@ -24,7 +24,6 @@ import { TableConfig } from './panel-charts/chart-configuration-models/table-con
 import { ChartConfig } from './panel-charts/chart-configuration-models/chart-config';
 import { ChartJsConfig } from './panel-charts/chart-configuration-models/chart-js-config';
 import { KpiConfig } from './panel-charts/chart-configuration-models/kpi-config';
-import { KpiDeviationConfig } from './panel-charts/chart-configuration-models/kpi-deviation-config';
 import { DynamicTextConfig } from './panel-charts/chart-configuration-models/dynamicText-config';
 import { LinkedDashboardProps } from '@eda/components/eda-panels/eda-blank-panel/link-dashboards/link-dashboard-props';
 // Eda Services
@@ -1910,19 +1909,25 @@ public tableNodeExpand(event: any): void {
                 backgroundColor: response.backgroundColor || '',
                 kpiColor: response.kpiColor || '',
                 prefixImage: response.prefixImage || '',
-                modifiedFontPoints: response.modifiedFontPoints || 0,
-                auxFontPoints: response.auxFontPoints || 0,
-                deltaFontPoints: response.deltaFontPoints || 0,
+                sufix: response.sufix || '',
+                valueFontScale: response.valueFontScale ?? KPI_CONFIG.DEFAULT_FONT_SCALE,
+                auxFontScale: response.auxFontScale ?? KPI_CONFIG.DEFAULT_FONT_SCALE,
+                deltaFontScale: response.deltaFontScale ?? KPI_CONFIG.DEFAULT_FONT_SCALE,
+                sufixFontScale: response.sufixFontScale ?? KPI_CONFIG.DEFAULT_FONT_SCALE,
+                imageScale: response.imageScale ?? KPI_CONFIG.IMAGE_DEFAULT_SCALE,
                 alertLimits: response.alerts || [],
                 roundedBars: response.roundedBars ?? true,
             };
-            const config = new ChartConfig(new KpiDeviationConfig({
+            const config = new ChartConfig(new KpiConfig({
                 backgroundColor: response.backgroundColor || '',
                 kpiColor: response.kpiColor || '',
                 prefixImage: response.prefixImage || '',
-                modifiedFontPoints: response.modifiedFontPoints || 0,
-                auxFontPoints: response.auxFontPoints || 0,
-                deltaFontPoints: response.deltaFontPoints || 0,
+                sufix: response.sufix || '',
+                valueFontScale: response.valueFontScale ?? KPI_CONFIG.DEFAULT_FONT_SCALE,
+                auxFontScale: response.auxFontScale ?? KPI_CONFIG.DEFAULT_FONT_SCALE,
+                deltaFontScale: response.deltaFontScale ?? KPI_CONFIG.DEFAULT_FONT_SCALE,
+                sufixFontScale: response.sufixFontScale ?? KPI_CONFIG.DEFAULT_FONT_SCALE,
+                imageScale: response.imageScale ?? KPI_CONFIG.IMAGE_DEFAULT_SCALE,
                 alertLimits: response.alerts || [],
                 roundedBars: response.roundedBars ?? true,
             }));
@@ -1940,8 +1945,8 @@ public tableNodeExpand(event: any): void {
             alertLimits: response.alerts,
             sufix: response.sufix,
             modifiedFontPoints: response.modifiedFontPoints || 0,
-            auxFontPoints: response.auxFontPoints || 0,
-            deltaFontPoints: response.deltaFontPoints || 0,
+            auxFontScale: response.auxFontScale ?? KPI_CONFIG.DEFAULT_FONT_SCALE,
+            deltaFontScale: response.deltaFontScale ?? KPI_CONFIG.DEFAULT_FONT_SCALE,
             fontScale: response.fontScale ?? KPI_CONFIG.DEFAULT_FONT_SCALE,
             imageScale: response.imageScale ?? KPI_CONFIG.IMAGE_DEFAULT_SCALE,
             valueFontScale: response.valueFontScale ?? KPI_CONFIG.DEFAULT_FONT_SCALE,
@@ -1991,8 +1996,8 @@ public tableNodeExpand(event: any): void {
                 edaChart: layout,
                 assignedColors: response.assignedColors,
                 modifiedFontPoints: response.modifiedFontPoints || 0,
-                auxFontPoints: response.auxFontPoints || 0,
-                deltaFontPoints: response.deltaFontPoints || 0,
+                auxFontScale: response.auxFontScale ?? KPI_CONFIG.DEFAULT_FONT_SCALE,
+                deltaFontScale: response.deltaFontScale ?? KPI_CONFIG.DEFAULT_FONT_SCALE,
                 fontScale: response.fontScale ?? KPI_CONFIG.DEFAULT_FONT_SCALE,
                 imageScale: response.imageScale ?? KPI_CONFIG.IMAGE_DEFAULT_SCALE,
                 valueFontScale: response.valueFontScale ?? KPI_CONFIG.DEFAULT_FONT_SCALE,

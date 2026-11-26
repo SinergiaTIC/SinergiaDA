@@ -42,8 +42,8 @@
           <div class="kpi-config-panel-wrapper">
             <div class="kpi-config-panel">
 
-              <!-- Size: kpitrend/kpideviation keep the numeric input (Edalitics mode, unchanged) -->
-              @if (showLegacySizeControl) {
+              <!-- Size: kpitrend/kpideviation — single "Modificar el tamaño del KPI" section for all their independently-resizable parts -->
+              @if (isKpiTrend || isKpiDeviation) {
                 <div class="kpi-config-section" [class.is-expanded]="isSizeExpanded">
                   <div class="kpi-section-head" role="button" tabindex="0"
                     (click)="toggleSection('size')"
@@ -56,38 +56,22 @@
                   </div>
                   @if (isSizeExpanded) {
                     <div class="chart-color-selection">
-                      <div class="chart-color-row">
-                        <span class="chart-color-label" i18n="@@increaseKpiSize">Incrementar el tamaño del KPI</span>
-                        <span class="chart-color-controls">
-                          <input type="number" [ngModel]="modifiedFontPoints" min="-90" max="300"
-                            (ngModelChange)="modifyKpiSize($event)" class="chart-color-input" />
-                        </span>
-                      </div>
-                    </div>
-                  }
-                </div>
-              }
-
-              <!-- Aux text / delta size: kpitrend/kpideviation, both modes (no hover equivalent for these small texts) -->
-              @if (isKpiTrend || isKpiDeviation) {
-                <div class="kpi-config-section" [class.is-expanded]="isAuxDeltaSizeExpanded">
-                  <div class="kpi-section-head" role="button" tabindex="0"
-                    (click)="toggleSection('auxDeltaSize')"
-                    (keydown.enter)="toggleSection('auxDeltaSize')"
-                    (keydown.space)="toggleSection('auxDeltaSize')">
-                    <h6 class="custom-border-b1" i18n="@@kpiAuxDeltaSize">Tamaño de textos auxiliares e incremento/decremento</h6>
-                    <div class="kpi-section-actions">
-                      <i class="pi" [ngClass]="isAuxDeltaSizeExpanded ? 'pi-chevron-up' : 'pi-chevron-down'"></i>
-                    </div>
-                  </div>
-                  @if (isAuxDeltaSizeExpanded) {
-                    <div class="chart-color-selection">
-                      <div class="chart-color-row">
+                      <!-- Main value: Edalitics mode only (forks adjusts it via the hover +/- on the KPI itself) -->
+                      @if (showLegacySizeControl) {
+                        <div class="chart-color-row">
+                          <span class="chart-color-label" i18n="@@increaseKpiSize">Incrementar el tamaño del KPI</span>
+                          <span class="chart-color-controls">
+                            <input type="number" [ngModel]="modifiedFontPoints" min="-90" max="300"
+                              (ngModelChange)="modifyKpiSize($event)" class="chart-color-input" />
+                          </span>
+                        </div>
+                      }
+                      <div class="chart-color-row chart-color-row--spaced">
                         <span class="chart-color-label" i18n="@@kpiAuxTextSize">Tamaño de textos auxiliares</span>
                         <span class="chart-color-controls kpi-size-controls">
                           <button type="button" class="kpi-size-btn" (click)="decreaseAuxFont()" [disabled]="!canDecreaseAuxFont()">-</button>
                           <button type="button" class="kpi-size-btn" (click)="increaseAuxFont()" [disabled]="!canIncreaseAuxFont()">+</button>
-                          <span class="kpi-size-percent">{{ auxFontPoints }}</span>
+                          <span class="kpi-size-percent">{{ auxFontScalePercent }}%</span>
                         </span>
                       </div>
                       <div class="chart-color-row chart-color-row--spaced">
@@ -95,9 +79,29 @@
                         <span class="chart-color-controls kpi-size-controls">
                           <button type="button" class="kpi-size-btn" (click)="decreaseDeltaFont()" [disabled]="!canDecreaseDeltaFont()">-</button>
                           <button type="button" class="kpi-size-btn" (click)="increaseDeltaFont()" [disabled]="!canIncreaseDeltaFont()">+</button>
-                          <span class="kpi-size-percent">{{ deltaFontPoints }}</span>
+                          <span class="kpi-size-percent">{{ deltaFontScalePercent }}%</span>
                         </span>
                       </div>
+                      @if (isKpiDeviation && hasSufix) {
+                        <div class="chart-color-row chart-color-row--spaced">
+                          <span class="chart-color-label" i18n="@@kpiSufixSize">Tamaño del sufijo</span>
+                          <span class="chart-color-controls kpi-size-controls">
+                            <button type="button" class="kpi-size-btn" (click)="decreaseSufixFont()" [disabled]="!canDecreaseSufixFont()">-</button>
+                            <button type="button" class="kpi-size-btn" (click)="increaseSufixFont()" [disabled]="!canIncreaseSufixFont()">+</button>
+                            <span class="kpi-size-percent">{{ sufixFontScalePercent }}%</span>
+                          </span>
+                        </div>
+                      }
+                      @if (isKpiDeviation && prefixImage) {
+                        <div class="chart-color-row chart-color-row--spaced">
+                          <span class="chart-color-label" i18n="@@kpiImageSize">Tamaño de la imagen</span>
+                          <span class="chart-color-controls kpi-size-controls">
+                            <button type="button" class="kpi-size-btn" (click)="decreaseImageScale()" [disabled]="!canDecreaseImageScale()">-</button>
+                            <button type="button" class="kpi-size-btn" (click)="increaseImageScale()" [disabled]="!canIncreaseImageScale()">+</button>
+                            <span class="kpi-size-percent">{{ imageScalePercent }}%</span>
+                          </span>
+                        </div>
+                      }
                     </div>
                   }
                 </div>

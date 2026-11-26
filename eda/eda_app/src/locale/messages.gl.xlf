@@ -3106,10 +3106,6 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
         <source>Incrementar el tamaño del KPI</source>
         <target>Incrementar o tamaño do KPI</target>
       </trans-unit>
-      <trans-unit id="kpiAuxDeltaSize">
-        <source>Tamaño de textos auxiliares e incremento/decremento</source>
-        <target>Tamaño dos textos auxiliares e incremento/decremento</target>
-      </trans-unit>
       <trans-unit id="kpiAuxTextSize">
         <source>Tamaño de textos auxiliares</source>
         <target>Tamaño dos textos auxiliares</target>

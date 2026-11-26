@@ -43,19 +43,20 @@ export class KpiEditDialogComponent implements OnInit, AfterViewInit, AfterViewC
     public ptooltipViewAlerts: string = $localize`:@@ptooltipViewAlerts:Configurar alertas`;
 
     public modifiedFontPoints: number = 0;
-    /** kpitrend/kpideviation only: auxiliary texts (period title, spy value, comparison label / header, bar scale labels) and the increment/decrement (vs. %) row, each independently resizable - both modes, no hover equivalent (the texts are too small to hover individually). */
-    public auxFontPoints: number = 0;
-    public deltaFontPoints: number = 0;
-    private readonly auxDeltaFontPointsMin = -8;
-    private readonly auxDeltaFontPointsMax = 40;
+    /** kpitrend/kpideviation only: auxiliary texts (period title, spy value, comparison label / header, bar scale labels) and the increment/decrement (vs. %) row, each independently resizable - both modes, no hover equivalent (the texts are too small to hover individually). Same percentage-scale mechanism as the Edalitics image/value/suffix scales below. */
+    public auxFontScale: number = KPI_CONFIG.DEFAULT_FONT_SCALE;
+    public deltaFontScale: number = KPI_CONFIG.DEFAULT_FONT_SCALE;
     /** true → Edalitics mode (numeric input below) | false → forks mode (hover +/- buttons on the KPI itself) */
     public readonly useHoverResize: boolean = !KPI_CONFIG.USE_EDALITICS_SIZE_LOGIC;
-    /** Edalitics mode only (plain kpi / kpi+chart, not kpitrend/kpideviation): image-vs-text and independent value/suffix scales. */
+    /** Edalitics mode only for plain kpi / kpi+chart (where it's a width-share); also reused as-is by kpideviation (both modes), where it instead scales the image's own fill fraction within its fixed-width column. */
     public imageScale: number = KPI_CONFIG.IMAGE_DEFAULT_SCALE;
     public valueFontScale: number = KPI_CONFIG.DEFAULT_FONT_SCALE;
     public sufixFontScale: number = KPI_CONFIG.DEFAULT_FONT_SCALE;
     private readonly imageScaleMin = KPI_CONFIG.IMAGE_MIN_SCALE;
-    private readonly imageScaleMax = KPI_CONFIG.IMAGE_MAX_SCALE;
+    /** kpideviation's image lives in a fixed-width column and only its own fill fraction scales (see EdaKpiDeviationComponent.getImageStyle) - capped at 250% of its default fill so it can't dwarf the number; plain kpi/kpi+chart keep the full configured max. */
+    private get imageScaleMax(): number {
+        return this.isKpiDeviation ? Math.min(0.5, KPI_CONFIG.IMAGE_MAX_SCALE) : KPI_CONFIG.IMAGE_MAX_SCALE;
+    }
     private readonly fontScaleMin = KPI_CONFIG.MIN_FONT_SCALE;
     private readonly fontScaleMax = KPI_CONFIG.MAX_FONT_SCALE;
     private readonly scaleStep = 0.1;
@@ -115,7 +116,6 @@ export class KpiEditDialogComponent implements OnInit, AfterViewInit, AfterViewC
     public isKpiDeviation: boolean = false;
     /** Collapsible "Aspecto" sections — same behavior as the develop KPI dialog. */
     public isSizeExpanded: boolean = false;
-    public isAuxDeltaSizeExpanded: boolean = false;
     public isAppearanceExpanded: boolean = true;
     public isAxisScaleExpanded: boolean = false;
     public isLabelsValuesExpanded: boolean = false;
@@ -142,6 +142,11 @@ export class KpiEditDialogComponent implements OnInit, AfterViewInit, AfterViewC
     /** Old single numeric "Tamaño" input: kpitrend/kpideviation only, Edalitics mode only (unchanged). */
     get showLegacySizeControl(): boolean {
         return !this.useHoverResize && (this.isKpiTrend || this.isKpiDeviation);
+    }
+
+    /** kpideviation only: whether a suffix is currently set on the live preview, read directly since it's edited inline on the KPI itself (not a tracked dialog field). */
+    get hasSufix(): boolean {
+        return !!this.panelChartComponent?.componentRef?.instance?.inject?.sufix;
     }
 
     /** Alerts: kpitrend and kpideviation both threshold a percentage (vsPercent), not a plain value. */
@@ -208,8 +213,8 @@ export class KpiEditDialogComponent implements OnInit, AfterViewInit, AfterViewC
         this.originalAlerts = [...(config.alertLimits || [])];
         this.alerts = [...this.originalAlerts];
         this.modifiedFontPoints = config.modifiedFontPoints || 0;
-        this.auxFontPoints = config.auxFontPoints || 0;
-        this.deltaFontPoints = config.deltaFontPoints || 0;
+        this.auxFontScale = typeof config.auxFontScale === 'number' ? config.auxFontScale : KPI_CONFIG.DEFAULT_FONT_SCALE;
+        this.deltaFontScale = typeof config.deltaFontScale === 'number' ? config.deltaFontScale : KPI_CONFIG.DEFAULT_FONT_SCALE;
         this.imageScale = typeof config.imageScale === 'number' ? config.imageScale : KPI_CONFIG.IMAGE_DEFAULT_SCALE;
         this.valueFontScale = typeof config.valueFontScale === 'number' ? config.valueFontScale : KPI_CONFIG.DEFAULT_FONT_SCALE;
         this.sufixFontScale = typeof config.sufixFontScale === 'number' ? config.sufixFontScale : KPI_CONFIG.DEFAULT_FONT_SCALE;
@@ -305,10 +310,9 @@ export class KpiEditDialogComponent implements OnInit, AfterViewInit, AfterViewC
         this.activeTab = tab;
     }
 
-    toggleSection(section: 'size' | 'auxDeltaSize' | 'appearance' | 'axisScale' | 'labelsValues'): void {
+    toggleSection(section: 'size' | 'appearance' | 'axisScale' | 'labelsValues'): void {
         switch (section) {
             case 'size': this.isSizeExpanded = !this.isSizeExpanded; break;
-            case 'auxDeltaSize': this.isAuxDeltaSizeExpanded = !this.isAuxDeltaSizeExpanded; break;
             case 'appearance': this.isAppearanceExpanded = !this.isAppearanceExpanded; break;
             case 'axisScale': this.isAxisScaleExpanded = !this.isAxisScaleExpanded; break;
             case 'labelsValues': this.isLabelsValuesExpanded = !this.isLabelsValuesExpanded; break;
@@ -336,11 +340,13 @@ export class KpiEditDialogComponent implements OnInit, AfterViewInit, AfterViewC
             chartSubType: this.panelChartConfig.edaChart,
             assignedColors: [...this.assignedColors],
             modifiedFontPoints: this.modifiedFontPoints,
-            auxFontPoints: this.auxFontPoints,
-            deltaFontPoints: this.deltaFontPoints,
+            auxFontScale: this.auxFontScale,
+            deltaFontScale: this.deltaFontScale,
             fontScale,
             imageScale: this.imageScale,
-            valueFontScale: this.valueFontScale,
+            // Read from the live instance when available: kpideviation/kpitrend change it via the
+            // hover +/- directly on the preview, bypassing this dialog's own tracked property.
+            valueFontScale: kpiInject?.valueFontScale ?? this.valueFontScale,
             sufixFontScale: this.sufixFontScale,
             backgroundColor: this.kpiBackgroundColor,
             kpiColor: this.kpiTextColor,
@@ -908,55 +914,79 @@ export class KpiEditDialogComponent implements OnInit, AfterViewInit, AfterViewC
         this.panelChartComponent.componentRef.changeDetectorRef.detectChanges();
     }
 
-    // --- Auxiliary/delta text size controls: kpitrend/kpideviation only, both modes ---
+    // --- Auxiliary/delta/suffix/image size controls: kpitrend/kpideviation only, both modes -
+    // same percentage-scale mechanism (10% steps, KPI_CONFIG-bounded) as plain kpi's Edalitics
+    // image/value/suffix scales below. The suffix reuses that exact sufixFontScale field/bounds. ---
 
     canDecreaseAuxFont(): boolean {
-        return this.auxFontPoints > this.auxDeltaFontPointsMin;
+        return this.auxFontScale > this.fontScaleMin + 1e-9;
     }
 
     canIncreaseAuxFont(): boolean {
-        return this.auxFontPoints < this.auxDeltaFontPointsMax;
+        return this.auxFontScale < this.fontScaleMax - 1e-9;
     }
 
     increaseAuxFont(): void {
-        this.setAuxFontPoints(this.auxFontPoints + 1);
+        this.setAuxFontScale(this.auxFontScale + KPI_CONFIG.DEFAULT_FONT_SCALE * this.scaleStep);
     }
 
     decreaseAuxFont(): void {
-        this.setAuxFontPoints(this.auxFontPoints - 1);
+        this.setAuxFontScale(this.auxFontScale - KPI_CONFIG.DEFAULT_FONT_SCALE * this.scaleStep);
     }
 
     canDecreaseDeltaFont(): boolean {
-        return this.deltaFontPoints > this.auxDeltaFontPointsMin;
+        return this.deltaFontScale > this.fontScaleMin + 1e-9;
     }
 
     canIncreaseDeltaFont(): boolean {
-        return this.deltaFontPoints < this.auxDeltaFontPointsMax;
+        return this.deltaFontScale < this.fontScaleMax - 1e-9;
     }
 
     increaseDeltaFont(): void {
-        this.setDeltaFontPoints(this.deltaFontPoints + 1);
+        this.setDeltaFontScale(this.deltaFontScale + KPI_CONFIG.DEFAULT_FONT_SCALE * this.scaleStep);
     }
 
     decreaseDeltaFont(): void {
-        this.setDeltaFontPoints(this.deltaFontPoints - 1);
+        this.setDeltaFontScale(this.deltaFontScale - KPI_CONFIG.DEFAULT_FONT_SCALE * this.scaleStep);
     }
 
-    private setAuxFontPoints(value: number): void {
-        this.auxFontPoints = Math.min(this.auxDeltaFontPointsMax, Math.max(this.auxDeltaFontPointsMin, value));
+    canDecreaseSufixFont(): boolean {
+        return this.sufixFontScale > this.fontScaleMin + 1e-9;
+    }
+
+    canIncreaseSufixFont(): boolean {
+        return this.sufixFontScale < this.fontScaleMax - 1e-9;
+    }
+
+    increaseSufixFont(): void {
+        this.setSufixFontScaleForTrendDeviation(this.sufixFontScale + KPI_CONFIG.DEFAULT_FONT_SCALE * this.scaleStep);
+    }
+
+    decreaseSufixFont(): void {
+        this.setSufixFontScaleForTrendDeviation(this.sufixFontScale - KPI_CONFIG.DEFAULT_FONT_SCALE * this.scaleStep);
+    }
+
+    private setAuxFontScale(value: number): void {
+        this.auxFontScale = +Math.min(this.fontScaleMax, Math.max(this.fontScaleMin, value)).toFixed(2);
         this._applyAuxDeltaToInstance();
     }
 
-    private setDeltaFontPoints(value: number): void {
-        this.deltaFontPoints = Math.min(this.auxDeltaFontPointsMax, Math.max(this.auxDeltaFontPointsMin, value));
+    private setDeltaFontScale(value: number): void {
+        this.deltaFontScale = +Math.min(this.fontScaleMax, Math.max(this.fontScaleMin, value)).toFixed(2);
+        this._applyAuxDeltaToInstance();
+    }
+
+    private setSufixFontScaleForTrendDeviation(value: number): void {
+        this.sufixFontScale = +Math.min(this.fontScaleMax, Math.max(this.fontScaleMin, value)).toFixed(2);
         this._applyAuxDeltaToInstance();
     }
 
     private _applyAuxDeltaToInstance(): void {
         const instance = this.panelChartComponent?.componentRef?.instance;
         if (!instance?.inject) return;
-        instance.inject.auxFontPoints = this.auxFontPoints;
-        instance.inject.deltaFontPoints = this.deltaFontPoints;
+        instance.inject.auxFontScale = this.auxFontScale;
+        instance.inject.deltaFontScale = this.deltaFontScale;
+        instance.inject.sufixFontScale = this.sufixFontScale;
         if (this.isKpiDeviation) {
             instance.updateChart?.();
         } else {
@@ -985,6 +1015,15 @@ export class KpiEditDialogComponent implements OnInit, AfterViewInit, AfterViewC
 
     get sufixFontScalePercent(): number {
         return Math.round((this.sufixFontScale / KPI_CONFIG.DEFAULT_FONT_SCALE) * 100);
+    }
+
+    /** kpitrend/kpideviation only */
+    get auxFontScalePercent(): number {
+        return Math.round((this.auxFontScale / KPI_CONFIG.DEFAULT_FONT_SCALE) * 100);
+    }
+
+    get deltaFontScalePercent(): number {
+        return Math.round((this.deltaFontScale / KPI_CONFIG.DEFAULT_FONT_SCALE) * 100);
     }
 
     canDecreaseImageScale(): boolean {
@@ -1056,7 +1095,11 @@ export class KpiEditDialogComponent implements OnInit, AfterViewInit, AfterViewC
         instance.inject.imageScale = this.imageScale;
         instance.inject.valueFontScale = this.valueFontScale;
         instance.inject.sufixFontScale = this.sufixFontScale;
-        this.panelChartComponent.componentRef.changeDetectorRef.detectChanges();
+        if (this.isKpiDeviation) {
+            instance.updateChart?.();
+        } else {
+            this.panelChartComponent.componentRef.changeDetectorRef.detectChanges();
+        }
     }
 
     // --- END Edalitics size controls ---

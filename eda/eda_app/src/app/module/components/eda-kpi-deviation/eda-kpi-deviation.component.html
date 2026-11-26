@@ -11,6 +11,7 @@
       <button type="button" i18n-title="@@kpiIncreaseFontSize" title="Aumentar tamaño" (click)="increaseFont()"
               [disabled]="!canIncreaseFont()"
               class="w-6 h-6 flex items-center justify-center rounded border border-gray-300 bg-white hover:bg-gray-100 text-gray-700 text-sm leading-none disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-white">+</button>
+      <span class="text-xs text-gray-500" style="min-width: 2.75rem; text-align: right;">{{ getValueScalePercent() }}%</span>
     </div>
   }
 
@@ -20,16 +21,45 @@
     {{ displayHeader }}
   </div>
 
-  <!-- Main value (with prefix image if set) -->
-  <div style="display:flex;align-items:center;gap:6px;margin-bottom:5px;min-width:0;" [ngStyle]="getContainerStyle()">
+  <!-- Main value. With a prefix image: two FIXED 50/50 columns, always - the left one only ever
+       holds the image (which grows/shrinks inside it via imageScale, the column itself never
+       changes), the right one holds the number(+suffix), pinned to its own left+bottom corner. The
+       boundary between them is always exactly at 50%, so the number always starts right on the
+       bar's 0 below, regardless of the image's size. Without an image, the number alone is centered
+       in the full width, as before. -->
+  <div [ngStyle]="getContainerStyle()" style="display:flex;align-items:stretch;margin-bottom:5px;min-width:0;">
     @if(inject?.prefixImage) {
-      <img [src]="inject.prefixImage" style="height:1em;width:auto;object-fit:contain;flex-shrink:0;" />
+      <div style="flex:0 0 50%;width:50%;height:100%;display:flex;align-items:center;justify-content:center;overflow:hidden;">
+        <img [src]="inject.prefixImage" [ngStyle]="getImageStyle()" style="width:auto;max-width:100%;object-fit:contain;object-position:center;display:block;" />
+      </div>
+      <div class="font-bold pointer" [ngStyle]="getValueStyle()"
+           style="flex:0 0 50%;width:50%;height:100%;display:flex;align-items:flex-end;justify-content:flex-start;gap:0.25em;white-space:nowrap;overflow:hidden;"
+           title="Añadir unidades"
+           (click)="setSufix(); $event.stopPropagation()">
+        <span style="line-height:1;">{{ formatValue(displayValue) }}</span>
+        @if (displaySufix) {
+          <span [ngStyle]="getSufixStyle()" style="line-height:1;align-self:center;">{{ displaySufix }}</span>
+        }
+      </div>
+    } @else {
+      <div class="font-bold pointer" [ngStyle]="getValueStyle()"
+           style="flex:1 1 auto;height:100%;display:flex;align-items:flex-end;justify-content:center;gap:0.25em;white-space:nowrap;overflow:hidden;"
+           title="Añadir unidades"
+           (click)="setSufix(); $event.stopPropagation()">
+        <span style="line-height:1;">{{ formatValue(displayValue) }}</span>
+        @if (displaySufix) {
+          <span [ngStyle]="getSufixStyle()" style="line-height:1;align-self:center;">{{ displaySufix }}</span>
+        }
+      </div>
     }
-    <div class="font-bold" [ngStyle]="getValueStyle()"
-         style="line-height:1.3;padding-top:0.1em;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">
-      {{ formatValue(displayValue) }}
-    </div>
   </div>
+  @if (sufixClick) {
+    <div style="display:flex;justify-content:center;margin-bottom:5px;">
+      <input type="text" [(ngModel)]="inject.sufix" (focusout)="setSufix()" (keydown.enter)="setSufix()"
+             (click)="$event.stopPropagation()" name="deviationSufix" autofocus
+             style="font-size:14px;width:140px;max-width:160px;border:1px solid #ccc;border-radius:4px;padding:3px 8px;" />
+    </div>
+  }
 
   <!-- Percentage delta -->
   @if(displayVsPercent !== null) {
