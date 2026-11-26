@@ -1125,15 +1125,17 @@ export abstract class QueryBuilderService {
         const modelPermissions = this.dataModel.ds.metadata.model_granted_roles;
 
 
-        /** SQL panels always use related-tables permissions (like 2.12.0), regardless of the
-         *  USE_RECURSIVE_PERMISSIONS flag, which only governs TREE/Edalitics mode (builder). Using
-         *  flat (column-based) permissions here returns nothing for SQL panels because their
-         *  fields are empty, so security would never be injected.
-         *  Only keep the permissions of the table being replaced (like 2.12.0 did), otherwise
-         *  every related table's permission would be joined into one subquery and exceed
-         *  MariaDB's limit of 61 tables per join. */
-        const permissions = this.getRecursivePermissions(modelPermissions, this.tables, origin, this.queryTODO)
-            .filter((p: any) => p.filter_table == this.cleanOriginTable(table));
+        /** SQL panels always use related-tables permissions because flat (column-based)
+         *  permissions return nothing for SQL panels: their fields are empty and security
+         *  would never be injected. USE_RECURSIVE_PERMISSIONS true (Edalitics) nests the
+         *  permissions of every related table in the subquery, like TREE mode does.
+         *  Alternative: with the flag false, keep only the permissions of the table being
+         *  replaced, so a panel with many related tables does not exceed MariaDB's limit
+         *  of 61 tables per join. */
+        const recursivePermissions = this.getRecursivePermissions(modelPermissions, this.tables, origin, this.queryTODO);
+        const permissions = eda_api_config.custom_behaviour.USE_RECURSIVE_PERMISSIONS
+            ? recursivePermissions
+            : recursivePermissions.filter((p: any) => p.filter_table == this.cleanOriginTable(table));
         
         const joinType = 'inner'; // es per els permisos. Ha de ser així.
         const valueListJoins = []; // anulat
@@ -1148,7 +1150,7 @@ export abstract class QueryBuilderService {
                 }
             });
 
-            const joinTree = this.dijkstraAlgorithm(graph, origin, dest.slice(0));
+            const joinTree = this.dijkstraAlgorithm(graph, this.cleanOriginTable(origin), dest.slice(0));
             const permissionJoins = this.getJoins(joinTree, dest, tables, joinType, valueListJoins, SCHEMA);
 
             let joinsubstitute = '';
