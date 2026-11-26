@@ -403,9 +403,9 @@ export class MySqlBuilderService extends QueryBuilderService {
             filtersString += '\nand ' + this.filterToString(f);
           } else {
             /* Null control... query generated in a different way */
-              if (   f.filter_type == 'is_null' && f.filter_elements[0].value1.length === 1 && filters.filter( (f)=>f.filter_column == column.column_name && f.filter_table == column.table_id ).length  >1 ) {// Si tengo varios filtros sobre una misma columna  es filtro por X o es nulo.
+              if (   f.filter_type == 'is_null' && f.filter_elements[0].value1.length === 1 && filters.filter( (f)=>f.filter_column == column.column_name && f.filter_table == column.table_id ).length  >1 ) {// Several filters on the same column: it is either filter X or null.
                      filtersString += `\nor ${colname}  is null `;
-              } if (   f.filter_type == 'is_null' && f.filter_elements[0].value1.length === 1 && filters.filter( (f)=>f.filter_column == column.column_name && f.filter_table == column.table_id ).length  ==1 ) { // si solo tengo el filtro de nulo es un and porque digo 1=1 y es nulo.
+              } if (   f.filter_type == 'is_null' && f.filter_elements[0].value1.length === 1 && filters.filter( (f)=>f.filter_column == column.column_name && f.filter_table == column.table_id ).length  ==1 ) { // Only a null filter: an AND, since 1=1 and it is null.
                 filtersString += `\nand ${colname}  is null `;
               } else {
                   filtersString += `\nand (${this.filterToString(f)} ) `;
