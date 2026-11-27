@@ -1121,6 +1121,10 @@ export class MySqlBuilderService extends QueryBuilderService {
             filterObject.filter_type = 'not like'
             return `${colname}  ${filterObject.filter_type} '%${filterValues[0].value1}%' `;
           }
+          if (colType === 'date') {
+            const dateFilter = this.dateFilterToString(filterObject, colname, colType);
+            if (dateFilter !== undefined) return dateFilter;
+          }
           return `${colname}  ${filterObject.filter_type} ${this.processFilter(filterValues[0].value1, colType)} `;
           // in values
         case 1:
@@ -1128,6 +1132,10 @@ export class MySqlBuilderService extends QueryBuilderService {
           if(valueListSource !== undefined && this.queryTODO.queryMode === 'SQL') {
             return `${colname}  ${filterObject.filter_type} (${this.processFilterValueList(filterObject)}) `;
           } else {
+            if (colType === 'date') {
+              const dateFilter = this.dateFilterToString(filterObject, colname, colType);
+              if (dateFilter !== undefined) return dateFilter;
+            }
             return `${colname}  ${filterObject.filter_type} (${this.processFilter(filterValues[0].value1, colType)}) `;
           }
         case 2:
@@ -1302,9 +1310,17 @@ public getHavingColname(column: any){
           filterObject.filter_type = 'not like'
           return `${colname}  ${filterObject.filter_type} '%${filterObject.filter_elements[0].value1}%' `;
         }   
+        if (colType === 'date') {
+          const dateFilter = this.dateFilterToString(filterObject, colname, colType);
+          if (dateFilter !== undefined) return dateFilter;
+        }
         return `${colname}  ${filterObject.filter_type} ${this.processFilter(filterObject.filter_elements[0].value1, colType)} `;
       case 1:
         if (filterObject.filter_type === 'not_in') { filterObject.filter_type = 'not in' }
+        if (colType === 'date') {
+          const dateFilter = this.dateFilterToString(filterObject, colname, colType);
+          if (dateFilter !== undefined) return dateFilter;
+        }
         return `${colname}  ${filterObject.filter_type} (${this.processFilter(filterObject.filter_elements[0].value1, colType)}) `;
       case 2:
         if (filterObject.filter_type === 'not_between') { filterObject.filter_type = 'not between' }

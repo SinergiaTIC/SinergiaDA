@@ -617,9 +617,17 @@ export class OracleBuilderService extends QueryBuilderService {
           filterObject.filter_type = 'not like'
           return `${colname}  ${filterObject.filter_type} '%${filterObject.filter_elements[0].value1}%' `;
         }
+        if (colType === 'date') {
+          const dateFilter = this.dateFilterToString(filterObject, colname, colType);
+          if (dateFilter !== undefined) return dateFilter;
+        }
         return `${colname}  ${filterObject.filter_type} ${this.processFilter(filterObject.filter_elements[0].value1, colType)} `;
       case 1:
         if (filterObject.filter_type === 'not_in') { filterObject.filter_type = 'not in' }
+        if (colType === 'date') {
+          const dateFilter = this.dateFilterToString(filterObject, colname, colType);
+          if (dateFilter !== undefined) return dateFilter;
+        }
         return `${colname}  ${filterObject.filter_type} (${this.processFilter(filterObject.filter_elements[0].value1, colType)}) `;
       case 2:
         return `${colname}  ${filterObject.filter_type}
@@ -739,9 +747,17 @@ export class OracleBuilderService extends QueryBuilderService {
           filterObject.filter_type = 'not like'
           return `${colname}  ${filterObject.filter_type} '%${filterObject.filter_elements[0].value1}%' `;
         }   
+        if (colType === 'date') {
+          const dateFilter = this.dateFilterToString(filterObject, colname, colType);
+          if (dateFilter !== undefined) return dateFilter;
+        }
         return `${colname}  ${filterObject.filter_type} ${this.processFilter(filterObject.filter_elements[0].value1, colType)} `;
       case 1:
         if (filterObject.filter_type === 'not_in') { filterObject.filter_type = 'not in' }
+        if (colType === 'date') {
+          const dateFilter = this.dateFilterToString(filterObject, colname, colType);
+          if (dateFilter !== undefined) return dateFilter;
+        }
         return `${colname}  ${filterObject.filter_type} (${this.processFilter(filterObject.filter_elements[0].value1, colType)}) `;
       case 2:
         return `${colname}  ${filterObject.filter_type} 
