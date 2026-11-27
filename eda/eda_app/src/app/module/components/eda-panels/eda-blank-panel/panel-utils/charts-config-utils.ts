@@ -8,9 +8,6 @@ import { DynamicTextConfig } from '../panel-charts/chart-configuration-models/dy
 import { MapConfig } from '../panel-charts/chart-configuration-models/map-config';
 import { SankeyConfig } from '../panel-charts/chart-configuration-models/sankey-config';
 import { FunnelConfig } from '../panel-charts/chart-configuration-models/funnel.config';
-import { KpiTrendConfig } from '../panel-charts/chart-configuration-models/kpi-trend-config';
-import { KpiDeviationConfig } from '../panel-charts/chart-configuration-models/kpi-deviation-config';
-
 import { TableConfig } from '../panel-charts/chart-configuration-models/table-config';
 import { ScatterConfig } from '../panel-charts/chart-configuration-models/scatter-config';
 import { SunburstConfig } from '../panel-charts/chart-configuration-models/sunburst-config';
@@ -59,8 +56,14 @@ export const ChartsConfigUtils = {
         positiveColor: inst?.inject?.positiveColor || '',
         negativeColor: inst?.inject?.negativeColor || '',
         prefixImage: inst?.inject?.prefixImage || '',
-        modifiedFontPoints: inst?.inject?.modifiedFontPoints || 0,
+        sufix: inst?.inject?.sufix || '',
+        valueFontScale: inst?.inject?.valueFontScale ?? KPI_CONFIG.DEFAULT_FONT_SCALE,
+        auxFontScale: inst?.inject?.auxFontScale ?? KPI_CONFIG.DEFAULT_FONT_SCALE,
+        deltaFontScale: inst?.inject?.deltaFontScale ?? KPI_CONFIG.DEFAULT_FONT_SCALE,
+        sufixFontScale: inst?.inject?.sufixFontScale ?? KPI_CONFIG.DEFAULT_FONT_SCALE,
+        imageScale: inst?.inject?.imageScale ?? KPI_CONFIG.IMAGE_DEFAULT_SCALE,
         alertLimits: inst?.inject?.alertLimits || [],
+        roundedBars: inst?.inject?.roundedBars ?? true,
       };
     } else if (ebp.panelChart.componentRef && ebp.panelChart.props.chartType.includes('kpi')) {
       const kpiChart = ebp.panelChart.componentRef.instance.inject?.edaChart;
@@ -205,14 +208,12 @@ export const ChartsConfigUtils = {
             });
         } else if (type === 'dynamicText') {
             return new DynamicTextConfig(null);
-        } else if (type === 'kpitrend') {
-            return new KpiTrendConfig();
-        } else if (type === 'kpideviation') {
-            return new KpiDeviationConfig();
+        } else if (type === 'kpitrend' || type === 'kpideviation') {
+            return new KpiConfig();
         }
     },
 
-  recoverConfig: (type: string, config: TableConfig | KpiConfig | DynamicTextConfig | ChartJsConfig | MapConfig | SankeyConfig | TreeMapConfig | TreeTableConfig | KnobConfig | FunnelConfig | BubblechartConfig | SunburstConfig | KpiTrendConfig) => {
+  recoverConfig: (type: string, config: TableConfig | KpiConfig | DynamicTextConfig | ChartJsConfig | MapConfig | SankeyConfig | TreeMapConfig | TreeTableConfig | KnobConfig | FunnelConfig | BubblechartConfig | SunburstConfig) => {
 
     return new ChartConfig(config);
 

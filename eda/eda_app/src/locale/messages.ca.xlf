@@ -1115,6 +1115,10 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
         <source>KPI Desviación</source>
         <target>KPI Desviació</target>
       </trans-unit>
+      <trans-unit id="kpiDeviationVsLabel">
+        <source>Vs.</source>
+        <target>Vs.</target>
+      </trans-unit>
       <trans-unit id="chartTypesTableAnalized">
         <source>Tabla DataQuality</source>
         <target>Taula DataQuality</target>
@@ -3110,6 +3114,14 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
         <source>Incrementar el tamaño del KPI</source>
         <target>Incrementar la mida del KPI</target>
       </trans-unit>
+      <trans-unit id="kpiAuxTextSize">
+        <source>Tamaño de textos auxiliares</source>
+        <target>Mida dels textos auxiliars</target>
+      </trans-unit>
+      <trans-unit id="kpiDeltaTextSize">
+        <source>Tamaño de incremento/decremento</source>
+        <target>Mida de l'increment/decrement</target>
+      </trans-unit>
       <trans-unit id="kpiImageSize">
         <source>Tamaño de la imagen</source>
         <target>Mida de la imatge</target>
@@ -3171,16 +3183,16 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
         <target>Any actual</target>
       </trans-unit>
       <trans-unit id="trendTitleMonth">
+        <source>Año actual</source>
+        <target>Any actual</target>
+      </trans-unit>
+      <trans-unit id="trendTitleWeek">
         <source>Mes actual</source>
         <target>Mes actual</target>
       </trans-unit>
-      <trans-unit id="trendTitleWeek">
-        <source>Semana actual</source>
-        <target>Setmana actual</target>
-      </trans-unit>
       <trans-unit id="trendTitleDay">
-        <source>Hoy</source>
-        <target>Avui</target>
+        <source>Mes actual</source>
+        <target>Mes actual</target>
       </trans-unit>
       <trans-unit id="trendTitlePeriod">
         <source>Período actual</source>
@@ -3191,16 +3203,16 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
         <target>Any anterior</target>
       </trans-unit>
       <trans-unit id="trendCompMonth">
+        <source>Año anterior</source>
+        <target>Any anterior</target>
+      </trans-unit>
+      <trans-unit id="trendCompWeek">
         <source>Mes anterior</source>
         <target>Mes anterior</target>
       </trans-unit>
-      <trans-unit id="trendCompWeek">
-        <source>Semana anterior</source>
-        <target>Setmana anterior</target>
-      </trans-unit>
       <trans-unit id="trendCompDay">
-        <source>Día anterior</source>
-        <target>Dia anterior</target>
+        <source>Mes anterior</source>
+        <target>Mes anterior</target>
       </trans-unit>
       <trans-unit id="trendCompPeriod">
         <source>Período anterior</source>
@@ -5643,6 +5655,10 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       <trans-unit id="widthLabelLine">
         <source>Grosor de línea</source>
         <target>Gruix de línia</target>
+      </trans-unit>
+      <trans-unit id="kpiBarRadiusLabel">
+        <source>Bordes redondeados</source>
+        <target>Cantonades arrodonides</target>
       </trans-unit>
       <trans-unit id="lineStyleLabel">
         <source>Tipo de línea</source>

@@ -49,9 +49,7 @@ import { MapConfig } from './chart-configuration-models/map-config';
 import { ChartJsConfig } from './chart-configuration-models/chart-js-config';
 import { Subscription } from 'rxjs';
 import { EdaKpiTrendComponent } from '@eda/components/eda-kpi-trend/eda-kpi-trend.component';
-import { KpiTrendConfig } from './chart-configuration-models/kpi-trend-config';
 import { EdaKpiDeviationComponent } from '@eda/components/eda-kpi-deviation/eda-kpi-deviation.component';
-import { KpiDeviationConfig } from './chart-configuration-models/kpi-deviation-config';
 
 @Component({
     standalone: true,
@@ -1101,15 +1099,18 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
 
         // --- Build datasets (label = column name for bars, comparison label for line) ---
         const compLabel = this._comparisonLabel(dateFormat);
+        const showLabels = cfg.edaChart?.showLabels ?? false;
+        const showLabelsPercent = cfg.edaChart?.showLabelsPercent ?? false;
+        const showDatalabels = showLabels || showLabelsPercent;
         const rawDatasets: any[] = [{
             label: header,
             data: currentSeries,
             type: 'bar',
-            borderRadius: 2,
+            borderRadius: (cfg?.roundedBars ?? true) ? 6 : 0,
             order: 2,
             backgroundColor: color0,
             borderColor: color0,
-            datalabels: { display: false }
+            datalabels: { display: showDatalabels }
         }];
         if (hasTwoSeries) {
             rawDatasets.push({
@@ -1124,7 +1125,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
                 order: 1,
                 backgroundColor: color1,
                 borderColor: color1,
-                datalabels: { display: false }
+                datalabels: { display: showDatalabels }
             });
         }
 
@@ -1139,10 +1140,18 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         const chartOptions = this.chartUtils.initChartOptions(
             'bar', dataDescription.numericColumns[0]?.name,
             dataDescription.otherColumns, false, false, dimensions, null,
-            { min: null, max: null }, styles, false, false, false, false,
+            { min: null, max: null }, styles, showLabels, showLabelsPercent, false, false,
             cfg.numberOfColumns, 'barline', ticksOptions, false, cfg.showGridLines ?? true,
             this.styleProviderService
         );
+
+        const labelColor = cfg.edaChart?.labelColor || '#000000';
+        const labelBackgroundColor = cfg.edaChart?.labelBackgroundColor || '';
+        const chartOpts: any = chartOptions.chartOptions;
+        if (!chartOpts.plugins) chartOpts.plugins = {};
+        if (!chartOpts.plugins.datalabels) chartOpts.plugins.datalabels = {};
+        chartOpts.plugins.datalabels.color = labelColor;
+        chartOpts.plugins.datalabels.backgroundColor = labelBackgroundColor || null;
 
         // --- Build chartConfig – same pattern as renderEdaKpiChart ---
         const chartConfig: any = {};
@@ -1157,6 +1166,24 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
             chartLegend: false
         };
 
+        // --- X axis options - same pattern as renderEdaKpiChart ---
+        const showXAxis = cfg.edaChart?.showXAxis ?? true;
+        const showXAxisLabels = cfg.edaChart?.showXAxisLabels ?? true;
+        const xAxisLabelCount = cfg.edaChart?.xAxisLabelCount || 0;
+        // Unlike kpibar/kpiline/kpiarea, this defaults to false: kpitrend's chart area is much
+        // smaller (shares width with the KPI value column), so the existing xTicksLimit:3 smart-skip
+        // (left alone when neither override flag is set) stays the out-of-the-box behavior.
+        const showAllXAxisLabels = cfg.edaChart?.showAllXAxisLabels ?? false;
+        this.applyKpiXAxisOptions(chartConfig.edaChart.chartOptions, showXAxis, showXAxisLabels, xAxisLabelCount, labels, showAllXAxisLabels);
+        chartConfig.edaChart.showXAxis = showXAxis;
+        chartConfig.edaChart.showXAxisLabels = showXAxisLabels;
+        chartConfig.edaChart.xAxisLabelCount = xAxisLabelCount;
+        chartConfig.edaChart.showAllXAxisLabels = showAllXAxisLabels;
+        chartConfig.edaChart.showLabels = showLabels;
+        chartConfig.edaChart.showLabelsPercent = showLabelsPercent;
+        chartConfig.edaChart.labelColor = labelColor;
+        chartConfig.edaChart.labelBackgroundColor = labelBackgroundColor;
+
         // --- KPI values ---
         chartConfig.header = header;
         chartConfig.kpiValue = kpiValue;
@@ -1167,20 +1194,27 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         chartConfig.periodTitle = this._periodTitle(dateFormat);
         chartConfig.comparisonLabel = compLabel;
         chartConfig.decimals = decimals;
+        chartConfig.prefixImage = cfg?.prefixImage || '';
+        chartConfig.roundedBars = cfg?.roundedBars ?? true;
+        chartConfig.alertLimits = cfg?.alertLimits || [];
 
         // --- Style config – same pattern as renderEdaKpiChart ---
         const propsConfig: any = this.props.config;
         if (propsConfig) {
-            const trendCfg = <KpiTrendConfig>propsConfig.getConfig();
+            const trendCfg = <KpiConfig>propsConfig.getConfig();
             chartConfig.sufix = trendCfg?.sufix || '';
             chartConfig.backgroundColor = trendCfg?.backgroundColor || '';
             chartConfig.kpiColor = trendCfg?.kpiColor || '';
             chartConfig.modifiedFontPoints = trendCfg?.modifiedFontPoints || 0;
+            chartConfig.auxFontScale = trendCfg?.auxFontScale ?? KPI_CONFIG.DEFAULT_FONT_SCALE;
+            chartConfig.deltaFontScale = trendCfg?.deltaFontScale ?? KPI_CONFIG.DEFAULT_FONT_SCALE;
         } else {
             chartConfig.sufix = '';
             chartConfig.backgroundColor = '';
             chartConfig.kpiColor = '';
             chartConfig.modifiedFontPoints = 0;
+            chartConfig.auxFontScale = KPI_CONFIG.DEFAULT_FONT_SCALE;
+            chartConfig.deltaFontScale = KPI_CONFIG.DEFAULT_FONT_SCALE;
         }
         chartConfig.currentYearColor = color0;
         chartConfig.previousYearColor = color1;
@@ -1372,6 +1406,14 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         this.entry.clear();
         this.componentRef = this.entry.createComponent(EdaKpiTrendComponent);
         this.componentRef.instance.inject = inject;
+        this.componentRef.instance.onNotify.subscribe(data => {
+            const cfg: any = this.props.config.getConfig();
+            if (cfg) {
+                if (data.modifiedFontPoints !== undefined) cfg.modifiedFontPoints = data.modifiedFontPoints;
+                this.props.config.setConfig(cfg);
+                this.dashboardService.setNotSaved(true);
+            }
+        });
         this.currentConfig = inject;
         this.configUpdated.emit(this.currentConfig);
     }
@@ -1403,6 +1445,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
 
         const value = this._roundDecimals(Number(data.values[0][numIdx]) || 0, decimals);
         const refValue = this._roundDecimals(Number(data.values[1][numIdx]) || 0, decimals);
+        const referenceLabel: string = catIdx !== -1 ? String(data.values[1][catIdx]) : '';
 
         const vsPercent = (refValue !== null && refValue !== 0)
             ? Math.round(((value - refValue) / refValue) * 1000) / 10
@@ -1414,6 +1457,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         chartConfig.header = header;
         chartConfig.value = value;
         chartConfig.referenceValue = refValue;
+        chartConfig.referenceLabel = referenceLabel;
         chartConfig.vsPercent = vsPercent;
         chartConfig.decimals = decimals;
         chartConfig.backgroundColor = cfg.backgroundColor || '';
@@ -1421,8 +1465,14 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         chartConfig.positiveColor = cfg.positiveColor || '';
         chartConfig.negativeColor = cfg.negativeColor || '';
         chartConfig.prefixImage = cfg.prefixImage || '';
-        chartConfig.modifiedFontPoints = cfg.modifiedFontPoints || 0;
+        chartConfig.sufix = cfg.sufix || '';
+        chartConfig.valueFontScale = cfg.valueFontScale ?? KPI_CONFIG.DEFAULT_FONT_SCALE;
+        chartConfig.auxFontScale = cfg.auxFontScale ?? KPI_CONFIG.DEFAULT_FONT_SCALE;
+        chartConfig.deltaFontScale = cfg.deltaFontScale ?? KPI_CONFIG.DEFAULT_FONT_SCALE;
+        chartConfig.sufixFontScale = cfg.sufixFontScale ?? KPI_CONFIG.DEFAULT_FONT_SCALE;
+        chartConfig.imageScale = cfg.imageScale ?? KPI_CONFIG.IMAGE_DEFAULT_SCALE;
         chartConfig.alertLimits = cfg.alertLimits || [];
+        chartConfig.roundedBars = cfg.roundedBars ?? true;
 
         this.createEdaKpiDeviationComponent(chartConfig);
     }
@@ -1431,6 +1481,15 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         this.entry.clear();
         this.componentRef = this.entry.createComponent(EdaKpiDeviationComponent);
         this.componentRef.instance.inject = inject;
+        this.componentRef.instance.onNotify.subscribe(data => {
+            const cfg: any = this.props.config.getConfig();
+            if (cfg) {
+                if (data.valueFontScale !== undefined) cfg.valueFontScale = data.valueFontScale;
+                if (data.sufix !== undefined) cfg.sufix = data.sufix;
+                this.props.config.setConfig(cfg);
+                this.dashboardService.setNotSaved(true);
+            }
+        });
         this.currentConfig = inject;
         this.configUpdated.emit(this.currentConfig);
     }
@@ -1811,7 +1870,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         const config = this.props.config.getConfig();
         const assignedColors = config['assignedColors'];
 
-        this.props.config.setConfig(new KpiTrendConfig({ assignedColors }));
+        this.props.config.setConfig(new KpiConfig({ ...config, assignedColors }));
         this.renderEdaKpiTrend();
     }
 

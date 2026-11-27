@@ -828,9 +828,10 @@ export class ChartUtilsService {
             notAllowed.splice(notAllowed.indexOf('treetable'), 1);
         }
 
-        // kpitrend: 2 columns - 1 date (year/month/week/day) + 1 numeric
+        // kpitrend: 2 columns - 1 date (month/week/day) + 1 numeric.
+        // 'year' is excluded: each group would hold a single period (no sub-period to break into bars), so there's no trend to chart.
         const dateColForTrend = query.find((c: any) => c.column_type === 'date');
-        const kpiTrendFormats = ['year', 'month', 'week', 'day'];
+        const kpiTrendFormats = ['month', 'week', 'day'];
         if (dataDescription.totalColumns === 2 && dataDescription.numericColumns.length === 1
             && dataDescription.otherColumns.length === 1
             && dateColForTrend && kpiTrendFormats.includes(dateColForTrend.format)) {

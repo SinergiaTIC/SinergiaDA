@@ -24,7 +24,6 @@ import { TableConfig } from './panel-charts/chart-configuration-models/table-con
 import { ChartConfig } from './panel-charts/chart-configuration-models/chart-config';
 import { ChartJsConfig } from './panel-charts/chart-configuration-models/chart-js-config';
 import { KpiConfig } from './panel-charts/chart-configuration-models/kpi-config';
-import { KpiDeviationConfig } from './panel-charts/chart-configuration-models/kpi-deviation-config';
 import { DynamicTextConfig } from './panel-charts/chart-configuration-models/dynamicText-config';
 import { LinkedDashboardProps } from '@eda/components/eda-panels/eda-blank-panel/link-dashboards/link-dashboard-props';
 // Eda Services
@@ -599,7 +598,7 @@ public tableNodeExpand(event: any): void {
     private refreshKpiResizeControls(): void {
         if (KPI_CONFIG.USE_EDALITICS_SIZE_LOGIC) return;
         const chartType = this.panelChartConfig?.chartType;
-        if (!chartType?.startsWith('kpi') || chartType === 'kpideviation') return;
+        if (!chartType?.startsWith('kpi')) return;
         const instance = this.panelChart?.componentRef?.instance;
         if (!instance?.inject) return;
         const desired = this.isEditable() && !this.isPanelLocked();
@@ -1925,15 +1924,27 @@ public tableNodeExpand(event: any): void {
                 backgroundColor: response.backgroundColor || '',
                 kpiColor: response.kpiColor || '',
                 prefixImage: response.prefixImage || '',
-                modifiedFontPoints: response.modifiedFontPoints || 0,
+                sufix: response.sufix || '',
+                valueFontScale: response.valueFontScale ?? KPI_CONFIG.DEFAULT_FONT_SCALE,
+                auxFontScale: response.auxFontScale ?? KPI_CONFIG.DEFAULT_FONT_SCALE,
+                deltaFontScale: response.deltaFontScale ?? KPI_CONFIG.DEFAULT_FONT_SCALE,
+                sufixFontScale: response.sufixFontScale ?? KPI_CONFIG.DEFAULT_FONT_SCALE,
+                imageScale: response.imageScale ?? KPI_CONFIG.IMAGE_DEFAULT_SCALE,
                 alertLimits: response.alerts || [],
+                roundedBars: response.roundedBars ?? true,
             };
-            const config = new ChartConfig(new KpiDeviationConfig({
+            const config = new ChartConfig(new KpiConfig({
                 backgroundColor: response.backgroundColor || '',
                 kpiColor: response.kpiColor || '',
                 prefixImage: response.prefixImage || '',
-                modifiedFontPoints: response.modifiedFontPoints || 0,
+                sufix: response.sufix || '',
+                valueFontScale: response.valueFontScale ?? KPI_CONFIG.DEFAULT_FONT_SCALE,
+                auxFontScale: response.auxFontScale ?? KPI_CONFIG.DEFAULT_FONT_SCALE,
+                deltaFontScale: response.deltaFontScale ?? KPI_CONFIG.DEFAULT_FONT_SCALE,
+                sufixFontScale: response.sufixFontScale ?? KPI_CONFIG.DEFAULT_FONT_SCALE,
+                imageScale: response.imageScale ?? KPI_CONFIG.IMAGE_DEFAULT_SCALE,
                 alertLimits: response.alerts || [],
+                roundedBars: response.roundedBars ?? true,
             }));
             this.renderChart(this.currentQuery, this.chartLabels, this.chartData, 'kpideviation', 'kpideviation', config);
             this.dashboardService.setNotSaved(true);
@@ -1949,6 +1960,8 @@ public tableNodeExpand(event: any): void {
             alertLimits: response.alerts,
             sufix: response.sufix,
             modifiedFontPoints: response.modifiedFontPoints || 0,
+            auxFontScale: response.auxFontScale ?? KPI_CONFIG.DEFAULT_FONT_SCALE,
+            deltaFontScale: response.deltaFontScale ?? KPI_CONFIG.DEFAULT_FONT_SCALE,
             fontScale: response.fontScale ?? KPI_CONFIG.DEFAULT_FONT_SCALE,
             imageScale: response.imageScale ?? KPI_CONFIG.IMAGE_DEFAULT_SCALE,
             valueFontScale: response.valueFontScale ?? KPI_CONFIG.DEFAULT_FONT_SCALE,
@@ -1956,6 +1969,7 @@ public tableNodeExpand(event: any): void {
             backgroundColor: response.backgroundColor || '',
             kpiColor: response.kpiColor || '',
             prefixImage: response.prefixImage || '',
+            roundedBars: response.roundedBars ?? true,
         };
 
         let layout: any;
@@ -1997,6 +2011,8 @@ public tableNodeExpand(event: any): void {
                 edaChart: layout,
                 assignedColors: response.assignedColors,
                 modifiedFontPoints: response.modifiedFontPoints || 0,
+                auxFontScale: response.auxFontScale ?? KPI_CONFIG.DEFAULT_FONT_SCALE,
+                deltaFontScale: response.deltaFontScale ?? KPI_CONFIG.DEFAULT_FONT_SCALE,
                 fontScale: response.fontScale ?? KPI_CONFIG.DEFAULT_FONT_SCALE,
                 imageScale: response.imageScale ?? KPI_CONFIG.IMAGE_DEFAULT_SCALE,
                 valueFontScale: response.valueFontScale ?? KPI_CONFIG.DEFAULT_FONT_SCALE,
@@ -2004,6 +2020,7 @@ public tableNodeExpand(event: any): void {
                 backgroundColor: response.backgroundColor || '',
                 kpiColor: response.kpiColor || '',
                 prefixImage: response.prefixImage || '',
+                roundedBars: response.roundedBars ?? true,
             })
         );
 

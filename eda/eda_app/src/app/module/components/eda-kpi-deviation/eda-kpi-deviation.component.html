@@ -1,28 +1,75 @@
 <div class="absolute inset-0 flex flex-col justify-center overflow-hidden"
      [style.background-color]="inject?.backgroundColor || null"
-     style="padding: 10px 14px;">
+     style="padding: 10px 14px;"
+     (mouseenter)="onMouseEnter()" (mouseleave)="onMouseLeave()">
+
+  @if (shouldShowControls()) {
+    <div class="absolute top-1 right-1 flex items-center gap-1.5" style="z-index:2;">
+      <button type="button" i18n-title="@@kpiDecreaseFontSize" title="Reducir tamaño" (click)="decreaseFont()"
+              [disabled]="!canDecreaseFont()"
+              class="w-6 h-6 flex items-center justify-center rounded border border-gray-300 bg-white hover:bg-gray-100 text-gray-700 text-sm leading-none disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-white">-</button>
+      <button type="button" i18n-title="@@kpiIncreaseFontSize" title="Aumentar tamaño" (click)="increaseFont()"
+              [disabled]="!canIncreaseFont()"
+              class="w-6 h-6 flex items-center justify-center rounded border border-gray-300 bg-white hover:bg-gray-100 text-gray-700 text-sm leading-none disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-white">+</button>
+      <span class="text-xs text-gray-500" style="min-width: 2.75rem; text-align: right;">{{ getValueScalePercent() }}%</span>
+    </div>
+  }
 
   <!-- Header label -->
-  <div style="font-size:9px;color:#aaa;text-transform:uppercase;letter-spacing:0.06em;
-              margin-bottom:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">
+  <div style="color:#777;font-weight:600;text-transform:uppercase;letter-spacing:0.04em;
+              margin-bottom:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" [ngStyle]="getAuxLabelStyle()">
     {{ displayHeader }}
   </div>
 
-  <!-- Main value (with prefix image if set) -->
-  <div style="display:flex;align-items:center;gap:6px;margin-bottom:5px;min-width:0;" [ngStyle]="getContainerStyle()">
+  <!-- Main value. With a prefix image: two FIXED 50/50 columns, always - the left one only ever
+       holds the image (which grows/shrinks inside it via imageScale, the column itself never
+       changes), the right one holds the number(+suffix), pinned to its own left+bottom corner. The
+       boundary between them is always exactly at 50%, so the number always starts right on the
+       bar's 0 below, regardless of the image's size. Without an image, the number alone is centered
+       in the full width, as before. -->
+  <div [ngStyle]="getContainerStyle()" style="display:flex;align-items:stretch;margin-bottom:5px;min-width:0;">
     @if(inject?.prefixImage) {
-      <img [src]="inject.prefixImage" style="height:1em;width:auto;object-fit:contain;flex-shrink:0;" />
+      <div style="flex:0 0 50%;width:50%;height:100%;display:flex;align-items:center;justify-content:center;overflow:hidden;">
+        <img [src]="inject.prefixImage" [ngStyle]="getImageStyle()" style="width:auto;max-width:100%;object-fit:contain;object-position:center;display:block;" />
+      </div>
+      <div class="font-bold pointer" [ngStyle]="getValueStyle()"
+           style="flex:0 0 50%;width:50%;height:100%;display:flex;align-items:flex-end;justify-content:flex-start;gap:0.25em;white-space:nowrap;overflow:hidden;"
+           title="Añadir unidades"
+           (click)="setSufix(); $event.stopPropagation()">
+        <span style="line-height:1;">{{ formatValue(displayValue) }}</span>
+        @if (displaySufix) {
+          <span [ngStyle]="getSufixStyle()" style="line-height:1;align-self:center;">{{ displaySufix }}</span>
+        }
+      </div>
+    } @else {
+      <div class="font-bold pointer" [ngStyle]="getValueStyle()"
+           style="flex:1 1 auto;height:100%;display:flex;align-items:flex-end;justify-content:center;gap:0.25em;white-space:nowrap;overflow:hidden;"
+           title="Añadir unidades"
+           (click)="setSufix(); $event.stopPropagation()">
+        <span style="line-height:1;">{{ formatValue(displayValue) }}</span>
+        @if (displaySufix) {
+          <span [ngStyle]="getSufixStyle()" style="line-height:1;align-self:center;">{{ displaySufix }}</span>
+        }
+      </div>
     }
-    <div class="font-bold" [ngStyle]="getValueStyle()"
-         style="line-height:1.1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">
-      {{ formatValue(displayValue) }}
-    </div>
   </div>
+  @if (sufixClick) {
+    <div style="display:flex;justify-content:center;margin-bottom:5px;">
+      <input type="text" [(ngModel)]="inject.sufix" (focusout)="setSufix()" (keydown.enter)="setSufix()"
+             (click)="$event.stopPropagation()" name="deviationSufix" autofocus
+             style="font-size:14px;width:140px;max-width:160px;border:1px solid #ccc;border-radius:4px;padding:3px 8px;" />
+    </div>
+  }
 
   <!-- Percentage delta -->
   @if(displayVsPercent !== null) {
-    <div style="display:flex;align-items:center;gap:3px;font-size:12px;font-weight:700;margin-bottom:12px;"
+    <div style="display:flex;align-items:center;justify-content:flex-end;gap:4px;font-weight:700;margin-bottom:12px;"
+         [ngStyle]="getDeltaStyle()"
          [style.color]="fillColor">
+      @if (displayReferenceLabel) {
+        <span i18n="@@kpiDeviationVsLabel">Vs.</span>
+        <span>{{ displayReferenceLabel }}</span>
+      }
       <span>{{ isPositive ? '▲' : '▼' }}</span>
       <span>{{ (isPositive ? '+' : '') }}{{ displayVsPercent | number:'1.1-1':'es' }}%</span>
     </div>
@@ -33,19 +80,24 @@
     <div style="position:relative;">
 
       <!-- Track (soft tint of the fill color) -->
-      <div style="position:relative;height:6px;border-radius:3px;"
+      <div style="position:relative;height:11px;"
+           [style.border-radius]="barRadius"
            [style.background-color]="trackColor">
 
-        <!-- Fill (from 0 to the value position) -->
-        <div style="position:absolute;top:0;height:100%;border-radius:3px;transition:left 0.4s,width 0.4s;"
+        <!-- Fill (from the fixed center/0 point to the value position) -->
+        <div style="position:absolute;top:0;height:100%;transition:left 0.4s,width 0.4s;"
+             [style.border-radius]="barRadius"
              [style.left]="barFillLeft + '%'"
              [style.width]="barFillWidth + '%'"
              [style.background-color]="fillColor">
         </div>
 
+        <!-- Fixed center (0) tick: never moves, regardless of the value's sign -->
+        <div style="position:absolute;top:0;left:50%;width:1px;height:100%;background-color:rgba(0,0,0,0.25);"></div>
+
         <!-- Marker at the value position -->
-        <div style="position:absolute;top:-7px;transform:translateX(-50%);
-                    font-size:7px;line-height:1;pointer-events:none;"
+        <div style="position:absolute;top:-9px;transform:translateX(-50%);
+                    font-size:10px;line-height:1;pointer-events:none;"
              [style.left]="markerLeft + '%'"
              [style.color]="fillColor">
           ▼
@@ -53,15 +105,11 @@
 
       </div>
 
-      <!-- Labels: 0 at the boundary side, scale at the opposite side -->
-      <div style="display:flex;justify-content:space-between;margin-top:4px;">
-        @if (isPositive) {
-          <span style="font-size:8px;color:#999;font-weight:600;">0</span>
-          <span style="font-size:8px;color:#bbb;">+{{ barScale }}%</span>
-        } @else {
-          <span style="font-size:8px;color:#bbb;">-{{ barScale }}%</span>
-          <span style="font-size:8px;color:#999;font-weight:600;">0</span>
-        }
+      <!-- Labels: fixed scale, -barScale% / 0 / +barScale% -->
+      <div style="position:relative;height:16px;margin-top:5px;">
+        <span style="position:absolute;left:0;color:#888;font-weight:600;" [ngStyle]="getAuxScaleLabelStyle()">-{{ barScale }}%</span>
+        <span style="position:absolute;left:50%;transform:translateX(-50%);color:#777;font-weight:700;" [ngStyle]="getAuxScaleLabelStyle()">0</span>
+        <span style="position:absolute;right:0;color:#888;font-weight:600;" [ngStyle]="getAuxScaleLabelStyle()">+{{ barScale }}%</span>
       </div>
 
     </div>

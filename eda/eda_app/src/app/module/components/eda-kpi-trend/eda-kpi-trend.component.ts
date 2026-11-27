@@ -1,4 +1,4 @@
-import { Component, OnInit, OnChanges, OnDestroy, SimpleChanges, Input, HostBinding,
+import { Component, OnInit, OnChanges, OnDestroy, SimpleChanges, Input, Output, EventEmitter, HostBinding,
          ChangeDetectorRef, AfterViewInit, ViewChild, ElementRef, Self, Inject, LOCALE_ID } from '@angular/core';
 import { CommonModule, getLocaleMonthNames, FormStyle, TranslationWidth } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -6,6 +6,7 @@ import { DropdownModule } from 'primeng/dropdown';
 import { EdaKpiTrend, TrendPeriodGroup } from './eda-kpi-trend';
 import { EdaChartComponent } from '../eda-chart/eda-chart.component';
 import { StyleProviderService } from '@eda/services/service.index';
+import { KPI_CONFIG } from '@eda/configs/customizable/customizable_merged';
 
 @Component({
     standalone: true,
@@ -16,6 +17,7 @@ import { StyleProviderService } from '@eda/services/service.index';
 })
 export class EdaKpiTrendComponent implements OnInit, OnChanges, AfterViewInit, OnDestroy {
     @Input() inject: EdaKpiTrend;
+    @Output() onNotify: EventEmitter<any> = new EventEmitter();
     @ViewChild('edaTrendChart') edaTrendChart: EdaChartComponent;
     @ViewChild('kpiLeft') kpiLeftRef: ElementRef;
 
@@ -47,6 +49,13 @@ export class EdaKpiTrendComponent implements OnInit, OnChanges, AfterViewInit, O
     color: string = '#67757c';
     family: string = 'inherit';
     modifiedFontPoints: number = 0;
+
+    /** true → forks mode: hover +/- buttons on the value itself (Edalitics adjusts the same field from the dialog instead). */
+    public readonly useHoverResize: boolean = !KPI_CONFIG.USE_EDALITICS_SIZE_LOGIC;
+    public isHovered: boolean = false;
+    private readonly fontPointsStep = 2;
+    private readonly fontPointsMin = -90;
+    private readonly fontPointsMax = 300;
 
     constructor(
         private styleProviderService: StyleProviderService,
@@ -131,16 +140,17 @@ export class EdaKpiTrendComponent implements OnInit, OnChanges, AfterViewInit, O
         const c0 = this.displayCurrentColor;
         const c1 = this.displayPreviousColor;
         const compLabel = this.displayComparisonLabel;
+        const showDatalabels = (this.inject?.edaChart?.showLabels ?? false) || (this.inject?.edaChart?.showLabelsPercent ?? false);
 
         const newDatasets: any[] = [{
             label: this.inject.header,
             data: result.currentSeries,
             type: 'bar',
-            borderRadius: 2,
+            borderRadius: (this.inject?.roundedBars ?? true) ? 6 : 0,
             order: 2,
             backgroundColor: c0,
             borderColor: c0,
-            datalabels: { display: false }
+            datalabels: { display: showDatalabels }
         }];
         if (compGroup) {
             newDatasets.push({
@@ -155,7 +165,7 @@ export class EdaKpiTrendComponent implements OnInit, OnChanges, AfterViewInit, O
                 order: 1,
                 backgroundColor: c1,
                 borderColor: c1,
-                datalabels: { display: false }
+                datalabels: { display: showDatalabels }
             });
         }
 
@@ -218,10 +228,57 @@ export class EdaKpiTrendComponent implements OnInit, OnChanges, AfterViewInit, O
 
     getValueStyle(): any {
         return {
-            color: this.color,
+            color: this._alertColor() || this.color,
             'font-family': this.family,
             'font-size': this._computeValueFontSize()
         };
+    }
+
+    /** Alert threshold color override, checked against vsPercent (the "vs anterior" %) - same pattern as eda-kpi-deviation. */
+    private _alertColor(): string | null {
+        const limits: any[] = this.inject?.alertLimits;
+        if (!limits?.length || this.displayVsPercent === null) return null;
+        const pct = this.displayVsPercent;
+        for (const a of limits) {
+            const thr = Number(a.value);
+            if (a.operand === '<' && pct < thr) return a.color;
+            if (a.operand === '=' && pct === thr) return a.color;
+            if (a.operand === '>' && pct > thr) return a.color;
+        }
+        return null;
+    }
+
+    /** Style for the secondary (comparison period) value: same color/family as the main KPI, independently resizable */
+    getSpyValueStyle(): any {
+        return {
+            color: this.color,
+            'font-family': this.family,
+            'font-size': this._auxFontSize(15) + 'px'
+        };
+    }
+
+    /** Auxiliary texts: period title + comparison label (small uppercase captions), independently resizable */
+    getAuxLabelStyle(): any {
+        return { 'font-size': this._auxFontSize(9) + 'px' };
+    }
+
+    /** Increment/decrement (vs. %) row, independently resizable */
+    getDeltaStyle(): any {
+        return { 'font-size': this._deltaFontSize(11) + 'px' };
+    }
+
+    /** Same percentage-scale mechanism as plain KPI's image/value/suffix scales (10% steps, KPI_CONFIG-bounded). */
+    private _scale(raw: any): number {
+        const value = typeof raw === 'number' ? raw : KPI_CONFIG.DEFAULT_FONT_SCALE;
+        return Math.min(KPI_CONFIG.MAX_FONT_SCALE, Math.max(KPI_CONFIG.MIN_FONT_SCALE, value));
+    }
+
+    private _auxFontSize(base: number): number {
+        return Math.max(6, Math.round(base * this._scale(this.inject?.auxFontScale)));
+    }
+
+    private _deltaFontSize(base: number): number {
+        return Math.max(6, Math.round(base * this._scale(this.inject?.deltaFontScale)));
     }
 
     private _computeValueFontSize(): string {
@@ -253,6 +310,40 @@ export class EdaKpiTrendComponent implements OnInit, OnChanges, AfterViewInit, O
     }
 
     absVal(v: number): number { return Math.abs(v); }
+
+    onMouseEnter(): void {
+        this.isHovered = true;
+    }
+
+    onMouseLeave(): void {
+        this.isHovered = false;
+    }
+
+    shouldShowControls(): boolean {
+        return this.useHoverResize && !!this.inject?.showResizeControls && this.isHovered;
+    }
+
+    increaseFont(): void {
+        this._applyFontPoints(this.modifiedFontPoints + this.fontPointsStep);
+    }
+
+    decreaseFont(): void {
+        this._applyFontPoints(this.modifiedFontPoints - this.fontPointsStep);
+    }
+
+    canIncreaseFont(): boolean {
+        return this.modifiedFontPoints < this.fontPointsMax;
+    }
+
+    canDecreaseFont(): boolean {
+        return this.modifiedFontPoints > this.fontPointsMin;
+    }
+
+    private _applyFontPoints(value: number): void {
+        this.modifiedFontPoints = Math.min(this.fontPointsMax, Math.max(this.fontPointsMin, value));
+        if (this.inject) this.inject.modifiedFontPoints = this.modifiedFontPoints;
+        this.onNotify.emit({ modifiedFontPoints: this.modifiedFontPoints });
+    }
 
     public updateChart(): void {
         if (this.inject?.edaChart) {
