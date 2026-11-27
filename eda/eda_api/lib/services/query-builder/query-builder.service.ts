@@ -86,7 +86,8 @@ export abstract class QueryBuilderService {
 
         let graph = this.buildGraph();
         /* Agafem els noms de les taules, origen i destí (és arbitrari), les columnes i el tipus d'agregació per construïr la consulta */
-        let origin = this.queryTODO.rootTable || this.queryTODO.fields.find(x => x.order === 0).table_id;
+        const rootTable: any = this.queryTODO.rootTable;
+        let origin = (typeof rootTable === 'object' ? rootTable?.table_name : rootTable) || this.queryTODO.fields.find(x => x.order === 0).table_id;
         let view = this.tables.filter(table => table.table_name.trim() === origin.trim()).map(table => { return table.query ? true: false })[0];
         let dest = [];
         const valueListList = [];
@@ -1124,12 +1125,17 @@ export abstract class QueryBuilderService {
         const modelPermissions = this.dataModel.ds.metadata.model_granted_roles;
 
 
-        /** Check the permissions behaviour. If they are recursive get recursive permissions*/
-        const permissions =
-            eda_api_config.custom_behaviour.USE_RECURSIVE_PERMISSIONS?
-            this.getRecursivePermissions(modelPermissions, this.tables, origin, this.queryTODO):
-            this.getFlatPermissions(modelPermissions, this.queryTODO)
-            ;
+        /** SQL panels always use related-tables permissions because flat (column-based)
+         *  permissions return nothing for SQL panels: their fields are empty and security
+         *  would never be injected. USE_RECURSIVE_PERMISSIONS true (Edalitics) nests the
+         *  permissions of every related table in the subquery, like TREE mode does.
+         *  Alternative: with the flag false, keep only the permissions of the table being
+         *  replaced, so a panel with many related tables does not exceed MariaDB's limit
+         *  of 61 tables per join. */
+        const recursivePermissions = this.getRecursivePermissions(modelPermissions, this.tables, origin, this.queryTODO);
+        const permissions = eda_api_config.custom_behaviour.USE_RECURSIVE_PERMISSIONS
+            ? recursivePermissions
+            : recursivePermissions.filter((p: any) => p.filter_table == this.cleanOriginTable(table));
         
         const joinType = 'inner'; // es per els permisos. Ha de ser així.
         const valueListJoins = []; // anulat
@@ -1144,7 +1150,7 @@ export abstract class QueryBuilderService {
                 }
             });
 
-            const joinTree = this.dijkstraAlgorithm(graph, origin, dest.slice(0));
+            const joinTree = this.dijkstraAlgorithm(graph, this.cleanOriginTable(origin), dest.slice(0));
             const permissionJoins = this.getJoins(joinTree, dest, tables, joinType, valueListJoins, SCHEMA);
 
             let joinsubstitute = '';

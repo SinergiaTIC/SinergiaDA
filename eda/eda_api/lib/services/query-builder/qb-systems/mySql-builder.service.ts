@@ -377,10 +377,54 @@ export class MySqlBuilderService extends QueryBuilderService {
 
   public getFilters(filters, destLongitud, pTable): any {
 
-    /** If We Have permissions And No Destination I Apply Them As A Separate Grouped Condition
-     * (OR'd within the same table, AND'd across tables) instead of mixing them into `filters`,
-     * where each entry gets ANDed individually and would wrongly exclude rows that satisfy one
-     * security rule (e.g. security group) but not another (e.g. assigned user). */
+    // custom_behaviour.AND_PERMISSIONS_WITHIN_TABLE true (Edalitics) -> identical to the historic
+    // behaviour: permissions are mixed into `filters` and ANDed one by one through the same pipeline
+    // as the user's own filters (equalfilters merging, the is_null OR/AND special-casing and
+    // mergeFilterStrings all see permissions too, exactly like before this flag existed).
+    if (eda_api_config.custom_behaviour?.AND_PERMISSIONS_WITHIN_TABLE) {
+
+      if (this.permissions.length > 0 && destLongitud == 0) this.permissions.forEach(permission => { filters.push(permission); });
+      else { this.permissions.forEach(permission => { if (permission.filter_table === pTable) filters.push(permission); }) }
+
+      if (filters.length) {
+
+        let equalfilters = this.getEqualFilters(filters);
+        filters = filters.filter(f => !equalfilters.toRemove.includes(f.filter_id));
+        let filtersString = `\nwhere 1 = 1 `;
+
+        filters.forEach(f => {
+          const column = this.findColumn(f.filter_table, f.filter_column);
+          column.autorelation = f.autorelation;
+          column.joins = f.joins;
+          column.valueListSource = f.valueListSource;
+          column.filter_codes = f.filter_codes;
+          const colname = this.getFilterColname(column);
+          if (f.filter_type === 'not_null' || f.filter_type === 'not_null_nor_empty' || f.filter_type === 'null_or_empty') {
+            filtersString += '\nand ' + this.filterToString(f);
+          } else {
+            /* Null control... query generated in a different way */
+              if (   f.filter_type == 'is_null' && f.filter_elements[0].value1.length === 1 && filters.filter( (f)=>f.filter_column == column.column_name && f.filter_table == column.table_id ).length  >1 ) {// Several filters on the same column: it is either filter X or null.
+                     filtersString += `\nor ${colname}  is null `;
+              } if (   f.filter_type == 'is_null' && f.filter_elements[0].value1.length === 1 && filters.filter( (f)=>f.filter_column == column.column_name && f.filter_table == column.table_id ).length  ==1 ) { // Only a null filter: an AND, since 1=1 and it is null.
+                filtersString += `\nand ${colname}  is null `;
+              } else {
+                  filtersString += `\nand (${this.filterToString(f)} ) `;
+              }
+          }
+        });
+
+        /**Allow filter ranges */
+        filtersString = this.mergeFilterStrings(filtersString, equalfilters);
+        return filtersString;
+      } else {
+        return '';
+      }
+    }
+
+    // custom_behaviour.AND_PERMISSIONS_WITHIN_TABLE false (Alternative) -> permissions are applied as a
+    // separate grouped condition (OR'd within the same table, AND'd across tables) instead of mixing them
+    // into `filters`, where each entry gets ANDed individually and would wrongly exclude rows that satisfy
+    // one security rule (e.g. security group) but not another (e.g. assigned user).
     const applicablePermissions = (this.permissions.length > 0 && destLongitud == 0)
       ? this.permissions
       : this.permissions.filter(permission => permission.filter_table === pTable);
@@ -410,7 +454,7 @@ export class MySqlBuilderService extends QueryBuilderService {
                    filtersString += `\nor ${colname}  is null `;
             } if (   f.filter_type == 'is_null' && f.filter_elements[0].value1.length === 1 && filters.filter( (f)=>f.filter_column == column.column_name && f.filter_table == column.table_id ).length  ==1 ) { // si solo tengo el filtro de nulo es un and porque digo 1=1 y es nulo.
               filtersString += `\nand ${colname}  is null `;
-            } else {  
+            } else {
                 filtersString += `\nand (${this.filterToString(f)} ) `;
             }
         }
@@ -565,12 +609,7 @@ export class MySqlBuilderService extends QueryBuilderService {
       const filterTableName = filter_table?.split('.')[0];
 
       // false (default) -> compare against the raw selected values | true (alternative) -> compare against the internal codes
-      // Use internal codes only for value-list filters with a configured ID column and valid codes.
-      // Otherwise use the selected values to avoid comparisons against stale or null codes.
-      const codesHaveNull = Array.isArray(filter_codes) && filter_codes.some((fc: any) => Array.isArray(fc?.value1) && fc.value1.some((v: any) => v == null || v === 'null'));
-      const codesOrElements = (useCodeForFilters && valueListSource?.target_id_column && Array.isArray(filter_codes) && filter_codes.length > 0 && !codesHaveNull)
-        ? filter_codes
-        : filter_elements;
+      const codesOrElements = useCodeForFilters ? filter_codes : filter_elements;
 
       ////////////////////////////////////////////////// filter_type //////////////////////////////////////////////////
       let filter_type_value = '';
@@ -803,14 +842,22 @@ export class MySqlBuilderService extends QueryBuilderService {
           }
 
           // Security: If the joined table has permissions, they are added as an extra condition for ON.
-          // (Just like getFilters() applies them when the table is the source: each rule with AND)
+          // custom_behaviour.AND_PERMISSIONS_WITHIN_TABLE true (Edalitics) -> each rule with AND.
+          // false (Alternative) -> OR within the table, AND across tables (just like getFilters()).
           let agregadoPermisos: any = '';
           if (destLongitud > 0) {
-            this.permissions.forEach((p: any) => {
-              if (p.filter_table == e[j]) {
-                agregadoPermisos += ` and (${this.filterToString(p)})`;
+            if (eda_api_config.custom_behaviour?.AND_PERMISSIONS_WITHIN_TABLE) {
+              this.permissions.forEach((p: any) => {
+                if (p.filter_table == e[j]) {
+                  agregadoPermisos += ` and (${this.filterToString(p)})`;
+                }
+              });
+            } else {
+              const permisosTabla = this.permissions.filter((p: any) => p.filter_table == e[j]);
+              if (permisosTabla.length) {
+                agregadoPermisos += ` and ${this.buildPermissionsSqlExpresion(permisosTabla)}`;
               }
-            });
+            }
           }
 
           //Version compatibility string//array
@@ -933,15 +980,29 @@ export class MySqlBuilderService extends QueryBuilderService {
                 targetTableJoin.push(aliasTargetTable || targetTable);
 
                 if (destLongitud > 0) {
-                  // The permissions of the destination table of this join are added to the ON (with AND, just like getFilters());
+                  // The permissions of the destination table of this join are added to the ON;
+                  // custom_behaviour.AND_PERMISSIONS_WITHIN_TABLE true (Edalitics) -> with AND, just like getFilters().
+                  // false (Alternative) -> OR within the table, AND across tables, just like getFilters().
                   // The rest are marked toBeUsed so that they are applied by another method (getSqlPermissionsExpression)
-                  this.permissions.forEach((p: any) => {
-                    if (p.filter_table == targetTable) {
-                      joinStr += ` and (${this.filterToString(p)})`;
-                    } else {
-                      p.toBeUsed = true;
+                  if (eda_api_config.custom_behaviour?.AND_PERMISSIONS_WITHIN_TABLE) {
+                    this.permissions.forEach((p: any) => {
+                      if (p.filter_table == targetTable) {
+                        joinStr += ` and (${this.filterToString(p)})`;
+                      } else {
+                        p.toBeUsed = true;
+                      }
+                    });
+                  } else {
+                    const permisosTabla = this.permissions.filter((p: any) => p.filter_table == targetTable);
+                    if (permisosTabla.length) {
+                      joinStr += ` and ${this.buildPermissionsSqlExpresion(permisosTabla)}`;
                     }
-                  });
+                    this.permissions.forEach((p: any) => {
+                      if (p.filter_table != targetTable) {
+                        p.toBeUsed = true;
+                      }
+                    });
+                  }
                 }
 
                 joinString.push(joinStr);
@@ -1105,9 +1166,7 @@ export class MySqlBuilderService extends QueryBuilderService {
       // Some queries (e.g. autocomplete suggestions) only send display values in filter_elements, so fall back to them
       // when filter_codes is missing/empty instead of crashing on filterValues[0].
       const hasFilterCodes = Array.isArray(filterObject.filter_codes) && filterObject.filter_codes.length > 0;
-      const hasValueListCodeColumn = !!filterObject.valueListSource?.target_id_column;
-      const codesHaveNull = hasFilterCodes && filterObject.filter_codes.some((fc: any) => Array.isArray(fc?.value1) && fc.value1.some((v: any) => v == null || v === 'null'));
-      const filterValues = (this.useValueListCodeForFilters() && hasFilterCodes && hasValueListCodeColumn && !codesHaveNull)
+      const filterValues = (this.useValueListCodeForFilters() && hasFilterCodes)
         ? filterObject.filter_codes
         : filterObject.filter_elements;
 
@@ -1408,13 +1467,19 @@ public getHavingColname(column: any){
 
 
   buildPermissionJoin(origin: string, joinStrings: string[], permissions: any[]) {
-
+    
     let joinString = `( SELECT ${origin}.* from ${origin} `;
-    joinString += joinStrings.join(' ') + ' where ';
-    permissions.forEach(permission => {
-      joinString += ` ${this.filterToString(permission )} and `
-    });
-    return `${joinString.slice(0, joinString.lastIndexOf(' and '))} )`;
+    // custom_behaviour.AND_PERMISSIONS_WITHIN_TABLE true (Edalitics) -> each rule with AND.
+    // false (Alternative) -> OR within the table, AND across tables.
+    if (eda_api_config.custom_behaviour?.AND_PERMISSIONS_WITHIN_TABLE) {
+      joinString += joinStrings.join(' ') + ' where ';
+      permissions.forEach(permission => {
+        joinString += ` ${this.filterToString(permission )} and `
+      });
+      return `${joinString.slice(0, joinString.lastIndexOf(' and '))} )`;
+    }
+    joinString += joinStrings.join(' ') + ' where ' + this.buildPermissionsSqlExpresion(permissions);
+    return `${joinString} )`;
   }
 
   sqlQuery(query: string, filters: any[], filterMarks: string[]): string {
