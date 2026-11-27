@@ -802,3 +802,16 @@ main.flex-grow:has(#myDashboard) {
   transform-origin: left center !important;
   margin-right: -15% !important;
 }
+
+/* ─── Query editor: show the full field name in the column and filter chips ──
+   The core component fixes the chip height at 2.5rem, so long names wrap onto a
+   second line and get clipped. Let the chip grow with its content instead. The
+   dialog content is appended to body, so the dialog is the scoping root; the
+   sorting list reuses the same classes and must keep its own layout. */
+.p-dialog.eda-dialog2:has(.select-list) .select-list .select-box,
+.p-dialog.eda-dialog2:has(.filter-list) .filter-list:not(#result-sorting-list) .select-box {
+  height: auto !important;
+  min-height: 2.5rem !important;
+  padding-top: 0.375rem !important;
+  padding-bottom: 0.375rem !important;
+}
