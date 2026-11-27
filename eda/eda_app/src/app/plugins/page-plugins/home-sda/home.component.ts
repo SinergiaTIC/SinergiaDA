@@ -279,12 +279,13 @@ export class HomeSdaComponent implements OnInit, OnDestroy {
   private initDashboards(): void {
     this.dashboardService.getDashboards().subscribe(
       res => {
-        this.allDashboards = [
+        // A report may be returned once per shared security group; keep a single entry per report
+        this.allDashboards = _.uniqBy([
           ...res.open.map(d => this.normalizeDashboard(d, "open")),
           ...res.common.map(d => this.normalizeDashboard(d, "common")),
           ...res.group.map(d => this.normalizeDashboard(d, "group")),
           ...res.private.map(d => this.normalizeDashboard(d, "private"))
-        ].sort((a, b) => (a.config.title > b.config.title ? 1 : b.config.title > a.config.title ? -1 : 0));
+        ], "_id").sort((a, b) => (a.config.title > b.config.title ? 1 : b.config.title > a.config.title ? -1 : 0));
 
         this.groups = _.map(_.uniqBy(res.group, "group._id"), "group");
         console.log("Groups obtained from service:", this.groups);
