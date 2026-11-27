@@ -426,7 +426,12 @@ export class EdaBlankPanelComponent implements OnInit, AfterViewChecked {
 
             if (modeSQL || queryMode == 'SQL') {
                 this.currentSQLQuery = contentQuery.query.SQLexpression;
-                this.sqlOriginTable = this.sqlOriginTables.find(t => t.value === contentQuery.query.fields[0].table_id);
+                // SQL panels can be saved with an empty fields array; only resolve
+                // the origin table when a first field actually exists. Otherwise the
+                // thrown error aborts ngOnInit and leaves the panel without data
+                // and without its context menu.
+                const firstField = contentQuery.query.fields?.[0];
+                this.sqlOriginTable = firstField ? this.sqlOriginTables.find(t => t.value === firstField.table_id) : undefined;
                 this.cdr.detectChanges();
             }
             this.loadChartsData(this.panel.content);
