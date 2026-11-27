@@ -1611,7 +1611,7 @@ public tableNodeExpand(event: any): void {
                 properties.chartDataset[0].data = this.graficos.assignedColors.map(element => element.value)
             }
         
-                this.panel.content.query.output.config = { colors: this.graficos.chartColors, chartType: this.graficos.chartType, assignedColors: this.graficos.assignedColors, chartLegend: this.graficos.chartLegend, coloredBarsConfig: this.graficos.coloredBarsConfig, showUniqueColors: this.graficos.showUniqueColors, uniqueBarColors: this.graficos.uniqueBarColors, showGridLines: this.graficos.showGridLines };
+                this.panel.content.query.output.config = { colors: this.graficos.chartColors, chartType: this.graficos.chartType, assignedColors: this.graficos.assignedColors, paletteName: this.graficos['paletteName'], chartLegend: this.graficos.chartLegend, coloredBarsConfig: this.graficos.coloredBarsConfig, showUniqueColors: this.graficos.showUniqueColors, uniqueBarColors: this.graficos.uniqueBarColors, showGridLines: this.graficos.showGridLines };
                 const layout =
                     new ChartConfig(new ChartJsConfig(this.graficos.chartColors, this.graficos.chartType,
                     this.graficos.addTrend, this.graficos.addComparative, this.graficos.showLabels,
@@ -1622,6 +1622,7 @@ public tableNodeExpand(event: any): void {
                 (layout.getConfig() as any)['showUniqueColors'] = this.graficos.showUniqueColors ?? false;
                 (layout.getConfig() as any)['uniqueBarColors'] = this.graficos.uniqueBarColors ?? [];
                 (layout.getConfig() as any)['showGridLines'] = this.graficos.showGridLines ?? true;
+                (layout.getConfig() as any)['paletteName'] = this.graficos['paletteName'];
                 this.renderChart(this.currentQuery, this.chartLabels, this.chartData, this.graficos.chartType, this.graficos.edaChart, layout);
             }
             //not saved alert message
@@ -1654,12 +1655,14 @@ public tableNodeExpand(event: any): void {
         zoom: number,
         coordinates: Array<Array<number>>,
         assignedColors: any[],
+        paletteName?: string,
         color?: string
     }): void {
         if (!_.isEqual(event, EdaDialogCloseEvent.NONE)) {
             this.panel.content.query.output.config = {
                 ...this.panel.content.query.output.config,
                 assignedColors: response.assignedColors,
+                paletteName: response.paletteName,
                 color: response.color, // legacy
                 logarithmicScale: response.logarithmicScale,
                 legendPosition: response.legendPosition,
@@ -1676,8 +1679,9 @@ public tableNodeExpand(event: any): void {
         this.mapController = undefined;
     }
         
-    public onCloseMapCoordProperties(event, response: { 
+    public onCloseMapCoordProperties(event, response: {
         assignedColors: any[],
+        paletteName?: string,
         initialColor?: string,  // For legacy compatibility.
         finalColor?: string,    // For legacy compatibility.
         logarithmicScale: boolean, 
@@ -1688,7 +1692,8 @@ public tableNodeExpand(event: any): void {
         if (!_.isEqual(event, EdaDialogCloseEvent.NONE)) {
             this.panel.content.query.output.config = {
                 ...this.panel.content.query.output.config,
-                assignedColors: response.assignedColors, 
+                assignedColors: response.assignedColors,
+                paletteName: response.paletteName,
                 logarithmicScale: response.logarithmicScale,
                 draggable: response.draggable,
                 zoom: response.zoom,
@@ -1716,7 +1721,7 @@ public tableNodeExpand(event: any): void {
                     e.color = response.colors[indexColor]
                 }
             });
-            this.panel.content.query.output.config = { colors: response.colors, assignedColors: this.panelChart.componentRef.instance.assignedColors };
+            this.panel.content.query.output.config = { colors: response.colors, assignedColors: this.panelChart.componentRef.instance.assignedColors, paletteName: response.paletteName };
             const config = new ChartConfig(this.panel.content.query.output.config);
             this.renderChart(this.currentQuery, this.chartLabels, this.chartData, this.graficos.chartType, this.graficos.edaChart, config);
             this.dashboardService.setNotSaved(true);
@@ -1737,7 +1742,7 @@ public tableNodeExpand(event: any): void {
                     e.color = response.colors[indexColor]
                 }
             });
-            this.panel.content.query.output.config = { colors: response.colors, assignedColors: this.panelChart.componentRef.instance.assignedColors };
+            this.panel.content.query.output.config = { colors: response.colors, assignedColors: this.panelChart.componentRef.instance.assignedColors, paletteName: response.paletteName };
             const config = new ChartConfig(this.panel.content.query.output.config);
             this.renderChart(this.currentQuery, this.chartLabels, this.chartData, this.graficos.chartType, this.graficos.edaChart, config);
             this.dashboardService.setNotSaved(true);
@@ -1762,7 +1767,8 @@ public tableNodeExpand(event: any): void {
             // Do not overwrite the entire config; only update what is necessary.
             this.panel.content.query.output.config = {
                 ...this.panel.content.query.output.config, // Keep the existing config.
-                assignedColors: response.assignedColors // Add assignedColors
+                assignedColors: response.assignedColors, // Add assignedColors
+                paletteName: response.paletteName
             };
             
             const config = new ChartConfig(this.panel.content.query.output.config);
@@ -1785,7 +1791,7 @@ public tableNodeExpand(event: any): void {
                 }
             });
             
-            this.panel.content.query.output.config = { colors: response.colors, assignedColors: this.panelChart.componentRef.instance.assignedColors };
+            this.panel.content.query.output.config = { colors: response.colors, assignedColors: this.panelChart.componentRef.instance.assignedColors, paletteName: response.paletteName };
             const config = new ChartConfig(this.panel.content.query.output.config);
             this.renderChart(this.currentQuery, this.chartLabels, this.chartData, this.graficos.chartType, this.graficos.edaChart, config);
             this.dashboardService.setNotSaved(true);
@@ -1806,7 +1812,7 @@ public tableNodeExpand(event: any): void {
                 }
             });
 
-            this.panel.content.query.output.config = { colors: response.colors, assignedColors: this.panelChart.componentRef.instance.assignedColors };
+            this.panel.content.query.output.config = { colors: response.colors, assignedColors: this.panelChart.componentRef.instance.assignedColors, paletteName: response.paletteName };
             const config = new ChartConfig(this.panel.content.query.output.config);
             this.renderChart(this.currentQuery, this.chartLabels, this.chartData, this.graficos.chartType, this.graficos.edaChart, config);
 
@@ -1845,7 +1851,8 @@ public tableNodeExpand(event: any): void {
                 // We assign the new colors to the config.
                 this.panel.content.query.output.config = {
                     colors: response.colors,
-                    assignedColors: chartInstance.assignedColors
+                    assignedColors: chartInstance.assignedColors,
+                    paletteName: response.paletteName
                 };
     
                 const config = new ChartConfig(this.panel.content.query.output.config);
@@ -1875,7 +1882,7 @@ public tableNodeExpand(event: any): void {
                             e.color = response.colors[indexColor]
                         }
                     });
-                    this.panel.content.query.output.config = { colors: response.colors, assignedColors: this.panelChart.componentRef.instance.assignedColors };
+                    this.panel.content.query.output.config = { colors: response.colors, assignedColors: this.panelChart.componentRef.instance.assignedColors, paletteName: response.paletteName };
                     const config = new ChartConfig(this.panel.content.query.output.config);
                     this.renderChart(this.currentQuery, this.chartLabels, this.chartData, this.graficos.chartType, this.graficos.edaChart, config);
 

@@ -30,12 +30,16 @@ export class BubblechartDialog implements OnInit, AfterViewChecked {
   public labels: Array<string | number> = [];
   public selectedPalette: { name: string; paleta: string[] } | null = null;
   public allPalettes: any = this.stylesProviderService.ChartsPalettes;
+  private originalPaletteName: string | undefined;
   public title = $localize`:@@ChartProps:PROPIEDADES DEL GRAFICO`;
 
   constructor(private stylesProviderService: StyleProviderService, private ChartUtilsService: ChartUtilsService) { }
 
   ngOnInit(): void {
     this.panelChartConfig = this.controller.params.panelChart;
+    const paletteConfig = this.panelChartConfig.config?.getConfig();
+    this.originalPaletteName = paletteConfig?.['paletteName'];
+    this.selectedPalette = this.stylesProviderService.resolveChartPaletteForConfig(paletteConfig);
   }
 
   ngAfterViewChecked(): void {
@@ -67,24 +71,37 @@ export class BubblechartDialog implements OnInit, AfterViewChecked {
     this.controller.close(event, response);
   }
 
+  private syncPaletteName(): void {
+    this.stylesProviderService.syncPaletteName(
+      this.myPanelChartComponent.props.config.getConfig(),
+      this.selectedPalette?.name
+    );
+  }
+
   /** Saves the color configuration */
   saveChartConfig(): void {
     const colorsForConfig = this.assignedColors.map(c => c.color);
 
     this.myPanelChartComponent.props.config.setConfig(new BubblechartConfig(colorsForConfig));
     this.myPanelChartComponent.props.config.getConfig()['assignedColors'] = [...this.assignedColors];
+    this.syncPaletteName();
     this.myPanelChartComponent.changeChartType();
 
-    this.onClose(EdaDialogCloseEvent.UPDATE, { colors: colorsForConfig });
+    this.onClose(EdaDialogCloseEvent.UPDATE, { colors: colorsForConfig, paletteName: this.selectedPalette?.name });
   }
 
   /** Cancels changes and restores the initial state */
   closeChartConfig(): void {
     this.assignedColors = this.originalAssignedColors.map(c => ({ ...c }));
+    this.selectedPalette = this.stylesProviderService.resolveChartPalette(this.originalPaletteName);
 
     const colorsForConfig = this.assignedColors.map(c => c.color);
     this.myPanelChartComponent.props.config.setConfig(new BubblechartConfig(colorsForConfig));
     this.myPanelChartComponent.props.config.getConfig()['assignedColors'] = [...this.assignedColors];
+    this.stylesProviderService.syncPaletteName(
+      this.myPanelChartComponent.props.config.getConfig(),
+      this.originalPaletteName
+    );
     this.myPanelChartComponent.changeChartType();
 
     this.onClose(EdaDialogCloseEvent.NONE);
@@ -95,6 +112,7 @@ export class BubblechartDialog implements OnInit, AfterViewChecked {
     const colorsForConfig = this.assignedColors.map(c => c.color);
     this.myPanelChartComponent.props.config.setConfig(new BubblechartConfig(colorsForConfig));
     this.myPanelChartComponent.props.config.getConfig()['assignedColors'] = [...this.assignedColors];
+    this.syncPaletteName();
     this.myPanelChartComponent.changeChartType();
   }
 
@@ -119,6 +137,7 @@ export class BubblechartDialog implements OnInit, AfterViewChecked {
     const colorsForConfig = this.assignedColors.map(c => c.color);
     this.myPanelChartComponent.props.config.setConfig(new BubblechartConfig(colorsForConfig));
     this.myPanelChartComponent.props.config.getConfig()['assignedColors'] = [...this.assignedColors];
+    this.syncPaletteName();
 
     this.myPanelChartComponent.changeChartType();
   }

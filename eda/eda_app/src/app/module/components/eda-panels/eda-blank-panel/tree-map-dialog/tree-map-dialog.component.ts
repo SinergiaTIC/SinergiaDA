@@ -31,6 +31,7 @@ export class TreeMapDialog implements OnInit, AfterViewChecked {
   public display: boolean = false;
   public selectedPalette: { name: string; paleta: string[] } | null = null;
   public allPalettes: any = this.stylesProviderService.ChartsPalettes;
+  private originalPaletteName: string | undefined;
   public title: string = $localize`:@@ChartProps:PROPIEDADES DEL GRAFICO`;
 
   constructor(
@@ -40,6 +41,9 @@ export class TreeMapDialog implements OnInit, AfterViewChecked {
 
   ngOnInit(): void {
     this.panelChartConfig = this.controller.params.panelChart;
+    const paletteConfig = this.panelChartConfig.config?.getConfig();
+    this.originalPaletteName = paletteConfig?.['paletteName'];
+    this.selectedPalette = this.stylesProviderService.resolveChartPaletteForConfig(paletteConfig);
     this.display = true;
   }
 
@@ -73,6 +77,13 @@ export class TreeMapDialog implements OnInit, AfterViewChecked {
     this.controller.close(event, response);
   }
 
+  private syncPaletteName(): void {
+    this.stylesProviderService.syncPaletteName(
+      this.myPanelChartComponent.props.config.getConfig(),
+      this.selectedPalette?.name
+    );
+  }
+
   /** Save color configuration */
   saveChartConfig(): void {
     const colorsForConfig = this.assignedColors.map(c => c.color);
@@ -80,20 +91,26 @@ export class TreeMapDialog implements OnInit, AfterViewChecked {
     // Update TreeMapConfig and assignedColors in the config
     this.myPanelChartComponent.props.config.setConfig(new TreeMapConfig(colorsForConfig));
     this.myPanelChartComponent.props.config.getConfig()['assignedColors'] = [...this.assignedColors];
+    this.syncPaletteName();
 
     this.myPanelChartComponent.changeChartType();
 
-    this.onClose(EdaDialogCloseEvent.UPDATE, { colors: colorsForConfig });
+    this.onClose(EdaDialogCloseEvent.UPDATE, { colors: colorsForConfig, paletteName: this.selectedPalette?.name });
   }
 
   /** Cancel changes and restore initial state */
   closeChartConfig(): void {
     this.assignedColors = this.originalAssignedColors.map(c => ({ ...c }));
+    this.selectedPalette = this.stylesProviderService.resolveChartPalette(this.originalPaletteName);
 
     // Update TreeMapConfig and assignedColors in the config
     const colorsForConfig = this.assignedColors.map(c => c.color);
     this.myPanelChartComponent.props.config.setConfig(new TreeMapConfig(colorsForConfig));
     this.myPanelChartComponent.props.config.getConfig()['assignedColors'] = [...this.assignedColors];
+    this.stylesProviderService.syncPaletteName(
+      this.myPanelChartComponent.props.config.getConfig(),
+      this.originalPaletteName
+    );
 
     this.myPanelChartComponent.changeChartType();
     this.onClose(EdaDialogCloseEvent.NONE);
@@ -106,6 +123,7 @@ export class TreeMapDialog implements OnInit, AfterViewChecked {
     // Update TreeMapConfig and synchronize assignedColors
     this.myPanelChartComponent.props.config.setConfig(new TreeMapConfig(colorsForConfig));
     this.myPanelChartComponent.props.config.getConfig()['assignedColors'] = [...this.assignedColors];
+    this.syncPaletteName();
 
     this.myPanelChartComponent.changeChartType();
   }
@@ -132,6 +150,7 @@ export class TreeMapDialog implements OnInit, AfterViewChecked {
     const colorsForConfig = this.assignedColors.map(c => c.color);
     this.myPanelChartComponent.props.config.setConfig(new TreeMapConfig(colorsForConfig));
     this.myPanelChartComponent.props.config.getConfig()['assignedColors'] = [...this.assignedColors];
+    this.syncPaletteName();
 
     this.myPanelChartComponent.changeChartType();
   }

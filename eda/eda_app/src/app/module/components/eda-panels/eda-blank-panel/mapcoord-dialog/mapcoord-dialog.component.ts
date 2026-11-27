@@ -37,6 +37,7 @@ export class MapCoordDialogComponent implements OnInit, AfterViewChecked {
   // Styles
   public selectedPalette: { name: string; paleta: any } | null = null;
   public allPalettes: any = this.stylesProviderService.ChartsPalettes;
+  private originalPaletteName: string | undefined;
 
   public display: boolean = false;
   public title: string = $localize`:@@ChartProps:PROPIEDADES DEL GRAFICO`;
@@ -102,6 +103,9 @@ export class MapCoordDialogComponent implements OnInit, AfterViewChecked {
     this.zoom = this.controller.params.zoom;
     this.coordinates = this.controller.params.coordinates;
     this.panelChartConfig = this.controller.params.panelChart;
+    const paletteConfig = this.panelChartConfig.config?.getConfig();
+    this.originalPaletteName = paletteConfig?.['paletteName'];
+    this.selectedPalette = this.stylesProviderService.resolveChartPaletteForConfig(paletteConfig);
     this.logarithmicScale = this.controller.params.logarithmicScale;
     this.draggable = this.controller.params.draggable;
     this.display = true;
@@ -112,6 +116,7 @@ export class MapCoordDialogComponent implements OnInit, AfterViewChecked {
     
     this.onClose(EdaDialogCloseEvent.UPDATE, {
       assignedColors: [...this.assignedColors],
+      paletteName: this.selectedPalette?.name,
       initialColor: colors[0], // For compatibility
       finalColor: colors[1],   // For compatibility
       logarithmicScale: this.logarithmicScale,
@@ -124,6 +129,7 @@ export class MapCoordDialogComponent implements OnInit, AfterViewChecked {
   closeChartConfig() {
     // Restore original colors
     this.assignedColors = this.originalAssignedColors.map(c => ({ ...c }));
+    this.selectedPalette = this.stylesProviderService.resolveChartPalette(this.originalPaletteName);
     const leafletMap = this.myPanelChartComponent.componentRef.instance;
     if (leafletMap?.reDrawCircles) {
       const colors = this.assignedColors.map(c => c.color);
