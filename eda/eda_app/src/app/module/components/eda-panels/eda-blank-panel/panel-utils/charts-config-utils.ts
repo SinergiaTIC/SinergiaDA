@@ -169,6 +169,12 @@ export const ChartsConfigUtils = {
       };
     }
 
+    const savedPaletteName = ebp.panelChart.props.config?.getConfig()?.['paletteName']
+      ?? ebp.panel?.content?.query?.output?.config?.['paletteName'];
+    if (config && savedPaletteName) {
+      config['paletteName'] = savedPaletteName;
+    }
+
     return new ChartConfig(config);
   },
 

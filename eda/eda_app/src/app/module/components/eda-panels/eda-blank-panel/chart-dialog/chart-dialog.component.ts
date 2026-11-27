@@ -54,6 +54,7 @@ export class ChartDialogComponent {
     public predictionMethod: string = 'Arima';
     public selectedPalette: { name: string; paleta: any } | null = null;
     public allPalettes: any = this.stylesProviderService.ChartsPalettes;
+    private originalPaletteName: string | undefined;
     public assignedColors: { value: string; color: string; opacity?: number }[] = [];
     private originalAssignedColors: { value: string; color: string; opacity?: number }[] = [];
     public uniqueBarColors: { value: string; color: string }[] = [];
@@ -134,6 +135,9 @@ export class ChartDialogComponent {
 
     ngOnInit(): void {
         this.panelChartConfig = this.controller.params.config;
+        const paletteConfig = this.panelChartConfig.config?.getConfig();
+        this.originalPaletteName = paletteConfig?.['paletteName'];
+        this.selectedPalette = this.stylesProviderService.resolveChartPaletteForConfig(paletteConfig);
         this.addTrend = this.controller.params.config.config.getConfig()['addTrend'] || false;
         this.showLabels = this.controller.params.config.config.getConfig()['showLabels'] || false;
         this.showLabelsPercent = this.controller.params.config.config.getConfig()['showLabelsPercent'] || false;
@@ -622,7 +626,11 @@ export class ChartDialogComponent {
     // Apply assignedColors to the chart based on its type
     private applyColorsToChart(): void {
         const type = this.chart['edaChart'];
-        
+
+        if (!this.chart.chartColors) this.chart.chartColors = [{}] as any;
+        if (!this.chart.chartColors[0]) this.chart.chartColors[0] = {} as any;
+        if (!this.chart.chartDataset) this.chart.chartDataset = [{}] as any;
+
         switch (type) {
         case 'doughnut':
         case 'polarArea':
@@ -802,6 +810,7 @@ export class ChartDialogComponent {
     // Apply palette
     onPaletteSelected(): void {
         if (!this.selectedPalette) return;
+        this.chart['paletteName'] = this.selectedPalette.name;
         const palette = this.selectedPalette.paleta;
 
         // Always update assignedColors
@@ -820,6 +829,11 @@ export class ChartDialogComponent {
         } else {
             this.handleInputColor();
         }
+
+        this.stylesProviderService.syncPaletteName(
+            this.controller.params.config.config.getConfig(),
+            this.selectedPalette?.name
+        );
     }
 
     // Traffic-light bar control methods
@@ -863,12 +877,25 @@ export class ChartDialogComponent {
     // Save/cancel configuration methods
 
     saveChartConfig() {
+        // Persist the selected palette name up front so it survives even if color
+        // application below fails for a particular chart.
+        this.chart['paletteName'] = this.selectedPalette?.name;
+        this.stylesProviderService.syncPaletteName(
+            this.controller.params.config.config.getConfig(),
+            this.selectedPalette?.name
+        );
+
         // Apply final colors
         this.applyColorsToChart();
-        
+
         // Save assignedColors in config and chart
         this.chart['assignedColors'] = [...this.assignedColors];
         this.controller.params.config.config.getConfig()['assignedColors'] = [...this.assignedColors];
+        this.stylesProviderService.syncPaletteName(
+            this.controller.params.config.config.getConfig(),
+            this.selectedPalette?.name
+        );
+        this.stylesProviderService.syncPaletteName(this.chart, this.selectedPalette?.name);
         this.chart['uniqueBarColors'] = [...this.uniqueBarColors];
         this.controller.params.config.config.getConfig()['uniqueBarColors'] = [...this.uniqueBarColors];
 
@@ -914,6 +941,12 @@ export class ChartDialogComponent {
 
     resetChartConfig() {
         // Restore original label values
+        this.selectedPalette = this.stylesProviderService.resolveChartPalette(this.originalPaletteName);
+        this.stylesProviderService.syncPaletteName(
+            this.controller.params.config.config.getConfig(),
+            this.originalPaletteName
+        );
+        this.stylesProviderService.syncPaletteName(this.chart, this.originalPaletteName);
         this.addTrend = this.originalLabelValues.addTrend;
         this.showLabels = this.originalLabelValues.showLabels;
         this.showLabelsPercent = this.originalLabelValues.showLabelsPercent;

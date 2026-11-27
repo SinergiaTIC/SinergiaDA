@@ -225,6 +225,7 @@ export class DashboardEditStyleDialog {
         if (!config) {
             return;
         }
+        config['paletteName'] = this.selectedPalette.name;
 
         // If it does NOT have assignedColors, we need to create them
         if (!config.assignedColors || !Array.isArray(config.assignedColors) || config.assignedColors.length === 0) {
@@ -276,6 +277,7 @@ export class DashboardEditStyleDialog {
             if (internalConfig) {
                 // Update assignedColors by reference
                 internalConfig['assignedColors'] = config.assignedColors;
+                internalConfig['paletteName'] = this.selectedPalette.name;
                 if (config.showUniqueColors) {
                     internalConfig['uniqueBarColors'] = config.uniqueBarColors;
                 }

@@ -44,6 +44,71 @@ export class StyleProviderService {
 	public loadedPanels: number = -1;
 	public palKnob: boolean = false;
 
+	/** Returns the chart palette matching the given name, if it exists. */
+	public getPaletteByName(name?: string): any {
+		if (!name) return undefined;
+		return this.ChartsPalettes?.find(palette => palette?.name === name);
+	}
+
+	/** Palette currently applied to the dashboard, used by charts as their base palette. */
+	public getCurrentChartPalette(): any {
+		return this.getPaletteByName(this.ActualChartPalette?.['name'])
+			|| this.DEFAULT_PALETTE_COLOR
+			|| this.ChartsPalettes?.[0];
+	}
+
+	/** Resolves a saved palette name, falling back to the current dashboard palette. */
+	public resolveChartPalette(name?: string): any {
+		return this.getPaletteByName(name) || this.getCurrentChartPalette();
+	}
+
+	/** Finds a palette whose colors match the ones saved by a chart. */
+	public findPaletteByColors(colors: any[]): any | undefined {
+		const values = (colors || [])
+			.map(color => (typeof color === 'string' ? color : color?.color))
+			.filter(Boolean)
+			.map(color => color.toLowerCase());
+		if (values.length < 2) return undefined;
+
+		// Exact prefix match first (colors saved in palette order).
+		const prefixMatch = this.ChartsPalettes?.find(palette => {
+			const source = (palette?.paleta || []).map(color => color.toLowerCase());
+			if (source.length < values.length) return false;
+			return values.every((color, index) => color === source[index]);
+		});
+		if (prefixMatch) return prefixMatch;
+
+		// Fallback: every saved color belongs to the palette (colors may be in label order).
+		const candidates = (this.ChartsPalettes || []).filter(palette => {
+			const source = (palette?.paleta || []).map(color => color.toLowerCase());
+			return values.every(color => source.includes(color));
+		});
+		if (candidates.length === 1) return candidates[0];
+		// If several match, prefer the one that contains the most of the saved colors... already all; keep first.
+		return candidates[0];
+	}
+
+	/** Resolves the palette used by a chart from its saved colors first, then from its saved name. */
+	public resolveChartPaletteForConfig(config: any): any {
+		const rawColors = config?.['assignedColors'] || config?.['colors'] || [];
+		const colors = Array.isArray(rawColors)
+			? rawColors.map(color => typeof color === 'string' ? color : color?.color)
+			: [];
+		return this.findPaletteByColors(colors)
+			|| this.getPaletteByName(config?.['paletteName'])
+			|| this.getCurrentChartPalette();
+	}
+
+	/** Persists (or clears) the palette name used by a chart in its config. */
+	public syncPaletteName(config: any, name?: string): void {
+		if (!config) return;
+		if (name) {
+			config['paletteName'] = name;
+		} else {
+			delete config['paletteName'];
+		}
+	}
+
 	
 	public DEFAULT_CUSTOM_CSS: string = '';
 	

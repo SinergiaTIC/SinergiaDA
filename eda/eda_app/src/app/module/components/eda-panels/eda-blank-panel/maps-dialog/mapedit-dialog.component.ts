@@ -39,6 +39,7 @@ export class MapEditDialogComponent implements OnInit, AfterViewChecked {
   // Styles
   public selectedPalette: { name: string; paleta: any } | null = null;
   public allPalettes: any = this.stylesProviderService.ChartsPalettes;
+  private originalPaletteName: string | undefined;
 
   public display: boolean = false;
   private colorsLoaded: boolean = false;
@@ -73,6 +74,9 @@ export class MapEditDialogComponent implements OnInit, AfterViewChecked {
     this.logarithmicScale = this.controller.params.logarithmicScale;
     this.draggable = this.controller.params.draggable;
     this.panelChartConfig = this.controller.params.panelChart;
+    const paletteConfig = this.panelChartConfig.config?.getConfig();
+    this.originalPaletteName = paletteConfig?.['paletteName'];
+    this.selectedPalette = this.stylesProviderService.resolveChartPaletteForConfig(paletteConfig);
     this.display = true;
   }
 
@@ -135,6 +139,7 @@ export class MapEditDialogComponent implements OnInit, AfterViewChecked {
   saveChartConfig() {
       this.onClose(EdaDialogCloseEvent.UPDATE, {
           assignedColors: [...this.assignedColors],
+          paletteName: this.selectedPalette?.name,
           color: this.assignedColors[0].color, // For legacy code
           logarithmicScale: this.logarithmicScale,
           baseLayer: this.baseLayer,
@@ -148,6 +153,7 @@ export class MapEditDialogComponent implements OnInit, AfterViewChecked {
   closeChartConfig() {
     // Restore original colors
     this.assignedColors = this.originalAssignedColors.map(c => ({ ...c }));
+    this.selectedPalette = this.stylesProviderService.resolveChartPalette(this.originalPaletteName);
     const leafletMap = this.myPanelChartComponent.componentRef.instance;
     if (leafletMap?.updateMapColors) {
       const colors = this.assignedColors.map(c => c.color);
