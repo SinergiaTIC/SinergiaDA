@@ -1,16 +1,5 @@
-import { SnowflakeConnection } from './db-systems/snowflake-connection';
-import { BigQueryConnection } from './db-systems/bigquery-connection';
-import { OracleConnection } from './db-systems/oracle-connection';
-import { VerticaConnection } from './db-systems/vertica-connection';
-import { MysqlConnection } from './db-systems/mysql-connection';
-import { PgConnection } from './db-systems/pg-connection';
-import { AbstractConnection } from './abstract-connection';
+import type { AbstractConnection } from './abstract-connection';
 import { EnCrypterService } from '../encrypter/encrypter.service';
-import { SQLserverConnection } from './db-systems/slqserver-connection';
-import { JSONWebServiceConnection } from './db-systems/json-webservice-connection';
-import { MongoDBConnection } from './db-systems/mongodb-connection';
-import { ClickHouseConnection } from './db-systems/clickhouse-connection';
-import { DuckDBConnection } from './db-systems/duckdb-connection';
 import { PluginRegistry } from '../../plugins';
 import DataSource from '../../module/datasource/model/datasource.model';
 
@@ -51,29 +40,32 @@ export class ManagerConnectionService {
             case MS_CONNECTION:
             // return new MsConnection(config, secondary);
             case MY_CONNECTION:
-                return new MysqlConnection(config);
+                return new (require('./db-systems/mysql-connection').MysqlConnection)(config);
             case PG_CONNECTION:
-                return new PgConnection(config);
+                return new (require('./db-systems/pg-connection').PgConnection)(config);
             case VE_CONNECTION:
-                return new VerticaConnection(config);
+                return new (require('./db-systems/vertica-connection').VerticaConnection)(config);
             case SQLS_CONNECTION:
-                return new SQLserverConnection(config);
+                return new (require('./db-systems/slqserver-connection').SQLserverConnection)(config);
             case ORACLE_CONNECTION:
-                return new OracleConnection(config);
+                return new (require('./db-systems/oracle-connection').OracleConnection)(config);
             case BIGQUERY_CONNECTION:
-                return new BigQueryConnection(config);
+                return new (require('./db-systems/bigquery-connection').BigQueryConnection)(config);
             case SNOWFLAKE_CONNECTION:
-                return new SnowflakeConnection(config);
+                return new (require('./db-systems/snowflake-connection').SnowflakeConnection)(config);
             case WEB_SERVICE:
-                return new JSONWebServiceConnection(config);
+                return new (require('./db-systems/json-webservice-connection').JSONWebServiceConnection)(config);
             case MONGODB_CONNECTION:
-                return new MongoDBConnection(config);
+                return new (require('./db-systems/mongodb-connection').MongoDBConnection)(config);
             case CLICKHOUSE_CONNECTION:
-                return new ClickHouseConnection(config);
+                return new (require('./db-systems/clickhouse-connection').ClickHouseConnection)(config);
             case DUCKDB_CONNECTION:
-                return new DuckDBConnection(config);
-            default:
-                return PluginRegistry.getConnection(config.type, config);
+                return new (require('./db-systems/duckdb-connection').DuckDBConnection)(config);
+            default: {
+                const connection = PluginRegistry.getConnection(config.type, config);
+                if (!connection) throw new Error(`El plugin de datasource "${config.type}" no está registrado ni habilitado en plugins_config.ENABLED_PLUGINS.`);
+                return connection;
+            }
         }
     }
 
@@ -82,29 +74,32 @@ export class ManagerConnectionService {
             case MS_CONNECTION:
             //return new MsConnection(config, secondary);
             case MY_CONNECTION:
-                return new MysqlConnection(config);
+                return new (require('./db-systems/mysql-connection').MysqlConnection)(config);
             case PG_CONNECTION:
-                return new PgConnection(config);
+                return new (require('./db-systems/pg-connection').PgConnection)(config);
             case VE_CONNECTION:
-                return new VerticaConnection(config);
+                return new (require('./db-systems/vertica-connection').VerticaConnection)(config);
             case SQLS_CONNECTION:
-                return new SQLserverConnection(config);
+                return new (require('./db-systems/slqserver-connection').SQLserverConnection)(config);
             case ORACLE_CONNECTION:
-                return new OracleConnection(config);
+                return new (require('./db-systems/oracle-connection').OracleConnection)(config);
             case BIGQUERY_CONNECTION:
-                return new BigQueryConnection(config);
+                return new (require('./db-systems/bigquery-connection').BigQueryConnection)(config);
             case SNOWFLAKE_CONNECTION:
-                return new SnowflakeConnection(config);
+                return new (require('./db-systems/snowflake-connection').SnowflakeConnection)(config);
             case WEB_SERVICE:
-                return new JSONWebServiceConnection(config);
+                return new (require('./db-systems/json-webservice-connection').JSONWebServiceConnection)(config);
             case MONGODB_CONNECTION:
-                return new MongoDBConnection(config);
+                return new (require('./db-systems/mongodb-connection').MongoDBConnection)(config);
             case CLICKHOUSE_CONNECTION:
-                return new ClickHouseConnection(config);
+                return new (require('./db-systems/clickhouse-connection').ClickHouseConnection)(config);
             case DUCKDB_CONNECTION:
-                return new DuckDBConnection(config);
-            default:
-                return PluginRegistry.getConnection(config.type, config);
+                return new (require('./db-systems/duckdb-connection').DuckDBConnection)(config);
+            default: {
+                const connection = PluginRegistry.getConnection(config.type, config);
+                if (!connection) throw new Error(`El plugin de datasource "${config.type}" no está registrado ni habilitado en plugins_config.ENABLED_PLUGINS.`);
+                return connection;
+            }
         }
     }
 

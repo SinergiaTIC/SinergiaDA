@@ -1,4 +1,11 @@
-import * as tf from '@tensorflow/tfjs';
+import type * as TensorFlowTypes from '@tensorflow/tfjs';
+
+let tf: typeof import('@tensorflow/tfjs');
+
+function loadTensorflow(): typeof import('@tensorflow/tfjs') {
+    if (!tf) tf = require('@tensorflow/tfjs');
+    return tf;
+}
 
 export class TensorflowService {
 
@@ -33,11 +40,13 @@ export class TensorflowService {
 
         // Con params manuales: LSTM directo, sin fallback
         if (tfParams) {
+            loadTensorflow();
             return await TensorflowService.lstmForecast(dataset, steps, tfParams, referenceDatasets);
         }
 
         // Sin params: LSTM → red densa → tendencia lineal
         try {
+            loadTensorflow();
             return await TensorflowService.lstmForecast(dataset, steps, undefined, referenceDatasets);
         } catch (err) {
             console.warn('\n⚠️  LSTM falló, usando red densa como fallback:', (err as Error).message);
@@ -312,7 +321,7 @@ export class TensorflowService {
 
         // ── PREDICCIÓN ─────────────────────────────────────────────────
         const inputFinal = tf.tensor3d([lastWindow]);
-        const predTensor = model.predict(inputFinal) as tf.Tensor;
+        const predTensor = model.predict(inputFinal) as TensorFlowTypes.Tensor;
         const predictions = Array.from(predTensor.dataSync());
         predTensor.dispose();
 
@@ -331,7 +340,7 @@ export class TensorflowService {
                     return newVec;
                 });
                 const inputNeutralized = tf.tensor3d([windowNeutralized]);
-                const neutralTensor = model.predict(inputNeutralized) as tf.Tensor;
+                const neutralTensor = model.predict(inputNeutralized) as TensorFlowTypes.Tensor;
                 const neutralPred = Array.from(neutralTensor.dataSync());
                 inputNeutralized.dispose();
                 neutralTensor.dispose();
@@ -464,7 +473,7 @@ export class TensorflowService {
         console.log(`  Datos reales correspondientes:        [${dataset.slice(-windowSize).join(', ')}]`);
 
         const input = tf.tensor2d([lastWindow]);
-        const pred = model.predict(input) as tf.Tensor;
+        const pred = model.predict(input) as TensorFlowTypes.Tensor;
         const predictions = Array.from(pred.dataSync());
 
         input.dispose();

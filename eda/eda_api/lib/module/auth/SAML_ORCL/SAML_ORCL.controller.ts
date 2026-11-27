@@ -5,6 +5,7 @@ import passport from '../SAML.passport';
 import { samlStrategy } from '../SAML.passport';
 
 import { insertServerLog } from '../../../services/server-log/server-log.service';
+import { getOracleClient } from '../../../services/connection/db-systems/oracle-client';
 import { parseStringPromise } from 'xml2js';
 import zlib from 'zlib';
 
@@ -23,9 +24,6 @@ const ORCL = require('../../../../config/bbdd_orcl').ORCL;
 const SAMLconfig = require('../../../../config/SAMLconfig');
 const util = require("util");
 
-
-// Requerido para la conexión de la base de datos Oracle
-const oracledb = require("oracledb");
 
 // Constante de origen para la conexión SAML, en local => http://localhost:4200
 const origen = SAMLconfig.urlRedirection;
@@ -369,6 +367,7 @@ async function getRoles(email) {
     let connection;
 
     try {
+        const oracledb = getOracleClient();
         connection = await oracledb.getConnection({
             user: ORCL.bbdd_user,
             password: ORCL.bbdd_pass,

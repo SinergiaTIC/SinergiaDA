@@ -1,6 +1,5 @@
 import cluster from 'cluster';
 import os from 'os';
-import fs from 'fs';
 
 const apiConfig = require('../config/eda_api_config');
 const numCPUs: number = (apiConfig.cluster_workers > 0) ? apiConfig.cluster_workers : os.cpus().length;
@@ -26,12 +25,6 @@ if (cluster.isMaster) {
 } else {
     const app = require('./app').default;
 
-    /**
-     * oracle client
-     */
-    const oracledb = require('oracledb');
-    const EDA_ORACLE_CLIENT = require('../config/oracle-config.js').EDA_ORACLE_CLIENT;
-
     // catch 404 and forward to error handler
     app.use(function(_req: any, _res: any, next: any) {
         let err: IError = new Error();
@@ -55,24 +48,4 @@ if (cluster.isMaster) {
         console.log(`\n\x1b[34m=====\x1b[0m Worker \x1b[32m[PID:${process.pid}]\x1b[0m escuchando en puerto \x1b[32m[${PORT}]\x1b[0m \x1b[34m=====\x1b[0m\n`);
     });
 
-    /**
-     * Oracle client
-     * The client is initialized in every worker (it is loaded per process),
-     * but startup messages are only logged by the first worker to avoid duplicates.
-     */
-    const oracleConfigured = !!EDA_ORACLE_CLIENT && fs.existsSync(EDA_ORACLE_CLIENT);
-    const isFirstWorker = cluster.worker?.id === 1;
-
-    if (!oracleConfigured) {
-        if (isFirstWorker) console.log('[Oracle] Oracle no configurado');
-    } else {
-        try {
-            oracledb.initOracleClient({ libDir: EDA_ORACLE_CLIENT });
-        } catch (err) {
-            if (isFirstWorker) {
-                console.log('[Oracle] Error inicializando el cliente de Oracle en', EDA_ORACLE_CLIENT);
-                console.error(err);
-            }
-        }
-    }
 }

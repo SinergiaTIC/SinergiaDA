@@ -1,7 +1,4 @@
 import { MailingService } from "../mailingService/mailing.service";
-import { chromium } from 'playwright';
-import PDFDocument = require('pdfkit');
-import sharp = require('sharp');
 import * as fs from 'fs';
 import * as path from 'path';
 
@@ -26,6 +23,7 @@ export class MailDashboardsController {
 
     let browser: any;
     try {
+      const { chromium } = require('playwright');
       browser = await chromium.launch({
         headless: true,
         args: ['--no-sandbox', '--disable-setuid-sandbox']
@@ -123,6 +121,7 @@ export class MailDashboardsController {
       const fullPath = path.join(filepath, filename);
 
       await new Promise<void>((resolve, reject) => {
+        const PDFDocument = require('pdfkit');
         const doc = new PDFDocument({ size: 'A4', margin: 0, autoFirstPage: false });
         const writeStream = fs.createWriteStream(fullPath);
         doc.pipe(writeStream);
@@ -130,6 +129,7 @@ export class MailDashboardsController {
         writeStream.on('error', reject);
 
         const buildPages = async () => {
+          const sharp = require('sharp');
           let position = 0;
 
           while (position < physicalHeight) {

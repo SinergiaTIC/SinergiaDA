@@ -1,9 +1,16 @@
-import { DuckDBInstance } from '@duckdb/node-api';
+import type { DuckDBInstance } from '@duckdb/node-api';
 import * as path from 'path';
 import * as fs from 'fs';
 import { DuckDBBuilderService } from '../../query-builder/qb-systems/duckdb-builder.service';
 import { AbstractConnection } from '../abstract-connection';
 import { AggregationTypes } from '../../../module/global/model/aggregation-types';
+
+let duckdbModule: typeof import('@duckdb/node-api');
+
+function loadDuckDB(): typeof import('@duckdb/node-api') {
+    if (!duckdbModule) duckdbModule = require('@duckdb/node-api');
+    return duckdbModule;
+}
 
 export class DuckDBConnection extends AbstractConnection {
 
@@ -33,6 +40,7 @@ export class DuckDBConnection extends AbstractConnection {
     }
 
     async getclient(): Promise<DuckDBInstance> {
+        const { DuckDBInstance } = loadDuckDB();
         return await DuckDBInstance.create(':memory:');
     }
 
